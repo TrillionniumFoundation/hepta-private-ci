@@ -48,7 +48,7 @@ impl SupervisorObserverClient {
     ) -> Result<RobrixSupervisordPayload, SupervisorError> {
         let request_id = self
             .next_request_id
-            .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))
+            .try_update(Ordering::Relaxed, Ordering::Relaxed, |id| id.checked_add(1))
             .map_err(|_| SupervisorError::Invalid("observer request identity exhausted".into()))?;
         let request = RobrixSupervisordRequest::new(request_id, method);
         request

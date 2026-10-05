@@ -136,13 +136,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
                 Ok(faults)
             });
-            match result {
-                Ok(faults) => {
-                    for error in faults {
-                        supervisor.record_fault(&agent_id, &error, &mut report);
-                    }
-                }
-                Err(error) => return Err(error),
+            let faults = result?;
+            for error in faults {
+                supervisor.record_fault(&agent_id, &error, &mut report);
             }
         }
         Ok((supervisor, report))

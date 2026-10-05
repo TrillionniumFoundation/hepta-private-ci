@@ -50,7 +50,7 @@ pub(crate) fn current_records<'a>(
             "original acknowledged prefix and whole current cycle",
         ));
     }
-    for (index, group) in records.chunks_exact(4).enumerate() {
+    for (index, group) in records.as_chunks::<4>().0.iter().enumerate() {
         for (policy, offset) in [("candidate", 0usize), ("baseline", 2usize)] {
             let expected = format!("calibration.episode.{}.{policy}.{index}", cut.audit_digest);
             match (&group[offset].event, &group[offset + 1].event) {

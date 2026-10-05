@@ -143,6 +143,11 @@ pub use cognitive_retrieval::SourceRevalidationBinding;
 pub use cognitive_retrieval_adapter::OwnerRetrievalExecutionV1;
 pub use cognitive_retrieval_adapter::OwnerRetrievalExecutionV2;
 pub use cognitive_retrieval_adapter::RetrievalExecutionContextV1;
+#[deprecated(note = "use execute_owner_observation_v2_controlled with explicit work control")]
+#[expect(
+    deprecated,
+    reason = "preserve the deprecated V1 compatibility re-export"
+)]
 pub use cognitive_retrieval_adapter::execute_owner_observation;
 pub use cognitive_retrieval_adapter::execute_owner_observation_controlled;
 pub use cognitive_retrieval_adapter::execute_owner_observation_v2_controlled;

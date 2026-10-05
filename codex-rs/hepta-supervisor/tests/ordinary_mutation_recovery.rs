@@ -5,6 +5,8 @@ use std::path::PathBuf;
 use std::time::Duration;
 use std::time::Instant;
 
+use anyhow::Context;
+use anyhow::Result;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
@@ -41,39 +43,42 @@ struct Fleet {
 }
 
 impl Fleet {
-    fn new(program: &str) -> Self {
+    fn new(program: &str) -> Result<Self> {
         let directory =
-            socket_directory::temporary_fleet("h7m-").expect("short Unix socket directory");
-        let root = HeptaFleetRoot::parse(directory.path().join("fleet")).expect("fleet root");
-        let registry = FleetRegistry::initialize(root.clone()).expect("initialize registry");
+            socket_directory::temporary_fleet("h7m-").context("short Unix socket directory")?;
+        let root = HeptaFleetRoot::parse(directory.path().join("fleet")).context("fleet root")?;
+        let registry = FleetRegistry::initialize(root.clone()).context("initialize registry")?;
         let workspace = directory.path().join("workspace");
-        std::fs::create_dir(&workspace).expect("workspace");
-        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("Agent id");
+        std::fs::create_dir(&workspace).context("workspace")?;
+        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").context("Agent id")?;
         let record = registry
             .register(
                 AgentManifest::new(
                     agent.clone(),
-                    WorkspaceBinding::new(workspace.canonicalize().expect("workspace path"), &root)
-                        .expect("workspace binding"),
+                    WorkspaceBinding::new(
+                        workspace.canonicalize().context("workspace path")?,
+                        &root,
+                    )
+                    .context("workspace binding")?,
                     ResourceBudget::local_default(),
                 )
-                .expect("manifest"),
+                .context("manifest")?,
             )
-            .expect("register agent");
+            .context("register agent")?;
         let source = directory.path().join("agentd");
-        std::fs::write(&source, program).expect("process fixture");
+        std::fs::write(&source, program).context("process fixture")?;
         std::fs::set_permissions(&source, std::fs::Permissions::from_mode(0o700))
-            .expect("executable fixture");
-        let release = ReleaseId::parse("release-v1").expect("release");
+            .context("executable fixture")?;
+        let release = ReleaseId::parse("release-v1").context("release")?;
         registry
             .install_release(release.clone(), &source, Vec::new())
-            .expect("install release");
+            .context("install release")?;
         registry
             .allow_release(&agent, &release)
-            .expect("allow release");
+            .context("allow release")?;
         let client = SupervisordClient::new(registry.layout().supervisor_socket().to_path_buf())
-            .expect("client");
-        Self {
+            .context("client")?;
+        Ok(Self {
             _directory: directory,
             root,
             agent,
@@ -81,7 +86,7 @@ impl Fleet {
             run_root: record.layout.owner_run_root().to_path_buf(),
             client,
             cancellation: CancellationToken::new(),
-        }
+        })
     }
 
     async fn wait_for_mutation_status(
@@ -129,8 +134,8 @@ impl Drop for Fleet {
 }
 
 #[tokio::test(flavor = "current_thread")]
-async fn socket_reconnect_preserves_outcome_and_emergency_kill_preserves_ambiguity() {
-    let fleet = Fleet::new("#!/bin/sh\nexec /bin/sleep 20\n");
+async fn socket_reconnect_preserves_outcome_and_emergency_kill_preserves_ambiguity() -> Result<()> {
+    let fleet = Fleet::new("#!/bin/sh\nexec /bin/sleep 20\n")?;
     let daemon = tokio::spawn(run_supervisord(
         fleet.root.clone(),
         fleet.cancellation.clone(),
@@ -272,11 +277,13 @@ async fn socket_reconnect_preserves_outcome_and_emergency_kill_preserves_ambigui
         .await
         .expect("join daemon")
         .expect("clean daemon shutdown");
+    Ok(())
 }
 
 #[tokio::test(flavor = "current_thread")]
-async fn startup_pending_ordinary_mutation_is_reachable_but_never_ready_or_replayed() {
-    let fleet = Fleet::new("#!/bin/sh\nexec /bin/sleep 20\n");
+async fn startup_pending_ordinary_mutation_is_reachable_but_never_ready_or_replayed() -> Result<()>
+{
+    let fleet = Fleet::new("#!/bin/sh\nexec /bin/sleep 20\n")?;
     let request_id = 7;
     let pending = prepare_mutation(
         &fleet.run_root,
@@ -326,11 +333,12 @@ async fn startup_pending_ordinary_mutation_is_reachable_but_never_ready_or_repla
         .await
         .expect("join daemon")
         .expect("clean daemon shutdown");
+    Ok(())
 }
 
 #[tokio::test(flavor = "current_thread")]
-async fn a_real_spawn_failure_immediately_blocks_readiness_and_further_mutations() {
-    let fleet = Fleet::new("#!/definitely-missing-hepta-interpreter\n");
+async fn a_real_spawn_failure_immediately_blocks_readiness_and_further_mutations() -> Result<()> {
+    let fleet = Fleet::new("#!/definitely-missing-hepta-interpreter\n")?;
     let daemon = tokio::spawn(run_supervisord(
         fleet.root.clone(),
         fleet.cancellation.clone(),
@@ -392,4 +400,5 @@ async fn a_real_spawn_failure_immediately_blocks_readiness_and_further_mutations
         .await
         .expect("join daemon")
         .expect("clean daemon shutdown");
+    Ok(())
 }

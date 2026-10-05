@@ -315,7 +315,7 @@ impl ProcessDriver for UnixProcessDriver {
         agent_control.peer_uid = peer_uid;
         let probe = HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone()));
         // From successful spawn onward, all setup faults travel with ownership.
-        let mut spawned = initialization::finish_child(
+        let spawned = initialization::finish_child(
             child,
             spec.generation,
             false,
@@ -323,6 +323,8 @@ impl ProcessDriver for UnixProcessDriver {
             Some(agent_control),
             self.log_channel_capacity,
         );
+        #[cfg(any(not(target_os = "linux"), feature = "local-host"))]
+        let mut spawned = spawned;
         #[cfg(all(target_os = "linux", feature = "local-host"))]
         if let (Some(host), Some(execution)) = (&self.local_host, execution) {
             spawned.process.resource_execution = Some((Arc::clone(host), execution.id));
@@ -356,8 +358,9 @@ impl ProcessDriver for UnixProcessDriver {
                 return Ok(Adoption::Missing);
             }
             let probe = HealthProbe::spawn(health_identity);
-            let mut process =
-                initialization::finish_adoption(reference, probe, Some(agent_control));
+            let process = initialization::finish_adoption(reference, probe, Some(agent_control));
+            #[cfg(any(not(target_os = "linux"), feature = "local-host"))]
+            let mut process = process;
             #[cfg(all(target_os = "linux", feature = "local-host"))]
             if let Some(host) = &self.local_host {
                 let id = match host.recover_execution(&spec.agent_id.to_string(), process_id) {
@@ -424,7 +427,7 @@ impl ProcessDriver for UnixProcessDriver {
         let mut identity = MatrixHealthProbeIdentity::from_spawn(spec, child.id());
         identity.peer_uid = peer_uid;
         let probe = HealthProbe::spawn(HealthProbeIdentity::Matrixd(identity));
-        let mut spawned = initialization::finish_child(
+        let spawned = initialization::finish_child(
             child,
             spec.agent_generation,
             true,
@@ -432,6 +435,8 @@ impl ProcessDriver for UnixProcessDriver {
             None,
             self.log_channel_capacity,
         );
+        #[cfg(any(not(target_os = "linux"), feature = "local-host"))]
+        let mut spawned = spawned;
         #[cfg(all(target_os = "linux", feature = "local-host"))]
         if let (Some(host), Some(execution)) = (&self.local_host, execution) {
             spawned.process.resource_execution = Some((Arc::clone(host), execution.id));
@@ -466,7 +471,9 @@ impl ProcessDriver for UnixProcessDriver {
                 return Ok(Adoption::Missing);
             }
             let probe = HealthProbe::spawn(health_identity);
-            let mut process = initialization::finish_adoption(reference, probe, None);
+            let process = initialization::finish_adoption(reference, probe, None);
+            #[cfg(any(not(target_os = "linux"), feature = "local-host"))]
+            let mut process = process;
             #[cfg(all(target_os = "linux", feature = "local-host"))]
             if let Some(host) = &self.local_host {
                 let id = match host

@@ -178,6 +178,10 @@ impl ProductionRecoveryObservationV1 {
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "preserve the production recovery observation V1 API"
+)]
 pub fn publish_production_recovery_observation(
     run_root: &Path,
     agent_id: &AgentId,

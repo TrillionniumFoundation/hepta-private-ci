@@ -41,18 +41,53 @@ impl RootAdmittedFleetPeerV1 {
     pub fn uid(&self) -> u32 {
         self.uid
     }
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub fn pid(&self) -> u32 {
         self.peer.pid
     }
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub fn start_ticks(&self) -> u64 {
         self.peer.start_ticks
     }
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub fn cgroup(&self) -> &str {
         &self.peer.cgroup
     }
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub fn executable_sha256(&self) -> &str {
         &self.peer.executable_sha256
     }
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub fn policy_sha256(&self) -> [u8; 32] {
         self.policy_sha256
     }
@@ -61,6 +96,13 @@ impl RootAdmittedFleetPeerV1 {
 impl RootFleetPeerAdmissionV1 {
     /// Reuse the original bounded, no-follow Root source reader. Reading a
     /// factual source does not open an issuer, signing key or owner frontier.
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub fn read_protected_source(
         path: &Path,
         maximum: usize,
@@ -97,6 +139,13 @@ impl RootFleetPeerAdmissionV1 {
         })
     }
 
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub async fn admit(&self, stream: &UnixStream) -> anyhow::Result<RootAdmittedFleetPeerV1> {
         let peer = self.capture(stream).await?;
         Ok(RootAdmittedFleetPeerV1 {
@@ -109,6 +158,13 @@ impl RootFleetPeerAdmissionV1 {
     /// Validate an independently Root-custodied historical model observation
     /// against the original enrollment. This does not assert its old PID is
     /// alive or substitute it for authentication of the current held socket.
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub fn validate_historical_model_scope(
         &self,
         current: &RootAdmittedFleetPeerV1,
@@ -133,6 +189,13 @@ impl RootFleetPeerAdmissionV1 {
 
     /// The same held socket must still resolve to the original policy and
     /// exact PID/start/executable/cgroup/current Fleet hold before effects.
+    #[cfg_attr(
+        all(test, not(feature = "local-model-authority")),
+        expect(
+            dead_code,
+            reason = "Off-feature tests only exercise peer gate open refusal."
+        )
+    )]
     pub async fn revalidate(
         &self,
         stream: &UnixStream,

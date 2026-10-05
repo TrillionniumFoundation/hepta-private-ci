@@ -32,7 +32,6 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use serde::Deserialize;
 use serde::Serialize;
-use sha2::Digest;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
@@ -71,7 +70,9 @@ use executable::ExecutableCache;
 use executable::MAX_ENROLLED_EXECUTABLES;
 #[path = "local_model_authority_peer.rs"]
 mod peer_admission;
+#[cfg(feature = "local-model-authority")]
 pub use peer_admission::RootAdmittedFleetPeerV1;
+#[cfg(feature = "local-model-authority")]
 pub use peer_admission::RootFleetPeerAdmissionV1;
 use store::ProtectedClock;
 use store::ProtectedFrontier;
@@ -662,6 +663,13 @@ impl Issuer {
     }
 }
 
+#[cfg_attr(
+    all(test, not(feature = "local-model-authority")),
+    expect(
+        dead_code,
+        reason = "The service entry is exported only with the authority feature."
+    )
+)]
 pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()> {
     anyhow::ensure!(
         rustix::process::geteuid().as_raw() == 0,

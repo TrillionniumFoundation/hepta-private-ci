@@ -1372,7 +1372,7 @@ fn product_attempt_nonce_digest(
     logical_start_ms: u64,
 ) -> Result<Digest32, CognitiveStoreError> {
     let attempt_sequence = PRODUCT_FEDERATION_ATTEMPT_SEQUENCE
-        .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
+        .try_update(Ordering::Relaxed, Ordering::Relaxed, |value| {
             value.checked_add(1)
         })
         .map_err(|_| {

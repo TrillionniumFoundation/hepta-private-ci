@@ -73,7 +73,7 @@ impl RecallWorkControlV1 {
         } else if self
             .state
             .remaining
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |remaining| {
+            .try_update(Ordering::AcqRel, Ordering::Acquire, |remaining| {
                 remaining.checked_sub(1)
             })
             .is_err()

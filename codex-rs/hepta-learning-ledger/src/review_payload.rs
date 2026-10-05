@@ -10,7 +10,9 @@ pub fn decode_review_payload_hex(value: &str) -> ReviewResult<Vec<u8>> {
     }
     value
         .as_bytes()
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|s| Ok(u8::from_str_radix(std::str::from_utf8(s)?, 16)?))
         .collect()
 }

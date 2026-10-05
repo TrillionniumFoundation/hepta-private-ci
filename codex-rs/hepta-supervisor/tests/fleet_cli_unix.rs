@@ -30,19 +30,21 @@ impl Drop for Daemon {
     }
 }
 
-fn cli(root: &Path, args: &[&str]) -> std::process::Output {
-    Command::new(cargo_bin("hepta-fleetctl").expect("fleetctl binary"))
+fn cli(
+    root: &Path,
+    args: &[&str],
+) -> Result<std::process::Output, Box<dyn std::error::Error + Send + Sync>> {
+    Ok(Command::new(cargo_bin("hepta-fleetctl")?)
         .arg("--fleet-root")
         .arg(root)
         .args(args)
-        .output()
-        .expect("execute fleetctl")
+        .output()?)
 }
 
-fn success(root: &Path, args: &[&str]) -> Value {
+fn success(root: &Path, args: &[&str]) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
     let deadline = Instant::now() + Duration::from_secs(5);
     let output = loop {
-        let output = cli(root, args);
+        let output = cli(root, args)?;
         // Only a read can be repeated. Mutations retain their exact request ID
         // and any uncertain response is an error requiring a status query.
         let read = matches!(
@@ -66,11 +68,12 @@ fn success(root: &Path, args: &[&str]) -> Value {
         "command {args:?}: {}",
         String::from_utf8_lossy(&output.stderr)
     );
-    serde_json::from_slice(&output.stdout).expect("CLI JSON")
+    Ok(serde_json::from_slice(&output.stdout)?)
 }
 
 #[tokio::test]
-async fn cli_installs_immutable_release_controls_real_process_and_queries_durable_outcome() {
+async fn cli_installs_immutable_release_controls_real_process_and_queries_durable_outcome()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let directory = tempfile::Builder::new()
         .prefix("h7-cli-")
         .tempdir_in("/tmp")
@@ -79,11 +82,11 @@ async fn cli_installs_immutable_release_controls_real_process_and_queries_durabl
     let workspace = directory.path().join("workspace");
     std::fs::create_dir(&workspace).expect("workspace");
     let workspace = workspace.canonicalize().expect("canonical workspace");
-    success(&root, &["init"]);
+    success(&root, &["init"])?;
     success(
         &root,
         &["register", AGENT, workspace.to_str().expect("path")],
-    );
+    )?;
     // A real installed executable verifies release copying and process control;
     // it has no authority fixtures, model tokens, or fake readiness service.
     success(
@@ -95,8 +98,8 @@ async fn cli_installs_immutable_release_controls_real_process_and_queries_durabl
             "--agentd-arg",
             "30",
         ],
-    );
-    success(&root, &["allow-release", AGENT, "local-v1"]);
+    )?;
+    success(&root, &["allow-release", AGENT, "local-v1"])?;
     let root_type = HeptaFleetRoot::parse(root.clone()).expect("fleet root");
     let registry = FleetRegistry::open_existing(root_type.clone()).expect("registry");
     let agent = AgentId::parse(AGENT).expect("agent");
@@ -133,7 +136,7 @@ async fn cli_installs_immutable_release_controls_real_process_and_queries_durabl
         );
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
-    let started = success(&root, &["start", AGENT, "local-v1", "7001"]);
+    let started = success(&root, &["start", AGENT, "local-v1", "7001"])?;
     let active = client.snapshot(agent.clone()).await.expect("owned process");
     assert!(active.active);
     assert!(active.process_id.is_some());
@@ -148,14 +151,14 @@ async fn cli_installs_immutable_release_controls_real_process_and_queries_durabl
         }
     };
     assert_eq!(
-        success(&root, &["mutation-status", AGENT, "7001"]),
+        success(&root, &["mutation-status", AGENT, "7001"])?,
         json!({"requestId": 7001, "status": status})
     );
     assert_eq!(
         started["agent"],
         serde_json::to_value(&active).expect("status JSON")
     );
-    let repeated = cli(&root, &["start", AGENT, "local-v1", "7001"]);
+    let repeated = cli(&root, &["start", AGENT, "local-v1", "7001"])?;
     assert!(!repeated.status.success());
     // Both recorded-ID rejection and busy admission are safe refusals. Neither
     // response may create another process or alter the durable original result.
@@ -164,7 +167,7 @@ async fn cli_installs_immutable_release_controls_real_process_and_queries_durabl
         active
     );
     assert_eq!(
-        success(&root, &["mutation-status", AGENT, "7001"]),
+        success(&root, &["mutation-status", AGENT, "7001"])?,
         json!({"requestId": 7001, "status": status})
     );
 
@@ -177,7 +180,7 @@ async fn cli_installs_immutable_release_controls_real_process_and_queries_durabl
             OTHER_AGENT,
             other_workspace.to_str().expect("path"),
         ],
-    );
+    )?;
     assert!(!forbidden.status.success());
     assert!(String::from_utf8_lossy(&forbidden.stderr).contains("another supervisord owns"));
     assert!(
@@ -187,27 +190,31 @@ async fn cli_installs_immutable_release_controls_real_process_and_queries_durabl
             .agent_root()
             .exists()
     );
-    success(&root, &["kill", AGENT, "7002"]);
+    success(&root, &["kill", AGENT, "7002"])?;
     await_terminal(&client, &agent).await;
+    Ok(())
 }
 
 #[test]
-fn cli_rejects_invalid_mutation_identity_before_connecting() {
+fn cli_rejects_invalid_mutation_identity_before_connecting()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let directory = tempfile::tempdir().expect("directory");
     let output = cli(
         &directory.path().join("absent"),
         &["start", AGENT, "local-v1", "0"],
-    );
+    )?;
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("REQUEST_ID must be nonzero"));
     assert!(!String::from_utf8_lossy(&output.stderr).contains("No such file"));
+    Ok(())
 }
 
 #[test]
-fn cli_rejects_unknown_install_flags_without_publishing_release() {
+fn cli_rejects_unknown_install_flags_without_publishing_release()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let directory = tempfile::tempdir().expect("directory");
     let root = directory.path().join("fleet");
-    success(&root, &["init"]);
+    success(&root, &["init"])?;
     let output = cli(
         &root,
         &[
@@ -217,14 +224,16 @@ fn cli_rejects_unknown_install_flags_without_publishing_release() {
             "--credential-profile",
             "/tmp/profile",
         ],
-    );
+    )?;
     assert!(!output.status.success());
     assert!(String::from_utf8_lossy(&output.stderr).contains("unknown install-release argument"));
     assert!(!root.join("releases/local-v1").exists());
+    Ok(())
 }
 
 #[tokio::test]
-async fn live_registration_and_retirement_preserve_history_under_the_same_daemon() {
+async fn live_registration_and_retirement_preserve_history_under_the_same_daemon()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let directory = tempfile::Builder::new()
         .prefix("h7-hot-")
         .tempdir_in("/tmp")
@@ -234,7 +243,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
     let peer_workspace = directory.path().join("peer-workspace");
     std::fs::create_dir(&workspace).expect("workspace");
     std::fs::create_dir(&peer_workspace).expect("peer workspace");
-    success(&root, &["init"]);
+    success(&root, &["init"])?;
     success(
         &root,
         &[
@@ -244,7 +253,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
             "--agentd-arg",
             "30",
         ],
-    );
+    )?;
     let root_type = HeptaFleetRoot::parse(root.clone()).expect("root");
     let registry = FleetRegistry::open_existing(root_type.clone()).expect("registry");
     let mut daemon = Daemon(
@@ -279,7 +288,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
             AGENT,
             workspace.to_str().expect("workspace"),
         ],
-    );
+    )?;
     assert_eq!(
         success(
             &root,
@@ -288,7 +297,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
                 AGENT,
                 workspace.to_str().expect("workspace")
             ]
-        ),
+        )?,
         registered
     );
     let changed_identity = cli(
@@ -298,7 +307,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
             AGENT,
             peer_workspace.to_str().expect("workspace"),
         ],
-    );
+    )?;
     assert!(!changed_identity.status.success());
     success(
         &root,
@@ -307,15 +316,15 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
             OTHER_AGENT,
             peer_workspace.to_str().expect("peer"),
         ],
-    );
+    )?;
     let agent = AgentId::parse(AGENT).expect("agent");
     let peer = AgentId::parse(OTHER_AGENT).expect("peer");
     let before = client
         .snapshot(agent.clone())
         .await
         .expect("registered Agent");
-    success(&root, &["allow-release-live", AGENT, "local-v1"]);
-    success(&root, &["start", AGENT, "local-v1", "8001"]);
+    success(&root, &["allow-release-live", AGENT, "local-v1"])?;
+    success(&root, &["start", AGENT, "local-v1", "8001"])?;
     let running = client.snapshot(agent.clone()).await.expect("owned process");
     let peer_before = client.snapshot(peer.clone()).await.expect("peer");
     assert!(running.active);
@@ -327,7 +336,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
         "live process cannot be archived"
     );
     assert_eq!(
-        success(&root, &["retirement-status", AGENT]),
+        success(&root, &["retirement-status", AGENT])?,
         json!({"agentId": agent, "archivedRoot": null})
     );
     assert_eq!(
@@ -338,18 +347,18 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
         client.retire_agent(before.control_fence).await.is_err(),
         "stale fence cannot retire a replacement"
     );
-    success(&root, &["kill", AGENT, "8002"]);
+    success(&root, &["kill", AGENT, "8002"])?;
     await_terminal(&client, &agent).await;
     let agent_root = root_type.layout().agent(&agent).agent_root().to_path_buf();
     let history = agent_root.join("operator-history.txt");
     std::fs::write(&history, b"complete retained private history\n").expect("private history");
-    let retired = success(&root, &["retire", AGENT]);
+    let retired = success(&root, &["retire", AGENT])?;
     let archive = registry
         .retired_agent_path(&agent)
         .expect("archive")
         .expect("durable retirement");
     assert_eq!(retired, json!({"agentId": agent, "archivedRoot": archive}));
-    assert_eq!(success(&root, &["retirement-status", AGENT]), retired);
+    assert_eq!(success(&root, &["retirement-status", AGENT])?, retired);
     assert_eq!(
         std::fs::read(archive.join("operator-history.txt")).expect("preserved history"),
         b"complete retained private history\n"
@@ -375,7 +384,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
                 AGENT,
                 workspace.to_str().expect("workspace")
             ]
-        )
+        )?
         .status
         .success(),
         "retired identity cannot be reused"
@@ -388,7 +397,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
             new_id,
             workspace.to_str().expect("workspace"),
         ],
-    );
+    )?;
     assert_eq!(
         client.snapshot(peer).await.expect("peer still unchanged"),
         peer_before
@@ -397,6 +406,7 @@ async fn live_registration_and_retirement_preserve_history_under_the_same_daemon
         archive.exists(),
         "new workspace registration cannot erase retired identity"
     );
+    Ok(())
 }
 
 async fn await_terminal(client: &SupervisordClient, agent: &AgentId) {
@@ -417,14 +427,15 @@ async fn await_terminal(client: &SupervisordClient, agent: &AgentId) {
 }
 
 #[tokio::test]
-async fn diagnostics_command_reaches_the_running_owner() -> Result<(), Box<dyn std::error::Error>> {
+async fn diagnostics_command_reaches_the_running_owner()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let directory = tempfile::Builder::new()
         .prefix("h7-diag-")
         .tempdir_in("/tmp")?;
     let root = directory.path().join("fleet");
     let workspace = directory.path().join("workspace");
     std::fs::create_dir(&workspace)?;
-    success(&root, &["init"]);
+    success(&root, &["init"])?;
     success(
         &root,
         &[
@@ -432,7 +443,7 @@ async fn diagnostics_command_reaches_the_running_owner() -> Result<(), Box<dyn s
             AGENT,
             workspace.to_str().ok_or("workspace path")?,
         ],
-    );
+    )?;
     let root_type = HeptaFleetRoot::parse(root.clone())?;
     let mut daemon = Daemon(
         Command::new(cargo_bin("hepta-supervisord")?)
@@ -457,7 +468,7 @@ async fn diagnostics_command_reaches_the_running_owner() -> Result<(), Box<dyn s
     }
     let entries = client.diagnostics(AgentId::parse(AGENT)?).await?;
     assert_eq!(
-        success(&root, &["diagnostics", AGENT]),
+        success(&root, &["diagnostics", AGENT])?,
         json!({"agentId": AGENT, "entries": entries})
     );
     Ok(())
@@ -477,11 +488,11 @@ async fn root_catalog_allow_cli_keeps_health_and_fences_observable()
     let root = directory.path().join("fleet");
     let workspace = directory.path().join("workspace");
     std::fs::create_dir(&workspace)?;
-    success(&root, &["init"]);
+    success(&root, &["init"])?;
     success(
         &root,
         &["register", AGENT, workspace.to_str().ok_or("path")?],
-    );
+    )?;
     let source = directory.path().join("catalog-program");
     let mut file = std::fs::File::create(&source)?;
     let buffer = [b'p'; 64 * 1024];
@@ -494,7 +505,7 @@ async fn root_catalog_allow_cli_keeps_health_and_fences_observable()
     success(
         &root,
         &["install-release", "read-v1", source.to_str().ok_or("path")?],
-    );
+    )?;
     let root_type = HeptaFleetRoot::parse(root.clone())?;
     let registry = FleetRegistry::open_existing(root_type.clone())?;
     let agent_id = AgentId::parse(AGENT)?;
@@ -528,7 +539,7 @@ async fn root_catalog_allow_cli_keeps_health_and_fences_observable()
         observations += 1;
         tokio::time::sleep(Duration::from_millis(10)).await;
     }
-    let output = allow.await?;
+    let output = allow.await??;
     assert!(
         output.status.success(),
         "{}",
