@@ -8,7 +8,7 @@ export function productStatusTextMatches(text,state){
  const common=[/not current write authority/i,/commands remain unavailable/i];
  const specific={
   notAttached:[/Production owner:\s*not attached/i,/No lease observation is available/i,/runtime unavailable\s*\(Transport\)/i],
-  timedOut:[/Production owner observation unavailable\s*\(TimedOut\)/i],
+  timedOut:[/Production owner observation unavailable\s*\(TimedOut\)/i,/runtime unavailable\s*\(Transport\)/i],
   noObservation:[/No owner observation has been requested/i],
  };
  assert.ok(Object.hasOwn(specific,state),'Unknown product status observation');
