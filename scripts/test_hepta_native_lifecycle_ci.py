@@ -404,6 +404,9 @@ class AssetInputTests(unittest.TestCase):
             "catalogSha256": native / "resources/NATIVE-ASSETS.json",
             "generatorSha256": native / "tools/generate-native-assets.py",
             "helperSha256": native / "tools/build-robrix-native.py",
+        "cjkPreparationSha256": self.root / "apps/hepta-control-ui/tools/prepare-fonts.py",
+        "cjkManifestSha256": self.root / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json",
+        "cjkLicenseSha256": self.root / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt",
         }
         for path in self.sources.values():
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -417,7 +420,7 @@ class AssetInputTests(unittest.TestCase):
                     "sha256": ci.sha(bytes([i])),
                     "license_group": "fixture",
                 }
-                for i in range(28)
+                for i in range(30)
             ],
             "noticeFileSha256": [],
             "liberationSource": {
@@ -466,7 +469,7 @@ class AssetInputTests(unittest.TestCase):
                 result["assetBytes"],
                 result["nativeRendererObserved"],
             ),
-            (28, 28, False),
+            (30, 30, False),
         )
 
     def test_changed_compiler_rust_is_rejected(self):

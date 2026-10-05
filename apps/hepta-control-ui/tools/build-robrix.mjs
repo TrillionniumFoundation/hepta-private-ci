@@ -16,6 +16,7 @@ const output = join(root, fixtures?'dist-robrix-fixtures':'dist');
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const provenance = JSON.parse(await readFile(join(workspace, 'robrix-ui/UPSTREAM.json'), 'utf8'));
 const sourceIdentity=await robrixSourceIdentity(root);
+const cjkFonts=JSON.parse(execFileSync('python3',[join(root,'tools/prepare-fonts.py'),...(process.env.HEPTA_FONTS_OFFLINE==='1'?['--offline']:[])],{encoding:'utf8'}));
 const metadata=JSON.parse(execFileSync('cargo',['+1.95.0','metadata','--locked','--format-version','1','--manifest-path',join(workspace,'Cargo.toml')],{encoding:'utf8',maxBuffer:16*1024*1024}));
 const widgets=metadata.packages.find(p=>p.name==='makepad-widgets');
 if(!widgets?.source?.endsWith('#'+provenance.makepad.revision)) throw new Error('Makepad lock does not match provenance');
@@ -88,6 +89,14 @@ for(const asset of art.assets){
  await mkdir(dirname(destination),{recursive:true});await writeFile(destination,bytes);
 }
 
+// Bind the same verified cache bytes used by native compile-time assets.
+for(const asset of cjkFonts.assets){
+ const bytes=await readFile(asset.inputPath);
+ if(bytes.length!==asset.bytes||sha(bytes)!==asset.sha256)throw new Error('CJK resource identity drift');
+ const destination=join(output,asset.logical);
+ await mkdir(dirname(destination),{recursive:true});await writeFile(destination,bytes);
+}
+for(const name of ['OFL.txt','NOTICE.txt'])await cp(join(workspace,'robrix-ui/resources/fonts',name),join(output,'hepta_robrix_ui/resources/fonts',name));
 const frameworkPath = join(output, 'makepad_platform/web.js');
 let framework = await readFile(frameworkPath, 'utf8');
 const originalFrameworkSha256 = sha(framework);
@@ -128,5 +137,5 @@ async function inventory(dir) {
  }
 }
 await inventory(output);
-await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
+await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,cjkFonts:{manifestSha256:cjkFonts.manifestSha256,bytes:cjkFonts.bytes,assets:cjkFonts.assets.map(({inputPath,...asset})=>asset)},nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
 console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);

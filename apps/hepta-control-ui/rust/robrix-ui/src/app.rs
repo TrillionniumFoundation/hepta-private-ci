@@ -85,7 +85,7 @@ impl AppMain for App {
             use makepad_widgets::makepad_platform::script::res::CxScriptResourceData;
             let resources = cx.script_data.resources.resources.clone();
             for resource in resources.borrow().iter() {
-                if !resource.abs_path.ends_with(".ttf") {
+                if !resource.abs_path.ends_with(".ttf") && !resource.abs_path.ends_with(".otf") {
                     continue;
                 }
                 let state = match &resource.data {

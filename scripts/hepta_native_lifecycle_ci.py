@@ -388,6 +388,9 @@ def verify_asset_inputs(directory: Path, root: Path) -> dict:
         "catalogSha256": catalog_path,
         "generatorSha256": native / "tools/generate-native-assets.py",
         "helperSha256": native / "tools/build-robrix-native.py",
+        "cjkPreparationSha256": root / "apps/hepta-control-ui/tools/prepare-fonts.py",
+        "cjkManifestSha256": root / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json",
+        "cjkLicenseSha256": root / "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/OFL.txt",
     }
     if (
         receipt.get("schema") != "hepta.native-assets-verification.v1"
@@ -415,7 +418,7 @@ def verify_asset_inputs(directory: Path, root: Path) -> dict:
         {key: asset[key] for key in ("logical", "bytes", "sha256", "license_group")}
         for asset in inputs["assets"]
     ]
-    if projected != catalog["assets"] or len({a["logical"] for a in projected}) != 28:
+    if projected != catalog["assets"] or len({a["logical"] for a in projected}) != 30:
         raise ValueError("embedded asset inventory differs from the fixed catalog")
     source = catalog["liberationSource"]
     if (

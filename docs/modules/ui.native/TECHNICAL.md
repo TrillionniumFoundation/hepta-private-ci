@@ -820,3 +820,20 @@ for lane ownership, execution-receipt fields and external evidence requirements.
 These references preserve the native owner/platform boundaries and incomplete
 qualification status. They do not qualify the new Makepad host or grant release
 authority; historical native receipts remain limited to their recorded subjects.
+
+### Shared CJK preparation boundary
+
+The visual candidate adds two immutable, unmodified Noto Sans SC OTF/CFF assets
+through `apps/hepta-control-ui/tools/prepare-fonts.py`. The source manifest and
+original OFL/copyright notice bind exact URLs, byte counts and SHA256. The shared
+cache is build-time only; the native asset generator consumes verified cache
+paths and embeds the same bytes that the Web manifest names. The catalog changes
+explicitly from28 to30 assets, with original WenKai coverage retained. Asset
+verification also binds the preparation helper, font manifest and license.
+
+The native wrapper's `--cjk-font-cache` selects a reusable cache; `--offline`
+rejects missing fonts without network access. The standalone shared desktop
+preview uses `tools/run-desktop.py` to stage a resource-complete workspace; no
+canonical source/Cargo cache is patched. New resource inventory tests and actual
+SDK CPU font checks do not qualify a native window, installed package, platform
+IME or accessibility. Those remain exact-source runtime obligations.

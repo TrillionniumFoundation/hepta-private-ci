@@ -83,9 +83,9 @@ script_mod! {
     }
     channel_heading := mod.widgets.ConversationHeading {compact: true}
     View {width: Fill height: Fit flow: Flow.Right{wrap: true} spacing: 6 padding: 6
-     conversations := mod.widgets.AuroraButton {text: "Conversations"}
-     chat_tab := mod.widgets.AuroraButton {text: "Chat"}
-     console_tab_button := mod.widgets.AuroraButton {text: "Console"}
+     conversations := mod.widgets.NavigationButton {text: "Conversations"}
+     chat_tab := mod.widgets.NavigationButton {text: "Chat"}
+     console_tab_button := mod.widgets.NavigationButton {text: "Console"}
      mobile_theme_switch := mod.widgets.AuroraButton {grab_key_focus: false text: "Aurora Graphite"}
     }
     mobile_pages := PageFlip {
@@ -142,6 +142,8 @@ struct VisualSelection {
 pub struct HomeScreen {
     #[deref]
     view: View,
+    #[rust]
+    mobile_page: Option<(LiveId, [WidgetUid; 3])>,
     #[rust]
     rendered: Option<RoomKey>,
     #[rust]
@@ -315,6 +317,25 @@ impl Widget for HomeScreen {
             self.view
                 .page_flip(cx, ids!(mobile_pages))
                 .set_active_page(cx, page);
+            let mut buttons = [
+                self.view.widget(cx, ids!(conversations)),
+                self.view.widget(cx, ids!(chat_tab)),
+                self.view.widget(cx, ids!(console_tab_button)),
+            ];
+            let identities = buttons.each_ref().map(|button| button.widget_uid());
+            if !buttons.iter().any(WidgetRef::is_empty)
+                && self.mobile_page != Some((page, identities))
+            {
+                for (button, target) in buttons.iter_mut().zip([
+                    id!(navigation_page),
+                    id!(chat_page),
+                    id!(console_page),
+                ]) {
+                    let selected = if page == target { 1.0 } else { 0.0 };
+                    script_apply_eval!(cx, button, {draw_bg +: {current_page: #(selected)}});
+                }
+                self.mobile_page = Some((page, identities));
+            }
             self.view
                 .button(cx, ids!(conversations))
                 .set_enabled(cx, !workspace.composing);

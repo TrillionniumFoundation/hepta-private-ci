@@ -1,5 +1,6 @@
 // Real canvas evidence. OCR is a necessary glyph regression, not full visual/a11y acceptance.
 import {test,expect} from '@playwright/test';
+import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -71,7 +72,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    if(process.env.HEPTA_ROBRIX_FIXTURES==='1'&&!consoleView){
     // HTTP requestfinished precedes Rust resource adoption and the redraw.
     // Wait for the real message renderer's font-family observation, not a sleep.
-    await expect.poll(()=>rustFontStates.some(text=>/HEPTA_FIXTURE_FONT_STATE .*loaded_fonts=3 complete=true/.test(text)),{timeout:60000}).toBe(true);
+    await expect.poll(()=>rustFontStates.some(text=>sharedFontFamilyReady(text)),{timeout:60000}).toBe(true);
    }
    // A Rust draw observation can precede browser compositing. Cross a real
    // frame boundary before reading pixels; no time-based sleep or retry waiver.

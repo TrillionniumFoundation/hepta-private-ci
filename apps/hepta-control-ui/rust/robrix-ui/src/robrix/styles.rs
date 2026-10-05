@@ -28,6 +28,26 @@ script_mod! {
    border_color_hover: mod.widgets.COLOR_ROBRIX_PURPLE border_color_focus: mod.widgets.COLOR_ROBRIX_PURPLE
   }
  }
+ // Current page is independent of keyboard focus: theme controls must not look
+ // like selected navigation merely because they retain focus after a click.
+ mod.widgets.NavigationButton = mod.widgets.AuroraButton {
+  draw_bg +: {
+   current_page: uniform(0.0)
+   pixel: fn() {
+    let sdf = Sdf2d.viewport(self.pos * self.rect_size)
+    sdf.box(0.5, 0.5, self.rect_size.x - 1.0, self.rect_size.y - 1.0, 10.0)
+    let face = mix(self.color, self.color_hover, self.hover)
+    sdf.fill_keep(mix(face, self.color_focus, self.current_page * 0.7))
+    sdf.stroke(mix(self.border_color, self.border_color_focus, self.focus), 1.0)
+    if self.current_page > 0.5 {
+     sdf.move_to(14.0, self.rect_size.y - 5.0)
+     sdf.line_to(self.rect_size.x - 14.0, self.rect_size.y - 5.0)
+     sdf.stroke(self.border_color_focus, 2.0)
+    }
+    return sdf.result
+   }
+  }
+ }
  mod.widgets.RailButton = mod.widgets.AuroraButton {
   width: Fill height: 44 padding: 0
   // Retain the action label in Button state; draw its visible icon in Rust.
@@ -71,11 +91,24 @@ script_mod! {
    pixel: fn() {
     let sdf = Sdf2d.viewport(self.pos * self.rect_size)
     let center = self.rect_size * 0.5
-    let face = mix(self.accent, self.color_disabled, self.disabled * 0.72)
-    let ink = mix(self.ink, self.border_color, self.disabled * 0.45)
+    let face = mix(self.accent, self.color_disabled, self.disabled)
+    let ink = mix(self.ink, self.border_color, self.disabled)
     sdf.circle(center.x, center.y, min(self.rect_size.x, self.rect_size.y) * 0.5 - 1.0)
     sdf.fill_keep(face)
-    sdf.stroke(mix(self.accent, self.border_color_focus, self.focus), 1.0)
+    let rim = mix(mix(self.accent, self.border_color_focus, self.focus), self.border_color, self.disabled)
+    sdf.stroke(rim, 1.0)
+    // A locked outline, not an active-looking send arrow, communicates that
+    // the real owner is unavailable. Button.enabled remains authoritative.
+    if self.disabled > 0.5 {
+     sdf.box(center.x - 6.0, center.y - 1.0, 12.0, 10.0, 2.0)
+     sdf.stroke(ink, 1.5)
+     sdf.move_to(center.x - 4.0, center.y - 1.0)
+     sdf.line_to(center.x - 4.0, center.y - 6.0)
+     sdf.line_to(center.x + 4.0, center.y - 6.0)
+     sdf.line_to(center.x + 4.0, center.y - 1.0)
+     sdf.stroke(ink, 1.5)
+     return sdf.result
+    }
     sdf.move_to(center.x, center.y + 8.0)
     sdf.line_to(center.x, center.y - 8.0)
     sdf.move_to(center.x - 6.0, center.y - 2.0)
@@ -119,14 +152,16 @@ script_mod! {
  mod.widgets.HEPTA_REGULAR = theme.font_regular {
   font_family: FontFamily {
    latin := FontMember {res: crate_resource("makepad_widgets:resources/IBMPlexSans-Text.ttf") asc: -0.1 desc: 0.0}
-   cjk := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiRegular.ttf") asc: 0.0 desc: 0.0}
+   cjk := FontMember {res: crate_resource("hepta_robrix_ui:resources/fonts/NotoSansSC-Regular.otf") asc: 0.0 desc: 0.0}
+   rare := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiRegular.ttf") asc: 0.0 desc: 0.0}
    emoji := FontMember {res: crate_resource("makepad_widgets:resources/NotoColorEmoji.ttf") asc: 0.0 desc: 0.0}
   }
  }
  mod.widgets.HEPTA_BOLD = theme.font_bold {
   font_family: FontFamily {
    latin := FontMember {res: crate_resource("makepad_widgets:resources/IBMPlexSans-SemiBold.ttf") asc: -0.1 desc: 0.0}
-   cjk := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiBold.ttf") asc: 0.0 desc: 0.0}
+   cjk := FontMember {res: crate_resource("hepta_robrix_ui:resources/fonts/NotoSansSC-Bold.otf") asc: 0.0 desc: 0.0}
+   rare := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiBold.ttf") asc: 0.0 desc: 0.0}
    emoji := FontMember {res: crate_resource("makepad_widgets:resources/NotoColorEmoji.ttf") asc: 0.0 desc: 0.0}
   }
  }

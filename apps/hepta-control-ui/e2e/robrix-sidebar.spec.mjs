@@ -1,6 +1,7 @@
 // Additional fixture-only real-input regression; the original six host cases and
 // their capture/OCR contract remain unchanged. No command or state-setting hook.
 import {test,expect} from '@playwright/test';
+import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -114,12 +115,21 @@ test('Compact sidebar creates once and preserves both conversations',async({page
  try{
   await page.setViewportSize({width:640,height:800});await page.goto('/');
   await expect(page.locator('canvas')).toBeVisible();await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
-  await expect.poll(()=>logs.some(value=>/HEPTA_FIXTURE_FONT_STATE .*loaded_fonts=3 complete=true/.test(value.text)),{timeout:60000}).toBe(true);
+  await expect.poll(()=>logs.some(value=>sharedFontFamilyReady(value.text)),{timeout:60000}).toBe(true);
   await expect.poll(()=>current()?.count).toBe(1);await expect.poll(()=>currentGeometry()?.total).toBe(64);
   original=current().active;const originalIds=[...current().draftIds];
   const originalText='Original room draft 中文 preserved';
   const newText='New local draft 中文 retained';
   await editorText(originalText,{write:true});
+  // Real pointer activation must not dispatch or erase a draft when no owner exists.
+  expect(current().sendEnabled).toBe(false);
+  const unavailableDraftBytes=current().draftBytes,unavailableCount=current().count;
+  await clickControl('send');
+  expect(current().sendEnabled).toBe(false);
+  expect(current().active).toBe(original);expect(current().count).toBe(unavailableCount);
+  expect(current().draftBytes).toBe(unavailableDraftBytes);
+  await editorText(originalText);
+
   const beforeScroll=await capture('original-before-scroll'),point=center(beforeScroll.geometryAfter.viewport);
   inputs.push({atMs:performance.now(),kind:'wheel',point,deltaY:-480,sourceCapture:beforeScroll.name,sourcePngSha256:beforeScroll.pngSha256});
   await page.mouse.move(point.x,point.y);await page.mouse.wheel(0,-480);

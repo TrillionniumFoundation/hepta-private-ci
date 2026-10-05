@@ -25,9 +25,10 @@
     "legacy:test-oracle": "node --test test/control.test.js test/canonical-profile.test.js test/runtime-client.test.js test/runtime-client-adversarial.test.js test/runtime-client-lifecycle.test.js test/browser-app-lifecycle.test.js test/browser-maintenance.test.js test/terminal-cleanup.test.js test/http-transport.test.js test/session-provider.test.js test/recovery-safety.test.js test/recovery-directory.test.js test/recovery-directory-integrity.test.js test/runtime-recovery-integration.test.js test/external-evidence.test.js",
     "legacy:test-contract": "node --test test/api-surface.test.js test/package-boundary.test.js",
     "legacy:lint": "node tools/lint.mjs",
-    "desktop": "cargo +1.95.0 run --manifest-path rust/Cargo.toml -p hepta-robrix-ui --bin hepta-robrix",
+    "desktop": "python3 tools/run-desktop.py",
     "legacy:test-e2e": "playwright test --config=playwright.config.mjs",
-    "legacy:receipt": "node tools/write-receipt.mjs"
+    "legacy:receipt": "node tools/write-receipt.mjs",
+    "prepare:fonts": "python3 tools/prepare-fonts.py"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

@@ -17,6 +17,7 @@ export async function robrixSourceIdentity(root){
  await walk(join(root,'rust/robrix-ui/patches'));
  await walk(join(root,'rust/robrix-ui/resources'));
  await add(join(root,'rust/robrix-ui/UPSTREAM.json'));
- for(const name of ['build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs'])await add(join(root,'tools',name));
+ await add(join(root,'rust/robrix-ui/build.rs'));
+ for(const name of ['build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs','prepare-fonts.py','run-desktop.py'])await add(join(root,'tools',name));
  return {sha256:sha(JSON.stringify(files)),files};
 }
