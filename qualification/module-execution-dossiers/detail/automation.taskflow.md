@@ -40,7 +40,11 @@ An unknown effect blocks dependent steps. Compensation is another separately aut
 
 ## 5. Capacity and performance profile
 
-Current hard bounds include <=1024 recovery/due frontier records per owner query, <=1024 catch-up occurrences per configured window, <=512 timezone transitions per Calendar V2 profile, <=1032 bounded calendar-day probes, TaskFlow's registered graph/step bounds, and <=16 pages of 100 persisted turns for one terminal-observation scan. Agentd still admits at most one new scheduler occurrence per tick and reconciles at most one historical occurrence per tick. No busy-loop retry or unlimited backlog is introduced.
+Current bounds include <=1024 records for legacy bulk recovery/due owner queries, <=1024 catch-up occurrences per configured window, <=512 timezone transitions per Calendar V2 profile, <=1032 bounded calendar-day probes, TaskFlow's registered graph/step bounds, and <=16 pages of 100 persisted turns for one terminal-observation scan. Agentd retains separate process-local unknown and ordinary recovery cursors. Each reads at most 64 physical metadata rows before filtering and hydrates at most one selected owned row in a consistent snapshot; finite high-water endpoints exclude later inserts until a subsequent sweep. Successful snapshot commit precedes cursor advancement, even for an ineligible page. Cursors accept clones of the same live store, reject independent opens, and restart from a fresh sweep after process restart. They neither alter business timestamps nor provide effect authority.
+
+Class priority alternates before awaiting. A pass reads at most two metadata pages, observes one selected historical occurrence and admits at most one new scheduler occurrence. A known occurrence uses a direct owned/eligible identity lookup instead of searching the first 1024 pending rows; expired historical leases remain readable for legitimate recovery, with mutation-time fencing unchanged. Read-only connect and observation waits have separate 5-second budgets, the latter shared across the turn page chain; exclusive connection shutdown can add two further 5-second waits. Timeout preserves uncertainty and permits independent work; cancellation stops scheduling; protocol, authority, generation and corruption errors remain fatal. The same host clock is resampled after cleanup and before new admission.
+
+Row-count and VM-work bounds do not impose hard text-byte, memory, I/O or wall-clock limits. Database waits can erode a lease outside network deadlines, retained-history traversal can be slow, and repeated restarts reset scheduling progress. No latency SLA or deployment capacity claim follows.
 
 Pilot ceilings remain design/qualification inputs, not deployment measurements. Bind selected-host latency, backlog, restore and saturation evidence before activation.
 
@@ -67,7 +71,7 @@ The implementation intentionally reuses:
 - the existing App Server `thread/queue/reconcile` stable-client-id primitive;
 - the kernel-owned durable `FinalUseAuthority` for external effect admission.
 
-No second scheduler, TaskFlow engine, queue writer, authority issuer or terminality oracle was introduced. Rollback must preserve schema v16 records or use a binary that understands Calendar V2, frozen legacy schedule revisions, legacy dispatch-unknown reconciliation evidence, provider reconciliation history, and terminal-observer cursor progress; older binaries must not replace the owner against an upgraded store.
+No second scheduler, TaskFlow engine, queue writer, authority issuer or terminality oracle was introduced. Rollback must preserve the converged schema v19 and use a binary that understands its retained causal-occurrence records, kernel destination dedupe, timer-owner lifecycle and terminal-observer cursor progress. Migrations 17/18 retain displaced branches' original SQL/checksums and historical metadata stamps v4/v5; the loader remaps only recognized legacy version/checksum pairs before SQLx validation, and migration 19 stamps the converged version without deleting either branch's data. A v16-only binary must not replace this owner against an upgraded store.
 
 Source implementation does not by itself authorize a concrete external provider, deployment, operator acceptance, canary, promotion or release.
 
