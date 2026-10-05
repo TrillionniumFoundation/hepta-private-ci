@@ -26,6 +26,16 @@ jobs:
       - name: Test Cargo manifest migration boundaries
         run: python3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'
 
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+      - name: Select the locked CI Python environment
+        shell: bash
+        run: |
+          uv sync --frozen --project scripts --only-group ci
+          echo "$GITHUB_WORKSPACE/scripts/.venv/bin" >> "$GITHUB_PATH"
+
       - name: Test Rust qualification source and cache boundaries
         run: python3 -m unittest discover -s .github/scripts -p 'test_rust_ci_source_integrity.py'
 
@@ -76,10 +86,6 @@ jobs:
       - name: Check root README ToC
         run: python3 scripts/readme_toc.py README.md
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
-        with:
-          version: "0.11.3"
       - name: Check formatting (run `just fmt` to fix)
         run: just fmt-check
 
