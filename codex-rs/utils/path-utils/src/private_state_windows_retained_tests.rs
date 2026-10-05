@@ -3,6 +3,7 @@ use pretty_assertions::assert_eq;
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
+use std::os::windows::fs::MetadataExt;
 use std::os::windows::fs::OpenOptionsExt;
 use windows_sys::Win32::Foundation::ERROR_SHARING_VIOLATION;
 use windows_sys::Win32::Foundation::HLOCAL;
@@ -192,15 +193,26 @@ fn rejects_junction_ancestors_and_children() {
             .unwrap(),
     );
     let alias = temp.path().join("private/alias");
+    // cmd's built-in mklink can parse '/' in an unquoted path as a switch.
+    // Keep fixture paths out of its command line; cwd is a separate OS parameter.
     let output = std::process::Command::new("cmd.exe")
-        .args(["/d", "/c", "mklink", "/J"])
-        .arg(&alias)
-        .arg(&target)
+        .current_dir(temp.path().join("private"))
+        .args(["/d", "/c", "mklink", "/J", "alias", "target"])
         .output()
         .unwrap();
     assert!(
         output.status.success(),
         "junction creation failed: {output:?}"
+    );
+    assert_ne!(
+        std::fs::symlink_metadata(&alias).unwrap().file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT,
+        0,
+        "mklink /J must create a real reparse point"
+    );
+    assert_eq!(
+        std::fs::canonicalize(&alias).unwrap(),
+        std::fs::canonicalize(&target).unwrap(),
+        "junction fixture must resolve to its intended target"
     );
     assert!(
         root.open_directory("alias", PrivateDirectoryMode::OpenExisting)
