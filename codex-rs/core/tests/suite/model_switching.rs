@@ -425,7 +425,10 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&["model_switch.instructions"]));
+    assert!(second_request.input().iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
     let developer_texts = second_request.message_input_texts("developer");
     let model_switch_text = developer_texts
         .iter()
@@ -436,8 +439,18 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
         "expected model switch preamble, got: {model_switch_text:?}"
     );
 
-    test.codex.ensure_rollout_materialized().await;
-    test.codex.flush_rollout().await?;
+    let rollout_items = test.rollout_response_items().await?;
+    let model_switch_item = rollout_items
+        .iter()
+        .find(|item| {
+            item["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
+                == json!(["model_switch.instructions"])
+        })
+        .expect("model switch classification should remain in durable history");
+    assert_eq!(
+        model_switch_item["content"],
+        json!([{ "type": "input_text", "text": model_switch_text }])
+    );
     let rollout_path = test.codex.rollout_path().expect("rollout path");
     let model_states = std::fs::read_to_string(rollout_path)?
         .lines()
@@ -992,7 +1005,31 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let first_request = requests.first().expect("expected first request");
-    assert!(first_request.has_content_kinds(&["user.image", "user.audio", "user.text"]));
+    assert!(
+        requests
+            .iter()
+            .flat_map(core_test_support::responses::ResponsesRequest::input)
+            .all(|item| item
+                .get("internal_chat_message_metadata_passthrough")
+                .is_none())
+    );
+    let rollout_items = test.rollout_response_items().await?;
+    let media_item = rollout_items
+        .iter()
+        .find(|item| {
+            item["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
+                == json!(["user.image", "user.audio", "user.text"])
+        })
+        .expect("original media classifications should remain in durable history");
+    assert_eq!(media_item["content"][0]["image_url"], image_url);
+    assert_eq!(
+        media_item["content"][1]["audio_url"],
+        "data:audio/wav;base64,YXVkaW8="
+    );
+    assert_eq!(
+        media_item["content"][2],
+        json!({ "type": "input_text", "text": "first turn" })
+    );
     assert!(
         !first_request.message_input_image_urls("user").is_empty(),
         "first request should include the uploaded image"
@@ -1003,11 +1040,8 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     );
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&[
-        "images.unsupported",
-        "audio.unsupported",
-        "user.text",
-    ]));
+    // Unsupported-media classifications are generated on prompt copies, and are
+    // covered by context_manager::history_tests::for_prompt_strips_media_when_model_does_not_support_it.
     assert!(
         second_request.message_input_image_urls("user").is_empty(),
         "second request should strip unsupported image content"

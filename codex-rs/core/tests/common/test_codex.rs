@@ -895,6 +895,22 @@ pub struct TestCodex {
 }
 
 impl TestCodex {
+    /// Reads durable response items after all queued rollout writes have completed.
+    pub async fn rollout_response_items(&self) -> Result<Vec<serde_json::Value>> {
+        self.codex.ensure_rollout_materialized().await;
+        self.codex.flush_rollout().await?;
+        let path = self.codex.rollout_path().context("rollout path")?;
+        let lines = std::fs::read_to_string(path)?
+            .lines()
+            .map(serde_json::from_str::<serde_json::Value>)
+            .collect::<serde_json::Result<Vec<_>>>()?;
+        Ok(lines
+            .into_iter()
+            .filter(|line| line["type"] == "response_item")
+            .map(|mut line| line["payload"].take())
+            .collect())
+    }
+
     pub fn cwd_path(&self) -> &Path {
         self.cwd.path()
     }
