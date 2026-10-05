@@ -285,8 +285,9 @@ impl AclSetupFailureFixture {
             result
         };
         assert_eq!(result, ERROR_SUCCESS, "install fixture ACL");
-        // Exercise the same object-based WRITE_DAC acquisition as deny repair.
-        // The original restoration handle remains usable regardless of the DACL.
+        // Prove that the fixture also rejects broadening an already-open
+        // handle. Deny repair now acquires WRITE_DAC on its retained handle at
+        // the initial open, which the fresh-open assertion below exercises.
         let reopened = unsafe {
             ReOpenFile(
                 acl_restore.file.as_raw_handle() as HANDLE,
@@ -352,10 +353,14 @@ impl AclSetupFailureFixture {
     }
 
     fn assert_rejected(&self, error: anyhow::Error) {
+        let raw_os_error = error
+            .root_cause()
+            .downcast_ref::<std::io::Error>()
+            .and_then(std::io::Error::raw_os_error);
         assert_eq!(
             (
                 error.to_string(),
-                error.root_cause().to_string(),
+                raw_os_error,
                 self.marker.try_exists().expect("inspect process marker"),
             ),
             (
@@ -363,10 +368,7 @@ impl AclSetupFailureFixture {
                     "apply legacy deny-write ACL to {}",
                     self.protected_file.display()
                 ),
-                format!(
-                    "ReOpenFile failed for {}: {ERROR_ACCESS_DENIED}",
-                    self.protected_file.display(),
-                ),
+                Some(ERROR_ACCESS_DENIED as i32),
                 false,
             ),
         );

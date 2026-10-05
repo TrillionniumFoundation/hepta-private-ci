@@ -3,15 +3,12 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use std::ffi::c_void;
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::os::windows::fs::OpenOptionsExt;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::io::FromRawHandle;
 use std::path::Path;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
-use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
 use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
@@ -52,7 +49,6 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
-use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
 use windows_sys::Win32::Storage::FileSystem::SECURITY_IDENTIFICATION;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 const SE_KERNEL_OBJECT: u32 = 6;
@@ -602,7 +598,11 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
     // A name-based reopen after metadata could replace a file with a directory
     // and mistakenly install a self-only ACE on the replacement directory.
     let file = OpenOptions::new()
-        .access_mode(READ_CONTROL | FILE_READ_ATTRIBUTES)
+        // Acquire mutation authority on the retained object up front. Windows
+        // does not reliably grant a broader ReOpenFile handle for directories,
+        // even when the caller owns the object. Opening once also keeps the
+        // metadata read and DACL update bound to the same filesystem object.
+        .access_mode(READ_CONTROL | FILE_READ_ATTRIBUTES | WRITE_DAC)
         .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
         .security_qos_flags(SECURITY_IDENTIFICATION)
@@ -657,35 +657,16 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
         let result = if let Err(err) = acl_api_result(path, "SetEntriesInAclW", code2) {
             Err(err)
         } else {
-            // ReOpenFile retains the object's identity. Keep READ_CONTROL with
-            // WRITE_DAC because SetSecurityInfo can reject a WRITE_DAC-only
-            // file or directory handle. Checking an already-complete deny
-            // still needs no write access.
-            let write_handle = ReOpenFile(
+            let code3 = SetSecurityInfo(
                 file.as_raw_handle() as HANDLE,
-                READ_CONTROL | WRITE_DAC,
-                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                FILE_FLAG_BACKUP_SEMANTICS,
+                1,
+                DACL_SECURITY_INFORMATION,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                p_new_dacl,
+                std::ptr::null_mut(),
             );
-            if write_handle == INVALID_HANDLE_VALUE {
-                Err(anyhow!(
-                    "ReOpenFile failed for {}: {}",
-                    path.display(),
-                    GetLastError(),
-                ))
-            } else {
-                let write_file = File::from_raw_handle(write_handle as *mut c_void);
-                let code3 = SetSecurityInfo(
-                    write_file.as_raw_handle() as HANDLE,
-                    1,
-                    DACL_SECURITY_INFORMATION,
-                    std::ptr::null_mut(),
-                    std::ptr::null_mut(),
-                    p_new_dacl,
-                    std::ptr::null_mut(),
-                );
-                acl_api_result(path, "SetSecurityInfo", code3).map(|()| true)
-            }
+            acl_api_result(path, "SetSecurityInfo", code3).map(|()| true)
         };
         if !p_new_dacl.is_null() {
             LocalFree(p_new_dacl as HLOCAL);
