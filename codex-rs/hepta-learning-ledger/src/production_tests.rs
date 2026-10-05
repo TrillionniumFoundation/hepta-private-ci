@@ -313,16 +313,41 @@ fn writer_with_observed_outcome(
     (writer, dataset)
 }
 
-fn persisted_writer_state(
-    fixture: &Fixture,
-    writer: &LedgerWriter,
-) -> (LedgerSnapshot, LedgerWitnessFrontier, Vec<u8>, Vec<u8>) {
+fn persisted_writer_state(writer: &LedgerWriter) -> (LedgerSnapshot, LedgerWitnessFrontier) {
     (
         writer.snapshot().unwrap(),
         writer.witness_frontier().unwrap(),
-        fs::read(fixture.root.join("ledger")).unwrap(),
-        fs::read(fixture.root.join("witness")).unwrap(),
     )
+}
+
+fn capture_and_reopen_writer(
+    fixture: &Fixture,
+    writer: LedgerWriter,
+    trust: ActivatedLearningTrustV1,
+) -> (
+    LedgerWriter,
+    (LedgerSnapshot, LedgerWitnessFrontier, Vec<u8>, Vec<u8>),
+) {
+    let (snapshot, frontier) = persisted_writer_state(&writer);
+    drop(writer);
+    let ledger_bytes = fs::read(fixture.root.join("ledger")).unwrap();
+    let witness_bytes = fs::read(fixture.root.join("witness")).unwrap();
+    let ledger = DurableLedger::recover(
+        fixture.file("ledger"),
+        binding(),
+        /*max_records*/ 64,
+        LedgerRecovery::Acknowledged(frontier.anchor),
+    )
+    .unwrap();
+    let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
+    let directory = fixture.directory();
+    let writer =
+        LedgerWriter::from_durable(ledger, witness, trust, &directory, &directory).unwrap();
+    assert_eq!(
+        persisted_writer_state(&writer),
+        (snapshot.clone(), frontier)
+    );
+    (writer, (snapshot, frontier, ledger_bytes, witness_bytes))
 }
 
 #[test]
@@ -446,8 +471,8 @@ fn production_admissions_recheck_trust_before_writes_and_after_recovery() {
             drop(valid_writer);
 
             let fixture = Fixture::new();
-            let (mut writer, dataset) = writer_with_observed_outcome(&fixture, trust.clone());
-            let before = persisted_writer_state(&fixture, &writer);
+            let (writer, dataset) = writer_with_observed_outcome(&fixture, trust.clone());
+            let (mut writer, before) = capture_and_reopen_writer(&fixture, writer, trust.clone());
             let result = admit(&mut writer, &dataset, rejected_at);
             assert!(
                 matches!(
@@ -458,21 +483,12 @@ fn production_admissions_recheck_trust_before_writes_and_after_recovery() {
                 ),
                 "{name} must reject at {rejected_at}: {result:?}"
             );
-            assert_eq!(persisted_writer_state(&fixture, &writer), before);
-            drop(writer);
-
-            let ledger = DurableLedger::recover(
-                fixture.file("ledger"),
-                binding(),
-                /*max_records*/ 64,
-                LedgerRecovery::Acknowledged(before.1.anchor),
-            )
-            .unwrap();
-            let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
-            let directory = fixture.directory();
-            let mut recovered =
-                LedgerWriter::from_durable(ledger, witness, trust, &directory, &directory).unwrap();
-            assert_eq!(persisted_writer_state(&fixture, &recovered), before);
+            assert_eq!(
+                persisted_writer_state(&writer),
+                (before.0.clone(), before.1)
+            );
+            let (mut recovered, after) = capture_and_reopen_writer(&fixture, writer, trust.clone());
+            assert_eq!(after, before);
             let result = admit(&mut recovered, &dataset, rejected_at);
             assert!(
                 matches!(
@@ -483,7 +499,12 @@ fn production_admissions_recheck_trust_before_writes_and_after_recovery() {
                 ),
                 "recovered {name} must reject at {rejected_at}: {result:?}"
             );
-            assert_eq!(persisted_writer_state(&fixture, &recovered), before);
+            assert_eq!(
+                persisted_writer_state(&recovered),
+                (before.0.clone(), before.1)
+            );
+            let (_, recovered_after) = capture_and_reopen_writer(&fixture, recovered, trust);
+            assert_eq!(recovered_after, before);
         }
     }
 }
