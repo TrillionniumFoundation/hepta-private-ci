@@ -1,3 +1,5 @@
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_protocol::items::TurnItem;
@@ -81,9 +83,16 @@ async fn additional_context_is_model_visible_but_not_a_user_message_item() -> Re
     .await;
 
     let request = request.single_request();
-    assert!(request.has_content_kinds(&["additional_content.automation_info"]));
-    assert!(request.has_content_kinds(&["additional_content.browser_info"]));
-    assert!(request.has_content_kinds(&["user.text"]));
+    let local_input = local_input_for_request(&test.codex, &request).await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["additional_content.automation_info"]
+    ));
+    assert!(has_content_kinds(
+        &local_input,
+        &["additional_content.browser_info"]
+    ));
+    assert!(has_content_kinds(&local_input, &["user.text"]));
     insta::assert_snapshot!(
         "additional_context_simple_input",
         context_snapshot::format_labeled_requests_snapshot(

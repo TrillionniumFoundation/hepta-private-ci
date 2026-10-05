@@ -1,4 +1,6 @@
 #![cfg(not(target_os = "windows"))]
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request;
 
 use anyhow::Context;
 use base64::Engine;
@@ -281,7 +283,11 @@ async fn assert_user_turn_local_image_resizes_to(
     .await;
 
     let request = mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.image", "user.text"]));
+    let local_input = local_input_for_request(codex, &request).await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["user.text", "user.image", "user.text"]
+    ));
     let body = request.body_json();
     let input = body
         .get("input")
@@ -305,7 +311,7 @@ async fn assert_user_turn_local_image_resizes_to(
             assert_eq!(resize_notice_indices, Vec::<usize>::new());
         }
         ResizeNoticeExpectation::Enabled => {
-            assert!(request.has_content_kinds(&["images.resize_notice"]));
+            assert!(has_content_kinds(&local_input, &["images.resize_notice"]));
             assert_eq!(resize_notice_indices, vec![image_message_index + 1]);
             assert_developer_text_message(
                 &input[image_message_index + 1],

@@ -1,3 +1,5 @@
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request;
 use codex_config::test_support::CloudConfigBundleFixture;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_core::ModelClient;
@@ -290,7 +292,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-async fn non_openai_responses_requests_include_item_ids_without_passthrough_metadata() {
+async fn non_openai_responses_requests_preserve_ordering_metadata_without_local_classifications() {
     let server = MockServer::start().await;
     let mut private_function_call = ev_function_call("private-call", "unsupported_tool", "{}");
     private_function_call["item"]["encrypted_function_args"] = json!(["message"]);
@@ -341,9 +343,36 @@ async fn non_openai_responses_requests_include_item_ids_without_passthrough_meta
     assert!(!input.is_empty(), "request should include input items");
     for item in input {
         assert!(
-            item.get("internal_chat_message_metadata_passthrough")
+            item.pointer("/internal_chat_message_metadata_passthrough/turn_id")
+                .and_then(serde_json::Value::as_str)
+                .is_some(),
+            "input item should preserve its turn ID: {item}"
+        );
+        // Creation times are stamped on harness-authored messages/outputs,
+        // not on server-authored function calls.
+        if (item["type"] == "message"
+            && matches!(item["role"].as_str(), Some("user" | "developer")))
+            || matches!(
+                item["type"].as_str(),
+                Some(
+                    "agent_message"
+                        | "function_call_output"
+                        | "custom_tool_call_output"
+                        | "tool_search_output"
+                )
+            )
+        {
+            assert!(
+                item.pointer("/internal_chat_message_metadata_passthrough/create_time")
+                    .and_then(serde_json::Value::as_f64)
+                    .is_some(),
+                "harness-authored input item should preserve its creation time: {item}"
+            );
+        }
+        assert!(
+            item.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds")
                 .is_none(),
-            "input item should omit internal chat message metadata passthrough: {item}"
+            "input item should omit local classifications: {item}"
         );
         assert!(
             item.get("encrypted_function_args").is_none(),
@@ -385,7 +414,8 @@ async fn sends_audio_urls_to_responses() {
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.audio"]));
+    let local_input = local_input_for_request(&codex, &request).await;
+    assert!(has_content_kinds(&local_input, &["user.audio"]));
     let user_message = request
         .input()
         .into_iter()
@@ -430,7 +460,11 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.audio", "user.text"]));
+    let local_input = local_input_for_request(&codex, &request).await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["user.text", "user.audio", "user.text"]
+    ));
     let user_message = request
         .input()
         .into_iter()

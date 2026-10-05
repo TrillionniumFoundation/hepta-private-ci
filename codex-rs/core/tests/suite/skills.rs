@@ -1,4 +1,6 @@
 #![allow(clippy::unwrap_used)]
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request;
 
 use anyhow::Result;
 use codex_core::StartIfIdleSubmission;
@@ -148,7 +150,11 @@ async fn user_turn_includes_skill_instructions() -> Result<()> {
         }),
         "expected skill instructions in user input, got {user_texts:?}"
     );
-    assert!(request.has_content_kinds(&["skills.selected_skill_instructions"]));
+    let local_input = local_input_for_request(&test.codex, &request).await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["skills.selected_skill_instructions"]
+    ));
 
     Ok(())
 }

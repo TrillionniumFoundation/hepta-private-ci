@@ -247,6 +247,104 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
     );
 }
 
+#[test]
+fn responses_request_content_annotations_follow_provider_and_feature_contract() {
+    // Exercise both request-building stages used by HTTP and WebSocket without
+    // connecting to the real first-party endpoint or trusting a loopback host.
+    for use_responses_lite in [false, true] {
+        for content_item_kinds_enabled in [false, true] {
+            for (base_url, accepts_classifications) in [
+                (codex_model_provider_info::OPENAI_API_BASE_URL, true),
+                ("http://127.0.0.1:12345/v1", false),
+                (CHATGPT_CODEX_BASE_URL, false),
+            ] {
+                let mut client = test_model_client(SessionSource::Exec);
+                Arc::get_mut(&mut client.state)
+                    .expect("new client owns its state")
+                    .content_item_kinds_enabled = content_item_kinds_enabled;
+                let api_provider = ModelProviderInfo::create_openai_provider(Some(base_url.into()))
+                    .to_api_provider(Some(AuthMode::ApiKey))
+                    .expect("test API provider");
+                let original = json!({
+                    "type": "message",
+                    "role": "user",
+                    "content": [{"type": "input_text", "text": "hello"}],
+                    "internal_chat_message_metadata_passthrough": {
+                        "content_item_kinds": ["user.text"],
+                        "turn_id": "turn-1",
+                        "create_time": 123,
+                    },
+                });
+                let prompt = Prompt {
+                    input: vec![serde_json::from_value(original.clone()).expect("annotated input")],
+                    base_instructions: BaseInstructions {
+                        text: "test instructions".into(),
+                        provenance: None,
+                    },
+                    ..Default::default()
+                };
+                let mut model_info = test_model_info();
+                model_info.use_responses_lite = use_responses_lite;
+                let metadata = test_responses_metadata_for_client(
+                    &client,
+                    Some("turn-1"),
+                    format!("{}:0", client.state.thread_id),
+                    /*parent_thread_id*/ None,
+                    TestCodexResponsesRequestKind::Turn,
+                );
+                let mut request = client
+                    .build_responses_request(
+                        &prompt,
+                        &model_info,
+                        /*effort*/ None,
+                        codex_protocol::config_types::ReasoningSummary::None,
+                        /*service_tier*/ None,
+                        &metadata,
+                        &api_provider,
+                    )
+                    .expect("build request without sending it");
+                client.prepare_response_items_for_request(&mut request.input, &api_provider);
+
+                let emit_classifications = accepts_classifications && content_item_kinds_enabled;
+                let mut expected_user = original.clone();
+                if !emit_classifications {
+                    expected_user["internal_chat_message_metadata_passthrough"]
+                        .as_object_mut()
+                        .expect("ordering metadata")
+                        .remove("content_item_kinds");
+                }
+                let mut expected_input = Vec::new();
+                if use_responses_lite {
+                    expected_input.push(json!({
+                        "type": "additional_tools", "role": "developer", "tools": [],
+                    }));
+                    let mut instructions = json!({
+                        "type": "message", "role": "developer",
+                        "content": [{"type": "input_text", "text": "test instructions"}],
+                    });
+                    if emit_classifications {
+                        instructions["internal_chat_message_metadata_passthrough"] = json!({
+                            "content_item_kinds": ["model.base_instructions"],
+                        });
+                    }
+                    expected_input.push(instructions);
+                }
+                expected_input.push(expected_user);
+                assert_eq!(
+                    serde_json::to_value(&request.input).expect("serialize request input"),
+                    json!(expected_input),
+                    "provider={base_url}, lite={use_responses_lite}, annotations={content_item_kinds_enabled}"
+                );
+                assert_eq!(
+                    serde_json::to_value(&prompt.input).expect("serialize original prompt"),
+                    json!([original]),
+                    "provider filtering must not mutate local annotations"
+                );
+            }
+        }
+    }
+}
+
 struct TransportSelectionEphemeralContributor {
     active: bool,
 }
