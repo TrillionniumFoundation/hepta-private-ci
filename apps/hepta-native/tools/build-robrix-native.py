@@ -132,6 +132,9 @@ def prepare_assets(
     root: Path, out: Path, target: Path, font_source: Path, offline: bool
 ):
     sdk, robrix = metadata(root, target, offline)
+    subprocess.run(["python3", str(root / "apps/hepta-control-ui/tools/prepare-fonts.py"),
+                    *(["--offline"] if offline else [])], check=True, stdout=subprocess.PIPE)
+
     generator = root / NATIVE / "tools/generate-native-assets.py"
     subprocess.run(
         [
@@ -189,6 +192,9 @@ def verify_assets(
             (root / NATIVE / "tools/generate-native-assets.py").read_bytes()
         ),
         "helperSha256": sha(Path(__file__).read_bytes()),
+        "cjkPreparationSha256": sha((root / "apps/hepta-control-ui/tools/prepare-fonts.py").read_bytes()),
+        "cjkManifestSha256": sha((root / ROBRIX / "resources/fonts/MANIFEST.json").read_bytes()),
+        "cjkLicenseSha256": sha((root / ROBRIX / "resources/fonts/OFL.txt").read_bytes()),
         "assetRustSha256": sha((out / "native-assets.rs").read_bytes()),
         "assetInputJsonSha256": sha((out / "native-assets-input.json").read_bytes()),
         "liberationSourceSha256": sha(font_source.read_bytes()),
@@ -436,11 +442,13 @@ def main():
     parser.add_argument("--liberation-source", type=Path)
     parser.add_argument("--download-font-source", action="store_true")
     parser.add_argument("--offline", action="store_true")
+    parser.add_argument("--cjk-font-cache", type=Path)
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()
     if sys.platform != "linux":
         parser.error("This developer preview is currently Linux-only")
     root = args.source_root.resolve(strict=True)
+    os.environ["HEPTA_CJK_FONT_CACHE"] = str((args.cjk_font_cache or root / "apps/hepta-control-ui/rust/target/font-assets").resolve())
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     font_source = checked_font_source(

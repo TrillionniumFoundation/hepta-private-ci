@@ -24,6 +24,8 @@ pub(crate) fn configure(cx: &mut Cx, font_override: Option<Vec<u8>>) {
         for (logical, embedded) in ASSETS {
             let bytes = if logical.ends_with("LXGWWenKaiRegular.ttf")
                 || logical.ends_with("LXGWWenKaiBold.ttf")
+                || logical.ends_with("NotoSansSC-Regular.otf")
+                || logical.ends_with("NotoSansSC-Bold.otf")
             {
                 font_override.as_deref().unwrap_or(embedded)
             } else {

@@ -140,8 +140,8 @@ script_mod! {
     let top_edge = max(0.0, 1.0 - self.pos.y * self.rect_size.y)
     let right_edge = max(0.0, 1.0 - (1.0 - self.pos.x) * self.rect_size.x)
     let lower_shade = max(0.0, self.pos.y - 0.45)
-    let face = mix(mix(self.color, #xf9f8f6, top_light * top_light * 0.14), #xb6afa5, lower_shade * 0.035)
-    return mix(mix(face, #xffffff, top_edge * 0.65), #xbcb7af, right_edge * 0.4)
+    let face = mix(mix(self.color, #xffffff, top_light * top_light * 0.28), #x8b9da3, lower_shade * 0.09)
+    return mix(mix(face, #xffffff, top_edge * 0.65), #x88999f, right_edge * 0.7)
    }
    if self.material > 0.5 {
     let top_glow = max(0.0, 1.0 - self.pos.y * 4.0)

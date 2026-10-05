@@ -120,6 +120,15 @@ test('Compact sidebar creates once and preserves both conversations',async({page
   const originalText='Original room draft 中文 preserved';
   const newText='New local draft 中文 retained';
   await editorText(originalText,{write:true});
+  // Real pointer activation must not dispatch or erase a draft when no owner exists.
+  expect(current().sendEnabled).toBe(false);
+  const unavailableDraftBytes=current().draftBytes,unavailableCount=current().count;
+  await clickControl('send');
+  expect(current().sendEnabled).toBe(false);
+  expect(current().active).toBe(original);expect(current().count).toBe(unavailableCount);
+  expect(current().draftBytes).toBe(unavailableDraftBytes);
+  await editorText(originalText);
+
   const beforeScroll=await capture('original-before-scroll'),point=center(beforeScroll.geometryAfter.viewport);
   inputs.push({atMs:performance.now(),kind:'wheel',point,deltaY:-480,sourceCapture:beforeScroll.name,sourcePngSha256:beforeScroll.pngSha256});
   await page.mouse.move(point.x,point.y);await page.mouse.wheel(0,-480);

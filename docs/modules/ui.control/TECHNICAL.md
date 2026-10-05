@@ -254,3 +254,39 @@ This section records the source-location obligation of `UI-V5`, not an execution
 The Rust controller and Robrix-derived Makepad widgets are present in that source tree. [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) binds the mapped paths and exact source objects; its source observation must be checked against the candidate by `python3 scripts/ui-control-source-map.py`.
 
 The current chat host has no qualified production principal/signer/bridge, operational Console composition remains pending, and transient chat drafts do not imply durable reload recovery. Actual execution outcomes belong only to source-bound external CI receipts. This source-location record grants no runtime authority, production-writer authority, independent acceptance, merge or release authorization.
+
+## Product-completion ledger: shared Rust UI
+
+This ledger separates implemented presentation from externally owned authority.
+It is not a percentage-complete or release qualification claim.
+
+| Area | Actual implementation | Remaining product boundary |
+| --- | --- | --- |
+| Shared views | Rust Robrix/Makepad conversation sidebar, virtual timeline, local draft, theme and responsive layouts; Web package is WASM with generated platform glue | Target-host usability, accessibility and high-end visual acceptance remain independent |
+| Input lifecycle | Central Rust preedit routing, stale owner/epoch checks and bounded rejected pointer tracking; actual SDK regressions | Physical IME candidate control, inside-field pointer interruption, hidden retained pages and full touch lifecycle need platform evidence |
+| Chat authority | `ChatWorkspace::install_owner`, `stage_authorized_text`, `begin_authorized_submit`, `observe_delivery` and bounded `ChatOwnerAdapter` contracts exist | No authenticated production principal/signer/gateway is composed into this shell; Send stays disabled |
+| Native lifecycle | `native_host::NativeHost` and `apps/hepta-native/src/ui/robrix_host.rs` adapt the existing polling, readiness witness, close/retry and post-exit owner | Runtime readiness observations do not grant chat or Operations authority; Linux developer preview is not universal native qualification |
+| Console | Existing retained controller contracts and a visible unavailable explanation | Operational controls are not composed into the canonical Rust host; no fabricated telemetry or successful effects |
+| Fixtures | Explicit `ui-fixtures` owner histories, geometry and input observations support real rendered regression tests | Fixture histories/callbacks are not live authenticated chat, module health or mutation receipts |
+| Typography/resources | Pinned SC sans pair, full WenKai tertiary and emoji; one bounded build-time preparation path feeds Web, staged desktop and native catalog | New glyph/layout pixels and native installed-resource behavior require their own exact-source evidence; no runtime network fallback |
+| Completion evidence | Exact source, tests, source-bound browser captures and independent review are recorded per candidate | Cross-module fan-in, host authorization, cancellation/revocation, platform IME, accessibility and deployment gates are still distinct |
+
+### Next typed owner integration seam
+
+The next seam is the existing signed-text host adapter, not a new UI-owned
+network/signing stack. `rust/core/src/chat_owner.rs` names the trusted host's
+`AgentdClient::submit_authbus_text` and status path. A genuine host must install
+current principal/session/generation/permission scope, retain the independently
+signed exact envelope, bind the real history/thread identity and revalidate
+AuthBus authority at dispatch. The UI receives only `SignedTextRef` correlation
+and authoritative delivery observations; queue admission must not become effect
+completion. Revocation/reconnect must clear stale signed references and invalidate
+in-flight observations before any Send enablement is considered.
+
+Operations remains behind its existing runtime owner and authenticated gateway.
+Compose read-only bounded status first through that typed owner, prove cancellation
+and stale-response rejection, then expose separately authorized commands with
+real operation identifiers and terminal receipts. The current `NativeHost` status
+panel is an existing lifecycle seam, not permission to derive Operations grants
+from a view or reuse Console credentials for chat. This work does not enable any
+such business action.

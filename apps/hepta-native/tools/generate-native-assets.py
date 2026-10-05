@@ -5,8 +5,10 @@ This program never discovers or modifies a Cargo cache and never fetches files.
 """
 
 import argparse
+import importlib.util
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 
@@ -40,13 +42,21 @@ def main():
     if pin != catalog["makepadRevision"]:
         raise ValueError("SDK revision differs from the fixed asset catalog")
     subprocess.run(["git", "-C", str(sdk), "diff", "--quiet", "HEAD", "--"], check=True)
+    helper = robrix.parents[1] / "tools/prepare-fonts.py"
+    spec = importlib.util.spec_from_file_location("hepta_fonts", helper)
+    fonts = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(fonts)
+    cjk = fonts.prepare(Path(os.environ.get("HEPTA_CJK_FONT_CACHE", robrix.parent / "target/font-assets")), offline=True)
+    cjk_paths = {a["logical"]: Path(a["inputPath"]) for a in cjk["assets"]}
     registered, records = [], []
     for asset in catalog["assets"]:
         logical = asset["logical"]
         crate, resource = logical.split("/", 1)
         if ".." in Path(resource).parts or Path(resource).is_absolute():
             raise ValueError("invalid logical asset path")
-        if crate == "makepad_widgets":
+        if logical in cjk_paths:
+            path = cjk_paths[logical]
+        elif crate == "makepad_widgets":
             path = sdk / "widgets" / resource
         elif crate == "hepta_robrix_ui":
             path = robrix / resource
@@ -59,7 +69,7 @@ def main():
             f"    ({rust_string(logical)}, include_bytes!({rust_string(str(path))})),"
         )
         records.append({**asset, "inputPath": str(path)})
-    if len(registered) != 28 or len({r["logical"] for r in records}) != 28:
+    if len(registered) != 30 or len({r["logical"] for r in records}) != 30:
         raise ValueError("fixed asset inventory changed")
     notices = []
     for notice in catalog["noticeFileSha256"]:

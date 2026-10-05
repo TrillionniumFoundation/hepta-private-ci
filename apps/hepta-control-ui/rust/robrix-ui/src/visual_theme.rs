@@ -34,9 +34,9 @@ impl VisualTheme {
     /// Display-only header geometry, measured inside the shared chat shell.
     pub fn channel_heading_height(self) -> f64 {
         match self {
-            Self::ObsidianIce => 84.0,
-            Self::LunarTitanium => 90.0,
-            Self::AuroraGraphite => 92.0,
+            Self::ObsidianIce => 76.0,
+            Self::LunarTitanium => 80.0,
+            Self::AuroraGraphite => 80.0,
         }
     }
     pub fn tokens(self) -> Tokens {
@@ -46,8 +46,8 @@ impl VisualTheme {
                 0x284665ff, 0x8ed9ffff,
             ],
             Self::LunarTitanium => [
-                0xf7f6f2ff, 0xdddcd9ff, 0xf9f8f6ff, 0x18232cff, 0x595953ff, 0x18707dff, 0xdad8d4ff,
-                0xc3d5d5ff, 0xecc9abff,
+                0xf9f8f4ff, 0xe4e7e7ff, 0xffffffff, 0x18232cff, 0x535e63ff, 0x176b78ff, 0x6d838cff,
+                0xcbdfe1ff, 0xb89b82ff,
             ],
             Self::AuroraGraphite => [
                 0x15191fff, 0x151a21ff, 0x181d26ff, 0xeef1f4ff, 0xaab0bbff, 0xa5f0ccff, 0x383e49ff,
@@ -210,6 +210,7 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                 script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent) ink: #(text)}});
             }
             if name == id!(theme_switch) || name == id!(mobile_theme_switch) {
+                script_apply_eval!(cx,widget,{draw_bg +: {color_focus: #(surface)}});
                 widget.as_button().set_text(cx, theme.label());
             }
         } else if widget.borrow::<Tab>().is_some() {

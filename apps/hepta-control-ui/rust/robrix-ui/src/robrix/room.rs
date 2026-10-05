@@ -40,8 +40,8 @@ script_mod! {
       return mix(mix(face, edge, top_edge * 0.28), #x383e49, bottom_edge * 0.6)
      }
      let warm = max(0.0, 1.0 - self.pos.y)
-     let face = mix(self.color, #xfffaf3, warm * 0.32)
-     return mix(mix(face, #xffffff, top_edge * 0.72), #xdad8d4, bottom_edge * 0.65)
+     let face = mix(self.color, #xffffff, warm * 0.45)
+     return mix(mix(face, #xffffff, top_edge * 0.72), #x88999f, bottom_edge * 0.55)
     }
    }
    room_actions := Label {
@@ -517,7 +517,7 @@ impl Widget for RoomScreen {
                 let own = message.role == Role::User;
                 let available = cx.turtle().rect().size.x.max(160.0);
                 // 40 px outer padding + 36 px avatar + 14 px profile gap.
-                let content_width = (available - 90.0).clamp(70.0, 780.0);
+                let content_width = (available - 90.0).clamp(70.0, 720.0);
                 let theme = cx.global::<crate::visual_theme::ThemeState>().selected;
                 let style = (theme, own, content_width.to_bits());
                 if cx

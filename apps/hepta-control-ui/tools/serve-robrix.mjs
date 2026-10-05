@@ -11,7 +11,7 @@ const manifest=JSON.parse(await readFile(resolve(root,'build-manifest.json'),'ut
 const sourceRoot=fileURLToPath(new URL('..',import.meta.url));
 if((await robrixSourceIdentity(sourceRoot)).sha256!==manifest.sourceIdentity?.sha256) throw new Error('Built artifact is stale; rebuild current UI source');
 if (manifest.browserRuntime!=='rust-makepad-wasm') throw new Error('Build the canonical Robrix UI first');
-const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.wasm':'application/wasm','.ttf':'font/ttf','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'};
+const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.wasm':'application/wasm','.ttf':'font/ttf','.otf':'font/otf','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'};
 createServer(async(req,res)=>{
  try {
   if(req.method!=='GET'&&req.method!=='HEAD'){res.writeHead(405);res.end();return;}

@@ -143,10 +143,16 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
     } else {
         "null".into()
     };
+    // Observe the real control; absence is null, never a fabricated disabled state.
+    let send_enabled = ui
+        .widget(cx, ids!(send_message_button))
+        .borrow::<Button>()
+        .map(|button| button.enabled().to_string())
+        .unwrap_or_else(|| "null".into());
     let geometry_frame = cx.global::<SidebarFixture>().geometry_frame;
     let geometry = cx.global::<SidebarFixture>().geometry.clone();
     let serialized = format!(
-        "{{\"active\":{},\"draftIds\":{:?},\"count\":{},\"draftBytes\":{},\"navigationOpen\":{},\"consoleOpen\":{},\"theme\":{:?},\"newDraftAreaValid\":{},\"newDraftFocused\":{},\"keyFocusValid\":{},\"controls\":{{{}}},\"targets\":{},\"geometryFrame\":{},\"geometry\":{},\"drawDpiFactor\":{},\"dpiProbe\":{},\"dpiProbeRaw\":{},\"dpiBarRaw\":{},\"dpiBarClipped\":{}}}",
+        "{{\"active\":{},\"draftIds\":{:?},\"count\":{},\"draftBytes\":{},\"navigationOpen\":{},\"consoleOpen\":{},\"theme\":{:?},\"newDraftAreaValid\":{},\"newDraftFocused\":{},\"keyFocusValid\":{},\"sendEnabled\":{},\"controls\":{{{}}},\"targets\":{},\"geometryFrame\":{},\"geometry\":{},\"drawDpiFactor\":{},\"dpiProbe\":{},\"dpiProbeRaw\":{},\"dpiBarRaw\":{},\"dpiBarClipped\":{}}}",
         workspace.active_id(),
         ids,
         ids.len(),
@@ -157,6 +163,7 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
         new_draft_valid,
         new_draft_focused,
         cx.key_focus().is_valid(cx),
+        send_enabled,
         controls,
         targets.unwrap_or_else(|| "null".into()),
         geometry_frame,

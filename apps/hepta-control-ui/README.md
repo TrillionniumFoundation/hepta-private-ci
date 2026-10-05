@@ -110,3 +110,36 @@ These are intermediate results, not product or release completion. Existing
 Console/DOM/egui test receipts and CPU fixtures do not qualify this new host.
 The UI continues to use existing core state and authorization contracts; no
 new runtime, credentials, signing authority or Matrix service behavior is added.
+
+### Shared CJK resources and visual candidate
+
+The shared Rust font stack keeps IBM Plex Latin, adds unmodified Noto Sans SC
+Regular/Bold as the secondary face, and retains complete WenKai as tertiary
+fallback plus existing emoji. This is **not** uniform pan-CJK sans: rare and
+out-of-subset characters retain their previous face. The pinned pair adds exactly
+16,874,504 bytes, with a 17,000,000-byte preparation cap. Immutable provenance,
+original OFL1.1 and font copyright are in `rust/robrix-ui/resources/fonts/`.
+No runtime font download is introduced.
+
+`npm run build` prepares a verified reusable cache under `rust/target`, then
+packages the same hashes into the Web resource manifest. `npm run desktop`
+prepares and runs a resource-complete staged Rust workspace; direct native Cargo
+builds without those resources fail with a preparation diagnostic. Use
+`python3 tools/run-desktop.py --offline` or `HEPTA_FONTS_OFFLINE=1 npm run build`
+after preparation. `HEPTA_CJK_FONT_CACHE` may name a reusable cache root. A corrupt
+cache fails explicitly rather than silently downloading a replacement. Preparation
+uses immutable HTTPS URLs, exact byte counts/SHA256, byte-bounded reads and atomic writes.
+The60-second timeout is per socket operation, not an overall transfer deadline.
+Each desktop invocation retains its own unique staged resource tree until its
+child exits; concurrent previews cannot delete one another's resources. The
+build-script guard is a missing/length diagnostic; hash verification belongs
+to the supported preparation wrapper.
+The embedded native wrapper uses the same preparation helper and fixed30-asset
+catalog; `--offline` also forbids CJK asset downloads.
+
+The visual candidate reduces header space and reading width, distinguishes the
+selected mobile page from focus, and displays an unavailable Send as a neutral
+lock while preserving the real disabled Button and owner boundary. Numeric
+contrast tests and SDK font rasterization do not replace actual browser/native
+pixel, focus, IME and accessibility qualification. See the module technical guide
+for the product-completion ledger and remaining owner integration.

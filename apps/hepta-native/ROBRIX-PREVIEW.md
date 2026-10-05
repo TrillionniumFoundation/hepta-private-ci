@@ -31,14 +31,14 @@ source archive checkout. Its platform overlay admits only loaded embedded
 resource bytes and publishes the X11 process ID before mapping the window for
 process-scoped diagnostics. It never patches the canonical checkout or Cargo cache. Its
 generated lock differs only in the platform package's Git-to-local source.
-The fixed 28 assets and original notices are checked by size and SHA-256 before
+The fixed 30 assets and original notices are checked by size and SHA-256 before
 compilation. Asset identities are regenerated from the generated checkout's
 manifest paths. Keep `native-preview-build-input.json` and the asset input
 records with build evidence.
 
 For an already downloaded original source archive, replace
 `--download-font-source` with `--liberation-source /absolute/archive.tar.gz`.
-`--offline` disables Cargo network resolution. `prepare-preview` prepares the
+`--offline` disables Cargo network resolution and shared CJK font downloads. The wrapper automatically prepares the fixed Noto Sans SC pair through the shared verified helper; `--cjk-font-cache` can select an existing cache for offline reuse. `prepare-preview` prepares the
 same inputs without compiling. `test-preview` runs the repository's `just test`
 entry point against the generated overlay and includes the resource conflict,
 missing-resource, source export and retained-owner adapter tests. Each prepare,
