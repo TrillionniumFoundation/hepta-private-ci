@@ -241,3 +241,22 @@ The bootstrap source-location obligation for `ui.control` is implemented by work
 - `apps/hepta-control-ui`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## Selective Rust product foundation (2026-10-05)
+
+The owning standalone workspace is now `apps/hepta-control-ui/rust`, with
+Rust1.95.0 UI tooling isolated from the product backend's Rust1.96.0. The shared
+Makepad renderer, typed bounded core, exact lock, SDK transformations, resource
+provenance and actual-host regressions are selectively imported; see the module
+README and `PORT_SOURCE.json` for source blob identities. The internal Rust DOM
+compatibility member remains only to preserve the locked workspace graph.
+
+This stage has not yet replaced the gateway `GET /` handwritten status shell.
+The next slice must serve the verified Rust bundle and expose the existing
+read-only runtime observations in Rust without changing API/write semantics.
+Chat owner admission/signing/Agentd dispatch, Operations owner projections and
+native-host closure remain separate missing contracts. Send and Console mutation
+controls stay disabled. Source-branch fixture evidence does not qualify this
+product tree; current source and synthetic merge require new build/pixel/input
+evidence. No historical qualification record is rewritten.
