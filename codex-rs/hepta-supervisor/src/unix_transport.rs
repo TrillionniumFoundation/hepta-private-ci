@@ -14,6 +14,7 @@ use std::time::Instant;
 use rustix::io::Errno;
 use rustix::net::AddressFamily;
 use rustix::net::SocketAddrUnix;
+#[cfg(not(target_vendor = "apple"))]
 use rustix::net::SocketFlags;
 use rustix::net::SocketType;
 
@@ -38,13 +39,15 @@ pub(super) fn exchange(
         ));
     }
     let address = SocketAddrUnix::new(path)?;
-    let fd = rustix::net::socket_with(
+    #[cfg(not(target_vendor = "apple"))]
+    let stream = UnixStream::from(rustix::net::socket_with(
         AddressFamily::UNIX,
         SocketType::STREAM,
         SocketFlags::CLOEXEC | SocketFlags::NONBLOCK,
         /*protocol*/ None,
-    )?;
-    let stream = UnixStream::from(fd);
+    )?);
+    #[cfg(target_vendor = "apple")]
+    let stream = socket_with_fcntl_flags()?;
     // Preserve std's Apple socket initialization: converting an OwnedFd does
     // not set SO_NOSIGPIPE, and Apple's std write path has no MSG_NOSIGNAL.
     #[cfg(target_vendor = "apple")]
@@ -101,6 +104,37 @@ pub(super) fn exchange(
             Err(error) => return Err(error),
         }
     }
+}
+
+/// Apple lacks socket-time CLOEXEC/NONBLOCK flags. Set both before connecting.
+/// The owned descriptor closes on every initialization error; it never escapes
+/// partially configured. Linux keeps its atomic socket-time initialization.
+#[cfg(any(target_vendor = "apple", test))]
+pub(super) fn socket_with_fcntl_flags() -> io::Result<UnixStream> {
+    let fd = rustix::net::socket(
+        AddressFamily::UNIX,
+        SocketType::STREAM,
+        /*protocol*/ None,
+    )?;
+    let descriptor_flags = rustix::io::fcntl_getfd(&fd)?;
+    rustix::io::fcntl_setfd(&fd, descriptor_flags | rustix::io::FdFlags::CLOEXEC)?;
+    // SAFETY: fd is owned and live; F_GETFL takes no additional argument.
+    let status_flags = unsafe { libc::fcntl(fd.as_raw_fd(), libc::F_GETFL) };
+    if status_flags < 0 {
+        return Err(io::Error::last_os_error());
+    }
+    // SAFETY: fd remains live; F_SETFL takes the integer flags returned above.
+    if unsafe {
+        libc::fcntl(
+            fd.as_raw_fd(),
+            libc::F_SETFL,
+            status_flags | libc::O_NONBLOCK,
+        )
+    } < 0
+    {
+        return Err(io::Error::last_os_error());
+    }
+    Ok(UnixStream::from(fd))
 }
 
 fn remaining(deadline: Instant) -> io::Result<Duration> {

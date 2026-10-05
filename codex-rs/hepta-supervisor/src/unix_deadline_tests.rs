@@ -21,6 +21,25 @@ use super::ProcessDriverError;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
+#[test]
+fn fcntl_socket_initialization_sets_both_flags_before_connect() -> TestResult {
+    use std::os::fd::AsRawFd;
+
+    let stream = super::transport::socket_with_fcntl_flags()?;
+    assert!(rustix::io::fcntl_getfd(&stream)?.contains(rustix::io::FdFlags::CLOEXEC));
+    // SAFETY: stream owns the live descriptor and F_GETFL has no third argument.
+    let status_flags = unsafe { libc::fcntl(stream.as_raw_fd(), libc::F_GETFL) };
+    if status_flags < 0 {
+        return Err(std::io::Error::last_os_error().into());
+    }
+    assert_ne!(status_flags & libc::O_NONBLOCK, 0);
+    assert!(
+        stream.peer_addr().is_err(),
+        "initialization must not connect"
+    );
+    Ok(())
+}
+
 #[derive(Clone, Copy)]
 enum Probe {
     AgentHealth,
