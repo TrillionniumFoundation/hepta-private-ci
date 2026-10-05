@@ -14,7 +14,11 @@ import subprocess
 import sys
 import unittest
 
-from scripts.hepta_workflow_commands import load_workflow, workflow_needs
+from scripts.hepta_workflow_commands import (
+    load_workflow,
+    workflow_commands,
+    workflow_needs,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECKER = ROOT / ".github/scripts/check_ci_results.py"
@@ -157,6 +161,39 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn("refresh-derived --check", self.jobs["derived-projections"])
         self.assertIn("cargo fmt", self.jobs["owner-formatting"])
         self.assertIn("-- --check", self.jobs["owner-formatting"])
+
+    def test_real_host_reconciliation_runs_in_the_feature_enabled_command(self):
+        commands = workflow_commands(self.jobs["process-qualification"])
+        host_commands = [
+            command
+            for command in commands
+            if command[:2] == ["just", "test"]
+            and any(
+                command[index : index + 2] == ["--test", "production_reconcile_host"]
+                for index in range(len(command) - 1)
+            )
+        ]
+        self.assertEqual(len(host_commands), 1)
+        command = host_commands[0]
+        self.assertIn("--locked", command)
+        self.assertIn("--test-threads=1", command)
+        for option, value in (
+            ("-p", "codex-hepta-agentd"),
+            ("--features", "qualification-cognitive-write"),
+            ("--test", "cognitive_product_e2e"),
+            ("--test", "plasticity_process_e2e"),
+            ("--test", "runtime_codex_product_e2e"),
+            ("--test", "supervised_two_agents"),
+            ("--test", "supervisord_product_e2e"),
+            ("--test", "queue_capacity_product"),
+        ):
+            with self.subTest(option=option, value=value):
+                self.assertTrue(
+                    any(
+                        command[index : index + 2] == [option, value]
+                        for index in range(len(command) - 1)
+                    )
+                )
 
     def test_checkout_and_candidate_permissions_remain_read_only(self):
         self.assertIn("permissions:\n  contents: read", self.text)
