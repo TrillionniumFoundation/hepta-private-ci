@@ -80,6 +80,9 @@ use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::OpenProcessToken;
 use windows_sys::Win32::System::Threading::OpenThreadToken;
 
+#[path = "private_state_windows_retained.rs"]
+pub(crate) mod retained;
+
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
 const INHERIT_ONLY_ACE: u8 = 0x08;
