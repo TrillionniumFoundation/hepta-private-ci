@@ -22,7 +22,8 @@
     "start": "node tools/serve-robrix.mjs",
     "test:robrix": "playwright test --config=playwright.robrix.config.mjs",
     "desktop": "python3 tools/run-desktop.py",
-    "prepare:fonts": "python3 tools/prepare-fonts.py"
+    "prepare:fonts": "python3 tools/prepare-fonts.py",
+    "product": "python3 tools/run-product.py"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

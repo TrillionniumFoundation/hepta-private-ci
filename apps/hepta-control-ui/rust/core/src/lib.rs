@@ -14,3 +14,6 @@ pub mod projection;
 pub mod recovery;
 pub mod scheduler;
 pub mod theme;
+
+/// Read-only runtime status projection; no business authority.
+pub mod runtime_view;

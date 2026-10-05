@@ -34,10 +34,10 @@ script_mod! {
    home_tab := DockTab {name: "Chat" kind: @room_screen template: @PermanentTab}
    console_tab := DockTab {name: "Console" kind: @console_screen template: @PermanentTab}
    room_screen := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
-   console_screen := View {
+   console_screen := ScrollYView {
     flow: Down padding: 24 spacing: 12
     Label {text: "Console" draw_text.color: COLOR_TEXT}
-    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Runtime controls are not yet composed into this Robrix host. No operation is dispatched from this view." draw_text.color: COLOR_TEXT}
+    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable." draw_text.color: COLOR_TEXT}
    }
   }
  }
@@ -96,8 +96,8 @@ script_mod! {
       back_to_chat := mod.widgets.AuroraButton {text: "Back to conversation"}
       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
      }
-     console_page := View {flow: Down padding: 16
-      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Console controls are awaiting composition. No runtime operation is dispatched here."}
+     console_page := ScrollYView {flow: Down padding: 16
+      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable."}
      }
     }
    }
@@ -116,6 +116,13 @@ impl Widget for MainConversationUI {
         self.view.handle_event(cx, event, scope);
     }
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        let status = cx
+            .global::<crate::runtime_status::RuntimeDisplay>()
+            .text
+            .clone();
+        self.view
+            .label(cx, ids!(console_status))
+            .set_text(cx, &status);
         // This child is created lazily by the outer layout Dock. Select here,
         // before its first draw, so a cached Console stays Console on resize.
         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
@@ -314,6 +321,13 @@ impl Widget for HomeScreen {
             } else {
                 id!(chat_page)
             };
+            let status = cx
+                .global::<crate::runtime_status::RuntimeDisplay>()
+                .text
+                .clone();
+            self.view
+                .label(cx, ids!(mobile_console_status))
+                .set_text(cx, &status);
             self.view
                 .page_flip(cx, ids!(mobile_pages))
                 .set_active_page(cx, page);

@@ -17,7 +17,9 @@ workspace = true
 anyhow = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-hepta-runtime = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 tokio = { workspace = true, features = [
     "io-util",
     "macros",
@@ -26,6 +28,9 @@ tokio = { workspace = true, features = [
     "signal",
     "time",
 ] }
+
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs"] }
 
 [dev-dependencies]
 codex-hepta-wire = { path = "../hepta-wire" }

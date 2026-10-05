@@ -5,6 +5,8 @@
 use crate::ime_router::ImeRouter;
 #[cfg(feature = "native-host")]
 use crate::native_host::render::RendererHost as NativeRenderer;
+#[cfg(target_arch = "wasm32")]
+use crate::runtime_status::RuntimeClient;
 use hepta_control_core::chat::ChatWorkspace;
 use makepad_widgets::*;
 app_main!(App, font_set: International, font_assets: [MATH_VIEW_FONT_ASSET], configure: |cx| {
@@ -46,6 +48,9 @@ pub struct App {
     workspace: ChatWorkspace,
     #[rust]
     ime_router: ImeRouter,
+    #[cfg(target_arch = "wasm32")]
+    #[rust]
+    runtime_status: RuntimeClient,
     #[cfg(feature = "native-host")]
     #[rust]
     native_host: NativeRenderer,
@@ -117,6 +122,15 @@ impl AppMain for App {
         crate::visual_theme::apply_tree(cx, &self.ui);
         self.ime_router
             .dispatch(cx, &self.ui, event, &mut self.workspace);
+        #[cfg(target_arch = "wasm32")]
+        self.runtime_status.handle_event(
+            cx,
+            &self.ui,
+            event,
+            self.workspace.tab == hepta_control_core::chat::WorkspaceTab::Console
+                && !self.workspace.navigation_open,
+            self.workspace.presentation_epoch(),
+        );
         #[cfg(feature = "native-host")]
         if matches!(event, Event::Draw(_)) {
             self.native_host.after_draw(cx, &self.ui);
