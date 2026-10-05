@@ -199,6 +199,10 @@ async fn worker_retains_host_and_owner_fence_until_worker_drop() {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::await_holding_invalid_type,
+    reason = "this test serializes the process-global checkpoint failpoint through asynchronous fixture operations"
+)]
 async fn checkpoint_stage_failures_are_classified_and_recoverable() {
     let _serial = CHECKPOINT_TEST_LOCK
         .get_or_init(|| tokio::sync::Mutex::new(()))
@@ -253,6 +257,10 @@ async fn checkpoint_stage_failures_are_classified_and_recoverable() {
 }
 
 #[tokio::test]
+#[expect(
+    clippy::await_holding_invalid_type,
+    reason = "this test serializes the process-global checkpoint failpoint through asynchronous fixture operations"
+)]
 async fn every_issuer_lifecycle_mutation_has_the_same_checkpoint_failure_contract() {
     let _serial = CHECKPOINT_TEST_LOCK
         .get_or_init(|| tokio::sync::Mutex::new(()))

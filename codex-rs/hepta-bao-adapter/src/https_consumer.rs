@@ -230,6 +230,10 @@ impl BaoClient {
     /// Product composition for a quota-controlled Bao read:
     /// authenticated time -> policy -> reservation -> durable dispatch fence ->
     /// kernel final-use claim -> provider observation -> signed settlement.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the existing composition API keeps independent authority, signed grant, policy admission, evidence source and consumer explicit"
+    )]
     pub async fn consume_kv_v2_with_authbus<E: BaoAuthBusEvidenceProvider>(
         &self,
         authbus: AuthBusExecutionPort<'_>,
@@ -319,7 +323,7 @@ impl BaoClient {
                     "successful settlement lost its receipt",
                 ))
             }
-            Err(error) if ambiguous_after_dispatch(&error) => {
+            Err(error) if ambiguous_after_dispatch(error) => {
                 let time = authbus
                     .observe_trusted_time_attestation(&evidence.trusted_time()?)
                     .await;
@@ -545,7 +549,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     Ok(receipt)
 }
 
-fn ambiguous_after_dispatch(error: &BaoClientError) -> bool {
+fn ambiguous_after_dispatch(error: BaoClientError) -> bool {
     matches!(
         error,
         BaoClientError::TransportUnavailable
@@ -588,6 +592,7 @@ impl fmt::Display for BaoClientError {
 }
 impl std::error::Error for BaoClientError {}
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 #[path = "https_consumer_tests.rs"]
 mod tests;

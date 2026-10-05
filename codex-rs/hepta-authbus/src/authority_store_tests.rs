@@ -118,7 +118,7 @@ async fn authorization_is_revision_bound_and_explicit_deny_grants_no_authority()
 }
 
 #[tokio::test]
-async fn trusted_time_floor_survives_reopen_and_failed_authorization() {
+async fn separately_observed_time_floor_survives_reopen_and_failed_authorization() {
     let root = TempDir::new().expect("temp dir");
     let path = root.path().join("authbus.sqlite");
     let store = AuthBusAuthorityStore::open(&path)
@@ -136,7 +136,7 @@ async fn trusted_time_floor_survives_reopen_and_failed_authorization() {
         .expect("reopen authority store");
     assert_eq!(
         store.last_trusted_time().await.expect("read time"),
-        Some(first)
+        Some(first.clone())
     );
     let missing = sample(11, 2_100);
     assert!(matches!(
@@ -151,6 +151,16 @@ async fn trusted_time_floor_survives_reopen_and_failed_authorization() {
             .await,
         Err(AuthBusAuthorityError::PolicyMissing)
     ));
+    // A rejected mutation rolls back its own uncommitted time observation.
+    assert_eq!(
+        store.last_trusted_time().await.expect("read time"),
+        Some(first)
+    );
+    // An independently accepted observation is a separate committed mutation.
+    store
+        .observe_time(missing.clone())
+        .await
+        .expect("observe time separately");
     assert_eq!(
         store.last_trusted_time().await.expect("read time"),
         Some(missing)

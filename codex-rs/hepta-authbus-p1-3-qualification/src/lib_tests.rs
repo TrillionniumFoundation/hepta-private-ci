@@ -17,6 +17,7 @@ use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_authbus::SignedSettlementEvidence;
 use codex_hepta_authbus::SignedTrustedTimeAttestation;
 use codex_hepta_authbus::TrustedTimeAttestationClaims;
+use codex_hepta_authbus::bootstrap_retryable;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use tempfile::TempDir;
@@ -207,10 +208,9 @@ fn persisted_registration_rejects_forged_revoked_and_epoch_substitution() {
 #[tokio::test]
 async fn authority_host_executes_modern_owner_purpose_sweep_and_settlement_matrix() {
     let (_root, database, checkpoint) = private_paths();
-    let host =
-        AuthBusAuthorityHost::bootstrap(&database, checkpoint.clone(), "qualification-owner")
-            .await
-            .expect("bootstrap authority host");
+    let host = bootstrap_retryable(&database, checkpoint.clone(), "qualification-owner")
+        .await
+        .expect("bootstrap authority host");
     assert!(matches!(
         AuthBusAuthorityHost::open(&database, checkpoint.clone(), "qualification-owner").await,
         Err(AuthBusAuthorityError::OwnerAlreadyActive)

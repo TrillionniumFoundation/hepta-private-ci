@@ -29,6 +29,9 @@ use crate::BaoSecretReceipt;
 
 pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync + 'static>;
 
+#[cfg(test)]
+type RevocationAppliedHook = Arc<dyn Fn(&FinalUseRevocationReceipt) + Send + Sync>;
+
 #[derive(Clone)]
 pub struct RegisteredBaoConsumer {
     id: String,
@@ -59,12 +62,16 @@ impl RegisteredBaoConsumer {
 
 /// Host-selected composition of final-use authority, independent approval,
 /// authenticated revocation distribution and a closed consumer registry.
+/// The injected clock must not synchronously reenter this host: freshness
+/// checks and revocation publication sample it under the same mutex.
 pub struct BaoFinalUseHost {
     authority: FinalUseAuthority,
     approval_verifier: FinalUseApprovalVerifier,
     revocation_verifier: FinalUseRevocationFeedVerifier,
     clock: Arc<dyn AuthorityClock>,
     revocation_fresh_until_unix_ms: Mutex<u64>,
+    #[cfg(test)]
+    after_revocation_applied: Mutex<Option<RevocationAppliedHook>>,
     consumers: BTreeMap<String, BaoConsumerCallback>,
 }
 
@@ -102,6 +109,8 @@ impl BaoFinalUseHost {
             revocation_verifier,
             clock,
             revocation_fresh_until_unix_ms: Mutex::new(0),
+            #[cfg(test)]
+            after_revocation_applied: Mutex::new(None),
             consumers: registry,
         })
     }
@@ -111,15 +120,15 @@ impl BaoFinalUseHost {
     }
 
     fn ensure_revocation_fresh(&self) -> Result<(), BaoFinalUseHostError> {
+        let fresh_until = self
+            .revocation_fresh_until_unix_ms
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
         let now_unix_ms = self
             .clock
             .now_unix_ms()
             .map_err(BaoFinalUseHostError::Trust)?;
-        let fresh_until = *self
-            .revocation_fresh_until_unix_ms
-            .lock()
-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
-        if fresh_until == 0 || now_unix_ms >= fresh_until {
+        if *fresh_until == 0 || now_unix_ms >= *fresh_until {
             return Err(BaoFinalUseHostError::StaleRevocationFeed);
         }
         Ok(())
@@ -132,6 +141,14 @@ impl BaoFinalUseHost {
         &self,
         update: &SignedFinalUseRevocationUpdate,
     ) -> Result<FinalUseRevocationReceipt, BaoFinalUseHostError> {
+        // Serialize the accepted head and its freshness publication. Otherwise
+        // an older concurrent update can overwrite a newer head's shorter
+        // validity interval after the authority has already accepted both.
+        // Sample protected time after acquiring this lock, including on reads.
+        let mut fresh_until = self
+            .revocation_fresh_until_unix_ms
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
         let now_unix_ms = self
             .clock
             .now_unix_ms()
@@ -140,10 +157,14 @@ impl BaoFinalUseHost {
             .revocation_verifier
             .apply(&self.authority, update, now_unix_ms)
             .map_err(BaoFinalUseHostError::Control)?;
-        let mut fresh_until = self
-            .revocation_fresh_until_unix_ms
-            .lock()
-            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+        #[cfg(test)]
+        {
+            // Per-host scheduling barrier, absent from production builds.
+            let hook = self.after_revocation_applied.lock().unwrap().clone();
+            if let Some(hook) = hook {
+                hook(&receipt);
+            }
+        }
         *fresh_until = receipt.valid_until_unix_ms();
         Ok(receipt)
     }
@@ -217,7 +238,8 @@ impl fmt::Display for BaoFinalUseHostError {
 }
 impl std::error::Error for BaoFinalUseHostError {}
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 mod tests {
     use super::*;
     use ed25519_dalek::SigningKey;
@@ -280,3 +302,8 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+#[cfg(unix)]
+#[path = "final_use_host_freshness_tests.rs"]
+mod freshness_tests;

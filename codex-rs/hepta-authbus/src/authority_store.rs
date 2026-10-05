@@ -3,6 +3,7 @@ use std::time::Duration;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use sqlx::ConnectOptions;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
@@ -35,7 +36,12 @@ impl AuthBusAuthorityStore {
             .journal_mode(SqliteJournalMode::Wal)
             .synchronous(SqliteSynchronous::Full)
             .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
+            .busy_timeout(Duration::from_secs(5))
+            .disable_statement_logging();
+        #[expect(
+            clippy::disallowed_methods,
+            reason = "independent AuthBus authority owner: fenced path, FULL/WAL, foreign keys, bounded pool; no rebuildable Codex state recovery"
+        )]
         let pool = SqlitePoolOptions::new()
             .max_connections(5)
             .connect_with(options)
@@ -63,22 +69,32 @@ impl AuthBusAuthorityStore {
             pool.close().await;
             return Err(error);
         }
-        sqlx::query(
-            "UPDATE authbus_recovery_state
-             SET recovery_required = (
-                 SELECT EXISTS(
-                     SELECT 1 FROM authbus_quota_reservation
-                     WHERE state = 'dispatch_attempted'
+        let recovery = async {
+            let mut tx = begin(&pool).await?;
+            sqlx::query(
+                "UPDATE authbus_recovery_state
+                 SET recovery_required = (
+                     SELECT EXISTS(
+                         SELECT 1 FROM authbus_quota_reservation
+                         WHERE state = 'dispatch_attempted'
+                     )
                  )
-             )
-             WHERE singleton = 1",
-        )
-        .execute(&pool)
-        .await
-        .map_err(storage)?;
+                 WHERE singleton = 1",
+            )
+            .execute(&mut *tx)
+            .await
+            .map_err(storage)?;
+            tx.commit().await.map_err(storage)
+        }
+        .await;
+        if let Err(error) = recovery {
+            pool.close().await;
+            return Err(error);
+        }
         Ok(Self { pool })
     }
 
+    #[cfg(test)]
     pub(crate) async fn observe_time(
         &self,
         time: TrustedTimeSample,
@@ -331,7 +347,12 @@ impl AuthBusAuthorityStore {
 pub(crate) async fn begin(
     pool: &SqlitePool,
 ) -> Result<Transaction<'static, Sqlite>, AuthBusAuthorityError> {
-    pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)
+    let mut tx = pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)?;
+    if let Err(error) = crate::frontier_sequence::validate(&mut tx).await {
+        tx.rollback().await.map_err(storage)?;
+        return Err(error);
+    }
+    Ok(tx)
 }
 
 pub(crate) async fn advance_time(
@@ -527,7 +548,7 @@ pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
 fn is_unique_violation(error: &sqlx::Error) -> bool {
     error
         .as_database_error()
-        .is_some_and(|database| database.is_unique_violation())
+        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
 }
 
 pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {

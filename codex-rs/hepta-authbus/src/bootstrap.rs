@@ -10,6 +10,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 
+use sqlx::ConnectOptions;
 use sqlx::Row;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqlitePoolOptions;
@@ -20,15 +21,15 @@ use crate::AuthBusAuthorityStore;
 use crate::owner_fence::OwnerFence;
 
 const EXPECTED_AUTHBUS_MIGRATIONS: i64 = 7;
-const AUTHORITATIVE_TABLES: &[&str] = &[
-    "authbus_trusted_time",
-    "authbus_policy",
-    "authbus_policy_history",
-    "authbus_policy_archive",
-    "authbus_quota_registry",
-    "authbus_quota_reservation",
-    "authbus_quota_reservation_archive",
-    "authbus_issuer_registry",
+const AUTHORITATIVE_ROW_COUNT_QUERIES: &[&str] = &[
+    "SELECT COUNT(*) FROM authbus_trusted_time",
+    "SELECT COUNT(*) FROM authbus_policy",
+    "SELECT COUNT(*) FROM authbus_policy_history",
+    "SELECT COUNT(*) FROM authbus_policy_archive",
+    "SELECT COUNT(*) FROM authbus_quota_registry",
+    "SELECT COUNT(*) FROM authbus_quota_reservation",
+    "SELECT COUNT(*) FROM authbus_quota_reservation_archive",
+    "SELECT COUNT(*) FROM authbus_issuer_registry",
 ];
 
 /// Open an already complete pair, create a new pair, or safely retry a failed
@@ -74,7 +75,12 @@ async fn remove_pristine_database_orphan(
         .create_if_missing(false)
         .read_only(true)
         .foreign_keys(true)
-        .busy_timeout(Duration::from_secs(5));
+        .busy_timeout(Duration::from_secs(5))
+        .disable_statement_logging();
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "owner-fenced pristine-bootstrap inspection is read-only, non-creating and single-connection; it cannot recover authoritative state"
+    )]
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
         .connect_with(options)
@@ -107,9 +113,8 @@ async fn remove_pristine_database_orphan(
         {
             return Err(AuthBusAuthorityError::RollbackDetected);
         }
-        for table in AUTHORITATIVE_TABLES {
-            let query = format!("SELECT COUNT(*) FROM {table}");
-            let count: i64 = sqlx::query_scalar(&query)
+        for &query in AUTHORITATIVE_ROW_COUNT_QUERIES {
+            let count: i64 = sqlx::query_scalar(query)
                 .fetch_one(&pool)
                 .await
                 .map_err(storage)?;
@@ -259,7 +264,8 @@ fn storage_io(error: std::io::Error) -> AuthBusAuthorityError {
     AuthBusAuthorityError::Storage(error.to_string())
 }
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 mod tests {
     use std::os::unix::fs::PermissionsExt;
 
