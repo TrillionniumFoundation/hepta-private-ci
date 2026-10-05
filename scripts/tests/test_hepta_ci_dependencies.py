@@ -311,6 +311,62 @@ class DocumentInputTests(unittest.TestCase):
         self.git("commit", "-qm", "fixture")
         return self.git("rev-parse", "HEAD")
 
+    def test_known_navigation_prose_preserves_exact_tree_input_consumers(self):
+        for path in (".github/workflows/README.md", "scripts/ENTRYPOINTS.md"):
+            with self.subTest(path=path):
+                self.write(path, "# Navigation\n")
+                self.write("codex-rs/leaf/src/lib.rs", "pub fn value() {}\n")
+                base = self.commit()
+                self.write(path, "# Navigation revised\n")
+                head = self.commit()
+                result = ci.plan(self.root, base, head)
+                self.assertFalse(result["full_workspace"])
+                self.assertEqual(result["packages"], [])
+                command = [
+                    sys.executable,
+                    str(SCRIPT.with_name("hepta_ci_scope.py")),
+                    "--base",
+                    base,
+                    "--head",
+                    head,
+                ]
+                outer = subprocess.run(
+                    command,
+                    cwd=self.root,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                self.assertFalse(json.loads(outer.stdout)["scope"]["native"])
+
+                # New and removed include edges must both preserve consumers.
+                self.write(
+                    "codex-rs/leaf/src/lib.rs",
+                    'const DOC: &str = include_str!("../../../' + path + '");\n',
+                )
+                included = self.commit()
+                self.write(path, "# Compiled navigation input\n")
+                changed = self.commit()
+                self.write("codex-rs/leaf/src/lib.rs", "pub fn value() {}\n")
+                removed = self.commit()
+                for old, new in (
+                    (head, included),
+                    (included, changed),
+                    (changed, removed),
+                ):
+                    with self.subTest(base=old, head=new):
+                        result = ci.plan(self.root, old, new)
+                        self.assertFalse(result["full_workspace"])
+                        self.assertEqual(result["packages"], ["host", "leaf"])
+                        outer = subprocess.run(
+                            command[:-4] + ["--base", old, "--head", new],
+                            cwd=self.root,
+                            capture_output=True,
+                            text=True,
+                            check=True,
+                        )
+                        self.assertTrue(json.loads(outer.stdout)["scope"]["native"])
+
     def test_code_and_module_guide_stay_scoped(self):
         self.write("codex-rs/leaf/src/lib.rs", "pub fn value() -> u32 { 2 }\n")
         self.write(self.doc, "# Updated explanation\n")
