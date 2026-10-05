@@ -75,6 +75,23 @@ class CommandOutputTests(unittest.TestCase):
         self.assertEqual(record["status"], "failed")
         self.assertEqual(record["observed_passed_tests"], 0)
 
+    def test_taskflow_nextest_minimum_rejects_zero_and_partial_selections(self):
+        # Parser/command-contract fixtures, not claimed native test execution.
+        for minimum in (3, 12):
+            for passed in (0, minimum - 1, minimum):
+                with self.subTest(minimum=minimum, passed=passed):
+                    self.receipt.unlink(missing_ok=True)
+                    summary = f"Summary [0.001s] {passed} tests run: {passed} passed, 0 failed, 184 skipped"
+                    result, record = self.execute(
+                        f"print({summary!r})", minimum=minimum
+                    )
+                    self.assertEqual(record["command_exit_code"], 0)
+                    self.assertEqual(record["observed_passed_tests"], passed)
+                    self.assertEqual(result.returncode, 0 if passed == minimum else 1)
+                    self.assertEqual(
+                        record["status"], "passed" if passed == minimum else "failed"
+                    )
+
     def test_ignored_tests_are_not_executed_tests(self):
         result, record = self.execute(
             "print('test result: ok. 0 passed; 0 failed; 3 ignored; 0 filtered out;')"
