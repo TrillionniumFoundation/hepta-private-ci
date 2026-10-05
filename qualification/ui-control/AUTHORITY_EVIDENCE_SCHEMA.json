@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.ui-control.authority-evidence-receipt.v1",
+  "title": "ui.control identity, permission, revocation, and session-switch evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "candidateCommit",
+    "candidateTree",
+    "backendDeploymentDigest",
+    "executedAt",
+    "executor",
+    "cases",
+    "rawEvidenceDigest"
+  ],
+  "properties": {
+    "schema": { "const": "hepta.ui-control.authority-evidence-receipt.v1" },
+    "status": { "enum": ["passed", "failed"] },
+    "candidateCommit": { "$ref": "#/$defs/sha1" },
+    "candidateTree": { "$ref": "#/$defs/sha1" },
+    "backendDeploymentDigest": { "$ref": "#/$defs/sha256" },
+    "executedAt": { "type": "string", "format": "date-time" },
+    "executor": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "cases": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 16,
+      "items": { "$ref": "#/$defs/case" }
+    },
+    "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "rawEvidenceDigest"],
+      "properties": {
+        "id": {
+          "enum": [
+            "permission-revision-change-observed",
+            "permission-revocation-fences-mutation",
+            "session-switch-requires-new-generation"
+          ]
+        },
+        "status": { "enum": ["passed", "failed"] },
+        "beforePermissionRevision": { "type": "integer", "minimum": 0 },
+        "afterPermissionRevision": { "type": "integer", "minimum": 0 },
+        "postRevocationStatus": { "enum": [401, 403] },
+        "operationCreated": { "type": "boolean" },
+        "beforeSessionIdDigest": { "$ref": "#/$defs/sha256" },
+        "afterSessionIdDigest": { "$ref": "#/$defs/sha256" },
+        "beforeConnectionGeneration": { "type": "integer", "minimum": 1 },
+        "afterConnectionGeneration": { "type": "integer", "minimum": 1 },
+        "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "id": { "const": "permission-revision-change-observed" } } },
+          "then": { "required": ["beforePermissionRevision", "afterPermissionRevision"] }
+        },
+        {
+          "if": { "properties": { "id": { "const": "permission-revocation-fences-mutation" } } },
+          "then": { "required": ["postRevocationStatus", "operationCreated"] }
+        },
+        {
+          "if": { "properties": { "id": { "const": "session-switch-requires-new-generation" } } },
+          "then": {
+            "required": [
+              "beforeSessionIdDigest",
+              "afterSessionIdDigest",
+              "beforeConnectionGeneration",
+              "afterConnectionGeneration"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
