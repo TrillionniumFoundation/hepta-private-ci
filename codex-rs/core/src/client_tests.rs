@@ -56,6 +56,7 @@ use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::models::BaseInstructions;
 use codex_protocol::models::ContentItem;
 use codex_protocol::models::ContentItemKind;
+use codex_protocol::models::FunctionCallOutputPayload;
 use codex_protocol::models::InternalChatMessageMetadataPassthrough;
 use codex_protocol::models::ResponseItem;
 use codex_protocol::openai_models::ModelInfo;
@@ -133,97 +134,333 @@ fn test_model_client_with_thread_id(
     )
 }
 
-#[test]
-fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
+#[test_case::test_case("mcp__rmcp"; "legacy prefixed MCP")]
+#[test_case::test_case("rmcp"; "non prefixed MCP")]
+fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it(namespace: &str) {
     let client = test_model_client(SessionSource::Exec);
-    let chatgpt_provider =
-        ModelProviderInfo::create_openai_provider(Some(CHATGPT_CODEX_BASE_URL.to_string()))
-            .to_api_provider(Some(AuthMode::Chatgpt))
-            .expect("ChatGPT provider should build");
-    let openai_provider =
+    let mut original = vec![
+        ResponseItem::Message {
+            id: None,
+            role: "user".to_string(),
+            content: vec![
+                ContentItem::InputText {
+                    text: "hello".to_string(),
+                },
+                ContentItem::InputImage {
+                    image_url: "data:image/png;base64,aW1hZ2U=".to_string(),
+                    detail: None,
+                },
+            ],
+            phase: None,
+            internal_chat_message_metadata_passthrough: Some(
+                InternalChatMessageMetadataPassthrough {
+                    turn_id: Some("turn-1".to_string()),
+                    content_item_kinds: Some(vec![
+                        ContentItemKind("user.text".to_string()),
+                        ContentItemKind("user.image".to_string()),
+                    ]),
+                    ..Default::default()
+                },
+            ),
+        },
+        ResponseItem::FunctionCallOutput {
+            id: None,
+            call_id: Some("blocked-call".to_string()),
+            name: None,
+            namespace: None,
+            output: FunctionCallOutputPayload::from_text(
+                "Tool call blocked by PreToolUse hook".to_string(),
+            ),
+            internal_chat_message_metadata_passthrough: None,
+        },
+    ];
+    let recorder = crate::tools::ExecutedToolCallRecorder::default();
+    recorder.record_tool_call(
+        &crate::tools::router::ToolCall {
+            tool_name: codex_tools::ToolName::namespaced(namespace, "echo"),
+            call_id: "blocked-call".to_string(),
+            payload: codex_tools::ToolPayload::Function {
+                arguments: json!({ "message": "hook e2e ping" }).to_string(),
+            },
+            encrypted_function_args: None,
+        },
+        &crate::tools::context::ToolCallSource::Direct,
+        codex_protocol::openai_models::ToolMode::Direct,
+    );
+    assert!(recorder.attach_pending_to_prompt(&mut original, &mut HashMap::new()));
+    let original_wire = serde_json::to_value(&original).expect("items should serialize");
+    assert_eq!(
+        original_wire[1]["internal_chat_message_metadata_passthrough"],
+        json!({
+            "executed_tool_calls": [{ "name": format!("{namespace}__echo"), "arguments": { "message": "hook e2e ping" } }],
+        })
+    );
+    let prompt = Prompt {
+        input: original,
+        ..Default::default()
+    };
+    let responses_metadata = test_responses_metadata_for_client(
+        &client,
+        /*turn_id*/ None,
+        format!("{}:0", client.state.thread_id),
+        /*parent_thread_id*/ None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    let mut stripped_wire = original_wire.clone();
+    for item in stripped_wire.as_array_mut().expect("items array") {
+        item.as_object_mut()
+            .expect("item object")
+            .remove("internal_chat_message_metadata_passthrough");
+    }
+
+    // Only the resolved official endpoint receives local metadata, regardless of its name.
+    for (base_url, name, auth_mode, expected_wire) in [
+        (
+            "https://api.openai.com/v1",
+            "OpenAI",
+            AuthMode::ApiKey,
+            &original_wire,
+        ),
+        (
+            "https://api.openai.com/v1/",
+            "custom-openai-proxy-name",
+            AuthMode::ApiKey,
+            &original_wire,
+        ),
+        (
+            CHATGPT_CODEX_BASE_URL,
+            "OpenAI",
+            AuthMode::Chatgpt,
+            &stripped_wire,
+        ),
+        (
+            "https://proxy.example.com/v1",
+            "OpenAI",
+            AuthMode::ApiKey,
+            &stripped_wire,
+        ),
+        (
+            "http://127.0.0.1:1234/v1",
+            "OpenAI",
+            AuthMode::ApiKey,
+            &stripped_wire,
+        ),
+        (
+            "http://localhost:1234/v1",
+            "OpenAI",
+            AuthMode::ApiKey,
+            &stripped_wire,
+        ),
+    ] {
+        let mut provider = ModelProviderInfo::create_openai_provider(Some(base_url.to_string()));
+        provider.name = name.to_string();
+        let provider = provider
+            .to_api_provider(Some(auth_mode))
+            .expect("provider should build");
+        let mut request = client
+            .build_responses_request(
+                &prompt,
+                &test_model_info(),
+                /*effort*/ None,
+                codex_protocol::config_types::ReasoningSummary::None,
+                /*service_tier*/ None,
+                &responses_metadata,
+                &provider,
+            )
+            .expect("request should build");
+        client.prepare_response_items_for_request(&mut request.input, &provider);
+        assert_eq!(
+            serde_json::to_value(&request.input).expect("items should serialize"),
+            *expected_wire,
+            "{base_url}"
+        );
+        assert_eq!(
+            serde_json::to_value(&prompt.input).expect("original items should serialize"),
+            original_wire
+        );
+    }
+}
+
+#[test]
+fn responses_lite_build_preserves_base_instruction_metadata_only_for_official_provider() {
+    let client = test_model_client(SessionSource::Exec);
+    let prompt = Prompt {
+        base_instructions: BaseInstructions {
+            text: "test instructions".to_string(),
+            provenance: None,
+        },
+        ..Default::default()
+    };
+    let mut model_info = test_model_info();
+    model_info.use_responses_lite = true;
+    let responses_metadata = test_responses_metadata_for_client(
+        &client,
+        /*turn_id*/ None,
+        format!("{}:0", client.state.thread_id),
+        /*parent_thread_id*/ None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    for base_url in [
+        "https://api.openai.com/v1",
+        "http://127.0.0.1:1234/v1",
+        CHATGPT_CODEX_BASE_URL,
+    ] {
+        let provider = ModelProviderInfo::create_openai_provider(Some(base_url.to_string()))
+            .to_api_provider(Some(AuthMode::ApiKey))
+            .expect("provider should build");
+        let mut request = client
+            .build_responses_request(
+                &prompt,
+                &model_info,
+                /*effort*/ None,
+                codex_protocol::config_types::ReasoningSummary::None,
+                /*service_tier*/ None,
+                &responses_metadata,
+                &provider,
+            )
+            .expect("request should build");
+        client.prepare_response_items_for_request(&mut request.input, &provider);
+        let mut expected_instruction = json!({
+            "type": "message",
+            "role": "developer",
+            "content": [{ "type": "input_text", "text": "test instructions" }],
+        });
+        if base_url == "https://api.openai.com/v1" {
+            expected_instruction["internal_chat_message_metadata_passthrough"] = json!({
+                "content_item_kinds": ["model.base_instructions"],
+            });
+        }
+        assert_eq!(
+            serde_json::to_value(&request.input).expect("input should serialize"),
+            json!([
+                { "type": "additional_tools", "role": "developer", "tools": [] },
+                expected_instruction,
+            ])
+        );
+        assert!(prompt.input.is_empty());
+        assert_eq!(prompt.base_instructions.text, "test instructions");
+    }
+}
+
+#[test]
+fn official_provider_preserves_recorded_custom_and_nested_attempts_on_replay() {
+    let client = test_model_client(SessionSource::Exec);
+    let provider =
         ModelProviderInfo::create_openai_provider(Some("https://api.openai.com/v1".to_string()))
             .to_api_provider(Some(AuthMode::ApiKey))
-            .expect("OpenAI provider should build");
-
-    let item_with_metadata = || ResponseItem::Message {
-        id: None,
-        role: "user".to_string(),
-        content: vec![ContentItem::InputText {
-            text: "hello".to_string(),
-        }],
-        phase: None,
-        internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
-            content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
+            .expect("official provider should build");
+    let recorder = crate::tools::ExecutedToolCallRecorder::default();
+    let escaped_input = "\\".repeat(4_096);
+    let cell_id = codex_code_mode::CellId::new("failed-nested-cell".to_string());
+    recorder.register_cell(&cell_id, "nested-output");
+    let calls = [
+        (
+            "namespaced",
+            codex_tools::ToolName::namespaced("test_namespace::", "unsupported_tool"),
+            codex_tools::ToolPayload::Custom {
+                input: "\"payload\"".to_string(),
+            },
+            crate::tools::context::ToolCallSource::Direct,
+        ),
+        (
+            "escaped",
+            codex_tools::ToolName::namespaced("test_namespace::", "unsupported_tool"),
+            codex_tools::ToolPayload::Custom {
+                input: escaped_input.clone(),
+            },
+            crate::tools::context::ToolCallSource::Direct,
+        ),
+        (
+            "direct-exec",
+            codex_tools::ToolName::plain("exec"),
+            codex_tools::ToolPayload::Custom {
+                input: "\"payload\"".to_string(),
+            },
+            crate::tools::context::ToolCallSource::Direct,
+        ),
+        (
+            "nested-output",
+            codex_tools::ToolName::plain("exec_command"),
+            codex_tools::ToolPayload::Function {
+                arguments: "{}".to_string(),
+            },
+            crate::tools::context::ToolCallSource::CodeMode {
+                cell_id: "failed-nested-cell".to_string(),
+                runtime_tool_call_id: "nested-attempt".to_string(),
+            },
+        ),
+    ];
+    let mut history = Vec::new();
+    for (call_id, tool_name, payload, source) in calls {
+        recorder.record_tool_call(
+            &crate::tools::router::ToolCall {
+                tool_name,
+                call_id: call_id.to_string(),
+                payload,
+                encrypted_function_args: None,
+            },
+            &source,
+            codex_protocol::openai_models::ToolMode::Direct,
+        );
+        history.push(ResponseItem::CustomToolCallOutput {
+            id: None,
+            call_id: call_id.to_string(),
+            name: None,
+            output: FunctionCallOutputPayload::from_text("attempt failed".to_string()),
+            internal_chat_message_metadata_passthrough: None,
+        });
+    }
+    let original_history = history.clone();
+    let expected_calls = json!([
+        [{ "name": "test_namespace::__unsupported_tool", "arguments": "\"payload\"" }],
+        [{ "name": "test_namespace::__unsupported_tool", "arguments": {
+            "_codex_executed_tool_call_truncated": {
+                "original_bytes": serde_json::to_vec(&escaped_input).expect("input should serialize").len(),
+                "max_bytes": 8 * 1024,
+            },
+        } }],
+        [{ "name": "exec", "arguments": "\"payload\"" }],
+        [{ "name": "exec_command", "arguments": {} }],
+    ]);
+    let responses_metadata = test_responses_metadata_for_client(
+        &client,
+        /*turn_id*/ None,
+        format!("{}:0", client.state.thread_id),
+        /*parent_thread_id*/ None,
+        TestCodexResponsesRequestKind::Turn,
+    );
+    // Rebuild prompt copies with fresh caches to verify retained-call replay.
+    for _ in 0..2 {
+        let mut prompt = Prompt {
+            input: history.clone(),
             ..Default::default()
-        }),
-    };
-
-    let mut chatgpt_item = item_with_metadata();
-    client.prepare_response_items_for_request(
-        std::slice::from_mut(&mut chatgpt_item),
-        &chatgpt_provider,
-    );
-    let chatgpt_wire = serde_json::to_value(&chatgpt_item).expect("item should serialize");
-    assert!(
-        chatgpt_wire
-            .get("internal_chat_message_metadata_passthrough")
-            .is_none()
-    );
-
-    let mut openai_item = item_with_metadata();
-    client.prepare_response_items_for_request(
-        std::slice::from_mut(&mut openai_item),
-        &openai_provider,
-    );
-    let openai_wire = serde_json::to_value(&openai_item).expect("item should serialize");
-    assert_eq!(
-        openai_wire
-            .get("internal_chat_message_metadata_passthrough")
-            .and_then(|metadata| metadata.get("content_item_kinds"))
-            .and_then(|kinds| kinds.as_array())
-            .map(Vec::len),
-        Some(1)
-    );
-
-    // The wire policy follows the resolved endpoint, not the friendly name.
-    // A custom provider name using the first-party OpenAI URL keeps metadata.
-    let mut custom_name_provider =
-        ModelProviderInfo::create_openai_provider(Some("https://api.openai.com/v1/".to_string()));
-    custom_name_provider.name = "custom-openai-proxy-name".to_string();
-    let custom_name_provider = custom_name_provider
-        .to_api_provider(Some(AuthMode::ApiKey))
-        .expect("custom OpenAI provider should build");
-    let mut custom_name_item = item_with_metadata();
-    client.prepare_response_items_for_request(
-        std::slice::from_mut(&mut custom_name_item),
-        &custom_name_provider,
-    );
-    assert!(
-        serde_json::to_value(&custom_name_item)
-            .expect("item should serialize")
-            .get("internal_chat_message_metadata_passthrough")
-            .is_some()
-    );
-
-    // Conversely, an `OpenAI`-named provider on a non-standard endpoint is
-    // treated conservatively and does not receive local-only metadata.
-    let mut nonstandard_provider =
-        ModelProviderInfo::create_openai_provider(Some("https://proxy.example.com/v1".to_string()));
-    nonstandard_provider.name = "OpenAI".to_string();
-    let nonstandard_provider = nonstandard_provider
-        .to_api_provider(Some(AuthMode::ApiKey))
-        .expect("non-standard provider should build");
-    let mut nonstandard_item = item_with_metadata();
-    client.prepare_response_items_for_request(
-        std::slice::from_mut(&mut nonstandard_item),
-        &nonstandard_provider,
-    );
-    assert!(
-        serde_json::to_value(&nonstandard_item)
-            .expect("item should serialize")
-            .get("internal_chat_message_metadata_passthrough")
-            .is_none()
-    );
+        };
+        assert!(recorder.attach_pending_to_prompt(&mut prompt.input, &mut HashMap::new()));
+        let original_prompt = prompt.input.clone();
+        let mut request = client
+            .build_responses_request(
+                &prompt,
+                &test_model_info(),
+                /*effort*/ None,
+                codex_protocol::config_types::ReasoningSummary::None,
+                /*service_tier*/ None,
+                &responses_metadata,
+                &provider,
+            )
+            .expect("request should build");
+        client.prepare_response_items_for_request(&mut request.input, &provider);
+        let wire = serde_json::to_value(&request.input).expect("input should serialize");
+        let recorded_calls = wire
+            .as_array()
+            .expect("input array")
+            .iter()
+            .map(|item| &item["internal_chat_message_metadata_passthrough"]["executed_tool_calls"])
+            .collect::<Vec<_>>();
+        assert_eq!(json!(recorded_calls), expected_calls);
+        assert_eq!(request.input, original_prompt);
+        assert_eq!(prompt.input, original_prompt);
+        assert_eq!(history, original_history);
+    }
 }
 
 struct TransportSelectionEphemeralContributor {

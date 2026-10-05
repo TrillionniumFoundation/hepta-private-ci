@@ -957,14 +957,20 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
     let requests = responses.requests();
     assert_eq!(requests.len(), 2);
     let output_item = requests[1].function_call_output(call_id);
-    assert_eq!(
-        output_item["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        json!([{
-            "name": format!("{mcp_namespace}__echo"),
-            "arguments": { "message": RMCP_ECHO_MESSAGE },
-        }]),
-        "a blocked MCP request must still retain the original model-attempted call",
+    assert_eq!(output_item["call_id"], call_id);
+    assert!(
+        output_item
+            .get("internal_chat_message_metadata_passthrough")
+            .is_none()
     );
+    let attempted_calls = requests[1].inputs_of_type("function_call");
+    let attempted_call = attempted_calls
+        .iter()
+        .find(|item| item["call_id"] == call_id)
+        .expect("blocked MCP call should remain in model input");
+    assert_eq!(attempted_call["name"], "echo");
+    assert_eq!(attempted_call["namespace"], mcp_namespace);
+    assert_eq!(attempted_call["arguments"], arguments);
     let output = output_item
         .get("output")
         .and_then(Value::as_str)

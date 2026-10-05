@@ -133,9 +133,6 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
                 "type": "input_text",
                 "text": "test instructions",
             }],
-            "internal_chat_message_metadata_passthrough": {
-                "content_item_kinds": ["model.base_instructions"],
-            },
         })
     );
 
@@ -271,7 +268,23 @@ async fn responses_lite_prepares_images() -> Result<()> {
     .await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.image", "images.preparation_error"]));
+    assert!(request.input().iter().all(|item| {
+        item.get("internal_chat_message_metadata_passthrough")
+            .is_none()
+    }));
+    let rollout_items = test.rollout_response_items().await?;
+    let image_item = rollout_items
+        .iter()
+        .find(|item| {
+            item["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
+                == serde_json::json!(["user.image", "images.preparation_error"])
+        })
+        .context("prepared image classifications should remain in durable history")?;
+    assert_eq!(image_item["content"][0]["image_url"], image_url);
+    assert_eq!(
+        image_item["content"][1]["text"],
+        "image content omitted because remote image URLs are not supported"
+    );
     let user_content = request
         .input()
         .into_iter()
