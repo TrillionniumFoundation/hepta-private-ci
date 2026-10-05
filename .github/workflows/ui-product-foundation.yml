@@ -76,7 +76,9 @@ jobs:
           echo "PR_SOURCE_SHA=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_ENV"
           grep -F 'channel = "1.96.0"' codex-rs/rust-toolchain.toml
       - name: Verify immutable merge checkout regression
-        run: python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
+        run: |
+          python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
+          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_build_product_preview.py -v
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
         with:
           node-version: 22
@@ -95,12 +97,12 @@ jobs:
       - id: official-tools-cache
         uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
-          path: .tmp/ui-official-tools-robrix
-          key: ui-official-tools-v2-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
+          path: ${{ runner.temp }}/ui-official-tools-robrix
+          key: ui-official-tools-v3-runner-temp-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
       - name: Install missing pinned official tools
         if: steps.official-tools-cache.outputs.cache-hit != 'true'
         env:
-          TOOL_ROOT: ${{ github.workspace }}/.tmp/ui-official-tools-robrix
+          TOOL_ROOT: ${{ runner.temp }}/ui-official-tools-robrix
           CARGO_BUILD_JOBS: 2
         run: |
           set -euo pipefail
@@ -108,7 +110,7 @@ jobs:
           python3 apps/hepta-control-ui/tools/install-official-nextest.py "$TOOL_ROOT"
       - name: Verify installed tool versions on every cache hit or miss
         env:
-          TOOL_ROOT: ${{ github.workspace }}/.tmp/ui-official-tools-robrix
+          TOOL_ROOT: ${{ runner.temp }}/ui-official-tools-robrix
         run: |
           set -euo pipefail
           test -x "$TOOL_ROOT/bin/just"
@@ -123,8 +125,8 @@ jobs:
       - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
         if: steps.official-tools-cache.outputs.cache-hit != 'true'
         with:
-          path: .tmp/ui-official-tools-robrix
-          key: ui-official-tools-v2-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
+          path: ${{ runner.temp }}/ui-official-tools-robrix
+          key: ui-official-tools-v3-runner-temp-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
       - name: Verify shared Rust presentation and renderer
         shell: bash
         run: |

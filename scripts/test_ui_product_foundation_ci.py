@@ -170,6 +170,11 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
                     any(matches(path, pattern) for pattern in patterns), path
                 )
 
+    def test_official_tools_do_not_dirty_the_source_checkout(self):
+        self.assertNotIn(".tmp/ui-official-tools-robrix", self.workflow)
+        self.assertIn("${{ runner.temp }}/ui-official-tools-robrix", self.workflow)
+        self.assertIn("ui-official-tools-v3-runner-temp-", self.workflow)
+
     def test_gateway_changes_trigger_source_and_merge_evidence(self):
         for path in (
             "codex-rs/hepta-native-gateway/**",

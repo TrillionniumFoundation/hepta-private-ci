@@ -11,12 +11,18 @@ ROOT = Path(__file__).resolve().parents[3]
 
 
 def git(*args):
-    return subprocess.check_output(["git", "--no-replace-objects", *args], cwd=ROOT, text=True).strip()
+    return subprocess.check_output(
+        ["git", "--no-replace-objects", *args], cwd=ROOT, text=True
+    ).strip()
 
 
 def identity():
-    if git("status", "--porcelain", "--untracked-files=normal"):
-        raise ValueError("Gateway preview evidence requires a committed clean source")
+    status = git("status", "--porcelain", "--untracked-files=normal")
+    if status:
+        raise ValueError(
+            "Gateway preview evidence requires a committed clean source; dirty paths:\n"
+            + status[:4096]
+        )
     paths = git(
         "ls-files",
         "--",
