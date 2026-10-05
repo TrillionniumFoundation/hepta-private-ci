@@ -1,5 +1,7 @@
 //! Read-only bounded round-robin discovery of unknown queue admissions.
 
+use super::recovery_scan::RecoveryScanCursor;
+use super::recovery_scan::RecoveryScanTable;
 use super::*;
 
 /// Process-local scheduling position for one live store instance and its clones.
@@ -9,18 +11,14 @@ use super::*;
 /// but cannot change its durable uncertainty or authorize another admission.
 #[derive(Debug)]
 pub struct AutomationUncertainDispatchScan {
-    store_identity: Arc<()>,
-    after: i64,
-    through: Option<i64>,
+    cursor: RecoveryScanCursor,
 }
 
 impl AutomationStore {
     /// Start a bounded unknown-dispatch scan. Keep one cursor per observer.
     pub fn uncertain_dispatch_scan(&self) -> AutomationUncertainDispatchScan {
         AutomationUncertainDispatchScan {
-            store_identity: Arc::clone(&self.uncertainty_scan_identity),
-            after: 0,
-            through: None,
+            cursor: RecoveryScanCursor::for_store(self),
         }
     }
 
@@ -35,34 +33,15 @@ impl AutomationStore {
         &self,
         scan: &mut AutomationUncertainDispatchScan,
     ) -> Result<Option<AutomationDispatchUncertainty>, AutomationError> {
-        if !Arc::ptr_eq(&scan.store_identity, &self.uncertainty_scan_identity) {
-            return Err(AutomationError::AccessDenied);
-        }
+        scan.cursor.verify_store(self)?;
         let mut tx = self.pool.begin().await.map_err(unavailable)?;
-        let through = match scan.through {
-            Some(through) => Some(through),
-            None => {
-                let first = sqlx::query_scalar::<_, i64>(
-                    "SELECT rowid FROM automation_dispatch_outcomes ORDER BY rowid LIMIT 1",
-                )
-                .fetch_optional(&mut *tx)
-                .await
-                .map_err(unavailable)?;
-                if first.is_some_and(|rowid| rowid <= 0) {
-                    return Err(AutomationError::Corrupt);
-                }
-                sqlx::query_scalar::<_, i64>(
-                    "SELECT rowid FROM automation_dispatch_outcomes ORDER BY rowid DESC LIMIT 1",
-                )
-                .fetch_optional(&mut *tx)
-                .await
-                .map_err(unavailable)?
-            }
-        };
+        let through = scan
+            .cursor
+            .high_water(&mut tx, RecoveryScanTable::DispatchOutcomes)
+            .await?;
         let Some(through) = through else {
             tx.commit().await.map_err(unavailable)?;
-            scan.after = 0;
-            scan.through = None;
+            scan.cursor.reset();
             return Ok(None);
         };
         let rows = sqlx::query(
@@ -77,12 +56,12 @@ impl AutomationStore {
              LEFT JOIN automation_tasks t ON t.task_id = o.task_id
              ORDER BY o.scan_rowid",
         )
-        .bind(scan.after)
+        .bind(scan.cursor.after)
         .bind(through)
         .fetch_all(&mut *tx)
         .await
         .map_err(unavailable)?;
-        let mut last_scanned = scan.after;
+        let mut last_scanned = scan.cursor.after;
         let mut next = None;
         for row in &rows {
             let rowid: i64 = row.try_get("scan_rowid").map_err(unavailable)?;
@@ -109,12 +88,10 @@ impl AutomationStore {
         }
         tx.commit().await.map_err(unavailable)?;
         // No local cursor mutation precedes successful snapshot completion.
-        if rows.is_empty() || last_scanned == through {
-            scan.after = 0;
-            scan.through = None;
+        if rows.is_empty() {
+            scan.cursor.reset();
         } else {
-            scan.after = last_scanned;
-            scan.through = Some(through);
+            scan.cursor.advance(last_scanned, through);
         }
         Ok(next)
     }

@@ -10,7 +10,72 @@ import sys
 import tempfile
 import unittest
 
+from hepta_workflow_commands import load_workflow, workflow_commands
+
 RUNNER = Path(__file__).with_name("hepta_ci_exec.py").resolve()
+
+
+class TaskflowObservationWorkflowTests(unittest.TestCase):
+    def test_taskflow_observation_uses_existing_exact_candidate_effects_lane(self):
+        text = (
+            RUNNER.parents[1] / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text()
+        workflow = load_workflow(text)
+        steps = workflow["jobs"]["qualification"]["steps"]
+        step = next(
+            item
+            for item in steps
+            if item.get("name") == "Durable operation and external-effect recovery"
+        )
+        self.assertEqual(
+            step["if"],
+            "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'",
+        )
+        commands = workflow_commands(
+            "run: |\n" + "\n".join("  " + line for line in step["run"].splitlines())
+        )
+        cases = (
+            (
+                "taskflow-owned-client",
+                "3",
+                "codex-app-server-client",
+                "test(remote::shutdown_lifetime_tests)",
+            ),
+            (
+                "taskflow-frontiers",
+                "11",
+                "codex-hepta-automation",
+                "test(pending_occurrence_scan) | test(uncertain_dispatch_scan)",
+            ),
+            (
+                "taskflow-observation",
+                "14",
+                "codex-hepta-agentd",
+                "test(automation_recovery::observation_policy_tests) | test(automation::service_tests::observation_stall_tests)",
+            ),
+        )
+        for record, minimum, package, selector in cases:
+            with self.subTest(record=record):
+                expected = [
+                    "python3",
+                    "scripts/hepta_ci_exec.py",
+                    "--output",
+                    f"$RUNNER_TEMP/hepta-command-records/{record}.json",
+                    "--minimum-tests",
+                    minimum,
+                    "--",
+                    "just",
+                    "test",
+                    "--locked",
+                    "-p",
+                    package,
+                    "--lib",
+                    "-E",
+                    selector,
+                ]
+                self.assertEqual(commands.count(expected), 1)
+        self.assertNotIn("continue-on-error", step)
+        self.assertEqual(workflow["jobs"]["required"]["needs"], "qualification")
 
 
 class GitExecutionFixture(unittest.TestCase):

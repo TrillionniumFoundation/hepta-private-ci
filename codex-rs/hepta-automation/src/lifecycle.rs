@@ -6,6 +6,7 @@
 //! revision and deterministic occurrence identity, then keeps queue admission
 //! distinct from terminal execution.
 
+use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
@@ -1019,30 +1020,35 @@ impl AutomationStore {
         .fetch_all(self.taskflow_pool())
         .await
         .map_err(unavailable)?;
-        let mut work = Vec::with_capacity(rows.len());
-        for row in rows {
-            let occurrence = occurrence_from_row(&row, self.taskflow_owner_agent_id().as_str())?;
-            let thread_id: String = row
-                .try_get("thread_id")
-                .map_err(|_| AutomationError::Corrupt)?;
-            let prompt: String = row
-                .try_get("prompt")
-                .map_err(|_| AutomationError::Corrupt)?;
-            work.push(AutomationOccurrenceWork {
-                admission: AutomationAdmission {
-                    agent_id: self.taskflow_owner_agent_id().clone(),
-                    task_id: occurrence.task_id,
-                    occurrence: occurrence.occurrence,
-                    scheduled_for_ms: occurrence.scheduled_for_ms,
-                    thread_id,
-                    prompt,
-                    client_user_message_id: occurrence.client_user_message_id.clone(),
-                },
-                occurrence,
-            });
-        }
-        Ok(work)
+        rows.iter()
+            .map(|row| occurrence_work_from_row(row, self.taskflow_owner_agent_id()))
+            .collect()
     }
+}
+
+pub(crate) fn occurrence_work_from_row(
+    row: &sqlx::sqlite::SqliteRow,
+    owner: &AgentId,
+) -> Result<AutomationOccurrenceWork, AutomationError> {
+    let occurrence = occurrence_from_row(row, owner.as_str())?;
+    let thread_id = row
+        .try_get("thread_id")
+        .map_err(|_| AutomationError::Corrupt)?;
+    let prompt = row
+        .try_get("prompt")
+        .map_err(|_| AutomationError::Corrupt)?;
+    Ok(AutomationOccurrenceWork {
+        admission: AutomationAdmission {
+            agent_id: owner.clone(),
+            task_id: occurrence.task_id,
+            occurrence: occurrence.occurrence,
+            scheduled_for_ms: occurrence.scheduled_for_ms,
+            thread_id,
+            prompt,
+            client_user_message_id: occurrence.client_user_message_id.clone(),
+        },
+        occurrence,
+    })
 }
 
 pub fn deterministic_occurrence_id(

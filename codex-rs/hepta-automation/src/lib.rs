@@ -87,6 +87,7 @@ pub use schedule_v2::AutomationTimezoneTransitionV1;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
+pub use store::AutomationPendingOccurrenceScan;
 pub use store::AutomationStore;
 pub use store::AutomationUncertainDispatchScan;
 pub use taskflow::TASKFLOW_COMPOSED_CALLER;
