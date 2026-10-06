@@ -1,4 +1,4 @@
-name: Rust UI bounded focus trace diagnostic
+name: Rust UI default keyboard verification
 'on':
   push:
     branches:
@@ -22,8 +22,8 @@ jobs:
       HEPTA_CI_LANE: source-head
       SOURCE_SHA: ${{ github.sha }}
       TESTED_SHA: ${{ github.sha }}
-      REVIEWED_WORKFLOW_SHA256: 7d193a75f4bab20ed0956af55b198df548e489bfa092d48238429293a174a527
-      HEPTA_KEYBOARD_FOCUS_TRACE: '1'
+      REVIEWED_WORKFLOW_SHA256: 6b4f3479dc85f8ba01515efb8ec9c56eb531831f6f3732d93693c535c8aa0a54
+      HEPTA_KEYBOARD_FOCUS_TRACE: '0'
     steps:
     - name: Anchor shared execution deadline before checkout
       shell: bash
@@ -47,9 +47,9 @@ jobs:
         cat > "$DIAGNOSTIC_ROOT/source-guard.py" <<'PYGUARD'
         import hashlib, json, os, re, subprocess, sys
         from pathlib import Path
-        EXPECTED_PARENT = '2e4501639b9014bc35580bff2abd5a7e8b77326a'
+        EXPECTED_PARENT = '2b3bcdc0cfb2aab0ea87a6deca0deca2ad91167b'
         WORKFLOW = '.github/workflows/rust-ui-keyboard-diagnostic.yml'
-        EXPECTED_BLOBS = {'apps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus.rs': '311843f958c2dd96608c6a8aff6873b1e7a60838'}
+        EXPECTED_BLOBS = {'apps/hepta-control-ui/tools/summarize-keyboard-evidence.py': '33c68ad8dbce8af095c18663ead29380a54f294d'}
         # Reviewed-source consistency only; this self-check is not a security signature.
         git = lambda *args: subprocess.check_output(['git', '--no-replace-objects', *args])
         source = os.environ['SOURCE_SHA']
@@ -63,7 +63,7 @@ jobs:
         tree = trees[0]
         paths = sorted([WORKFLOW, *EXPECTED_BLOBS])
         changes = git('diff-tree', '--no-commit-id', '--name-status', '-r', '--no-renames', EXPECTED_PARENT, commit).decode().splitlines()
-        EXPECTED_CHANGES = ['M\t.github/workflows/rust-ui-keyboard-diagnostic.yml', 'M\tapps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus.rs']
+        EXPECTED_CHANGES = ['M\t.github/workflows/rust-ui-keyboard-diagnostic.yml', 'M\tapps/hepta-control-ui/tools/summarize-keyboard-evidence.py']
         assert sorted(changes) == EXPECTED_CHANGES, 'Expected exact two reviewed paths and statuses'
         entries = {}
         for item in git('ls-tree', '-r', '-z', commit, '--', *paths).split(b'\0'):
@@ -80,7 +80,7 @@ jobs:
         assert matches == 1, 'Expected exactly one workflow fingerprint field'
         assert hashlib.sha256(normalized).hexdigest() == os.environ['REVIEWED_WORKFLOW_SHA256'], 'Other reviewed workflow bytes changed'
         assert git('status', '--porcelain', '--untracked-files=normal') == b'', 'Source checkout changed'
-        result = {'caseScope': 'three unchanged compact keyboard contracts on limited production fix; default-off focus trace; AX observation only', 'sourceSha': commit, 'sourceTree': tree, 'parents': parents, 'blobs': entries, 'workflowNormalizedSha256': os.environ['REVIEWED_WORKFLOW_SHA256'], 'dirty': False}
+        result = {'caseScope': 'three unchanged compact keyboard contracts on unchanged production Rust; default artifact with Rust traces forbidden; AX observation only', 'sourceSha': commit, 'sourceTree': tree, 'parents': parents, 'blobs': entries, 'workflowNormalizedSha256': os.environ['REVIEWED_WORKFLOW_SHA256'], 'dirty': False}
         output = Path(sys.argv[1])
         if len(sys.argv) == 3:
             before = json.loads(Path(sys.argv[2]).read_text())
@@ -123,13 +123,13 @@ jobs:
         budget=$(( remaining < 300 ? remaining : 300 ))
         python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/node-dependencies.json" --timeout-seconds "$budget" -- npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
     - id: canonical_build
-      name: Build explicitly tagged keyboard trace artifact
+      name: Build default artifact without focus instrumentation
       run: |
         set -euo pipefail
         remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
         test "$remaining" -ge 30
         budget=$(( remaining < 1200 ? remaining : 1200 ))
-        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/canonical-build.json" --timeout-seconds "$budget" -- npm run build --prefix apps/hepta-control-ui -- --keyboard-focus-trace
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/canonical-build.json" --timeout-seconds "$budget" -- npm run build --prefix apps/hepta-control-ui
     - name: Install Chromium and OCR inputs
       run: |
         set -euo pipefail
@@ -157,7 +157,7 @@ jobs:
         remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
         test "$remaining" -ge 30
         budget=$(( remaining < 120 ? remaining : 120 ))
-        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/collect-keyboard-outcomes.json" --timeout-seconds "$budget" -- python3 apps/hepta-control-ui/tools/summarize-keyboard-evidence.py apps/hepta-control-ui/test-results "$SOURCE_SHA" --output "$DIAGNOSTIC_ROOT/keyboard-summary.json"
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/collect-keyboard-outcomes.json" --timeout-seconds "$budget" -- python3 apps/hepta-control-ui/tools/summarize-keyboard-evidence.py apps/hepta-control-ui/test-results "$SOURCE_SHA" --trace-mode forbidden --output "$DIAGNOSTIC_ROOT/keyboard-summary.json"
       if: always() && steps.canonical_build.outcome == 'success'
     - id: bounded_pixels
       name: Bound raw browser artifact size without changing evidence
@@ -204,13 +204,13 @@ jobs:
         import hashlib, json, os
         from pathlib import Path
         root = Path(os.environ['DIAGNOSTIC_ROOT'])
-        manifest = Path('apps/hepta-control-ui/dist-robrix-keyboard-trace/build-manifest.json')
+        manifest = Path('apps/hepta-control-ui/dist/build-manifest.json')
         build = root / 'canonical-build.json'
         if build.exists() and json.loads(build.read_text()).get('status') == 'passed':
             assert manifest.is_file(), 'Successful packaging did not retain its manifest'
             data = manifest.read_bytes()
             decoded = json.loads(data)
-            assert decoded.get('diagnostic') == {'kind': 'keyboard-focus-trace', 'qualification': False, 'buildFeature': 'hepta-robrix-ui/keyboard-focus-trace'} and decoded['fixtures'] is False
+            assert 'diagnostic' not in decoded and decoded['fixtures'] is False and decoded['browserRuntime'] == 'rust-makepad-wasm', 'Default non-instrumented canonical artifact required'
             (root / 'build-manifest.json').write_bytes(data)
             inventory = [{'path': str(p.relative_to(manifest.parent)), 'bytes': p.stat().st_size, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(manifest.parent.rglob('*')) if p.is_file()]
             (root / 'packaged-files.json').write_text(json.dumps({'manifestSha256': hashlib.sha256(data).hexdigest(), 'files': inventory, 'qualification': False}, indent=2) + '\n')

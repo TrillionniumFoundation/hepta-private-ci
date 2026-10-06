@@ -7,7 +7,9 @@ import re
 from pathlib import Path
 
 
-def collect(root, source):
+def collect(root, source, trace_mode="required"):
+    assert trace_mode in ("required", "forbidden"), "Explicit trace mode required"
+    tracing = trace_mode == "required"
     report = json.loads((root / 'robrix-keyboard-results.json').read_text())
     stats = report['stats']
     assert stats['expected'] + stats['unexpected'] == 3 and stats['skipped'] == stats['flaky'] == 0
@@ -35,10 +37,14 @@ def collect(root, source):
         font_pass = bool(requests) and requests == finished and not data['pendingFonts'] and not any(x['event'] == 'failed' or x['event'] == 'response' and x['status'] != 200 for x in data['fonts'])
         if data['complete']:
             assert font_pass and not data['errors']
-        trace = data.get('rustFocusTrace', [])
-        assert data.get('focusTraceExpected') is True and 0 < len(trace) <= 64
-        assert all(isinstance(line, str) and len(line) <= 16384 and '\n' not in line and '\r' not in line and re.fullmatch(r'HEPTA_KEYBOARD_FOCUS phase=(before|after)-dispatch kind=(down|up) key=(Tab|Space|ReturnKey|Escape) shift=(true|false) focus=.+ valid=(true|false) candidates=\[.*\] public_nav_root=(None|Some\(.+\)) stops_truncated=(true|false) stops=\[.*\]', line) for line in trace), 'Invalid or unbounded Rust focus trace'
-        subjects.append({'diagnosticInstrumented': True, 'rustFocusTrace': trace, 'scenario': data['scenario'], 'complete': data['complete'], 'fontHealth': font_pass,
+        trace = data['rustFocusTrace']
+        assert data.get('focusTraceExpected') is tracing, 'Browser trace mode differs from requested artifact mode'
+        if tracing:
+            assert 0 < len(trace) <= 64
+            assert all(isinstance(line, str) and len(line) <= 16384 and '\n' not in line and '\r' not in line and re.fullmatch(r'HEPTA_KEYBOARD_FOCUS phase=(before|after)-dispatch kind=(down|up) key=(Tab|Space|ReturnKey|Escape) shift=(true|false) focus=.+ valid=(true|false) candidates=\[.*\] public_nav_root=(None|Some\(.+\)) stops_truncated=(true|false) stops=\[.*\]', line) for line in trace), 'Invalid or unbounded Rust focus trace'
+        else:
+            assert trace == [], 'Default artifact must not emit Rust focus traces'
+        subjects.append({'diagnosticInstrumented': tracing, 'rustFocusTrace': trace, 'scenario': data['scenario'], 'complete': data['complete'], 'fontHealth': font_pass,
                          'captures': len(data['captures']), 'errors': data['errors'], 'axObservations': data['axObservations']})
     expected = {'cold-keyboard-entry', 'draft-theme-round-trip', 'escape-restores-opener'}
     assert len(subjects) == 3 and {x['scenario'] for x in subjects} == expected
@@ -46,7 +52,7 @@ def collect(root, source):
     assert complete_count == stats['expected'], 'Final authoritative result differs from completion receipt'
     return {'sourceSha': source, 'keyboardContractsPassed': complete_count == 3,
             'completeCount': complete_count, 'subjects': subjects, 'screenReaderQualified': False,
-            'physicalImeQualified': False, 'diagnosticInstrumented': True, 'scope': '3 compact640px keyboard contracts; AX role/name inventory is observation only'}
+            'physicalImeQualified': False, 'diagnosticInstrumented': tracing, 'traceMode': trace_mode, 'scope': '3 compact640px keyboard contracts; AX role/name inventory is observation only'}
 
 
 if __name__ == '__main__':
@@ -54,8 +60,9 @@ if __name__ == '__main__':
     p.add_argument('root', type=Path)
     p.add_argument('source')
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--trace-mode', choices=('required', 'forbidden'), required=True)
     args = p.parse_args()
-    summary = collect(args.root, args.source)
+    summary = collect(args.root, args.source, args.trace_mode)
     args.output.write_text(json.dumps(summary, indent=2) + '\n')
     print(json.dumps(summary, indent=2))
     # The browser step owns failure status. Collection success is not acceptance.
