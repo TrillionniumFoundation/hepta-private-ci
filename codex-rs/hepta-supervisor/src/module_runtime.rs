@@ -29,6 +29,9 @@ use crate::WriterHandoffCheckpointV1;
 // proposal consumes no module candidate slots but still occupies host memory.
 const MAX_PENDING_TOPOLOGIES: usize = 128;
 
+#[path = "module_runtime_withdrawal.rs"]
+mod withdrawal;
+
 #[derive(Debug)]
 pub struct RuntimeModuleSupervisorV1 {
     registry: RuntimeModuleRegistryV1,
@@ -71,6 +74,7 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     NoChangeTopologyCandidate,
     DuplicateTopologyCandidate,
     UnknownTopologyCandidate,
+    PendingTopologyMember(Digest32),
     PendingTopologyCapacity,
     MissingTopologyAbi(StableId),
     UnexpectedTopologyAbi(StableId),
@@ -1081,3 +1085,7 @@ mod bootstrap_tests;
 #[cfg(test)]
 #[path = "module_runtime_initialization_tests.rs"]
 mod initialization_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_withdrawal_tests.rs"]
+mod withdrawal_tests;

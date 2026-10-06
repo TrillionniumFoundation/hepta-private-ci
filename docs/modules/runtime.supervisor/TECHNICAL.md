@@ -231,6 +231,26 @@ The posture is least authority, bounded input, typed contracts, digest binding a
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
+### Withdrawal of uncommitted module candidates
+
+`RuntimeModuleSupervisorV1::discard_selected_candidate` withdraws an individually
+selected Shadow or Canary candidate, releasing its pending slot and in-memory
+selection reference without changing the serving predecessor. Active, draining
+and quarantined writer reservations are not eligible. A member of an admitted
+topology returns `PendingTopologyMember`; the host must withdraw that whole
+proposal through `discard_topology_candidate`, including its staged promotions.
+Membership is generation-bound: sharing an artifact alone does not couple
+otherwise distinct candidates.
+
+Withdrawal retains the greatest-admitted generation fence through payload
+compaction and checkpoint encoding, so retry uses a fresh generation rather than
+replaying withdrawn work. The pending and lifetime-identity limits are unchanged.
+Unknown, unselected or already terminal inputs reject without changing the
+working set; repeating withdrawal is not a process-termination acknowledgement.
+The host must separately cancel isolated candidate workers and reconcile effects.
+This API does not persist the registry, establish current-root custody, revoke
+authority, migrate owner state or qualify an installed deployment.
+
 ## 10. Performance, capacity and hot-path policy
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs) and the linked implementation components.

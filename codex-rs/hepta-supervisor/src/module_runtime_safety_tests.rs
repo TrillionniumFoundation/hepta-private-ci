@@ -841,3 +841,96 @@ fn topology_can_rewire_a_consumer_and_retire_its_old_provider_atomically() {
     assert_eq!(result.active[0].generation, generation(2));
     assert!(result.active[0].dependencies.is_empty());
 }
+
+#[test]
+fn single_member_withdrawal_cannot_split_a_pending_topology() {
+    for lifecycle in [
+        RuntimeModuleLifecycleV1::Shadow,
+        RuntimeModuleLifecycleV1::Canary,
+    ] {
+        let mut supervisor = RuntimeModuleSupervisorV1::new();
+        let candidate_digest = pending_extension(&mut supervisor);
+        if lifecycle == RuntimeModuleLifecycleV1::Canary {
+            supervisor.enter_topology_canary(candidate_digest).unwrap();
+            supervisor
+                .promote_stateless(&id("extension"), generation(2), digest("canary"))
+                .unwrap();
+        }
+        let before = (
+            supervisor.registry.checkpoint(),
+            supervisor.selections.clone(),
+            supervisor.pending_topologies.clone(),
+            supervisor.pending_promotions.clone(),
+            supervisor.retirement_ready.clone(),
+        );
+        assert_eq!(
+            supervisor.discard_selected_candidate(&id("extension"), generation(2)),
+            Err(RuntimeModuleSupervisorErrorV1::PendingTopologyMember(
+                candidate_digest
+            ))
+        );
+        assert_eq!(
+            (
+                supervisor.registry.checkpoint(),
+                supervisor.selections.clone(),
+                supervisor.pending_topologies.clone(),
+                supervisor.pending_promotions.clone(),
+                supervisor.retirement_ready.clone()
+            ),
+            before
+        );
+        supervisor
+            .discard_topology_candidate(candidate_digest)
+            .expect("group withdrawal remains available");
+        assert!(supervisor.pending_promotions.is_empty());
+        assert!(supervisor.pending_topologies.is_empty());
+        assert!(supervisor.selections.is_empty());
+    }
+}
+
+#[test]
+fn withdrawing_a_later_single_candidate_preserves_the_earlier_topology_member() {
+    let mut supervisor = RuntimeModuleSupervisorV1::new();
+    let candidate_digest = pending_extension(&mut supervisor);
+    supervisor
+        .register_shadow_for_test(
+            stateless_abi(
+                "extension",
+                3,
+                "later-extension",
+                candidate_digest,
+                None,
+                &[],
+            ),
+            digest("later-selection"),
+        )
+        .unwrap();
+    let before = supervisor.pending_topologies.clone();
+    let earlier = supervisor
+        .registry
+        .record(&id("extension"), generation(2))
+        .cloned();
+    supervisor
+        .discard_selected_candidate(&id("extension"), generation(3))
+        .expect("same artifact is not same member generation");
+    assert_eq!(supervisor.pending_topologies, before);
+    assert_eq!(
+        supervisor.registry.record(&id("extension"), generation(2)),
+        earlier.as_ref()
+    );
+    assert_eq!(supervisor.selections.len(), 1);
+    supervisor.enter_topology_canary(candidate_digest).unwrap();
+    supervisor
+        .promote_stateless(&id("extension"), generation(2), digest("canary"))
+        .unwrap();
+    let selected = supervisor
+        .finalize_topology_candidate(candidate_digest)
+        .expect("earlier proposal still finalizes");
+    assert_eq!(selected.active[0].generation, generation(2));
+    assert_eq!(
+        supervisor
+            .registry
+            .greatest_admitted_generation(&id("extension")),
+        Some(generation(3))
+    );
+}
