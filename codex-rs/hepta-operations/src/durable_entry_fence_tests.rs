@@ -113,48 +113,73 @@ async fn adapter_entry_excludes_concurrent_recovery_but_allows_wal_reads() -> Te
     let store = DurableOperationStore::open(&directory.path().join("source.sqlite3")).await?;
     let (authorized, _authority_directory) = authorize(&store, /*nonce*/ 73).await?;
     let claim = authorized.claim().clone();
-    let competitor = DurableOperationStore::open(store.path()).await?;
-    // Keep the normal SQLite owner shim. Preconfigure every pool connection so
-    // the competing recovery observes contention immediately and deterministically.
-    let mut connections = Vec::new();
-    for _ in 0..competitor.pool.options().get_max_connections() {
-        let mut connection = competitor.pool.acquire().await?;
-        sqlx::query("PRAGMA busy_timeout = 0")
-            .execute(&mut *connection)
-            .await?;
-        connections.push(connection);
-    }
-    drop(connections);
+    let competitor_path = store.path().to_path_buf();
+    let competitor_claim = claim.clone();
+    let (ready_tx, ready_rx) = tokio::sync::oneshot::channel();
+    let (enter_tx, enter_rx) = tokio::sync::oneshot::channel();
+    let (release_tx, release_rx) = tokio::sync::oneshot::channel();
+    let (observed_tx, observed_rx) = std::sync::mpsc::sync_channel(1);
+    let competitor_thread = std::thread::spawn(move || {
+        let runtime = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .expect("competitor runtime");
+        runtime.block_on(async {
+            // Create, use and close the pool on one live runtime. Returning a
+            // SQLx connection can schedule runtime work; the effect callback
+            // must not block the runtime that owns those return tasks.
+            let competitor = DurableOperationStore::open(&competitor_path)
+                .await
+                .expect("competitor store");
+            let mut connections = Vec::new();
+            for _ in 0..competitor.pool.options().get_max_connections() {
+                let mut connection = competitor.pool.acquire().await.expect("connection");
+                sqlx::query("PRAGMA busy_timeout = 0")
+                    .execute(&mut *connection)
+                    .await
+                    .expect("zero contention wait");
+                connections.push(connection);
+            }
+            drop(connections);
+            ready_tx.send(()).expect("fixture ready");
+            enter_rx.await.expect("effect entered");
+            let recovery = competitor.recover_expired_leases().await;
+            assert!(
+                matches!(
+                    &recovery,
+                    Err(DurableOperationError::Unavailable(message))
+                        if message.contains("locked")
+                ),
+                "competing recovery must reach SQLite contention: {recovery:?}"
+            );
+            let observed = competitor
+                .operation(
+                    &competitor_claim.intent.scope_id,
+                    &competitor_claim.intent.operation_id,
+                )
+                .await
+                .expect("WAL read")
+                .expect("source operation");
+            assert_eq!(observed.state, DurableOperationState::Dispatching);
+            assert_eq!(observed.writer_fence, competitor_claim.fence);
+            observed_tx.send(()).expect("WAL observation complete");
+            // Dropping the sender on an owner error/cancellation also wakes us;
+            // the worker never waits for a release that can no longer arrive.
+            release_rx.await.expect("effect transaction released");
+            competitor
+                .recover_expired_leases()
+                .await
+                .expect("same competitor recovers after entry");
+            competitor.close().await;
+        });
+    });
+    ready_rx.await?;
     store
-        .execute_authorized(authorized, |operation| {
-            // Another connection attempts the actual recovery writer while this
-            // callback is entered. Zero busy timeout makes exclusion deterministic.
-            std::thread::scope(|scope| {
-                scope
-                    .spawn(|| {
-                        let runtime = tokio::runtime::Builder::new_current_thread()
-                            .enable_all()
-                            .build()
-                            .expect("competitor runtime");
-                        runtime.block_on(async {
-                            let recovery = competitor.recover_expired_leases().await;
-                            assert!(matches!(
-                                recovery,
-                                Err(DurableOperationError::Unavailable(message))
-                                    if message.contains("locked")
-                            ));
-                            let observed = competitor
-                                .operation(&operation.scope_id, &operation.operation_id)
-                                .await
-                                .expect("WAL read")
-                                .expect("source operation");
-                            assert_eq!(observed.state, DurableOperationState::Dispatching);
-                            assert_eq!(observed.writer_fence, claim.fence);
-                        });
-                    })
-                    .join()
-                    .expect("competing recovery");
-            });
+        .execute_authorized(authorized, |_| {
+            enter_tx.send(()).expect("start competing recovery");
+            observed_rx
+                .recv_timeout(Duration::from_secs(10))
+                .expect("locked recovery and concurrent WAL read");
             DispatchEffect::Dispatched {
                 value: (),
                 dispatch_digest: Digest32::of_bytes(b"entered under current fence"),
@@ -162,13 +187,13 @@ async fn adapter_entry_excludes_concurrent_recovery_but_allows_wal_reads() -> Te
             }
         })
         .await?;
-    competitor.recover_expired_leases().await?;
+    release_tx.send(()).expect("release competing recovery");
+    competitor_thread.join().expect("competing recovery");
     let after = store
         .operation(&claim.intent.scope_id, &claim.intent.operation_id)
         .await?
         .ok_or("operation")?;
     assert_eq!(after.state, DurableOperationState::Dispatched);
-    competitor.close().await;
     store.close().await;
     Ok(())
 }
