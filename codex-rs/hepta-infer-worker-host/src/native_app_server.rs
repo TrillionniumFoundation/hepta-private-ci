@@ -81,7 +81,16 @@ use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
-const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+#[path = "native_output_text.rs"]
+mod output_text;
+
+use output_text::MAX_OUTPUT_BYTES;
+use output_text::NativeOutputText;
+
+struct NativeObservation<'a> {
+    output: &'a mut NativeRunOutput,
+    text: &'a mut NativeOutputText,
+}
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
@@ -900,10 +909,14 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut text = NativeOutputText::new();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                NativeObservation {
+                    output: &mut output,
+                    text: &mut text,
+                },
                 deadline,
                 cancellation,
                 Some(&owner),
@@ -911,6 +924,9 @@ impl AppServerModelDriver {
             )
             .await;
         if let Err(reason) = result {
+            // Preserve accepted partial text for the existing cancellation/owner-
+            // loss record. The same accumulator survives the grace observation.
+            output.output = text.snapshot_output();
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
@@ -943,7 +959,10 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    NativeObservation {
+                        output: &mut output,
+                        text: &mut text,
+                    },
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
@@ -970,6 +989,9 @@ impl AppServerModelDriver {
                 });
             }
         }
+        // Materialize once after normal or grace observation. Text availability
+        // never changes the independent terminal or owner-authority result.
+        output.output = text.into_output();
         if output.terminal_observed {
             let _ = timeout(
                 RPC_TIMEOUT,
@@ -1007,12 +1029,13 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        observation: NativeObservation<'_>,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
         binding: &CodexTurnBinding,
     ) -> std::result::Result<(), String> {
+        let NativeObservation { output, text } = observation;
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
             let event = tokio::select! {
@@ -1029,7 +1052,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, text, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1419,6 +1442,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    text: &mut NativeOutputText,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1426,13 +1450,43 @@ fn observe_event(
         return Ok(false);
     };
     match notification.as_ref() {
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if !text.is_rejected()
+                && !text.is_sealed()
+                && let ThreadItem::AgentMessage {
+                    id,
+                    text: initial_text,
+                    ..
+                } = &started.item
+            {
+                text.item_started(id, initial_text)
+                    .map_err(|error| error.to_string())?;
+            }
+        }
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            if !text.is_rejected() && !text.is_sealed() {
+                text.delta(&delta.item_id, &delta.delta)
+                    .map_err(|error| error.to_string())?;
             }
-            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if !text.is_rejected()
+                && !text.is_sealed()
+                && let ThreadItem::AgentMessage {
+                    id,
+                    text: full_text,
+                    ..
+                } = &completed.item
+            {
+                text.item_completed(id, full_text)
+                    .map_err(|error| error.to_string())?;
+            }
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1468,6 +1522,11 @@ fn observe_event(
                 }
                 _ => return Err("nonterminal adapter status for turn/completed".to_string()),
             };
+            // A rejected text stream can still yield a verified physical
+            // terminal fact during grace, but never regain consumer success.
+            if text.is_rejected() && output.boundary_status == NativeBoundaryStatus::Indeterminate {
+                output.boundary_status = NativeBoundaryStatus::Quarantined;
+            }
             if output.boundary_status == NativeBoundaryStatus::Indeterminate {
                 output.boundary_status = physical_boundary;
             }
@@ -1482,6 +1541,11 @@ fn observe_event(
             }
             output.terminal_observed = true;
             downgrade_for_owner_loss(output);
+            // Turn items may be a summary or absent. They are not a replacement
+            // transcript; completed items were reconciled as their own events.
+            if !text.is_rejected() {
+                text.seal().map_err(|error| error.to_string())?;
+            }
             return Ok(true);
         }
         _ => {}
