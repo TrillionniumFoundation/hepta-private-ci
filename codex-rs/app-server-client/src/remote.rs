@@ -71,6 +71,9 @@ const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 const INITIALIZE_TIMEOUT: Duration = Duration::from_secs(10);
 const REMOTE_APP_SERVER_MAX_WEBSOCKET_MESSAGE_SIZE: usize = 128 << 20;
 const MAX_REMOTE_EVENT_CHANNEL_CAPACITY: usize = 65_536;
+// Count bound only: queued commands, waiting callers, and payload bytes are separate.
+// Keep sent IDs reserved even after caller cancellation, until a reply or worker exit.
+const MAX_PENDING_REMOTE_REQUESTS: usize = 1_024;
 static NEXT_REMOTE_CONNECTION_ID: AtomicU64 = AtomicU64::new(1);
 // Tungstenite still needs an HTTP request URI for the WebSocket handshake;
 // the bytes travel over the Unix socket, not TCP.
@@ -681,6 +684,13 @@ impl RemoteAppServerClient {
                                     let _ = response_tx.send(Err(IoError::new(
                                         ErrorKind::InvalidInput,
                                         format!("duplicate remote app-server request id `{request_id}`"),
+                                    )));
+                                    continue;
+                                }
+                                if pending_requests.len() >= MAX_PENDING_REMOTE_REQUESTS {
+                                    let _ = response_tx.send(Err(IoError::new(
+                                        ErrorKind::WouldBlock,
+                                        "remote app-server pending request capacity reached; request was not sent",
                                     )));
                                     continue;
                                 }
@@ -1582,3 +1592,7 @@ mod tests {
 #[cfg(test)]
 #[path = "remote_shutdown_lifetime_tests.rs"]
 mod shutdown_lifetime_tests;
+
+#[cfg(test)]
+#[path = "remote_pending_capacity_tests.rs"]
+mod pending_capacity_tests;
