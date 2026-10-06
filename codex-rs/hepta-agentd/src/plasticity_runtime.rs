@@ -23,6 +23,7 @@ use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
+use crate::AgentdPlasticityAdmissionContextV1;
 use crate::AgentdPlasticityAnchorStoreV1;
 use crate::AgentdPlasticityHostErrorV1;
 use crate::AgentdState;
@@ -51,7 +52,7 @@ impl fmt::Display for PlasticityRuntimeCallErrorV1 {
 }
 impl StdError for PlasticityRuntimeCallErrorV1 {}
 
-enum PlasticityRuntimeCommandV1 {
+pub(crate) enum PlasticityRuntimeCommandV1 {
     Parameter {
         request: Box<ParameterPlasticityProductRequestV1>,
         now: u64,
@@ -72,7 +73,7 @@ enum PlasticityRuntimeCommandV1 {
 /// material, so dropping/recreating a handle cannot create another owner.
 #[derive(Clone)]
 pub struct PlasticityRuntimeHandleV1 {
-    sender: mpsc::Sender<PlasticityRuntimeCommandV1>,
+    pub(crate) producer: crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1,
 }
 
 impl PlasticityRuntimeHandleV1 {
@@ -81,18 +82,7 @@ impl PlasticityRuntimeHandleV1 {
         request: ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        let (response, receive) = oneshot::channel();
-        self.sender
-            .send(PlasticityRuntimeCommandV1::Parameter {
-                request: Box::new(request),
-                now,
-                response,
-            })
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?;
-        receive
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
+        self.producer.submit_parameter(request, now).await
     }
 
     pub async fn propose_topology(
@@ -100,18 +90,7 @@ impl PlasticityRuntimeHandleV1 {
         request: TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
-        let (response, receive) = oneshot::channel();
-        self.sender
-            .send(PlasticityRuntimeCommandV1::Topology {
-                request: Box::new(request),
-                now,
-                response,
-            })
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?;
-        receive
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
+        self.producer.submit_topology(request, now).await
     }
 }
 
@@ -209,7 +188,11 @@ pub fn plasticity_runtime_channel_v1(
     validate_plasticity_runtime_capacity(capacity)?;
     let (sender, receiver) = mpsc::channel(capacity);
     Ok((
-        PlasticityRuntimeHandleV1 { sender },
+        PlasticityRuntimeHandleV1 {
+            producer: crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(
+                sender,
+            ),
+        },
         PlasticityRuntimeOwnerV1 {
             receiver,
             artifacts,
@@ -298,10 +281,12 @@ impl PlasticityRuntimeOwnerV1 {
                     }
                     let result = propose_agentd_plasticity_v1(
                         *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
+                        AgentdPlasticityAdmissionContextV1 {
+                            artifacts: &self.artifacts,
+                            ledger: &self.ledger,
+                            owner_evidence_resolver: self.owner_evidence_resolver.as_ref(),
+                            owner_evidence_policy: &self.owner_evidence_policy,
+                        },
                         &self.verifier,
                         &mut self.parameter_writer,
                         &mut self.parameter_anchor_store,

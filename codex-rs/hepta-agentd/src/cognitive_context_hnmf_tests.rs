@@ -256,16 +256,18 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
         .await
         .unwrap();
     let accepted = crate::cognitive_context::revalidate_with_retrieval_context(
-        &store,
-        &owner,
-        &snapshot.snapshot_digest,
-        &snapshot.read_digest,
-        snapshot.omitted_records,
-        &snapshot.items,
-        snapshot.plan.as_ref(),
-        None,
-        1,
-        Some(&stable),
+        crate::cognitive_context_request::RevalidateContextRequest {
+            store: &store,
+            owner: &owner,
+            snapshot_digest: &snapshot.snapshot_digest,
+            read_digest: &snapshot.read_digest,
+            omitted_records: snapshot.omitted_records,
+            items: &snapshot.items,
+            plan: snapshot.plan.as_ref(),
+            ranker: None,
+            body_generation: 1,
+            current_retrieval: Some(&stable),
+        },
     )
     .await
     .unwrap();
@@ -281,16 +283,18 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
         calls: Arc::new(AtomicUsize::new(0)),
     });
     let rejected = crate::cognitive_context::revalidate_with_retrieval_context(
-        &store,
-        &owner,
-        &snapshot.snapshot_digest,
-        &snapshot.read_digest,
-        snapshot.omitted_records,
-        &snapshot.items,
-        snapshot.plan.as_ref(),
-        None,
-        1,
-        Some(&changed),
+        crate::cognitive_context_request::RevalidateContextRequest {
+            store: &store,
+            owner: &owner,
+            snapshot_digest: &snapshot.snapshot_digest,
+            read_digest: &snapshot.read_digest,
+            omitted_records: snapshot.omitted_records,
+            items: &snapshot.items,
+            plan: snapshot.plan.as_ref(),
+            ranker: None,
+            body_generation: 1,
+            current_retrieval: Some(&changed),
+        },
     )
     .await;
     assert!(matches!(

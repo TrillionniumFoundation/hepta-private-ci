@@ -24,6 +24,28 @@ use codex_hepta_types::Revision;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
+impl CognitiveRetrievalLearningSink {
+    fn append(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        request_id: u64,
+        observation: &RetrievalAssignmentObservationV1,
+    ) -> Result<AppendReceipt, String> {
+        self.append_with_delivery_policy(
+            owner,
+            body_generation,
+            request_id,
+            observation,
+            &[],
+            /*context_exposed*/ false,
+            /*published_context_digest*/ None,
+            /*downstream_policy_digest*/ None,
+            ProbabilityQ32::ONE,
+        )
+    }
+}
+
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
 }

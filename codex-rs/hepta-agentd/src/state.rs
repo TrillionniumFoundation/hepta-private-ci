@@ -165,46 +165,8 @@ impl AgentdState {
         handle: crate::PlasticityRuntimeHandleV1,
     ) -> Result<(), AgentdError> {
         self.plasticity_runtime
-            .set(
-                crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::new(
-                    handle,
-                ),
-            )
+            .set(handle.producer.clone())
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
-    }
-
-    /// Named Agentd-owned producer boundary for governed parameter plasticity.
-    /// Callers never receive the mutable writer or a second owner handle.
-    pub(crate) async fn submit_parameter_plasticity_v1(
-        &self,
-        request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
-        now: u64,
-    ) -> Result<
-        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
-        crate::PlasticityRuntimeCallErrorV1,
-    > {
-        let producer = self
-            .plasticity_runtime
-            .get()
-            .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
-        producer.submit_parameter(request, now).await
-    }
-
-    /// Named Agentd-owned producer boundary for governed topology plasticity.
-    /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
-    pub(crate) async fn submit_topology_plasticity_v1(
-        &self,
-        request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
-        now: u64,
-    ) -> Result<
-        codex_hepta_intelligence::TopologyPlasticityProductReceiptV1,
-        crate::PlasticityRuntimeCallErrorV1,
-    > {
-        let producer = self
-            .plasticity_runtime
-            .get()
-            .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
-        producer.submit_topology(request, now).await
     }
 
     pub(crate) fn attach_cognitive_store(
