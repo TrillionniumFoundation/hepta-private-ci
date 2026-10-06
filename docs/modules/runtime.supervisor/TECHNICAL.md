@@ -219,6 +219,32 @@ writes, zero-budget non-dispatch and successful fragmented framing. These checks
 do not qualify installed-product recovery, large-release performance, or later
 numeric-PID signal authority.
 
+### Two-phase module retirement
+
+`RuntimeModuleSupervisorV1::begin_retirement` removes one selected module from
+new dispatch before the host drains its workers. Repeating the same Quiescing
+generation is idempotent. The writer/dependency reservation and lifetime
+generation fence remain held; a selected dependent still blocks provider
+retirement. A readiness marker recorded before admission stopped is discarded,
+not reused as evidence of the subsequent drain.
+
+After the owner observes drain and terminal effect reconciliation, the host calls
+`retire_after_reconciliation` with that observation. It can complete an already
+Quiescing registry, including one reconstructed through the checkpoint codec,
+instead of trying to begin the transition again. Invalid evidence or a remaining
+dependent leaves the stopped route and writer reservation unchanged for a retry.
+The existing one-call path remains available for an externally observed Active
+or Quarantined retirement. Unknown or already terminal identities do not reopen
+routes or release generation fences.
+
+These are lifecycle bookkeeping APIs, not worker termination, grant revocation,
+physical state migration or a durable Supervisor store. The checkpoint test uses
+a fixture current root; it does not establish independent root custody. The host
+must persist and authenticate its state and obtain the actual owner observations
+before an installed deployment can claim recovery. The implementation and its
+behavioral regressions are in `module_runtime_retirement.rs` and
+`module_runtime_retirement_tests.rs` under `codex-rs/hepta-supervisor/src/`.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls

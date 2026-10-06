@@ -29,6 +29,9 @@ use crate::WriterHandoffCheckpointV1;
 // proposal consumes no module candidate slots but still occupies host memory.
 const MAX_PENDING_TOPOLOGIES: usize = 128;
 
+#[path = "module_runtime_retirement.rs"]
+mod retirement;
+
 #[path = "module_runtime_withdrawal.rs"]
 mod withdrawal;
 
@@ -694,51 +697,6 @@ impl RuntimeModuleSupervisorV1 {
         )
     }
 
-    pub fn record_retirement_ready(
-        &mut self,
-        module_id: &StableId,
-        generation: Generation,
-        witness: RuntimeModuleRetirementWitnessV1,
-    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
-        let record = self
-            .registry
-            .record(module_id, generation)
-            .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
-        if self.registry.active_generation(module_id) != Some(generation)
-            || witness.drain_digest.is_zero()
-            || witness.unknown_effect_count != 0
-            || ((!record.abi.effect_scope.is_empty()
-                || !record.abi.authoritative_domains.is_empty())
-                && witness.reconciliation_digest.is_zero())
-        {
-            return Err(RuntimeModuleSupervisorErrorV1::InvalidRetirementWitness);
-        }
-        let mut bytes = b"hepta.runtime-module-retirement.v1".to_vec();
-        bytes.extend_from_slice(witness.drain_digest.as_array());
-        bytes.extend_from_slice(witness.reconciliation_digest.as_array());
-        bytes.extend_from_slice(&witness.unknown_effect_count.to_be_bytes());
-        self.retirement_ready
-            .insert((module_id.clone(), generation), Digest32::of_bytes(&bytes));
-        Ok(())
-    }
-
-    pub fn retire_after_reconciliation(
-        &mut self,
-        module_id: &StableId,
-        generation: Generation,
-        witness: RuntimeModuleRetirementWitnessV1,
-    ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
-        let mut staged = self.registry.clone();
-        staged.begin_retire(module_id, generation)?;
-        let snapshot = staged.finish_retire(module_id, generation)?;
-        // Invalid drain evidence or dependency checks must leave both serving
-        // state and bookkeeping untouched, rather than leaking a ready marker.
-        self.record_retirement_ready(module_id, generation, witness)?;
-        self.registry = staged;
-        self.prune_lifecycle_metadata();
-        Ok(snapshot)
-    }
-
     /// Restore only stateless, effect-free content. The verified regression
     /// token does not replace a current domain-owner migration/handoff witness.
     pub fn rollback_verified(
@@ -1089,3 +1047,7 @@ mod initialization_tests;
 #[cfg(test)]
 #[path = "module_runtime_withdrawal_tests.rs"]
 mod withdrawal_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_retirement_tests.rs"]
+mod retirement_tests;
