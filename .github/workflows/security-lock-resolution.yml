@@ -42,7 +42,8 @@ jobs:
           printf '%s\n' 'NON-QUALIFYING lock resolution proposal. No compilation, tests, vulnerability reachability, merge, or release qualification.' > "$EVIDENCE/SCOPE.txt"
           test "$(git rev-parse HEAD)" = "$BASE_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$BASE_TREE"
-          test "$(git show -s --format=%P "$GITHUB_SHA")" = b0a0e86324f10ccd4bec20cf6f65ec0e3199f4ff
+          test "$(git show -s --format=%P "$GITHUB_SHA")" = fce22d52149b9d5d6d54c1d4f1490816a29d1549
+          test "$(git show -s --format=%P fce22d52149b9d5d6d54c1d4f1490816a29d1549)" = b0a0e86324f10ccd4bec20cf6f65ec0e3199f4ff
           test "$(git show -s --format=%P b0a0e86324f10ccd4bec20cf6f65ec0e3199f4ff)" = 13ac0610d5e31793dd8ec0b488e6c81ec702d6d7
           test "$(git show -s --format=%P 13ac0610d5e31793dd8ec0b488e6c81ec702d6d7)" = "$BASE_SHA"
           test "$(git diff --name-only "$BASE_SHA" "$GITHUB_SHA")" = '.github/workflows/security-lock-resolution.yml'
@@ -119,6 +120,16 @@ jobs:
           run just-version just --version
           test "$(cat .bazelversion)" = 9.0.0
           run bazel-version bazel --version
+          # A no-op target update isolates resolver churn from security upgrades.
+          if [[ "$CANDIDATE" == openssl ]]; then
+            run baseline-noop cargo update --manifest-path codex-rs/Cargo.toml -p openssl@0.10.75 --precise 0.10.75
+          else
+            run baseline-noop cargo update --manifest-path codex-rs/Cargo.toml -p quinn-proto@0.11.14 --precise 0.11.14
+          fi
+          cp codex-rs/Cargo.lock "$EVIDENCE/baseline-noop-Cargo.lock"
+          sha256sum "$EVIDENCE/baseline-noop-Cargo.lock" > "$EVIDENCE/baseline-noop.sha256"
+          git restore --source="$BASE_SHA" -- codex-rs/Cargo.lock
+          cmp codex-rs/Cargo.lock "$EVIDENCE/before-Cargo.lock"
           if [[ "$CANDIDATE" == openssl ]]; then
             run openssl-sys cargo update --manifest-path codex-rs/Cargo.toml -p openssl-sys@0.9.111 --precise 0.9.116
             run openssl cargo update --manifest-path codex-rs/Cargo.toml -p openssl@0.10.75 --precise 0.10.80
@@ -134,13 +145,33 @@ jobs:
               assert len(selected) == len(expected), 'Duplicate or missing expected package'
               assert {p['name'] for p in selected} == set(expected), 'Missing expected package'
               return {p['name']: p for p in selected}
+          def records(path):
+              return tomllib.loads(path.read_text())['package']
           def remainder(path):
-              return sorted((json.dumps(p, sort_keys=True) for p in tomllib.loads(path.read_text())['package'] if p['name'] not in expected))
+              return sorted((json.dumps(p, sort_keys=True) for p in records(path) if p['name'] not in expected))
+          def verify_control(before, control):
+              original, baseline = records(before), records(control)
+              def without_tempfile(packages):
+                  return sorted(json.dumps(p, sort_keys=True) for p in packages if p['name'] != 'tempfile')
+              assert without_tempfile(original) == without_tempfile(baseline), 'No-op control changed unrelated records'
+              old = [p for p in original if p['name'] == 'tempfile']
+              new = [p for p in baseline if p['name'] == 'tempfile']
+              assert len(old) == len(new) == 1, 'Expected one tempfile record'
+              assert old[0]['version'] == new[0]['version'] == '3.27.0'
+              assert old[0]['checksum'] == new[0]['checksum'] == '32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd'
+              normalized = dict(new[0])
+              assert 'getrandom 0.3.4' in old[0]['dependencies']
+              assert 'getrandom 0.4.3' not in old[0]['dependencies']
+              normalized['dependencies'] = [d.replace('getrandom 0.4.3', 'getrandom 0.3.4') if d == 'getrandom 0.4.3' else d for d in new[0]['dependencies']]
+              assert normalized == old[0], 'Only reviewed tempfile getrandom edge may differ in no-op control'
           expected = {'openssl': ('0.10.75', '0.10.80'), 'openssl-sys': ('0.9.111', '0.9.116')} if os.environ['CANDIDATE'] == 'openssl' else {'quinn-proto': ('0.11.14', '0.11.15')}
           before, after = evidence / 'before-Cargo.lock', pathlib.Path('codex-rs/Cargo.lock')
           assert tomllib.loads(before.read_text())['version'] == tomllib.loads(after.read_text())['version'] == 4
           a, b = packages(before), packages(after)
-          assert remainder(before) == remainder(after), 'Unrelated dependency churn: review required'
+          control = evidence / 'baseline-noop-Cargo.lock'
+          assert tomllib.loads(control.read_text())['version'] == 4
+          verify_control(before, control)
+          assert remainder(control) == remainder(after), 'Candidate churn differs from verified no-op control'
           for name, (old, new) in expected.items():
               assert a[name]['version'] == old and b[name]['version'] == new, name
               assert len(b[name]['checksum']) == 64 and all(c in '0123456789abcdef' for c in b[name]['checksum']), name
