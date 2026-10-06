@@ -22,7 +22,7 @@ jobs:
       HEPTA_CI_LANE: source-head
       SOURCE_SHA: ${{ github.sha }}
       TESTED_SHA: ${{ github.sha }}
-      REVIEWED_WORKFLOW_SHA256: a2198ac9c88e04b9c67fbede2f7d1435e2f506130210e78991db9a4afea1034b
+      REVIEWED_WORKFLOW_SHA256: ddc11e7d96b58dbfcf688d593930387519b6fa5e04fb48466492e69a9e7c288b
     steps:
     - name: Anchor shared execution deadline before checkout
       shell: bash
@@ -46,9 +46,9 @@ jobs:
         cat > "$DIAGNOSTIC_ROOT/source-guard.py" <<'PYGUARD'
         import hashlib, json, os, re, subprocess, sys
         from pathlib import Path
-        EXPECTED_PARENT = '33cf2729495c058f9870fbc04dcaaea4939017f4'
+        EXPECTED_PARENT = 'a9baf482696ea6a8462bfba6bae0fca3f3ab6108'
         WORKFLOW = '.github/workflows/rust-ui-breakpoints.yml'
-        EXPECTED_BLOBS = {'apps/hepta-control-ui/playwright.breakpoints.config.mjs': '9312ff3fe97442569ff13a3faeefef088b3791dc', 'apps/hepta-control-ui/e2e/robrix-breakpoints.spec.mjs': '41a42b727862d5e3d136695dc7e3591792b79b9d', 'apps/hepta-control-ui/tools/robrix-breakpoint-plan.mjs': '611f07dab17fdce199f3197a6147a45de52a98c4', 'apps/hepta-control-ui/tools/verify-breakpoint-evidence.py': '059bfa9be341e0147bb869a3729250ac9a77a568', 'apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs': '46566c685fdddb9409c23df886a08abd62b4e730'}
+        EXPECTED_BLOBS = {'apps/hepta-control-ui/playwright.breakpoints.config.mjs': '9312ff3fe97442569ff13a3faeefef088b3791dc', 'apps/hepta-control-ui/e2e/robrix-breakpoints.spec.mjs': 'c227d7b8c5f0a38202b2b4ee27debe8675d18204', 'apps/hepta-control-ui/tools/robrix-breakpoint-plan.mjs': 'f60ca8173238fe4b595a7c3f05ae38e04b4f4658', 'apps/hepta-control-ui/tools/verify-breakpoint-evidence.py': '059bfa9be341e0147bb869a3729250ac9a77a568', 'apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs': 'f59e57b74150e20d74d569f19f1762f6ed48420f'}
         # Reviewed-source consistency only; this self-check is not a security signature.
         git = lambda *args: subprocess.check_output(['git', '--no-replace-objects', *args])
         source = os.environ['SOURCE_SHA']
@@ -62,7 +62,8 @@ jobs:
         tree = trees[0]
         paths = sorted([WORKFLOW, *EXPECTED_BLOBS])
         changes = git('diff-tree', '--no-commit-id', '--name-status', '-r', '--no-renames', EXPECTED_PARENT, commit).decode().splitlines()
-        assert sorted(changes) == ['A\t' + path for path in paths], 'Expected exactly six new paths'
+        modified = sorted([WORKFLOW, 'apps/hepta-control-ui/e2e/robrix-breakpoints.spec.mjs', 'apps/hepta-control-ui/tools/robrix-breakpoint-plan.mjs', 'apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs'])
+        assert sorted(changes) == ['M\t' + path for path in modified], 'Expected exact reviewed modified paths'
         entries = {}
         for item in git('ls-tree', '-r', '-z', commit, '--', *paths).split(b'\0'):
             if not item: continue

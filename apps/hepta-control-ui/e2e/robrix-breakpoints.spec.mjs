@@ -4,7 +4,7 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {screenshotWordCenter,readScreenshotText,prepareVerifiedRegionForOcr} from '../tools/verify-robrix-pixels.mjs';
-import {breakpointWidths,breakpointThemes,headingRegion,navigationRegion,requireObservedPoint} from '../tools/robrix-breakpoint-plan.mjs';
+import {breakpointWidths,breakpointThemes,headingRegion,navigationRegion,requireObservedPoint,consoleRegion,themeTextRegion,requireThemeText,requireAuthorityWarning} from '../tools/robrix-breakpoint-plan.mjs';
 for(const theme of breakpointThemes)for(const width of breakpointWidths)test(`Console breakpoint ${theme} ${width}`,async({page},testInfo)=>{
  const sourceSha=execFileSync('git',['--no-replace-objects','rev-parse','--verify','HEAD^{commit}'],{encoding:'utf8'}).trim();
  // Known existing compact composer position at759x800, not an OCR-observed target.
@@ -26,6 +26,11 @@ for(const theme of breakpointThemes)for(const width of breakpointWidths)test(`Co
   const row={name,theme:currentTheme,viewport,pngSha256:createHash('sha256').update(bytes).digest('hex')};captures.push(row);
   const text=await readScreenshotText(path);await writeFile(testInfo.outputPath(name+'-ocr.txt'),text);health();return{path,text,row};
  }
+ async function regionText(captured,name,region,normalization='continuous'){
+  const path=testInfo.outputPath(name+'.png');const proof=await prepareVerifiedRegionForOcr(captured.path,path,region,captured.row.viewport,{normalization});
+  expect(proof.sourcePngSha256).toBe(captured.row.pngSha256);
+  const text=await readScreenshotText(path,{layout:'block'});await writeFile(testInfo.outputPath(name+'-ocr.txt'),text);await writeFile(testInfo.outputPath(name+'-source.json'),JSON.stringify(proof,null,2));return text;
+ }
  async function clickTab(captured,word){const point=await screenshotWordCenter(captured.path,word,page.viewportSize().width,{recordOcr:true});requireObservedPoint(point,navigationRegion(page.viewportSize(),theme));await page.mouse.click(point.x,point.y);await frame();}
  try{
   // Start all subjects in compact view;760/761 cross the real adaptive boundary.
@@ -33,21 +38,24 @@ for(const theme of breakpointThemes)for(const width of breakpointWidths)test(`Co
   let captured=await capture('initial-chat');
   for(const [index,current] of breakpointThemes.slice(0,breakpointThemes.indexOf(theme)).entries()){
    const point=await screenshotWordCenter(captured.path,current,759,{recordOcr:true});requireObservedPoint(point,{left:0,top:92,width:759,height:104});await page.mouse.click(point.x,point.y);currentTheme=breakpointThemes[index+1];captured=await capture('theme-after-'+current);
+   requireThemeText(await regionText(captured,'theme-line-after-'+current,themeTextRegion(captured.row.viewport,point),'navigation-neutral'),currentTheme);
   }
-  expect(captured.text).toMatch(new RegExp(theme,'i'));
+  if(theme==='Aurora'){const point=await screenshotWordCenter(captured.path,'Aurora',759,{recordOcr:true});requireThemeText(await regionText(captured,'initial-theme-line',themeTextRegion(captured.row.viewport,point),'navigation-neutral'),theme);}
   const draft='Breakpoint retained draft 中文🚀';await page.mouse.click(editorPoint.x,editorPoint.y);await page.keyboard.insertText(draft);await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(draft);
   if(width===759){await page.setViewportSize({width:760,height:800});await frame();}
   captured=await capture('draft-before-console');await clickTab(captured,'Console');
   await page.setViewportSize({width,height:800});await frame();
   await page.mouse.move(width-35,400);await page.mouse.wheel(0,-3000);await frame();
   const top=await capture('console-top');
-  expect(top.text).toMatch(/Runtime\s+observations/i);expect(top.text).toMatch(/Production\s+owner/i);expect(top.text).toMatch(/Not\s+requested/i);
+  const topText=await regionText(top,'console-top-body',consoleRegion(top.row.viewport,theme));
+  expect(topText).toMatch(/Runtime\s+observations/i);expect(topText).toMatch(/Production\s+owner/i);expect(topText).toMatch(/Not\s+requested/i);
   const crop=testInfo.outputPath('console-heading.png');const observed=await prepareVerifiedRegionForOcr(top.path,crop,headingRegion(page.viewportSize(),theme),page.viewportSize());expect(observed.sourcePngSha256).toBe(top.row.pngSha256);
   const heading=await readScreenshotText(observed.rawPath??crop,{layout:'block'});expect(heading.trim()).toMatch(/^Console\s*$/i);
   await page.mouse.move(width-35,500);await page.mouse.wheel(0,3000);await frame();
   const bottom=await capture('console-bottom');
-  expect(bottom.text).toMatch(/Legacy\s+runtime\s+observation/i);
-  expect(bottom.text.replace(/\s+/g,' ')).toMatch(/These observations do not provide current write authority\. Chat and operation commands remain unavailable\./i);
+  const bottomText=await regionText(bottom,'console-bottom-body',consoleRegion(bottom.row.viewport,theme));
+  expect(bottomText).toMatch(/Legacy\s+runtime\s+observation/i);
+  const warning=requireAuthorityWarning(bottomText);await writeFile(testInfo.outputPath('authority-warning-proof.json'),JSON.stringify({...warning,sourcePngSha256:bottom.row.pngSha256},null,2));
   // Return across the breakpoint while still in Console; then restore the same editor.
   await page.setViewportSize({width:759,height:800});await frame();await page.mouse.move(724,400);await page.mouse.wheel(0,-3000);captured=await capture('console-before-return');await clickTab(captured,'Chat');
   await page.mouse.click(editorPoint.x,editorPoint.y);await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(draft);
