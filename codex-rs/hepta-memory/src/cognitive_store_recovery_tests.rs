@@ -409,7 +409,10 @@ async fn unavailable_descriptor_binding_fails_closed_without_mutating_the_store(
         &RecoveryVerifier,
     )
     .await;
-    assert!(matches!(result, Err(CognitiveRecoveryError::Indeterminate(_))));
+    assert!(matches!(
+        result,
+        Err(CognitiveRecoveryError::Indeterminate(_))
+    ));
     assert_eq!(capture_recovery_tree(&root), before);
 
     let reopened = CognitiveStore::open(&layout(&temp, &owner))
