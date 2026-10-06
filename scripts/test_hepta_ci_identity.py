@@ -57,6 +57,83 @@ class IdentityTests(unittest.TestCase):
         self.assertEqual(actual, self.expected(self.source))
         self.assertEqual(calls.call_count, 2)
 
+    def test_replacement_ref_does_not_substitute_commit_metadata(self):
+        expected = self.expected(self.source)
+        replacement = self.git(
+            "commit-tree", expected["tree"], "-p", self.source, "-m", "replacement"
+        )
+        self.git("replace", self.source, replacement)
+        self.assertNotEqual(self.expected(self.source), expected)
+        self.assertEqual(executor.identity(), expected)
+
+    def test_replaced_source_tree_never_dispatches(self):
+        expected = self.expected(self.source, dirty=True)
+        (self.repo / "input").write_text("unreviewed\n")
+        self.git("add", "input")
+        tree = self.git("write-tree")
+        replacement = self.git("commit-tree", tree, "-m", "replacement")
+        self.git("replace", self.source, replacement)
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertNotEqual(tree, expected["tree"])
+        marker = self.root / "effect"
+        output = self.root / "record.json"
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "SOURCE_SHA": self.source,
+                    "TESTED_SHA": self.source,
+                    "HEPTA_CI_LANE": "source-head",
+                },
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            result = executor.run(
+                output,
+                [sys.executable, "-c", f"open({str(marker)!r}, 'w').write('effect')"],
+            )
+        self.assertEqual(result, 2)
+        self.assertFalse(marker.exists())
+        record = json.loads(output.read_text())
+        self.assertEqual(record["before"], expected)
+        self.assertEqual(record["status"], "rejected")
+        self.assertIsNone(record["command_exit_code"])
+
+    def test_replaced_merge_parents_never_dispatch(self):
+        tree = self.git("rev-parse", "HEAD^{tree}")
+        source = self.git("commit-tree", tree, "-p", self.source, "-m", "source")
+        tested = self.git("commit-tree", tree, "-p", source, "-m", "not a merge")
+        replacement = self.git(
+            "commit-tree", tree, "-p", self.source, "-p", source, "-m", "replacement"
+        )
+        expected = self.expected(tested)
+        self.git("checkout", "-q", "--detach", tested)
+        self.git("replace", tested, replacement)
+        marker = self.root / "effect"
+        output = self.root / "record.json"
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "SOURCE_SHA": source,
+                    "BASE_SHA": self.source,
+                    "TESTED_SHA": tested,
+                    "HEPTA_CI_LANE": "base-merge",
+                },
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            result = executor.run(
+                output,
+                [sys.executable, "-c", f"open({str(marker)!r}, 'w').write('effect')"],
+            )
+        self.assertEqual(result, 2)
+        self.assertFalse(marker.exists())
+        record = json.loads(output.read_text())
+        self.assertEqual(record["before"], expected)
+        self.assertEqual(record["status"], "rejected")
+        self.assertIsNone(record["command_exit_code"])
+
     def test_detached_checkout(self):
         self.git("checkout", "-q", "--detach", self.source)
         self.assertEqual(executor.identity(), self.expected(self.source))

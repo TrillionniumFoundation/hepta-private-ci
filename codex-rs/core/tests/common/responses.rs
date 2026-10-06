@@ -1861,7 +1861,7 @@ mod request_input_invariant_tests {
             "name": "send_message_to_thread", "output": "message",
         });
         validate_request_input_invariants(&[call.clone(), output.clone()]);
-        assert_rejected(&[output.clone()]);
+        assert_rejected(std::slice::from_ref(&output));
         assert_rejected(&[json!({"type": "function_call", "call_id": "other"}), output]);
         assert_rejected(&[call]);
     }

@@ -270,6 +270,11 @@ mod platform {
     }
 }
 
+#[cfg(any(windows, test))]
+mod windows_peer_pid;
+#[cfg(all(windows, test))]
+mod windows_peer_sid_tests;
+
 #[cfg(windows)]
 mod platform {
     use std::io;
@@ -358,7 +363,16 @@ mod platform {
         let peer_user = token_user(peer_token.raw())?;
         let current_user = token_user(current_token.raw())?;
 
-        if unsafe { EqualSid(peer_user.sid()?, current_user.sid()?) } == 0 {
+        // SAFETY: both validated token buffers remain alive for this call.
+        unsafe { ensure_matching_user_sids(peer_user.sid()?, current_user.sid()?) }
+    }
+
+    pub(super) unsafe fn ensure_matching_user_sids(
+        peer_sid: windows_sys::Win32::Foundation::PSID,
+        current_sid: windows_sys::Win32::Foundation::PSID,
+    ) -> IoResult<()> {
+        let same_user = unsafe { EqualSid(peer_sid, current_sid) } != 0;
+        if !same_user {
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
                 "Unix socket peer is not owned by the current user",
@@ -369,32 +383,24 @@ mod platform {
     }
 
     fn peer_process_id(stream: &Stream) -> IoResult<u32> {
-        let mut peer_process_id = 0_u32;
-        let mut bytes_returned = 0_u32;
-        let result = unsafe {
-            WSAIoctl(
-                stream.0.get_ref().get_ref().as_raw_socket() as _,
-                SIO_AF_UNIX_GETPEERPID,
-                ptr::null_mut(),
-                0,
-                ptr::addr_of_mut!(peer_process_id).cast(),
-                std::mem::size_of_val(&peer_process_id) as u32,
-                ptr::addr_of_mut!(bytes_returned),
-                ptr::null_mut(),
-                None,
-            )
-        };
-        if result == SOCKET_ERROR {
-            return Err(io::Error::from_raw_os_error(unsafe { WSAGetLastError() }));
-        }
-        if bytes_returned != std::mem::size_of_val(&peer_process_id) as u32 || peer_process_id == 0
-        {
-            return Err(io::Error::new(
-                io::ErrorKind::InvalidData,
-                "Windows AF_UNIX peer did not return a valid process ID",
-            ));
-        }
-        Ok(peer_process_id)
+        super::windows_peer_pid::query_peer_pid(|peer_process_id, bytes_returned| {
+            let result = unsafe {
+                WSAIoctl(
+                    stream.0.get_ref().get_ref().as_raw_socket() as _,
+                    SIO_AF_UNIX_GETPEERPID,
+                    ptr::null_mut(),
+                    0,
+                    ptr::from_mut(peer_process_id).cast(),
+                    std::mem::size_of::<u32>() as u32,
+                    ptr::from_mut(bytes_returned),
+                    ptr::null_mut(),
+                    None,
+                )
+            };
+            // Capture the API error immediately, before any other call.
+            let socket_error = (result == SOCKET_ERROR).then(|| unsafe { WSAGetLastError() });
+            super::windows_peer_pid::validate_ioctl_status(result, socket_error)
+        })
     }
 
     struct OwnedHandle(HANDLE);

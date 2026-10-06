@@ -15,9 +15,9 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 
-TREE = "ce39e8f8ba742f101b481d99ae7bcefec9065f44"
-BASE = "69d951e0577e5d6ba537775252896cd1ed028fae"
-BRANCH = "refs/heads/dot/frozen-bounded-qualification-20261006"
+TREE = "d4419f34ea07a28aa6bac14c10af72fbe8001c03"
+BASE = "f736f5c3797da5cf0e0bddc28d8b56b1ce87beb9"
+BRANCH = "refs/heads/dot/frozen-focused-repairs-20261006"
 ADDITIONS = (".github/workflows/frozen-bounded-qualification.yml", "scripts/hepta_frozen_bounded.py")
 LIMIT = 16 * 1024**2
 SUPERVISOR_REQUIRED_TESTS = (
@@ -33,15 +33,13 @@ HELPER_MANIFEST_LABEL = "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper
 HELPER_MANIFEST_TEST = "setup_helper_embeds_as_invoker_manifest"
 SUPERVISOR_LABELS = ("//codex-rs/hepta-supervisor:hepta-supervisor-robrix_control_projection-test",)
 LABELS = (
-    "//codex-rs/core/tests/common:common-unit-tests",
-    "//codex-rs/ext/queue:queue-queue_service-test",
-    "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
-    "//codex-rs/sandboxing:sandboxing-unit-tests",
-    HELPER_MANIFEST_LABEL,
+    '//codex-rs/uds:uds-unit-tests',
+    '//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests',
 )
+EXPECTED_WINDOWS_TESTS = {'//codex-rs/uds:uds-unit-tests': (24, ['windows_peer_pid::tests::exact_size_success_needs_one_query', 'windows_peer_pid::tests::zero_length_requires_complete_matching_confirmation', 'windows_peer_pid::tests::api_failure_preserves_original_os_error_before_output_validation', 'windows_peer_pid::tests::confirmation_api_failure_preserves_its_os_error', 'windows_peer_pid::tests::malformed_positive_lengths_reject_without_confirmation', 'windows_peer_pid::tests::zero_pid_rejects_with_either_accepted_length', 'windows_peer_pid::tests::confirmation_changed_pid_or_length_rejects', 'windows_peer_pid::tests::partial_confirmation_writes_reject_every_short_width', 'windows_peer_pid::tests::every_partial_byte_subset_fails_for_both_reported_lengths_and_edge_pids', 'windows_peer_pid::tests::every_retained_single_bit_fails_even_if_length_claims_full_output', 'windows_peer_pid::tests::every_sampled_malformed_confirmation_length_fails_without_retry', 'windows_peer_pid::tests::windows_pending_wouldblock_and_failure_values_propagate_without_retry', 'windows_peer_pid::tests::api_boundary_accepts_only_exact_success_and_preserves_captured_failure', 'windows_peer_pid::tests::api_boundary_rejects_unknown_nonzero_or_inconsistent_status', 'windows_peer_sid_tests::matching_complete_sids_pass_the_existing_owner_gate', 'windows_peer_sid_tests::different_complete_sids_still_fail_closed', 'windows_peer_sid_tests::equal_final_rid_does_not_authorize_a_different_sid_authority', 'lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms']), '//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests': (32, ['control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity'])}
 
 def git(*args, env=None):
-    return subprocess.check_output(["git", *args], text=True, env=env).strip()
+    return subprocess.check_output(["git", "--no-replace-objects", *args], text=True, env=env).strip()
 
 def save(path, data):
     path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -49,24 +47,25 @@ def save(path, data):
 def identity():
     if os.environ.get("GITHUB_EVENT_NAME") != "push" or os.environ.get("GITHUB_REF") != BRANCH:
         raise ValueError("Only the single approved source branch push is accepted")
-    head = git("rev-parse", "HEAD")
+    import hepta_ci_exec
+    observed = hepta_ci_exec.identity()
+    head = observed["commit"]
     if head != os.environ["SOURCE_SHA"] or head != os.environ["TESTED_SHA"]:
         raise ValueError("head/source/tested mismatch")
     if os.environ.get("HEPTA_CI_LANE") != "source-head":
         raise ValueError("source-head lane required")
-    dirty = git("status", "--porcelain", "--untracked-files=normal")
-    if dirty:
-        raise ValueError("source is dirty: " + dirty)
-    subprocess.run(["git", "merge-base", "--is-ancestor", BASE, head], check=True)
+    if observed["dirty"]:
+        raise ValueError("source is dirty")
+    git("merge-base", "--is-ancestor", BASE, head)
     with tempfile.TemporaryDirectory() as temporary:
         env = dict(os.environ, GIT_INDEX_FILE=str(Path(temporary) / "index"))
-        subprocess.run(["git", "read-tree", "HEAD"], env=env, check=True)
-        subprocess.run(["git", "update-index", "--force-remove", "--", *ADDITIONS], env=env, check=True)
+        git("read-tree", head, env=env)
+        git("update-index", "--force-remove", "--", *ADDITIONS, env=env)
         projected = git("write-tree", env=env)
     if projected != TREE:
         raise ValueError(f"source projection {projected} differs from reviewed {TREE}")
-    return {"head": head, "tree": git("rev-parse", "HEAD^{tree}"), "reviewed_tree": projected,
-            "base": BASE, "lane": "source-head", "diagnostic_blobs": {p: git("rev-parse", f"HEAD:{p}") for p in ADDITIONS}}
+    return {"head": head, "tree": observed["tree"], "reviewed_tree": projected,
+            "base": BASE, "lane": "source-head", "diagnostic_blobs": {p: git("rev-parse", f"{head}:{p}") for p in ADDITIONS}}
 
 def test(name, packages, selection=(), umask=None):
     command = ["just", "test", "--locked", "--retries", "0"]
@@ -84,14 +83,13 @@ def commands(group):
     if group == "client":
         return [test("client-default", ["codex-app-server-client"]), lint("client-strict-selected", ["codex-app-server-client"])]
     if group == "fixture":
-        packages = ["codex-exec", "core_test_support", "codex-hepta-memory-extension"]
-        result = [test("fixture-exec-memory-default", packages),
-                  test("environment-selection", ["codex-core"], ["--lib", "environment_selection"]),
-                  test("bedrock-setup", ["codex-app-server"], ["suite::v2::bedrock_setup"]),
-                  test("bedrock-broad", ["codex-app-server"], ["bedrock"]),
-                  test("thread-inject", ["codex-app-server"], ["suite::v2::thread_inject_items"])]
-        result += [test("private-home-" + mask, ["core_test_support"], ["exec_fixture_home_is_private"], int(mask, 8)) for mask in ("000", "022", "077")]
-        return result + [lint("affected-strict-selected", packages + ["codex-core", "codex-app-server"])]
+        packages = ["codex-exec", "core_test_support", "codex-hepta-memory-extension", "codex-core", "codex-app-server"]
+        return [{"name": "executor-identity-regressions", "command": ["env", "PYTHONPATH=scripts", sys.executable,
+                 "-m", "unittest", "-v", "test_hepta_ci_exec", "test_hepta_ci_exec_deadline",
+                 "test_hepta_ci_exec_output", "test_hepta_ci_exec_signals", "test_hepta_ci_identity"],
+                 "tests": False, "minimum_tests": 70},
+                test("core-support-default", ["core_test_support"]),
+                lint("affected-strict-selected", packages)]
     if group == "lifecycle":
         packages = ["codex-hepta-control-plane", "codex-hepta-supervisor", "codex-hepta-intelligence-eval", "codex-hepta-agent-protocol"]
         return [{"name": "executor-identity-regressions", "command": ["env", "PYTHONPATH=scripts", sys.executable,
@@ -199,6 +197,10 @@ def linux(group, directory):
             if item["tests"]:
                 record["junit"] = xml_record(report)
                 shutil.copyfile(report, directory / (name + ".junit.xml"))
+                if name == "core-support-default":
+                    required = "request_input_invariant_tests::named_output_with_call_id_still_requires_matching_call"
+                    if not any(item == required or item.endswith("::" + required) for item in record["junit"]["executed_test_names"]):
+                        raise ValueError("changed core invariant test did not execute")
                 if name == "lifecycle-default":
                     observed = record["junit"]["executed_test_names"]
                     record["required_supervisor_tests"] = {name: any(item == name or item.endswith("::" + name) for item in observed) for name in SUPERVISOR_REQUIRED_TESTS}
@@ -262,6 +264,16 @@ def supervisor_bazel(directory):
     save(directory / "supervisor-bazel.json", record)
     return code
 
+def verify_windows_counts(label, log):
+    count, required = EXPECTED_WINDOWS_TESTS[label]
+    names = re.findall(r"^test ([A-Za-z0-9_:]+) \.\.\. ok$", log, re.M)
+    summaries = re.findall(r"^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;", log, re.M)
+    if summaries != [(str(count), "0", "0", "0", "0")] or len(names) != count or len(set(names)) != count:
+        raise ValueError("exact fresh Rust count/uniqueness gate failed")
+    if not set(required).issubset(names) or "skipping test:" in log.lower():
+        raise ValueError("required native controls missing or skipped")
+    return {"passed": count, "failed": 0, "ignored": 0, "filtered": 0, "required_names": sorted(required)}
+
 def collect_bazel(directory, group="windows"):
     labels = LABELS if group == "windows" else SUPERVISOR_LABELS
     receipt = directory / (group + ".json")
@@ -280,6 +292,7 @@ def collect_bazel(directory, group="windows"):
                 summary = event["testSummary"]
                 record["targets"][label] = {"summary": summary}
                 failed |= summary.get("overallStatus") != "PASSED" or summary.get("totalRunCount") != 1 or summary.get("totalNumCached", 0) != 0
+                failed |= summary.get("runCount") != 1 or summary.get("attemptCount") != 1
         failed |= set(record["targets"]) != set(labels)
     except (OSError, ValueError) as error:
         record["bep_error"] = str(error)
@@ -314,6 +327,8 @@ def collect_bazel(directory, group="windows"):
                 if not all(target["required_supervisor_tests"].values()):
                     raise ValueError("Bazel omitted one or more of the twelve Supervisor controls")
             target["failed_test_names"] = re.findall(r"^test (.*?) \.\.\. FAILED$", log, re.M)
+            if group == "windows":
+                target["required_native_counts"] = verify_windows_counts(label, log)
             if not target["libtest_counts"] or any(item["failed"] for item in target["libtest_counts"]) or not sum(item["passed"] + item["failed"] for item in target["libtest_counts"]) or target["xml"]["failures"]:
                 failed = True
         except (OSError, ValueError, ET.ParseError) as error:
