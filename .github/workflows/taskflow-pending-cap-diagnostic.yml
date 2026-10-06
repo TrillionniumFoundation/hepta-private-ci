@@ -23,7 +23,7 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: 0
       CARGO_PROFILE_TEST_DEBUG: 0
     steps:
-      - name: Bound setup and both test commands together
+      - name: Bound setup and tests and strict lint together
         shell: bash
         run: |
           echo "NATIVE_DEADLINE=$(( $(date +%s) + 3000 ))" >> "$GITHUB_ENV"
@@ -47,7 +47,7 @@ jobs:
           set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y build-essential libcap-dev pkg-config
-          rustup toolchain install 1.96.0 --profile minimal
+          rustup toolchain install 1.96.0 --profile minimal --component clippy
       - timeout-minutes: 5
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
@@ -58,33 +58,33 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Test actual-worker pending capacity
-        id: pending
+      - name: Test complete app-server-client package
+        id: client
         shell: bash
         run: |
           set -euo pipefail
           remaining=$(( NATIVE_DEADLINE - $(date +%s) ))
           test "$remaining" -ge 30
-          budget=$(( remaining < 2700 ? remaining : 2700 ))
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-pending-cap-records/pending.json" --minimum-tests 3 --timeout-seconds "$budget" -- just test --locked -p codex-app-server-client --lib -E 'test(remote::pending_capacity_tests)'
-      - name: Retain pending receipt before the second command
+          budget=$(( remaining < 2100 ? remaining : 2100 ))
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-pending-cap-records/client-all.json" --minimum-tests 33 --timeout-seconds "$budget" -- just test --locked -p codex-app-server-client
+      - name: Retain full-client receipt before lint
         if: always()
         timeout-minutes: 3
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: taskflow-pending-cap-first-${{ github.sha }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/taskflow-pending-cap-records/pending.json*
+          name: taskflow-client-all-first-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/taskflow-pending-cap-records/client-all.json*
           if-no-files-found: error
           retention-days: 7
-      - name: Test existing owned-client lifetime in same lib build
-        if: ${{ !cancelled() && steps.pending.outcome != 'skipped' }}
+      - name: Strict app-server-client lint
+        if: ${{ !cancelled() && steps.client.outcome != 'skipped' }}
         shell: bash
         run: |
           set -euo pipefail
           remaining=$(( NATIVE_DEADLINE - $(date +%s) ))
           test "$remaining" -ge 30
-          budget=$(( remaining < 2700 ? remaining : 2700 ))
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-pending-cap-records/lifetime.json" --minimum-tests 3 --timeout-seconds "$budget" -- just test --locked -p codex-app-server-client --lib -E 'test(remote::shutdown_lifetime_tests)'
+          budget=$(( remaining < 1200 ? remaining : 1200 ))
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-pending-cap-records/client-clippy.json" --timeout-seconds "$budget" -- just clippy --locked -p codex-app-server-client --all-targets --no-deps -- -D warnings
       - name: Verify source remains unchanged
         if: always()
         shell: bash
