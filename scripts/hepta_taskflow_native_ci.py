@@ -14,12 +14,12 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 
-BASE = "7d0853fd7ac68eedbe74e62295a22cf864ad583f"
-SOURCE_TREE = 'a736f174d452ef0b4142b9b6d25034447b561687'
-BRANCH = "refs/heads/dot/taskflow-native-encoding-20261006"
-SOURCES = {'codex-rs/hepta-automation/src/taskflow.rs': '88262d0c26bd23582c94ed5a775c98e96abb29a2', 'codex-rs/hepta-automation/src/taskflow_step.rs': '5467d294634eff43210cfc9233f2f0188bd83927', 'codex-rs/hepta-automation/src/retrieval_choice_qualification/encoding.rs': 'ad3b7820badb80e4b287297879b7646149a11ac9', 'codex-rs/hepta-agent-protocol/Cargo.toml': 'a39ba6c36f32c5186511b5702e5010c01b63ca2d', 'codex-rs/hepta-agent-protocol/qualification/retrieval_choice_encoding.rs': 'ddb8da5d3cd7f525b5764cfa3a73ed44a7cda0d3'}
+BASE = "cb36650b1c01e7a329dcff4cf25638117475aa39"
+SOURCE_TREE = '457fc0e9239ff1caa2799548fcea41362eaeeb92'
+BRANCH = "refs/heads/dot/taskflow-native-encoding-box-20261006"
+SOURCES = {'codex-rs/hepta-automation/src/taskflow.rs': '88262d0c26bd23582c94ed5a775c98e96abb29a2', 'codex-rs/hepta-automation/src/taskflow_step.rs': 'c0b053db1f3130959d04158e71b0ee8ab4fd70a3', 'codex-rs/hepta-automation/src/retrieval_choice_qualification/encoding.rs': 'ad3b7820badb80e4b287297879b7646149a11ac9', 'codex-rs/hepta-agent-protocol/Cargo.toml': 'a39ba6c36f32c5186511b5702e5010c01b63ca2d', 'codex-rs/hepta-agent-protocol/qualification/retrieval_choice_encoding.rs': 'ddb8da5d3cd7f525b5764cfa3a73ed44a7cda0d3'}
 DIAGNOSTICS = {".github/workflows/taskflow-native-encoding.yml", "scripts/hepta_taskflow_native_ci.py"}
-ADDED_SOURCE = ('codex-rs/hepta-agent-protocol/qualification/retrieval_choice_encoding.rs', 'codex-rs/hepta-automation/src/retrieval_choice_qualification/encoding.rs')
+CHANGED_SOURCE = {"codex-rs/hepta-automation/src/taskflow_step.rs"}
 REQUIRED = {
  "automation": ("run_lifecycle_is_fenced_and_command_deduplicated", "taskflow_mutations_reject_corrupt_event_chain_before_replay_or_append", "step_outbox_lifecycle_is_durable_fenced_and_idempotent", "step_outbox_failed_commands_leave_no_partial_event_and_expiry_is_fenced"),
  "protocol": ("actual_producer_types_roundtrip_without_shortening_ids", "real_serde_expansion_counts_toward_complete_observation_limit", "exact_total_boundary_and_one_byte_over", "full_observation_has_independent_hard_limit", "duplicate_retained_records_are_counted_twice", "utf8_and_existing_json_escape_bytes_are_preserved", "tags_lengths_and_integer_width_are_fixed", "aggregate_overflow_does_not_mutate_budget"),
@@ -70,11 +70,10 @@ def identity():
     for line in git("diff", "--no-renames", "--name-status", BASE, head).splitlines():
         status, path = line.split("\t")
         changed[path] = status
-    expected = {path: "A" if path in ADDED_SOURCE else "M" for path in SOURCES}
-    expected.update({path: "A" for path in DIAGNOSTICS})
+    expected = {path: "M" for path in CHANGED_SOURCE | DIAGNOSTICS}
     if changed != expected:
-        raise ValueError("changed paths/statuses differ from exact five-source/two-diagnostic scope")
-    blobs = {path: git("rev-parse", f"{head}:{path}") for path in sorted(expected)}
+        raise ValueError("changed paths/statuses differ from exact one-source/two-diagnostic follow-up scope")
+    blobs = {path: git("rev-parse", f"{head}:{path}") for path in sorted(set(SOURCES) | DIAGNOSTICS)}
     for path, blob in SOURCES.items():
         if blobs[path] != blob or git("hash-object", "--path", path, path) != blob:
             raise ValueError("unreviewed source blob: " + path)
@@ -89,7 +88,7 @@ def identity():
         "head": head, "tree": trees[0], "parents": parents, "changed": changed,
         "source_projection": projection,
         "blobs": blobs,
-        "sha256": {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in sorted(expected)},
+        "sha256": {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in sorted(set(SOURCES) | DIAGNOSTICS)},
         "clean": True,
     }
 

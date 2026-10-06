@@ -145,7 +145,7 @@ pub(crate) struct PendingStepOperation {
 }
 
 enum PendingStepOutcome {
-    Historical(TaskFlowStepCommandResult),
+    Historical(Box<TaskFlowStepCommandResult>),
     Fresh(Vec<StepEvent>),
 }
 
@@ -158,7 +158,7 @@ impl PendingStepOperation {
         attempt: u32,
     ) -> Result<TaskFlowStepCommandResult, TaskFlowError> {
         match self.outcome {
-            PendingStepOutcome::Historical(result) => Ok(result),
+            PendingStepOutcome::Historical(result) => Ok(*result),
             PendingStepOutcome::Fresh(events) => Ok(TaskFlowStepCommandResult {
                 status: TaskFlowStepCommandStatus::Applied,
                 receipt: reconstruct_step(owner, run_id, step_id, attempt, &events)?,
@@ -316,10 +316,10 @@ impl AutomationStore {
                 &events,
             )?;
             return Ok(PendingStepOperation {
-                outcome: PendingStepOutcome::Historical(TaskFlowStepCommandResult {
+                outcome: PendingStepOutcome::Historical(Box::new(TaskFlowStepCommandResult {
                     status: TaskFlowStepCommandStatus::AlreadyApplied,
                     receipt: receipt_with_seq(receipt, existing.event_seq),
-                }),
+                })),
             });
         }
         check_active_run_fence(&run, fence, now_ms)?;
@@ -834,10 +834,10 @@ impl AutomationStore {
                 &events,
             )?;
             return Ok(PendingStepOperation {
-                outcome: PendingStepOutcome::Historical(TaskFlowStepCommandResult {
+                outcome: PendingStepOutcome::Historical(Box::new(TaskFlowStepCommandResult {
                     status: TaskFlowStepCommandStatus::AlreadyApplied,
                     receipt: receipt_with_seq(receipt, existing.event_seq),
-                }),
+                })),
             });
         }
         let current = events
