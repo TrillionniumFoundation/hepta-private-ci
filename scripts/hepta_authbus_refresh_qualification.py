@@ -15,6 +15,7 @@ import time
 import xml.etree.ElementTree as ET
 
 BASE = '66f0ba01bb444a245001d7d1fd21121fc8c01206'
+PARENT = 'ab6e8747d509ea561da17b1f445d2513f6dc601d'
 BRANCH = 'refs/heads/dot/authbus-revocation-qualification-20261006'
 PRODUCT = 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
 ORIGINAL_BLOB = 'b4573c8760e8550984aef084759e52bbd82726e0'
@@ -50,8 +51,8 @@ def identity():
         raise ValueError('Source identity or clean-worktree check failed')
     if os.environ.get('HEPTA_CI_LANE') != 'source-head':
         raise ValueError('Source-head lane required')
-    if record.get('parents') != [BASE]:
-        raise ValueError('Single reviewed base parent required for this new branch')
+    if record.get('parents') != [PARENT]:
+        raise ValueError('Exact reviewed predecessor required for this diagnostic correction')
     git('merge-base', '--is-ancestor', BASE, head)
     if git('rev-parse', f'{BASE}:{PRODUCT}') != ORIGINAL_BLOB or git('rev-parse', f'{head}:{PRODUCT}') != REVIEWED_BLOB:
         raise ValueError('Product blob differs from reviewed one-file change')
@@ -130,11 +131,11 @@ def metadata(directory):
 
 
 def discovery(directory):
-    with (directory / 'discovery.json').open('x') as output:
+    with (directory / 'nextest-list.json').open('x') as output:
         subprocess.run(['cargo', 'nextest', 'list', '--locked', '--lib', '-p', PACKAGE,
                         '--cargo-metadata', str(directory / 'cargo-metadata.json'), '--message-format', 'json'],
                        cwd='codex-rs', stdout=output, check=True, timeout=remaining())
-    save(directory / 'discovered-names.json', discovery_names(read_json(directory / 'discovery.json')))
+    save(directory / 'discovered-names.json', discovery_names(read_json(directory / 'nextest-list.json')))
 
 
 def recorded_run(path, command):
