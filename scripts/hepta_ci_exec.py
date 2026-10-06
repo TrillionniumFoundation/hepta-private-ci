@@ -28,12 +28,25 @@ def git(*args: str) -> str:
 
 
 def identity() -> dict:
-    metadata = git("cat-file", "-p", "HEAD").split("\n\n", 1)[0].splitlines()
+    # Status supplies one HEAD observation together with the dirty-worktree
+    # check. Do not traverse upstream history just to capture that identity.
+    status = git(
+        "status", "--porcelain=v2", "--branch", "--no-ahead-behind",
+        "--untracked-files=normal",
+    ).splitlines()
+    commit = next(
+        (line[13:] for line in status if line.startswith("# branch.oid ")), ""
+    )
+    if re.fullmatch(r"[0-9a-f]{40}", commit) is None:
+        raise ValueError("Git status did not return a committed HEAD")
+    # Resolve immutable metadata by the observed object, not three separate
+    # symbolic HEAD reads. Raw parents remain available in shallow checkouts.
+    metadata = git("cat-file", "-p", commit).split("\n\n", 1)[0].splitlines()
     return {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
+        "commit": commit,
+        "tree": next(line[5:] for line in metadata if line.startswith("tree ")),
         "parents": [line[7:] for line in metadata if line.startswith("parent ")],
-        "dirty": bool(git("status", "--porcelain", "--untracked-files=normal")),
+        "dirty": any(not line.startswith("# ") for line in status),
     }
 
 
