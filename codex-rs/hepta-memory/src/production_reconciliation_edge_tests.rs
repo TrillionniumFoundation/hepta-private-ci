@@ -10,6 +10,10 @@ async fn fixture_times(store: &CognitiveStore, lease_id: &str, times: &[(&str, i
     let trigger: String = sqlx::query_scalar(
         "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = 'cognitive_operation_ledger_no_update'",
     ).fetch_one(&mut *transaction).await.expect("original immutable guard");
+    assert_eq!(
+        trigger,
+        "CREATE TRIGGER cognitive_operation_ledger_no_update BEFORE UPDATE ON cognitive_operation_ledger BEGIN SELECT RAISE(ABORT, 'operation ledger is immutable'); END"
+    );
     sqlx::query("DROP TRIGGER cognitive_operation_ledger_no_update")
         .execute(&mut *transaction)
         .await
@@ -20,7 +24,7 @@ async fn fixture_times(store: &CognitiveStore, lease_id: &str, times: &[(&str, i
         ).bind(timestamp).bind(lease_id).bind(id).execute(&mut *transaction).await.expect("fixture timestamp");
         assert_eq!(changed.rows_affected(), 1);
     }
-    sqlx::raw_sql(&trigger)
+    sqlx::raw_sql("CREATE TRIGGER cognitive_operation_ledger_no_update BEFORE UPDATE ON cognitive_operation_ledger BEGIN SELECT RAISE(ABORT, 'operation ledger is immutable'); END")
         .execute(&mut *transaction)
         .await
         .expect("restore exact immutable guard");

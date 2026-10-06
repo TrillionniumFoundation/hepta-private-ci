@@ -17,8 +17,9 @@ import hepta_ci_exec
 from hepta_frozen_bounded import xml_record
 
 BASE = "66f0ba01bb444a245001d7d1fd21121fc8c01206"
-SOURCE_TREE = "09ede9a8cea00da3fd920dcdd43d1bcc3410bcd8"
-BASELINE_TREE = "ca41e6081f17dfe48e4c5bafe91969c36736943e"
+PARENT = "e326b1da0bf18d2dd493779fb24dc9b26c3ce63a"
+SOURCE_TREE = "9c5eebf58c1f2fbd1cc662a1313c769b978f62b4"
+BASELINE_TREE = "ca7e5e353690a9b795fe74f3a276a4d92f2f77ac"
 BRANCH = "refs/heads/dot/operations-fairness-qualification-20261006"
 ADDITIONS = (".github/workflows/operations-fairness-qualification.yml", "scripts/hepta_operations_fairness_ci.py")
 TEST_PATHS = tuple("codex-rs/hepta-memory/src/" + name for name in (
@@ -33,6 +34,9 @@ REQUIRED = tuple(RED) + (
     "cursor_does_not_retain_writer_lock_and_resets_on_reopened_owner",
     "tied_and_new_keys_wrap_past_terminal_holes_without_crossing_destinations",
     "concurrent_cross_wrap_observations_preserve_terminal_cas_and_never_dispatch",
+    "concurrent_same_snapshot_has_one_reservation_and_one_bounded_loser",
+    "stale_owner_and_destination_cannot_overwrite_empty_or_wrapped_version",
+    "poisoned_cursor_rejects_snapshot_and_publication",
 )
 
 def save(path, value):
@@ -53,8 +57,9 @@ def identity():
     result = hepta_ci_exec.identity()
     if result["dirty"] or result["commit"] != os.environ["SOURCE_SHA"] or result["commit"] != os.environ["TESTED_SHA"]:
         raise ValueError("dirty or wrong source identity")
-    if result["parents"] != [BASE] or os.environ.get("HEPTA_CI_LANE") != "source-head":
+    if result["parents"] != [PARENT] or os.environ.get("HEPTA_CI_LANE") != "source-head":
         raise ValueError("diagnostic requires the exact sole parent and source-head lane")
+    git("merge-base", "--is-ancestor", BASE, PARENT)
     with tempfile.TemporaryDirectory() as temp:
         env = dict(os.environ, GIT_INDEX_FILE=str(Path(temp) / "index"))
         git("read-tree", result["commit"], env=env)
@@ -101,7 +106,7 @@ def verify_green(record, junit, focused):
     if record.get("command_exit_code") != 0 or junit["failures"] or any(names.count(name) != 1 for name in REQUIRED):
         raise ValueError("required named native controls did not pass exactly once")
     if focused and (len(names) != len(REQUIRED) or junit["skipped"] != 0 or junit["passed"] != len(REQUIRED)):
-        raise ValueError("focused control inventory is not exactly seven fresh passes")
+        raise ValueError("focused control inventory is not exactly the required fresh passes")
 
 @contextlib.contextmanager
 def source(root, sha):

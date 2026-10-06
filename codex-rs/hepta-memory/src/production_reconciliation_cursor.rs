@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use std::sync::Weak;
 
-use tokio::sync::Mutex;
+use std::sync::Mutex;
 
 use super::DurableWriterLock;
 use super::ProductionDurableWriter;
@@ -11,11 +11,13 @@ use super::ProductionWriterError;
 
 type Position = (i64, String);
 
+#[derive(Clone)]
 struct Cycle {
     upper: Position,
     after: Option<Position>,
 }
 
+#[derive(Clone)]
 struct Scope {
     // Weak identity distinguishes owner incarnations without retaining their
     // writer/store fences after the last actual owner has been dropped.
@@ -26,29 +28,70 @@ struct Scope {
 
 #[derive(Default)]
 pub(super) struct ReconciliationCursor {
-    scope: Mutex<Option<Scope>>,
+    scope: Mutex<Arc<Option<Scope>>>,
 }
 
 impl ReconciliationCursor {
-    /// Serialize discovery and reserve progress before returning one identity. The
-    /// caller never retains this lock while awaiting any destination observer.
+    /// Discover from an immutable snapshot, then reserve with a version CAS.
+    /// No mutex guard crosses SQL or observer awaits; a CAS loser yields no item.
     pub(super) async fn reserve_next(
         &self,
         writer: &ProductionDurableWriter,
         destination: &str,
     ) -> Result<Option<String>, ProductionWriterError> {
-        let mut guard = self.scope.lock().await;
+        let snapshot = self.snapshot()?;
         let writer_identity = Arc::downgrade(&writer._writer_lock);
-        if guard.as_ref().is_some_and(|scope| {
-            !scope.writer.ptr_eq(&writer_identity) || scope.destination != destination
-        }) {
-            *guard = None;
+        let mut scope = snapshot
+            .as_ref()
+            .as_ref()
+            .filter(|scope| {
+                scope.writer.ptr_eq(&writer_identity) && scope.destination == destination
+            })
+            .cloned()
+            .unwrap_or_else(|| Scope {
+                writer: writer_identity,
+                destination: destination.to_string(),
+                cycle: None,
+            });
+        let next = Self::discover_next(writer, destination, &mut scope).await?;
+        self.publish(&snapshot, scope, next)
+    }
+
+    // A held snapshot keeps its Arc allocation alive, so version identity
+    // cannot wrap or suffer pointer ABA even if the state values repeat.
+    fn snapshot(&self) -> Result<Arc<Option<Scope>>, ProductionWriterError> {
+        let guard = self.scope.lock().map_err(|_| {
+            ProductionWriterError::Durability("reconciliation cursor is poisoned".to_string())
+        })?;
+        Ok(Arc::clone(&guard))
+    }
+
+    fn publish(
+        &self,
+        snapshot: &Arc<Option<Scope>>,
+        scope: Scope,
+        next: Option<String>,
+    ) -> Result<Option<String>, ProductionWriterError> {
+        let mut current = self.scope.lock().map_err(|_| {
+            ProductionWriterError::Durability("reconciliation cursor is poisoned".to_string())
+        })?;
+        if !Arc::ptr_eq(snapshot, &current) {
+            // Another caller reserved progress while SQL ran. Do not observe
+            // our stale item, overwrite another scope, or spin/requery. None is
+            // no progress for this call, never proof the backlog is empty.
+            return Ok(None);
         }
-        let scope = guard.get_or_insert_with(|| Scope {
-            writer: writer_identity,
-            destination: destination.to_string(),
-            cycle: None,
-        });
+        // Empty discovery and wrap also install a fresh version: an older
+        // snapshot may not publish over that observation or scope switch.
+        *current = Arc::new(Some(scope));
+        Ok(next)
+    }
+
+    async fn discover_next(
+        writer: &ProductionDurableWriter,
+        destination: &str,
+        scope: &mut Scope,
+    ) -> Result<Option<String>, ProductionWriterError> {
         // An exhausted saved range may wrap once in this reservation. The
         // caller bounds reservations and stops a repeated identity per call.
         for _ in 0..2 {
@@ -118,12 +161,155 @@ impl ReconciliationCursor {
                     after: Some(first.clone()),
                 })
             };
-            // Reserve exactly this item before returning it. An observer
-            // error/cancellation never skips an unattempted page tail. There
-            // is no await between updating progress and returning the identity.
+            // Update only this private snapshot. Cancellation during SQL never
+            // publishes partial progress. The caller's CAS reserves this item
+            // before any observer may run.
             scope.cycle = next_cycle;
             return Ok(Some(first.1));
         }
         Ok(None)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::Barrier;
+
+    fn scope(destination: &str, owner: &Arc<DurableWriterLock>) -> Scope {
+        Scope {
+            writer: Arc::downgrade(owner),
+            destination: destination.to_string(),
+            cycle: None,
+        }
+    }
+
+    fn identity_fixture() -> Arc<DurableWriterLock> {
+        // A unique Arc namespace for scheduling tests, not an acquired writer
+        // fence or authority proof. Real reopen coverage lives with the owner.
+        Arc::new(DurableWriterLock {
+            _file: tempfile::tempfile().expect("identity fixture file"),
+            _path: std::path::PathBuf::from("identity-only-fixture"),
+        })
+    }
+
+    #[test]
+    fn concurrent_same_snapshot_has_one_reservation_and_one_bounded_loser() {
+        let cursor = Arc::new(ReconciliationCursor::default());
+        let snapshot = cursor.snapshot().expect("snapshot");
+        let owner = identity_fixture();
+        let barrier = Arc::new(Barrier::new(/*n*/ 2));
+        let handles: Vec<_> = (0..2)
+            .map(|_| {
+                let cursor = Arc::clone(&cursor);
+                let snapshot = Arc::clone(&snapshot);
+                let owner = Arc::clone(&owner);
+                let barrier = Arc::clone(&barrier);
+                std::thread::spawn(move || {
+                    barrier.wait();
+                    cursor
+                        .publish(
+                            &snapshot,
+                            scope("destination", &owner),
+                            Some("operation".to_string()),
+                        )
+                        .expect("CAS attempt")
+                })
+            })
+            .collect();
+        let outcomes: Vec<_> = handles
+            .into_iter()
+            .map(|h| h.join().expect("thread"))
+            .collect();
+        assert_eq!(outcomes.iter().filter(|item| item.is_some()).count(), 1);
+        assert_eq!(outcomes.iter().filter(|item| item.is_none()).count(), 1);
+        let current = cursor.snapshot().expect("fresh snapshot");
+        assert!(!Arc::ptr_eq(&snapshot, &current));
+        assert_eq!(
+            cursor
+                .publish(
+                    &current,
+                    scope("destination", &owner),
+                    Some("next".to_string())
+                )
+                .expect("later progress"),
+            Some("next".to_string())
+        );
+    }
+
+    #[test]
+    fn stale_owner_and_destination_cannot_overwrite_empty_or_wrapped_version() {
+        let cursor = ReconciliationCursor::default();
+        let first_owner = identity_fixture();
+        let next_owner = identity_fixture();
+        let initial = cursor.snapshot().expect("initial");
+        cursor
+            .publish(
+                &initial,
+                scope("first", &first_owner),
+                Some("first-op".to_string()),
+            )
+            .expect("first scope");
+        let stale = cursor.snapshot().expect("old owner snapshot");
+        // Empty discovery still publishes the new scope/version.
+        assert_eq!(
+            cursor
+                .publish(&stale, scope("next", &next_owner), None)
+                .expect("empty scope switch"),
+            None
+        );
+        assert_eq!(
+            cursor
+                .publish(
+                    &stale,
+                    scope("first", &first_owner),
+                    Some("stale-op".to_string())
+                )
+                .expect("stale CAS"),
+            None
+        );
+        let current = cursor.snapshot().expect("current");
+        let current_scope = current.as_ref().as_ref().expect("scope retained");
+        assert_eq!(current_scope.destination, "next");
+        assert!(current_scope.writer.ptr_eq(&Arc::downgrade(&next_owner)));
+        // Repeating equal state values is still a new version, not pointer ABA.
+        cursor
+            .publish(&current, scope("next", &next_owner), None)
+            .expect("wrap version");
+        assert_eq!(
+            cursor
+                .publish(
+                    &current,
+                    scope("next", &next_owner),
+                    Some("old-cycle".to_string())
+                )
+                .expect("old-cycle CAS"),
+            None
+        );
+    }
+
+    #[test]
+    fn poisoned_cursor_rejects_snapshot_and_publication() {
+        let cursor = Arc::new(ReconciliationCursor::default());
+        let snapshot = cursor.snapshot().expect("before poison");
+        let poison = Arc::clone(&cursor);
+        assert!(
+            std::thread::spawn(move || {
+                let _guard = poison.scope.lock().expect("fixture lock");
+                panic!("controlled cursor poison");
+            })
+            .join()
+            .is_err()
+        );
+        assert!(cursor.snapshot().is_err());
+        assert!(
+            cursor
+                .publish(
+                    &snapshot,
+                    scope("destination", &identity_fixture()),
+                    Some("operation".to_string())
+                )
+                .is_err()
+        );
     }
 }
