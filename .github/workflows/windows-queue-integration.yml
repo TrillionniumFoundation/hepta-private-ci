@@ -1,0 +1,185 @@
+name: Windows Queue integration
+on:
+  push:
+    branches: [dot/windows-queue-pathext-integration-20261006]
+permissions:
+  contents: read
+concurrency:
+  group: windows-queue-integration-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  queue-core-common:
+    runs-on: windows-latest
+    timeout-minutes: 55
+    environment:
+      name: bazel
+      deployment: false
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select evidence directory outside source
+        run: echo "QUEUE_EVIDENCE=$RUNNER_TEMP/windows-queue-integration" >> "$GITHUB_ENV"
+      - name: Prepare pinned native Windows environment
+        timeout-minutes: 8
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Smoke test native MSVC header parser
+        timeout-minutes: 3
+        run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
+      - name: Record clean exact source
+        run: |
+          python - <<'PY'
+          import json, os, pathlib, subprocess, sys
+          sys.path.insert(0, 'scripts')
+          import hepta_ci_candidate
+          root = pathlib.Path.cwd().resolve()
+          evidence = pathlib.Path(os.environ['QUEUE_EVIDENCE']).resolve()
+          assert not evidence.is_relative_to(root)
+          evidence.mkdir(parents=True, exist_ok=False)
+          assert not subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'])
+          record = hepta_ci_candidate.candidate_plan(source=os.environ['SOURCE_SHA'], tested=os.environ['TESTED_SHA'], lane='source-head')
+          (evidence / 'source-before.json').write_text(json.dumps(record, sort_keys=True))
+          PY
+      - name: Execute fresh Queue and Core common targets
+        timeout-minutes: 40
+        run: |
+          export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"
+          python - <<'PYCODE'
+          import json, os, pathlib, subprocess, sys
+          evidence = pathlib.Path(os.environ['QUEUE_EVIDENCE']).resolve()
+          bash = pathlib.Path(os.environ['HEPTA_BAZEL_BASH'])
+          if bash.name.lower() == 'bash':
+              bash = bash.with_name(bash.name + '.exe')
+          assert bash.is_absolute() and bash.name.lower() == 'bash.exe' and bash.is_file()
+          command = [str(bash), '.github/scripts/run-bazel-ci.sh',
+              '--print-failed-action-summary', '--print-failed-test-logs',
+              '--windows-msvc-host-platform', '--remote-download-toplevel', '--',
+              'test', '--platforms=//:windows_x86_64_msvc', '--nocache_test_results',
+              '--test_tag_filters=-argument-comment-lint', '--test_verbose_timeout_warnings',
+              '--test_output=all', '--build_metadata=COMMIT_SHA=' + os.environ['TESTED_SHA'],
+              '--build_event_json_file=' + (evidence / 'tests.bep.jsonl').as_posix(), '--',
+              '//codex-rs/core/tests/common:common-unit-tests',
+              '//codex-rs/ext/queue:queue-queue_service-test']
+          (evidence / 'command.json').write_text(json.dumps(command))
+          kept = 0
+          truncated = False
+          with (evidence / 'command.log').open('xb') as log, subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
+              while chunk := os.read(process.stdout.fileno(), 65536):
+                  saved = chunk[:max(0, 64 * 1024**2 - kept)]
+                  log.write(saved)
+                  kept += len(saved)
+                  truncated |= len(saved) != len(chunk)
+                  sys.stdout.buffer.write(saved)
+                  sys.stdout.buffer.flush()
+              code = process.wait()
+          (evidence / 'command.exit').write_text(str(code))
+          (evidence / 'capture.json').write_text(json.dumps({'bytes': kept, 'truncated': truncated, 'timeout_owner': 'Actions step'}))
+          sys.exit(code or (2 if truncated else 0))
+          PYCODE
+      - name: Verify source and retain exact passing logs and XML
+        if: always() && !cancelled()
+        timeout-minutes: 3
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib, shutil, subprocess, sys, xml.etree.ElementTree as ET
+          sys.path.insert(0, 'scripts')
+          import hepta_ci_candidate
+          evidence = pathlib.Path(os.environ['QUEUE_EVIDENCE']).resolve()
+          assert not subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'])
+          after = hepta_ci_candidate.candidate_plan(source=os.environ['SOURCE_SHA'], tested=os.environ['TESTED_SHA'], lane='source-head')
+          (evidence / 'source-after.json').write_text(json.dumps(after, sort_keys=True))
+          assert after == json.loads((evidence / 'source-before.json').read_text())
+          labels = {
+            '//codex-rs/core/tests/common:common-unit-tests': 'codex-rs/core/tests/common/common-unit-tests',
+            '//codex-rs/ext/queue:queue-queue_service-test': 'codex-rs/ext/queue/queue-queue_service-test',
+          }
+          base = pathlib.Path(os.environ['BAZEL_OUTPUT_BASE']).resolve()
+          testlogs = base / 'execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs'
+          records = {}
+          for label, relative in labels.items():
+              destination = evidence / label.split(':')[-1]
+              destination.mkdir(exist_ok=False)
+              records[label] = {}
+              for filename in ('test.log', 'test.xml'):
+                  source = testlogs / relative / filename
+                  assert source.resolve().is_relative_to(base) and source.is_file()
+                  assert source.stat().st_size <= 16 * 1024 * 1024
+                  shutil.copyfile(source, destination / filename)
+                  records[label][filename] = hashlib.sha256((destination / filename).read_bytes()).hexdigest()
+              tree = ET.parse(destination / 'test.xml').getroot()
+              records[label]['xml_root'] = dict(tree.attrib)
+              records[label]['testcases'] = len(list(tree.iter('testcase')))
+          (evidence / 'test-files.json').write_text(json.dumps(records, sort_keys=True))
+          bep = evidence / 'tests.bep.jsonl'
+          assert bep.stat().st_size <= 32 * 1024 * 1024
+          summaries = {}
+          with bep.open(encoding='utf-8') as stream:
+              for line in stream:
+                  event = json.loads(line)
+                  label = event.get('id', {}).get('testSummary', {}).get('label')
+                  if label in labels:
+                      assert label not in summaries
+                      summaries[label] = event['testSummary']
+          assert set(summaries) == set(labels)
+          for summary in summaries.values():
+              assert summary['overallStatus'] == 'PASSED'
+              assert summary['totalRunCount'] == 1 and summary.get('totalNumCached', 0) == 0
+          assert (evidence / 'command.exit').read_text().strip() == '0'
+          assert json.loads((evidence / 'capture.json').read_text())['truncated'] is False
+          (evidence / 'verified.json').write_text(json.dumps({'source': after, 'targets': summaries, 'scope': 'two exact native targets; individual counts in retained logs/XML'}, sort_keys=True))
+          PY
+      - name: Stage bounded evidence upload
+        if: always()
+        timeout-minutes: 3
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, pathlib
+          root = pathlib.Path(os.environ['QUEUE_EVIDENCE']).resolve()
+          upload = root / 'upload'
+          upload.mkdir(parents=True, exist_ok=False)
+          limits = {name: 1024**2 for name in ('source-before.json', 'source-after.json', 'command.exit', 'command.json', 'capture.json', 'test-files.json', 'verified.json')}
+          limits.update({'command.log': 64 * 1024**2, 'tests.bep.jsonl': 32 * 1024**2})
+          for target in ('common-unit-tests', 'queue-queue_service-test'):
+              for file in ('test.log', 'test.xml'):
+                  limits[target + '/' + file] = 16 * 1024**2
+          records = {}
+          total = 0
+          for name, limit in limits.items():
+              source = root / name
+              if not source.is_file() or source.is_symlink() or not source.resolve().is_relative_to(root):
+                  records[name] = {'retained': False, 'reason': 'missing or unsafe path'}
+                  continue
+              with source.open('rb') as stream:
+                  data = stream.read(limit + 1)
+              if len(data) > limit:
+                  records[name] = {'retained': False, 'reason': 'exceeds per-file bound', 'limit': limit}
+                  continue
+              total += len(data)
+              assert total <= 192 * 1024**2
+              destination = upload / name
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              destination.write_bytes(data)
+              records[name] = {'retained': True, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+          (upload / 'upload-manifest.json').write_text(json.dumps(records, sort_keys=True))
+          PY
+      - name: Upload source-bound test evidence
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: windows-queue-integration-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-queue-integration/upload
+          if-no-files-found: error
