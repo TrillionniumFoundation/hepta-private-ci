@@ -1,0 +1,46 @@
+name: PR 1389 bounded CI log diagnosis
+on:
+  push:
+    branches: [diagnostics/pr-1389-55d89d21]
+permissions:
+  actions: read
+jobs:
+  read-failed-job-logs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Read exact-head failures without changing qualification
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, re, subprocess
+          repo = os.environ["GH_REPO"]
+          if repo != "TrillionniumFoundation/hepta-private-ci":
+              raise SystemExit("unexpected repository")
+          expected = "55d89d21f2239e1cce123880d927013103c2835f"
+          run_id = 37377904936
+          def api(path):
+              return subprocess.check_output(["gh", "api", path], text=True)
+          run = json.loads(api(f"repos/{repo}/actions/runs/{run_id}"))
+          if run["head_sha"] != expected or run["status"] != "completed":
+              raise SystemExit("run identity or completion changed")
+          pattern = re.compile(r"(?i)(?:\berror(?:\[|:)|\bFAILED\b|\bFAIL\b|panicked at|permission denied|access is denied|no space left|os error|test result:|failures:|failed to|could not|linker command|undefined symbols|signal:)")
+          for job_id in (112006737424, 112006737426, 112006737625):
+              job = json.loads(api(f"repos/{repo}/actions/jobs/{job_id}"))
+              if job["run_id"] != run_id or job["head_sha"] != expected or job["conclusion"] != "failure":
+                  raise SystemExit("job identity or conclusion changed")
+              text = api(f"repos/{repo}/actions/jobs/{job_id}/logs")
+              lines = text.splitlines()
+              hits = [i for i, line in enumerate(lines) if pattern.search(line)]
+              selected = sorted({j for i in hits for j in range(max(0, i-3), min(len(lines), i+9))})
+              print(f"DIAGNOSTIC source_sha={expected} run={run_id} job={job_id} name={job['name']} total_lines={len(lines)} matches={len(hits)}")
+              # The original source logs stay intact. Bound only this diagnostic view.
+              for i in selected[-200:]:
+                  line = lines[i].replace("::", ": :")
+                  print(f"L{i+1}: {line[:1200]}")
+              print("END DIAGNOSTIC; not a qualification or passing test result")
+          PY
