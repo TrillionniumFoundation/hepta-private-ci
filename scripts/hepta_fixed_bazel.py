@@ -25,6 +25,7 @@ GROUPS = {
         "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
     ),
     "windows-queue-diagnostic": (
+        "//codex-rs/core/tests/common:common-unit-tests",
         "//codex-rs/ext/queue:queue-queue_service-test",
     ),
     "linux-supervisor": (

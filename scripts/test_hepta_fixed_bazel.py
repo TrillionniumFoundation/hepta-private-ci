@@ -44,6 +44,16 @@ class FixedQualificationTests(unittest.TestCase):
                 self.write(events)
                 with self.assertRaises(ValueError): fixed.verify_bep(self.bep, self.labels)
 
+    def test_queue_controls_and_integration_each_require_fresh_results(self):
+        self.labels = fixed.GROUPS['windows-queue-diagnostic']
+        self.write(self.events())
+        self.assertEqual(set(fixed.verify_bep(self.bep, self.labels)['targets']), set(self.labels))
+        for missing in self.labels:
+            self.write([event for event in self.events()
+                        if event['id']['testSummary']['label'] != missing])
+            with self.assertRaises(ValueError):
+                fixed.verify_bep(self.bep, self.labels)
+
     def test_flaky_outcome_is_retained_not_hidden(self):
         events = self.events(); events[0]['testSummary']['overallStatus'] = 'FLAKY'
         self.write(events)
@@ -71,10 +81,14 @@ class FixedQualificationTests(unittest.TestCase):
             self.assertIn('--windows-msvc-host-platform', command)
             self.assertIn('--platforms=//:windows_x86_64_msvc', command)
             self.assertIn('--nocache_test_results', command)
-            self.assertEqual(command[-1:], list(fixed.GROUPS[group]))
+            self.assertEqual(command[-len(fixed.GROUPS[group]):], list(fixed.GROUPS[group]))
             self.assertNotIn("//codex-rs/core:core-unit-tests", command)
             self.assertNotIn("//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test", command)
             self.assertNotIn('//...', command)
+        self.assertEqual(fixed.GROUPS['windows-queue-diagnostic'], (
+            '//codex-rs/core/tests/common:common-unit-tests',
+            '//codex-rs/ext/queue:queue-queue_service-test',
+        ))
         with self.assertRaises(ValueError): fixed.windows_command('linux-supervisor', self.directory)
 
     def test_bare_or_relative_bash_is_rejected_even_with_path_available(self):

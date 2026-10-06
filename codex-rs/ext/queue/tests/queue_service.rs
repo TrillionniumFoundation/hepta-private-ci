@@ -216,6 +216,22 @@ fn python_hook_uses_resolved_interpreter_without_child_path() {
         .current_dir(fixture.path())
         .output()
         .expect("run Python hook without a child search path");
+    let controls = if !output.status.success()
+        || String::from_utf8_lossy(&output.stdout).trim() != "queue-python-exact-path"
+    {
+        Some(
+            core_test_support::windows_hook_controls::run_queue_python_controls(
+                &python,
+                &program,
+                &argv,
+                &command,
+                &script_path,
+                fixture.path(),
+            ),
+        )
+    } else {
+        None
+    };
     // Redact before debug/byte formatting so escaped paths cannot evade it.
     // Never format Command itself: it also contains environment overrides.
     let mut redactions = vec![(fixture.path().to_string_lossy().into_owned(), "<fixture>")];
@@ -248,6 +264,13 @@ fn python_hook_uses_resolved_interpreter_without_child_path() {
         {
             redactions.push((value.to_string_lossy().into_owned(), "<redacted>"));
         }
+    }
+    // A PowerShell error could echo its encoded argument. Treat that argument
+    // solely as an in-memory secret; never include it in the control report.
+    if let Some(controls) = &controls
+        && let Some(encoded) = &controls.encoded_command
+    {
+        redactions.push((encoded.clone(), "<encoded-command>"));
     }
     redactions.retain(|(value, _)| !value.is_empty());
     redactions.sort_by_key(|(value, _)| std::cmp::Reverse(value.len()));
@@ -299,6 +322,9 @@ fn python_hook_uses_resolved_interpreter_without_child_path() {
             std::str::from_utf8(&output.stderr).is_ok(),
         )
     };
+    if let Some(controls) = &controls {
+        eprintln!("failure-only controls: {}", controls.report(&sanitize));
+    }
     assert!(output.status.success(), "hook failed: {}", diagnostic());
     // Keep raw output in the comparison, but not in assert_eq!'s unredacted diff.
     assert!(

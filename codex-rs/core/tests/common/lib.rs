@@ -34,6 +34,8 @@ pub mod test_codex;
 pub mod test_codex_exec;
 mod test_environment;
 pub mod tracing;
+#[cfg(windows)]
+pub mod windows_hook_controls;
 pub mod zsh_fork;
 
 pub(crate) use test_environment::TestEnvironment;

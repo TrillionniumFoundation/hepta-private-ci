@@ -162,15 +162,16 @@ unsafe fn token_restricting_sid_count(token: HANDLE) -> Result<u32> {
         &mut needed,
     );
     let query_error = GetLastError();
+    let count_size = std::mem::size_of::<u32>();
     let entries_offset = std::mem::offset_of!(TOKEN_GROUPS, Groups);
     anyhow::ensure!(
         queried == 0 && query_error == ERROR_INSUFFICIENT_BUFFER,
         "diagnostic restricting-list size query: {query_error}"
     );
-    // This diagnostic expects one capability. Bound allocation independently of
-    // the returned size and reject malformed/truncated layouts rather than read.
+    // Expect an empty base list or one capability. Bound allocation independently
+    // of the returned size and reject malformed/truncated layouts rather than read.
     anyhow::ensure!(
-        (entries_offset..=64 * 1024).contains(&(needed as usize)),
+        (count_size..=64 * 1024).contains(&(needed as usize)),
         "unexpected diagnostic restricting-list size"
     );
     let capacity = needed;
@@ -187,10 +188,19 @@ unsafe fn token_restricting_sid_count(token: HANDLE) -> Result<u32> {
         GetLastError()
     );
     anyhow::ensure!(
-        needed <= capacity && needed as usize >= entries_offset,
+        needed <= capacity && needed as usize >= count_size,
         "diagnostic restricting-list returned invalid length"
     );
     let count = std::ptr::read_unaligned(storage.as_ptr().cast::<u32>());
+    // An empty variable-length TOKEN_GROUPS needs only its count field. Do not
+    // require or access the aligned Groups member when no entries are present.
+    if count == 0 {
+        return Ok(0);
+    }
+    anyhow::ensure!(
+        needed as usize >= entries_offset,
+        "diagnostic restricting-list entry offset exceeds buffer"
+    );
     let available_entries =
         (needed as usize - entries_offset) / std::mem::size_of::<SID_AND_ATTRIBUTES>();
     anyhow::ensure!(
@@ -200,22 +210,34 @@ unsafe fn token_restricting_sid_count(token: HANDLE) -> Result<u32> {
     Ok(count)
 }
 
-unsafe fn token_diagnostic_u32(token: HANDLE, class: i32) -> Result<u32> {
+unsafe fn token_diagnostic_u32(token: HANDLE, role: &str, class: i32) -> Option<u32> {
+    // Optional metadata only. Decode a DWORD only under its documented contract;
+    // an unsuccessful call or different returned length remains unknown.
     let mut value = 0_u32;
+    let capacity = std::mem::size_of_val(&value) as u32;
     let mut needed = 0;
-    anyhow::ensure!(
-        GetTokenInformation(
-            token,
-            class,
-            (&mut value as *mut u32).cast(),
-            4,
-            &mut needed,
-        ) != 0,
-        "diagnostic token query class={class}: {}",
-        GetLastError()
+    let queried = GetTokenInformation(
+        token,
+        class,
+        (&mut value as *mut u32).cast(),
+        capacity,
+        &mut needed,
     );
-    anyhow::ensure!(needed == 4, "unexpected diagnostic token query size");
-    Ok(value)
+    let win32_error = if queried == 0 {
+        Some(GetLastError())
+    } else {
+        None
+    };
+    let decoded = if queried != 0 && needed == capacity {
+        Some(value)
+    } else {
+        None
+    };
+    eprintln!(
+        "delete diagnostic token_query role={role} class={class} capacity={capacity} return_length={needed} api_return={queried} win32_error={win32_error:?} zero_initialized_buffer={:02x?} decoded_dword={decoded:?}",
+        value.to_ne_bytes(),
+    );
+    decoded
 }
 
 #[derive(Debug)]
@@ -239,11 +261,18 @@ fn deletion_permission_matrix(object_delete: bool, parent_delete_child: bool) ->
     let token = OwnedToken(unsafe {
         create_workspace_write_token_with_caps_from(base.0, &[allowed.as_ptr()])?
     });
+    let base_restricting_count = unsafe { token_restricting_sid_count(base.0)? };
+    anyhow::ensure!(
+        base_restricting_count == 0,
+        "base-token control has restricting SIDs"
+    );
     let restricting_count = unsafe { token_restricting_sid_count(token.0)? };
+    let base_has_restrictions =
+        unsafe { token_diagnostic_u32(base.0, "base", TokenHasRestrictions) };
     let (has_restrictions, app_container, has_allowed, has_unrelated, has_world, has_logon) = unsafe {
         (
-            token_diagnostic_u32(token.0, TokenHasRestrictions)?,
-            token_diagnostic_u32(token.0, TokenIsAppContainer)?,
+            token_diagnostic_u32(token.0, "restricted", TokenHasRestrictions),
+            token_diagnostic_u32(token.0, "restricted", TokenIsAppContainer),
             token_has_restricting_sid(token.0, allowed.as_ptr())?,
             token_has_restricting_sid(token.0, unrelated.as_ptr())?,
             token_has_restricting_sid(token.0, everyone_sid)?,
@@ -252,16 +281,12 @@ fn deletion_permission_matrix(object_delete: bool, parent_delete_child: bool) ->
     };
     // Creation flags are source-declared, not an inferred runtime TOKEN flag.
     eprintln!(
-        "delete diagnostic object_delete={object_delete} parent_delete_child={parent_delete_child} declared_creation_flags={:#x} has_restrictions={has_restrictions} app_container={app_container} restricting_count={restricting_count} restricting_allowed={has_allowed} restricting_unrelated={has_unrelated} restricting_world={has_world} restricting_logon={has_logon}",
+        "delete diagnostic object_delete={object_delete} parent_delete_child={parent_delete_child} declared_creation_flags={:#x} has_restrictions={has_restrictions:?} app_container={app_container:?} base_has_restrictions={base_has_restrictions:?} base_restricting_count={base_restricting_count} restricting_count={restricting_count} restricting_allowed={has_allowed} restricting_unrelated={has_unrelated} restricting_world={has_world} restricting_logon={has_logon}",
         DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED,
     );
     anyhow::ensure!(
         restricting_count == 1 && has_allowed && !has_unrelated && !has_world && !has_logon,
         "diagnostic capability membership mismatch"
-    );
-    anyhow::ensure!(
-        unsafe { token_diagnostic_u32(base.0, TokenHasRestrictions)? } == 0,
-        "base-token control is already restricted"
     );
     let parent_mask = NON_DELETE_ACCESS
         | if parent_delete_child {
