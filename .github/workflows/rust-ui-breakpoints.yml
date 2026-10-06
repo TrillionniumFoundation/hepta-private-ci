@@ -1,0 +1,216 @@
+name: Rust UI new breakpoint acceptance
+'on':
+  push:
+    branches:
+    - dot/rust-ui-breakpoints-20261006
+permissions:
+  contents: read
+concurrency:
+  group: rust-ui-breakpoints-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  breakpoints:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/dot/rust-ui-breakpoints-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      RUSTUP_TOOLCHAIN: 1.95.0
+      CARGO_BUILD_JOBS: '1'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_RELEASE_DEBUG: '0'
+      HEPTA_CI_LANE: source-head
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      REVIEWED_WORKFLOW_SHA256: a2198ac9c88e04b9c67fbede2f7d1435e2f506130210e78991db9a4afea1034b
+    steps:
+    - name: Anchor shared execution deadline before checkout
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "DIAGNOSTIC_DEADLINE=$(( $(date +%s) + 3000 ))" >> "$GITHUB_ENV"
+        echo "DIAGNOSTIC_ROOT=$RUNNER_TEMP/rust-ui-breakpoints" >> "$GITHUB_ENV"
+        echo "TOOL_ROOT=$RUNNER_TEMP/ui-official-tools-robrix" >> "$GITHUB_ENV"
+        echo "CARGO_TARGET_DIR=$RUNNER_TEMP/rust-status-cards-target" >> "$GITHUB_ENV"
+        mkdir -p "$RUNNER_TEMP/rust-ui-breakpoints"
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+        fetch-depth: 2
+      timeout-minutes: 5
+    - name: Bind diagnostic identity and external receipt directories
+      shell: bash
+      run: |
+        set -euo pipefail
+        cat > "$DIAGNOSTIC_ROOT/source-guard.py" <<'PYGUARD'
+        import hashlib, json, os, re, subprocess, sys
+        from pathlib import Path
+        EXPECTED_PARENT = '33cf2729495c058f9870fbc04dcaaea4939017f4'
+        WORKFLOW = '.github/workflows/rust-ui-breakpoints.yml'
+        EXPECTED_BLOBS = {'apps/hepta-control-ui/playwright.breakpoints.config.mjs': '9312ff3fe97442569ff13a3faeefef088b3791dc', 'apps/hepta-control-ui/e2e/robrix-breakpoints.spec.mjs': '41a42b727862d5e3d136695dc7e3591792b79b9d', 'apps/hepta-control-ui/tools/robrix-breakpoint-plan.mjs': '611f07dab17fdce199f3197a6147a45de52a98c4', 'apps/hepta-control-ui/tools/verify-breakpoint-evidence.py': '059bfa9be341e0147bb869a3729250ac9a77a568', 'apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs': '46566c685fdddb9409c23df886a08abd62b4e730'}
+        # Reviewed-source consistency only; this self-check is not a security signature.
+        git = lambda *args: subprocess.check_output(['git', '--no-replace-objects', *args])
+        source = os.environ['SOURCE_SHA']
+        assert re.fullmatch(r'[0-9a-f]{40}', source), 'Source must be one full immutable SHA'
+        commit = git('rev-parse', '--verify', source + '^{commit}').decode().strip()
+        assert commit == source and git('rev-parse', '--verify', 'HEAD^{commit}').decode().strip() == commit
+        header = git('cat-file', '-p', commit).split(b'\n\n', 1)[0].decode().splitlines()
+        trees = [line.split(' ', 1)[1] for line in header if line.startswith('tree ')]
+        parents = [line.split(' ', 1)[1] for line in header if line.startswith('parent ')]
+        assert len(trees) == 1 and parents == [EXPECTED_PARENT], 'Reviewed sole parent changed'
+        tree = trees[0]
+        paths = sorted([WORKFLOW, *EXPECTED_BLOBS])
+        changes = git('diff-tree', '--no-commit-id', '--name-status', '-r', '--no-renames', EXPECTED_PARENT, commit).decode().splitlines()
+        assert sorted(changes) == ['A\t' + path for path in paths], 'Expected exactly six new paths'
+        entries = {}
+        for item in git('ls-tree', '-r', '-z', commit, '--', *paths).split(b'\0'):
+            if not item: continue
+            meta, path = item.split(b'\t', 1)
+            mode, kind, blob = meta.decode().split()
+            assert mode == '100644' and kind == 'blob'
+            entries[path.decode()] = blob
+        assert set(entries) == set(paths)
+        assert all(entries[path] == expected for path, expected in EXPECTED_BLOBS.items()), 'Reviewed blob changed'
+        workflow = git('cat-file', 'blob', entries[WORKFLOW])
+        pattern = rb'(?m)^([ ]*REVIEWED_WORKFLOW_SHA256: )[0-9a-f]{64}$'
+        normalized, matches = re.subn(pattern, lambda match: match.group(1) + b'0' * 64, workflow)
+        assert matches == 1, 'Expected exactly one workflow fingerprint field'
+        assert hashlib.sha256(normalized).hexdigest() == os.environ['REVIEWED_WORKFLOW_SHA256'], 'Other reviewed workflow bytes changed'
+        assert git('status', '--porcelain', '--untracked-files=normal') == b'', 'Source checkout changed'
+        result = {'sourceSha': commit, 'sourceTree': tree, 'parents': parents, 'blobs': entries, 'workflowNormalizedSha256': os.environ['REVIEWED_WORKFLOW_SHA256'], 'dirty': False}
+        output = Path(sys.argv[1])
+        if len(sys.argv) == 3:
+            before = json.loads(Path(sys.argv[2]).read_text())
+            assert before == result, 'Source identity changed after execution'
+        output.write_text(json.dumps(result, indent=2) + '\n')
+        print(json.dumps(result))
+        PYGUARD
+        python3 "$DIAGNOSTIC_ROOT/source-guard.py" "$DIAGNOSTIC_ROOT/source-before.json"
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      with:
+        node-version: '22'
+      timeout-minutes: 5
+    - name: Install and verify existing pinned UI build inputs
+      timeout-minutes: 15
+      shell: bash
+      run: |
+        set -euo pipefail
+        remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+        test "$remaining" -ge 30
+        budget=$(( remaining < 900 ? remaining : 900 ))
+        timeout --signal=TERM --kill-after=10s "${budget}s" bash -euo pipefail <<'SETUP'
+        rustup toolchain install 1.95.0 --profile minimal --target wasm32-unknown-unknown
+        rustup toolchain install nightly-2026-10-02 --profile minimal --component rust-src
+        test "$(rustup run nightly-2026-10-02 rustc --version)" = "rustc 1.101.0-nightly (c36f14571 2026-10-01)"
+        test "$(rustc --version)" = "rustc 1.95.0 (59807616e 2026-04-14)"
+        { rustc --version; rustup run nightly-2026-10-02 rustc --version; node --version; } > "$DIAGNOSTIC_ROOT/tool-versions.txt"
+        SETUP
+    - name: Install existing locked Node build dependencies
+      run: |
+        set -euo pipefail
+        remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+        test "$remaining" -ge 30
+        budget=$(( remaining < 300 ? remaining : 300 ))
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/node-dependencies.json" --timeout-seconds "$budget" -- npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+    - id: canonical_build
+      name: Package canonical pinned Makepad Wasm artifact
+      run: |
+        set -euo pipefail
+        remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+        test "$remaining" -ge 30
+        budget=$(( remaining < 1200 ? remaining : 1200 ))
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/canonical-build.json" --timeout-seconds "$budget" -- npm run build --prefix apps/hepta-control-ui
+    - name: Install Chromium and OCR inputs
+      run: |
+        set -euo pipefail
+        remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+        test "$remaining" -ge 30
+        budget=$(( remaining < 600 ? remaining : 600 ))
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/install-chromium-and-ocr-inputs.json" --timeout-seconds "$budget" -- bash -euo pipefail -c 'cd apps/hepta-control-ui; npx --no-install playwright install --with-deps chromium; sudo apt-get install -y tesseract-ocr tesseract-ocr-eng python3-pil'
+    - name: Check breakpoint source contracts
+      run: |
+        set -euo pipefail
+        remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+        test "$remaining" -ge 30
+        budget=$(( remaining < 120 ? remaining : 120 ))
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/check-breakpoint-source-contracts.json" --timeout-seconds "$budget" -- node --test apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs
+    - name: Run twelve new breakpoint cases
+      run: |
+        set -euo pipefail
+        remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+        test "$remaining" -ge 30
+        budget=$(( remaining < 900 ? remaining : 900 ))
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/run-twelve-new-breakpoint-cases.json" --timeout-seconds "$budget" -- bash -euo pipefail -c 'cd apps/hepta-control-ui; npx --no-install playwright test --config=playwright.breakpoints.config.mjs'
+    - name: Require all twelve source bound results
+      run: |
+        set -euo pipefail
+        remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+        test "$remaining" -ge 30
+        budget=$(( remaining < 120 ? remaining : 120 ))
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/require-all-twelve-source-bound-results.json" --timeout-seconds "$budget" -- python3 apps/hepta-control-ui/tools/verify-breakpoint-evidence.py apps/hepta-control-ui/test-results "$SOURCE_SHA" --output "$DIAGNOSTIC_ROOT/breakpoint-results.json"
+      if: always() && steps.canonical_build.outcome == 'success'
+    - id: bounded_pixels
+      name: Bound raw browser artifact size without changing evidence
+      timeout-minutes: 2
+      if: always()
+      run: |
+        set -euo pipefail
+        python3 - <<'PYBOUND'
+        from pathlib import Path
+        import hashlib, json, os
+        root = Path('apps/hepta-control-ui/test-results')
+        selected = list((root / 'robrix-breakpoints').rglob('*')) + [root / 'robrix-breakpoints-results.json']
+        files = []
+        for path in selected:
+            assert not path.is_symlink(), 'Evidence may not contain symlinks'
+            if not path.is_file():
+                continue
+            size = path.stat().st_size
+            files.append({'path': str(path.relative_to(root)), 'bytes': size, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+        total = sum(item['bytes'] for item in files)
+        bounded = bool(files) and len(files) <= 2000 and total <= 64 * 1024 * 1024 and all(item['bytes'] <= 8 * 1024 * 1024 for item in files)
+        Path(os.environ['DIAGNOSTIC_ROOT'], 'browser-artifact-inventory.json').write_text(json.dumps({'files': files, 'bytes': total, 'bounded': bounded, 'sourceSha': os.environ['SOURCE_SHA']}, indent=2) + '\n')
+        assert bounded, 'Browser evidence exceeds bounded artifact policy or is absent; inspect retained inventory'
+        PYBOUND
+    - name: Upload actual default browser captures and failure diagnostics
+      timeout-minutes: 2
+      if: always() && steps.bounded_pixels.outcome == 'success'
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: rust-ui-breakpoint-pixels-${{ github.sha }}-${{ github.run_attempt }}
+        path: |
+          apps/hepta-control-ui/test-results/robrix-breakpoints/
+          apps/hepta-control-ui/test-results/robrix-breakpoints-results.json
+        if-no-files-found: error
+        retention-days: '7'
+    - name: Retain source and artifact metadata without compiled caches
+      timeout-minutes: 2
+      if: always()
+      shell: bash
+      run: |
+        set -euo pipefail
+        python3 "$DIAGNOSTIC_ROOT/source-guard.py" "$DIAGNOSTIC_ROOT/source-after.json" "$DIAGNOSTIC_ROOT/source-before.json"
+        python3 - <<'PYMANIFEST'
+        import hashlib, json, os
+        from pathlib import Path
+        root = Path(os.environ['DIAGNOSTIC_ROOT'])
+        manifest = Path('apps/hepta-control-ui/dist/build-manifest.json')
+        build = root / 'canonical-build.json'
+        if build.exists() and json.loads(build.read_text()).get('status') == 'passed':
+            assert manifest.is_file(), 'Successful packaging did not retain its manifest'
+            data = manifest.read_bytes()
+            (root / 'build-manifest.json').write_bytes(data)
+            inventory = [{'path': str(p.relative_to(manifest.parent)), 'bytes': p.stat().st_size, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(manifest.parent.rglob('*')) if p.is_file()]
+            (root / 'packaged-files.json').write_text(json.dumps({'manifestSha256': hashlib.sha256(data).hexdigest(), 'files': inventory, 'qualification': False}, indent=2) + '\n')
+        PYMANIFEST
+    - name: Upload diagnostic receipts only
+      timeout-minutes: 2
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: rust-ui-breakpoints-${{ github.sha }}-${{ github.run_attempt }}
+        path: |
+          ${{ runner.temp }}/rust-ui-breakpoints/
+        if-no-files-found: error
+        retention-days: '7'
