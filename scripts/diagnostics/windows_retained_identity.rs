@@ -342,17 +342,55 @@ fn length_drift_and_hardlink_inputs_are_rejected() -> io::Result<()> {
     Ok(())
 }
 
+fn parent_fixture_stage<T>(stage: &'static str, result: io::Result<T>) -> io::Result<T> {
+    // Labels contain no paths or identity data. Successful operations remain silent
+    // so the native harness's per-case receipt is not interleaved with diagnostics.
+    result.inspect_err(|error| {
+        eprintln!(
+            "parent-stage={stage} raw_os_error={:?}",
+            error.raw_os_error()
+        );
+    })
+}
+
 #[test]
 fn persistent_parent_replacement_is_rejected() -> io::Result<()> {
     let f = Fixture::new()?;
+    let control = f.root.join("ordinary-control");
+    parent_fixture_stage("ordinary-create", std::fs::create_dir(&control))?;
+    parent_fixture_stage(
+        "ordinary-write",
+        std::fs::write(control.join("db"), b"same"),
+    )?;
+    parent_fixture_stage(
+        "ordinary-rename",
+        std::fs::rename(&control, f.root.join("ordinary-control-renamed")),
+    )?;
+    parent_fixture_stage("ordinary-recreate", std::fs::create_dir(&control))?;
+    parent_fixture_stage(
+        "ordinary-rewrite",
+        std::fs::write(control.join("db"), b"same"),
+    )?;
+
     let parent = f.root.join("parent");
-    std::fs::create_dir(&parent)?;
+    parent_fixture_stage("retained-create", std::fs::create_dir(&parent))?;
     let file = parent.join("db");
-    std::fs::write(&file, b"same")?;
-    let guard = Inspection::bind(&file)?;
-    std::fs::rename(&parent, f.root.join("old-parent"))?;
-    std::fs::create_dir(&parent)?;
-    std::fs::write(&file, b"same")?;
+    parent_fixture_stage("retained-write", std::fs::write(&file, b"same"))?;
+    let guard = parent_fixture_stage("retained-bind", Inspection::bind(&file))?;
+    let renamed = parent_fixture_stage(
+        "retained-rename",
+        std::fs::rename(&parent, f.root.join("old-parent")),
+    );
+    if renamed.is_err() {
+        eprintln!(
+            "parent-outcome=mutation-blocked ordinary-control-complete=true replacement-complete=false revalidation-exercised=false"
+        );
+    }
+    // Keep the original strict obligation: a blocked fixture is a FAILED case,
+    // not proof that revalidation rejected an actual replacement or an ABA race.
+    renamed?;
+    parent_fixture_stage("retained-recreate", std::fs::create_dir(&parent))?;
+    parent_fixture_stage("retained-rewrite", std::fs::write(&file, b"same"))?;
     assert!(guard.verify().is_err());
     Ok(())
 }

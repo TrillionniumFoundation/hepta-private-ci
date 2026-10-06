@@ -7,9 +7,10 @@ import subprocess
 import sys
 
 BASE = "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+PARENT = "112c9a1d83ca765eba86902dfae598d7a473ffb9"
 BRANCH = "refs/heads/dot/operations-windows-identity-diagnostic-20261006"
 SOURCE = "scripts/diagnostics/windows_retained_identity.rs"
-SOURCE_SHA256 = "a87d37c60559874616d4652e8a0d401b27f0b353e11d4efa3f3b250fa24717c8"
+SOURCE_SHA256 = "c63578240dcdadbdf100e60b2256b3293caf757421a3238d6baf284d6e33d60e"
 PATHS = sorted((SOURCE, "scripts/diagnostics/windows_retained_identity_ci.py", ".github/workflows/operations-windows-identity-diagnostic.yml"))
 NAMES = sorted(("stable_identity_and_unchanged_bytes", "equal_length_path_replacement_is_rejected",
     "length_drift_and_hardlink_inputs_are_rejected", "persistent_parent_replacement_is_rejected",
@@ -40,7 +41,7 @@ def identity():
     digest = hashlib.sha256(canonical).hexdigest()
     blob = hashlib.sha1(b"blob " + str(len(canonical)).encode("ascii") + b"\0" + canonical).hexdigest()
     working_blob = git("hash-object", "--path", SOURCE, SOURCE)
-    if head != os.environ["GITHUB_SHA"] or parents != [BASE] or len(trees) != 1 or paths != PATHS:
+    if head != os.environ["GITHUB_SHA"] or parents != [PARENT] or len(trees) != 1 or paths != PATHS:
         raise ValueError("head, sole parent, or changed paths differ from reviewed proposal")
     if git("status", "--porcelain", "--untracked-files=all") or digest != SOURCE_SHA256 or working_blob != blob:
         raise ValueError("dirty source, incorrect canonical digest, or working blob differs")
