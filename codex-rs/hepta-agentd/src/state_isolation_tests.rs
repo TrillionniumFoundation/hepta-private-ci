@@ -672,3 +672,91 @@ fn private_owner_trust_refuses_unsupported_platform_ownership() {
         "AuthBus text: private owner configuration currently requires Unix ownership checks"
     );
 }
+
+#[tokio::test]
+async fn zero_effect_readiness_rejects_missing_cognitive_owner() {
+    let (_temp, registry, previous) = fixture().expect("runtime fixture");
+    let identity = previous.identity.clone();
+    drop(previous);
+    let state = AgentdState::new(identity, registry, /*event_capacity*/ 16)
+        .expect("fresh zero-effect state");
+    state.refresh_generation().expect("current generation");
+    assert!(state.authbus.get().is_none());
+    assert!(state.automation_effect.get().is_none());
+    assert!(state.evidence.get().is_none());
+    assert!(state.production_operations.get().is_none());
+    state
+        .mark_runtime_prerequisites_ready()
+        .expect("inspect absent owner");
+    state
+        .mark_app_server_ready()
+        .expect("app server alone ready");
+    let readiness = state
+        .response(
+            /*request_id*/ 1,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Readiness,
+        )
+        .await
+        .expect("readiness response");
+    assert!(
+        matches!(readiness.payload, AgentdPayload::Readiness(snapshot)
+        if !snapshot.critical_stores_ready && snapshot.revocation_ready
+            && snapshot.required_ports_ready && !snapshot.admission_open)
+    );
+    let health = state
+        .response(
+            /*request_id*/ 2,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Health,
+        )
+        .await
+        .expect("health response");
+    assert!(matches!(health.payload, AgentdPayload::Health(snapshot)
+        if !snapshot.ready && !snapshot.promotion_ready));
+}
+
+#[tokio::test]
+async fn zero_effect_readiness_requires_real_store_then_app_server() {
+    let (_temp, registry, previous) = fixture().expect("runtime fixture");
+    let identity = previous.identity.clone();
+    drop(previous);
+    let state = AgentdState::new(identity, registry, /*event_capacity*/ 16)
+        .expect("fresh zero-effect state");
+    state.refresh_generation().expect("current generation");
+    assert!(state.authbus.get().is_none());
+    assert!(state.automation_effect.get().is_none());
+    assert!(state.evidence.get().is_none());
+    assert!(state.production_operations.get().is_none());
+    let cognitive =
+        codex_hepta_cognitive_store::DurableCognitiveStore::open(&state.identity.layout)
+            .await
+            .expect("real cognitive owner");
+    state
+        .attach_cognitive_store(Arc::new(cognitive))
+        .expect("attach matching owner");
+    state
+        .mark_runtime_prerequisites_ready()
+        .expect("freeze real owner prerequisites");
+    let before = state
+        .response(
+            /*request_id*/ 1,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Health,
+        )
+        .await
+        .expect("before app readiness");
+    assert!(matches!(before.payload, AgentdPayload::Health(snapshot)
+        if !snapshot.ready && !snapshot.promotion_ready));
+    state.mark_app_server_ready().expect("app server readiness");
+    let after = state
+        .response(
+            /*request_id*/ 2,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Health,
+        )
+        .await
+        .expect("after app readiness");
+    assert!(matches!(after.payload, AgentdPayload::Health(snapshot)
+        if snapshot.ready && snapshot.promotion_ready && !snapshot.fenced));
+}

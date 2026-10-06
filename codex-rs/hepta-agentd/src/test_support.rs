@@ -118,6 +118,10 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // This fixture has no effect-authority host. Freeze the same zero-
+        // authority prerequisites as production only after opening and attaching
+        // the actual cognitive owner; App Server readiness remains a later gate.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 

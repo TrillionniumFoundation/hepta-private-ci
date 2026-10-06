@@ -165,7 +165,7 @@ impl AgentdState {
         handle: crate::PlasticityRuntimeHandleV1,
     ) -> Result<(), AgentdError> {
         self.plasticity_runtime
-            .set(handle.producer.clone())
+            .set(handle.producer)
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
