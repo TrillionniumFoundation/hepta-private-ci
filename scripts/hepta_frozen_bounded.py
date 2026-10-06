@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import re
+import runpy
 import shutil
 import signal
 import subprocess
@@ -14,7 +15,7 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 
-TREE = "ba49d9ed32e2c1e628c715d419f6d926d727b53a"
+TREE = "ce39e8f8ba742f101b481d99ae7bcefec9065f44"
 BASE = "69d951e0577e5d6ba537775252896cd1ed028fae"
 BRANCH = "refs/heads/dot/frozen-bounded-qualification-20261006"
 ADDITIONS = (".github/workflows/frozen-bounded-qualification.yml", "scripts/hepta_frozen_bounded.py")
@@ -93,7 +94,11 @@ def commands(group):
         return result + [lint("affected-strict-selected", packages + ["codex-core", "codex-app-server"])]
     if group == "lifecycle":
         packages = ["codex-hepta-control-plane", "codex-hepta-supervisor", "codex-hepta-intelligence-eval", "codex-hepta-agent-protocol"]
-        return [test("lifecycle-default", packages), lint("control-supervisor-strict-dependencies", packages[:2], False),
+        return [{"name": "executor-identity-regressions", "command": ["env", "PYTHONPATH=scripts", sys.executable,
+                 "-m", "unittest", "-v", "test_hepta_ci_exec", "test_hepta_ci_exec_deadline",
+                 "test_hepta_ci_exec_output", "test_hepta_ci_exec_signals", "test_hepta_ci_identity"],
+                 "tests": False, "minimum_tests": 67},
+                test("lifecycle-default", packages), lint("control-supervisor-strict-dependencies", packages[:2], False),
                 {"name": "owned-development-docs", "command": [sys.executable, "scripts/hepta-docs.py", "verify", "--profile", "development"], "tests": False}]
     raise ValueError("unknown Linux group")
 
@@ -127,22 +132,59 @@ def recorded_run(output, command, *, minimum_tests, timeout_seconds):
         for number, handler in previous.items():
             signal.signal(number, handler)
 
+def prepare_metadata(group, directory):
+    # Match the repository wrapper's bounded eligibility decision before
+    # adding the reporting-only tool config that otherwise forces fallback.
+    policy = runpy.run_path("scripts/run-nextest.py", run_name="hepta_bounded_nextest_policy")
+    workspace = Path.cwd() / "codex-rs"
+    selected = [item["command"][2:] for item in commands(group) if item["tests"]]
+    if not all(policy["use_scoped_metadata"](args, workspace) for args in selected):
+        raise ValueError("repository policy requires full metadata; bounded diagnostic will not expand scope")
+    path = directory / "cargo-metadata.json"
+    with path.open("xb") as stream:
+        subprocess.run(["cargo", "metadata", "--no-deps", "--format-version=1", "--locked",
+                        "--manifest-path", str(workspace / "Cargo.toml")],
+                       stdout=stream, check=True, timeout=remaining())
+    if path.stat().st_size > LIMIT:
+        raise ValueError("scoped metadata exceeds evidence bound")
+    metadata = json.loads(path.read_text())
+    names = {package["name"] for package in metadata["packages"] if package["id"] in metadata["workspace_members"]}
+    if metadata["resolve"] is not None or Path(metadata["workspace_root"]).resolve() != workspace.resolve():
+        raise ValueError("metadata is not the exact selected workspace's no-deps view")
+    if not all(package in names for args in selected for package in policy["scoped_packages"](args)):
+        raise ValueError("selected package is absent from fresh workspace metadata")
+
 def linux(group, directory):
-    records = [{**item, "status": "not-run"} for item in commands(group)]
+    # JUnit is profile-specific in the pinned nextest. A lower-priority tool
+    # overlay adds reporting without replacing repository test policy.
+    junit_config = directory / "nextest-junit.toml"
+    with junit_config.open("x", encoding="utf-8") as stream:
+        stream.write("[profile.local.junit]\npath = " + json.dumps(str(directory / "nextest-junit.xml")) + "\n")
+    records = [{"name": "scoped-cargo-metadata", "command": [sys.executable,
+                "scripts/hepta_frozen_bounded.py", "metadata", group], "tests": False, "status": "not-run"}]
+    records += [{**item, "status": "not-run"} for item in commands(group)]
+    for record in records:
+        if record["tests"]:
+            record["command"][2:2] = ["--tool-config-file", f"hepta-bounded:{junit_config}",
+                                       "--cargo-metadata", str(directory / "cargo-metadata.json")]
     failure = False
     for record in records:
         item = record
         name = item["name"]
+        if item["tests"] and records[0]["status"] != "passed":
+            record["error"] = "fresh scoped metadata preparation did not pass; Rust stage not run"
+            save(directory / "stages.json", records)
+            continue
         save(directory / "stages.json", records)
         try:
             budget = remaining()
-            report = Path(os.environ["CARGO_TARGET_DIR"]) / "nextest/local/junit.xml"
+            report = directory / "nextest-junit.xml"
             if item["tests"]:
                 report.unlink(missing_ok=True)  # Only stale evidence, never a compiled artifact.
             mask = item.get("umask")
             oldmask = os.umask(mask) if mask is not None else None
             try:
-                code = recorded_run(directory / (name + ".json"), item["command"], minimum_tests=int(item["tests"]), timeout_seconds=budget)
+                code = recorded_run(directory / (name + ".json"), item["command"], minimum_tests=item.get("minimum_tests", int(item["tests"])), timeout_seconds=budget)
             finally:
                 if oldmask is not None:
                     os.umask(oldmask)
@@ -306,7 +348,7 @@ def stage(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("before", "after", "run", "collect-bazel", "stage", "budget"))
+    parser.add_argument("phase", choices=("before", "after", "run", "metadata", "collect-bazel", "stage", "budget"))
     parser.add_argument("group", choices=("client", "fixture", "lifecycle", "windows", "supervisor-bazel"))
     args = parser.parse_args()
     directory = Path(os.environ["BOUNDED_EVIDENCE"]).resolve()
@@ -314,6 +356,10 @@ def main():
     if not directory.is_absolute() or directory.is_relative_to(root):
         raise ValueError("evidence must be outside source")
     directory.mkdir(parents=True, exist_ok=True)
+    if args.phase == "metadata":
+        identity()
+        prepare_metadata(args.group, directory)
+        return 0
     if args.phase == "collect-bazel":
         return collect_bazel(directory, args.group)
     if args.phase == "stage":
