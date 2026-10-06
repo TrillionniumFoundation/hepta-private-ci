@@ -369,7 +369,24 @@ impl MatrixdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let result = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                if std::env::var_os("HEPTA_WINDOWS_PEER_DIAGNOSTICS")
+                    .is_some_and(|value| value == "1")
+                {
+                    use std::io::Write as _;
+                    let outcome = match &result {
+                        Ok(Ok(())) => "success",
+                        Err(_) => "deadline",
+                        Ok(Err(MatrixdControlError::Io(_))) => "io-error",
+                        Ok(Err(MatrixdControlError::Invalid(_))) => "invalid-frame",
+                        Ok(Err(MatrixdControlError::Json(_))) => "json-error",
+                        Ok(Err(MatrixdControlError::Protocol(_))) => "protocol-error",
+                    };
+                    let _ = writeln!(
+                        std::io::stderr().lock(),
+                        "matrixd_control phase=connection outcome={outcome}"
+                    );
+                }
             });
         }
     }
@@ -392,7 +409,17 @@ async fn serve_connection(
     stream: UnixStream,
     state: Arc<MatrixdControlState>,
 ) -> Result<(), MatrixdControlError> {
-    stream.ensure_current_user_peer()?;
+    stream.ensure_current_user_peer().inspect_err(|error| {
+        if std::env::var_os("HEPTA_WINDOWS_PEER_DIAGNOSTICS").is_some_and(|value| value == "1") {
+            use std::io::Write as _;
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "matrixd_control phase=peer-auth outcome=rejected kind={:?} os_error={:?}",
+                error.kind(),
+                error.raw_os_error(),
+            );
+        }
+    })?;
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_MATRIXD_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();

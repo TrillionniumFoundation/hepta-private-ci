@@ -358,7 +358,15 @@ mod platform {
         let peer_user = token_user(peer_token.raw())?;
         let current_user = token_user(current_token.raw())?;
 
-        if unsafe { EqualSid(peer_user.sid()?, current_user.sid()?) } == 0 {
+        let same_user = unsafe { EqualSid(peer_user.sid()?, current_user.sid()?) } != 0;
+        if std::env::var_os("HEPTA_WINDOWS_PEER_DIAGNOSTICS").is_some_and(|value| value == "1") {
+            use std::io::Write as _;
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "windows_peer phase=token-user sid_match={same_user}"
+            );
+        }
+        if !same_user {
             return Err(io::Error::new(
                 io::ErrorKind::PermissionDenied,
                 "Unix socket peer is not owned by the current user",
@@ -384,8 +392,19 @@ mod platform {
                 None,
             )
         };
-        if result == SOCKET_ERROR {
-            return Err(io::Error::from_raw_os_error(unsafe { WSAGetLastError() }));
+        // Capture the error immediately; opt-in logging must not replace it.
+        let socket_error = (result == SOCKET_ERROR).then(|| unsafe { WSAGetLastError() });
+        if std::env::var_os("HEPTA_WINDOWS_PEER_DIAGNOSTICS").is_some_and(|value| value == "1") {
+            use std::io::Write as _;
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "windows_peer phase=ioctl api_result={result} returned_bytes={bytes_returned} capacity={} pid_nonzero={} winsock_error={socket_error:?}",
+                std::mem::size_of_val(&peer_process_id),
+                peer_process_id != 0,
+            );
+        }
+        if let Some(error) = socket_error {
+            return Err(io::Error::from_raw_os_error(error));
         }
         if bytes_returned != std::mem::size_of_val(&peer_process_id) as u32 || peer_process_id == 0
         {
