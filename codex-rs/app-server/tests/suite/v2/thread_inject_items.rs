@@ -253,18 +253,7 @@ async fn thread_inject_items_adds_raw_response_items_to_thread_history() -> Resu
     );
 
     let injected_value = serde_json::to_value(&injected_item)?;
-    let model_input: Vec<Value> = response_mock
-        .single_request()
-        .input()
-        .into_iter()
-        .map(strip_response_item_ids_from_json)
-        .collect();
-    assert!(
-        model_input
-            .iter()
-            .all(|item| item.get("metadata").is_none() && item.get("client_authored").is_none()),
-        "private harness metadata must never enter the provider request"
-    );
+    let model_input = semantic_model_input(&response_mock.single_request());
     assert!(
         response_item_text_position(&model_input, application_context_text).is_some(),
         "application-provided developer context should reach the model"
@@ -408,23 +397,44 @@ async fn thread_inject_items_adds_raw_response_items_after_a_turn() -> Result<()
     let requests = response_mock.requests();
     assert_eq!(requests.len(), 2);
     assert!(
-        !requests[0]
-            .input()
+        !semantic_model_input(&requests[0])
             .into_iter()
-            .map(strip_response_item_ids_from_json)
             .any(|item| item == injected_value),
         "injected item should not be sent before it is injected"
     );
     assert!(
-        requests[1]
-            .input()
+        semantic_model_input(&requests[1])
             .into_iter()
-            .map(strip_response_item_ids_from_json)
             .any(|item| item == injected_value),
         "injected item should be sent after being injected into existing history"
     );
 
     Ok(())
+}
+
+// Generated item IDs and transport ordering metadata do not change injected
+// content. Check privacy on the actual wire items before projecting those two
+// transport fields away; never filter or reorder the captured request items.
+fn semantic_model_input(request: &responses::ResponsesRequest) -> Vec<Value> {
+    request
+        .input()
+        .into_iter()
+        .map(|mut item| {
+            assert!(
+                item.get("metadata").is_none() && item.get("client_authored").is_none(),
+                "private harness metadata must never enter the provider request: {item}"
+            );
+            assert!(
+                item.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds")
+                    .is_none(),
+                "local classifications must not reach the loopback provider: {item}"
+            );
+            if let Some(object) = item.as_object_mut() {
+                object.remove("internal_chat_message_metadata_passthrough");
+            }
+            strip_response_item_ids_from_json(item)
+        })
+        .collect()
 }
 
 fn response_item_text_position(items: &[Value], needle: &str) -> Option<usize> {
