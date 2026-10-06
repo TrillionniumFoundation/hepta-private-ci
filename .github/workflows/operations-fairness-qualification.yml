@@ -54,7 +54,7 @@ jobs:
         timeout-minutes: 5
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Run instrumented baseline and exact candidate checks
+      - name: Run complete Memory suite and strict lint on the exact follow-up
         shell: bash
         timeout-minutes: 50
         run: python3 scripts/hepta_operations_fairness_ci.py run

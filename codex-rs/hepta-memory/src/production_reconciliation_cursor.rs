@@ -199,28 +199,25 @@ mod tests {
         let snapshot = cursor.snapshot().expect("snapshot");
         let owner = identity_fixture();
         let barrier = Arc::new(Barrier::new(/*n*/ 2));
-        let handles: Vec<_> = (0..2)
-            .map(|_| {
-                let cursor = Arc::clone(&cursor);
-                let snapshot = Arc::clone(&snapshot);
-                let owner = Arc::clone(&owner);
-                let barrier = Arc::clone(&barrier);
-                std::thread::spawn(move || {
-                    barrier.wait();
-                    cursor
-                        .publish(
-                            &snapshot,
-                            scope("destination", &owner),
-                            Some("operation".to_string()),
-                        )
-                        .expect("CAS attempt")
-                })
+        // Eagerly spawn both participants before joining either one. A lazy
+        // spawn-and-join iterator would deadlock the first barrier waiter.
+        let handles: [std::thread::JoinHandle<Option<String>>; 2] = std::array::from_fn(|_| {
+            let cursor = Arc::clone(&cursor);
+            let snapshot = Arc::clone(&snapshot);
+            let owner = Arc::clone(&owner);
+            let barrier = Arc::clone(&barrier);
+            std::thread::spawn(move || {
+                barrier.wait();
+                cursor
+                    .publish(
+                        &snapshot,
+                        scope("destination", &owner),
+                        Some("operation".to_string()),
+                    )
+                    .expect("CAS attempt")
             })
-            .collect();
-        let outcomes: Vec<_> = handles
-            .into_iter()
-            .map(|h| h.join().expect("thread"))
-            .collect();
+        });
+        let outcomes = handles.map(|handle| handle.join().expect("thread"));
         assert_eq!(outcomes.iter().filter(|item| item.is_some()).count(), 1);
         assert_eq!(outcomes.iter().filter(|item| item.is_none()).count(), 1);
         let current = cursor.snapshot().expect("fresh snapshot");

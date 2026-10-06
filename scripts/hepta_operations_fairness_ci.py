@@ -17,13 +17,11 @@ import hepta_ci_exec
 from hepta_frozen_bounded import xml_record
 
 BASE = "66f0ba01bb444a245001d7d1fd21121fc8c01206"
-PARENT = "e326b1da0bf18d2dd493779fb24dc9b26c3ce63a"
-SOURCE_TREE = "9c5eebf58c1f2fbd1cc662a1313c769b978f62b4"
-BASELINE_TREE = "ca7e5e353690a9b795fe74f3a276a4d92f2f77ac"
+PARENT = "eb85f3958731e4f6936e1a35343f92a6b5c4a804"
+SOURCE_TREE = "98a578579a43f64cc6f9deaccdcf555e2a2f01b0"
 BRANCH = "refs/heads/dot/operations-fairness-qualification-20261006"
 ADDITIONS = (".github/workflows/operations-fairness-qualification.yml", "scripts/hepta_operations_fairness_ci.py")
-TEST_PATHS = tuple("codex-rs/hepta-memory/src/" + name for name in (
-    "production_cognitive_source_target_tests.rs", "production_reconciliation_fairness_tests.rs", "production_reconciliation_edge_tests.rs"))
+# Historical baseline gate retained for receipt audits; run() does not execute it.
 RED = {
     "same_destination_unavailable_prefix_does_not_starve_later_operation": "unavailable prefix must not hide later identity",
     "cloned_dispatcher_reserves_beyond_paused_observer_and_cancelled_page_wraps": "concurrent reservations must reach all three identities",
@@ -37,6 +35,12 @@ REQUIRED = tuple(RED) + (
     "concurrent_same_snapshot_has_one_reservation_and_one_bounded_loser",
     "stale_owner_and_destination_cannot_overwrite_empty_or_wrapped_version",
     "poisoned_cursor_rejects_snapshot_and_publication",
+    "abrupt_child_keeps_private_sidecars_and_public_exact_cut_recovery",
+    "recovery_does_not_repair_an_unsafe_existing_sidecar",
+    "existing_private_bytes_are_neither_truncated_nor_rewritten",
+    "existing_links_and_restrictive_permissions_are_rejected_without_repair",
+    "existing_fifo_is_rejected_without_waiting_for_a_peer",
+    "open_rejects_existing_nonprivate_main_without_repair",
 )
 
 def save(path, value):
@@ -144,36 +148,24 @@ def run():
     before = identity()
     if json.loads((evidence / "source-before.json").read_text()) != before:
         raise ValueError("source changed since pre-setup verification")
-    baseline = Path(os.environ["RUNNER_TEMP"]) / "operations-test-baseline"
-    git("worktree", "add", "--detach", str(baseline), BASE)
-    for path in TEST_PATHS:
-        destination = baseline / path
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(root / path, destination)
-    git("add", "--", *TEST_PATHS, cwd=baseline)
-    tree = git("write-tree", cwd=baseline)
-    if tree != BASELINE_TREE or set(git("diff", "--cached", "--name-only", BASE, cwd=baseline).splitlines()) != set(TEST_PATHS):
-        raise ValueError("instrumented baseline changed unapproved source")
-    env = dict(os.environ, GIT_AUTHOR_NAME="dot source diagnostic", GIT_AUTHOR_EMAIL="diagnostic@example.invalid", GIT_COMMITTER_NAME="dot source diagnostic", GIT_COMMITTER_EMAIL="diagnostic@example.invalid")
-    sha = git("commit-tree", tree, "-p", BASE, "-m", "Local test-only instrumented baseline", cwd=baseline, env=env)
-    git("checkout", "--detach", sha, cwd=baseline)
-    save(evidence / "baseline-source.json", {"commit": sha, "tree": tree, "parent": BASE, "test_paths": TEST_PATHS, "scope": "test-only instrumented baseline, not remote source"})
-    stages = [{"name": name, "status": "not-run"} for name in ("baseline-red", "candidate-focused", "memory-default", "memory-strict")]
+    # The instrumented original baseline's four exact behavioral failures are
+    # already retained on eb85. This test-only lint follow-up reruns only the
+    # affected complete Memory suite and strict lint, not that baseline again.
+    stages = [{"name": name, "status": "not-run"} for name in ("memory-default", "memory-strict")]
     save(evidence / "stages.json", stages)
     for stage in stages:
         name = stage["name"]
         directory = evidence / name
         directory.mkdir()
-        tested_root, tested_sha = (baseline, sha) if name == "baseline-red" else (root, before["commit"])
+        tested_root, tested_sha = root, before["commit"]
         try:
             with source(tested_root, tested_sha):
                 if name == "memory-strict":
                     command = ["just", "clippy", "--locked", "-p", "codex-hepta-memory", "--all-targets", "--", "-D", "warnings"]
                 else:
-                    selected = RED if name == "baseline-red" else REQUIRED if name == "candidate-focused" else None
-                    command = test_command(tested_root, directory, selected)
+                    command = test_command(tested_root, directory, None)
                 output = directory / "native.json"
-                code = recorded(output, command, 0 if name in ("baseline-red", "memory-strict") else len(REQUIRED), 1500 if name == "baseline-red" else 900)
+                code = recorded(output, command, 0 if name == "memory-strict" else len(REQUIRED), 1500 if name == "memory-default" else 900)
                 record = json.loads(output.read_text())
                 stage["exit_code"] = code
                 if record.get("interrupted_signal") is not None:
@@ -186,19 +178,17 @@ def run():
                 else:
                     junit = xml_record(directory / "junit.xml")
                     save(directory / "junit-summary.json", junit)
-                    if name == "baseline-red": verify_red(record, junit)
-                    else:
-                        if code: raise ValueError("candidate execution wrapper rejected the run")
-                        verify_green(record, junit, name == "candidate-focused")
+                    if code: raise ValueError("candidate execution wrapper rejected the run")
+                    verify_green(record, junit, False)
                     stage["passed"], stage["skipped"] = junit["passed"], junit["skipped"]
-                stage["status"] = "expected-behavioral-failure" if name == "baseline-red" else "passed"
+                stage["status"] = "passed"
         except (OSError, ValueError, subprocess.SubprocessError, ET.ParseError) as error:
             stage.update(status="failed-or-incomplete", error=str(error))
         save(evidence / "stages.json", stages)
     after = identity()
     save(evidence / "source-after.json", after)
     if after != before: raise ValueError("candidate source changed")
-    return int(any(s["status"] not in ("passed", "expected-behavioral-failure") for s in stages))
+    return int(any(s["status"] != "passed" for s in stages))
 
 def before_setup():
     evidence = Path(os.environ["OPERATIONS_EVIDENCE"])
