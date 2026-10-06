@@ -7,15 +7,26 @@ use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Foundation::ERROR_INSUFFICIENT_BUFFER;
 use windows_sys::Win32::Security::ACCESS_ALLOWED_ACE;
 use windows_sys::Win32::Security::ACE_HEADER;
+use windows_sys::Win32::Security::AccessCheck;
+use windows_sys::Win32::Security::Authorization::GetNamedSecurityInfoW;
+use windows_sys::Win32::Security::DuplicateToken;
+use windows_sys::Win32::Security::GENERIC_MAPPING;
+use windows_sys::Win32::Security::GROUP_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::GetAce;
 use windows_sys::Win32::Security::GetSecurityDescriptorControl;
+use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
+use windows_sys::Win32::Security::PRIVILEGE_SET;
 use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::SE_DACL_PROTECTED;
+use windows_sys::Win32::Security::SecurityImpersonation;
 use windows_sys::Win32::Security::TOKEN_GROUPS;
 use windows_sys::Win32::Security::TokenHasRestrictions;
 use windows_sys::Win32::Security::TokenIsAppContainer;
 use windows_sys::Win32::Storage::FileSystem::DeleteFileW;
 use windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::RemoveDirectoryW;
 
 // No generic rights, inherited ACEs, owner-specific grant or ambient DACL may
@@ -240,6 +251,101 @@ unsafe fn token_diagnostic_u32(token: HANDLE, role: &str, class: i32) -> Option<
     decoded
 }
 
+// This is a test-only ordinary-identity control, not a production token policy.
+// Disable maximum privileges without LUA_TOKEN or restricting SIDs. Windows
+// retains SeChangeNotifyPrivilege; this isolates privilege differences without
+// claiming to strip traversal privilege or change ordinary group membership.
+unsafe fn max_privileges_disabled_control(base: HANDLE) -> Result<OwnedToken> {
+    let mut token = 0;
+    anyhow::ensure!(
+        CreateRestrictedToken(
+            base,
+            DISABLE_MAX_PRIVILEGE,
+            0,
+            std::ptr::null(),
+            0,
+            std::ptr::null(),
+            0,
+            std::ptr::null(),
+            &mut token,
+        ) != 0,
+        "diagnostic max-privileges-disabled control: {}",
+        GetLastError()
+    );
+    let token = OwnedToken(token);
+    anyhow::ensure!(
+        token_restricting_sid_count(token.0)? == 0,
+        "max-privileges-disabled control unexpectedly has restricting SIDs"
+    );
+    Ok(token)
+}
+
+// Observe the ACL check for each right independently of NTFS deletion fallback.
+// AccessCheck is supporting evidence only; the native delete plus existence
+// assertion below remains the actual boundary test.
+unsafe fn observe_delete_right(path: &Path, token: HANDLE, right: u32, role: &str) -> Result<()> {
+    let mut descriptor = std::ptr::null_mut();
+    let code = GetNamedSecurityInfoW(
+        to_wide(path).as_ptr(),
+        SE_FILE_OBJECT,
+        DACL_SECURITY_INFORMATION | OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION,
+        std::ptr::null_mut(),
+        std::ptr::null_mut(),
+        std::ptr::null_mut(),
+        std::ptr::null_mut(),
+        &mut descriptor,
+    );
+    if code != ERROR_SUCCESS {
+        if !descriptor.is_null() {
+            LocalFree(descriptor as HLOCAL);
+        }
+        anyhow::bail!("diagnostic access-check descriptor: {code}");
+    }
+    let result = (|| -> Result<()> {
+        let mut duplicate = 0;
+        anyhow::ensure!(
+            DuplicateToken(token, SecurityImpersonation, &mut duplicate) != 0,
+            "diagnostic impersonation-token duplicate: {}",
+            GetLastError()
+        );
+        let duplicate = OwnedToken(duplicate);
+        let mapping = GENERIC_MAPPING {
+            GenericRead: FILE_GENERIC_READ,
+            GenericWrite: FILE_GENERIC_WRITE,
+            GenericExecute: FILE_GENERIC_EXECUTE,
+            GenericAll: FILE_ALL_ACCESS,
+        };
+        // Aligned, fixed bounded output storage. A larger required size is a
+        // reported API failure, never an unchecked read or allocation request.
+        let mut privileges = [0_usize; 512];
+        let mut length = std::mem::size_of_val(&privileges) as u32;
+        let mut granted = 0;
+        let mut allowed = 0;
+        let queried = AccessCheck(
+            descriptor,
+            duplicate.0,
+            right,
+            &mapping,
+            privileges.as_mut_ptr().cast::<PRIVILEGE_SET>(),
+            &mut length,
+            &mut granted,
+            &mut allowed,
+        );
+        let error = if queried == 0 || allowed == 0 {
+            Some(GetLastError())
+        } else {
+            None
+        };
+        eprintln!(
+            "delete diagnostic access_check role={role} right={right:#x} api_return={queried} allowed={allowed} granted={granted:#x} privilege_buffer_length={length} win32_error={error:?}"
+        );
+        anyhow::ensure!(queried != 0, "diagnostic AccessCheck failed: {error:?}");
+        Ok(())
+    })();
+    LocalFree(descriptor as HLOCAL);
+    result
+}
+
 #[derive(Debug)]
 struct DeleteObservation {
     capability: &'static str,
@@ -251,8 +357,27 @@ struct DeleteObservation {
 }
 
 fn deletion_permission_matrix(object_delete: bool, parent_delete_child: bool) -> Result<()> {
+    deletion_permission_matrix_with_control(object_delete, parent_delete_child, false)
+}
+
+fn deletion_permission_matrix_with_control(
+    object_delete: bool,
+    parent_delete_child: bool,
+    disable_control_max_privileges: bool,
+) -> Result<()> {
     let mut fixture = DiagnosticFixture::new()?;
     let base = OwnedToken(unsafe { get_current_token_for_restriction()? });
+    let ordinary_control = if disable_control_max_privileges {
+        Some(unsafe { max_privileges_disabled_control(base.0)? })
+    } else {
+        None
+    };
+    let control_token = ordinary_control.as_ref().map_or(base.0, |token| token.0);
+    let control_role = if disable_control_max_privileges {
+        "max-privileges-disabled"
+    } else {
+        "raw-base"
+    };
     let allowed = LocalSid::from_string("S-1-5-21-181-282-383-484")?;
     let unrelated = LocalSid::from_string("S-1-5-21-191-292-393-494")?;
     let mut logon = unsafe { get_logon_sid_bytes(base.0)? };
@@ -281,7 +406,7 @@ fn deletion_permission_matrix(object_delete: bool, parent_delete_child: bool) ->
     };
     // Creation flags are source-declared, not an inferred runtime TOKEN flag.
     eprintln!(
-        "delete diagnostic object_delete={object_delete} parent_delete_child={parent_delete_child} declared_creation_flags={:#x} has_restrictions={has_restrictions:?} app_container={app_container:?} base_has_restrictions={base_has_restrictions:?} base_restricting_count={base_restricting_count} restricting_count={restricting_count} restricting_allowed={has_allowed} restricting_unrelated={has_unrelated} restricting_world={has_world} restricting_logon={has_logon}",
+        "delete diagnostic control={control_role} object_delete={object_delete} parent_delete_child={parent_delete_child} declared_creation_flags={:#x} has_restrictions={has_restrictions:?} app_container={app_container:?} base_has_restrictions={base_has_restrictions:?} base_restricting_count={base_restricting_count} restricting_count={restricting_count} restricting_allowed={has_allowed} restricting_unrelated={has_unrelated} restricting_world={has_world} restricting_logon={has_logon}",
         DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED,
     );
     anyhow::ensure!(
@@ -330,9 +455,27 @@ fn deletion_permission_matrix(object_delete: bool, parent_delete_child: bool) ->
                     verify_diagnostic_dacl(&parent, &parent_grants)?;
                     verify_diagnostic_dacl(&child, &child_grants)?;
                 }
+                let selected = if restricted { token.0 } else { control_token };
+                let role = if restricted {
+                    "restricted"
+                } else {
+                    control_role
+                };
+                eprintln!(
+                    "delete diagnostic rights control={control_role} capability={label} directory={directory} restricted={restricted}"
+                );
+                for (path, right) in [(&parent, FILE_DELETE_CHILD), (&child, DELETE)] {
+                    // Supporting metadata must never suppress a native boundary
+                    // observation. API failure stays explicitly unknown.
+                    if let Err(error) = unsafe { observe_delete_right(path, selected, right, role) }
+                    {
+                        eprintln!(
+                            "delete diagnostic access_check_unknown role={role} right={right:#x} error={error}"
+                        );
+                    }
+                }
                 let wide = to_wide(&child);
                 let win32_error = {
-                    let selected = if restricted { token.0 } else { base.0 };
                     let _impersonation = unsafe { Impersonation::enter(selected)? };
                     // Record GetLastError immediately, before any other API call.
                     let succeeded = unsafe {
@@ -365,7 +508,7 @@ fn deletion_permission_matrix(object_delete: bool, parent_delete_child: bool) ->
                         && (!restricted || label == "allowed"),
                 };
                 eprintln!(
-                    "delete diagnostic capability={} directory={} restricted={} win32_error={} exists_after={} expected_delete={}",
+                    "delete diagnostic control={control_role} capability={} directory={} restricted={} win32_error={} exists_after={} expected_delete={}",
                     observation.capability,
                     observation.directory,
                     observation.restricted,
@@ -416,4 +559,26 @@ fn deletion_isolation_with_parent_delete_child_only() -> Result<()> {
 #[test]
 fn deletion_isolation_with_both_delete_routes() -> Result<()> {
     deletion_permission_matrix(true, true)
+}
+
+// Retain the original raw-base matrices and their assertions. These additional
+// matrices change only the ordinary control, never the production restricted token.
+#[test]
+fn deletion_isolation_max_privileges_disabled_neither_route() -> Result<()> {
+    deletion_permission_matrix_with_control(false, false, true)
+}
+
+#[test]
+fn deletion_isolation_max_privileges_disabled_object_delete_only() -> Result<()> {
+    deletion_permission_matrix_with_control(true, false, true)
+}
+
+#[test]
+fn deletion_isolation_max_privileges_disabled_parent_delete_child_only() -> Result<()> {
+    deletion_permission_matrix_with_control(false, true, true)
+}
+
+#[test]
+fn deletion_isolation_max_privileges_disabled_both_routes() -> Result<()> {
+    deletion_permission_matrix_with_control(true, true, true)
 }
