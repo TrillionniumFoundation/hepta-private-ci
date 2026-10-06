@@ -13,6 +13,40 @@ use makepad_widgets::*;
 script_mod! {
  use mod.prelude.widgets.*
  use mod.widgets.*
+ // A vertical shared composition: no fixed text heights or desktop-only facts.
+ mod.widgets.ObservationCard = View {
+  width: Fill height: Fit flow: Down padding: 18 spacing: 10
+  show_bg: true
+  draw_bg +: {
+   color: COLOR_SECONDARY border: uniform(COLOR_BORDER)
+   secondary: uniform(COLOR_ROBRIX_PURPLE)
+   pixel: fn() {
+    let sdf = Sdf2d.viewport(self.pos * self.rect_size)
+    sdf.box(0.5, 0.5, self.rect_size.x - 1.0, self.rect_size.y - 1.0, 8.0)
+    sdf.fill_keep(self.color)
+    sdf.stroke(self.border, 1.0)
+    // Static branding stroke, never an operational health indicator.
+    sdf.move_to(18.0, 1.0)
+    sdf.line_to(50.0, 1.0)
+    sdf.stroke(self.secondary, 2.0)
+    return sdf.result
+   }
+  }
+  card_title := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT}
+  headline := Label {width: Fill flow: Flow.Right{wrap: true} text: "Not requested" draw_text +: {color: COLOR_TEXT text_style: theme.font_regular{font_size: 22}}}
+  detail := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT}
+ }
+ mod.widgets.RuntimeObservationPanel = #(RuntimeObservationPanel::register_widget(vm)) {
+  width: Fill height: Fit flow: Down spacing: 16
+  owner_card := mod.widgets.ObservationCard {card_title +: {text: "Production owner"}}
+  legacy_card := mod.widgets.ObservationCard {card_title +: {text: "Legacy runtime observation"}}
+  authority_note := Label {width: Fill flow: Flow.Right{wrap: true} text: "These observations do not provide current write authority. Chat and operation commands remain unavailable." draw_text.color: COLOR_TEXT}
+  native_limitations := Label {visible: false width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT}
+ }
+ mod.widgets.ObservationHeading = Label {
+  width: Fill flow: Flow.Right{wrap: true} text: "Runtime observations"
+  draw_text +: {color: COLOR_TEXT text_style: theme.font_regular{font_size: 24}}
+ }
  mod.widgets.HeptaBrandBar = View {
   width: Fill height: 68 flow: Right align: Align{y: 0.5}
   padding: Inset{left: 33, right: 24} spacing: 20
@@ -36,9 +70,10 @@ script_mod! {
    room_screen := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
    console_screen := ScrollYView {
     flow: Down padding: 24 spacing: 12
-    Label {text: "Console" draw_text.color: COLOR_TEXT}
-    owner_refresh := mod.widgets.AuroraButton {text: "Refresh observations" enabled: false}
-    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable." draw_text.color: COLOR_TEXT}
+    mod.widgets.ObservationHeading {}
+    Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only, point-in-time metadata" draw_text.color: COLOR_TEXT}
+    owner_refresh := mod.widgets.AuroraButton {height: 44 text: "Refresh observations" enabled: false}
+    observation_panel := mod.widgets.RuntimeObservationPanel {}
    }
   }
  }
@@ -98,14 +133,53 @@ script_mod! {
       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
      }
      console_page := ScrollYView {flow: Down padding: 16 spacing: 12
-      mobile_owner_refresh := mod.widgets.AuroraButton {text: "Refresh observations" enabled: false}
-      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable."}
+      mod.widgets.ObservationHeading {}
+      Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only, point-in-time metadata" draw_text.color: COLOR_TEXT}
+      mobile_owner_refresh := mod.widgets.AuroraButton {height: 44 text: "Refresh observations" enabled: false}
+      mobile_observation_panel := mod.widgets.RuntimeObservationPanel {}
      }
     }
    }
   }
  }
 }
+/// Read retained typed state before painting, including a newly created Dock panel.
+#[derive(Script, ScriptHook, Widget)]
+pub struct RuntimeObservationPanel {
+    #[deref]
+    view: View,
+}
+impl Widget for RuntimeObservationPanel {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+    }
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        let display = cx.global::<crate::runtime_status::RuntimeDisplay>().clone();
+        self.view
+            .label(cx, ids!(owner_card.headline))
+            .set_text(cx, display.owner.headline);
+        self.view
+            .label(cx, ids!(owner_card.detail))
+            .set_text(cx, &display.owner.detail);
+        self.view
+            .label(cx, ids!(legacy_card.headline))
+            .set_text(cx, display.legacy.headline);
+        self.view
+            .label(cx, ids!(legacy_card.detail))
+            .set_text(cx, &display.legacy.detail);
+        let native_note = self.view.widget(cx, ids!(native_limitations));
+        let show_native_note = !display.native_note.is_empty();
+        if native_note.visible() != show_native_note {
+            native_note.set_visible(cx, show_native_note);
+        }
+        if show_native_note {
+            native_note.set_text(cx, &display.native_note);
+        }
+        // Label setters skip identical strings; publication invalidates the tree.
+        self.view.draw_walk(cx, scope, walk)
+    }
+}
+
 /// The existing Chat/Console Dock, under a shared display-only room heading.
 /// It receives the original workspace and forwards every event unchanged.
 #[derive(Script, ScriptHook, Widget)]
@@ -135,10 +209,6 @@ impl Widget for MainConversationUI {
         let step = self.view.draw_walk(cx, scope, walk);
         // Dock creates this child lazily during drawing. Apply only after it
         // exists, and avoid ButtonRef::set_enabled's unconditional redraw loop.
-        let status = cx
-            .global::<crate::runtime_status::RuntimeDisplay>()
-            .text
-            .clone();
         let enabled = cfg!(target_arch = "wasm32")
             && !cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
         let button = self.view.widget(cx, ids!(owner_refresh));
@@ -147,11 +217,20 @@ impl Widget for MainConversationUI {
             self.view
                 .button(cx, ids!(owner_refresh))
                 .set_enabled(cx, enabled);
+            let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
+            self.view.button(cx, ids!(owner_refresh)).set_text(
+                cx,
+                if busy {
+                    "Reading observations…"
+                } else {
+                    "Refresh observations"
+                },
+            );
             self.owner_refresh_rendered = Some(key);
+            // A lazy button was already drawn with template defaults. The normal
+            // setter redraw is suppressed in Draw; schedule one bounded repaint.
+            cx.redraw_area_in_draw(button.area());
         }
-        self.view
-            .label(cx, ids!(console_status))
-            .set_text(cx, &status);
         step
     }
 }
@@ -370,10 +449,6 @@ impl Widget for HomeScreen {
                 .set_enabled(cx, !workspace.composing);
         }
         let step = self.view.draw_walk(cx, scope, walk);
-        let status = cx
-            .global::<crate::runtime_status::RuntimeDisplay>()
-            .text
-            .clone();
         let enabled = cfg!(target_arch = "wasm32")
             && !cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
         let button = self.view.widget(cx, ids!(mobile_owner_refresh));
@@ -382,11 +457,20 @@ impl Widget for HomeScreen {
             self.view
                 .button(cx, ids!(mobile_owner_refresh))
                 .set_enabled(cx, enabled);
+            let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
+            self.view.button(cx, ids!(mobile_owner_refresh)).set_text(
+                cx,
+                if busy {
+                    "Reading observations…"
+                } else {
+                    "Refresh observations"
+                },
+            );
             self.owner_refresh_rendered = Some(key);
+            // A lazy button was already drawn with template defaults. The normal
+            // setter redraw is suppressed in Draw; schedule one bounded repaint.
+            cx.redraw_area_in_draw(button.area());
         }
-        self.view
-            .label(cx, ids!(mobile_console_status))
-            .set_text(cx, &status);
         step
     }
 }

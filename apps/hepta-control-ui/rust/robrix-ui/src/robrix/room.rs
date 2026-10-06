@@ -123,7 +123,7 @@ script_mod! {
   }
  }
 }
-/// Displays the existing conversation title without changing workspace state.
+/// Displays the visible route title without changing workspace state.
 #[derive(Script, ScriptHook, Widget)]
 pub struct ConversationHeading {
     #[deref]
@@ -148,9 +148,14 @@ impl Widget for ConversationHeading {
         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
             self.view.label(cx, ids!(room_actions)).set_text(
                 cx,
-                workspace
-                    .title_for(workspace.active_id())
-                    .unwrap_or("New conversation"),
+                crate::presentation::workspace_heading(
+                    workspace,
+                    if self.compact {
+                        crate::presentation::HeadingLayout::Compact
+                    } else {
+                        crate::presentation::HeadingLayout::Desktop
+                    },
+                ),
             );
         }
         self.view.draw_walk(cx, scope, walk)

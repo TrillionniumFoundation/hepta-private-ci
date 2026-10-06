@@ -52,6 +52,27 @@ pub enum OwnerReadState {
 }
 
 impl OwnerReadState {
+    /// Display-only headline derived from validated metadata, never write authority.
+    /// Recorded dispositions are deliberately distinct from current health.
+    pub fn observation_headline(&self) -> &'static str {
+        match self {
+            Self::Unavailable(RuntimeUnavailable::NotConnected) => "Not requested",
+            Self::Unavailable(_) => "Unavailable",
+            Self::Loading => "Reading…",
+            Self::Received(document) => match document.observation {
+                Observation::NotAttached {} => "Not attached",
+                Observation::Unavailable { .. } => "Unavailable",
+                Observation::Observed { disposition, .. } => match disposition {
+                    Disposition::Missing => "Recorded missing",
+                    Disposition::Active => "Recorded active",
+                    Disposition::ExpiredActive => "Recorded expired active",
+                    Disposition::Released => "Recorded released",
+                    Disposition::RolledBack => "Recorded rolled back",
+                },
+            },
+        }
+    }
+
     pub fn display_text(&self) -> String {
         let detail = match self {
             Self::Unavailable(RuntimeUnavailable::NotConnected) => "No owner observation has been requested for this view. Use the read-only control above to query metadata.".to_owned(),

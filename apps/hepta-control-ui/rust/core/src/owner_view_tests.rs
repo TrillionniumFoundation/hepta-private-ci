@@ -91,3 +91,55 @@ fn ticket_exhaustion_does_not_recycle_request_identity() {
         &OwnerReadState::Unavailable(RuntimeUnavailable::CounterExhausted)
     );
 }
+
+#[test]
+fn card_headlines_distinguish_absence_from_recorded_metadata() {
+    assert_eq!(
+        OwnerReader::default().state().observation_headline(),
+        "Not requested"
+    );
+    assert_eq!(OwnerReadState::Loading.observation_headline(), "Reading…");
+    for (observation, expected) in [
+        (serde_json::json!({"status":"not_attached"}), "Not attached"),
+        (
+            serde_json::json!({"status":"unavailable","reason":"busy"}),
+            "Unavailable",
+        ),
+        (
+            serde_json::json!({"status":"observed","generation":null,"disposition":"missing"}),
+            "Recorded missing",
+        ),
+        (
+            serde_json::json!({"status":"observed","generation":1,"disposition":"active"}),
+            "Recorded active",
+        ),
+        (
+            serde_json::json!({"status":"observed","generation":1,"disposition":"expired_active"}),
+            "Recorded expired active",
+        ),
+        (
+            serde_json::json!({"status":"observed","generation":1,"disposition":"released"}),
+            "Recorded released",
+        ),
+        (
+            serde_json::json!({"status":"observed","generation":1,"disposition":"rolled_back"}),
+            "Recorded rolled back",
+        ),
+    ] {
+        let state =
+            OwnerReadState::Received(parse(200, &document(observation)).expect("valid fixture"));
+        assert_eq!(state.observation_headline(), expected);
+        assert!(state.display_text().contains("not current write authority"));
+    }
+    for reason in [
+        RuntimeUnavailable::Transport,
+        RuntimeUnavailable::TimedOut,
+        RuntimeUnavailable::Oversize,
+        RuntimeUnavailable::InvalidStatus,
+        RuntimeUnavailable::CounterExhausted,
+    ] {
+        let state = OwnerReadState::Unavailable(reason);
+        assert_eq!(state.observation_headline(), "Unavailable");
+        assert!(state.display_text().contains(&format!("{reason:?}")));
+    }
+}

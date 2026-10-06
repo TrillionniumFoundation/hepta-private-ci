@@ -207,9 +207,8 @@ impl RendererHost {
             ui.widget(cx, ids!(native_host_status))
                 .set_text(cx, &self.view.status);
             let missing = "Linux development host: authenticated startup status and safe close are connected. Operation binding, final-use actions, reconciliation/history controls, update staging/activation controls and accessibility settings are not yet composed here. Chat Send remains unavailable without its independent writer owner.";
-            ui.label(cx, ids!(console_status)).set_text(cx, missing);
-            ui.label(cx, ids!(mobile_console_status))
-                .set_text(cx, missing);
+            cx.global::<crate::runtime_status::RuntimeDisplay>()
+                .native_note = missing.to_owned();
             ui.button(cx, ids!(native_retry_close))
                 .set_visible(cx, self.view.can_retry_close);
             ui.view(cx, ids!(native_content)).set_visible(

@@ -16,6 +16,26 @@ pub const MAX_FILTER_BYTES: usize = 512;
 pub const MAX_PREVIEW_BYTES: usize = 160;
 pub const MAX_NOTE_BYTES: usize = 2048;
 
+/// Whether the shared heading belongs to the desktop workspace or compact pages.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum HeadingLayout {
+    Desktop,
+    Compact,
+}
+
+/// Read-only title for the visible route; compact navigation takes precedence.
+pub fn workspace_heading(workspace: &ChatWorkspace, layout: HeadingLayout) -> &str {
+    if layout == HeadingLayout::Compact && workspace.navigation_open {
+        return "Conversations";
+    }
+    match workspace.tab {
+        WorkspaceTab::Console => "Console",
+        WorkspaceTab::Conversations => workspace
+            .title_for(workspace.active_id())
+            .unwrap_or("New conversation"),
+    }
+}
+
 /// Stable within one principal presentation. Epoch prevents a recycled local
 /// room zero from reusing another principal's widgets or callbacks.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]

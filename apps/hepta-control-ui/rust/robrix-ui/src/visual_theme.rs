@@ -264,6 +264,9 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             if name == id!(brand_mark) {
                 script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent)}});
             }
+            if name == id!(owner_card) || name == id!(legacy_card) {
+                script_apply_eval!(cx,widget,{draw_bg +: {color: #(surface) border: #(border) secondary: #(secondary)}});
+            }
             if name == id!(avatar_frame) {
                 script_apply_eval!(cx,widget,{draw_bg +: {color: #(selected) border_color: #(accent)}});
             }

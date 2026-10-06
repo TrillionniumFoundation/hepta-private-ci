@@ -3,26 +3,63 @@ use hepta_control_core::owner_view::OwnerReadState;
 use hepta_control_core::runtime_view::RuntimeReadState;
 use hepta_control_core::runtime_view::RuntimeUnavailable;
 
+/// A display projection, not an owner or command-admission capability.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub(crate) struct ObservationCardPresentation {
+    pub(crate) headline: &'static str,
+    pub(crate) detail: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct RuntimeDisplay {
-    pub(crate) text: String,
+    pub(crate) owner: ObservationCardPresentation,
+    pub(crate) legacy: ObservationCardPresentation,
+    pub(crate) native_note: String,
     pub(crate) busy: bool,
+}
+impl RuntimeDisplay {
+    fn from_observations(owner: &OwnerReadState, legacy: &RuntimeReadState) -> Self {
+        Self {
+            owner: ObservationCardPresentation {
+                headline: owner.observation_headline(),
+                // Preserve every validated field, bounded failure reason and caveat.
+                // Never recover typed state by parsing this human-readable text.
+                detail: owner.display_text(),
+            },
+            legacy: ObservationCardPresentation {
+                headline: match legacy {
+                    RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected) => {
+                        "Not requested"
+                    }
+                    RuntimeReadState::Unavailable(_) => "Unavailable",
+                    RuntimeReadState::Loading => "Reading…",
+                    RuntimeReadState::Ready(_) => "Snapshot received",
+                },
+                detail: legacy.display_text(),
+            },
+            native_note: String::new(),
+            busy: false,
+        }
+    }
 }
 impl Default for RuntimeDisplay {
     fn default() -> Self {
+        let mut display = Self::from_observations(
+            &OwnerReadState::Unavailable(RuntimeUnavailable::NotConnected),
+            &RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected),
+        );
         if !cfg!(target_arch = "wasm32") {
-            return Self {
-                text: "Read-only metadata is unavailable in this native product port. No native owner bridge is installed; chat and commands remain unavailable.".to_owned(),
-                busy: false,
+            display.owner = ObservationCardPresentation {
+                headline: "Unavailable on native",
+                detail: "No native owner metadata bridge is installed.".to_owned(),
+            };
+            display.legacy = ObservationCardPresentation {
+                headline: "Unavailable on native",
+                detail: "Read-only runtime metadata is unavailable in this native product port."
+                    .to_owned(),
             };
         }
-        Self {
-            text: format!(
-                "{}\n\nLegacy runtime observation\n{}",
-                OwnerReadState::Unavailable(RuntimeUnavailable::NotConnected).display_text(),
-                RuntimeReadState::Unavailable(RuntimeUnavailable::NotConnected).display_text()
-            ),
-            busy: false,
-        }
+        display
     }
 }
 
@@ -215,23 +252,34 @@ mod web {
             self.deadline = Timer::default();
         }
         fn publish(&self, cx: &mut Cx, ui: &WidgetRef) {
-            let text = format!(
-                "{}\n\nLegacy runtime observation\n{}",
-                self.owner.state().display_text(),
-                self.legacy.state().display_text()
-            );
-            let busy = self.active.is_some();
-            if cx.global::<RuntimeDisplay>().text != text
-                || cx.global::<RuntimeDisplay>().busy != busy
-            {
-                cx.global::<RuntimeDisplay>().text = text.clone();
-                cx.global::<RuntimeDisplay>().busy = busy;
+            let mut display =
+                RuntimeDisplay::from_observations(self.owner.state(), self.legacy.state());
+            display.busy = self.active.is_some();
+            // This wording reflects the actual owner-then-legacy sequence only.
+            if matches!(
+                self.active,
+                Some(Flight {
+                    channel: Channel::Owner,
+                    ..
+                })
+            ) {
+                display.legacy.headline = "Waiting";
+                display.legacy.detail = "Waiting for the owner observation request to finish. No current legacy status is shown.".to_owned();
+            }
+            if *cx.global::<RuntimeDisplay>() != display {
+                let busy = display.busy;
+                *cx.global::<RuntimeDisplay>() = display;
                 ui.button(cx, ids!(owner_refresh)).set_enabled(cx, !busy);
                 ui.button(cx, ids!(mobile_owner_refresh))
                     .set_enabled(cx, !busy);
-                ui.label(cx, ids!(console_status)).set_text(cx, &text);
-                ui.label(cx, ids!(mobile_console_status))
-                    .set_text(cx, &text);
+                let caption = if busy {
+                    "Reading observations…"
+                } else {
+                    "Refresh observations"
+                };
+                ui.button(cx, ids!(owner_refresh)).set_text(cx, caption);
+                ui.button(cx, ids!(mobile_owner_refresh))
+                    .set_text(cx, caption);
                 ui.redraw(cx);
             }
         }

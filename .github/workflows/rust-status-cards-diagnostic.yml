@@ -1,0 +1,170 @@
+name: Rust status cards compile diagnostic
+
+on:
+  push:
+    branches: [dot/rust-status-cards-diagnostic-20261006]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rust-status-cards-diagnostic-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  compile-package:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/dot/rust-status-cards-diagnostic-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      RUSTUP_TOOLCHAIN: 1.95.0
+      CARGO_BUILD_JOBS: 1
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_RELEASE_DEBUG: 0
+      HEPTA_CI_LANE: source-head
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+    steps:
+      - name: Anchor shared execution deadline before checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "DIAGNOSTIC_DEADLINE=$(( $(date +%s) + 3000 ))" >> "$GITHUB_ENV"
+          echo "DIAGNOSTIC_ROOT=$RUNNER_TEMP/rust-status-cards-diagnostic" >> "$GITHUB_ENV"
+          echo "TOOL_ROOT=$RUNNER_TEMP/ui-official-tools-robrix" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/rust-status-cards-target" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/rust-status-cards-diagnostic"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+        timeout-minutes: 5
+      - name: Bind diagnostic identity and external receipt directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          git = lambda *args: subprocess.check_output(['git', *args], text=True).strip()
+          data = {'sourceSha': git('rev-parse', 'HEAD'), 'sourceTree': git('rev-parse', 'HEAD^{tree}'), 'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'scope': 'source-head Rust pure tests, default-UI Wasm Clippy and canonical Wasm packaging only', 'qualification': False, 'nativeHostQualified': False, 'pixelsQualified': False, 'browserFontsQualified': False, 'gatewayQualified': False}
+          Path(os.environ['RUNNER_TEMP'], 'rust-status-cards-diagnostic', 'source-before.json').write_text(json.dumps(data, indent=2) + '\n')
+          PY
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+        timeout-minutes: 5
+      - name: Install and verify existing pinned UI build inputs
+        timeout-minutes: 15
+        shell: bash
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 900 ? remaining : 900 ))
+          timeout --signal=TERM --kill-after=10s "${budget}s" bash -euo pipefail <<'SETUP'
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy --target wasm32-unknown-unknown
+          rustup toolchain install nightly-2026-10-02 --profile minimal --component rust-src
+          test "$(rustup run nightly-2026-10-02 rustc --version)" = "rustc 1.101.0-nightly (c36f14571 2026-10-01)"
+          test "$(rustc --version)" = "rustc 1.95.0 (59807616e 2026-04-14)"
+          cargo install just --locked --version 1.58.0 --root "$TOOL_ROOT"
+          python3 apps/hepta-control-ui/tools/install-official-nextest.py "$TOOL_ROOT"
+          export PATH="$TOOL_ROOT/bin:$PATH"
+          test "$(command -v just)" = "$TOOL_ROOT/bin/just"
+          test "$(command -v cargo-nextest)" = "$TOOL_ROOT/bin/cargo-nextest"
+          test "$(just --version)" = "just 1.58.0"
+          python3 apps/hepta-control-ui/tools/install-official-nextest.py --verify "$TOOL_ROOT"
+          cargo nextest --version | grep -E '^cargo-nextest 0\.9\.146([[:space:]]|$)'
+          echo "$TOOL_ROOT/bin" >> "$GITHUB_PATH"
+          { rustc --version; rustup run nightly-2026-10-02 rustc --version; node --version; just --version; cargo nextest --version; } > "$DIAGNOSTIC_ROOT/tool-versions.txt"
+          SETUP
+      - name: Pure Rust presentation tests with observed counts
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 600 ? remaining : 600 ))
+          python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/pure-tests.json" --minimum-tests 1 --timeout-seconds "$budget" -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
+      - name: Execute both new status-card and route-heading regressions
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 180 ? remaining : 180 ))
+          python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/new-regressions.json" --minimum-tests 2 --timeout-seconds "$budget" -- just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features -E '(package(=hepta-control-core) & test(=owner_view::tests::card_headlines_distinguish_absence_from_recorded_metadata)) | (package(=hepta-robrix-ui) & test(=presentation::tests::headings_follow_visible_routes_without_changing_the_active_conversation))'
+      - name: Compile actual default-UI Wasm renderer
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 900 ? remaining : 900 ))
+          python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/renderer-clippy.json" --timeout-seconds "$budget" -- cargo clippy --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
+      - name: Check Rust formatting
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 120 ? remaining : 120 ))
+          python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/rust-format.json" --timeout-seconds "$budget" -- cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
+      - name: Preserve pure-test and renderer receipts before packaging
+        if: always()
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rust-status-cards-compile-stage-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-status-cards-diagnostic/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Install existing locked Node build dependencies
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 300 ? remaining : 300 ))
+          python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/node-dependencies.json" --timeout-seconds "$budget" -- npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+      - name: Package canonical pinned Makepad Wasm artifact
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 1200 ? remaining : 1200 ))
+          python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/canonical-build.json" --timeout-seconds "$budget" -- npm run build --prefix apps/hepta-control-ui
+      - name: Retain source and artifact metadata without compiled caches
+        timeout-minutes: 2
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'], 'rust-status-cards-diagnostic')
+          root.mkdir(exist_ok=True)
+          git = lambda *args: subprocess.check_output(['git', *args], text=True).strip()
+          after = {'sourceSha': git('rev-parse', 'HEAD'), 'sourceTree': git('rev-parse', 'HEAD^{tree}'), 'dirty': bool(git('status', '--porcelain', '--untracked-files=normal'))}
+          (root / 'source-after.json').write_text(json.dumps(after, indent=2) + '\n')
+          before = json.loads((root / 'source-before.json').read_text())
+          manifest = Path('apps/hepta-control-ui/dist/build-manifest.json')
+          build = root / 'canonical-build.json'
+          if build.exists() and json.loads(build.read_text()).get('status') == 'passed':
+              assert manifest.is_file(), 'Successful packaging did not retain its manifest'
+              data = manifest.read_bytes()
+              (root / 'build-manifest.json').write_bytes(data)
+              inventory = [{'path': str(p.relative_to(manifest.parent)), 'bytes': p.stat().st_size, 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in sorted(manifest.parent.rglob('*')) if p.is_file()]
+              (root / 'packaged-files.json').write_text(json.dumps({'manifestSha256': hashlib.sha256(data).hexdigest(), 'files': inventory, 'qualification': False}, indent=2) + '\n')
+          assert not after['dirty'], 'Source checkout became dirty'
+          assert after['sourceSha'] == before['sourceSha'] and after['sourceTree'] == before['sourceTree'], 'Source identity changed'
+          PY
+      - name: Upload diagnostic receipts only
+        timeout-minutes: 2
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rust-status-cards-compile-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-status-cards-diagnostic/
+          if-no-files-found: error
+          retention-days: 7

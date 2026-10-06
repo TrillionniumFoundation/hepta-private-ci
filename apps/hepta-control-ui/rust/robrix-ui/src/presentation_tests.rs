@@ -629,3 +629,50 @@ fn parent_tail_redraw_deduplicates_layout_and_does_not_replace_user_intent() {
     assert!(!tracker.request_tail_redraw(true, 10.0, false, 60, f64::NAN, size));
     assert!(!tracker.request_tail_redraw(true, 10.0, false, 60, -140.0, [0.0, 0.0]));
 }
+
+#[test]
+fn headings_follow_visible_routes_without_changing_the_active_conversation() {
+    let mut workspace = ChatWorkspace::default();
+    let room = workspace.active_id();
+    assert_eq!(
+        workspace_heading(&workspace, HeadingLayout::Desktop),
+        "New conversation"
+    );
+    assert_eq!(
+        workspace_heading(&workspace, HeadingLayout::Compact),
+        "New conversation"
+    );
+    history(&mut workspace, 0);
+    for tab in [WorkspaceTab::Conversations, WorkspaceTab::Console] {
+        workspace.tab = tab;
+        let expected = match tab {
+            WorkspaceTab::Conversations => "Observed conversation",
+            WorkspaceTab::Console => "Console",
+        };
+        for navigation_open in [false, true] {
+            workspace.navigation_open = navigation_open;
+            assert_eq!(
+                workspace_heading(&workspace, HeadingLayout::Desktop),
+                expected
+            );
+            assert_eq!(
+                workspace_heading(&workspace, HeadingLayout::Compact),
+                if navigation_open {
+                    "Conversations"
+                } else {
+                    expected
+                }
+            );
+            assert_eq!(workspace.active_id(), room);
+            assert_eq!(workspace.title_for(room), Some("Observed conversation"));
+            assert_eq!(workspace.tab, tab);
+            assert_eq!(workspace.navigation_open, navigation_open);
+        }
+    }
+    workspace.navigation_open = false;
+    workspace.tab = WorkspaceTab::Conversations;
+    assert_eq!(
+        workspace_heading(&workspace, HeadingLayout::Compact),
+        "Observed conversation"
+    );
+}
