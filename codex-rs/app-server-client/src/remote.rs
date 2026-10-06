@@ -71,6 +71,9 @@ const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 const INITIALIZE_TIMEOUT: Duration = Duration::from_secs(10);
 const REMOTE_APP_SERVER_MAX_WEBSOCKET_MESSAGE_SIZE: usize = 128 << 20;
 const MAX_REMOTE_EVENT_CHANNEL_CAPACITY: usize = 65_536;
+// Count bound only: queued commands, waiting callers, and payload bytes are separate.
+// Keep sent IDs reserved even after caller cancellation, until a reply or worker exit.
+const MAX_PENDING_REMOTE_REQUESTS: usize = 1_024;
 static NEXT_REMOTE_CONNECTION_ID: AtomicU64 = AtomicU64::new(1);
 // Tungstenite still needs an HTTP request URI for the WebSocket handshake;
 // the bytes travel over the Unix socket, not TCP.
@@ -636,6 +639,13 @@ impl RemoteAppServerClient {
                                     )));
                                     continue;
                                 }
+                                if pending_requests.len() >= MAX_PENDING_REMOTE_REQUESTS {
+                                    let _ = response_tx.send(Err(IoError::new(
+                                        ErrorKind::WouldBlock,
+                                        "remote app-server pending request capacity reached; request was not sent",
+                                    )));
+                                    continue;
+                                }
                                 pending_requests.insert(request_id.clone(), response_tx);
                                 if let Err(err) = write_jsonrpc_message(
                                     &mut stream,
@@ -936,7 +946,7 @@ impl RemoteAppServerClient {
     {
         self.request_typed_observed_response(request)
             .await
-            .map(|observed| observed.into_response())
+            .map(RemoteAppServerObservedResponse::into_response)
     }
 
     pub async fn request_typed_observed_response<T>(
@@ -1530,3 +1540,7 @@ mod tests {
             .expect("shutdown should complete when worker exits first");
     }
 }
+
+#[cfg(test)]
+#[path = "remote_pending_capacity_tests.rs"]
+mod pending_capacity_tests;

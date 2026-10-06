@@ -30,12 +30,10 @@ pub(crate) enum WindowsSandboxBackend {
 
 /// Apply the same backend policy to capture and interactive sessions before setup.
 ///
-/// Direct restricted tokens are limited to unrestricted-read, no-write profiles
-/// without filesystem overrides. Other filesystem requests use the dedicated
-/// account and ACL setup of the elevated backend. This routing does not establish
-/// complete deletion isolation: WRITE_RESTRICTED and parent DELETE_CHILD access
-/// remain separate Windows qualification concerns. Elevated errors must not fall
-/// back to the direct token backend.
+/// The remaining direct-token route is temporarily unavailable because parent
+/// DELETE_CHILD access can escape its capability boundary. Existing elevated
+/// selection is unchanged and is not independently qualified by this containment.
+/// Never fall back or automatically escalate in response to the containment error.
 pub(crate) fn select_windows_sandbox_backend(
     request: &WindowsSandboxBackendRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {
@@ -61,9 +59,9 @@ pub(crate) fn select_windows_sandbox_backend(
         || !request.deny_read_paths_override.is_empty()
         || !request.deny_write_paths_override.is_empty();
 
-    Ok(if requires_elevated_filesystem {
-        WindowsSandboxBackend::Elevated
-    } else {
-        WindowsSandboxBackend::RestrictedToken
-    })
+    if requires_elevated_filesystem {
+        return Ok(WindowsSandboxBackend::Elevated);
+    }
+    crate::ensure_legacy_execution_available()?;
+    Ok(WindowsSandboxBackend::RestrictedToken)
 }

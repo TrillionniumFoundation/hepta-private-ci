@@ -8,6 +8,15 @@ mod ssh_config_dependencies;
 use std::fmt;
 use std::sync::Arc;
 
+/// Temporary containment of the direct legacy token's parent-delete escape.
+/// This does not qualify the elevated backend or repair the token primitive.
+pub const WINDOWS_LEGACY_CONTAINMENT_ERROR: &str = "The direct Windows restricted-token backend cannot enforce deletion isolation through parent directories; command execution is blocked";
+
+#[cfg(target_os = "windows")]
+pub(crate) fn ensure_legacy_execution_available() -> anyhow::Result<()> {
+    anyhow::bail!(WINDOWS_LEGACY_CONTAINMENT_ERROR)
+}
+
 /// Cancellation hook used by Windows sandbox capture backends.
 #[derive(Clone)]
 pub struct WindowsSandboxCancellationToken {
@@ -756,6 +765,8 @@ mod windows_impl {
             return Ok(());
         }
 
+        // Reject before capability files, helper directories or host ACL preparation.
+        crate::ensure_legacy_execution_available()?;
         ensure_codex_home_exists(codex_home)?;
         let current_dir = cwd.to_path_buf();
         let capability_roots =

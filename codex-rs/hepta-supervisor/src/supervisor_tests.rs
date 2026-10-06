@@ -2303,3 +2303,6 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+#[path = "restart_budget_rpc_replay_tests.rs"]
+mod restart_budget_rpc_replay_tests;

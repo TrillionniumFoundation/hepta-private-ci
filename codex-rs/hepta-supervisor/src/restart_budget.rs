@@ -39,6 +39,25 @@ pub struct RestartClaim {
     pub backoff: Duration,
 }
 
+impl RestartBudgetState {
+    fn validate_at(&self, maximum_attempts: u32, now_ms: u64) -> Result<(), RestartBudgetError> {
+        if self.schema_version != RESTART_BUDGET_SCHEMA_VERSION
+            || self.window_started_unix_ms == 0
+            || self.attempts > maximum_attempts
+        {
+            return Err(RestartBudgetError::Invalid(
+                "restart budget state is outside configured bounds".to_string(),
+            ));
+        }
+        if now_ms < self.window_started_unix_ms {
+            return Err(RestartBudgetError::Invalid(
+                "clock rollback cannot replenish restart budget".to_string(),
+            ));
+        }
+        Ok(())
+    }
+}
+
 pub fn claim_restart(
     run_root: &Path,
     maximum_attempts: u32,
@@ -55,31 +74,20 @@ pub fn claim_restart(
         pending: false,
         next_eligible_unix_ms: now_ms,
     });
-    if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION
-        || state.window_started_unix_ms == 0
-        || state.attempts > maximum_attempts
-    {
-        return Err(RestartBudgetError::Invalid(
-            "restart budget state is outside configured bounds".to_string(),
-        ));
-    }
-    if now_ms < state.window_started_unix_ms {
-        return Err(RestartBudgetError::Invalid(
-            "clock rollback cannot replenish restart budget".to_string(),
-        ));
-    }
-    if now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms {
-        state.window_started_unix_ms = now_ms;
-        state.attempts = 0;
-        state.pending = false;
-        state.next_eligible_unix_ms = now_ms;
-    }
+    state.validate_at(maximum_attempts, now_ms)?;
     if state.pending {
-        // Exact replay of a pending restart does not consume another attempt.
+        // Window expiry is not completion of an admitted restart. Reuse the
+        // original attempt and eligibility without rewriting either journal
+        // domain, even when current policy would assign a different backoff.
         return Ok(RestartClaim {
             attempt: state.attempts,
             backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
         });
+    }
+    if now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms {
+        state.window_started_unix_ms = now_ms;
+        state.attempts = 0;
+        state.next_eligible_unix_ms = now_ms;
     }
     if state.attempts >= maximum_attempts {
         return Err(RestartBudgetError::Exhausted);
@@ -117,23 +125,18 @@ pub fn restart_available(
     window: Duration,
 ) -> Result<bool, RestartBudgetError> {
     let Some(state) = read_restart_budget(run_root)? else {
-        return Ok(true);
+        return Ok(maximum_attempts > 0);
     };
-    if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION || state.attempts > maximum_attempts {
-        return Err(RestartBudgetError::Invalid(
-            "restart budget state is outside configured bounds".to_string(),
-        ));
-    }
+    let now_ms = unix_ms()?;
+    state.validate_at(maximum_attempts, now_ms)?;
     if state.pending {
         return Ok(true);
     }
     let window_ms = u64::try_from(window.as_millis())
         .map_err(|_| RestartBudgetError::Invalid("restart window exceeds u64".to_string()))?;
-    let now_ms = unix_ms()?;
-    Ok(
-        now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms
-            || state.attempts < maximum_attempts,
-    )
+    Ok(maximum_attempts > 0
+        && (now_ms.saturating_sub(state.window_started_unix_ms) >= window_ms
+            || state.attempts < maximum_attempts))
 }
 
 pub fn pending_restart(
@@ -143,15 +146,11 @@ pub fn pending_restart(
     let Some(state) = read_restart_budget(run_root)? else {
         return Ok(None);
     };
-    if state.schema_version != RESTART_BUDGET_SCHEMA_VERSION || state.attempts > maximum_attempts {
-        return Err(RestartBudgetError::Invalid(
-            "restart budget state is outside configured bounds".to_string(),
-        ));
-    }
+    let now_ms = unix_ms()?;
+    state.validate_at(maximum_attempts, now_ms)?;
     if !state.pending {
         return Ok(None);
     }
-    let now_ms = unix_ms()?;
     Ok(Some(RestartClaim {
         attempt: state.attempts,
         backoff: Duration::from_millis(state.next_eligible_unix_ms.saturating_sub(now_ms)),
@@ -191,6 +190,10 @@ fn unix_ms() -> Result<u64, RestartBudgetError> {
     u64::try_from(millis)
         .map_err(|_| RestartBudgetError::Invalid("system clock exceeds u64 millis".to_string()))
 }
+
+#[cfg(test)]
+#[path = "restart_budget_replay_tests.rs"]
+mod replay_tests;
 
 #[cfg(test)]
 mod tests {

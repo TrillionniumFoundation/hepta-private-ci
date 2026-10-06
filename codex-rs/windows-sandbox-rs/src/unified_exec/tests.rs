@@ -350,7 +350,7 @@ fn elevated_non_tty_cmd_forwards_env_output_and_exit() {
 }
 
 #[test]
-fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
+fn internal_legacy_session_is_contained_before_deny_read_setup() {
     let _guard = legacy_process_test_guard();
     let runtime = current_thread_runtime();
     runtime.block_on(async move {
@@ -379,10 +379,10 @@ fn legacy_non_tty_cmd_rejects_deny_read_overrides() {
             /*use_private_desktop*/ true,
         )
         .await
-        .expect_err("legacy deny-read should require the elevated backend");
+        .expect_err("internal legacy entrypoint must remain contained");
         assert!(
             err.to_string()
-                .contains("deny-read overrides require the elevated Windows sandbox backend"),
+                .contains(crate::WINDOWS_LEGACY_CONTAINMENT_ERROR),
             "unexpected error: {err:#}"
         );
     });

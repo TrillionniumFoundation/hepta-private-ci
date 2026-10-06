@@ -64,3 +64,32 @@ phase where they reconcile startup response data with later events.
   for a request, preventing unread notifications from blocking its response.
 - `shutdown()` performs a bounded graceful shutdown and then aborts if timeout
   is exceeded.
+
+### Remote request capacity
+
+A remote connection retains at most 1,024 unanswered outgoing requests. A new
+request at capacity fails locally with `io::ErrorKind::WouldBlock` before any
+part of that request is written. An ID already pending still produces
+`InvalidInput`, including at capacity, and never replaces the original waiter.
+The existing bounded command queue retains its enqueue backpressure and FIFO
+send order; the capacity check runs when the worker dequeues a request.
+
+Dropping or timing out a response future does not free a sent request's slot or
+ID: the peer might still execute it and reply later. Matching responses and
+errors free slots before waking waiters. If replies never arrive, slots remain
+occupied until the connection exits. The owner may choose to close the shared
+connection, which also fails unrelated pending requests. There is no automatic
+close, resend, cancellation, or retry policy.
+
+Control and cancellation RPCs use the same outgoing request budget and can be
+rejected at capacity. Notifications, replies to server requests, and explicit
+shutdown do not consume slots, but still use the existing command queue and
+transport. The cap does not give them priority or a new shutdown time bound.
+
+This bounds request count, not payload/ID bytes, execution time, caller-created
+futures waiting to enqueue, or event-buffer memory. With command capacity `M`,
+there are at most `1,024 + M` pending/queued registrations plus one dequeued
+transient command. Initialization occurs before this budget exists. Sustained
+loads requiring over 1,024 concurrent unanswered requests now receive local
+capacity errors; callers should handle that explicitly without treating a
+separate timed-out request as absent or safe to repeat.

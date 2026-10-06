@@ -160,6 +160,18 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The current supervisor serializes one Agent mutation at the owner lock, generation-fences every managed process, and persists crash-relevant state below the Agent run root: the exact process lease, bounded automatic-restart budget, unified release transaction and, for externally authorized transitions, a signed intent.
 
+A pending restart keeps its charged attempt and original eligibility deadline
+across accounting-window expiry, daemon recovery and repeated restart requests.
+Only an observed completion permits a later claim to replenish an expired window.
+Claim, recovery and availability use the same schema, attempt-bound and clock
+rollback validation; a zero-attempt policy is never reported available. Replaying
+pending work does not rewrite the canonical restart record or its independent
+Matrix companion budget. The schema and sole writer remain unchanged. The
+`restart_budget_replay_tests.rs` file exercises durable record replay, and
+`restart_budget_rpc_replay_tests.rs` exercises the public Supervisor restart and
+recovery path using the existing controlled process driver. These fixtures do not
+establish power-loss durability or installed-process deployment qualification.
+
 The release transaction is the durable execution journal for both local and signed transitions. Before drain it records source/target release identities, immutable manifest and agentd/matrixd program digests, the exact per-Agent allow/revoke admission-frontier digest, a deterministic compatibility-binding digest over the source/target pair, expected Fleet release-state generation, lifecycle generation, rollback predecessor and optional production grant/authority epoch. Phase is fsynced before each process boundary. A production daemon configured with the external grant/H7 verifier rejects unsigned Upgrade/Rollback RPCs.
 
 Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new App Server admission first and waits for RPC handlers that already crossed the admission gate, so a late `thread/queue/reconcile` handler cannot publish new durable work after drain has been declared terminal. It then requires the running assistant-turn count to reach zero and checks the durable Automation/TaskFlow owner for unclassified `leased`, `claimed`, `admitted` or `running` work. Durable `uncertain`/`indeterminate` effects remain classified unknown for restart reconciliation and are never relabelled as success or failure merely to drain. A supervisord crash after durable Draining replays the idempotent typed request. If the optional automation store is unavailable, graceful drain fails closed and the supervisor may only advance through its bounded timeout/stop escalation.
@@ -207,6 +219,32 @@ writes, zero-budget non-dispatch and successful fragmented framing. These checks
 do not qualify installed-product recovery, large-release performance, or later
 numeric-PID signal authority.
 
+### Two-phase module retirement
+
+`RuntimeModuleSupervisorV1::begin_retirement` removes one selected module from
+new dispatch before the host drains its workers. Repeating the same Quiescing
+generation is idempotent. The writer/dependency reservation and lifetime
+generation fence remain held; a selected dependent still blocks provider
+retirement. A readiness marker recorded before admission stopped is discarded,
+not reused as evidence of the subsequent drain.
+
+After the owner observes drain and terminal effect reconciliation, the host calls
+`retire_after_reconciliation` with that observation. It can complete an already
+Quiescing registry, including one reconstructed through the checkpoint codec,
+instead of trying to begin the transition again. Invalid evidence or a remaining
+dependent leaves the stopped route and writer reservation unchanged for a retry.
+The existing one-call path remains available for an externally observed Active
+or Quarantined retirement. Unknown or already terminal identities do not reopen
+routes or release generation fences.
+
+These are lifecycle bookkeeping APIs, not worker termination, grant revocation,
+physical state migration or a durable Supervisor store. The checkpoint test uses
+a fixture current root; it does not establish independent root custody. The host
+must persist and authenticate its state and obtain the actual owner observations
+before an installed deployment can claim recovery. The implementation and its
+behavioral regressions are in `module_runtime_retirement.rs` and
+`module_runtime_retirement_tests.rs` under `codex-rs/hepta-supervisor/src/`.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls
@@ -218,6 +256,26 @@ Owned threat entries:
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
+
+### Withdrawal of uncommitted module candidates
+
+`RuntimeModuleSupervisorV1::discard_selected_candidate` withdraws an individually
+selected Shadow or Canary candidate, releasing its pending slot and in-memory
+selection reference without changing the serving predecessor. Active, draining
+and quarantined writer reservations are not eligible. A member of an admitted
+topology returns `PendingTopologyMember`; the host must withdraw that whole
+proposal through `discard_topology_candidate`, including its staged promotions.
+Membership is generation-bound: sharing an artifact alone does not couple
+otherwise distinct candidates.
+
+Withdrawal retains the greatest-admitted generation fence through payload
+compaction and checkpoint encoding, so retry uses a fresh generation rather than
+replaying withdrawn work. The pending and lifetime-identity limits are unchanged.
+Unknown, unselected or already terminal inputs reject without changing the
+working set; repeating withdrawal is not a process-termination acknowledgement.
+The host must separately cancel isolated candidate workers and reconcile effects.
+This API does not persist the registry, establish current-root custody, revoke
+authority, migrate owner state or qualify an installed deployment.
 
 ## 10. Performance, capacity and hot-path policy
 

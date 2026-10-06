@@ -1,4 +1,4 @@
-// Test the direct backend's ACL failure boundary; public adapters select a backend first.
+// Direct legacy launches now fail before ACL setup; fixture authority checks remain unchanged.
 use super::collect_stdout_and_exit;
 use super::current_thread_runtime;
 use super::legacy_process_test_guard;
@@ -353,22 +353,20 @@ impl AclSetupFailureFixture {
         ])
     }
 
-    fn assert_rejected(&self, error: anyhow::Error) {
+    fn assert_contained(&self, error: anyhow::Error) {
         assert_eq!(
             (
                 error.to_string(),
-                error.root_cause().to_string(),
+                error
+                    .downcast_ref::<std::io::Error>()
+                    .and_then(std::io::Error::raw_os_error),
                 self.marker.try_exists().expect("inspect process marker"),
+                self.codex_home.try_exists().expect("inspect helper home"),
             ),
             (
-                format!(
-                    "apply legacy deny-write ACL to {}",
-                    self.protected_file.display()
-                ),
-                format!(
-                    "ReOpenFile failed for {}: {ERROR_ACCESS_DENIED}",
-                    self.protected_file.display(),
-                ),
+                crate::WINDOWS_LEGACY_CONTAINMENT_ERROR.to_string(),
+                None,
+                false,
                 false,
             ),
         );
@@ -376,7 +374,7 @@ impl AclSetupFailureFixture {
 }
 
 #[test]
-fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
+fn legacy_session_is_contained_before_deny_acl_setup() {
     let _guard = legacy_process_test_guard();
     // Keep privilege removal local to this thread, including the native setup
     // calls in the current-thread runtime. The process token remains unchanged.
@@ -406,12 +404,14 @@ fn legacy_session_rejects_deny_acl_setup_failure_before_spawn() {
             }
             Err(error) => Err(error),
         };
-        fixture.assert_rejected(result.expect_err("ACL setup failure must prevent session spawn"));
+        fixture.assert_contained(
+            result.expect_err("containment must prevent session setup and spawn"),
+        );
     });
 }
 
 #[test]
-fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
+fn legacy_capture_is_contained_before_deny_acl_setup() {
     let _guard = legacy_process_test_guard();
     let _caller = PrivilegeRestrictedCaller::enter();
     let fixture = AclSetupFailureFixture::new();
@@ -428,9 +428,9 @@ fn legacy_capture_rejects_deny_acl_setup_failure_before_spawn() {
         std::slice::from_ref(&fixture.protected_file),
         /*use_private_desktop*/ true,
     );
-    fixture.assert_rejected(
+    fixture.assert_contained(
         result
             .map(|_| ())
-            .expect_err("ACL setup failure must prevent capture spawn"),
+            .expect_err("containment must prevent capture setup and spawn"),
     );
 }

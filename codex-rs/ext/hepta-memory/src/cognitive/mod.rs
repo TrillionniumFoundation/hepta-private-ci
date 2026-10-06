@@ -271,10 +271,6 @@ pub(crate) struct CognitiveExtension {
 }
 
 impl CognitiveExtension {
-    pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
-        Self::new_with_mutation(runtime, None, false)
-    }
-
     pub(crate) fn new_with_mutation(
         runtime: CognitiveRuntime,
         production_mutation: Option<Arc<dyn ProductionCognitiveMutation>>,

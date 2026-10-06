@@ -344,7 +344,11 @@ fn secret_detector_covers_common_key_shapes() {
 #[tokio::test]
 async fn mutation_tools_require_explicit_write_runtime_and_host_capability() {
     let fixture = cognitive_fixture().await;
-    let available = CognitiveExtension::new(CognitiveRuntime::Available(fixture.store.clone()));
+    let available = CognitiveExtension::new_with_mutation(
+        CognitiveRuntime::Available(fixture.store.clone()),
+        /*production_mutation*/ None,
+        /*qualification_write_enabled*/ false,
+    );
 
     let read_only = ExtensionData::new(THREAD_ID);
     read_only.insert(HeptaMemoryThreadState::for_cognitive_test_with_write(
@@ -378,9 +382,13 @@ async fn mutation_tools_require_explicit_write_runtime_and_host_capability() {
         tool_names(&available, &read_only)
     );
 
-    let unavailable = CognitiveExtension::new(CognitiveRuntime::Unavailable(
-        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ));
+    let unavailable = CognitiveExtension::new_with_mutation(
+        CognitiveRuntime::Unavailable(
+            codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
+        ),
+        /*production_mutation*/ None,
+        /*qualification_write_enabled*/ false,
+    );
     assert_eq!(
         tool_names(&unavailable, &writable),
         vec![
@@ -634,7 +642,11 @@ async fn structured_kg_retrieval_channels_reach_the_physical_attachment() {
         )
         .await
         .expect("structured KG write");
-    let extension = CognitiveExtension::new(CognitiveRuntime::Available(fixture.store));
+    let extension = CognitiveExtension::new_with_mutation(
+        CognitiveRuntime::Available(fixture.store),
+        /*production_mutation*/ None,
+        /*qualification_write_enabled*/ false,
+    );
     let thread_store = cognitive_thread_store();
     let turn_store = ExtensionData::new("turn-structured-kg-physical-channels");
     prepare(
