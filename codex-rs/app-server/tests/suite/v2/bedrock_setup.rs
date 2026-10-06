@@ -27,6 +27,23 @@ use wiremock::MockServer;
 
 const READ_TIMEOUT: Duration = Duration::from_secs(/*secs*/ 60);
 
+// SQLite rejects group-writable homes. Request private permissions at creation
+// so these fixtures work with a developer's umask without changing it globally.
+fn private_codex_home() -> std::io::Result<TempDir> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+
+        tempfile::Builder::new()
+            .permissions(std::fs::Permissions::from_mode(/*mode*/ 0o700))
+            .tempdir()
+    }
+    #[cfg(not(unix))]
+    {
+        TempDir::new()
+    }
+}
+
 async fn bedrock_app_server(
     codex_home: &Path,
     environment: &[(&str, Option<&str>)],
@@ -65,7 +82,7 @@ async fn bedrock_app_server(
 
 #[tokio::test]
 async fn discover_bedrock_profiles_and_environment_credentials() -> Result<()> {
-    let codex_home = TempDir::new()?;
+    let codex_home = private_codex_home()?;
     let mut app_server = bedrock_app_server(
         codex_home.path(),
         &[
@@ -128,7 +145,7 @@ async fn discover_bedrock_profiles_and_environment_credentials() -> Result<()> {
 
 #[tokio::test]
 async fn setup_bedrock_profile_and_environment() -> Result<()> {
-    let codex_home = TempDir::new()?;
+    let codex_home = private_codex_home()?;
     let config_path = codex_home.path().join("config.toml");
     let dotenv_path = codex_home.path().join(".env");
     std::fs::write(
@@ -197,7 +214,7 @@ async fn setup_bedrock_profile_and_environment() -> Result<()> {
         .into()
     );
 
-    let managed_home = TempDir::new()?;
+    let managed_home = private_codex_home()?;
     let managed_config_path = managed_home.path().join("config.toml");
     std::fs::write(&managed_config_path, "")?;
     login_with_bedrock_api_key(
@@ -270,7 +287,7 @@ async fn setup_bedrock_profile_and_environment() -> Result<()> {
 
 #[tokio::test]
 async fn setup_bedrock_rejects_invalid_or_conflicting_credentials() -> Result<()> {
-    let codex_home = TempDir::new()?;
+    let codex_home = private_codex_home()?;
     let mut app_server = bedrock_app_server(codex_home.path(), &[]).await?;
 
     for (params, expected_error) in [
@@ -308,7 +325,7 @@ async fn setup_bedrock_rejects_invalid_or_conflicting_credentials() -> Result<()
     assert!(!codex_home.path().join(".env").exists());
     assert!(!codex_home.path().join("config.toml").exists());
 
-    let home = TempDir::new()?;
+    let home = private_codex_home()?;
     std::fs::write(
         home.path().join("config.toml"),
         "forced_login_method = \"chatgpt\"\n",
@@ -426,7 +443,7 @@ async fn bedrock_endpoints_require_explicit_experimental_api() -> Result<()> {
             ..Default::default()
         }),
     ] {
-        let codex_home = TempDir::new()?;
+        let codex_home = private_codex_home()?;
         std::fs::write(
             codex_home.path().join("config.toml"),
             "cli_auth_credentials_store = \"file\"\n",
@@ -450,7 +467,7 @@ async fn bedrock_endpoints_require_explicit_experimental_api() -> Result<()> {
 
 #[tokio::test]
 async fn bedrock_endpoints_reject_forced_chatgpt_without_changes() -> Result<()> {
-    let codex_home = TempDir::new()?;
+    let codex_home = private_codex_home()?;
     std::fs::write(
         codex_home.path().join("config.toml"),
         "cli_auth_credentials_store = \"file\"\nforced_login_method = \"chatgpt\"\n",
@@ -468,7 +485,7 @@ async fn bedrock_endpoints_reject_forced_chatgpt_without_changes() -> Result<()>
 #[tokio::test]
 async fn bedrock_endpoints_reject_external_chatgpt_auth_without_changes() -> Result<()> {
     let server = MockServer::start().await;
-    let codex_home = TempDir::new()?;
+    let codex_home = private_codex_home()?;
     std::fs::write(
         codex_home.path().join("config.toml"),
         format!(
