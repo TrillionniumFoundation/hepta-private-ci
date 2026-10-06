@@ -3107,6 +3107,10 @@ fn map_response_stream(
     )
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "response-stream lifecycle keeps provider ownership, telemetry, redaction, and request observation explicit"
+)]
 fn map_response_events<S>(
     upstream_request_id: Option<String>,
     api_stream: S,
