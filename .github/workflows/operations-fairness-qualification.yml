@@ -1,0 +1,78 @@
+# Source diagnostic only: no merge lane, authority activation or OS security changes.
+name: Operations bounded fairness source qualification
+on:
+  push:
+    branches: [dot/operations-fairness-qualification-20261006]
+permissions:
+  contents: read
+concurrency:
+  group: operations-fairness-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  memory:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/operations-fairness-qualification-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Bound setup and all native stages together
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "OPERATIONS_DEADLINE=$(( $(date +%s) + 3000 ))" >> "$GITHUB_ENV"
+          echo "OPERATIONS_EVIDENCE=$RUNNER_TEMP/operations-fairness-records" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/operations-fairness-target" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/operations-fairness-records"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact source and sole parent before any setup
+        shell: bash
+        timeout-minutes: 2
+        run: python3 scripts/hepta_operations_fairness_ci.py before
+      - name: Install official pinned toolchain and ordinary build prerequisites
+        shell: bash
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev libcap-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 5
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run instrumented baseline and exact candidate checks
+        shell: bash
+        timeout-minutes: 50
+        run: python3 scripts/hepta_operations_fairness_ci.py run
+      - name: Verify source unchanged after success or failure
+        if: always()
+        shell: bash
+        timeout-minutes: 2
+        run: python3 scripts/hepta_operations_fairness_ci.py after
+      - name: Retain bounded source identities and raw results
+        if: always()
+        shell: bash
+        timeout-minutes: 2
+        run: python3 scripts/hepta_operations_fairness_ci.py stage
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        timeout-minutes: 3
+        with:
+          name: operations-fairness-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/operations-fairness-records/upload
+          if-no-files-found: error
+          retention-days: 7

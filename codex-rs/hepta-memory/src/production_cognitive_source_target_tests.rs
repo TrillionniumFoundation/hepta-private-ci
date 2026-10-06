@@ -376,3 +376,127 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_without_redispatch() {
         LocalOutcomeState::Committed
     );
 }
+// Candidate regression only: append inside the existing target test module.
+// Not compiled or executed. The synthetic observer does not prove an external effect.
+#[derive(Debug, Default)]
+struct UnavailablePrefixTarget {
+    observed: std::sync::Mutex<Vec<String>>,
+    dispatches: std::sync::atomic::AtomicUsize,
+}
+
+impl ProductionOutboxTarget for UnavailablePrefixTarget {
+    fn dispatch<'a>(&'a self, _request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
+        self.dispatches
+            .fetch_add(/*val*/ 1, std::sync::atomic::Ordering::SeqCst);
+        Box::pin(async {
+            ProductionTargetOutcome::Indeterminate {
+                reason: "synthetic target has no terminal observation yet".to_string(),
+            }
+        })
+    }
+}
+
+impl crate::FinalUseProductionOutboxTarget for UnavailablePrefixTarget {
+    fn destination_id(&self) -> &str {
+        COGNITIVE_SOURCE_DESTINATION_V1
+    }
+
+    fn observe_terminal<'a>(
+        &'a self,
+        request: &'a ProductionDispatchRequest,
+    ) -> ProductionTerminalObservationFuture<'a> {
+        Box::pin(async move {
+            let mut seen = self.observed.lock().expect("observer log");
+            let blocked = seen
+                .first()
+                .is_none_or(|first| first == &request.occurrence_key);
+            seen.push(request.occurrence_key.clone());
+            if blocked {
+                ProductionTerminalObservation::Unavailable {
+                    reason: "oldest observed identity remains unavailable".to_string(),
+                }
+            } else {
+                ProductionTerminalObservation::NotApplied {
+                    reason: "synthetic observer establishes no effect for the other identity"
+                        .to_string(),
+                }
+            }
+        })
+    }
+}
+
+#[tokio::test]
+async fn same_destination_unavailable_prefix_does_not_starve_later_operation() {
+    let temp = TempDir::new().expect("temp");
+    let store = store(&temp).await;
+    let owner = store.owner_agent_id().clone();
+    let writer = ProductionDurableWriter::open(
+        store,
+        production_authority(owner.clone()),
+        &AllowVerifier,
+        "production:h4:fairness-regression",
+        /*generation*/ 1,
+    )
+    .await
+    .expect("writer");
+    let target = Arc::new(UnavailablePrefixTarget::default());
+    let issuer = SigningKey::from_bytes(&[91; 32]);
+    let dispatcher =
+        ProductionFinalUseOutboxDispatcher::attach(final_use(&temp, &issuer), target.clone());
+    for operation_id in ["operation:fairness-a", "operation:fairness-b"] {
+        let (draft, payload) = source_payload(operation_id, operation_id.as_bytes());
+        let queued = writer
+            .prepare_operation(
+                operation(&owner, operation_id, &payload, &draft, None),
+                COGNITIVE_SOURCE_TOPIC_V1,
+                &payload,
+            )
+            .await
+            .expect("prepare immutable operation");
+        let binding = writer
+            .final_use_binding(&queued, COGNITIVE_SOURCE_DESTINATION_V1)
+            .await
+            .expect("binding");
+        let signed = signed_final_use(&issuer, binding.clone(), operation_id);
+        let receipt = dispatcher
+            .dispatch(&writer, &signed, &binding, queued)
+            .await
+            .expect("dispatch");
+        assert_eq!(receipt.state, LocalOutcomeState::Indeterminate);
+    }
+    assert_eq!(
+        dispatcher
+            .reconcile(&writer, /*limit*/ 1)
+            .await
+            .expect("first bounded pass"),
+        0
+    );
+    let second = dispatcher
+        .clone()
+        .reconcile(&writer, /*limit*/ 1)
+        .await
+        .expect("second bounded pass");
+    let seen = target.observed.lock().expect("observer log").clone();
+    assert_eq!(seen.len(), 2, "one observer call per pass");
+    assert_ne!(
+        seen[0], seen[1],
+        "unavailable prefix must not hide later identity"
+    );
+    assert_eq!(second, 1);
+    assert_eq!(
+        target.dispatches.load(std::sync::atomic::Ordering::SeqCst),
+        2,
+        "reconciliation must never dispatch"
+    );
+    assert_eq!(
+        writer.status(&seen[0]).await.expect("blocked status"),
+        LocalOutcomeState::Indeterminate
+    );
+    assert_eq!(
+        writer.status(&seen[1]).await.expect("later status"),
+        LocalOutcomeState::Rejected
+    );
+}
+
+#[path = "production_reconciliation_fairness_tests.rs"]
+mod reconciliation_fairness_tests;

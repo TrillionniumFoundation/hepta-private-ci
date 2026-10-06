@@ -57,6 +57,9 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_reconciliation_cursor.rs"]
+mod reconciliation_cursor;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
@@ -896,38 +899,45 @@ impl ProductionDurableWriter {
     where
         T: FinalUseProductionOutboxTarget + ?Sized,
     {
+        // This compatibility API is one-shot discovery from the oldest row.
+        // Retained production dispatchers share a cursor for repeated passes.
+        self.reconcile_target_batch_with_cursor(
+            target,
+            limit,
+            &reconciliation_cursor::ReconciliationCursor::default(),
+        )
+        .await
+    }
+
+    async fn reconcile_target_batch_with_cursor<T>(
+        &self,
+        target: &T,
+        limit: usize,
+        cursor: &reconciliation_cursor::ReconciliationCursor,
+    ) -> Result<usize, ProductionWriterError>
+    where
+        T: FinalUseProductionOutboxTarget + ?Sized,
+    {
         self.verify_authority().await?;
         if !(1..=256).contains(&limit) {
             return Err(ProductionWriterError::Invalid(
                 "reconcile batch limit must be 1..=256".to_string(),
             ));
         }
-        let operation_ids = sqlx::query_scalar::<_, String>(
-            "SELECT o.operation_id
-             FROM cognitive_operation_ledger o
-             WHERE o.lease_id = ? AND o.destination_id = ?
-               AND (
-                   SELECT e.event_kind
-                   FROM cognitive_local_events e
-                   WHERE e.lease_id = o.lease_id
-                     AND e.occurrence_key = o.operation_id
-                   ORDER BY e.event_sequence DESC
-                   LIMIT 1
-               ) IN ('indeterminate', 'reconcile_still_indeterminate')
-             ORDER BY o.prepared_at_unix_seconds, o.operation_id
-             LIMIT ?",
-        )
-        .bind(self.lease_id())
-        .bind(target.destination_id())
-        .bind(i64::try_from(limit).map_err(|_| {
-            ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
-        })?)
-        .fetch_all(&self.store.pool)
-        .await
-        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
-
+        let mut observed = std::collections::BTreeSet::new();
         let mut reconciled = 0_usize;
-        for operation_id in operation_ids {
+        for _ in 0..limit {
+            // Reserve only the next attempted item, never an unattempted tail.
+            let Some(operation_id) = cursor.reserve_next(self, target.destination_id()).await?
+            else {
+                break;
+            };
+            // A short eligible cycle must not amplify this call into repeated
+            // observations. The set has at most `limit` keys; clones may make
+            // progress independently while this call awaits an observer.
+            if !observed.insert(operation_id.clone()) {
+                break;
+            }
             let request = self
                 .reconciliation_request(&operation_id, target.destination_id())
                 .await?;
@@ -2148,6 +2158,7 @@ impl ProductionOutboxDispatcher {
 pub struct ProductionFinalUseOutboxDispatcher {
     final_use: FinalUseAuthority,
     target: Arc<dyn FinalUseProductionOutboxTarget>,
+    reconciliation_cursor: Arc<reconciliation_cursor::ReconciliationCursor>,
 }
 
 impl fmt::Debug for ProductionFinalUseOutboxDispatcher {
@@ -2164,7 +2175,11 @@ impl ProductionFinalUseOutboxDispatcher {
         final_use: FinalUseAuthority,
         target: Arc<dyn FinalUseProductionOutboxTarget>,
     ) -> Self {
-        Self { final_use, target }
+        Self {
+            final_use,
+            target,
+            reconciliation_cursor: Arc::default(),
+        }
     }
 
     pub fn destination_id(&self) -> &str {
@@ -2197,7 +2212,11 @@ impl ProductionFinalUseOutboxDispatcher {
         limit: usize,
     ) -> Result<usize, ProductionWriterError> {
         writer
-            .reconcile_target_batch(self.target.as_ref(), limit)
+            .reconcile_target_batch_with_cursor(
+                self.target.as_ref(),
+                limit,
+                &self.reconciliation_cursor,
+            )
             .await
     }
 }
