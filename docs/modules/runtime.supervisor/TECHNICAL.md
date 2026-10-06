@@ -160,6 +160,18 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The current supervisor serializes one Agent mutation at the owner lock, generation-fences every managed process, and persists crash-relevant state below the Agent run root: the exact process lease, bounded automatic-restart budget, unified release transaction and, for externally authorized transitions, a signed intent.
 
+A pending restart keeps its charged attempt and original eligibility deadline
+across accounting-window expiry, daemon recovery and repeated restart requests.
+Only an observed completion permits a later claim to replenish an expired window.
+Claim, recovery and availability use the same schema, attempt-bound and clock
+rollback validation; a zero-attempt policy is never reported available. Replaying
+pending work does not rewrite the canonical restart record or its independent
+Matrix companion budget. The schema and sole writer remain unchanged. The
+`restart_budget_replay_tests.rs` file exercises durable record replay, and
+`restart_budget_rpc_replay_tests.rs` exercises the public Supervisor restart and
+recovery path using the existing controlled process driver. These fixtures do not
+establish power-loss durability or installed-process deployment qualification.
+
 The release transaction is the durable execution journal for both local and signed transitions. Before drain it records source/target release identities, immutable manifest and agentd/matrixd program digests, the exact per-Agent allow/revoke admission-frontier digest, a deterministic compatibility-binding digest over the source/target pair, expected Fleet release-state generation, lifecycle generation, rollback predecessor and optional production grant/authority epoch. Phase is fsynced before each process boundary. A production daemon configured with the external grant/H7 verifier rejects unsigned Upgrade/Rollback RPCs.
 
 Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new App Server admission first and waits for RPC handlers that already crossed the admission gate, so a late `thread/queue/reconcile` handler cannot publish new durable work after drain has been declared terminal. It then requires the running assistant-turn count to reach zero and checks the durable Automation/TaskFlow owner for unclassified `leased`, `claimed`, `admitted` or `running` work. Durable `uncertain`/`indeterminate` effects remain classified unknown for restart reconciliation and are never relabelled as success or failure merely to drain. A supervisord crash after durable Draining replays the idempotent typed request. If the optional automation store is unavailable, graceful drain fails closed and the supervisor may only advance through its bounded timeout/stop escalation.
