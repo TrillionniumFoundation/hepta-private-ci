@@ -42,7 +42,8 @@ jobs:
           printf '%s\n' 'NON-QUALIFYING lock resolution proposal. No compilation, tests, vulnerability reachability, merge, or release qualification.' > "$EVIDENCE/SCOPE.txt"
           test "$(git rev-parse HEAD)" = "$BASE_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$BASE_TREE"
-          test "$(git show -s --format=%P "$GITHUB_SHA")" = 13ac0610d5e31793dd8ec0b488e6c81ec702d6d7
+          test "$(git show -s --format=%P "$GITHUB_SHA")" = b0a0e86324f10ccd4bec20cf6f65ec0e3199f4ff
+          test "$(git show -s --format=%P b0a0e86324f10ccd4bec20cf6f65ec0e3199f4ff)" = 13ac0610d5e31793dd8ec0b488e6c81ec702d6d7
           test "$(git show -s --format=%P 13ac0610d5e31793dd8ec0b488e6c81ec702d6d7)" = "$BASE_SHA"
           test "$(git diff --name-only "$BASE_SHA" "$GITHUB_SHA")" = '.github/workflows/security-lock-resolution.yml'
           test -z "$(git status --porcelain)"
@@ -66,13 +67,46 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Bound each generated file/log to 32 MiB and each tool call to 12 minutes.
-          ulimit -f 32768
+          # Bound logs only: an inherited RLIMIT_FSIZE also breaks tool downloads.
+          cat > "$EVIDENCE/capture-bounded.py" <<'PYCAP'
+          import os, pathlib, signal, subprocess, sys
+          limit = 32 * 1024 * 1024
+          written = 0
+          overflow = False
+          process = subprocess.Popen(sys.argv[2:], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, start_new_session=True)
+          with pathlib.Path(sys.argv[1]).open('wb') as output:
+              while chunk := process.stdout.read1(65536):
+                  keep = min(len(chunk), limit - written)
+                  output.write(chunk[:keep])
+                  written += keep
+                  if keep < len(chunk):
+                      overflow = True
+                      try:
+                          os.killpg(process.pid, signal.SIGTERM)
+                      except ProcessLookupError:
+                          pass
+                      try:
+                          process.wait(timeout=5)
+                      except subprocess.TimeoutExpired:
+                          pass
+                      # The leader may exit while a descendant ignores TERM.
+                      try:
+                          os.killpg(process.pid, signal.SIGKILL)
+                      except ProcessLookupError:
+                          pass
+                      process.wait()
+                      break
+          status = process.wait()
+          if overflow:
+              print(f'Command log exceeded 32 MiB; process group terminated (status={status}); review required', file=sys.stderr)
+              sys.exit(125)
+          sys.exit(status if status >= 0 else 128 - status)
+          PYCAP
           run() {
             local label="$1"; shift
             printf '%q ' "$@" >> "$EVIDENCE/commands.txt"; printf '\n' >> "$EVIDENCE/commands.txt"
             set +e
-            timeout --kill-after=30s 12m "$@" > "$EVIDENCE/$label.log" 2>&1
+            python3 "$EVIDENCE/capture-bounded.py" "$EVIDENCE/$label.log" timeout --kill-after=30s 12m "$@"
             local status=$?
             set -e
             printf '%s=%s\n' "$label" "$status" >> "$EVIDENCE/exit-status.txt"
