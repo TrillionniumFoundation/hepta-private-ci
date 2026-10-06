@@ -181,6 +181,18 @@ upgrade/rollback must preserve acknowledged successor writes and current owner
 fences through the domain's independently admitted path. This admission guard
 does not implement durable registry recovery or qualify cross-schema rollback.
 
+The native ABI's `requires_handoff()` predicate accounts independently for
+state class, authoritative domains and external effects. The Supervisor's
+`promote_new_initialized_module` path therefore accepts a newly selected,
+canary-ready stateless writer/effect adapter only with nonzero initialization
+and readiness evidence. A pure stateless, domain-free, effect-free module keeps
+its ordinary `promote_stateless` path. A replacement with a predecessor cannot
+substitute initialization for its owner's handoff, and an addition cannot take
+another selected writer's domain. Selection, canary, dependency validation and
+atomic rejection remain in the existing publication path. These are admission
+checks, not proof that an owner actually initialized storage or that an installed
+Agentd performed a migration or external effect.
+
 ## 9. Security, privacy and threat controls
 
 Owned threat entries:

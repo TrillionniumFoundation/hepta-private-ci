@@ -578,10 +578,7 @@ impl RuntimeModuleSupervisorV1 {
             .registry
             .record(module_id, generation)
             .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
-        if record.abi.predecessor_generation.is_some()
-            || record.abi.state_class
-                == codex_hepta_control_plane::RuntimeModuleStateClassV1::Stateless
-        {
+        if record.abi.predecessor_generation.is_some() || !record.abi.requires_handoff() {
             return Err(RuntimeModuleSupervisorErrorV1::PredecessorMismatch);
         }
         let selection_digest = self.selection_digest(module_id, generation)?;
@@ -1080,3 +1077,7 @@ mod predecessor_tests;
 #[cfg(test)]
 #[path = "module_runtime_bootstrap_tests.rs"]
 mod bootstrap_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_initialization_tests.rs"]
+mod initialization_tests;
