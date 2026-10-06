@@ -56,16 +56,17 @@ def _normalize_aliases(
 def authority_fields(source_index: dict[str, str], target: str) -> AuthorityFields:
     """Keep typed fields across split impl modules; no variable-name allowlist."""
     aliases = {target}
-    while True:
+    pending = {target}
+    while pending:
         discovered = {
             alias
             for code in source_index.values()
-            for name in aliases
+            for name in pending
             for alias in _declared_aliases(code, name)
         }
-        if discovered <= aliases:
-            break
-        aliases.update(discovered)
+        # The source index is fixed: only newly discovered names need a scan.
+        pending = discovered - aliases
+        aliases.update(pending)
     fields = AuthorityFields(frozenset(aliases - {target}))
     for code in source_index.values():
         code = _normalize_aliases(code, target, fields.aliases)

@@ -128,6 +128,66 @@ class TypedAuthorityCallTests(unittest.TestCase):
                     self.match(f"fn f(value: {name}) {{ value.enter(); }}")
                 )
 
+    def test_alias_closure_scans_each_reachable_name_once(self):
+        index = {"root": "pub type Alias0 = Gate;"}
+        for number in range(1, 32):
+            index[f"alias{number}"] = f"pub type Alias{number} = Alias{number - 1};"
+        index["owner"] = "struct Host { authority: Alias31 }"
+        with patch.object(
+            callers, "_declared_aliases", wraps=callers._declared_aliases
+        ) as declared:
+            fields = authority_fields(index, "Gate")
+        self.assertEqual(fields, {("Host", "authority"): "Gate"})
+        self.assertEqual(fields.aliases, frozenset(f"Alias{i}" for i in range(32)))
+        # Closure visits each reachable name once per source. Normalization
+        # may additionally discover the direct target aliases once per source.
+        self.assertLessEqual(declared.call_count, len(index) * (32 + 2))
+
+    def test_alias_cycles_and_source_order_preserve_reachable_fields(self):
+        index = {
+            "owner": "struct Host { authority: Last, unrelated: Disconnected }",
+            "tail": "pub type Last = Branch; use parent::Last as First;",
+            "branch": "use root::First as Branch; pub type Duplicate = First;",
+            "root": "pub type First = Gate; pub type Disconnected = Other;",
+        }
+        for ordered in (index, dict(reversed(list(index.items())))):
+            with self.subTest(order=list(ordered)):
+                fields = authority_fields(ordered, "Gate")
+                self.assertEqual(fields, {("Host", "authority"): "Gate"})
+                self.assertEqual(
+                    fields.aliases, frozenset({"First", "Branch", "Last", "Duplicate"})
+                )
+                self.assertTrue(
+                    has_authority_call(
+                        "impl Host { fn f(&self) { self.authority.enter(); } }",
+                        "Gate",
+                        "enter",
+                        fields,
+                    )
+                )
+
+    def test_transitive_alias_keeps_unresolved_receiver_rejection(self):
+        index = {
+            "root": "pub type First = Gate;",
+            "tail": "use root::First as Last;",
+        }
+        fields = authority_fields(index, "Gate")
+        self.assertFalse(
+            has_authority_call(
+                "fn f(known: &Last, other: &Other) { other.enter(); }",
+                "Gate",
+                "enter",
+                fields,
+            )
+        )
+        with self.assertRaises(UnresolvedTypedReceiver):
+            has_authority_call(
+                "fn f(known: &Last) { let opaque = factory(known); opaque.enter(); }",
+                "Gate",
+                "enter",
+                fields,
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
