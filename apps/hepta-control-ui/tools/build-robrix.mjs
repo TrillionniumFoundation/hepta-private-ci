@@ -13,7 +13,10 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const workspace = join(root, 'rust');
 let source;
 const fixtures=process.argv.includes('--fixtures');
-await withArtifactLease(root,'build',async lease=>withStagedArtifact(lease,fixtures?'dist-robrix-fixtures':'dist',async output=>{
+const keyboardFocusTrace=process.argv.includes('--keyboard-focus-trace');
+if(fixtures&&keyboardFocusTrace)throw new Error('Keyboard trace cannot be mixed with owner fixtures');
+const artifactName=keyboardFocusTrace?'dist-robrix-keyboard-trace':fixtures?'dist-robrix-fixtures':'dist';
+await withArtifactLease(root,'build',async lease=>withStagedArtifact(lease,artifactName,async output=>{
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const provenance = JSON.parse(await readFile(join(workspace, 'robrix-ui/UPSTREAM.json'), 'utf8'));
 const sourceIdentity=await robrixSourceIdentity(root);
@@ -62,7 +65,7 @@ const packageEnv={...process.env,CARGO_TARGET_DIR:join(overlay.workspace,'target
 delete packageEnv.CARGO_ENCODED_RUSTFLAGS;
 delete packageEnv.RUSTFLAGS;
 delete packageEnv.CARGO_BUILD_TARGET;
-execFileSync(packager,['wasm','--no-threads','build','-p','hepta-robrix-ui','--bin','hepta-robrix','--release',...(fixtures?['--features','hepta-robrix-ui/ui-fixtures']:[])],{cwd:overlay.workspace,stdio:'inherit',env:packageEnv});
+execFileSync(packager,['wasm','--no-threads','build','-p','hepta-robrix-ui','--bin','hepta-robrix','--release',...(fixtures?['--features','hepta-robrix-ui/ui-fixtures']:keyboardFocusTrace?['--features','hepta-robrix-ui/keyboard-focus-trace']:[])],{cwd:overlay.workspace,stdio:'inherit',env:packageEnv});
 const canonicalLock=await readFile(join(workspace,'Cargo.lock'),'utf8');
 const generatedLock=await readFile(join(overlay.workspace,'Cargo.lock'),'utf8');
 let expectedLock=canonicalLock;
@@ -137,7 +140,7 @@ await inventory(output);
 const expectedResources=JSON.parse(await readFile(join(workspace,'robrix-ui/patches/web-asset-paths.json'),'utf8'));
 const expectedPaths=[...expectedResources.files,wasmName].sort();
 if(JSON.stringify(Object.keys(files).sort())!==JSON.stringify(expectedPaths))throw new Error('Generated package resource set differs from the reviewed SDK/resource catalog');
-await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,cjkFonts:{manifestSha256:cjkFonts.manifestSha256,bytes:cjkFonts.bytes,assets:cjkFonts.assets.map(({inputPath,...asset})=>asset)},nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
+await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,...(keyboardFocusTrace?{diagnostic:{kind:'keyboard-focus-trace',qualification:false,buildFeature:'hepta-robrix-ui/keyboard-focus-trace'}}:{}),sourceIdentity,staticBridge,upstream:provenance,artAssets:art,cjkFonts:{manifestSha256:cjkFonts.manifestSha256,bytes:cjkFonts.bytes,assets:cjkFonts.assets.map(({inputPath,...asset})=>asset)},nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
 console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);
 
 }));

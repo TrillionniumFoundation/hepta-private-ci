@@ -6,9 +6,9 @@ import {readScreenshotText,screenshotWordCenter,prepareVerifiedRegionForOcr} fro
 import {observedControl,themeLine,requireCompleteText,summarizeAx} from '../tools/keyboard-probe-contract.mjs';
 for(const scenario of ['cold-keyboard-entry','draft-theme-round-trip','escape-restores-opener'])test(scenario,async({page},testInfo)=>{
  const sourceSha=execFileSync('git',['--no-replace-objects','rev-parse','--verify','HEAD^{commit}'],{encoding:'utf8'}).trim();
- const events=[],errors=[],fonts=[],captures=[],axObservations=[];const pending=new Set();let complete=false;
+ const events=[],errors=[],fonts=[],captures=[],axObservations=[],rustFocusTrace=[];const pending=new Set();let complete=false;
  const isFont=request=>/\.(?:ttf|otf|woff2?)(?:[?#]|$)/i.test(request.url());
- page.on('pageerror',e=>errors.push(e.message));page.on('console',e=>{if(e.type()==='error')errors.push(e.text());});
+ page.on('pageerror',e=>errors.push(e.message));page.on('console',e=>{const text=e.text();if(e.type()==='error')errors.push(text);const marker=text.indexOf('HEPTA_KEYBOARD_FOCUS ');if(marker>=0){if(rustFocusTrace.length>=64||text.length>16384)errors.push('Focus trace exceeded fixed capture bounds');else rustFocusTrace.push(text.slice(marker));}});
  page.on('request',r=>{if(isFont(r)){pending.add(r);fonts.push({event:'request',url:r.url()});}if(/\/api\//.test(r.url()))errors.push('Unexpected API request:'+r.url());});
  page.on('requestfinished',r=>{if(isFont(r)){pending.delete(r);fonts.push({event:'finished',url:r.url()});}});
  page.on('requestfailed',r=>{if(isFont(r)){pending.delete(r);fonts.push({event:'failed',url:r.url(),error:r.failure()?.errorText});}});
@@ -46,6 +46,6 @@ for(const scenario of ['cold-keyboard-entry','draft-theme-round-trip','escape-re
   health();complete=true;
  }finally{
   await capture('terminal-state').catch(error=>events.push({type:'terminal-capture-failed',error:String(error)}));
-  await writeFile(testInfo.outputPath('keyboard-evidence.json'),JSON.stringify({sourceSha,scenario,complete,scope:'3 compact keyboard contracts; AX inventory observation only',physicalImeQualified:false,screenReaderQualified:false,editorPoint:{...editor,kind:'known existing composer position'},events,errors,fonts,pendingFonts:[...pending].map(r=>r.url()),captures,axObservations},null,2));
+  await writeFile(testInfo.outputPath('keyboard-evidence.json'),JSON.stringify({sourceSha,scenario,complete,scope:'3 compact keyboard contracts; AX inventory observation only',physicalImeQualified:false,screenReaderQualified:false,editorPoint:{...editor,kind:'known existing composer position'},events,errors,fonts,rustFocusTrace,focusTraceExpected:process.env.HEPTA_KEYBOARD_FOCUS_TRACE==='1',pendingFonts:[...pending].map(r=>r.url()),captures,axObservations},null,2));
  }
 });

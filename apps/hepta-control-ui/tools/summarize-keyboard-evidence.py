@@ -3,6 +3,7 @@ import argparse
 from collections import Counter
 import hashlib
 import json
+import re
 from pathlib import Path
 
 
@@ -34,7 +35,10 @@ def collect(root, source):
         font_pass = bool(requests) and requests == finished and not data['pendingFonts'] and not any(x['event'] == 'failed' or x['event'] == 'response' and x['status'] != 200 for x in data['fonts'])
         if data['complete']:
             assert font_pass and not data['errors']
-        subjects.append({'scenario': data['scenario'], 'complete': data['complete'], 'fontHealth': font_pass,
+        trace = data.get('rustFocusTrace', [])
+        assert data.get('focusTraceExpected') is True and 0 < len(trace) <= 64
+        assert all(isinstance(line, str) and len(line) <= 16384 and '\n' not in line and '\r' not in line and re.fullmatch(r'HEPTA_KEYBOARD_FOCUS phase=(before|after)-dispatch kind=(down|up) key=(Tab|Space|ReturnKey|Escape) shift=(true|false) focus=.+ valid=(true|false) candidates=\[.*\] public_nav_root=(None|Some\(.+\)) stops_truncated=(true|false) stops=\[.*\]', line) for line in trace), 'Invalid or unbounded Rust focus trace'
+        subjects.append({'diagnosticInstrumented': True, 'rustFocusTrace': trace, 'scenario': data['scenario'], 'complete': data['complete'], 'fontHealth': font_pass,
                          'captures': len(data['captures']), 'errors': data['errors'], 'axObservations': data['axObservations']})
     expected = {'cold-keyboard-entry', 'draft-theme-round-trip', 'escape-restores-opener'}
     assert len(subjects) == 3 and {x['scenario'] for x in subjects} == expected
@@ -42,7 +46,7 @@ def collect(root, source):
     assert complete_count == stats['expected'], 'Final authoritative result differs from completion receipt'
     return {'sourceSha': source, 'keyboardContractsPassed': complete_count == 3,
             'completeCount': complete_count, 'subjects': subjects, 'screenReaderQualified': False,
-            'physicalImeQualified': False, 'scope': '3 compact640px keyboard contracts; AX role/name inventory is observation only'}
+            'physicalImeQualified': False, 'diagnosticInstrumented': True, 'scope': '3 compact640px keyboard contracts; AX role/name inventory is observation only'}
 
 
 if __name__ == '__main__':

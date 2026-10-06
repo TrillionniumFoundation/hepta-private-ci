@@ -18,6 +18,8 @@ default = ["ui"]
 ui = ["dep:makepad-widgets"]
 ui-fixtures = ["hepta-control-core/ui-fixtures"]
 native-host = []
+# Isolated diagnostics only; never enabled by default.
+keyboard-focus-trace = []
 
 [dependencies]
 makepad-widgets = { git = "https://github.com/kevinaboos/makepad", rev = "337566c8b25d47f7e4fff6a202157b65bf183330", features = ["serde"], optional = true }

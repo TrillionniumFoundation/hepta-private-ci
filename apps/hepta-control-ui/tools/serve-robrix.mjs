@@ -5,10 +5,16 @@ import { fileURLToPath } from 'node:url';
 import {robrixSourceIdentity} from './robrix-source-identity.mjs';
 import {withArtifactLease,loadArtifactSnapshot} from './owned-artifact-lease.mjs';
 const sourceRoot=fileURLToPath(new URL('..',import.meta.url));
+const fixtures=process.env.HEPTA_ROBRIX_FIXTURES==='1';
+const keyboardFocusTrace=process.env.HEPTA_KEYBOARD_FOCUS_TRACE==='1';
+if(fixtures&&keyboardFocusTrace)throw new Error('Keyboard trace preview cannot use fixtures');
 const snapshot=await withArtifactLease(sourceRoot,'preview',async()=>{
-const root=fileURLToPath(new URL(process.env.HEPTA_ROBRIX_FIXTURES==='1'?'../dist-robrix-fixtures/':'../dist/',import.meta.url));
+const root=fileURLToPath(new URL(keyboardFocusTrace?'../dist-robrix-keyboard-trace/':fixtures?'../dist-robrix-fixtures/':'../dist/',import.meta.url));
 const snapshot=await loadArtifactSnapshot(root);
 const {manifest}=snapshot;
+if(keyboardFocusTrace){
+ if(manifest.fixtures!==false||manifest.diagnostic?.kind!=='keyboard-focus-trace'||manifest.diagnostic?.qualification!==false||manifest.diagnostic?.buildFeature!=='hepta-robrix-ui/keyboard-focus-trace')throw new Error('Expected explicit keyboard diagnostic artifact');
+}else if(manifest.diagnostic)throw new Error('Diagnostic artifacts require explicit diagnostic preview');
 if((await robrixSourceIdentity(sourceRoot)).sha256!==manifest.sourceIdentity?.sha256) throw new Error('Built artifact is stale; rebuild current UI source');
 if (manifest.browserRuntime!=='rust-makepad-wasm') throw new Error('Build the canonical Robrix UI first');
 return snapshot;

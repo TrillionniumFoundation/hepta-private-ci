@@ -64,6 +64,81 @@ impl ScriptHook for App {
         }
     }
 }
+// Temporary read-only diagnostic on the isolated keyboard-audit branch.
+// It records neither editor/search text nor owner credentials, and never sets focus.
+#[cfg(feature = "keyboard-focus-trace")]
+impl App {
+    fn observe_keyboard_focus(&self, cx: &mut Cx, event: &Event, phase: &str) {
+        let (kind, key) = match event {
+            Event::KeyDown(key) => ("down", key),
+            Event::KeyUp(key) => ("up", key),
+            _ => return,
+        };
+        if !matches!(
+            key.key_code,
+            KeyCode::Tab | KeyCode::Space | KeyCode::ReturnKey | KeyCode::Escape
+        ) {
+            return;
+        }
+        let focus = cx.key_focus();
+        let mut candidates = Vec::new();
+        for (name, id) in [
+            ("conversations", id!(conversations)),
+            ("chat_tab", id!(chat_tab)),
+            ("console_tab", id!(console_tab_button)),
+            ("mobile_theme", id!(mobile_theme_switch)),
+            ("desktop_theme", id!(theme_switch)),
+            ("editor", id!(message_input)),
+            ("search", id!(room_filter)),
+            ("back", id!(back_to_chat)),
+            ("new_draft", id!(new_draft)),
+            ("rail_chat", id!(rail_chat)),
+            ("rail_console", id!(rail_console)),
+            ("send", id!(send_message_button)),
+        ] {
+            let widget = self.ui.widget(cx, &[id]);
+            let area = widget.area();
+            if !widget.is_empty() {
+                candidates.push((
+                    name,
+                    area,
+                    area.is_valid(cx),
+                    area == focus,
+                    widget.visible(),
+                ));
+            }
+        }
+        let mut stops = Vec::new();
+        let mut public_nav_root = None;
+        let mut stops_truncated = false;
+        if cx.has_global::<makepad_widgets::makepad_draw::nav::CxNavTreeRc>()
+            && let Some(root) = self.ui.widget(cx, ids!(main_window)).area().draw_list_id()
+        {
+            public_nav_root = Some(root);
+            let _ = CxDraw::iterate_nav_stops(cx, root, |cx, stop| {
+                if stops.len() < 32 {
+                    stops.push((stop.area, stop.area.is_valid(cx), stop.area == focus));
+                } else {
+                    stops_truncated = true;
+                }
+                None
+            });
+        }
+        log!(
+            "HEPTA_KEYBOARD_FOCUS phase={} kind={} key={:?} shift={} focus={:?} valid={} candidates={:?} public_nav_root={:?} stops_truncated={} stops={:?}",
+            phase,
+            kind,
+            key.key_code,
+            key.modifiers.shift,
+            focus,
+            focus.is_valid(cx),
+            candidates,
+            public_nav_root,
+            stops_truncated,
+            stops,
+        );
+    }
+}
 impl AppMain for App {
     fn after_new_from_script(vm: &mut ScriptVm, app: &mut Self) {
         #[cfg(feature = "native-host")]
@@ -120,8 +195,12 @@ impl AppMain for App {
             return;
         }
         crate::visual_theme::apply_tree(cx, &self.ui);
+        #[cfg(feature = "keyboard-focus-trace")]
+        self.observe_keyboard_focus(cx, event, "before-dispatch");
         self.ime_router
             .dispatch(cx, &self.ui, event, &mut self.workspace);
+        #[cfg(feature = "keyboard-focus-trace")]
+        self.observe_keyboard_focus(cx, event, "after-dispatch");
         #[cfg(target_arch = "wasm32")]
         self.runtime_status.handle_event(
             cx,

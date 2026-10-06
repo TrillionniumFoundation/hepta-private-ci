@@ -8,7 +8,7 @@ import {join,resolve,basename} from 'node:path';
 import {fileURLToPath} from 'node:url';
 const runner=fileURLToPath(new URL('./artifact-lock.py',import.meta.url));
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
-const names=['dist','dist-robrix-fixtures'];
+const names=['dist','dist-robrix-fixtures','dist-robrix-keyboard-trace'];
 const hashPattern=/^[a-f0-9]{64}$/;
 const exists=async path=>{try{return await lstat(path);}catch(e){if(e.code==='ENOENT')return null;throw e;}};
 
