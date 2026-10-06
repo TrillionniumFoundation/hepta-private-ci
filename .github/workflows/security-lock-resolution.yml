@@ -25,8 +25,10 @@ jobs:
       CANDIDATE: ${{ matrix.candidate }}
       RUSTUP_TOOLCHAIN: 1.96.0
       CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
-      EVIDENCE: ${{ runner.temp }}/security-lock-evidence
     steps:
+      - name: Set evidence directory after runner allocation
+        shell: bash
+        run: echo "EVIDENCE=$RUNNER_TEMP/security-lock-evidence" >> "$GITHUB_ENV"
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: 69d951e0577e5d6ba537775252896cd1ed028fae
@@ -40,7 +42,8 @@ jobs:
           printf '%s\n' 'NON-QUALIFYING lock resolution proposal. No compilation, tests, vulnerability reachability, merge, or release qualification.' > "$EVIDENCE/SCOPE.txt"
           test "$(git rev-parse HEAD)" = "$BASE_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$BASE_TREE"
-          test "$(git show -s --format=%P "$GITHUB_SHA")" = "$BASE_SHA"
+          test "$(git show -s --format=%P "$GITHUB_SHA")" = 13ac0610d5e31793dd8ec0b488e6c81ec702d6d7
+          test "$(git show -s --format=%P 13ac0610d5e31793dd8ec0b488e6c81ec702d6d7)" = "$BASE_SHA"
           test "$(git diff --name-only "$BASE_SHA" "$GITHUB_SHA")" = '.github/workflows/security-lock-resolution.yml'
           test -z "$(git status --porcelain)"
           printf 'base=%s\ntree=%s\ncarrier=%s\ncandidate=%s\n' "$BASE_SHA" "$BASE_TREE" "$GITHUB_SHA" "$CANDIDATE" > "$EVIDENCE/identity.txt"
