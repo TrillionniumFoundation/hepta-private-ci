@@ -1230,6 +1230,11 @@ url = "ws://127.0.0.1:8765"
             .with_writer(MockWriter::new(buffer))
             .finish();
         let _subscriber_guard = tracing::subscriber::set_default(subscriber);
+        // With only one registered subscriber, tracing can cache a callsite as disabled when
+        // another test first visits it without our thread-local subscriber. Keep a second
+        // dispatch alive so callsite registration considers both subscribers on every thread.
+        let _parallel_test_dispatch =
+            tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
 
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -1260,18 +1265,15 @@ url = "ws://127.0.0.1:8765"
         ));
         environments
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
-        let snapshot_task = tokio::spawn({
-            let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
-        });
-        tokio::task::yield_now().await;
-        assert!(!snapshot_task.is_finished());
+        let snapshot = environments.snapshot();
+        tokio::pin!(snapshot);
+        // Poll the snapshot before serving the connection, proving that it actually waits.
+        assert!(futures::poll!(snapshot.as_mut()).is_pending());
 
         let server = tokio::spawn(serve_environment_info(listener));
-        let snapshot = timeout(Duration::from_secs(5), snapshot_task)
+        let snapshot = timeout(Duration::from_secs(5), snapshot)
             .await
-            .expect("snapshot should finish after the environment starts")
-            .expect("snapshot task");
+            .expect("snapshot should finish after the environment starts");
 
         assert!(snapshot.starting().next().is_none());
         assert_eq!(snapshot.to_selections(), vec![selection]);

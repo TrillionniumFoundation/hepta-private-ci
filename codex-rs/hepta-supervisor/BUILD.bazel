@@ -11,6 +11,7 @@ codex_rust_crate(
         "hepta-supervisord": [],
     },
     crate_name = "codex_hepta_supervisor",
+    test_data_extra = glob(["fixtures/robrix-control-v2/**"]),
 )
 
 # Caller evidence inspected by the Hepta contracts tests.
