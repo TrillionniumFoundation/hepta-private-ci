@@ -87,8 +87,10 @@ def execute_logged(
 ) -> dict:
     """Bound a POSIX command group, retain raw output, and reap its direct child.
 
-    EOF is not process completion; parent exit is not pipe completion. Escaped
-    sessions require an external sandbox and are not claimed to be terminated.
+    EOF is not process completion; parent exit is not pipe completion. Every
+    exit path cancels remaining group members, even those that closed stdout.
+    Escaped sessions require an external sandbox and are not claimed to be
+    terminated.
     """
     if (
         not command
@@ -115,7 +117,6 @@ def execute_logged(
         )
         assert process.stdout is not None
         descriptor = process.stdout.fileno()
-        completed = False
         try:
             os.set_blocking(descriptor, False)
             with selectors.DefaultSelector() as selector:
@@ -155,18 +156,15 @@ def execute_logged(
                             break
                     if exceeded:
                         break
-                completed = (
-                    eof
-                    and process.poll() is not None
-                    and not timed_out
-                    and not exceeded
-                )
         finally:
-            if not completed:
-                try:
-                    os.killpg(process.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
+            # Normal leader exit and pipe EOF do not prove that the command's
+            # group is empty: a descendant may redirect or close both outputs.
+            # Cancel only this invocation's group on every exit path. The
+            # direct child's actual exit status and raw log remain unchanged.
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
             process.wait()
             process.stdout.close()
             stream.flush()
