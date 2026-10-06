@@ -1,24 +1,24 @@
-# Exact main-based twelve-source composition only; no merge or deployment lane.
-name: Main fairness and circuit integration
+# Three Automation fixture/build inputs over the reviewed main integration.
+name: Main Automation fixture qualification
 on:
   push:
-    branches: [dot/main-fairness-circuit-integration-20261006]
+    branches: [dot/main-automation-fixtures-20261006]
 permissions:
   contents: read
 concurrency:
-  group: main-fairness-circuit-${{ github.ref }}
+  group: main-automation-fixtures-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   source-qualification:
     name: ${{ matrix.lane }} source qualification
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/main-fairness-circuit-integration-20261006'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/main-automation-fixtures-20261006'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 1
       matrix:
-        lane: [memory, automation]
+        lane: [automation]
     env:
       RUSTUP_TOOLCHAIN: 1.96.0
       CARGO_BUILD_JOBS: '2'
@@ -43,7 +43,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 2
           persist-credentials: false
-      - name: Verify exact raw parent and reviewed fourteen-file scope
+      - name: Verify exact raw parent and reviewed five-file follow-up scope
         shell: bash
         timeout-minutes: 2
         run: python3 scripts/hepta_main_slice_ci.py before
@@ -82,23 +82,13 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Check the twelve reviewed Rust files with repository formatting settings
+      - name: Check both repaired Rust fixtures with repository formatting settings
         shell: bash
         timeout-minutes: 2
         run: |
           rustfmt --check --edition 2024 --config imports_granularity=Item,skip_children=true \
-            codex-rs/hepta-automation/src/authorized_effect.rs \
-            codex-rs/hepta-automation/src/migration_convergence_tests.rs \
-            codex-rs/hepta-automation/src/neural_circuit.rs \
-            codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs \
-            codex-rs/hepta-memory/src/cognitive_schema_tests.rs \
-            codex-rs/hepta-memory/src/cognitive_store_tests.rs \
-            codex-rs/hepta-memory/src/local_lease_outbox.rs \
-            codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs \
-            codex-rs/hepta-memory/src/production_reconciliation_cursor.rs \
-            codex-rs/hepta-memory/src/production_reconciliation_edge_tests.rs \
-            codex-rs/hepta-memory/src/production_reconciliation_fairness_tests.rs \
-            codex-rs/hepta-memory/src/production_writer.rs
+            codex-rs/hepta-automation/tests/automation.rs \
+            codex-rs/hepta-automation/tests/retirement_recovery.rs
 
       - name: Fresh package inventory, full default suite and strict all-target lint
         shell: bash

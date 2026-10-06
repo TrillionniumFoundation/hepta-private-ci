@@ -1,4 +1,4 @@
-"""Qualify only the reviewed main-based Memory/Automation source slice."""
+"""Qualify the reviewed Automation fixture follow-up over the main integration."""
 
 import hashlib
 import json
@@ -14,33 +14,20 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 
-BASE = "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
-SOURCE_TREE = "3a72cbe191ef0992566492e615067557a17ff5be"
-BRANCH = "refs/heads/dot/main-fairness-circuit-integration-20261006"
+BASE = "bf1862dd05b176a4282c7e657203cb24395d249a"
+SOURCE_TREE = "566b8d5f72680a60441a5b57c84859acdd58dc2f"
+BRANCH = "refs/heads/dot/main-automation-fixtures-20261006"
 SOURCES = {
-    "codex-rs/hepta-automation/src/authorized_effect.rs": "f8af9c1f620aab2a8bc39573698528f934189ac0",
-    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "1e7dd7024881956c1520b63d7e65ddd01d56e01f",
-    "codex-rs/hepta-automation/src/neural_circuit.rs": "245b48f535eb0d83457b56a642a36c3131dc3785",
-    "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs": "72a549e85391df4b1930b1225cbb4279ef0ad277",
-    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "ad441ad91869c6070a60497181e346c5086ece5a",
-    "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "a702f89bf4c38fec052d875ce6ddcca887bd0edc",
-    "codex-rs/hepta-memory/src/local_lease_outbox.rs": "724fca8e2b88c29c75a61b5968a2756a8cccef89",
-    "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs": "5c419d3442cc9310d1e1ca27ba6a7739fc2cf6b5",
-    "codex-rs/hepta-memory/src/production_reconciliation_cursor.rs": "0dec4794ee253cce7ab934726ff6dea7d6870190",
-    "codex-rs/hepta-memory/src/production_reconciliation_edge_tests.rs": "f96c76a281b250be88fd22760b58b93b876958a0",
-    "codex-rs/hepta-memory/src/production_reconciliation_fairness_tests.rs": "6245861154a2e5f0d6427a766bd8ce6c999f60bf",
-    "codex-rs/hepta-memory/src/production_writer.rs": "9e839e2768509c5d4e064a1943b84a9c81deb4db",
+    "codex-rs/hepta-automation/tests/automation.rs": "b179332702b85339f0646f47bce40d48ef7674ff",
+    "codex-rs/hepta-automation/tests/retirement_recovery.rs": "c1eac373961514fccc0914897434ccc68d43e9d9",
+    "codex-rs/hepta-automation/BUILD.bazel": "8545046b41b681f2990a9486fa69cd21d112a875"
 }
 
 DIAGNOSTICS = {
     ".github/workflows/main-fairness-circuit-integration.yml",
     "scripts/hepta_main_slice_ci.py",
 }
-ADDED_SOURCE = {
-    "codex-rs/hepta-memory/src/production_reconciliation_cursor.rs",
-    "codex-rs/hepta-memory/src/production_reconciliation_edge_tests.rs",
-    "codex-rs/hepta-memory/src/production_reconciliation_fairness_tests.rs",
-}
+ADDED_SOURCE = set()
 REQUIRED = {
     "memory": (
         "same_destination_unavailable_prefix_does_not_starve_later_operation",
@@ -60,6 +47,8 @@ REQUIRED = {
         "structural_successor_cannot_rebind_predecessor_or_widen_capabilities",
         "circuit_reuses_taskflow_cycle_and_terminal_rejection",
         "successor_rejects_version_exhaustion_but_accepts_last_increment",
+        "v1_store_migrates_atomically_to_dispatch_outcome_schema",
+        "all_release_paths_preserve_disable_and_cancel_across_restart",
     ),
 }
 
@@ -106,9 +95,9 @@ def identity():
         status, path = line.split("\t")
         changed[path] = status
     expected = {path: "A" if path in ADDED_SOURCE else "M" for path in SOURCES}
-    expected.update({path: "A" for path in DIAGNOSTICS})
+    expected.update({path: "M" for path in DIAGNOSTICS})
     if changed != expected:
-        raise ValueError("changed paths/statuses differ from exact fourteen-file scope")
+        raise ValueError("changed paths/statuses differ from exact five-file follow-up scope")
     blobs = {path: git("rev-parse", f"{head}:{path}") for path in sorted(expected)}
     for path, blob in SOURCES.items():
         if blobs[path] != blob or git("hash-object", "--path", path, path) != blob:
@@ -318,6 +307,8 @@ def verify_results(inventory, xml_path, lane):
 
 
 def run(lane):
+    if lane != "automation":
+        raise ValueError("only Automation is admitted in this follow-up")
     package = "codex-hepta-" + lane
     root, out = Path.cwd().resolve(), evidence()
     if identity() != json.loads((out / "source-before.json").read_text()):

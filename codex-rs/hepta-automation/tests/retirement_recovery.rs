@@ -121,7 +121,11 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
         AutomationTaskState::Disabled,
         AutomationTaskState::Cancelled,
     ] {
-        for release in [ReleasePath::PreDispatchRetry, ReleasePath::StaleGeneration] {
+        for release in [
+            ReleasePath::PreDispatchRetry,
+            ReleasePath::StaleGeneration,
+            ReleasePath::NegativeObservation,
+        ] {
             let (_temp, layout, store, lease) = leased_store().await?;
             if matches!(release, ReleasePath::NegativeObservation) {
                 prepare_dispatch_intent(&store, &lease, /*observed_at_ms*/ 101).await?;
