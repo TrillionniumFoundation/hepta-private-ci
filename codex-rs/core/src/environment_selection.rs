@@ -1229,7 +1229,7 @@ url = "ws://127.0.0.1:8765"
             .with_span_events(FmtSpan::NEW)
             .with_writer(MockWriter::new(buffer))
             .finish();
-        let _subscriber_guard = tracing::subscriber::set_default(subscriber);
+        let dispatcher = tracing::Dispatch::new(subscriber);
 
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -1258,14 +1258,16 @@ url = "ws://127.0.0.1:8765"
             TurnEnvironmentSnapshot::default(),
             /*non_blocking_snapshots*/ false,
         ));
-        environments
-            .update_selections(std::slice::from_ref(&selection), &test_environment_config());
+        tracing::dispatcher::with_default(&dispatcher, || {
+            environments
+                .update_selections(std::slice::from_ref(&selection), &test_environment_config());
+        });
         let snapshot_task = tokio::spawn(
             {
                 let environments = Arc::clone(&environments);
                 async move { environments.snapshot().await }
             }
-            .with_current_subscriber(),
+            .with_subscriber(dispatcher),
         );
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());

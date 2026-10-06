@@ -60,6 +60,8 @@ use codex_thread_store::ThreadStoreError;
 use codex_thread_store::ThreadStoreFuture;
 use codex_utils_absolute_path::test_support::PathExt;
 use core_test_support::hooks::trust_discovered_hooks;
+#[cfg(windows)]
+use core_test_support::powershell_encoded_command;
 use core_test_support::responses;
 use core_test_support::responses::start_mock_server;
 use core_test_support::streaming_sse::StreamingSseChunk;
@@ -166,12 +168,10 @@ fn python_hook_command(script_path: &Path) -> String {
         let python = python.to_string_lossy().replace('\'', "''");
         let script_path = script_path.to_string_lossy().replace('\'', "''");
         // Hook execution follows the selected environment shell, which can be
-        // either PowerShell or cmd on Windows. Invoke a fresh PowerShell
-        // explicitly so the quoted interpreter and script paths have one
-        // stable grammar under both parents.
-        return format!(
-            "powershell.exe -NoLogo -NoProfile -NonInteractive -Command \"& '{python}' '{script_path}'\""
-        );
+        // either PowerShell or cmd on Windows. Encode the nested PowerShell
+        // body so cmd's outer `/C "..."` wrapper cannot consume its quoting.
+        let script = format!("& '{python}' '{script_path}'");
+        return powershell_encoded_command(&script);
     }
 
     #[cfg(not(windows))]
