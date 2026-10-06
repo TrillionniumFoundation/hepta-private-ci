@@ -1179,11 +1179,34 @@ impl AutomationStore {
             .begin()
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
+        let result = self
+            .apply_taskflow_command_tx(
+                &mut tx,
+                command,
+                &command_digest,
+                allow_proven_absence_requeue,
+                allow_effect_observation_quarantine,
+            )
+            .await?;
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        Ok(result)
+    }
+
+    // Callers retain pre-transaction validation and own commit/rollback.
+    // Recovery flags keep their existing meaning and restricted callers.
+    pub(crate) async fn apply_taskflow_command_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        command: &TaskFlowCommand,
+        command_digest: &Sha256Digest,
+        allow_proven_absence_requeue: bool,
+        allow_effect_observation_quarantine: bool,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
         let row =
             sqlx::query("SELECT * FROM taskflow_runs WHERE owner_agent_id = ? AND run_id = ?")
                 .bind(self.taskflow_owner_agent_id().as_str())
                 .bind(&command.run_id)
-                .fetch_optional(&mut *tx)
+                .fetch_optional(&mut **tx)
                 .await
                 .map_err(|_| TaskFlowError::Unavailable)?
                 .ok_or_else(|| {
@@ -1193,9 +1216,9 @@ impl AutomationStore {
         // Validate the complete immutable history before command de-duplication
         // or any projection/event append.  A corrupt tail must never be
         // hidden behind `AlreadyApplied` or extended with a new event.
-        verify_taskflow_event_chain_tx(&mut tx, &run).await?;
+        verify_taskflow_event_chain_tx(tx, &run).await?;
         let definition = load_taskflow_definition_tx(
-            &mut tx,
+            tx,
             self.taskflow_owner_agent_id(),
             &run.workflow_id,
             run.workflow_version,
@@ -1214,7 +1237,7 @@ impl AutomationStore {
         .bind(self.taskflow_owner_agent_id().as_str())
         .bind(&command.run_id)
         .bind(&command.command_id)
-        .fetch_optional(&mut *tx)
+        .fetch_optional(&mut **tx)
         .await
         .map_err(|_| TaskFlowError::Unavailable)?
         {
@@ -1236,7 +1259,6 @@ impl AutomationStore {
                     .try_get("event_seq")
                     .map_err(|_| TaskFlowError::Corrupt("event sequence column".to_string()))?,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
             return Ok(TaskFlowCommandResult {
                 status: TaskFlowCommandStatus::AlreadyApplied,
                 revision,
@@ -1288,22 +1310,21 @@ impl AutomationStore {
             .ok_or_else(|| corrupt("run revision overflow"))?;
         run.updated_at_ms = command.now_ms;
         run.state_digest = run.compute_state_digest()?;
-        update_taskflow_run(&mut tx, &run, Some(&command.fence)).await?;
-        let previous = previous_event_digest(&mut tx, &run).await?;
+        update_taskflow_run(tx, &run, Some(&command.fence)).await?;
+        let previous = previous_event_digest(tx, &run).await?;
         let payload = serde_json::to_string(&command.transition).map_err(|error| {
             TaskFlowError::Corrupt(format!("transition serialization: {error}"))
         })?;
         let event_seq = append_taskflow_event(
-            &mut tx,
+            tx,
             &run,
             transition_name,
             &command.command_id,
-            &command_digest,
+            command_digest,
             &payload,
             &previous,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(TaskFlowCommandResult {
             status: TaskFlowCommandStatus::Applied,
             revision: run.revision,

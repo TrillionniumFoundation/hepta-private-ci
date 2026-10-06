@@ -138,6 +138,35 @@ pub struct TaskFlowStepCommandResult {
     pub receipt: TaskFlowStepReceipt,
 }
 
+/// Transaction-local outcome. Fresh receipts are reconstructed by ordinary
+/// wrappers only after commit; historical receipts are validated before commit.
+pub(crate) struct PendingStepOperation {
+    outcome: PendingStepOutcome,
+}
+
+enum PendingStepOutcome {
+    Historical(TaskFlowStepCommandResult),
+    Fresh(Vec<StepEvent>),
+}
+
+impl PendingStepOperation {
+    pub(crate) fn into_result(
+        self,
+        owner: &AgentId,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<TaskFlowStepCommandResult, TaskFlowError> {
+        match self.outcome {
+            PendingStepOutcome::Historical(result) => Ok(result),
+            PendingStepOutcome::Fresh(events) => Ok(TaskFlowStepCommandResult {
+                status: TaskFlowStepCommandStatus::Applied,
+                receipt: reconstruct_step(owner, run_id, step_id, attempt, &events)?,
+            }),
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 struct StepEvent {
     event_seq: u64,
@@ -228,10 +257,41 @@ impl AutomationStore {
         validate_fence(self, fence)?;
         ensure_step_schema(self).await?;
         let mut tx = self.begin_step_tx().await?;
-        let run = load_run(&mut tx, self, run_id).await?;
-        let definition = load_definition(&mut tx, self, &run).await?;
+        let pending = self
+            .prepare_taskflow_step_tx(
+                &mut tx,
+                run_id,
+                step_id,
+                attempt,
+                fence,
+                intent_digest,
+                payload_digest,
+                command_id,
+                now_ms,
+            )
+            .await?;
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        pending.into_result(self.taskflow_owner_agent_id(), run_id, step_id, attempt)
+    }
+
+    // Callers preserve the ordinary pre-transaction validation/schema checks.
+    // This core neither commits nor creates provider/dispatch authority.
+    pub(crate) async fn prepare_taskflow_step_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+        intent_digest: &Sha256Digest,
+        payload_digest: &Sha256Digest,
+        command_id: &str,
+        now_ms: u64,
+    ) -> Result<PendingStepOperation, TaskFlowError> {
+        let run = load_run(tx, self, run_id).await?;
+        let definition = load_definition(tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
-        let events = load_step_events(&mut tx, self, run_id, step_id, attempt).await?;
+        let events = load_step_events(tx, self, run_id, step_id, attempt).await?;
         let command_digest = operation_digest(
             "prepare",
             self.taskflow_owner_agent_id(),
@@ -255,10 +315,11 @@ impl AutomationStore {
                 attempt,
                 &events,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
-            return Ok(TaskFlowStepCommandResult {
-                status: TaskFlowStepCommandStatus::AlreadyApplied,
-                receipt: receipt_with_seq(receipt, existing.event_seq),
+            return Ok(PendingStepOperation {
+                outcome: PendingStepOutcome::Historical(TaskFlowStepCommandResult {
+                    status: TaskFlowStepCommandStatus::AlreadyApplied,
+                    receipt: receipt_with_seq(receipt, existing.event_seq),
+                }),
             });
         }
         check_active_run_fence(&run, fence, now_ms)?;
@@ -268,7 +329,7 @@ impl AutomationStore {
             ));
         }
         let event = append_step_event(
-            &mut tx,
+            tx,
             self,
             run_id,
             step_id,
@@ -285,16 +346,8 @@ impl AutomationStore {
             now_ms,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
-        Ok(TaskFlowStepCommandResult {
-            status: TaskFlowStepCommandStatus::Applied,
-            receipt: reconstruct_step(
-                self.taskflow_owner_agent_id(),
-                run_id,
-                step_id,
-                attempt,
-                &[event],
-            )?,
+        Ok(PendingStepOperation {
+            outcome: PendingStepOutcome::Fresh(vec![event]),
         })
     }
 
@@ -715,10 +768,48 @@ impl AutomationStore {
         }
         ensure_step_schema(self).await?;
         let mut tx = self.begin_step_tx().await?;
-        let run = load_run(&mut tx, self, run_id).await?;
-        let definition = load_definition(&mut tx, self, &run).await?;
+        let pending = self
+            .append_taskflow_step_operation_tx(
+                &mut tx,
+                operation,
+                run_id,
+                step_id,
+                attempt,
+                fence,
+                intent_digest,
+                payload_digest,
+                command_id,
+                receipt_digest,
+                observation,
+                final_outcome,
+                now_ms,
+            )
+            .await?;
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        pending.into_result(self.taskflow_owner_agent_id(), run_id, step_id, attempt)
+    }
+
+    // The caller performs the unchanged operation/argument validation first.
+    pub(crate) async fn append_taskflow_step_operation_tx(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        operation: &str,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+        intent_digest: &Sha256Digest,
+        payload_digest: &Sha256Digest,
+        command_id: &str,
+        receipt_digest: Option<&Sha256Digest>,
+        observation: Option<TaskFlowStepObservation>,
+        final_outcome: Option<TaskFlowReconcileOutcome>,
+        now_ms: u64,
+    ) -> Result<PendingStepOperation, TaskFlowError> {
+        let run = load_run(tx, self, run_id).await?;
+        let definition = load_definition(tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
-        let events = load_step_events(&mut tx, self, run_id, step_id, attempt).await?;
+        let events = load_step_events(tx, self, run_id, step_id, attempt).await?;
         let command_digest = operation_digest(
             operation,
             self.taskflow_owner_agent_id(),
@@ -742,10 +833,11 @@ impl AutomationStore {
                 attempt,
                 &events,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
-            return Ok(TaskFlowStepCommandResult {
-                status: TaskFlowStepCommandStatus::AlreadyApplied,
-                receipt: receipt_with_seq(receipt, existing.event_seq),
+            return Ok(PendingStepOperation {
+                outcome: PendingStepOutcome::Historical(TaskFlowStepCommandResult {
+                    status: TaskFlowStepCommandStatus::AlreadyApplied,
+                    receipt: receipt_with_seq(receipt, existing.event_seq),
+                }),
             });
         }
         let current = events
@@ -795,7 +887,7 @@ impl AutomationStore {
             _ => unreachable!(),
         };
         let event = append_step_event(
-            &mut tx,
+            tx,
             self,
             run_id,
             step_id,
@@ -812,18 +904,10 @@ impl AutomationStore {
             now_ms,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         let mut all_events = events;
         all_events.push(event);
-        Ok(TaskFlowStepCommandResult {
-            status: TaskFlowStepCommandStatus::Applied,
-            receipt: reconstruct_step(
-                self.taskflow_owner_agent_id(),
-                run_id,
-                step_id,
-                attempt,
-                &all_events,
-            )?,
+        Ok(PendingStepOperation {
+            outcome: PendingStepOutcome::Fresh(all_events),
         })
     }
 

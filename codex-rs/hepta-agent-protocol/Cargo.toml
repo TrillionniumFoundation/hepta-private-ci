@@ -21,3 +21,11 @@ serde = { workspace = true, features = ["derive"] }
 
 [dev-dependencies]
 serde_json = { workspace = true }
+
+[features]
+qualification-retrieval-encoding = []
+
+[[test]]
+name = "retrieval_choice_encoding"
+path = "qualification/retrieval_choice_encoding.rs"
+required-features = ["qualification-retrieval-encoding"]

@@ -1,0 +1,109 @@
+# Five reviewed TaskFlow source paths; bounded qualification only.
+name: TaskFlow native encoding qualification
+on:
+  push:
+    branches: [dot/taskflow-native-encoding-20261006]
+permissions:
+  contents: read
+concurrency:
+  group: taskflow-native-encoding-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-qualification:
+    name: Default Automation and opt-in protocol encoding
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/taskflow-native-encoding-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_TERM_COLOR: never
+      PYTHONDONTWRITEBYTECODE: '1'
+      GIT_NO_REPLACE_OBJECTS: '1'
+    steps:
+      - name: Bound setup and native work together
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "SLICE_DEADLINE=$(( $(date +%s) + 3000 ))" >> "$GITHUB_ENV"
+          echo "SLICE_EVIDENCE=$RUNNER_TEMP/taskflow-native-records" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/taskflow-native-target" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/taskflow-native-records"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify exact raw parent and reviewed five-source/two-diagnostic scope
+        shell: bash
+        timeout-minutes: 2
+        run: python3 scripts/hepta_taskflow_native_ci.py before
+      - name: Install ordinary build dependencies and official pinned Rust
+        shell: bash
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libssl-dev libcap-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy --component rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 5
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install pinned DotSlash for existing Automation inputs
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+        timeout-minutes: 3
+      - name: Expose existing DotSlash executable at its supported Unix path
+        shell: bash
+        timeout-minutes: 1
+        run: |
+          set -euo pipefail
+          if [[ -w /usr/local/bin ]]; then
+            cp "$(command -v dotslash)" /usr/local/bin/dotslash
+          else
+            sudo cp "$(command -v dotslash)" /usr/local/bin/dotslash
+          fi
+          test -x /usr/local/bin/dotslash
+      - name: Resolve existing checksum-verified Automation V8 pair
+        timeout-minutes: 10
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Format-check exact reviewed Rust sources
+        shell: bash
+        timeout-minutes: 2
+        run: |
+          rustfmt --check --edition 2024 --config imports_granularity=Item,skip_children=true \
+            codex-rs/hepta-automation/src/taskflow.rs \
+            codex-rs/hepta-automation/src/taskflow_step.rs \
+            codex-rs/hepta-automation/src/retrieval_choice_qualification/encoding.rs \
+            codex-rs/hepta-agent-protocol/qualification/retrieval_choice_encoding.rs
+
+      - name: Fresh default Automation, explicit protocol serde, strict lint and default-target isolation
+        shell: bash
+        timeout-minutes: 50
+        run: python3 scripts/hepta_taskflow_native_ci.py run
+      - name: Verify source after success or failure
+        if: always()
+        shell: bash
+        timeout-minutes: 2
+        run: python3 scripts/hepta_taskflow_native_ci.py after
+      - name: Stage bounded original evidence without qualifying partial results
+        id: evidence
+        if: always()
+        shell: bash
+        timeout-minutes: 2
+        run: python3 scripts/hepta_taskflow_native_ci.py stage
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() && steps.evidence.outputs.upload_directory != '' }}
+        timeout-minutes: 3
+        with:
+          name: taskflow-native-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.evidence.outputs.upload_directory }}
+          if-no-files-found: error
+          retention-days: 7
