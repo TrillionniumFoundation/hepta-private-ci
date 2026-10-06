@@ -163,10 +163,15 @@ fn python_hook_command(script_path: &Path) -> String {
             .map(|directory| directory.join("python.exe"))
             .find(|candidate| candidate.is_file())
             .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
-        // Windows test sessions use PowerShell. Its call operator is required
-        // when the resolved interpreter is quoted; without it, the command is
-        // parsed as string expressions and the hook never starts.
-        return format!("& \"{}\" \"{}\"", python.display(), script_path.display());
+        let python = python.to_string_lossy().replace('\'', "''");
+        let script_path = script_path.to_string_lossy().replace('\'', "''");
+        // Hook execution follows the selected environment shell, which can be
+        // either PowerShell or cmd on Windows. Invoke a fresh PowerShell
+        // explicitly so the quoted interpreter and script paths have one
+        // stable grammar under both parents.
+        return format!(
+            "powershell.exe -NoLogo -NoProfile -NonInteractive -Command \"& '{python}' '{script_path}'\""
+        );
     }
 
     #[cfg(not(windows))]
