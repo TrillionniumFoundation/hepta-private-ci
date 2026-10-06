@@ -2,7 +2,6 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -18,6 +17,7 @@ use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_keygen;
 
 #[test]
 fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
@@ -153,24 +153,6 @@ struct TrustFixture {
     root: PathBuf,
 }
 
-fn ssh_keygen_command() -> Command {
-    #[cfg(windows)]
-    {
-        let ssh_keygen = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
-            .into_iter()
-            .chain(std::env::var_os("PATH"))
-            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
-            .map(|directory| directory.join("ssh-keygen.exe"))
-            .find(|candidate| candidate.is_file())
-            .unwrap_or_else(|| panic!("trust tests require a real ssh-keygen.exe on PATH"));
-        Command::new(ssh_keygen)
-    }
-    #[cfg(not(windows))]
-    {
-        Command::new("/usr/bin/ssh-keygen")
-    }
-}
-
 impl TrustFixture {
     fn new() -> Self {
         let temporary = private_tempdir("temporary trust directory");
@@ -179,7 +161,7 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = ssh_keygen_command()
+        let generated = ssh_keygen()
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -196,7 +178,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = ssh_keygen_command()
+        let fingerprint_output = ssh_keygen()
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -261,7 +243,7 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = ssh_keygen_command()
+        let signed = ssh_keygen()
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace])
