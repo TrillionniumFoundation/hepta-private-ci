@@ -1091,13 +1091,21 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
                 .expect("legacy projection revoked");
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
+    let expected_migrations: Vec<_> = sqlx::migrate!("./migrations")
+        .iter()
+        .map(|migration| (migration.version, true))
+        .collect();
+    assert!(
+        !expected_migrations.is_empty(),
+        "compiled migrations must not be empty"
+    );
     assert_eq!(
-        sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
+        sqlx::query_as::<_, (i64, bool)>(
+            "SELECT version, success FROM _sqlx_migrations ORDER BY version",
         )
-        .fetch_one(&migrated.pool)
+        .fetch_all(&migrated.pool)
         .await
         .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
+        expected_migrations,
     );
 }
