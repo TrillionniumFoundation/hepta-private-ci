@@ -31,6 +31,31 @@ use tokio::time::timeout;
 
 const DEFAULT_READ_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(10);
 
+fn private_codex_home() -> Result<TempDir> {
+    let mut home = tempfile::Builder::new();
+    home.prefix("inject-items-home-");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        // Request a private owner at creation, independent of the caller's
+        // umask. Never chmod or adopt an existing state directory.
+        home.permissions(std::fs::Permissions::from_mode(/*mode*/ 0o700));
+    }
+    Ok(home.tempdir()?)
+}
+
+#[cfg(unix)]
+#[test]
+fn inject_items_fixture_home_is_private() -> Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+    let home = private_codex_home()?;
+    assert_eq!(
+        std::fs::metadata(home.path())?.permissions().mode() & 0o777,
+        0o700
+    );
+    Ok(())
+}
+
 #[tokio::test]
 async fn thread_inject_items_adds_raw_response_items_to_thread_history() -> Result<()> {
     let server = responses::start_mock_server().await;
@@ -41,7 +66,7 @@ async fn thread_inject_items_adds_raw_response_items_to_thread_history() -> Resu
     ]);
     let response_mock = responses::mount_sse_once(&server, body).await;
 
-    let codex_home = TempDir::new()?;
+    let codex_home = private_codex_home()?;
     MockResponsesConfig::new(&server.uri())
         .enable_feature(Feature::Sqlite)
         .enable_feature(Feature::RetainClientDeveloperMessages)
@@ -284,7 +309,7 @@ async fn thread_inject_items_adds_raw_response_items_after_a_turn() -> Result<()
     ]);
     let response_mock = responses::mount_sse_sequence(&server, vec![first_body, second_body]).await;
 
-    let codex_home = TempDir::new()?;
+    let codex_home = private_codex_home()?;
     MockResponsesConfig::new(&server.uri()).write(codex_home.path())?;
 
     let mut mcp = TestAppServer::builder()
