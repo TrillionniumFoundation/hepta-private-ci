@@ -1,5 +1,8 @@
+import re
 import unittest
+from unittest.mock import patch
 
+import hepta_typed_callers as callers
 from hepta_typed_callers import (
     UnresolvedTypedReceiver,
     authority_fields,
@@ -74,6 +77,56 @@ class TypedAuthorityCallTests(unittest.TestCase):
                 "fn f(same: &Other) { same.enter(); } fn g(same: &Gate) { same.enter(); }"
             )
         )
+
+    def test_absent_names_do_not_scan_regexes(self):
+        code = "fn f(value: Unrelated) { value.enter(); }"
+        fields = callers.AuthorityFields(frozenset({"Alias", "LocalAlias"}))
+        fields["Owner", "authority"] = "Gate"
+        with (
+            patch.object(callers.re, "findall", wraps=re.findall) as findall,
+            patch.object(callers.re, "sub", wraps=re.sub) as substitute,
+            patch.object(callers.re, "search", wraps=re.search) as search,
+        ):
+            self.assertFalse(has_authority_call(code, "Gate", "enter", fields))
+            self.assertEqual(findall.call_count, 0)
+            self.assertEqual(substitute.call_count, 0)
+            self.assertEqual(search.call_count, 0)
+
+    def test_alias_prefilter_preserves_literal_and_word_boundaries(self):
+        for target in ("Gate", "A", "A+B", ""):
+            for prefix in ("", "Other", "_", "é"):
+                for suffix in ("", "Other", "_", "é"):
+                    code = (
+                        f"use owner::{prefix}{target}{suffix} as Renamed; "
+                        f"type Local = owner::{prefix}{target}{suffix};"
+                    )
+                    expected = set(
+                        re.findall(rf"\b{re.escape(target)}\s+as\s+(\w+)", code)
+                    )
+                    expected.update(
+                        re.findall(
+                            rf"\btype\s+(\w+)\s*=\s*(?:\w+::)*{re.escape(target)}\s*;",
+                            code,
+                        )
+                    )
+                    with self.subTest(target=target, code=code):
+                        self.assertEqual(
+                            callers._declared_aliases(code, target), expected
+                        )
+
+    def test_normalization_preserves_whole_identifier_matching(self):
+        code = "Alias AliasSuffix PrefixAlias _Alias Alias_ éAlias Aliasé"
+        self.assertEqual(
+            callers._normalize_aliases(code, "Gate", frozenset({"Alias", "Absent"})),
+            "Gate AliasSuffix PrefixAlias _Alias Alias_ éAlias Aliasé",
+        )
+
+    def test_type_substrings_do_not_manufacture_authority(self):
+        for name in ("OtherGate", "GateSuffix", "éGate", "_Gate"):
+            with self.subTest(name=name):
+                self.assertFalse(
+                    self.match(f"fn f(value: {name}) {{ value.enter(); }}")
+                )
 
 
 if __name__ == "__main__":
