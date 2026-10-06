@@ -47,6 +47,15 @@ def _normalize_aliases(
     code: str, target: str, aliases: frozenset[str] = frozenset()
 ) -> str:
     aliases = aliases | _declared_aliases(code, target)
+    present = [alias for alias in aliases if alias in code]
+    if (
+        len(present) > 1
+        and re.fullmatch(r"\w+", target)
+        and all(re.fullmatch(r"\w+", alias) for alias in aliases)
+    ):
+        # Whole identifiers cannot introduce another distinct alias on replacement.
+        names = "|".join(re.escape(alias) for alias in sorted(present))
+        return re.sub(rf"\b(?:{names})\b", target, code)
     for alias in aliases:
         if alias in code:
             code = re.sub(rf"\b{re.escape(alias)}\b", target, code)

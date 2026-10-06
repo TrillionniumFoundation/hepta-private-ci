@@ -188,6 +188,39 @@ class TypedAuthorityCallTests(unittest.TestCase):
                 fields,
             )
 
+    def test_many_aliases_share_one_normalization_scan(self):
+        aliases = frozenset(f"Alias{i}" for i in range(64))
+        code = " ".join(sorted(aliases))
+        with patch.object(callers.re, "sub", wraps=re.sub) as substitute:
+            normalized = callers._normalize_aliases(code, "Gate", aliases)
+        self.assertEqual(normalized, " ".join("Gate" for _ in aliases))
+        self.assertEqual(substitute.call_count, 1)
+
+    def test_batched_aliases_preserve_overlapping_identifier_boundaries(self):
+        code = (
+            "Alias Alias1 Alias11 OtherAlias1 Alias1Other "
+            "éAlias1 Alias1é _Alias1 Alias1_"
+        )
+        self.assertEqual(
+            callers._normalize_aliases(
+                code, "Gate", frozenset({"Alias", "Alias1", "Alias11", "Absent"})
+            ),
+            "Gate Gate Gate OtherAlias1 Alias1Other éAlias1 Alias1é _Alias1 Alias1_",
+        )
+
+    def test_non_identifier_normalization_retains_sequential_semantics(self):
+        aliases = frozenset({"Alias", "A", "B", "A+B", "r#Alias", "Á", "Gate+Suffix"})
+        for target in ("Gate", "A+B", "r#Alias", "Á", ""):
+            for code in ("Alias", "A+Suffix B", "Alias A B A+B r#Alias Á"):
+                expected = code
+                for alias in aliases:
+                    if alias in expected:
+                        expected = re.sub(rf"\b{re.escape(alias)}\b", target, expected)
+                with self.subTest(target=target, code=code):
+                    self.assertEqual(
+                        callers._normalize_aliases(code, target, aliases), expected
+                    )
+
 
 if __name__ == "__main__":
     unittest.main()
