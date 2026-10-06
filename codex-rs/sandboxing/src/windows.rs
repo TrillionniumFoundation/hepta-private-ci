@@ -14,9 +14,10 @@ use crate::compatibility_sandbox_policy_for_permission_profile;
 /// Resolved filesystem overrides for the Windows sandbox backends.
 ///
 /// The elevated Windows backend consumes extra deny-read paths plus explicit
-/// read and write roots during setup/refresh. The unelevated restricted-token
-/// backend only consumes extra deny-write carveouts on top of the legacy
-/// `WorkspaceWrite` allow set. Read-root overrides are layered on top of the
+/// read and write roots during setup/refresh. The direct legacy-token backend
+/// is temporarily contained because it cannot enforce parent-directory deletion
+/// isolation. Existing requests requiring elevated routing remain separately
+/// unqualified by this containment. Read-root overrides are layered on top of the
 /// baseline helper roots that the elevated setup path needs to launch the
 /// sandboxed command; split policies that opt into platform defaults carry
 /// that explicitly with the override.
@@ -33,6 +34,8 @@ pub fn windows_sandbox_uses_elevated_backend(sandbox_level: WindowsSandboxLevel)
     matches!(sandbox_level, WindowsSandboxLevel::Elevated)
 }
 
+// This predicate describes the managed policy shape shared with Elevated;
+// direct legacy availability is checked by the resolver and final dispatcher.
 pub fn permission_profile_supports_windows_restricted_token_sandbox(
     permission_profile: &PermissionProfile,
 ) -> bool {
@@ -87,6 +90,19 @@ pub fn resolve_windows_restricted_token_filesystem_overrides(
     let needs_direct_runtime_enforcement = file_system_sandbox_policy
         .needs_direct_runtime_enforcement(network_sandbox_policy, sandbox_policy_cwd);
 
+    // A default unrestricted-read/no-write request would select the direct
+    // legacy token. Report its temporary unavailability before the fast path.
+    // Restricted reads and write requests retain their existing elevated routing.
+    if permission_profile_supports_windows_restricted_token_sandbox(permission_profile)
+        && !needs_direct_runtime_enforcement
+        && file_system_sandbox_policy.has_full_disk_read_access()
+        && file_system_sandbox_policy
+            .get_writable_roots_with_cwd(sandbox_policy_cwd)
+            .is_empty()
+    {
+        return Err(codex_windows_sandbox::WINDOWS_LEGACY_CONTAINMENT_ERROR.to_string());
+    }
+
     if permission_profile_supports_windows_restricted_token_sandbox(permission_profile)
         && !needs_direct_runtime_enforcement
     {
@@ -106,10 +122,10 @@ pub fn resolve_windows_restricted_token_filesystem_overrides(
     // deny-write sentinels.
     file_system_sandbox_policy.remove_skip_missing_path_entries();
 
-    // The restricted-token backend can still enforce split write restrictions,
-    // but its WRITE_RESTRICTED token does not make capability SID deny-read ACEs
-    // participate in read access checks. Read restrictions therefore require the
-    // elevated backend, even when the filesystem root remains readable.
+    // Preserve existing filesystem override validation and elevated routing.
+    // The contained direct backend is not proof of split-write isolation, and
+    // WRITE_RESTRICTED does not make capability deny-read ACEs authoritative.
+    // Elevated execution remains independently unqualified by containment.
     if !windows_policy_has_root_read_access(&file_system_sandbox_policy, sandbox_policy_cwd) {
         return Err(
             "windows unelevated restricted-token sandbox cannot enforce split filesystem read restrictions directly; refusing to run unsandboxed"
@@ -396,4 +412,46 @@ fn has_reopened_writable_descendant(writable_roots: &[WritableRoot]) -> bool {
                 })
             })
     })
+}
+
+#[cfg(test)]
+mod containment_tests {
+    use super::*;
+
+    #[test]
+    fn direct_readonly_support_reports_containment() {
+        let cwd =
+            AbsolutePathBuf::try_from(std::env::current_dir().expect("cwd")).expect("absolute cwd");
+        let result = resolve_windows_restricted_token_filesystem_overrides(
+            SandboxType::WindowsRestrictedToken,
+            &PermissionProfile::read_only(),
+            &cwd,
+            WindowsSandboxLevel::RestrictedToken,
+        );
+        assert_eq!(
+            result.expect_err("direct read-only must be unavailable"),
+            codex_windows_sandbox::WINDOWS_LEGACY_CONTAINMENT_ERROR
+        );
+    }
+
+    #[test]
+    fn explicit_elevated_readonly_support_is_not_reclassified() {
+        let cwd =
+            AbsolutePathBuf::try_from(std::env::current_dir().expect("cwd")).expect("absolute cwd");
+        assert_eq!(
+            resolve_windows_restricted_token_filesystem_overrides(
+                SandboxType::WindowsRestrictedToken,
+                &PermissionProfile::read_only(),
+                &cwd,
+                WindowsSandboxLevel::Elevated,
+            )
+            .expect("explicit elevated bypass stays unchanged"),
+            None
+        );
+        assert!(
+            permission_profile_supports_windows_restricted_token_sandbox(
+                &PermissionProfile::read_only()
+            )
+        );
+    }
 }

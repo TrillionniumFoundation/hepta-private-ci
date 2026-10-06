@@ -246,28 +246,233 @@ fn capture_rejects_managed_network_before_backend_setup() -> Result<()> {
     Ok(())
 }
 
+fn fixture_security_snapshot(path: &std::path::Path) -> Result<Vec<u16>> {
+    // Read only the owned fixture. SDDL avoids comparing descriptor padding.
+    unsafe {
+        let mut descriptor = std::ptr::null_mut();
+        let information = windows_sys::Win32::Security::DACL_SECURITY_INFORMATION
+            | windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
+        let code = windows_sys::Win32::Security::Authorization::GetNamedSecurityInfoW(
+            crate::winutil::to_wide(path).as_ptr(),
+            windows_sys::Win32::Security::Authorization::SE_FILE_OBJECT,
+            information,
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            &mut descriptor,
+        );
+        if code != windows_sys::Win32::Foundation::ERROR_SUCCESS {
+            if !descriptor.is_null() {
+                windows_sys::Win32::Foundation::LocalFree(
+                    descriptor as windows_sys::Win32::Foundation::HLOCAL,
+                );
+            }
+            anyhow::bail!("cannot read fixture owner/DACL: {code}");
+        }
+        let mut text = std::ptr::null_mut();
+        let mut length = 0;
+        let ok = windows_sys::Win32::Security::Authorization::ConvertSecurityDescriptorToStringSecurityDescriptorW(
+            descriptor, 1, information,
+            &mut text, &mut length,
+        );
+        windows_sys::Win32::Foundation::LocalFree(
+            descriptor as windows_sys::Win32::Foundation::HLOCAL,
+        );
+        let result = if ok == 0 || text.is_null() || length == 0 || length > 64 * 1024 {
+            Err(anyhow::anyhow!("cannot serialize fixture owner/DACL"))
+        } else {
+            Ok(std::slice::from_raw_parts(text, length as usize).to_vec())
+        };
+        if !text.is_null() {
+            windows_sys::Win32::Foundation::LocalFree(
+                text as windows_sys::Win32::Foundation::HLOCAL,
+            );
+        }
+        result
+    }
+}
+
+// Identity files are intentionally unusable so an accidental elevated dispatch
+// fails before account setup/logon instead of changing the test host.
+fn fixture_snapshot(
+    fixture: &UnusableIdentityFixture,
+) -> Result<Vec<(PathBuf, Vec<u8>, Vec<u16>)>> {
+    fn walk(path: &std::path::Path, out: &mut Vec<(PathBuf, Vec<u8>, Vec<u16>)>) -> Result<()> {
+        for entry in fs::read_dir(path)? {
+            let entry = entry?;
+            let path = entry.path();
+            if entry.file_type()?.is_dir() {
+                out.push((path.clone(), Vec::new(), fixture_security_snapshot(&path)?));
+                walk(&path, out)?;
+            } else {
+                out.push((
+                    path.clone(),
+                    fs::read(&path)?,
+                    fixture_security_snapshot(&path)?,
+                ));
+            }
+        }
+        Ok(())
+    }
+    let mut entries = vec![(
+        fixture._root.path().to_path_buf(),
+        Vec::new(),
+        fixture_security_snapshot(fixture._root.path())?,
+    )];
+    walk(fixture._root.path(), &mut entries)?;
+    entries.sort();
+    Ok(entries)
+}
+
 #[test]
-fn readonly_capture_without_overrides_keeps_direct_backend() -> Result<()> {
-    let fixture = UnusableIdentityFixture::new()?;
-    let profile = PermissionProfile::read_only();
-    let mut request = fixture.request(&profile);
-    request.command = vec![
-        r"C:\Windows\System32\cmd.exe".to_string(),
-        "/d".to_string(),
-        "/c".to_string(),
-        "echo DIRECT-READONLY&exit /b 23".to_string(),
-    ];
-    let result =
-        run_windows_sandbox_capture_for_level(request, WindowsSandboxLevel::RestrictedToken)?;
-    assert_eq!(
-        (
-            result.exit_code,
-            result.stdout,
-            result.stderr,
-            result.timed_out
-        ),
-        (23, b"DIRECT-READONLY\r\n".to_vec(), vec![], false),
+fn readonly_public_capture_adapters_are_contained_without_side_effects() -> Result<()> {
+    for (adapter, cancelled) in
+        (0..3).flat_map(|adapter| [false, true].map(|cancelled| (adapter, cancelled)))
+    {
+        let fixture = UnusableIdentityFixture::new()?;
+        let before = fixture_snapshot(&fixture)?;
+        let profile = PermissionProfile::read_only();
+        let mut request = fixture.request(&profile);
+        request.cancellation =
+            cancelled.then(|| crate::WindowsSandboxCancellationToken::new(|| true));
+        let result = match adapter {
+            0 => {
+                run_windows_sandbox_capture_for_level(request, WindowsSandboxLevel::RestrictedToken)
+            }
+            1 => run_windows_sandbox_capture(
+                request.permission_profile,
+                request.workspace_roots,
+                request.codex_home,
+                request.command,
+                request.cwd,
+                request.env_map,
+                request.timeout_ms,
+                request.cancellation,
+                request.use_private_desktop,
+            ),
+            _ => run_windows_sandbox_capture_with_filesystem_overrides(
+                request.permission_profile,
+                request.workspace_roots,
+                request.codex_home,
+                request.command,
+                request.cwd,
+                request.env_map,
+                request.timeout_ms,
+                request.cancellation,
+                &[],
+                &[],
+                request.use_private_desktop,
+            ),
+        };
+        assert_eq!(
+            result
+                .err()
+                .context("direct capture must be blocked")?
+                .to_string(),
+            crate::WINDOWS_LEGACY_CONTAINMENT_ERROR
+        );
+        assert_eq!(fixture_snapshot(&fixture)?, before);
+        assert!(!fixture.marker.try_exists()?);
+        assert!(!cap_sid_file(&fixture.home).try_exists()?);
+    }
+    Ok(())
+}
+
+#[test]
+fn readonly_public_session_adapters_are_contained_without_side_effects() -> Result<()> {
+    let runtime = tokio::runtime::Builder::new_current_thread()
+        .enable_all()
+        .build()?;
+    runtime.block_on(async {
+        for historical in [false, true] {
+            let fixture = UnusableIdentityFixture::new()?;
+            let before = fixture_snapshot(&fixture)?;
+            let profile = PermissionProfile::read_only();
+            let request = fixture.request(&profile);
+            let result = if historical {
+                spawn_windows_sandbox_session_legacy(
+                    &profile,
+                    &fixture.roots,
+                    &fixture.home,
+                    request.command,
+                    &fixture.cwd,
+                    request.env_map,
+                    request.timeout_ms,
+                    &[],
+                    &[],
+                    false,
+                    false,
+                    request.use_private_desktop,
+                )
+                .await
+            } else {
+                crate::spawn_windows_sandbox_session_for_level(
+                    crate::WindowsSandboxSessionRequest {
+                        permission_profile: &profile,
+                        workspace_roots: &fixture.roots,
+                        codex_home: &fixture.home,
+                        command: request.command,
+                        cwd: &fixture.cwd,
+                        env_map: request.env_map,
+                        windows_sandbox_level: WindowsSandboxLevel::RestrictedToken,
+                        proxy_enforced: false,
+                        network_proxy_restricting_sid: None,
+                        proxy_settings_mode: crate::WindowsSandboxProxySettingsMode::Reconcile,
+                        timeout_ms: request.timeout_ms,
+                        read_roots_override: None,
+                        read_roots_include_platform_defaults: true,
+                        write_roots_override: None,
+                        deny_read_paths_override: &[],
+                        deny_write_paths_override: &[],
+                        tty: false,
+                        stdin_open: false,
+                        use_private_desktop: request.use_private_desktop,
+                    },
+                )
+                .await
+            };
+            assert_eq!(
+                result
+                    .err()
+                    .context("direct session must be blocked")?
+                    .to_string(),
+                crate::WINDOWS_LEGACY_CONTAINMENT_ERROR
+            );
+            assert_eq!(fixture_snapshot(&fixture)?, before);
+            assert!(!fixture.marker.try_exists()?);
+            assert!(!cap_sid_file(&fixture.home).try_exists()?);
+        }
+        Ok(())
+    })
+}
+
+#[test]
+fn legacy_preflight_is_contained_before_creating_capability_state() -> Result<()> {
+    let temp = tempfile::tempdir()?;
+    let home = temp.path().join("absent-home");
+    let cwd = temp.path().join("workspace");
+    fs::create_dir(&cwd)?;
+    let roots = vec![AbsolutePathBuf::from_absolute_path(&cwd)?];
+    let before_dacl = fixture_security_snapshot(&cwd)?;
+    let before_root = fixture_security_snapshot(temp.path())?;
+    let result = crate::run_windows_sandbox_legacy_preflight(
+        &PermissionProfile::workspace_write(),
+        &roots,
+        &home,
+        &cwd,
+        &HashMap::new(),
     );
-    assert!(!fixture.marker.try_exists()?);
+    assert_eq!(
+        result
+            .err()
+            .context("legacy write preflight must be blocked")?
+            .to_string(),
+        crate::WINDOWS_LEGACY_CONTAINMENT_ERROR
+    );
+    assert!(!home.try_exists()?);
+    assert_eq!(fixture_security_snapshot(&cwd)?, before_dacl);
+    assert_eq!(fixture_security_snapshot(temp.path())?, before_root);
+    assert_eq!(fs::read_dir(&cwd)?.count(), 0);
     Ok(())
 }

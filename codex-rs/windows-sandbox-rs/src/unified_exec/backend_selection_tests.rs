@@ -51,7 +51,7 @@ fn request<'a>(
 }
 
 #[test]
-fn read_only_profile_without_overrides_keeps_restricted_token_backend() {
+fn read_only_profile_without_overrides_is_contained_before_setup() {
     let temp = TempDir::new().expect("tempdir");
     let cwd = temp.path().join("workspace");
     let codex_home = temp.path().join("codex-home");
@@ -68,8 +68,10 @@ fn read_only_profile_without_overrides_keeps_restricted_token_backend() {
     );
 
     assert_eq!(
-        WindowsSandboxBackend::RestrictedToken,
-        select_windows_sandbox_backend(&request).expect("select backend")
+        select_windows_sandbox_backend(&request)
+            .expect_err("direct token is unavailable")
+            .to_string(),
+        crate::WINDOWS_LEGACY_CONTAINMENT_ERROR,
     );
 }
 

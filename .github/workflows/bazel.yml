@@ -6,7 +6,7 @@ name: Bazel
 on:
   push:
     branches:
-      - dot/windows-delete-right-controls-20261006
+      - dot/windows-legacy-containment-20261006
   workflow_call:
     inputs:
       reusable-call:
@@ -31,12 +31,12 @@ permissions:
 concurrency:
   # Cancel previous actions from the same PR or branch except 'main' branch.
   # See https://docs.github.com/en/actions/using-jobs/using-concurrency and https://docs.github.com/en/actions/learn-github-actions/contexts for more info.
-  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-delete-right-controls-20261006' && inputs.reusable-call != true && '::diagnostic-delete-right-controls-push' || '' }}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
+  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-legacy-containment-20261006' && inputs.reusable-call != true && '::diagnostic-legacy-containment-push' || '' }}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
   test:
-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-delete-right-controls-20261006' && inputs.reusable-call != true) }}
+    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-legacy-containment-20261006' && inputs.reusable-call != true) }}
     # PRs use the sharded Windows cross-compiled test jobs below. Post-merge
     # pushes to main also run the native Windows test job for broader Windows
     # signal without putting PR latency back on the critical path. When
@@ -152,7 +152,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   test-windows-shard:
-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-delete-right-controls-20261006' && inputs.reusable-call != true) }}
+    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-legacy-containment-20261006' && inputs.reusable-call != true) }}
     # Split the native Windows Bazel test leg across separate Windows hosts.
     # Build actions and host-loaded proc macros use the same MSVC ABI as the
     # test binaries, avoiding cross-ABI native archive linkage.
@@ -267,7 +267,7 @@ jobs:
     timeout-minutes: 30
     # Preserve the existing required-check surface while the real work happens
     # in the sharded Windows jobs above.
-    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-delete-right-controls-20261006' && inputs.reusable-call != true) }}
+    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-legacy-containment-20261006' && inputs.reusable-call != true) }}
     needs: test-windows-shard
     runs-on: ubuntu-24.04
     name: Bazel test on windows-latest for x86_64-pc-windows-msvc
@@ -361,7 +361,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   clippy:
-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-delete-right-controls-20261006' && inputs.reusable-call != true) }}
+    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-legacy-containment-20261006' && inputs.reusable-call != true) }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -479,7 +479,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   verify-release-build:
-    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-delete-right-controls-20261006' && inputs.reusable-call != true) }}
+    if: ${{ (inputs.qualification-group == '' || inputs.qualification-group == 'full') && !(github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-legacy-containment-20261006' && inputs.reusable-call != true) }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -639,7 +639,7 @@ jobs:
           if-no-files-found: error
 
   fixed-windows-platform:
-    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-delete-right-controls-20261006' && inputs.reusable-call != true) }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform') || (github.event_name == 'push' && github.ref == 'refs/heads/dot/windows-legacy-containment-20261006' && inputs.reusable-call != true) }}
     runs-on: windows-latest
     timeout-minutes: 60
     environment:
@@ -672,45 +672,24 @@ jobs:
       - name: Smoke test native MSVC header parser
         timeout-minutes: 3
         run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
-      - name: Compute remaining deletion diagnostic step budget
+      - name: Compute remaining legacy containment step budget
         id: delete-budget
         run: python scripts/hepta_fixed_bazel.py budget --github-output "$GITHUB_OUTPUT"
-      - name: Run fixed deletion diagnostic native targets
+      - name: Run fixed legacy containment native targets
         timeout-minutes: ${{ fromJSON(steps.delete-budget.outputs.minutes) }}
         run: |
           export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"
-          python scripts/hepta_fixed_bazel.py windows --group windows-delete-diagnostic --directory "$RUNNER_TEMP/hepta-fixed-windows"
-      - name: Retain deletion diagnostic receipt before Queue compilation
+          python scripts/hepta_fixed_bazel.py windows --group windows-legacy-containment --directory "$RUNNER_TEMP/hepta-fixed-windows"
+      - name: Retain legacy containment receipt
         if: always()
         timeout-minutes: 3
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: fixed-windows-delete-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          name: fixed-windows-legacy-containment-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            ${{ runner.temp }}/hepta-fixed-windows/windows-delete-diagnostic.json
-            ${{ runner.temp }}/hepta-fixed-windows/windows-delete-diagnostic.log
-            ${{ runner.temp }}/hepta-fixed-windows/windows-delete-diagnostic.bep-tail.jsonl
-          if-no-files-found: error
-      - name: Compute remaining Queue diagnostic step budget
-        id: queue-budget
-        if: always() && !cancelled() && steps.delete-budget.outcome == 'success'
-        run: python scripts/hepta_fixed_bazel.py budget --github-output "$GITHUB_OUTPUT"
-      - name: Run fixed Queue diagnostic native targets
-        if: always() && !cancelled() && steps.queue-budget.outcome == 'success'
-        timeout-minutes: ${{ fromJSON(steps.queue-budget.outputs.minutes) }}
-        run: |
-          export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"
-          python scripts/hepta_fixed_bazel.py windows --group windows-queue-diagnostic --directory "$RUNNER_TEMP/hepta-fixed-windows"
-      - name: Retain Queue diagnostic receipt
-        if: always()
-        timeout-minutes: 3
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: fixed-windows-queue-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
-          path: |
-            ${{ runner.temp }}/hepta-fixed-windows/windows-queue-diagnostic.json
-            ${{ runner.temp }}/hepta-fixed-windows/windows-queue-diagnostic.log
-            ${{ runner.temp }}/hepta-fixed-windows/windows-queue-diagnostic.bep-tail.jsonl
+            ${{ runner.temp }}/hepta-fixed-windows/windows-legacy-containment.json
+            ${{ runner.temp }}/hepta-fixed-windows/windows-legacy-containment.log
+            ${{ runner.temp }}/hepta-fixed-windows/windows-legacy-containment.bep-tail.jsonl
           if-no-files-found: error
 
   reject-unknown-diagnostic:

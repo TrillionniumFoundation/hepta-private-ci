@@ -54,6 +54,20 @@ class FixedQualificationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 fixed.verify_bep(self.bep, self.labels)
 
+    def test_containment_keeps_boundary_repro_and_support_reporting_targets(self):
+        self.labels = fixed.GROUPS['windows-legacy-containment']
+        self.assertEqual(self.labels, (
+            '//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests',
+            '//codex-rs/sandboxing:sandboxing-unit-tests',
+        ))
+        self.write(self.events())
+        self.assertEqual(set(fixed.verify_bep(self.bep, self.labels)['targets']), set(self.labels))
+        for missing in self.labels:
+            self.write([event for event in self.events()
+                        if event['id']['testSummary']['label'] != missing])
+            with self.assertRaises(ValueError):
+                fixed.verify_bep(self.bep, self.labels)
+
     def test_flaky_outcome_is_retained_not_hidden(self):
         events = self.events(); events[0]['testSummary']['overallStatus'] = 'FLAKY'
         self.write(events)
@@ -76,11 +90,13 @@ class FixedQualificationTests(unittest.TestCase):
 
     @patch.dict(fixed.os.environ, {"HEPTA_BAZEL_BASH": r"C:\Program Files\Git\bin\bash.exe"})
     def test_windows_commands_share_exact_native_platform_and_no_cached_tests(self):
-        for group in ('windows-delete-diagnostic', 'windows-queue-diagnostic'):
+        for group in ('windows-delete-diagnostic', 'windows-queue-diagnostic', 'windows-legacy-containment'):
             command = fixed.windows_command(group, self.directory)
             self.assertIn('--windows-msvc-host-platform', command)
             self.assertIn('--platforms=//:windows_x86_64_msvc', command)
             self.assertIn('--nocache_test_results', command)
+            self.assertEqual('--keep_going' in command, group == 'windows-legacy-containment')
+            self.assertEqual('--test_output=all' in command, group == 'windows-legacy-containment')
             self.assertEqual(command[-len(fixed.GROUPS[group]):], list(fixed.GROUPS[group]))
             self.assertNotIn("//codex-rs/core:core-unit-tests", command)
             self.assertNotIn("//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test", command)
@@ -102,9 +118,9 @@ class FixedQualificationTests(unittest.TestCase):
             command = fixed.windows_command('windows-delete-diagnostic', self.directory)
         self.assertEqual(command[0], r'C:\Program Files\Git\usr\bin\bash.exe')
 
-    def test_both_windows_steps_pass_the_actual_running_shell(self):
+    def test_containment_step_passes_the_actual_running_shell(self):
         text = (Path(__file__).resolve().parents[1] / '.github/workflows/bazel.yml').read_text()
-        self.assertEqual(text.count('export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"'), 2)
+        self.assertEqual(text.count('export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"'), 1)
 
     def test_linux_command_is_only_supervisor(self):
         command = pilot.native_command(Path('/source'), self.directory)
@@ -154,7 +170,8 @@ class FixedQualificationTests(unittest.TestCase):
         self.assertNotIn('matrix:', diagnostic)
         self.assertIn('reject-unknown-diagnostic:', diagnostic)
         self.assertIn('fromJSON(steps.delete-budget.outputs.minutes)', diagnostic)
-        self.assertIn('fromJSON(steps.queue-budget.outputs.minutes)', diagnostic)
+        self.assertNotIn('steps.queue-budget', diagnostic)
+        self.assertIn('--group windows-legacy-containment', diagnostic)
 
 
 if __name__ == '__main__':

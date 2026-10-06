@@ -129,6 +129,8 @@ pub(crate) fn prepare_legacy_spawn_context(
     command: &[String],
     options: SpawnPrepOptions,
 ) -> Result<SpawnContext> {
+    // Defense in depth for direct internal callers, before any setup side effects.
+    crate::ensure_legacy_execution_available()?;
     let common = prepare_spawn_context_common(
         permission_profile,
         workspace_roots,
@@ -525,31 +527,30 @@ mod tests {
     }
 
     #[test]
-    fn legacy_spawn_env_applies_offline_network_rewrite() {
-        let codex_home = TempDir::new().expect("tempdir");
+    fn legacy_spawn_containment_preserves_environment_and_missing_home() {
+        let temp = TempDir::new().expect("tempdir");
+        let home = temp.path().join("must-stay-absent");
         let cwd = TempDir::new().expect("tempdir");
-        let mut env_map = HashMap::new();
+        let mut env_map = HashMap::from([("HTTP_PROXY".to_string(), "original".to_string())]);
+        let original_env = env_map.clone();
         let workspace_roots = workspace_roots_for(cwd.path());
-
-        let _context = prepare_legacy_spawn_context(
+        let error = prepare_legacy_spawn_context(
             &PermissionProfile::workspace_write(),
-            workspace_roots.as_slice(),
-            codex_home.path(),
+            &workspace_roots,
+            &home,
             cwd.path(),
             &mut env_map,
             &["cmd.exe".to_string()],
             SpawnPrepOptions {
                 inherit_path: true,
-                add_git_safe_directory: false,
+                add_git_safe_directory: true,
             },
         )
-        .expect("legacy env prep");
-
-        assert_eq!(env_map.get("SBX_NONET_ACTIVE"), Some(&"1".to_string()));
-        assert_eq!(
-            env_map.get("HTTP_PROXY"),
-            Some(&"http://127.0.0.1:9".to_string())
-        );
+        .err()
+        .expect("legacy setup must be blocked");
+        assert_eq!(error.to_string(), crate::WINDOWS_LEGACY_CONTAINMENT_ERROR);
+        assert_eq!(env_map, original_env);
+        assert!(!home.exists());
     }
 
     #[test]

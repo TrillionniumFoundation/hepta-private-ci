@@ -21,6 +21,10 @@ import hepta_ci_candidate
 import hepta_ci_exec
 
 GROUPS = {
+    "windows-legacy-containment": (
+        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+        "//codex-rs/sandboxing:sandboxing-unit-tests",
+    ),
     "windows-delete-diagnostic": (
         "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
     ),
@@ -125,7 +129,7 @@ def replace_receipt(path: Path, record: dict) -> None:
 
 
 def windows_command(group: str, directory: Path) -> list[str]:
-    if group not in ("windows-delete-diagnostic", "windows-queue-diagnostic"):
+    if group not in ("windows-delete-diagnostic", "windows-queue-diagnostic", "windows-legacy-containment"):
         raise ValueError("not a fixed Windows group")
     bash = os.environ.get("HEPTA_BAZEL_BASH", "")
     parsed = PureWindowsPath(bash)
@@ -140,6 +144,9 @@ def windows_command(group: str, directory: Path) -> list[str]:
         "--windows-msvc-host-platform", "--remote-download-toplevel", "--",
         "test", "--platforms=//:windows_x86_64_msvc", "--nocache_test_results",
         "--test_tag_filters=-argument-comment-lint", "--test_verbose_timeout_warnings",
+        # Retain passing containment names and finish both independent targets
+        # even while the original low-level deletion reproducer remains red.
+        *(["--keep_going", "--test_output=all"] if group == "windows-legacy-containment" else []),
         f"--build_metadata=COMMIT_SHA={os.environ.get('TESTED_SHA', '')}",
         f"--build_event_json_file={(directory / (group + '.bep.json')).as_posix()}",
         "--", *GROUPS[group],
