@@ -270,16 +270,18 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
         .codex_home(test.home_path().to_path_buf())
         .build()
         .await?;
-    // Simulate a lost index without invoking hard deletion, whose seal must prevent resurrection.
+    // Initialize an empty, completed index while the rollout directory is
+    // temporarily unavailable. This simulates a lost index without invoking
+    // hard deletion, whose seal must prevent resurrection.
+    let hidden_sessions_dir = test.home_path().join("sessions-unindexed");
+    std::fs::rename(&sessions_dir, &hidden_sessions_dir)?;
     let state_db_path = config.sqlite.state_db_path();
     std::fs::remove_file(&state_db_path)?;
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
+    std::fs::rename(&hidden_sessions_dir, &sessions_dir)?;
     assert_eq!(state_db.get_thread(thread_id).await?, None);
-    state_db
-        .mark_backfill_complete(/*last_watermark*/ None)
-        .await?;
 
     let resumed_marker = format!("resume-last-repaired-{}", Uuid::new_v4());
     test.cmd_with_server(&server)
