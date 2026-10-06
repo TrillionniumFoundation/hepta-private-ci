@@ -1221,6 +1221,15 @@ url = "ws://127.0.0.1:8765"
 
     #[tokio::test]
     async fn blocking_snapshot_waits_for_starting_environment() {
+        assert_blocking_snapshot_waits_for_starting_environment().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+    async fn blocking_snapshot_waits_for_starting_environment_across_workers() {
+        assert_blocking_snapshot_waits_for_starting_environment().await;
+    }
+
+    async fn assert_blocking_snapshot_waits_for_starting_environment() {
         let buffer: &'static std::sync::Mutex<Vec<u8>> =
             Box::leak(Box::new(std::sync::Mutex::new(Vec::new())));
         let subscriber = tracing_subscriber::fmt()
@@ -1262,7 +1271,9 @@ url = "ws://127.0.0.1:8765"
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
+            // The test's subscriber is thread-local; keep it when this task
+            // is polled on another worker, just like the resolution tasks.
+            async move { environments.snapshot().await }.with_current_subscriber()
         });
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());

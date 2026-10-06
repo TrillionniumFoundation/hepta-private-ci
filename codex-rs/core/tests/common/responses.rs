@@ -1662,9 +1662,11 @@ pub async fn mount_compact_response_sequence(
 
 /// Validate invariants on the request body sent to `/v1/responses`.
 ///
-/// - No `function_call_output`/`custom_tool_call_output` with missing/empty `call_id`.
+/// - Function outputs may omit `call_id` only when they carry a non-empty `name`,
+///   as used by named cross-thread messages. An explicit empty/invalid ID is rejected.
+/// - Custom tool outputs always require a non-empty `call_id`.
 /// - `tool_search_output` must have a `call_id` unless it is a server-executed legacy item.
-/// - Every `function_call_output` must match a prior `function_call` or
+/// - Every `function_call_output` carrying an ID must match a `function_call` or
 ///   `local_shell_call` with the same `call_id` in the same `input`.
 /// - Every `custom_tool_call_output` must match a prior `custom_tool_call`.
 /// - Every `tool_search_output` must match a prior `tool_search_call`.
@@ -1689,7 +1691,10 @@ fn validate_request_body_invariants(request: &wiremock::Request) {
         .get("input")
         .and_then(Value::as_array)
         .expect("input array not found in request");
+    validate_request_input_invariants(items);
+}
 
+fn validate_request_input_invariants(items: &[Value]) {
     use std::collections::HashSet;
 
     fn get_call_id(item: &Value) -> Option<&str> {
@@ -1711,9 +1716,21 @@ fn validate_request_body_invariants(request: &wiremock::Request) {
         items
             .iter()
             .filter(|item| item.get("type").and_then(Value::as_str) == Some(kind))
-            .map(|item| {
+            .filter_map(|item| {
+                // Named cross-thread messages are deliberately unpaired. This
+                // exception must not hide an explicit invalid or orphan ID,
+                // or apply to a custom tool output with a coincidental name.
+                if kind == "function_call_output"
+                    && item.get("call_id").is_none_or(Value::is_null)
+                    && item
+                        .get("name")
+                        .and_then(Value::as_str)
+                        .is_some_and(|name| !name.is_empty())
+                {
+                    return None;
+                }
                 let id = get_call_id(item).expect(missing_msg);
-                id.to_string()
+                Some(id.to_string())
             })
             .collect()
     }
@@ -1786,5 +1803,117 @@ fn validate_request_body_invariants(request: &wiremock::Request) {
             tool_search_outputs.contains(cid),
             "Tool search output is missing for call id: {cid}",
         );
+    }
+}
+
+#[cfg(test)]
+mod request_input_invariant_tests {
+    use super::validate_request_input_invariants;
+    use serde_json::Value;
+    use serde_json::json;
+
+    fn assert_rejected(items: &[Value]) {
+        assert!(
+            std::panic::catch_unwind(|| validate_request_input_invariants(items)).is_err(),
+            "invalid tool input was accepted: {items:?}"
+        );
+    }
+
+    #[test]
+    fn named_unpaired_function_output_without_call_id_is_allowed() {
+        let output = json!({
+            "type": "function_call_output",
+            "name": "send_message_to_thread",
+            "namespace": "codex_app",
+            "output": "Another agent delegated this task.",
+        });
+        validate_request_input_invariants(std::slice::from_ref(&output));
+        let mut null_id = output;
+        null_id["call_id"] = Value::Null;
+        validate_request_input_invariants(&[null_id]);
+    }
+
+    #[test]
+    fn named_output_with_invalid_call_id_is_rejected() {
+        for call_id in [json!(""), json!(17), json!([])] {
+            assert_rejected(&[json!({
+                "type": "function_call_output", "name": "send_message_to_thread",
+                "call_id": call_id, "output": "message",
+            })]);
+        }
+    }
+
+    #[test]
+    fn unnamed_unpaired_function_output_is_rejected() {
+        for name in [Value::Null, json!(""), json!(17)] {
+            assert_rejected(&[json!({
+                "type": "function_call_output", "name": name, "output": "message",
+            })]);
+        }
+        assert_rejected(&[json!({"type": "function_call_output", "output": "message"})]);
+    }
+
+    #[test]
+    fn named_output_with_call_id_still_requires_matching_call() {
+        let call = json!({"type": "function_call", "call_id": "call-1"});
+        let output = json!({
+            "type": "function_call_output", "call_id": "call-1",
+            "name": "send_message_to_thread", "output": "message",
+        });
+        validate_request_input_invariants(&[call.clone(), output.clone()]);
+        assert_rejected(&[output.clone()]);
+        assert_rejected(&[json!({"type": "function_call", "call_id": "other"}), output]);
+        assert_rejected(&[call]);
+    }
+
+    #[test]
+    fn ordinary_function_call_pairing_remains_bidirectional() {
+        let call = json!({"type": "function_call", "call_id": "call-1"});
+        let output = json!({"type": "function_call_output", "call_id": "call-1", "output": "ok"});
+        validate_request_input_invariants(&[call.clone(), output.clone()]);
+        assert_rejected(&[call]);
+        assert_rejected(&[output]);
+    }
+
+    #[test]
+    fn custom_tool_output_cannot_use_named_unpaired_exception() {
+        assert_rejected(&[json!({
+            "type": "custom_tool_call_output", "name": "send_message_to_thread", "output": "ok",
+        })]);
+        let call = json!({"type": "custom_tool_call", "call_id": "call-1"});
+        let output =
+            json!({"type": "custom_tool_call_output", "call_id": "call-1", "output": "ok"});
+        validate_request_input_invariants(&[call.clone(), output.clone()]);
+        assert_rejected(&[call]);
+        assert_rejected(&[output]);
+    }
+
+    #[test]
+    fn local_shell_output_requires_its_call() {
+        let call = json!({"type": "local_shell_call", "call_id": "call-1"});
+        let output = json!({"type": "function_call_output", "call_id": "call-1", "output": "ok"});
+        validate_request_input_invariants(&[call, output.clone()]);
+        assert_rejected(&[output]);
+    }
+
+    #[test]
+    fn legacy_server_tool_search_output_remains_allowed() {
+        validate_request_input_invariants(&[json!({
+            "type": "tool_search_output", "execution": "server", "output": [],
+        })]);
+    }
+
+    #[test]
+    fn client_tool_search_pairing_remains_bidirectional() {
+        assert_rejected(&[json!({
+            "type": "tool_search_output", "execution": "client", "output": [],
+        })]);
+        let call = json!({"type": "tool_search_call", "call_id": "call-1"});
+        let output = json!({
+            "type": "tool_search_output", "call_id": "call-1", "execution": "client", "output": [],
+        });
+        validate_request_input_invariants(&[call.clone(), output.clone()]);
+        assert_rejected(&[call]);
+        assert_rejected(&[output]);
     }
 }
