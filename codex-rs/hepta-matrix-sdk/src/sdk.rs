@@ -208,7 +208,7 @@ impl MatrixSdkClient {
             .build()
             .await
             .map_err(|error| {
-                use matrix_sdk::client::ClientBuildError;
+                use matrix_sdk::ClientBuildError;
                 let category = match error {
                     ClientBuildError::MissingHomeserver => "missing-homeserver",
                     ClientBuildError::InvalidServerName => "invalid-server-name",
