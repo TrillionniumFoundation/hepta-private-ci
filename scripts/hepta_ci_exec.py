@@ -24,7 +24,10 @@ import time
 
 
 def git(*args: str) -> str:
-    return subprocess.check_output(["git", *args], text=True).strip()
+    # Local replacement refs must not relabel unreviewed trees or merge parents.
+    return subprocess.check_output(
+        ["git", "--no-replace-objects", *args], text=True
+    ).strip()
 
 
 def identity() -> dict:
