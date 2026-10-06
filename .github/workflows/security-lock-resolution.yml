@@ -1,0 +1,168 @@
+name: Security lock resolution proposals
+on:
+  push:
+    branches: [dot/security-lock-resolution-20261006]
+    paths: [.github/workflows/security-lock-resolution.yml]
+permissions:
+  contents: read
+concurrency:
+  group: security-lock-resolution-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  resolve:
+    name: Resolve ${{ matrix.candidate }} locks only
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        candidate: [openssl, quinn]
+    env:
+      BASE_SHA: 69d951e0577e5d6ba537775252896cd1ed028fae
+      BASE_TREE: 0db7ad41495b80490abc78f1290e40966b25744a
+      CANDIDATE: ${{ matrix.candidate }}
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+      EVIDENCE: ${{ runner.temp }}/security-lock-evidence
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 69d951e0577e5d6ba537775252896cd1ed028fae
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify unchanged source and workflow-only carrier
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE"
+          printf '%s\n' 'NON-QUALIFYING lock resolution proposal. No compilation, tests, vulnerability reachability, merge, or release qualification.' > "$EVIDENCE/SCOPE.txt"
+          test "$(git rev-parse HEAD)" = "$BASE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$BASE_TREE"
+          test "$(git show -s --format=%P "$GITHUB_SHA")" = "$BASE_SHA"
+          test "$(git diff --name-only "$BASE_SHA" "$GITHUB_SHA")" = '.github/workflows/security-lock-resolution.yml'
+          test -z "$(git status --porcelain)"
+          printf 'base=%s\ntree=%s\ncarrier=%s\ncandidate=%s\n' "$BASE_SHA" "$BASE_TREE" "$GITHUB_SHA" "$CANDIDATE" > "$EVIDENCE/identity.txt"
+          cp codex-rs/Cargo.lock "$EVIDENCE/before-Cargo.lock"
+          cp MODULE.bazel.lock "$EVIDENCE/before-MODULE.bazel.lock"
+          sha256sum codex-rs/Cargo.lock MODULE.bazel.lock > "$EVIDENCE/before.sha256"
+          test "$(df -B1 --output=avail . | tail -1)" -ge 10737418240
+      # Reuse the smaller repository tool setup: no build cache or sysctl setup.
+      - uses: ./.github/actions/setup-ci-tools
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: 1.96.0
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        with:
+          bazelisk-version: 1.28.1
+          bazelisk-cache: false
+          disk-cache: false
+          repository-cache: false
+      - name: Resolve minimal candidate and synchronize Bazel lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Bound each generated file/log to 32 MiB and each tool call to 12 minutes.
+          ulimit -f 32768
+          run() {
+            local label="$1"; shift
+            printf '%q ' "$@" >> "$EVIDENCE/commands.txt"; printf '\n' >> "$EVIDENCE/commands.txt"
+            set +e
+            timeout --kill-after=30s 12m "$@" > "$EVIDENCE/$label.log" 2>&1
+            local status=$?
+            set -e
+            printf '%s=%s\n' "$label" "$status" >> "$EVIDENCE/exit-status.txt"
+            tail -n 40 "$EVIDENCE/$label.log"
+            test "$status" -eq 0
+            test "$(df -B1 --output=avail . | tail -1)" -ge 5368709120
+          }
+          run cargo-version cargo --version
+          run rustc-version rustc --version
+          run just-version just --version
+          test "$(cat .bazelversion)" = 9.0.0
+          run bazel-version bazel --version
+          if [[ "$CANDIDATE" == openssl ]]; then
+            run openssl-sys cargo update --manifest-path codex-rs/Cargo.toml -p openssl-sys@0.9.111 --precise 0.9.116
+            run openssl cargo update --manifest-path codex-rs/Cargo.toml -p openssl@0.10.75 --precise 0.10.80
+          else
+            run quinn cargo update --manifest-path codex-rs/Cargo.toml -p quinn-proto@0.11.14 --precise 0.11.15
+          fi
+          # Fail before Bazel on any unexpected Cargo package addition/removal/change.
+          cat > "$EVIDENCE/check-closure.py" <<'PY'
+          import json, os, pathlib, tomllib
+          evidence = pathlib.Path(os.environ['EVIDENCE'])
+          def packages(path):
+              selected = [p for p in tomllib.loads(path.read_text())['package'] if p['name'] in expected]
+              assert len(selected) == len(expected), 'Duplicate or missing expected package'
+              assert {p['name'] for p in selected} == set(expected), 'Missing expected package'
+              return {p['name']: p for p in selected}
+          def remainder(path):
+              return sorted((json.dumps(p, sort_keys=True) for p in tomllib.loads(path.read_text())['package'] if p['name'] not in expected))
+          expected = {'openssl': ('0.10.75', '0.10.80'), 'openssl-sys': ('0.9.111', '0.9.116')} if os.environ['CANDIDATE'] == 'openssl' else {'quinn-proto': ('0.11.14', '0.11.15')}
+          before, after = evidence / 'before-Cargo.lock', pathlib.Path('codex-rs/Cargo.lock')
+          assert tomllib.loads(before.read_text())['version'] == tomllib.loads(after.read_text())['version'] == 4
+          a, b = packages(before), packages(after)
+          assert remainder(before) == remainder(after), 'Unrelated dependency churn: review required'
+          for name, (old, new) in expected.items():
+              assert a[name]['version'] == old and b[name]['version'] == new, name
+              assert len(b[name]['checksum']) == 64 and all(c in '0123456789abcdef' for c in b[name]['checksum']), name
+              assert a[name]['source'] == b[name]['source'] == 'registry+https://github.com/rust-lang/crates.io-index', name
+              deps = a[name].get('dependencies', [])
+              if name == 'openssl':
+                  deps = [d for d in deps if d != 'once_cell']
+              assert b[name].get('dependencies', []) == deps, 'Unexpected dependency edges: ' + name
+          PY
+          run closure-before python3 "$EVIDENCE/check-closure.py"
+          run integrity python3 scripts/verify_cargo_lock.py
+          run bazel-update just bazel-lock-update
+          run bazel-check just bazel-lock-check
+          run closure-after python3 "$EVIDENCE/check-closure.py"
+          # Resolve the real Linux workspace graph without compiling or substituting stubs.
+          run metadata cargo metadata --manifest-path codex-rs/Cargo.toml --locked --format-version 1 --filter-platform x86_64-unknown-linux-gnu
+          run hickory-features cargo tree --manifest-path codex-rs/Cargo.toml --locked --offline --target x86_64-unknown-linux-gnu -i hickory-proto -e features
+          run quinn-normal cargo tree --manifest-path codex-rs/Cargo.toml --locked --offline --target x86_64-unknown-linux-gnu -i quinn-proto -e normal
+          run closure-final python3 "$EVIDENCE/check-closure.py"
+      - name: Preserve bounded review evidence and enforce changed paths
+        id: evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE"
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, tomllib
+          out = pathlib.Path(os.environ['EVIDENCE'])
+          allowed = {'codex-rs/Cargo.lock', 'MODULE.bazel.lock'}
+          changes = subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], text=True).splitlines()
+          untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], text=True).splitlines()
+          (out / 'changed-paths.json').write_text(json.dumps({'tracked': changes, 'untracked': untracked}, indent=2))
+          for label, path in [('before', out / 'before-Cargo.lock'), ('after', pathlib.Path('codex-rs/Cargo.lock'))]:
+              if path.exists():
+                  packages = tomllib.loads(path.read_text())['package']
+                  (out / (label + '-packages.json')).write_text(json.dumps(packages, indent=2, sort_keys=True))
+          patch = subprocess.check_output(['git', 'diff', '--binary', 'HEAD', '--', *sorted(allowed)])
+          assert len(patch) <= 4 * 1024 * 1024, 'Patch exceeds 4 MiB review budget'
+          (out / 'suggested.patch').write_bytes(patch)
+          (out / 'after-Cargo.lock').write_bytes(pathlib.Path('codex-rs/Cargo.lock').read_bytes())
+          (out / 'after-MODULE.bazel.lock').write_bytes(pathlib.Path('MODULE.bazel.lock').read_bytes())
+          (out / 'path-check.txt').write_text('PASS\n' if set(changes) <= allowed and not untracked else 'FAIL: Unexpected source changes; review required\n')
+          assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == os.environ['BASE_SHA']
+          assert sum(p.stat().st_size for p in out.iterdir() if p.is_file()) <= 64 * 1024 * 1024, 'Evidence exceeds 64 MiB budget'
+          PY
+          sha256sum "$EVIDENCE/suggested.patch" > "$EVIDENCE/patch.sha256"
+          sha256sum codex-rs/Cargo.lock MODULE.bazel.lock > "$EVIDENCE/after.sha256"
+          python3 - <<'PYBOUND'
+          import os, pathlib
+          out = pathlib.Path(os.environ['EVIDENCE'])
+          assert sum(p.stat().st_size for p in out.iterdir() if p.is_file()) <= 64 * 1024 * 1024, 'Final evidence exceeds 64 MiB budget'
+          PYBOUND
+          echo "upload_ready=true" >> "$GITHUB_OUTPUT"
+          grep -qx PASS "$EVIDENCE/path-check.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always() && steps.evidence.outputs.upload_ready == 'true'
+        with:
+          name: security-lock-${{ matrix.candidate }}-${{ github.sha }}
+          path: ${{ runner.temp }}/security-lock-evidence/
+          retention-days: 3
+          if-no-files-found: error
