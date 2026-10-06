@@ -1,0 +1,211 @@
+# Exact candidate source qualification only; not deployment or whole-workspace acceptance.
+name: taskflow-circuit-version source diagnostic
+on:
+  push:
+    branches: [dot/taskflow-circuit-version-guard-20261006]
+permissions:
+  contents: read
+concurrency:
+  group: taskflow-circuit-version-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  diagnostic:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/taskflow-circuit-version-guard-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      GIT_NO_REPLACE_OBJECTS: 1
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - name: Bound setup and all native commands together
+        shell: bash
+        run: |
+          echo "NATIVE_DEADLINE=$(( $(date +%s) + 3000 ))" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/taskflow-circuit-version-target" >> "$GITHUB_ENV"
+      - timeout-minutes: 5
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Verify clean source and retain identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from hepta_ci_exec import git, identity
+          
+          def check_identity(record, blob, paths):
+              if record["commit"] != os.environ["SOURCE_SHA"] or record["dirty"]:
+                  raise ValueError("candidate commit or clean-source guard failed")
+              if record["parents"] != ["66f0ba01bb444a245001d7d1fd21121fc8c01206"]:
+                  raise ValueError("candidate must have exact sole reviewed parent")
+              if blob != "245b48f535eb0d83457b56a642a36c3131dc3785":
+                  raise ValueError("neural circuit source differs from reviewed blob")
+              if set(paths) != {"codex-rs/hepta-automation/src/neural_circuit.rs", ".github/workflows/taskflow-circuit-version-diagnostic.yml"}:
+                  raise ValueError("candidate changed paths differ from reviewed scope")
+          
+          record = identity()
+          blob = git("rev-parse", record["commit"] + ":codex-rs/hepta-automation/src/neural_circuit.rs")
+          paths = git("diff-tree", "--no-commit-id", "--name-only", "-r", record["parents"][0], record["commit"]).splitlines()
+          check_identity(record, blob, paths)
+          record["neural_blob"] = blob
+          record["changed_paths"] = sorted(paths)
+          records = Path(os.environ["RUNNER_TEMP"]) / "taskflow-circuit-version-records"
+          records.mkdir(parents=True, exist_ok=True)
+          phase = "before"
+          if phase == "after" and record != json.loads((records / "source-before.json").read_text()):
+              raise ValueError("source identity changed during execution")
+          (records / f"source-{phase}.json").write_text(json.dumps(record, indent=2) + "\n")
+          PY
+      - name: Install pinned native prerequisites
+        timeout-minutes: 10
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev libssl-dev pkg-config
+          rustup toolchain install 1.96.0 --profile minimal --component clippy
+      - timeout-minutes: 5
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install pinned DotSlash
+        timeout-minutes: 3
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Make DotSlash available at the stable Unix tool path
+        timeout-minutes: 1
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -w /usr/local/bin ]]; then
+            cp "$(which dotslash)" /usr/local/bin
+          else
+            sudo cp "$(which dotslash)" /usr/local/bin
+          fi
+          test -x /usr/local/bin/dotslash
+      - name: Resolve existing verified V8 inputs
+        timeout-minutes: 10
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Run exact successor boundary regression
+        id: boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          remaining=$(( NATIVE_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 2100 ? remaining : 2100 ))
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-circuit-version-records/boundary.json" --minimum-tests 1 --timeout-seconds "$budget" -- just test --locked --retries 0 -p codex-hepta-automation --lib -E 'test(=neural_circuit::tests::successor_rejects_version_exhaustion_but_accepts_last_increment)'
+      - name: Run full default Automation package
+        id: package
+        if: ${{ !cancelled() && steps.boundary.outcome != 'skipped' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          remaining=$(( NATIVE_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 1200 ? remaining : 1200 ))
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-circuit-version-records/automation-all.json" --minimum-tests 107 --timeout-seconds "$budget" -- just test --locked --retries 0 -p codex-hepta-automation
+      - name: Verify named regression and actual suite counts
+        if: ${{ !cancelled() && steps.package.outcome != 'skipped' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, re
+          from pathlib import Path
+          records = Path(os.environ["RUNNER_TEMP"]) / "taskflow-circuit-version-records"
+          def verify_result(record, log, expected_count=None, required_name=None):
+              if record["status"] != "passed" or record["exit_code"] != 0 or record["observed_failed_tests"] != 0:
+                  raise ValueError("test command did not pass")
+              if hashlib.sha256(log).hexdigest() != record["log_sha256"]:
+                  raise ValueError("log hash mismatch")
+              if expected_count is not None and record["observed_passed_tests"] != expected_count:
+                  raise ValueError("named regression did not run exactly once")
+              text = re.sub(r"\x1b\[[0-9;]*m", "", log.decode())
+              if required_name is not None:
+                  names = re.findall(r"(?m)^\s*PASS\s+\[[^\]]+\]\s+\S+\s+(\S+)\s*$", text)
+                  if names != [required_name]:
+                      raise ValueError("named regression PASS record missing or duplicated")
+              return {"passed": record["observed_passed_tests"], "failed": record["observed_failed_tests"], "required_name": required_name}
+          counts = {}
+          for label in ["boundary", "automation-all"]:
+              record = json.loads((records / f"{label}.json").read_text())
+              log = (records / record["log_file"]).read_bytes()
+              counts[label] = verify_result(record, log, 1 if label == "boundary" else None, "neural_circuit::tests::successor_rejects_version_exhaustion_but_accepts_last_increment" if label == "boundary" else None)
+          (records / "verified-test-counts.json").write_text(json.dumps(counts, indent=2) + "\n")
+          PY
+      - name: Retain tests before lint
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: taskflow-circuit-tests-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/taskflow-circuit-version-records/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Strict selected-package all-target lint
+        if: ${{ !cancelled() && steps.boundary.outcome != 'skipped' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          remaining=$(( NATIVE_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 1200 ? remaining : 1200 ))
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-circuit-version-records/automation-clippy.json" --timeout-seconds "$budget" -- just clippy --locked -p codex-hepta-automation --all-targets --no-deps -- -D warnings
+      - name: Verify source unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from hepta_ci_exec import git, identity
+          
+          def check_identity(record, blob, paths):
+              if record["commit"] != os.environ["SOURCE_SHA"] or record["dirty"]:
+                  raise ValueError("candidate commit or clean-source guard failed")
+              if record["parents"] != ["66f0ba01bb444a245001d7d1fd21121fc8c01206"]:
+                  raise ValueError("candidate must have exact sole reviewed parent")
+              if blob != "245b48f535eb0d83457b56a642a36c3131dc3785":
+                  raise ValueError("neural circuit source differs from reviewed blob")
+              if set(paths) != {"codex-rs/hepta-automation/src/neural_circuit.rs", ".github/workflows/taskflow-circuit-version-diagnostic.yml"}:
+                  raise ValueError("candidate changed paths differ from reviewed scope")
+          
+          record = identity()
+          blob = git("rev-parse", record["commit"] + ":codex-rs/hepta-automation/src/neural_circuit.rs")
+          paths = git("diff-tree", "--no-commit-id", "--name-only", "-r", record["parents"][0], record["commit"]).splitlines()
+          check_identity(record, blob, paths)
+          record["neural_blob"] = blob
+          record["changed_paths"] = sorted(paths)
+          records = Path(os.environ["RUNNER_TEMP"]) / "taskflow-circuit-version-records"
+          records.mkdir(parents=True, exist_ok=True)
+          phase = "after"
+          if phase == "after" and record != json.loads((records / "source-before.json").read_text()):
+              raise ValueError("source identity changed during execution")
+          (records / f"source-{phase}.json").write_text(json.dumps(record, indent=2) + "\n")
+          PY
+      - name: Retain all diagnostic receipts
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: taskflow-circuit-diagnostic-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/taskflow-circuit-version-records/
+          if-no-files-found: error
+          retention-days: 7
