@@ -353,7 +353,7 @@ impl BaoClient {
                     SettlementStatus::Completed,
                     admission.amount,
                     terminal,
-                    None,
+                    /*receipt*/ None,
                 )
                 .await
                 {

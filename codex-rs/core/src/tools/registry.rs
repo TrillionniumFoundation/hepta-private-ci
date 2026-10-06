@@ -537,7 +537,9 @@ impl ToolRegistry {
         {
             let mut active = invocation.session.active_turn.lock().await;
             if invocation.session.shutdown_started()
-                || invocation.session.has_pending_task_terminalization()
+                || invocation
+                    .session
+                    .has_task_terminalization_admission_fence()
                 || active
                     .as_ref()
                     .is_some_and(|current| current.task_terminalization.is_some())

@@ -25,7 +25,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
           components: rustfmt
       - name: cargo fmt
@@ -45,7 +45,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: cargo-shear@1.11.2
@@ -64,10 +64,18 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
-        with:
-          toolchain: nightly-2025-09-18
-          components: llvm-tools-preview, rustc-dev, rust-src
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
+      - name: Install nightly argument-comment-lint toolchain
+        shell: bash
+        run: |
+          rustup toolchain install nightly-2025-09-18 \
+            --profile minimal \
+            --component llvm-tools-preview \
+            --component rustc-dev \
+            --component rust-src \
+            --no-self-update
+          rustup default nightly-2025-09-18
+
       - name: Cache cargo-dylint tooling
         id: cargo_dylint_cache
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
@@ -224,6 +232,13 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      - name: Record the exact Rust source before tool setup
+        id: rust-source-before
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)" = "$GITHUB_SHA"
+          git -C "$GITHUB_WORKSPACE" rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/rust-source-before.txt"
       - uses: ./.github/actions/setup-ci
       - name: Install Linux build dependencies
         if: ${{ runner.os == 'Linux' }}
@@ -234,17 +249,18 @@ jobs:
             sudo apt-get update -y
             sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential pkg-config libcap-dev
           fi
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58 # 1.96.0
         with:
           targets: ${{ matrix.target }}
           components: clippy
 
       - if: ${{ matrix.target == 'x86_64-unknown-linux-musl' || matrix.target == 'aarch64-unknown-linux-musl'}}
         name: Use hermetic Cargo home (musl)
+        id: rust-cargo-home
         shell: bash
         run: |
           set -euo pipefail
-          cargo_home="${GITHUB_WORKSPACE}/.cargo-home"
+          cargo_home="${RUNNER_TEMP}/rust-ci-cargo-home"
           mkdir -p "${cargo_home}/bin"
           echo "CARGO_HOME=${cargo_home}" >> "$GITHUB_ENV"
           echo "${cargo_home}/bin" >> "$GITHUB_PATH"
@@ -270,10 +286,10 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            ${{ github.workspace }}/.cargo-home/bin/
-            ${{ github.workspace }}/.cargo-home/registry/index/
-            ${{ github.workspace }}/.cargo-home/registry/cache/
-            ${{ github.workspace }}/.cargo-home/git/db/
+            ${{ runner.temp }}/rust-ci-cargo-home/bin/
+            ${{ runner.temp }}/rust-ci-cargo-home/registry/index/
+            ${{ runner.temp }}/rust-ci-cargo-home/registry/cache/
+            ${{ runner.temp }}/rust-ci-cargo-home/git/db/
           key: cargo-home-${{ matrix.runner }}-${{ matrix.target }}-${{ matrix.profile }}-${{ steps.lockhash.outputs.hash }}-${{ steps.lockhash.outputs.toolchain_hash }}
           restore-keys: |
             cargo-home-${{ matrix.runner }}-${{ matrix.target }}-${{ matrix.profile }}-
@@ -296,7 +312,7 @@ jobs:
             echo "Using sccache GitHub backend"
           else
             echo "SCCACHE_GHA_ENABLED=false" >> "$GITHUB_ENV"
-            echo "SCCACHE_DIR=${{ github.workspace }}/.sccache" >> "$GITHUB_ENV"
+            echo "SCCACHE_DIR=${{ runner.temp }}/rust-ci-sccache" >> "$GITHUB_ENV"
             echo "Using sccache local disk + actions/cache fallback"
           fi
 
@@ -310,7 +326,7 @@ jobs:
         id: cache_sccache_restore
         uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
-          path: ${{ github.workspace }}/.sccache/
+          path: ${{ runner.temp }}/rust-ci-sccache/
           key: sccache-${{ matrix.runner }}-${{ matrix.target }}-${{ matrix.profile }}-${{ steps.lockhash.outputs.hash }}-${{ github.run_id }}
           restore-keys: |
             sccache-${{ matrix.runner }}-${{ matrix.target }}-${{ matrix.profile }}-${{ steps.lockhash.outputs.hash }}-
@@ -338,6 +354,20 @@ jobs:
         uses: mlugg/setup-zig@d1434d08867e3ee9daa34448df10607b98908d29 # v2.2.1
         with:
           version: 0.14.0
+          # setup-zig hard-codes its cache to $GITHUB_WORKSPACE/.zig-cache.
+          # The qualified checkout must stay immutable; the next step points
+          # Zig itself at runner.temp instead.
+          use-cache: false
+
+      - if: ${{ matrix.target == 'x86_64-unknown-linux-musl' || matrix.target == 'aarch64-unknown-linux-musl'}}
+        name: Keep Zig caches outside the qualified checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          zig_cache_root="${RUNNER_TEMP}/rust-ci-zig-cache"
+          mkdir -p "${zig_cache_root}/global" "${zig_cache_root}/local"
+          echo "ZIG_GLOBAL_CACHE_DIR=${zig_cache_root}/global" >> "$GITHUB_ENV"
+          echo "ZIG_LOCAL_CACHE_DIR=${zig_cache_root}/local" >> "$GITHUB_ENV"
 
       - if: ${{ matrix.target == 'x86_64-unknown-linux-musl' || matrix.target == 'aarch64-unknown-linux-musl'}}
         name: Install musl build tools
@@ -354,24 +384,35 @@ jobs:
         with:
           target: ${{ matrix.target }}
 
-      - name: Install cargo-chef
-        if: ${{ matrix.profile == 'release' }}
-        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
-        with:
-          tool: cargo-chef
-          version: 0.1.71
-
-      - name: Pre-warm dependency cache (cargo-chef)
-        if: ${{ matrix.profile == 'release' }}
+      # cargo-chef cook overwrites source with dummy crates. Do not run it in
+      # the checkout being qualified; the existing Cargo/sccache caches remain.
+      - name: Verify checkout commit before Cargo
+        id: rust-source-preflight
         shell: bash
         run: |
           set -euo pipefail
-          RECIPE="${RUNNER_TEMP}/chef-recipe.json"
-          cargo chef prepare --recipe-path "$RECIPE"
-          cargo chef cook --recipe-path "$RECIPE" --target ${{ matrix.target }} --release
+          test "$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Reject source mutations before Cargo
+        uses: ./.github/actions/check-clean-worktree
 
       - name: cargo clippy
         run: cargo clippy --target ${{ matrix.target }} --tests --profile ${{ matrix.profile }} --timings -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+
+      - name: Build the actual release sources
+        if: ${{ matrix.profile == 'release' }}
+        run: cargo build --locked --target ${{ matrix.target }} --release --timings
+
+      - name: Verify the exact Rust source after Cargo
+        id: rust-source-after
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C "$GITHUB_WORKSPACE" rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/rust-source-after.txt"
+          cmp "$RUNNER_TEMP/rust-source-before.txt" "$RUNNER_TEMP/rust-source-after.txt"
+      - name: Reject tracked or untracked source mutations after Cargo
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
 
       - name: Upload Cargo timings (clippy)
         if: always()
@@ -379,6 +420,19 @@ jobs:
         with:
           name: cargo-timings-rust-ci-clippy-${{ matrix.target }}-${{ matrix.profile }}
           path: ${{ env.CARGO_TARGET_DIR }}/**/cargo-timings/cargo-timing.html
+          if-no-files-found: warn
+
+      # On Windows CARGO_TARGET_DIR and runner.temp can be disjoint roots.
+      # Upload them separately so artifact collection never requires one
+      # path to be a parent of the other.
+      - name: Upload qualified source identities
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: rust-source-identity-${{ matrix.target }}-${{ matrix.profile }}
+          path: |
+            ${{ runner.temp }}/rust-source-before.txt
+            ${{ runner.temp }}/rust-source-after.txt
           if-no-files-found: warn
 
       # Save caches explicitly; make non-fatal so cache packaging
@@ -393,10 +447,10 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            ${{ github.workspace }}/.cargo-home/bin/
-            ${{ github.workspace }}/.cargo-home/registry/index/
-            ${{ github.workspace }}/.cargo-home/registry/cache/
-            ${{ github.workspace }}/.cargo-home/git/db/
+            ${{ runner.temp }}/rust-ci-cargo-home/bin/
+            ${{ runner.temp }}/rust-ci-cargo-home/registry/index/
+            ${{ runner.temp }}/rust-ci-cargo-home/registry/cache/
+            ${{ runner.temp }}/rust-ci-cargo-home/git/db/
           key: cargo-home-${{ matrix.runner }}-${{ matrix.target }}-${{ matrix.profile }}-${{ steps.lockhash.outputs.hash }}-${{ steps.lockhash.outputs.toolchain_hash }}
 
       - name: Save sccache cache (fallback)
@@ -404,7 +458,7 @@ jobs:
         continue-on-error: true
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
-          path: ${{ github.workspace }}/.sccache/
+          path: ${{ runner.temp }}/rust-ci-sccache/
           key: sccache-${{ matrix.runner }}-${{ matrix.target }}-${{ matrix.profile }}-${{ steps.lockhash.outputs.hash }}-${{ github.run_id }}
 
       - name: sccache stats

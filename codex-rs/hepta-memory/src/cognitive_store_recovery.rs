@@ -38,6 +38,7 @@ use super::unavailable;
 use super::verify_store;
 use crate::ProductionAuthorityLease;
 use crate::ProductionAuthorityVerifier;
+use crate::cognitive_durability::sync_directory;
 use crate::cognitive_path::canonical_path_without_redirection;
 use crate::framing::frame_part;
 
@@ -146,11 +147,8 @@ impl CognitiveStore {
                     "cognitive recovery root does not exist".to_string(),
                 )
             })?;
-        if canonical_root != root {
-            return Err(CognitiveRecoveryError::Indeterminate(
-                "cognitive recovery root is redirected".to_string(),
-            ));
-        }
+        // The path guard already checked namespace equivalence and rejected
+        // redirects, including Windows reparse points in every ancestor.
         let exclusive_guard = CognitiveStoreOpenGuard::acquire_exclusive(&canonical_root)
             .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
         let source_path = resolve_active_database_path(&canonical_root)
@@ -220,11 +218,13 @@ impl CognitiveStore {
             cleanup_candidate_sidecars(&candidate)?;
             protect_database_file(&candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&candidate)
+            std::fs::OpenOptions::new()
+                .read(true)
+                .write(cfg!(windows))
+                .open(&candidate)
                 .and_then(|file| file.sync_all())
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
-            std::fs::File::open(&canonical_root)
-                .and_then(|directory| directory.sync_all())
+            sync_directory(&canonical_root)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
 
             let pool = config

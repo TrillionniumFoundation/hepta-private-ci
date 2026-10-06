@@ -2132,7 +2132,7 @@ def main():
     sp = ap.add_subparsers(dest="cmd", required=True)
     verification = sp.add_parser("verify")
     verification.add_argument(
-        "--profile", choices=["development", "qualification"], default="qualification"
+        "--profile", choices=["development", "qualification"], default="development"
     )
     for name in ["generate-status", "inventory-legacy", "self-test"]:
         sp.add_parser(name)

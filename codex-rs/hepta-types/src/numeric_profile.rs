@@ -141,7 +141,7 @@ impl NumericProfileDefinitionV1 {
                 value: CanonicalValueV1::Text(rounding.id()),
             },
         ];
-        let digest = canonical_digest_v1(&type_id, 1, &fields)
+        let digest = canonical_digest_v1(&type_id, /*schema_version*/ 1, &fields)
             .map_err(NumericProfileDefinitionError::Canonical)?;
         Ok(Self {
             profile,

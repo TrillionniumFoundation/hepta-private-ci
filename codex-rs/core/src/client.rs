@@ -1225,7 +1225,7 @@ impl ModelClient {
         }
         if !provider_accepts_internal_chat_message_metadata(&api_provider.base_url) {
             for item in &mut input {
-                item.clear_internal_chat_message_metadata_passthrough();
+                item.clear_content_item_kinds();
             }
         }
         let reasoning = Self::build_reasoning(model_info, effort, summary);
@@ -1279,18 +1279,18 @@ impl ModelClient {
         input: &mut [ResponseItem],
         api_provider: &ApiProvider,
     ) {
-        let strip_internal_metadata =
+        let strip_content_item_kinds =
             !provider_accepts_internal_chat_message_metadata(&api_provider.base_url);
         for item in input {
             if item.id().is_some_and(|id| !id.is_prefixed()) {
                 item.set_id(/*new_id*/ None);
             }
-            if strip_internal_metadata {
-                // The ChatGPT Codex backend does not accept Hepta's local
-                // content classification metadata on the wire. Keep it in
-                // durable history, but strip it from this provider-specific
-                // request copy immediately before serialization.
-                item.clear_internal_chat_message_metadata_passthrough();
+            if strip_content_item_kinds {
+                // Compatible endpoints do not accept Hepta's local content
+                // classifications. Strip only those classifications from the
+                // request copy: turn IDs and creation timestamps are protocol
+                // metadata used to preserve exact compaction ordering.
+                item.clear_content_item_kinds();
             }
             if !self.state.content_item_kinds_enabled {
                 item.clear_content_item_kinds();
@@ -2139,7 +2139,10 @@ impl ModelClientSession {
             {
                 if let Some(attempt) = admitted_provider_attempt.take()
                     && let Err(terminal_error) = attempt
-                        .finish_immediate(None, "ephemeral_final_use_revalidation")
+                        .finish_immediate(
+                            /*http_status*/ None,
+                            "ephemeral_final_use_revalidation",
+                        )
                         .await
                 {
                     return Err(terminal_error);

@@ -9,9 +9,9 @@
 
 mod backends;
 
-use crate::resolved_permissions::ResolvedWindowsSandboxPermissions;
+use crate::backend_selection::WindowsSandboxBackend;
+use crate::backend_selection::WindowsSandboxBackendRequest;
 use anyhow::Result;
-use anyhow::bail;
 use codex_protocol::config_types::WindowsSandboxLevel;
 use codex_protocol::models::PermissionProfile;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -46,55 +46,21 @@ pub struct WindowsSandboxSessionRequest<'a> {
     pub use_private_desktop: bool,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum WindowsSandboxBackend {
-    RestrictedToken,
-    Elevated,
-}
-
-/// Select the only backend that can enforce the requested filesystem policy.
-///
-/// A `WRITE_RESTRICTED` token limits ordinary write access through restricting
-/// SIDs, but Windows can authorize deletion through a parent directory's
-/// `FILE_DELETE_CHILD` right. That alternate authorization path means the
-/// restricted-token backend cannot prove that deletion stays inside the
-/// declared writable roots. Explicit filesystem overrides have the same
-/// problem because their effective parent ACLs are not part of the token.
-///
-/// Therefore the direct token backend is intentionally limited to an
-/// unrestricted-read, no-write, no-override profile. Every write-capable or
-/// path-restricted request is delegated to the elevated broker, which owns the
-/// authoritative filesystem mediation boundary. If that broker is unavailable,
-/// launch fails closed rather than falling back to the weaker backend.
 fn select_windows_sandbox_backend(
     request: &WindowsSandboxSessionRequest<'_>,
 ) -> Result<WindowsSandboxBackend> {
-    if matches!(request.windows_sandbox_level, WindowsSandboxLevel::Elevated) {
-        return Ok(WindowsSandboxBackend::Elevated);
-    }
-    if request.proxy_enforced {
-        bail!("managed networking requires the elevated Windows sandbox backend");
-    }
-    if request.network_proxy_restricting_sid.is_some() {
-        bail!("network proxy restricting SID requires the elevated Windows sandbox backend");
-    }
-
-    let permissions =
-        ResolvedWindowsSandboxPermissions::try_from_permission_profile_for_workspace_roots(
-            request.permission_profile,
-            request.workspace_roots,
-        )?;
-    let requires_elevated_filesystem = !permissions.has_full_disk_read_access()
-        || permissions.uses_write_capabilities_for_cwd(request.cwd, &request.env_map)
-        || request.read_roots_override.is_some()
-        || request.write_roots_override.is_some()
-        || !request.deny_read_paths_override.is_empty()
-        || !request.deny_write_paths_override.is_empty();
-
-    Ok(if requires_elevated_filesystem {
-        WindowsSandboxBackend::Elevated
-    } else {
-        WindowsSandboxBackend::RestrictedToken
+    crate::backend_selection::select_windows_sandbox_backend(&WindowsSandboxBackendRequest {
+        permission_profile: request.permission_profile,
+        workspace_roots: request.workspace_roots,
+        cwd: request.cwd,
+        env_map: &request.env_map,
+        windows_sandbox_level: request.windows_sandbox_level,
+        proxy_enforced: request.proxy_enforced,
+        network_proxy_restricting_sid: request.network_proxy_restricting_sid.as_deref(),
+        read_roots_override: request.read_roots_override,
+        write_roots_override: request.write_roots_override,
+        deny_read_paths_override: request.deny_read_paths_override,
+        deny_write_paths_override: request.deny_write_paths_override,
     })
 }
 
@@ -126,7 +92,7 @@ pub async fn spawn_windows_sandbox_session_for_level(
             .await
         }
         WindowsSandboxBackend::RestrictedToken => {
-            spawn_windows_sandbox_session_legacy(
+            backends::legacy::spawn_windows_sandbox_session_legacy(
                 request.permission_profile,
                 request.workspace_roots,
                 request.codex_home,
@@ -145,6 +111,7 @@ pub async fn spawn_windows_sandbox_session_for_level(
     }
 }
 
+/// Historical request shape; filesystem policy may select the elevated account.
 #[allow(clippy::too_many_arguments)]
 pub async fn spawn_windows_sandbox_session_legacy(
     permission_profile: &PermissionProfile,
@@ -160,20 +127,27 @@ pub async fn spawn_windows_sandbox_session_legacy(
     stdin_open: bool,
     use_private_desktop: bool,
 ) -> Result<SpawnedProcess> {
-    backends::legacy::spawn_windows_sandbox_session_legacy(
+    spawn_windows_sandbox_session_for_level(WindowsSandboxSessionRequest {
         permission_profile,
         workspace_roots,
         codex_home,
         command,
         cwd,
         env_map,
+        windows_sandbox_level: WindowsSandboxLevel::RestrictedToken,
+        proxy_enforced: false,
+        network_proxy_restricting_sid: None,
+        proxy_settings_mode: crate::WindowsSandboxProxySettingsMode::Reconcile,
         timeout_ms,
-        additional_deny_read_paths,
-        additional_deny_write_paths,
+        read_roots_override: None,
+        read_roots_include_platform_defaults: true,
+        write_roots_override: None,
+        deny_read_paths_override: additional_deny_read_paths,
+        deny_write_paths_override: additional_deny_write_paths,
         tty,
         stdin_open,
         use_private_desktop,
-    )
+    })
     .await
 }
 

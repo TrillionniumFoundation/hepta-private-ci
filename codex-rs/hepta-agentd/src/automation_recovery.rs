@@ -52,7 +52,12 @@ pub(crate) async fn reconcile_one(
     if reconcile_one_unknown_dispatch(store, state, identity, now_ms).await? {
         return Ok(true);
     }
-    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
+    let Some(work) = store
+        .pending_occurrence_work(/*limit*/ 1)
+        .await?
+        .into_iter()
+        .next()
+    else {
         return Ok(false);
     };
     reconcile_work(store, state, identity, work, now_ms).await?;
@@ -65,7 +70,12 @@ async fn reconcile_one_unknown_dispatch(
     identity: &AgentdIdentity,
     now_ms: u64,
 ) -> Result<bool, AgentdError> {
-    let Some(uncertain) = store.uncertain_dispatches(1).await?.into_iter().next() else {
+    let Some(uncertain) = store
+        .uncertain_dispatches(/*limit*/ 1)
+        .await?
+        .into_iter()
+        .next()
+    else {
         return Ok(false);
     };
     let task = store
@@ -392,7 +402,7 @@ async fn pending_exact(
     occurrence: u64,
 ) -> Result<AutomationOccurrenceWork, AgentdError> {
     store
-        .pending_occurrence_work(1024)
+        .pending_occurrence_work(/*limit*/ 1024)
         .await?
         .into_iter()
         .find(|work| work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence)
@@ -426,7 +436,7 @@ async fn connect(
             opt_out_notification_methods: Vec::new(),
             channel_capacity: 8,
         },
-        16,
+        /*event_channel_capacity*/ 16,
     )
     .await
     .map_err(|error| {

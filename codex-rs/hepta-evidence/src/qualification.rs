@@ -1265,7 +1265,7 @@ fn roles_have_distinct_authenticated_identities(
             ));
     }
     assign(
-        0,
+        /*index*/ 0,
         required_roles,
         &identities,
         &mut BTreeSet::<String>::new(),

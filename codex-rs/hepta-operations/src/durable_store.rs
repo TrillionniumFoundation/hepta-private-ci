@@ -354,6 +354,7 @@ impl DurableOperationStore {
         }))
     }
 
+    /// Extend a prepared operation's current lease before dispatch entry.
     pub async fn renew_claim(
         &self,
         claim: &DispatchClaim,
@@ -367,6 +368,7 @@ impl DurableOperationStore {
             .map_err(sqlx_error)?;
         let now = now_millis()?;
         let status = require_current_lease(&mut tx, claim, now).await?;
+        ensure_clock_not_behind(&mut tx, now).await?;
         let fence = status
             .fence
             .checked_add(1)
@@ -378,6 +380,12 @@ impl DurableOperationStore {
             load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
                 .await?
                 .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+        if operation.state != DurableOperationState::Prepared {
+            return Err(DurableOperationError::InvalidTransition {
+                from: operation.state,
+                to: "renew_claim",
+            });
+        }
         let revision = next_revision(operation.revision)?;
         sqlx::query(
             "UPDATE cross_owner_outbox SET fence = ?, lease_until_ms = ?, updated_at_ms = ?
@@ -474,13 +482,40 @@ impl DurableOperationStore {
     /// persist its classified outcome. Async adapters should make their actual
     /// side-effect entry synchronous (for example enqueue to an owner runtime)
     /// and reconcile any later uncertainty through `observe_terminal`.
+    ///
+    /// The callback must be bounded and nonblocking: it runs while the source
+    /// writer reservation excludes recovery and owner handoff. It must not
+    /// synchronously wait for a write to this source store. Await destination
+    /// completion only after this method returns.
     pub async fn execute_authorized<T>(
         &self,
         authorized: AuthorizedDispatch,
         effect: impl FnOnce(&OperationIntentV1) -> DispatchEffect<T>,
     ) -> Result<T, DurableOperationError> {
         let claim = authorized.claim.clone();
-        let observation = match authorized.enter(effect) {
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(sqlx_error)?;
+        let now = now_millis()?;
+        require_current_lease(&mut tx, &claim, now).await?;
+        let operation =
+            load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
+                .await?
+                .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+        if operation.state != DurableOperationState::Dispatching {
+            return Err(DurableOperationError::InvalidTransition {
+                from: operation.state,
+                to: "execute_authorized",
+            });
+        }
+        // Keep current-owner validation and synchronous adapter entry in one
+        // writer reservation. Releasing it before the callback would let lease
+        // recovery or generation handoff invalidate an authorization in between.
+        let observation = authorized.enter(effect);
+        tx.commit().await.map_err(sqlx_error)?;
+        let observation = match observation {
             Ok(observation) => observation,
             Err(error) => {
                 self.release_not_dispatched(
@@ -1307,6 +1342,7 @@ async fn require_current_lease(
         return Err(DurableOperationError::ClockRollback);
     }
     if status.state != DurableOutboxState::Leased
+        || status.intent != claim.intent
         || status.worker_id.as_ref() != Some(&claim.worker_id)
         || status.fence != claim.fence
         || status.intent.owner_generation != claim.owner_generation

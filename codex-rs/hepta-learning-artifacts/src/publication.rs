@@ -125,7 +125,10 @@ impl ArtifactPublicationTransactionV1 {
             intent_digest,
         };
         let phase = ArtifactPublicationPhaseV1::Prepared;
-        let state_digest = digest_state(&intent, phase, None, None, None);
+        let state_digest = digest_state(
+            &intent, phase, /*registry_receipt*/ None, /*witness_receipt*/ None,
+            /*acknowledged_at*/ None,
+        );
         Ok(Self {
             intent,
             phase,

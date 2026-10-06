@@ -39,9 +39,11 @@ use codex_utils_cli::ProfileV2Name;
 use codex_utils_cli::SharedCliOptions;
 use owo_colors::OwoColorize;
 use std::collections::HashSet;
+use std::future::Future;
 use std::io::IsTerminal;
 use std::io::Write;
 use std::path::PathBuf;
+use std::pin::Pin;
 use std::sync::Arc;
 use supports_color::Stream;
 
@@ -1088,10 +1090,10 @@ fn main() -> anyhow::Result<()> {
     configure_product_home()?;
     let remote_control_disabled = codex_app_server::take_remote_control_disabled_env();
     arg0_dispatch_or_else(move |arg0_paths: Arg0DispatchPaths| {
-        Box::pin(async move {
-            cli_main(arg0_paths, remote_control_disabled).await?;
-            Ok(())
-        })
+        // Keep the CLI future's layout out of the runtime's generic entry path.
+        let future: Pin<Box<dyn Future<Output = anyhow::Result<()>>>> =
+            Box::pin(cli_main(arg0_paths, remote_control_disabled));
+        future
     })
 }
 

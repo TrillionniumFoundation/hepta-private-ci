@@ -15,6 +15,7 @@ use std::os::unix::fs::symlink;
 use super::*;
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
+#[cfg(unix)]
 use crate::ForgetMemoryDraft;
 use crate::KgFactSetDraft;
 use crate::MemoryDraft;
@@ -135,6 +136,7 @@ enum EntryPayload {
     Symlink(PathBuf),
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn exact_current_cut_recovers_writable_generation_and_persists_activation() {
     let temp = TempDir::new().expect("temp dir");
@@ -257,6 +259,7 @@ async fn writable_recovery_requires_exclusive_store_fence() {
     ));
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
     let temp = TempDir::new().expect("temp dir");
@@ -362,6 +365,7 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
     drop(store);
     let mut tampered = anchor;
     tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
+    #[cfg(unix)]
     assert!(matches!(
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
@@ -372,6 +376,53 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
         .await,
         Err(CognitiveRecoveryError::AccessDenied(_))
     ));
+    #[cfg(windows)]
+    assert!(matches!(
+        CognitiveStore::open_with_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&tampered),
+            &authority,
+            &RecoveryVerifier,
+        )
+        .await,
+        Err(CognitiveRecoveryError::Indeterminate(_))
+    ));
+}
+
+#[cfg(windows)]
+#[tokio::test]
+async fn unavailable_descriptor_binding_fails_closed_without_mutating_the_store() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(194);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let original = store.path().to_path_buf();
+    let root = original.parent().expect("cognitive root").to_path_buf();
+    store.pool.close().await;
+    drop(store);
+    let before = capture_recovery_tree(&root);
+
+    let result = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+        &recovery_authority(&owner),
+        &RecoveryVerifier,
+    )
+    .await;
+    assert!(matches!(
+        result,
+        Err(CognitiveRecoveryError::Indeterminate(_))
+    ));
+    assert_eq!(capture_recovery_tree(&root), before);
+
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("ordinary reopen remains available");
+    assert_eq!(reopened.path(), original.as_path());
+    assert_eq!(
+        reopened.recovery_anchor().await.expect("reopen anchor"),
+        anchor
+    );
 }
 
 #[cfg(unix)]

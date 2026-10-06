@@ -1618,9 +1618,7 @@ pub(crate) fn publish_active_database(
         file.write_all(b"\n").map_err(unavailable)?;
         file.sync_all().map_err(unavailable)?;
         fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
-            .and_then(|directory| directory.sync_all())
-            .map_err(unavailable)?;
+        crate::cognitive_durability::sync_directory(root).map_err(unavailable)?;
         Ok(())
     })();
     if result.is_err() {
