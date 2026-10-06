@@ -10,7 +10,7 @@ import hashlib
 import json
 import math
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import stat
 import subprocess
 import sys
@@ -128,8 +128,15 @@ def replace_receipt(path: Path, record: dict) -> None:
 def windows_command(group: str, directory: Path) -> list[str]:
     if group not in ("windows-acl-helper", "windows-core-queue"):
         raise ValueError("not a fixed Windows group")
+    bash = os.environ.get("HEPTA_BAZEL_BASH", "")
+    parsed = PureWindowsPath(bash)
+    # MSYS may expose its running executable without the native .exe suffix.
+    if parsed.name.lower() == "bash":
+        parsed = parsed.with_name(parsed.name + ".exe")
+    if not parsed.is_absolute() or parsed.name.lower() != "bash.exe":
+        raise ValueError("an absolute Actions Git Bash executable is required")
     return [
-        "bash", ".github/scripts/run-bazel-ci.sh",
+        str(parsed), ".github/scripts/run-bazel-ci.sh",
         "--print-failed-action-summary", "--print-failed-test-logs",
         "--windows-msvc-host-platform", "--remote-download-toplevel", "--",
         "test", "--platforms=//:windows_x86_64_msvc", "--nocache_test_results",
@@ -151,6 +158,8 @@ def run_windows(group: str, directory: Path) -> int:
     directory.mkdir(parents=True, exist_ok=True)
     record_path = directory / (group + '.json')
     command = windows_command(group, directory)
+    if not Path(command[0]).is_file():
+        raise ValueError("the Actions Git Bash executable is unavailable")
     record = {"scope": "source-only fixed native targets", "group": group,
               "source_before": before, "command": command, "status": "running",
               "command_exit_code": None, "run_id": os.environ.get("GITHUB_RUN_ID"),

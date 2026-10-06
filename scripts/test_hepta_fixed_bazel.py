@@ -64,6 +64,7 @@ class FixedQualificationTests(unittest.TestCase):
         for now in (2800, 2750, 99, float('nan')):
             with self.assertRaises(ValueError): fixed.budget_minutes(100, now)
 
+    @patch.dict(fixed.os.environ, {"HEPTA_BAZEL_BASH": r"C:\Program Files\Git\bin\bash.exe"})
     def test_windows_commands_share_exact_native_platform_and_no_cached_tests(self):
         for group in ('windows-acl-helper', 'windows-core-queue'):
             command = fixed.windows_command(group, self.directory)
@@ -73,6 +74,21 @@ class FixedQualificationTests(unittest.TestCase):
             self.assertEqual(command[-2:], list(fixed.GROUPS[group]))
             self.assertNotIn('//...', command)
         with self.assertRaises(ValueError): fixed.windows_command('linux-supervisor', self.directory)
+
+    def test_bare_or_relative_bash_is_rejected_even_with_path_available(self):
+        for value in ('', 'bash', 'bash.exe', r'bin\bash.exe', r'C:\Windows\System32\wsl.exe'):
+            with self.subTest(value=value), patch.dict(fixed.os.environ, {'HEPTA_BAZEL_BASH': value, 'PATH': r'C:\Windows\System32'}):
+                with self.assertRaisesRegex(ValueError, 'absolute Actions Git Bash'):
+                    fixed.windows_command('windows-acl-helper', self.directory)
+
+    def test_absolute_msys_shell_without_exe_keeps_its_directory(self):
+        with patch.dict(fixed.os.environ, {'HEPTA_BAZEL_BASH': r'C:\Program Files\Git\usr\bin\bash'}):
+            command = fixed.windows_command('windows-acl-helper', self.directory)
+        self.assertEqual(command[0], r'C:\Program Files\Git\usr\bin\bash.exe')
+
+    def test_both_windows_steps_pass_the_actual_running_shell(self):
+        text = (Path(__file__).resolve().parents[1] / '.github/workflows/bazel.yml').read_text()
+        self.assertEqual(text.count('export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"'), 2)
 
     def test_linux_command_is_only_supervisor(self):
         command = pilot.native_command(Path('/source'), self.directory)
