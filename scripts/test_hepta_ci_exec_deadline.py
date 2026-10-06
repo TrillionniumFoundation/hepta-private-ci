@@ -26,13 +26,13 @@ class CommandDeadlineTests(unittest.TestCase):
         self.root = Path(temporary.name)
         self.log = self.root / "command.log"
 
-    def execute(self, code, **kwargs):
+    def execute(self, code, *, timeout_seconds=0.75, **kwargs):
         started = time.monotonic()
         with contextlib.redirect_stdout(io.StringIO()):
             record = executor.execute_logged(
                 [sys.executable, "-c", code],
                 self.log,
-                timeout_seconds=0.75,
+                timeout_seconds=timeout_seconds,
                 **kwargs,
             )
         self.assertLess(
@@ -111,6 +111,67 @@ class CommandDeadlineTests(unittest.TestCase):
                     os.kill(child_pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
+
+    def assert_silent_descendant_is_cancelled(self, parent_exit):
+        ready = self.root / "descendant-ready"
+        released = self.root / "release-after-return"
+        late_effect = self.root / "effect-after-parent-exit"
+        child_code = (
+            "from pathlib import Path; import time\n"
+            f"Path({str(ready)!r}).write_text('ready')\n"
+            f"while not Path({str(released)!r}).exists(): time.sleep(0.001)\n"
+            f"Path({str(late_effect)!r}).write_text('outlived command')\n"
+            "time.sleep(60)\n"
+        )
+        parent_code = (
+            "from pathlib import Path; import subprocess,sys,time\n"
+            f"child=subprocess.Popen([sys.executable,'-c',{child_code!r}],"
+            "stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)\n"
+            "print(child.pid, flush=True)\n"
+            f"while not Path({str(ready)!r}).exists(): time.sleep(0.001)\n"
+            f"sys.exit({parent_exit})\n"
+        )
+        try:
+            record = self.execute(parent_code, timeout_seconds=3)
+            self.assertTrue(ready.exists(), "descendant never reached its body")
+            self.assertEqual(record["returncode"], parent_exit)
+            self.assertFalse(record["timed_out"])
+            self.assertFalse(record["output_limit_exceeded"])
+            released.write_text("execute_logged has returned")
+            time.sleep(0.75)
+            self.assertFalse(
+                late_effect.exists(),
+                "silent descendant executed after the bounded command returned",
+            )
+        finally:
+            # Clean up the deliberately leaked fixture even on the old code.
+            if self.log.exists() and self.log.read_text().strip():
+                child_pid = int(self.log.read_text().strip())
+                try:
+                    os.kill(child_pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+
+    def test_successful_parent_cannot_leave_a_silent_descendant(self):
+        self.assert_silent_descendant_is_cancelled(0)
+
+    def test_failed_parent_cannot_leave_a_silent_descendant(self):
+        self.assert_silent_descendant_is_cancelled(7)
+
+    def test_normal_completion_does_not_cancel_unrelated_process(self):
+        with subprocess.Popen(
+            [sys.executable, "-c", "import time; time.sleep(60)"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ) as unrelated:
+            try:
+                record = self.execute("print('finished')", timeout_seconds=3)
+                self.assertEqual(record["returncode"], 0)
+                self.assertFalse(record["timed_out"])
+                self.assertIsNone(unrelated.poll())
+            finally:
+                unrelated.kill()
+                unrelated.wait(timeout=5)
 
     def test_normal_exit_is_not_a_timeout(self):
         record = self.execute("print('finished')")
