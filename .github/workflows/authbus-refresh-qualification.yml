@@ -1,0 +1,97 @@
+# Branch-only source diagnostics. No PR event, merge or deployment qualification.
+name: AuthBus refresh bounded qualification
+on:
+  push:
+    branches: [dot/authbus-revocation-qualification-20261006]
+permissions:
+  contents: read
+concurrency:
+  group: authbus-refresh-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  authbus-refresh:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/authbus-revocation-qualification-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - name: Anchor total group budget before checkout or setup
+        run: |
+          python - <<'PYCODE'
+          import os, pathlib, time
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write('AUTHBUS_DEADLINE=' + str(time.time() + 4800) + '\n')
+              stream.write('AUTHBUS_EVIDENCE=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'authbus-refresh') + '\n')
+              stream.write('CARGO_TARGET_DIR=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'target-authbus-refresh') + '\n')
+          PYCODE
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record and enforce exact reviewed source projection
+        run: python scripts/hepta_authbus_refresh_qualification.py before
+      - name: Install official native prerequisites and exact Rust toolchain
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config libssl-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy --component rustfmt
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 5
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+        timeout-minutes: 3
+      - name: Make DotSlash available at the stable Unix tool path
+        timeout-minutes: 1
+        run: |
+          if [[ -w /usr/local/bin ]]; then
+            cp "$(which dotslash)" /usr/local/bin
+          else
+            sudo cp "$(which dotslash)" /usr/local/bin
+          fi
+          test -x /usr/local/bin/dotslash
+      - name: Resolve existing checksum-verified V8 inputs
+        timeout-minutes: 10
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python scripts/hepta_ci_v8.py
+      - name: Compute remaining execution budget
+        id: budget
+        run: python scripts/hepta_authbus_refresh_qualification.py budget
+      - name: Execute fixed bounded stages, retaining independent failures
+        timeout-minutes: ${{ fromJSON(steps.budget.outputs.minutes) }}
+        run: python scripts/hepta_authbus_refresh_qualification.py run
+      - name: Verify unchanged exact source after execution or failure
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_authbus_refresh_qualification.py after
+      - name: Stage bounded receipts and raw logs only
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_authbus_refresh_qualification.py stage
+      - name: Retain diagnostic evidence, never compiled caches
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-authbus-refresh-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/authbus-refresh/upload
+          if-no-files-found: error
+          retention-days: 7
