@@ -158,7 +158,13 @@ impl KeyboardFocus {
             return false;
         }
         NavControl::send_trigger_to_scroll_stack(cx, stack);
-        cx.set_key_focus(area);
+        if area == editor.area() {
+            // The SDK field API invalidates the retained field draw, allowing
+            // IME show/config to refresh without waiting for the blink timer.
+            editor.as_text_input().take_key_focus(cx);
+        } else {
+            cx.set_key_focus(area);
+        }
         true
     }
     pub(crate) fn after_dispatch(

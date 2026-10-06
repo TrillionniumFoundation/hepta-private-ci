@@ -22,7 +22,7 @@ jobs:
       HEPTA_CI_LANE: source-head
       SOURCE_SHA: ${{ github.sha }}
       TESTED_SHA: ${{ github.sha }}
-      REVIEWED_WORKFLOW_SHA256: 76ba34f7bea58f54b0f58b98849e7e54cb7230fd46dc179774cd5a37ee0426a3
+      REVIEWED_WORKFLOW_SHA256: 7d193a75f4bab20ed0956af55b198df548e489bfa092d48238429293a174a527
       HEPTA_KEYBOARD_FOCUS_TRACE: '1'
     steps:
     - name: Anchor shared execution deadline before checkout
@@ -47,9 +47,9 @@ jobs:
         cat > "$DIAGNOSTIC_ROOT/source-guard.py" <<'PYGUARD'
         import hashlib, json, os, re, subprocess, sys
         from pathlib import Path
-        EXPECTED_PARENT = '38a62d01d54c02bd606d0fe6d316c900497c7c49'
+        EXPECTED_PARENT = '2e4501639b9014bc35580bff2abd5a7e8b77326a'
         WORKFLOW = '.github/workflows/rust-ui-keyboard-diagnostic.yml'
-        EXPECTED_BLOBS = {'apps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs': '09933b8959d91a76a1b5ab6cf71b0cda3db22a14', 'apps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus.rs': 'cfc8bd74a5fb86ea209ae92889853dc12d23fe66', 'apps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus_policy.rs': '0dfdda260cb2d3bd25f852164c014e5207127b46', 'apps/hepta-control-ui/rust/robrix-ui/src/lib.rs': '0dfa12ae8aaea3e82dea376ebd02c35e3373ccfb'}
+        EXPECTED_BLOBS = {'apps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus.rs': '311843f958c2dd96608c6a8aff6873b1e7a60838'}
         # Reviewed-source consistency only; this self-check is not a security signature.
         git = lambda *args: subprocess.check_output(['git', '--no-replace-objects', *args])
         source = os.environ['SOURCE_SHA']
@@ -63,8 +63,8 @@ jobs:
         tree = trees[0]
         paths = sorted([WORKFLOW, *EXPECTED_BLOBS])
         changes = git('diff-tree', '--no-commit-id', '--name-status', '-r', '--no-renames', EXPECTED_PARENT, commit).decode().splitlines()
-        EXPECTED_CHANGES = ['A\tapps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus.rs', 'A\tapps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus_policy.rs', 'M\t.github/workflows/rust-ui-keyboard-diagnostic.yml', 'M\tapps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs', 'M\tapps/hepta-control-ui/rust/robrix-ui/src/lib.rs']
-        assert sorted(changes) == EXPECTED_CHANGES, 'Expected exact five reviewed paths and statuses'
+        EXPECTED_CHANGES = ['M\t.github/workflows/rust-ui-keyboard-diagnostic.yml', 'M\tapps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus.rs']
+        assert sorted(changes) == EXPECTED_CHANGES, 'Expected exact two reviewed paths and statuses'
         entries = {}
         for item in git('ls-tree', '-r', '-z', commit, '--', *paths).split(b'\0'):
             if not item: continue
