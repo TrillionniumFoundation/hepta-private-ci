@@ -1,0 +1,400 @@
+# Source-head diagnostics only. No PR/dispatch route and no merge qualification.
+name: Frozen bounded source qualification
+on:
+  push:
+    branches: [dot/frozen-bounded-qualification-20261006]
+permissions:
+  contents: read
+concurrency:
+  group: frozen-bounded-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  client:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/frozen-bounded-qualification-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - name: Anchor total group budget before checkout or setup
+        run: |
+          python - <<'PYCODE'
+          import os, pathlib, time
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write('BOUNDED_DEADLINE=' + str(time.time() + 3000) + '\n')
+              stream.write('BOUNDED_EVIDENCE=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'bounded-client') + '\n')
+              stream.write('CARGO_TARGET_DIR=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'target-client') + '\n')
+          PYCODE
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record and enforce exact reviewed source projection
+        run: python scripts/hepta_frozen_bounded.py before client
+      - name: Install official native prerequisites and exact Rust toolchain
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config libssl-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 5
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+        timeout-minutes: 3
+      - name: Resolve existing checksum-verified V8 inputs
+        timeout-minutes: 10
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python scripts/hepta_ci_v8.py
+      - name: Compute remaining execution budget
+        id: budget
+        run: python scripts/hepta_frozen_bounded.py budget client
+      - name: Execute fixed bounded stages, retaining independent failures
+        timeout-minutes: ${{ fromJSON(steps.budget.outputs.minutes) }}
+        run: python scripts/hepta_frozen_bounded.py run client
+      - name: Verify unchanged exact source after execution or failure
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py after client
+      - name: Stage bounded receipts and raw logs only
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py stage client
+      - name: Retain diagnostic evidence, never compiled caches
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-bounded-client-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bounded-client/upload
+          if-no-files-found: error
+          retention-days: 7
+  fixture:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/frozen-bounded-qualification-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - name: Anchor total group budget before checkout or setup
+        run: |
+          python - <<'PYCODE'
+          import os, pathlib, time
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write('BOUNDED_DEADLINE=' + str(time.time() + 3900) + '\n')
+              stream.write('BOUNDED_EVIDENCE=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'bounded-fixture') + '\n')
+              stream.write('CARGO_TARGET_DIR=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'target-fixture') + '\n')
+          PYCODE
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record and enforce exact reviewed source projection
+        run: python scripts/hepta_frozen_bounded.py before fixture
+      - name: Install official native prerequisites and exact Rust toolchain
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config libssl-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 5
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+        timeout-minutes: 3
+      - name: Resolve existing checksum-verified V8 inputs
+        timeout-minutes: 10
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python scripts/hepta_ci_v8.py
+      - name: Compute remaining execution budget
+        id: budget
+        run: python scripts/hepta_frozen_bounded.py budget fixture
+      - name: Execute fixed bounded stages, retaining independent failures
+        timeout-minutes: ${{ fromJSON(steps.budget.outputs.minutes) }}
+        run: python scripts/hepta_frozen_bounded.py run fixture
+      - name: Verify unchanged exact source after execution or failure
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py after fixture
+      - name: Stage bounded receipts and raw logs only
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py stage fixture
+      - name: Retain diagnostic evidence, never compiled caches
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-bounded-fixture-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bounded-fixture/upload
+          if-no-files-found: error
+          retention-days: 7
+  lifecycle:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/frozen-bounded-qualification-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - name: Anchor total group budget before checkout or setup
+        run: |
+          python - <<'PYCODE'
+          import os, pathlib, time
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write('BOUNDED_DEADLINE=' + str(time.time() + 3000) + '\n')
+              stream.write('BOUNDED_EVIDENCE=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'bounded-lifecycle') + '\n')
+              stream.write('CARGO_TARGET_DIR=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'target-lifecycle') + '\n')
+          PYCODE
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record and enforce exact reviewed source projection
+        run: python scripts/hepta_frozen_bounded.py before lifecycle
+      - name: Install official native prerequisites and exact Rust toolchain
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config libssl-dev
+          rustup toolchain install 1.96.0 --profile minimal --component clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        timeout-minutes: 5
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+        timeout-minutes: 3
+      - name: Resolve existing checksum-verified V8 inputs
+        timeout-minutes: 10
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python scripts/hepta_ci_v8.py
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        timeout-minutes: 3
+        with:
+          version: '0.11.3'
+          enable-cache: false
+      - name: Install frozen small docs verification environment
+        timeout-minutes: 5
+        run: |
+          uv sync --frozen --project scripts --only-group ci
+          echo "$GITHUB_WORKSPACE/scripts/.venv/bin" >> "$GITHUB_PATH"
+      - name: Compute remaining execution budget
+        id: budget
+        run: python scripts/hepta_frozen_bounded.py budget lifecycle
+      - name: Execute fixed bounded stages, retaining independent failures
+        timeout-minutes: ${{ fromJSON(steps.budget.outputs.minutes) }}
+        run: python scripts/hepta_frozen_bounded.py run lifecycle
+      - name: Verify unchanged exact source after execution or failure
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py after lifecycle
+      - name: Stage bounded receipts and raw logs only
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py stage lifecycle
+      - name: Retain diagnostic evidence, never compiled caches
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-bounded-lifecycle-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bounded-lifecycle/upload
+          if-no-files-found: error
+          retention-days: 7
+  windows:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/frozen-bounded-qualification-20261006'
+    runs-on: windows-2025
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - name: Anchor total group budget before checkout or setup
+        run: |
+          python - <<'PYCODE'
+          import os, pathlib, time
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write('BOUNDED_DEADLINE=' + str(time.time() + 2700) + '\n')
+              stream.write('BOUNDED_EVIDENCE=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'bounded-windows') + '\n')
+              stream.write('CARGO_TARGET_DIR=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'target-windows') + '\n')
+          PYCODE
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record and enforce exact reviewed source projection
+        run: python scripts/hepta_frozen_bounded.py before windows
+      - name: Prepare pinned native Windows tools and repository downloads
+        timeout-minutes: 8
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: frozen-bounded-source
+      - name: Verify native header parser
+        timeout-minutes: 3
+        run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
+      - name: Select the actual native Git Bash executable
+        run: echo "HEPTA_BAZEL_BASH=$(cygpath -w "$BASH")" >> "$GITHUB_ENV"
+      - name: Compute remaining execution budget
+        id: budget
+        run: python scripts/hepta_frozen_bounded.py budget windows
+      - name: Execute fixed bounded stages, retaining independent failures
+        timeout-minutes: ${{ fromJSON(steps.budget.outputs.minutes) }}
+        run: python scripts/hepta_frozen_bounded.py run windows
+      - name: Collect every Windows target even after test failure or timeout
+        if: always()
+        timeout-minutes: 3
+        run: python scripts/hepta_frozen_bounded.py collect-bazel windows
+      - name: Verify unchanged exact source after execution or failure
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py after windows
+      - name: Stage bounded receipts and raw logs only
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py stage windows
+      - name: Retain diagnostic evidence, never compiled caches
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-bounded-windows-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bounded-windows/upload
+          if-no-files-found: error
+          retention-days: 7
+  supervisor-bazel:
+    needs: lifecycle
+    if: always() && !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/dot/frozen-bounded-qualification-20261006'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+      RUSTUP_TOOLCHAIN: 1.96.0
+      CARGO_BUILD_JOBS: '2'
+      CARGO_INCREMENTAL: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - name: Anchor total group budget before checkout or setup
+        run: |
+          python - <<'PYCODE'
+          import os, pathlib, time
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write('BOUNDED_DEADLINE=' + str(time.time() + 2700) + '\n')
+              stream.write('BOUNDED_EVIDENCE=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'bounded-supervisor-bazel') + '\n')
+              stream.write('CARGO_TARGET_DIR=' + str(pathlib.Path(os.environ['RUNNER_TEMP']) / 'target-supervisor-bazel') + '\n')
+          PYCODE
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        timeout-minutes: 5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record and enforce exact reviewed source projection
+        run: python scripts/hepta_frozen_bounded.py before supervisor-bazel
+      - name: Prepare pinned native Linux Bazel tools and repository downloads
+        timeout-minutes: 8
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: frozen-bounded-source
+      - name: Compute remaining execution budget
+        id: budget
+        run: python scripts/hepta_frozen_bounded.py budget supervisor-bazel
+      - name: Execute fixed bounded stages, retaining independent failures
+        timeout-minutes: ${{ fromJSON(steps.budget.outputs.minutes) }}
+        run: python scripts/hepta_frozen_bounded.py run supervisor-bazel
+      - name: Collect exact Linux Bazel target even after test failure or timeout
+        if: always()
+        timeout-minutes: 3
+        run: python scripts/hepta_frozen_bounded.py collect-bazel supervisor-bazel
+      - name: Verify unchanged exact source after execution or failure
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py after supervisor-bazel
+      - name: Stage bounded receipts and raw logs only
+        if: always()
+        timeout-minutes: 2
+        run: python scripts/hepta_frozen_bounded.py stage supervisor-bazel
+      - name: Retain diagnostic evidence, never compiled caches
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: frozen-bounded-supervisor-bazel-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bounded-supervisor-bazel/upload
+          if-no-files-found: error
+          retention-days: 7
