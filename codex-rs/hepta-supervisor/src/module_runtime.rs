@@ -29,6 +29,12 @@ use crate::WriterHandoffCheckpointV1;
 // proposal consumes no module candidate slots but still occupies host memory.
 const MAX_PENDING_TOPOLOGIES: usize = 128;
 
+#[path = "module_runtime_retirement.rs"]
+mod retirement;
+
+#[path = "module_runtime_withdrawal.rs"]
+mod withdrawal;
+
 #[derive(Debug)]
 pub struct RuntimeModuleSupervisorV1 {
     registry: RuntimeModuleRegistryV1,
@@ -71,6 +77,7 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     NoChangeTopologyCandidate,
     DuplicateTopologyCandidate,
     UnknownTopologyCandidate,
+    PendingTopologyMember(Digest32),
     PendingTopologyCapacity,
     MissingTopologyAbi(StableId),
     UnexpectedTopologyAbi(StableId),
@@ -578,10 +585,7 @@ impl RuntimeModuleSupervisorV1 {
             .registry
             .record(module_id, generation)
             .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
-        if record.abi.predecessor_generation.is_some()
-            || record.abi.state_class
-                == codex_hepta_control_plane::RuntimeModuleStateClassV1::Stateless
-        {
+        if record.abi.predecessor_generation.is_some() || !record.abi.requires_handoff() {
             return Err(RuntimeModuleSupervisorErrorV1::PredecessorMismatch);
         }
         let selection_digest = self.selection_digest(module_id, generation)?;
@@ -691,51 +695,6 @@ impl RuntimeModuleSupervisorV1 {
                 handoff_digest: Digest32::of_bytes(&bytes),
             },
         )
-    }
-
-    pub fn record_retirement_ready(
-        &mut self,
-        module_id: &StableId,
-        generation: Generation,
-        witness: RuntimeModuleRetirementWitnessV1,
-    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
-        let record = self
-            .registry
-            .record(module_id, generation)
-            .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
-        if self.registry.active_generation(module_id) != Some(generation)
-            || witness.drain_digest.is_zero()
-            || witness.unknown_effect_count != 0
-            || ((!record.abi.effect_scope.is_empty()
-                || !record.abi.authoritative_domains.is_empty())
-                && witness.reconciliation_digest.is_zero())
-        {
-            return Err(RuntimeModuleSupervisorErrorV1::InvalidRetirementWitness);
-        }
-        let mut bytes = b"hepta.runtime-module-retirement.v1".to_vec();
-        bytes.extend_from_slice(witness.drain_digest.as_array());
-        bytes.extend_from_slice(witness.reconciliation_digest.as_array());
-        bytes.extend_from_slice(&witness.unknown_effect_count.to_be_bytes());
-        self.retirement_ready
-            .insert((module_id.clone(), generation), Digest32::of_bytes(&bytes));
-        Ok(())
-    }
-
-    pub fn retire_after_reconciliation(
-        &mut self,
-        module_id: &StableId,
-        generation: Generation,
-        witness: RuntimeModuleRetirementWitnessV1,
-    ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
-        let mut staged = self.registry.clone();
-        staged.begin_retire(module_id, generation)?;
-        let snapshot = staged.finish_retire(module_id, generation)?;
-        // Invalid drain evidence or dependency checks must leave both serving
-        // state and bookkeeping untouched, rather than leaking a ready marker.
-        self.record_retirement_ready(module_id, generation, witness)?;
-        self.registry = staged;
-        self.prune_lifecycle_metadata();
-        Ok(snapshot)
     }
 
     /// Restore only stateless, effect-free content. The verified regression
@@ -1080,3 +1039,15 @@ mod predecessor_tests;
 #[cfg(test)]
 #[path = "module_runtime_bootstrap_tests.rs"]
 mod bootstrap_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_initialization_tests.rs"]
+mod initialization_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_withdrawal_tests.rs"]
+mod withdrawal_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_retirement_tests.rs"]
+mod retirement_tests;

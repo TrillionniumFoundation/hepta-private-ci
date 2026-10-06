@@ -338,7 +338,7 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -651,7 +651,8 @@ pub enum AgentdMethod {
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        // Heap indirection keeps other control methods compact; wire shape is unchanged.
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -1072,7 +1073,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1214,6 +1215,14 @@ mod tests {
             .iter()
             .flat_map(|byte| format!("{byte:02x}").chars().collect::<Vec<_>>())
             .collect::<String>();
+        // Preserve the pre-indirection wire layout exactly. In-memory enum
+        // storage must not add a wrapper, rename a field or change signed data.
+        let intent_json = serde_json::to_string(&intent).expect("legacy intent");
+        let payload_json = serde_json::to_string(&wire_payload_hex).expect("legacy wire payload");
+        let grant_json = serde_json::to_string(&signed_grant).expect("legacy signed grant");
+        let legacy_wire = format!(
+            "{{\"schema_version\":{AGENTD_CONTROL_SCHEMA_VERSION},\"request_id\":11,\"spawn_generation\":3,\"method\":{{\"type\":\"automation_execute_effect\",\"intent\":{intent_json},\"wire_payload_hex\":{payload_json},\"signed_grant\":{grant_json},\"command_id\":\"effect-command\"}}}}"
+        );
         let request = AgentdRequest::automation_execute_effect(
             11,
             3,
@@ -1223,6 +1232,10 @@ mod tests {
             "effect-command".to_string(),
         );
         let bytes = serde_json::to_vec(&request).expect("serialize effect request");
+        assert_eq!(bytes.as_slice(), legacy_wire.as_bytes());
+        let mut unknown_field = serde_json::to_value(&request).expect("wire value");
+        unknown_field["method"]["untrusted"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<AgentdRequest>(unknown_field).is_err());
         assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
@@ -1318,13 +1331,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

@@ -64,6 +64,15 @@ pub struct RuntimeModuleAbiV1 {
 }
 
 impl RuntimeModuleAbiV1 {
+    /// State, writer ownership and external effects independently require an
+    /// initialization or handoff witness. A stateless label discharges none of
+    /// the other obligations; this predicate grants no execution authority.
+    pub fn requires_handoff(&self) -> bool {
+        self.state_class != RuntimeModuleStateClassV1::Stateless
+            || !self.authoritative_domains.is_empty()
+            || !self.effect_scope.is_empty()
+    }
+
     pub fn validate(&self) -> Result<(), RuntimeModuleRegistryError> {
         if self.implementation_digest.is_zero() {
             return Err(RuntimeModuleRegistryError::EmptyImplementationDigest);
@@ -119,11 +128,7 @@ impl RuntimeModulePromotionWitnessV1 {
         if self.selection_digest.is_zero() || self.canary_digest.is_zero() {
             return Err(RuntimeModuleRegistryError::MissingPromotionEvidence);
         }
-        if (abi.state_class != RuntimeModuleStateClassV1::Stateless
-            || !abi.authoritative_domains.is_empty()
-            || !abi.effect_scope.is_empty())
-            && self.handoff_digest.is_zero()
-        {
+        if abi.requires_handoff() && self.handoff_digest.is_zero() {
             return Err(RuntimeModuleRegistryError::MissingWriterHandoff);
         }
         Ok(())
@@ -497,10 +502,7 @@ impl RuntimeModuleRegistryV1 {
         // predecessor's retained domain or external effects are safe to reopen.
         // Reject before staging anything, including a new generation fence.
         for abi in [&active_record.abi, &predecessor.abi] {
-            if abi.state_class != RuntimeModuleStateClassV1::Stateless
-                || !abi.authoritative_domains.is_empty()
-                || !abi.effect_scope.is_empty()
-            {
+            if abi.requires_handoff() {
                 return Err(RuntimeModuleRegistryError::MissingWriterHandoff);
             }
         }
