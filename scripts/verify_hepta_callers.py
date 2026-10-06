@@ -399,9 +399,7 @@ def _rust_item_end(source: str, start: int) -> int | None:
     # An attribute can guard a struct field or a struct-expression entry. Those
     # end at a top-level comma, not at the next function body or semicolon.
     # Preserve the enclosing brace even when the final field has no comma.
-    field = re.match(
-        r"(?:pub(?:\([^)]*\))?\s+)?(?:r#)?\w+\s*:(?!:)", source[start:]
-    )
+    field = re.match(r"(?:pub(?:\([^)]*\))?\s+)?(?:r#)?\w+\s*:(?!:)", source[start:])
     if field:
         paren = bracket = brace = angle = 0
         for index in range(start, len(source)):
