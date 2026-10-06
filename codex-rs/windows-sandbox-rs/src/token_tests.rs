@@ -299,3 +299,6 @@ fn workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces() ->
     }
     Ok(())
 }
+
+#[path = "token_delete_diagnostics.rs"]
+mod delete_diagnostics;

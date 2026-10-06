@@ -14,7 +14,7 @@ class FixedQualificationTests(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         self.directory = Path(temp.name)
         self.bep = self.directory / 'events.json'
-        self.labels = fixed.GROUPS['windows-acl-helper']
+        self.labels = fixed.GROUPS['windows-delete-diagnostic']
 
     def events(self):
         return [{'id': {'testSummary': {'label': label}},
@@ -66,12 +66,14 @@ class FixedQualificationTests(unittest.TestCase):
 
     @patch.dict(fixed.os.environ, {"HEPTA_BAZEL_BASH": r"C:\Program Files\Git\bin\bash.exe"})
     def test_windows_commands_share_exact_native_platform_and_no_cached_tests(self):
-        for group in ('windows-acl-helper', 'windows-core-queue'):
+        for group in ('windows-delete-diagnostic', 'windows-queue-diagnostic'):
             command = fixed.windows_command(group, self.directory)
             self.assertIn('--windows-msvc-host-platform', command)
             self.assertIn('--platforms=//:windows_x86_64_msvc', command)
             self.assertIn('--nocache_test_results', command)
-            self.assertEqual(command[-2:], list(fixed.GROUPS[group]))
+            self.assertEqual(command[-1:], list(fixed.GROUPS[group]))
+            self.assertNotIn("//codex-rs/core:core-unit-tests", command)
+            self.assertNotIn("//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test", command)
             self.assertNotIn('//...', command)
         with self.assertRaises(ValueError): fixed.windows_command('linux-supervisor', self.directory)
 
@@ -79,11 +81,11 @@ class FixedQualificationTests(unittest.TestCase):
         for value in ('', 'bash', 'bash.exe', r'bin\bash.exe', r'C:\Windows\System32\wsl.exe'):
             with self.subTest(value=value), patch.dict(fixed.os.environ, {'HEPTA_BAZEL_BASH': value, 'PATH': r'C:\Windows\System32'}):
                 with self.assertRaisesRegex(ValueError, 'absolute Actions Git Bash'):
-                    fixed.windows_command('windows-acl-helper', self.directory)
+                    fixed.windows_command('windows-delete-diagnostic', self.directory)
 
     def test_absolute_msys_shell_without_exe_keeps_its_directory(self):
         with patch.dict(fixed.os.environ, {'HEPTA_BAZEL_BASH': r'C:\Program Files\Git\usr\bin\bash'}):
-            command = fixed.windows_command('windows-acl-helper', self.directory)
+            command = fixed.windows_command('windows-delete-diagnostic', self.directory)
         self.assertEqual(command[0], r'C:\Program Files\Git\usr\bin\bash.exe')
 
     def test_both_windows_steps_pass_the_actual_running_shell(self):
@@ -137,8 +139,8 @@ class FixedQualificationTests(unittest.TestCase):
         self.assertNotIn('secrets.', diagnostic)
         self.assertNotIn('matrix:', diagnostic)
         self.assertIn('reject-unknown-diagnostic:', diagnostic)
-        self.assertIn('fromJSON(steps.acl-budget.outputs.minutes)', diagnostic)
-        self.assertIn('fromJSON(steps.core-budget.outputs.minutes)', diagnostic)
+        self.assertIn('fromJSON(steps.delete-budget.outputs.minutes)', diagnostic)
+        self.assertIn('fromJSON(steps.queue-budget.outputs.minutes)', diagnostic)
 
 
 if __name__ == '__main__':

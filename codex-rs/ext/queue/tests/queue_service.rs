@@ -156,29 +156,36 @@ fn install_registered_queue(
 fn python_hook_command(script_path: &Path) -> String {
     #[cfg(windows)]
     {
-        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
-            .into_iter()
-            .chain(std::env::var_os("PATH"))
-            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
-            .map(|directory| directory.join("python.exe"))
-            .find(|candidate| candidate.is_file())
-            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
-        // Keep the resolved interpreter even when the session PATH differs.
-        // Core runs hooks through the environment shell, normally PowerShell
-        // on Windows; a quoted executable needs its call operator there.
-        if codex_core::shell::default_user_shell().name() == "powershell" {
-            return format!(
-                "& '{}' '{}'",
-                python.to_string_lossy().replace('\'', "''"),
-                script_path.to_string_lossy().replace('\'', "''"),
-            );
-        }
-        // The command runner supplies cmd.exe's outer /C quoting.
-        return format!("\"{}\" \"{}\"", python.display(), script_path.display());
+        windows_python_hook_command(script_path).1
     }
 
     #[cfg(not(windows))]
     format!("python3 \"{}\"", script_path.display())
+}
+
+#[cfg(windows)]
+fn windows_python_hook_command(script_path: &Path) -> (std::path::PathBuf, String) {
+    let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+        .into_iter()
+        .chain(std::env::var_os("PATH"))
+        .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+        .map(|directory| directory.join("python.exe"))
+        .find(|candidate| candidate.is_file())
+        .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+    // Keep the resolved interpreter even when the session PATH differs.
+    // Core runs hooks through the environment shell, normally PowerShell
+    // on Windows; a quoted executable needs its call operator there.
+    let command = if codex_core::shell::default_user_shell().name() == "powershell" {
+        format!(
+            "& '{}' '{}'",
+            python.to_string_lossy().replace('\'', "''"),
+            script_path.to_string_lossy().replace('\'', "''"),
+        )
+    } else {
+        // The command runner supplies cmd.exe's outer /C quoting.
+        format!("\"{}\" \"{}\"", python.display(), script_path.display())
+    };
+    (python, command)
 }
 
 #[cfg(windows)]
@@ -190,34 +197,114 @@ fn python_hook_uses_resolved_interpreter_without_child_path() {
     let script_path = fixture.path().join("queue hook's spaces.py");
     std::fs::write(&script_path, "print('queue-python-exact-path')\n")
         .expect("write Python hook fixture");
-    let command = python_hook_command(&script_path);
+    let (python, command) = windows_python_hook_command(&script_path);
     let shell = codex_core::shell::default_user_shell();
     let mut argv = shell.derive_exec_args("", /*use_login_shell*/ false);
     let program = argv.remove(0);
     let _ = argv.pop();
     // Match Core's environment-shell selection and CommandHookRuntime's
     // argument handling, rather than testing only cmd.exe's fallback path.
-    let mut child = std::process::Command::new(program);
+    let mut child = std::process::Command::new(&program);
     child.args(&argv);
     if argv.iter().any(|arg| arg.eq_ignore_ascii_case("/c")) {
         child.raw_arg(format!(r#""{command}""#));
     } else {
-        child.arg(command);
+        child.arg(&command);
     }
     let output = child
         .env("PATH", "")
         .current_dir(fixture.path())
         .output()
         .expect("run Python hook without a child search path");
+    // Redact before debug/byte formatting so escaped paths cannot evade it.
+    // Never format Command itself: it also contains environment overrides.
+    let mut redactions = vec![(fixture.path().to_string_lossy().into_owned(), "<fixture>")];
+    for name in [
+        "USERPROFILE",
+        "HOME",
+        "LOCALAPPDATA",
+        "APPDATA",
+        "TEMP",
+        "TMP",
+    ] {
+        if let Some(value) = std::env::var_os(name) {
+            redactions.push((value.to_string_lossy().into_owned(), "<user-dir>"));
+        }
+    }
+    // Child startup errors can echo credential values from inherited settings.
+    // Use values only for redaction, never include names or the environment.
+    for (name, value) in std::env::vars_os() {
+        let name = name.to_string_lossy().to_ascii_uppercase();
+        if [
+            "TOKEN",
+            "SECRET",
+            "PASSWORD",
+            "CREDENTIAL",
+            "API_KEY",
+            "PRIVATE_KEY",
+        ]
+        .iter()
+        .any(|part| name.contains(part))
+        {
+            redactions.push((value.to_string_lossy().into_owned(), "<redacted>"));
+        }
+    }
+    redactions.retain(|(value, _)| !value.is_empty());
+    redactions.sort_by_key(|(value, _)| std::cmp::Reverse(value.len()));
+    let sanitize = |text: &str| {
+        // Fail closed for encodings/case folds this ASCII path redactor cannot
+        // safely match, including UTF-8-lossy replacements and UTF-16 output.
+        if !text.is_ascii() || text.contains('\0') {
+            return "<non-ASCII or NUL-containing diagnostic suppressed>".to_owned();
+        }
+        let mut text = text.to_owned();
+        for (value, replacement) in &redactions {
+            for value in [
+                value.clone(),
+                value.replace('\\', "/"),
+                value.replace('\\', "\\\\"),
+            ] {
+                // Windows paths are case insensitive. Preserve the remaining
+                // spelling, Python repr backslashes and PowerShell quotes.
+                for value in [value.clone(), value.replace('\'', "''")] {
+                    let lower = text.to_ascii_lowercase();
+                    let needle = value.to_ascii_lowercase();
+                    for (start, _) in lower
+                        .match_indices(&needle)
+                        .collect::<Vec<_>>()
+                        .into_iter()
+                        .rev()
+                    {
+                        text.replace_range(start..start + value.len(), replacement);
+                    }
+                }
+            }
+        }
+        text
+    };
+    let diagnostic = || {
+        let stdout = sanitize(&String::from_utf8_lossy(&output.stdout));
+        let stderr = sanitize(&String::from_utf8_lossy(&output.stderr));
+        let argv = argv.iter().map(|arg| sanitize(arg)).collect::<Vec<_>>();
+        format!(
+            "shell={:?} argv={argv:?} command={:?} python={:?} status={} stdout_len={} stdout_utf8_valid={} stdout_sanitized={stdout:?} stdout_sanitized_bytes={:?} stderr_len={} stderr_utf8_valid={} stderr_sanitized={stderr:?}",
+            sanitize(&program),
+            sanitize(&command),
+            sanitize(&python.to_string_lossy()),
+            output.status,
+            output.stdout.len(),
+            std::str::from_utf8(&output.stdout).is_ok(),
+            stdout.as_bytes(),
+            output.stderr.len(),
+            std::str::from_utf8(&output.stderr).is_ok(),
+        )
+    };
+    assert!(output.status.success(), "hook failed: {}", diagnostic());
+    // Keep raw output in the comparison, but not in assert_eq!'s unredacted diff.
     assert!(
-        output.status.success(),
-        "hook failed: stdout={} stderr={}",
-        String::from_utf8_lossy(&output.stdout),
-        String::from_utf8_lossy(&output.stderr),
-    );
-    assert_eq!(
-        String::from_utf8_lossy(&output.stdout).trim(),
-        "queue-python-exact-path",
+        String::from_utf8_lossy(&output.stdout).trim() == "queue-python-exact-path",
+        "unexpected hook output: {}",
+        diagnostic(),
     );
 }
 

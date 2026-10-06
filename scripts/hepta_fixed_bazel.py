@@ -21,12 +21,10 @@ import hepta_ci_candidate
 import hepta_ci_exec
 
 GROUPS = {
-    "windows-acl-helper": (
+    "windows-delete-diagnostic": (
         "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
-        "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test",
     ),
-    "windows-core-queue": (
-        "//codex-rs/core:core-unit-tests",
+    "windows-queue-diagnostic": (
         "//codex-rs/ext/queue:queue-queue_service-test",
     ),
     "linux-supervisor": (
@@ -126,7 +124,7 @@ def replace_receipt(path: Path, record: dict) -> None:
 
 
 def windows_command(group: str, directory: Path) -> list[str]:
-    if group not in ("windows-acl-helper", "windows-core-queue"):
+    if group not in ("windows-delete-diagnostic", "windows-queue-diagnostic"):
         raise ValueError("not a fixed Windows group")
     bash = os.environ.get("HEPTA_BAZEL_BASH", "")
     parsed = PureWindowsPath(bash)
