@@ -23,3 +23,8 @@ pub mod native_host;
 
 #[cfg(feature = "ui")]
 pub use makepad_widgets;
+
+#[cfg(feature = "ui")]
+mod keyboard_focus;
+#[cfg(any(feature = "ui", test))]
+mod keyboard_focus_policy;

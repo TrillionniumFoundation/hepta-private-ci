@@ -22,7 +22,7 @@ jobs:
       HEPTA_CI_LANE: source-head
       SOURCE_SHA: ${{ github.sha }}
       TESTED_SHA: ${{ github.sha }}
-      REVIEWED_WORKFLOW_SHA256: 29ab5adff439f71bdbed065b41673099d4e0b99d4c2b324827372a1d111be1ec
+      REVIEWED_WORKFLOW_SHA256: 76ba34f7bea58f54b0f58b98849e7e54cb7230fd46dc179774cd5a37ee0426a3
       HEPTA_KEYBOARD_FOCUS_TRACE: '1'
     steps:
     - name: Anchor shared execution deadline before checkout
@@ -47,9 +47,9 @@ jobs:
         cat > "$DIAGNOSTIC_ROOT/source-guard.py" <<'PYGUARD'
         import hashlib, json, os, re, subprocess, sys
         from pathlib import Path
-        EXPECTED_PARENT = '929435d21019b97aefb1855c909de93aa984585b'
+        EXPECTED_PARENT = '38a62d01d54c02bd606d0fe6d316c900497c7c49'
         WORKFLOW = '.github/workflows/rust-ui-keyboard-diagnostic.yml'
-        EXPECTED_BLOBS = {'apps/hepta-control-ui/.gitignore': '02d1a52de33a52e70928da54a1308a0c8da95d58', 'apps/hepta-control-ui/e2e/robrix-keyboard.spec.mjs': '7e8ebdbdcbaea46b433b05c18f550ff073b80f6e', 'apps/hepta-control-ui/rust/robrix-ui/Cargo.toml': 'b682df68e9679782238c97049e82020c3e5dc78d', 'apps/hepta-control-ui/rust/robrix-ui/src/app.rs': 'aaec35108ebb754f720e39f56294f6b0ed5c63db', 'apps/hepta-control-ui/test/keyboard-focus-trace-contract.test.mjs': 'e50ff43769c705a9712f94a8ea06d22f05017801', 'apps/hepta-control-ui/tools/build-robrix.mjs': 'a18340dbc994919b4062aed2c50c7c444edd71a7', 'apps/hepta-control-ui/tools/owned-artifact-lease.mjs': '51a271454ac606ce8859ff7777ce365b04257670', 'apps/hepta-control-ui/tools/serve-robrix.mjs': '6eb63adfa1a5557dc117cc4f761575acd09ad3be', 'apps/hepta-control-ui/tools/summarize-keyboard-evidence.py': 'cc3b1fc23082acda0ca17948b6f64e48f9181ab5'}
+        EXPECTED_BLOBS = {'apps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs': '09933b8959d91a76a1b5ab6cf71b0cda3db22a14', 'apps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus.rs': 'cfc8bd74a5fb86ea209ae92889853dc12d23fe66', 'apps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus_policy.rs': '0dfdda260cb2d3bd25f852164c014e5207127b46', 'apps/hepta-control-ui/rust/robrix-ui/src/lib.rs': '0dfa12ae8aaea3e82dea376ebd02c35e3373ccfb'}
         # Reviewed-source consistency only; this self-check is not a security signature.
         git = lambda *args: subprocess.check_output(['git', '--no-replace-objects', *args])
         source = os.environ['SOURCE_SHA']
@@ -63,8 +63,8 @@ jobs:
         tree = trees[0]
         paths = sorted([WORKFLOW, *EXPECTED_BLOBS])
         changes = git('diff-tree', '--no-commit-id', '--name-status', '-r', '--no-renames', EXPECTED_PARENT, commit).decode().splitlines()
-        EXPECTED_CHANGES = ['A\tapps/hepta-control-ui/test/keyboard-focus-trace-contract.test.mjs', 'M\t.github/workflows/rust-ui-keyboard-diagnostic.yml', 'M\tapps/hepta-control-ui/.gitignore', 'M\tapps/hepta-control-ui/e2e/robrix-keyboard.spec.mjs', 'M\tapps/hepta-control-ui/rust/robrix-ui/Cargo.toml', 'M\tapps/hepta-control-ui/rust/robrix-ui/src/app.rs', 'M\tapps/hepta-control-ui/tools/build-robrix.mjs', 'M\tapps/hepta-control-ui/tools/owned-artifact-lease.mjs', 'M\tapps/hepta-control-ui/tools/serve-robrix.mjs', 'M\tapps/hepta-control-ui/tools/summarize-keyboard-evidence.py']
-        assert sorted(changes) == EXPECTED_CHANGES, 'Expected exact ten reviewed paths and statuses'
+        EXPECTED_CHANGES = ['A\tapps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus.rs', 'A\tapps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus_policy.rs', 'M\t.github/workflows/rust-ui-keyboard-diagnostic.yml', 'M\tapps/hepta-control-ui/rust/robrix-ui/src/ime_router.rs', 'M\tapps/hepta-control-ui/rust/robrix-ui/src/lib.rs']
+        assert sorted(changes) == EXPECTED_CHANGES, 'Expected exact five reviewed paths and statuses'
         entries = {}
         for item in git('ls-tree', '-r', '-z', commit, '--', *paths).split(b'\0'):
             if not item: continue
@@ -80,7 +80,7 @@ jobs:
         assert matches == 1, 'Expected exactly one workflow fingerprint field'
         assert hashlib.sha256(normalized).hexdigest() == os.environ['REVIEWED_WORKFLOW_SHA256'], 'Other reviewed workflow bytes changed'
         assert git('status', '--porcelain', '--untracked-files=normal') == b'', 'Source checkout changed'
-        result = {'caseScope': 'three unchanged compact keyboard contracts; instrumented read-only Rust focus; AX observation only', 'sourceSha': commit, 'sourceTree': tree, 'parents': parents, 'blobs': entries, 'workflowNormalizedSha256': os.environ['REVIEWED_WORKFLOW_SHA256'], 'dirty': False}
+        result = {'caseScope': 'three unchanged compact keyboard contracts on limited production fix; default-off focus trace; AX observation only', 'sourceSha': commit, 'sourceTree': tree, 'parents': parents, 'blobs': entries, 'workflowNormalizedSha256': os.environ['REVIEWED_WORKFLOW_SHA256'], 'dirty': False}
         output = Path(sys.argv[1])
         if len(sys.argv) == 3:
             before = json.loads(Path(sys.argv[2]).read_text())
@@ -108,6 +108,13 @@ jobs:
         test "$(rustc --version)" = "rustc 1.95.0 (59807616e 2026-04-14)"
         { rustc --version; rustup run nightly-2026-10-02 rustc --version; node --version; } > "$DIAGNOSTIC_ROOT/tool-versions.txt"
         SETUP
+    - name: Check pure keyboard focus policy on pinned Rust
+      run: |
+        set -euo pipefail
+        remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+        test "$remaining" -ge 30
+        budget=$(( remaining < 120 ? remaining : 120 ))
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/keyboard-focus-policy.json" --timeout-seconds "$budget" -- bash -euo pipefail -c 'tmp=$(mktemp -d "$RUNNER_TEMP/keyboard-policy.XXXXXX"); cleanup() { rm -rf -- "$tmp"; }; trap cleanup EXIT; rustup run 1.95.0 rustc --edition=2024 --test apps/hepta-control-ui/rust/robrix-ui/src/keyboard_focus_policy.rs -o "$tmp/policy-tests"; "$tmp/policy-tests"'
     - name: Install existing locked Node build dependencies
       run: |
         set -euo pipefail

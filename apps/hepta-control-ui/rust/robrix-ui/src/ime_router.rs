@@ -26,6 +26,7 @@ struct Owner {
 pub(crate) struct ImeRouter {
     owner: Option<Owner>,
     pointers: PointerGate,
+    keyboard_focus: crate::keyboard_focus::KeyboardFocus,
 }
 
 impl ImeRouter {
@@ -93,7 +94,13 @@ impl ImeRouter {
         event: &Event,
         workspace: &mut ChatWorkspace,
     ) {
+        // Owner cleanup can itself queue focus changes. Do not replace them.
+        let had_ime_owner = self.owner.is_some();
         self.synchronize(cx, root, workspace);
+        let ime_quiet = !had_ime_owner && self.owner.is_none() && !workspace.composing;
+        let keyboard_plan = self
+            .keyboard_focus
+            .before_dispatch(cx, root, event, workspace, ime_quiet);
         let area = self.owner.as_ref().map(|owner| owner.input.area());
         let preedit = if area.is_some() {
             Preedit::Active
@@ -107,7 +114,7 @@ impl ImeRouter {
                 Position::OutsideFocusedField
             }
         };
-        let mut forward = true;
+        let mut forward = !keyboard_plan.consume_tab;
         match event {
             Event::MouseDown(mouse) => {
                 forward = self.pointers.start(
@@ -225,6 +232,14 @@ impl ImeRouter {
             }
         }
         self.synchronize(cx, root, workspace);
+        self.keyboard_focus.after_dispatch(
+            cx,
+            root,
+            event,
+            workspace,
+            ime_quiet && self.owner.is_none() && !workspace.composing,
+            keyboard_plan,
+        );
     }
 }
 
