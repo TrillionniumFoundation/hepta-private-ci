@@ -1,0 +1,229 @@
+name: Windows Matrix SDK bounded contention experiment
+'on':
+  push:
+    branches:
+    - dot/windows-matrix-sdk-contention-20261006
+permissions:
+  contents: read
+concurrency:
+  group: matrix-sdk-contention-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  store-contention:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ github.sha }}
+        fetch-depth: 0
+        persist-credentials: false
+    - name: Select isolated evidence root
+      run: |
+        echo "SDK_EVIDENCE=$RUNNER_TEMP/matrix-sdk-contention" >> "$GITHUB_ENV"
+        python - <<'PYCODE'
+        import os, pathlib
+        root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'matrix-sdk-contention'
+        assert not root.resolve().is_relative_to(pathlib.Path.cwd().resolve())
+        root.mkdir(exist_ok=False)
+        PYCODE
+    - name: Prepare isolated native build paths without changing host security
+      id: native_paths
+      timeout-minutes: 2
+      run: |
+        python - <<'PYCODE'
+        import json, os, pathlib
+        root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'bq'
+        paths = {
+            'CI_BUILD_ROOT': root,
+            'BAZEL_OUTPUT_BASE': root / 'o',
+            'BAZEL_OUTPUT_USER_ROOT': root / 'b',
+            'BAZEL_REPOSITORY_CACHE': root / 'repository-cache',
+            'BAZEL_REPO_CONTENTS_CACHE': root / 'repo-contents',
+            'CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR': root / 'execution-logs',
+            'TEMP': root / 'tmp',
+            'TMP': root / 'tmp',
+        }
+        for path in paths.values():
+            path.mkdir(parents=True, exist_ok=True)
+        with open(os.environ['GITHUB_ENV'], 'a') as stream:
+            for name, path in paths.items():
+                stream.write(name + '=' + str(path) + '\n')
+            stream.write('CODEX_REPO_ROOT=' + os.environ['GITHUB_WORKSPACE'] + '\n')
+            stream.write('CARGO_NET_GIT_FETCH_WITH_CLI=true\n')
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+            stream.write('output-base=' + str(paths['BAZEL_OUTPUT_BASE']) + '\n')
+        policy = {}
+        for name in ('unprivileged_userns_clone', 'apparmor_restrict_unprivileged_userns'):
+            path = pathlib.Path('/proc/sys/kernel') / name
+            policy[name] = path.read_text().strip() if path.is_file() else 'absent'
+        evidence = pathlib.Path(os.environ['SDK_EVIDENCE'])
+        (evidence / 'native-security-policy.json').write_text(json.dumps(policy, sort_keys=True) + '\n')
+        PYCODE
+    - name: Install pinned Bazelisk without restoring or saving build caches
+      timeout-minutes: 3
+      uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+      with:
+        bazelisk-version: 1.28.1
+        output-base: ${{ steps.native_paths.outputs.output-base }}
+        bazelisk-cache: false
+        disk-cache: false
+        repository-cache: false
+        external-cache: false
+        cache-save: false
+    - name: Install pinned DotSlash
+      timeout-minutes: 3
+      uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+    - name: Install pinned just
+      timeout-minutes: 3
+      uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+      with:
+        tool: just@1.51.0
+    - name: Make DotSlash available at the stable Windows tool path
+      timeout-minutes: 1
+      shell: pwsh
+      run: Copy-Item (Get-Command dotslash).Source -Destination "$env:LOCALAPPDATA\Microsoft\WindowsApps\dotslash.exe"
+    - name: Enable Git long paths for native Windows tool inputs
+      timeout-minutes: 1
+      shell: pwsh
+      run: git config --global core.longpaths true
+    - name: Expose MSVC SDK environment (Windows)
+      timeout-minutes: 3
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        # Bazel exec-side Rust build scripts do not reliably inherit the MSVC developer
+        # shell on GitHub-hosted Windows runners, so discover the latest VS install and
+        # ask `VsDevCmd.bat` to materialize the x64/x64 compiler + SDK environment.
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        if (-not (Test-Path $vswhere)) {
+          throw "vswhere.exe not found"
+        }
+
+        $installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null
+        if (-not $installPath) {
+          throw "Could not locate a Visual Studio installation with VC tools"
+        }
+
+        $vsDevCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'
+        if (-not (Test-Path $vsDevCmd)) {
+          throw "VsDevCmd.bat not found at $vsDevCmd"
+        }
+
+        # Keep the export surface explicit: these are the paths and SDK roots that the
+        # MSVC toolchain probes need later when Bazel runs Windows exec-platform build
+        # scripts such as `aws-lc-sys`.
+        $varsToExport = @(
+          'INCLUDE',
+          'LIB',
+          'LIBPATH',
+          'PATH',
+          'UCRTVersion',
+          'UniversalCRTSdkDir',
+          'VCINSTALLDIR',
+          'VCToolsInstallDir',
+          'WindowsLibPath',
+          'WindowsSdkBinPath',
+          'WindowsSdkDir',
+          'WindowsSDKLibVersion',
+          'WindowsSDKVersion'
+        )
+        $requiredVars = @(
+          'INCLUDE',
+          'LIB',
+          'LIBPATH',
+          'UniversalCRTSdkDir',
+          'VCToolsInstallDir',
+          'WindowsSdkDir'
+        )
+
+        # `VsDevCmd.bat` is a batch file, so invoke it under `cmd.exe`, suppress its
+        # banner, then dump the resulting environment with `set`. Re-export only the
+        # approved keys into `GITHUB_ENV` so later steps inherit the same MSVC context.
+        # Windows environment names are case-insensitive, but Git Bash variable lookup
+        # is not. Normalize every accepted key to the canonical spelling above before
+        # handing it to the shell wrapper.
+        $envLines = & cmd.exe /c ('"{0}" -no_logo -arch=x64 -host_arch=x64 >nul && set' -f $vsDevCmd)
+        if ($LASTEXITCODE -ne 0) {
+          throw "VsDevCmd.bat failed with exit code $LASTEXITCODE"
+        }
+
+        # PowerShell hashtable keys are case-insensitive, matching Windows
+        # environment semantics while retaining the canonical key chosen above.
+        $exportedValues = @{}
+        foreach ($line in $envLines) {
+          if ($line -notmatch '^(.*?)=(.*)$') {
+            continue
+          }
+
+          $inputName = $matches[1]
+          $value = $matches[2]
+          $canonicalName = $varsToExport |
+            Where-Object { $_ -ieq $inputName } |
+            Select-Object -First 1
+          if ($null -eq $canonicalName) {
+            continue
+          }
+
+          if ($exportedValues.ContainsKey($canonicalName) -and
+              $exportedValues[$canonicalName] -cne $value) {
+            throw "VsDevCmd.bat returned conflicting values for $canonicalName"
+          }
+          $exportedValues[$canonicalName] = $value
+        }
+
+        $missingVars = @(
+          $requiredVars | Where-Object {
+            -not $exportedValues.ContainsKey($_) -or
+            [string]::IsNullOrWhiteSpace($exportedValues[$_])
+          }
+        )
+        if ($missingVars.Count -ne 0) {
+          throw "VsDevCmd.bat did not provide required variables: $($missingVars -join ', ')"
+        }
+
+        foreach ($canonicalName in $varsToExport) {
+          if ($exportedValues.ContainsKey($canonicalName)) {
+            "$canonicalName=$($exportedValues[$canonicalName])" |
+              Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+        }
+    - name: Compute cache-stable Windows Bazel PATH
+      timeout-minutes: 1
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: ./.github/scripts/compute-bazel-windows-path.ps1
+    - name: Verify native header parser
+      timeout-minutes: 3
+      run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
+    - name: Select exact native Git Bash executable
+      run: echo "HEPTA_BAZEL_BASH=$(cygpath -w "$BASH")" >> "$GITHUB_ENV"
+    - name: Compile exact single upgrade target once
+      timeout-minutes: 35
+      run: python scripts/hepta_matrix_contention.py build
+    - name: Run one isolated, three concurrent, one isolated control
+      timeout-minutes: 8
+      run: python scripts/hepta_matrix_contention.py exercise
+    - name: Stage bounded individual-run evidence
+      if: always()
+      timeout-minutes: 3
+      run: python scripts/hepta_matrix_contention.py stage
+    - name: Retain experiment evidence only
+      if: always()
+      timeout-minutes: 3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: matrix-sdk-contention-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/matrix-sdk-contention/upload
+        if-no-files-found: error
