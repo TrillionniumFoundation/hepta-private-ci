@@ -52,6 +52,7 @@ struct IdentityKeys {
 
 #[tokio::test]
 async fn sdk_018_store_upgrades_without_losing_keys_session_or_owner_cursor() -> TestResult {
+    let started = std::time::Instant::now();
     let fixture: LegacyFixture =
         serde_json::from_str(include_str!("fixtures/sdk-0.18/expected.json"))?;
     let expected_session: MatrixSession =
@@ -148,6 +149,10 @@ async fn sdk_018_store_upgrades_without_losing_keys_session_or_owner_cursor() ->
 
     // Open the bytes written by 0.18 before the Hepta adapter deliberately
     // clears the SDK cursor. This exercises the real upstream migrations.
+    eprintln!(
+        "matrix_upgrade phase=upstream-open start_ms={}",
+        started.elapsed().as_millis()
+    );
     let migrated = Client::builder()
         .homeserver_url(&fixture.homeserver)
         .sqlite_store_with_cache_path(paths.state(), paths.cache(), Some(&fixture.passphrase))
@@ -162,10 +167,18 @@ async fn sdk_018_store_upgrades_without_losing_keys_session_or_owner_cursor() ->
         Some(fixture.sync_token.clone())
     );
     drop(migrated);
+    eprintln!(
+        "matrix_upgrade phase=upstream-open-complete elapsed_ms={}",
+        started.elapsed().as_millis()
+    );
 
     // Verify both the initial restoration and a subsequent reopen of the
     // upgraded stores. No test-only TLS provider initialization is performed.
-    for _ in 0..2 {
+    for reopen in 0..2 {
+        eprintln!(
+            "matrix_upgrade phase=adapter-open reopen={reopen} start_ms={}",
+            started.elapsed().as_millis()
+        );
         let (upgraded, restored_session) = MatrixSdkClient::login_or_restore(
             &layout,
             config.clone(),
@@ -174,8 +187,16 @@ async fn sdk_018_store_upgrades_without_losing_keys_session_or_owner_cursor() ->
             /*device_display_name*/ None,
         )
         .await?;
+        eprintln!(
+            "matrix_upgrade phase=adapter-open-complete reopen={reopen} elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
         assert_eq!(restored_session, expected_session);
         assert_restored_client(upgraded.client(), &fixture, &expected_session).await?;
+        eprintln!(
+            "matrix_upgrade phase=restored-keys-verified reopen={reopen} elapsed_ms={}",
+            started.elapsed().as_millis()
+        );
         assert_eq!(
             serde_json::from_slice::<MatrixSession>(&fs::read(paths.session())?)?,
             expected_session

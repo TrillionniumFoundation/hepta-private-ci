@@ -35,6 +35,10 @@ use crate::MatrixSidecarConfigError;
 use crate::MatrixTransportError;
 use crate::sync::MatrixSyncComposer;
 
+#[path = "sdk_startup_diagnostics.rs"]
+mod startup_diagnostics;
+use startup_diagnostics::StartupPhase;
+
 const MATRIX_ROOM_MESSAGE_EVENT_TYPE: &str = "m.room.message";
 const MATRIX_ROOM_ENCRYPTED_EVENT_TYPE: &str = "m.room.encrypted";
 // A Matrix companion must either reach its homeserver quickly or return to
@@ -89,12 +93,17 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+        let mut diagnostic = StartupPhase::new("login-password.open");
         let sidecar = tokio::time::timeout(
             MATRIX_STORE_OPEN_TIMEOUT,
             Self::build(layout, config, store_passphrase),
         )
         .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        .map_err(|_| {
+            diagnostic.finish("store-open-deadline");
+            MatrixSdkError::Initialization
+        })??;
+        diagnostic.advance("login-password.authentication");
         let mut login = sidecar
             .client
             .matrix_auth()
@@ -114,9 +123,13 @@ impl MatrixSdkClient {
             .map_err(|_| MatrixSdkError::Authentication)?;
         let session = MatrixSession::from(&response);
         verify_session_identity(&sidecar.config, &session)?;
+        diagnostic.advance("login-password.persist-session");
         persist_session(sidecar.paths.session(), &session)?;
+        diagnostic.advance("login-password.verify-identity");
         sidecar.verify_authenticated_identity()?;
+        diagnostic.advance("login-password.event-cache-subscribe");
         sidecar.enable_event_cache()?;
+        diagnostic.finish("success");
         Ok((sidecar, session))
     }
 
@@ -132,27 +145,43 @@ impl MatrixSdkClient {
         store_passphrase: Option<&str>,
         device_display_name: Option<&str>,
     ) -> Result<(Self, MatrixSession), MatrixSdkError> {
+        let mut diagnostic = StartupPhase::new("login-or-restore.open");
         let sidecar = tokio::time::timeout(
             MATRIX_STORE_OPEN_TIMEOUT,
             Self::build(layout, config.clone(), store_passphrase),
         )
         .await
-        .map_err(|_| MatrixSdkError::Initialization)??;
+        .map_err(|_| {
+            diagnostic.finish("store-open-deadline");
+            MatrixSdkError::Initialization
+        })??;
 
+        diagnostic.advance("login-or-restore.load-session");
         if let Some(session) = load_session(sidecar.paths.session())? {
             verify_session_identity(&sidecar.config, &session)?;
+            diagnostic.advance("login-or-restore.restore-session");
             let restore = tokio::time::timeout(
                 MATRIX_STARTUP_REQUEST_TIMEOUT,
                 sidecar.client.restore_session(session.clone()),
             )
             .await;
+            let outcome = match &restore {
+                Ok(Ok(())) => "success",
+                Ok(Err(_)) => "sdk-restore-error",
+                Err(_) => "restore-deadline",
+            };
+            diagnostic.finish(outcome);
             if matches!(restore, Ok(Ok(()))) {
+                let mut restored = StartupPhase::new("login-or-restore.verify-identity");
                 sidecar.verify_authenticated_identity()?;
+                restored.advance("login-or-restore.event-cache-subscribe");
                 sidecar.enable_event_cache()?;
+                restored.finish("success");
                 return Ok((sidecar, session));
             }
         }
 
+        diagnostic.finish("fallback-login");
         drop(sidecar);
         Self::login_password(
             layout,
@@ -169,25 +198,46 @@ impl MatrixSdkClient {
         config: MatrixSidecarConfig,
         store_passphrase: Option<&str>,
     ) -> Result<Self, MatrixSdkError> {
+        let mut diagnostic = StartupPhase::new("build.paths-prepare");
         let paths = MatrixSdkPaths::prepare(layout, &config)?;
+        diagnostic.advance("build.sdk-stores-open");
         let client = Client::builder()
             .homeserver_url(config.binding.homeserver.as_str())
             .sqlite_store_with_cache_path(paths.state(), paths.cache(), store_passphrase)
             .handle_refresh_tokens()
             .build()
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| {
+                use matrix_sdk::client::ClientBuildError;
+                let category = match error {
+                    ClientBuildError::MissingHomeserver => "missing-homeserver",
+                    ClientBuildError::InvalidServerName => "invalid-server-name",
+                    ClientBuildError::WellKnownLookupDisabled => "discovery-disabled",
+                    ClientBuildError::AutoDiscovery(_) => "discovery-error",
+                    ClientBuildError::SlidingSyncVersion(_) => "sliding-sync-version-error",
+                    ClientBuildError::Url(_) => "url-error",
+                    ClientBuildError::Http(_) => "http-error",
+                    ClientBuildError::SqliteStore(_) => "sqlite-store-error",
+                };
+                diagnostic.finish(category);
+                MatrixSdkError::Initialization
+            })?;
         // The SDK's own sync token is only an optimization for its normal
         // sync loop.  Hepta persists the authoritative cursor in its durable
         // inbox store and always supplies that cursor explicitly.  Clear a
         // stale SDK token before session activation so a process restart
         // cannot discard a replay whose `next_batch` happens to equal the
         // SDK token that was persisted before the prior inbox commit.
+        diagnostic.advance("build.clear-sdk-cursor");
         client
             .state_store()
             .remove_kv_data(StateStoreDataKey::SyncToken)
             .await
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| {
+                diagnostic.finish("state-store-error");
+                MatrixSdkError::Initialization
+            })?;
+        diagnostic.advance("build.session-callbacks");
         let save_session_path = paths.session().to_path_buf();
         let reload_session_path = paths.session().to_path_buf();
         client
@@ -213,8 +263,13 @@ impl MatrixSdkClient {
                     })
                 }),
             )
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|_| {
+                diagnostic.finish("callback-setup-error");
+                MatrixSdkError::Initialization
+            })?;
+        diagnostic.advance("build.verify-homeserver");
         verify_homeserver(&config, &client)?;
+        diagnostic.finish("success");
         Ok(Self {
             client,
             config,
