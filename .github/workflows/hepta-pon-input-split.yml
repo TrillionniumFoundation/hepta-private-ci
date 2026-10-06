@@ -1,0 +1,82 @@
+name: hepta-pon-input-split
+on:
+  push:
+    branches: [dev/hepta-pon-input-split-20261006]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  split:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Download only the exact existing build-input artifact
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: hepta-offline-toolchain-1.96.0
+          run-id: 37449403825
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/inputs
+      - name: Check original archive hashes and split transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'inputs'
+          names = set()
+          for line in (root / 'archives.sha256').read_text().splitlines():
+              expected, original = line.split(maxsplit=1)
+              name = Path(original).name
+              if name in names or name not in {'rust-1.96.0-x64.tar.gz', 'cargo-inputs.tar.gz'}:
+                  raise SystemExit('unexpected archive manifest')
+              names.add(name)
+              with (root / name).open('rb') as stream:
+                  actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+              if actual != expected:
+                  raise SystemExit('archive digest mismatch')
+          if len(names) != 2:
+              raise SystemExit('incomplete archive set')
+          PY
+          mkdir -p "$RUNNER_TEMP/parts"
+          tar -C "$RUNNER_TEMP/inputs" -cf "$RUNNER_TEMP/tool-inputs.tar" archives.sha256 cargo-inputs.tar.gz rust-1.96.0-x64.tar.gz rustc.txt
+          sha256sum "$RUNNER_TEMP/tool-inputs.tar" > "$RUNNER_TEMP/parts/transport.sha256"
+          split -b 250000000 -d -a 2 "$RUNNER_TEMP/tool-inputs.tar" "$RUNNER_TEMP/parts/input-"
+          test "$(find "$RUNNER_TEMP/parts" -name 'input-*' -type f | wc -l)" = 4
+          sha256sum "$RUNNER_TEMP/parts/"input-* > "$RUNNER_TEMP/parts/parts.sha256"
+      - name: Upload input part zero and checked manifest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-input-part-00
+          path: |
+            ${{ runner.temp }}/parts/input-00
+            ${{ runner.temp }}/parts/parts.sha256
+            ${{ runner.temp }}/parts/transport.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - name: Upload input part one
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-input-part-01
+          path: ${{ runner.temp }}/parts/input-01
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - name: Upload input part two
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-input-part-02
+          path: ${{ runner.temp }}/parts/input-02
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
+      - name: Upload input part three
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-input-part-03
+          path: ${{ runner.temp }}/parts/input-03
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7
