@@ -3,15 +3,13 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use std::ffi::c_void;
-use std::fs::File;
 use std::fs::OpenOptions;
 use std::os::windows::fs::OpenOptionsExt;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::io::FromRawHandle;
 use std::path::Path;
 use windows_sys::Win32::Foundation::CloseHandle;
+use windows_sys::Win32::Foundation::ERROR_ACCESS_DENIED;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
-use windows_sys::Win32::Foundation::GetLastError;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
 use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
@@ -52,9 +50,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::OPEN_EXISTING;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
-use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
 use windows_sys::Win32::Storage::FileSystem::SECURITY_IDENTIFICATION;
-use windows_sys::Win32::Storage::FileSystem::SECURITY_SQOS_PRESENT;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 const SE_KERNEL_OBJECT: u32 = 6;
 const INHERIT_ONLY_ACE: u8 = 0x08;
@@ -598,98 +594,127 @@ impl DenyAceKind {
     }
 }
 
+enum DenyAclAuthority {
+    Repair,
+    InspectOnly(std::io::Error),
+}
+
 unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Result<bool> {
-    // Determine scope and update the DACL through the same filesystem object.
-    // A name-based reopen after metadata could replace a file with a directory
-    // and mistakenly install a self-only ACE on the replacement directory.
-    let file = OpenOptions::new()
-        .access_mode(READ_CONTROL | FILE_READ_ATTRIBUTES)
-        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
-        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
-        .security_qos_flags(SECURITY_IDENTIFICATION)
-        .open(path)
-        .with_context(|| format!("open filesystem object for deny ACL on {}", path.display()))?;
-    let metadata = file
-        .metadata()
-        .with_context(|| format!("read file type for deny ACL on {}", path.display()))?;
-    let inheritance = if metadata.is_dir() {
-        CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE
-    } else {
-        0
+    // A repair uses one initially write-capable object for metadata and DACL
+    // access. The fallback can inspect an already-complete ACL, never mutate it.
+    let read_access = READ_CONTROL | FILE_READ_ATTRIBUTES;
+    let open = |access| {
+        OpenOptions::new()
+            .access_mode(access)
+            .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+            .security_qos_flags(SECURITY_IDENTIFICATION)
+            .open(path)
     };
-    let mut p_sd: *mut c_void = std::ptr::null_mut();
-    let mut p_dacl: *mut ACL = std::ptr::null_mut();
-    let code = GetSecurityInfo(
-        file.as_raw_handle() as HANDLE,
-        1,
-        DACL_SECURITY_INFORMATION,
-        std::ptr::null_mut(),
-        std::ptr::null_mut(),
-        &mut p_dacl,
-        std::ptr::null_mut(),
-        &mut p_sd,
-    );
-    if code != ERROR_SUCCESS {
-        if !p_sd.is_null() {
-            LocalFree(p_sd as HLOCAL);
+    let open_context = format!("open filesystem object for deny ACL on {}", path.display());
+    let (file, authority) = match open(read_access | WRITE_DAC) {
+        Ok(file) => (file, DenyAclAuthority::Repair),
+        Err(denied) if denied.raw_os_error() == Some(ERROR_ACCESS_DENIED as i32) => {
+            match open(read_access) {
+                Ok(file) => (file, DenyAclAuthority::InspectOnly(denied)),
+                Err(inspection) => {
+                    return Err(denied)
+                        .context(format!(
+                            "read-only deny ACL inspection failed: {inspection}"
+                        ))
+                        .context(open_context);
+                }
+            }
         }
-        return Err(anyhow!(
-            "GetSecurityInfo failed for {}: {code}",
-            path.display()
-        ));
-    }
+        Err(error) => return Err(error).context(open_context),
+    };
+    let inspection = (|| -> Result<_> {
+        let metadata = file
+            .metadata()
+            .with_context(|| format!("read file type for deny ACL on {}", path.display()))?;
+        let inheritance = if metadata.is_dir() {
+            CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE
+        } else {
+            0
+        };
+        let mut p_sd: *mut c_void = std::ptr::null_mut();
+        let mut p_dacl: *mut ACL = std::ptr::null_mut();
+        let code = GetSecurityInfo(
+            file.as_raw_handle() as HANDLE,
+            1,
+            DACL_SECURITY_INFORMATION,
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+            &mut p_dacl,
+            std::ptr::null_mut(),
+            &mut p_sd,
+        );
+        if code != ERROR_SUCCESS {
+            if !p_sd.is_null() {
+                LocalFree(p_sd as HLOCAL);
+            }
+            return Err(anyhow!(
+                "GetSecurityInfo failed for {}: {code}",
+                path.display()
+            ));
+        }
+        Ok((inheritance, p_dacl, p_sd))
+    })();
+    let (inheritance, p_dacl, p_sd) = match inspection {
+        Ok(inspection) => inspection,
+        Err(inspection) => {
+            return match authority {
+                DenyAclAuthority::Repair => Err(inspection),
+                DenyAclAuthority::InspectOnly(denied) => Err(denied)
+                    .context(format!(
+                        "read-only deny ACL inspection failed: {inspection}"
+                    ))
+                    .context(open_context),
+            };
+        }
+    };
     let result = if kind.already_present(p_dacl, psid, inheritance) {
         Ok(false)
     } else {
-        let trustee = TRUSTEE_W {
-            pMultipleTrustee: std::ptr::null_mut(),
-            MultipleTrusteeOperation: 0,
-            TrusteeForm: TRUSTEE_IS_SID,
-            TrusteeType: TRUSTEE_IS_UNKNOWN,
-            ptstrName: psid as *mut u16,
-        };
-        let mut explicit: EXPLICIT_ACCESS_W = std::mem::zeroed();
-        explicit.grfAccessPermissions = kind.mask();
-        explicit.grfAccessMode = DENY_ACCESS;
-        explicit.grfInheritance = inheritance;
-        explicit.Trustee = trustee;
-        let mut p_new_dacl: *mut ACL = std::ptr::null_mut();
-        let code2 = SetEntriesInAclW(1, &explicit, p_dacl, &mut p_new_dacl);
-        let result = if let Err(err) = acl_api_result(path, "SetEntriesInAclW", code2) {
-            Err(err)
-        } else {
-            // ReOpenFile retains the object's identity. Request WRITE_DAC only
-            // for repairs; checking an already-complete deny needs no write access.
-            let write_handle = ReOpenFile(
-                file.as_raw_handle() as HANDLE,
-                WRITE_DAC,
-                FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                FILE_FLAG_BACKUP_SEMANTICS | SECURITY_SQOS_PRESENT | SECURITY_IDENTIFICATION,
-            );
-            if write_handle == INVALID_HANDLE_VALUE {
-                Err(anyhow!(
-                    "ReOpenFile failed for {}: {}",
-                    path.display(),
-                    GetLastError(),
-                ))
-            } else {
-                let write_file = File::from_raw_handle(write_handle as *mut c_void);
-                let code3 = SetSecurityInfo(
-                    write_file.as_raw_handle() as HANDLE,
-                    1,
-                    DACL_SECURITY_INFORMATION,
-                    std::ptr::null_mut(),
-                    std::ptr::null_mut(),
-                    p_new_dacl,
-                    std::ptr::null_mut(),
-                );
-                acl_api_result(path, "SetSecurityInfo", code3).map(|()| true)
+        match authority {
+            // Preserve the original denial. No ACL construction, setter, or
+            // name-based write reopen is reachable from this inspection handle.
+            DenyAclAuthority::InspectOnly(denied) => Err(denied).context(open_context),
+            DenyAclAuthority::Repair => {
+                let trustee = TRUSTEE_W {
+                    pMultipleTrustee: std::ptr::null_mut(),
+                    MultipleTrusteeOperation: 0,
+                    TrusteeForm: TRUSTEE_IS_SID,
+                    TrusteeType: TRUSTEE_IS_UNKNOWN,
+                    ptstrName: psid as *mut u16,
+                };
+                let mut explicit: EXPLICIT_ACCESS_W = std::mem::zeroed();
+                explicit.grfAccessPermissions = kind.mask();
+                explicit.grfAccessMode = DENY_ACCESS;
+                explicit.grfInheritance = inheritance;
+                explicit.Trustee = trustee;
+                let mut p_new_dacl: *mut ACL = std::ptr::null_mut();
+                let code2 = SetEntriesInAclW(1, &explicit, p_dacl, &mut p_new_dacl);
+                let result = if let Err(err) = acl_api_result(path, "SetEntriesInAclW", code2) {
+                    Err(err)
+                } else {
+                    let code3 = SetSecurityInfo(
+                        file.as_raw_handle() as HANDLE,
+                        1,
+                        DACL_SECURITY_INFORMATION,
+                        std::ptr::null_mut(),
+                        std::ptr::null_mut(),
+                        p_new_dacl,
+                        std::ptr::null_mut(),
+                    );
+                    acl_api_result(path, "SetSecurityInfo", code3).map(|()| true)
+                };
+                if !p_new_dacl.is_null() {
+                    LocalFree(p_new_dacl as HLOCAL);
+                }
+                result
             }
-        };
-        if !p_new_dacl.is_null() {
-            LocalFree(p_new_dacl as HLOCAL);
         }
-        result
     };
     if !p_sd.is_null() {
         LocalFree(p_sd as HLOCAL);

@@ -349,9 +349,83 @@ fn writer_reproduces_the_tracked_artifact_set_byte_for_byte() -> Result<()> {
 }
 
 fn read_tracked_artifacts() -> Result<BTreeMap<String, Vec<u8>>> {
-    read_artifacts(
-        &std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
-    )
+    if !codex_utils_cargo_bin::runfiles_available() {
+        // Cargo keeps strict enumeration of the source fixture directory.
+        return read_artifacts(
+            &std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("fixtures/robrix-control-v2"),
+        );
+    }
+    let mut resources = Vec::new();
+    for name in [
+        MANIFEST_FILE,
+        CORPUS_FILE,
+        GENERATED_CONSTANTS_FILE,
+        MATRIXD_SCHEMA_FILE,
+        SUPERVISORD_SCHEMA_FILE,
+    ] {
+        // Resolve every declared resource before following delivery symlinks.
+        let resource = format!("fixtures/robrix-control-v2/{name}");
+        resources.push((name, codex_utils_cargo_bin::find_resource!(resource)?));
+    }
+    read_artifacts(&validated_fixture_backing_root(&resources)?)
+}
+
+// Bazel may deliver declared data through symlinks, including in manifest mode.
+// Only the five successfully resolved resources may establish the backing root.
+fn validated_fixture_backing_root(
+    resources: &[(&str, std::path::PathBuf)],
+) -> std::io::Result<std::path::PathBuf> {
+    use std::io::{Error, ErrorKind};
+    let invalid = |message| Error::new(ErrorKind::InvalidData, message);
+    let expected: BTreeSet<_> = resources.iter().map(|(name, _)| *name).collect();
+    if resources.len() != 5 || expected.len() != 5 {
+        return Err(invalid(
+            "exactly five distinct fixture resources are required",
+        ));
+    }
+    let mut root = None;
+    for (name, delivered) in resources {
+        let backing = fs::canonicalize(delivered)?;
+        if !fs::metadata(&backing)?.is_file()
+            || backing.file_name() != Some(std::ffi::OsStr::new(name))
+        {
+            return Err(invalid(
+                "fixture backing must be a regular file with its declared name",
+            ));
+        }
+        let parent = backing
+            .parent()
+            .ok_or_else(|| invalid("fixture has no parent"))?;
+        if let Some(expected_root) = &root {
+            if expected_root != parent {
+                return Err(invalid(
+                    "fixture resources have different backing directories",
+                ));
+            }
+        } else {
+            root = Some(parent.to_path_buf());
+        }
+    }
+    let root = root.ok_or_else(|| invalid("fixture root is missing"))?;
+    let mut actual = BTreeSet::new();
+    for entry in fs::read_dir(&root)? {
+        let entry = entry?;
+        if !entry.file_type()?.is_file() {
+            return Err(invalid("fixture backing directory contains a non-file"));
+        }
+        actual.insert(
+            entry
+                .file_name()
+                .into_string()
+                .map_err(|_| invalid("fixture name is not UTF-8"))?,
+        );
+    }
+    if actual.iter().map(String::as_str).collect::<BTreeSet<_>>() != expected {
+        return Err(invalid(
+            "fixture backing directory does not match the declared set",
+        ));
+    }
+    Ok(root)
 }
 
 fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {
@@ -372,4 +446,134 @@ fn read_artifacts(root: &std::path::Path) -> Result<BTreeMap<String, Vec<u8>>> {
         artifacts.insert(name, fs::read(entry.path())?);
     }
     Ok(artifacts)
+}
+
+#[cfg(all(test, unix))]
+mod fixture_backing_tests {
+    use super::*;
+    use std::path::PathBuf;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    const NAMES: [&str; 5] = [
+        "manifest.json",
+        "corpus.json",
+        "constants.rs",
+        "matrix.json",
+        "supervisor.json",
+    ];
+    struct Fixture(PathBuf);
+    impl Fixture {
+        fn new() -> Self {
+            static NEXT: AtomicUsize = AtomicUsize::new(0);
+            let p = (0..1024)
+                .find_map(|_| {
+                    let path = std::env::temp_dir().join(format!(
+                        "hepta-backing-{}-{}",
+                        std::process::id(),
+                        NEXT.fetch_add(1, Ordering::Relaxed)
+                    ));
+                    match fs::create_dir(&path) {
+                        Ok(()) => Some(path),
+                        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => None,
+                        Err(error) => panic!("create fixture directory: {error}"),
+                    }
+                })
+                .expect("could not reserve a fresh fixture directory");
+            fs::create_dir(p.join("physical")).unwrap();
+            for name in NAMES {
+                fs::write(p.join("physical").join(name), name).unwrap();
+            }
+            Self(p)
+        }
+        fn resources(&self) -> Vec<(&'static str, PathBuf)> {
+            NAMES
+                .into_iter()
+                .map(|n| (n, self.0.join("physical").join(n)))
+                .collect()
+        }
+    }
+    impl Drop for Fixture {
+        fn drop(&mut self) {
+            fs::remove_dir_all(&self.0).unwrap();
+        }
+    }
+    #[test]
+    fn regular_backing_passes() {
+        let f = Fixture::new();
+        assert_eq!(
+            validated_fixture_backing_root(&f.resources()).unwrap(),
+            fs::canonicalize(f.0.join("physical")).unwrap()
+        );
+    }
+    #[test]
+    fn symlink_delivery_passes() {
+        let f = Fixture::new();
+        fs::create_dir(f.0.join("delivery")).unwrap();
+        let resources: Vec<_> = f
+            .resources()
+            .into_iter()
+            .map(|(n, p)| {
+                let link = f.0.join("delivery").join(n);
+                std::os::unix::fs::symlink(p, &link).unwrap();
+                (n, link)
+            })
+            .collect();
+        assert_eq!(
+            validated_fixture_backing_root(&resources).unwrap(),
+            fs::canonicalize(f.0.join("physical")).unwrap()
+        );
+    }
+    #[test]
+    fn missing_resource_rejected_even_when_backing_exists() {
+        let f = Fixture::new();
+        let mut r = f.resources();
+        r[1].1 = f.0.join("missing-delivery");
+        assert!(validated_fixture_backing_root(&r).is_err());
+    }
+    #[test]
+    fn partial_declaration_rejected() {
+        let f = Fixture::new();
+        assert!(validated_fixture_backing_root(&f.resources()[..4]).is_err());
+    }
+    #[test]
+    fn different_parent_rejected() {
+        let f = Fixture::new();
+        fs::create_dir(f.0.join("other")).unwrap();
+        let mut r = f.resources();
+        let p = f.0.join("other").join(NAMES[1]);
+        fs::write(&p, b"same").unwrap();
+        r[1].1 = p;
+        assert!(validated_fixture_backing_root(&r).is_err());
+    }
+    #[test]
+    fn extra_file_rejected() {
+        let f = Fixture::new();
+        fs::write(f.0.join("physical/extra"), b"extra").unwrap();
+        assert!(validated_fixture_backing_root(&f.resources()).is_err());
+    }
+    #[test]
+    fn directory_entry_rejected() {
+        let f = Fixture::new();
+        fs::create_dir(f.0.join("physical/extra")).unwrap();
+        assert!(validated_fixture_backing_root(&f.resources()).is_err());
+    }
+    #[test]
+    fn backing_symlink_entry_rejected() {
+        let f = Fixture::new();
+        std::os::unix::fs::symlink("manifest.json", f.0.join("physical/extra")).unwrap();
+        assert!(validated_fixture_backing_root(&f.resources()).is_err());
+    }
+    #[test]
+    fn renamed_backing_rejected() {
+        let f = Fixture::new();
+        let mut r = f.resources();
+        r[1].1 = r[0].1.clone();
+        assert!(validated_fixture_backing_root(&r).is_err());
+    }
+    #[test]
+    fn nonregular_resource_rejected() {
+        let f = Fixture::new();
+        fs::remove_file(f.0.join("physical/manifest.json")).unwrap();
+        fs::create_dir(f.0.join("physical/manifest.json")).unwrap();
+        assert!(validated_fixture_backing_root(&f.resources()).is_err());
+    }
 }

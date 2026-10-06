@@ -191,6 +191,14 @@ fn native_denies_round_trip_with_file_and_directory_inheritance() -> Result<()> 
                 std::fs::write(path.join("existing.txt"), "existing child")?;
                 std::fs::write(path.join("existing/grandchild.txt"), "existing grandchild")?;
             }
+            // Permitted-mutation control: the same rights and flags used by
+            // the production initial open must be available for both kinds.
+            let _write_authority = OpenOptions::new()
+                .access_mode(READ_CONTROL | FILE_READ_ATTRIBUTES | WRITE_DAC)
+                .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+                .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+                .security_qos_flags(SECURITY_IDENTIFICATION)
+                .open(&path)?;
             // SAFETY: the owned fixture and capability SID remain live.
             let repairs = unsafe {
                 (
