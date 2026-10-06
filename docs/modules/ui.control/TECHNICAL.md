@@ -16,6 +16,18 @@
 
 This stable document is the implementation guide for `ui.control`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+## Current Rust product scope
+
+The default application is now the Rust/Makepad renderer. Use the
+[Rust implementation guide](../../../apps/hepta-control-ui/RUST_ARCHITECTURE.md)
+for its concrete source inventory, startup, read-only owner boundary and remaining
+qualification. The JavaScript operation references and `IMPLEMENTATION_MAP.json`
+describe retained legacy boundary/test-oracle coverage, not the current Rust
+widget/transport implementation. Their mapping-complete fields do not mean
+product, deployment or independent acceptance is complete; those flags remain
+false. The registry-level responsibilities below are not claims that every target
+capability is composed in the Rust product.
+
 ## 1. Identity, mission and ownership
 
 Present runtime state and requests without issuing authority or directly writing stores.
@@ -42,7 +54,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `ui.control`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact: the declared roots exist. The historical V8 inventory and test bindings do not establish that the current Rust candidate passed compilation, lint or exact-head qualification. Those require receipts for the selected candidate. This status does not activate `ui.control`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -137,13 +149,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [apps/hepta-control-ui/src/control.js](../../../apps/hepta-control-ui/src/control.js) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Legacy oracle limits belong to [apps/hepta-control-ui/src/control.js](../../../apps/hepta-control-ui/src/control.js). Current Rust reader bounds and lifecycle behavior are described in the [Rust implementation guide](../../../apps/hepta-control-ui/RUST_ARCHITECTURE.md#owner-read-only-and-lifecycle-boundaries).
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-JavaScript presentation/client boundary, not a server or authority issuer. Connect an authenticated versioned backend, preserve request IDs over reconnect and visibly distinguish stale/pending/indeterminate states. Browser packaging, real backend integration and accessibility acceptance must match the selected host deployment.
+Rust/Makepad application presentation with generated JavaScript browser platform glue, not an authority issuer. The current product performs explicit read-only owner/runtime observations; authenticated chat and mutation composition remain absent. Browser packaging, real backend integration and accessibility acceptance must match the exact selected candidate and host. The retained JavaScript clients are legacy compatibility oracles, not a parallel product UI.
 
 Current operating and state-format references:
 
@@ -154,12 +166,15 @@ Current operating and state-format references:
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Legacy compatibility test sources (source references, not Rust product pass receipts):
 
 - [apps/hepta-control-ui/test/control.test.js](../../../apps/hepta-control-ui/test/control.test.js); named case: `runtime projection exposes only registered safe fields`.
 - [apps/hepta-control-ui/test/runtime-client.test.js](../../../apps/hepta-control-ui/test/runtime-client.test.js); named case: `submits and reconciles a generation-bound stop request`.
 
 From the repository root, run `node --test apps/hepta-control-ui/test/control.test.js apps/hepta-control-ui/test/runtime-client.test.js`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.control.md) separately labels target acceptance designs.
+
+For current Rust core, renderer and gateway test entry points, use the
+[Rust verification map](../../../apps/hepta-control-ui/RUST_ARCHITECTURE.md#verification-map-and-remaining-qualification).
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

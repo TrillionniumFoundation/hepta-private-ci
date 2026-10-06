@@ -8,9 +8,10 @@ copyright/permission notice. No Matrix protocol or SDK implementation is include
 
 The same Rust widget modules build for native and WASM. Conversation navigation,
 virtual message timeline and composer are primary; Console is an internal tab.
-The Console currently reports its unported operational controls. It does not
-pretend those controls are preserved by a placeholder. Existing native owner,
-recovery and platform implementations remain in their original crates for reuse.
+The browser Console performs explicit, bounded read-only owner and legacy-runtime
+observations; operation controls remain unavailable. The native preview reports
+its missing owner bridge. Existing owner/recovery implementations outside this
+product port are not composed merely by sharing its widgets.
 
 `presentation.rs` reads the existing bounded `ChatWorkspace` and applies fenced
 local actions. It does not introduce a runtime, credentials, a signer, a message
@@ -29,13 +30,17 @@ unqualified nightly instead of silently claiming reproducible output. Current
 recorded compile input is nightly `1.101.0-nightly (c36f14571 2026-10-01)`;
 this is a build input record, not host qualification.
 
-Native: `cargo +1.95.0 run --manifest-path rust/Cargo.toml -p hepta-robrix-ui
---bin hepta-robrix`. Linux requires the official Wayland/X11/ALSA development
-libraries. This cloud's native check stopped at missing `wayland-client.pc`;
-package installation was not permitted by its filesystem/root environment.
+Native: from `apps/hepta-control-ui`, use `npm run desktop` (or
+`python3 tools/run-desktop.py --offline` after font preparation and Cargo caching).
+The wrapper verifies fonts and retains an invocation-owned staged workspace until
+the renderer exits. Direct unprepared `cargo run` is not the supported
+resource-complete path. Linux requires the official Wayland/X11/ALSA development
+libraries. Availability of those prerequisites does not establish native-window,
+owner-composition or installed-package qualification.
 
-Pure presentation tests use repository `just test`, package `hepta-robrix-ui`,
-`--no-default-features --lib`. Disabling graphics for these tests does not qualify
+From the application directory, `npm test` invokes pinned Rust 1.95.0 nextest
+for `hepta-control-core` and `hepta-robrix-ui` with
+`--locked --no-default-features --lib`. Disabling graphics for these tests does not qualify
 the renderer. Standard `wasm32-unknown-unknown` check and no-threads release
 packaging have succeeded locally. The first actual hosted browser run exposed
 a missing ListScrollBar definition, asynchronous font-loading diagnostics and
@@ -90,3 +95,8 @@ International fonts currently contribute about 49.5 MB of the package; first
 qualification preserves them. Font coverage/loading optimization and complete
 third-party font notices remain review items. No production deployment is
 qualified by a compile or by old egui/DOM screenshots.
+
+See the [Rust implementation and integration guide](../../RUST_ARCHITECTURE.md)
+for source inventory, supported startup paths, owner boundaries, extension points
+and candidate-specific qualification limits. Historical browser investigations
+above explain retained patches; they are not current candidate pass receipts.

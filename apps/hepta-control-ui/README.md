@@ -6,6 +6,9 @@ Rust compatibility member so the imported workspace and locked build graph stay
 coherent; it is not the default product entry. Generated Makepad JavaScript and
 the static WASM loader are platform boot/render/input glue.
 
+See [RUST_ARCHITECTURE.md](RUST_ARCHITECTURE.md) for the current implementation
+inventory, startup paths, owner boundaries, extension points and verification map.
+
 ## Product status
 
 This candidate replaces the product gateway's handwritten `GET /` interface
@@ -68,8 +71,9 @@ face; this is not uniform pan-CJK sans. The new pair is16,874,504 bytes under a
 `npm run build` and `npm run desktop` prepare the same verified cache. Set
 `HEPTA_CJK_FONT_CACHE` for a shared cache; use `HEPTA_FONTS_OFFLINE=1 npm run build`
 or `python3 tools/run-desktop.py --offline` after preparation. Missing/corrupt
-resources fail explicitly. There is no runtime HTTP font fetch. Downloads are
-byte-bounded with atomic writes; the60-second timeout is per socket operation,
+resources fail explicitly. Browser font loading fetches packaged assets over
+same-origin HTTP from the selected verified bundle; it does not use a runtime
+third-party font service. Build-time font downloads are byte-bounded with atomic writes; the60-second timeout is per socket operation,
 not a whole-transfer deadline. Each desktop invocation retains its own staged
 resource tree for the child lifetime. Direct unprepared native Cargo builds
 fail a missing/length diagnostic; the supported wrapper verifies full hashes.

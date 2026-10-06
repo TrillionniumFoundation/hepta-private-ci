@@ -46,6 +46,16 @@ None.
 
 ### Native source and scope
 
+This registered module and its JavaScript implementation map describe the retained
+native adapter boundary. They do not describe a completed Rust native product.
+The shared Rust/Makepad renderer currently lives under `ui.control`; its supported
+resource-staged `npm run desktop` command is a renderer preview. The optional
+`native-host` trait requires an externally supplied owner and does not install or
+compose one. See the [Rust implementation guide](../../../apps/hepta-control-ui/RUST_ARCHITECTURE.md)
+for that source inventory, startup contract and explicit native qualification gaps.
+The existing false product/deployment/acceptance flags are unchanged.
+
+
 The registered primary source is [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js); observed identifiers include `buildNativeIntent`, `observeNativeOutcome`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
