@@ -101,6 +101,7 @@ def execute_logged(
     maximum_bytes: int = 64 * 1024 * 1024,
     timeout_seconds: float = 3600,
     cancellation: CommandCancellation | None = None,
+    retain_process_group: bool = False,
 ) -> dict:
     """Bound a POSIX command group, retain raw output, and reap its direct child.
 
@@ -203,7 +204,7 @@ def execute_logged(
     if cancellation is not None and cancellation.signal_number is not None:
         interrupted_signal = cancellation.signal_number
     passed, failed = observed_test_counts(data.decode("utf-8", errors="replace"))
-    return {
+    result = {
         "returncode": process.returncode,
         "interrupted_signal": interrupted_signal,
         "timed_out": timed_out,
@@ -213,6 +214,9 @@ def execute_logged(
         "observed_passed_tests": passed,
         "observed_failed_tests": failed,
     }
+    if retain_process_group:
+        result["process_group_id"] = process.pid
+    return result
 
 
 def run(
@@ -222,6 +226,8 @@ def run(
     minimum_tests: int = 0,
     timeout_seconds: float = 3600,
     cancellation: CommandCancellation | None = None,
+    retain_process_group: bool = False,
+    deadline_monotonic: float | None = None,
 ) -> int:
     if not command or type(minimum_tests) is not int or minimum_tests < 0:
         raise ValueError("a command and nonnegative minimum test count are required")
@@ -284,8 +290,15 @@ def run(
             raise ValueError("an explicit source-head or base-merge lane is required")
         log = output.with_name(output.name + "." + uuid.uuid4().hex + ".log")
         record["log_file"] = log.name
+        if deadline_monotonic is not None:
+            if not math.isfinite(deadline_monotonic):
+                raise ValueError("invalid absolute command deadline")
+            timeout_seconds = min(timeout_seconds, deadline_monotonic - time.monotonic())
+            if timeout_seconds <= 0:
+                raise ValueError("command deadline expired before native launch")
         execution = execute_logged(
-            command, log, timeout_seconds=timeout_seconds, cancellation=cancellation
+            command, log, timeout_seconds=timeout_seconds, cancellation=cancellation,
+            retain_process_group=retain_process_group,
         )
         record.update(execution)
         record["log_file"] = log.name

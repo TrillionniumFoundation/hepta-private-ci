@@ -6,6 +6,16 @@ name: Bazel
 on:
   workflow_call:
   workflow_dispatch:
+    inputs:
+      qualification-group:
+        description: Explicit scoped diagnostic; full preserves ordinary qualification
+        type: choice
+        required: true
+        default: full
+        options:
+          - full
+          - linux-supervisor
+          - windows-platform
 
 permissions:
   contents: read
@@ -13,11 +23,12 @@ permissions:
 concurrency:
   # Cancel previous actions from the same PR or branch except 'main' branch.
   # See https://docs.github.com/en/actions/using-jobs/using-concurrency and https://docs.github.com/en/actions/learn-github-actions/contexts for more info.
-  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}
+  group: concurrency-group::${{ github.workflow }}::${{ github.event.pull_request.number > 0 && format('pr-{0}', github.event.pull_request.number) || github.ref_name }}${{ github.ref_name == 'main' && format('::{0}', github.run_id) || ''}}${{ inputs.qualification-group != '' && inputs.qualification-group != 'full' && format('::diagnostic-{0}', inputs.qualification-group) || '' }}
   cancel-in-progress: ${{ github.ref_name != 'main' }}
 
 jobs:
   test:
+    if: ${{ inputs.qualification-group == '' || inputs.qualification-group == 'full' }}
     # PRs use the sharded Windows cross-compiled test jobs below. Post-merge
     # pushes to main also run the native Windows test job for broader Windows
     # signal without putting PR latency back on the critical path. When
@@ -133,6 +144,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   test-windows-shard:
+    if: ${{ inputs.qualification-group == '' || inputs.qualification-group == 'full' }}
     # Split the native Windows Bazel test leg across separate Windows hosts.
     # Build actions and host-loaded proc macros use the same MSVC ABI as the
     # test binaries, avoiding cross-ABI native archive linkage.
@@ -247,7 +259,7 @@ jobs:
     timeout-minutes: 30
     # Preserve the existing required-check surface while the real work happens
     # in the sharded Windows jobs above.
-    if: always()
+    if: ${{ always() && (inputs.qualification-group == '' || inputs.qualification-group == 'full') }}
     needs: test-windows-shard
     runs-on: ubuntu-24.04
     name: Bazel test on windows-latest for x86_64-pc-windows-msvc
@@ -265,7 +277,7 @@ jobs:
     # Native Windows Bazel tests are slower and frequently approach the
     # 30-minute PR budget. Run this only for post-merge commits to main and give
     # it a larger timeout.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && (inputs.qualification-group == '' || inputs.qualification-group == 'full') }}
     timeout-minutes: 40
     runs-on: windows-latest
     name: Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)
@@ -341,6 +353,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   clippy:
+    if: ${{ inputs.qualification-group == '' || inputs.qualification-group == 'full' }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -458,6 +471,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   verify-release-build:
+    if: ${{ inputs.qualification-group == '' || inputs.qualification-group == 'full' }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -566,3 +580,130 @@ jobs:
       - name: Check for a clean worktree
         if: always() && !cancelled()
         uses: ./.github/actions/check-clean-worktree
+
+  fixed-linux-supervisor:
+    if: github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'linux-supervisor'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Anchor diagnostic budget before checkout
+        run: python3 -c 'import time; print(f"HEPTA_PILOT_JOB_STARTED={time.monotonic()}")' >> "$GITHUB_ENV"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact manual source
+        run: python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --lane source-head
+      - name: Prepare bounded measurement without cache restore or upload
+        run: python3 scripts/hepta_bazel_cache_pilot.py prepare --directory "$RUNNER_TEMP/hepta-supervisor-measure"
+      - name: Prepare existing pinned Bazel environment
+        timeout-minutes: 8
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-test
+      - name: Run only Supervisor projection with fresh tests
+        timeout-minutes: 48
+        run: python3 scripts/hepta_bazel_cache_pilot.py run --directory "$RUNNER_TEMP/hepta-supervisor-measure"
+      - name: Verify selected native target actually executed
+        run: python3 scripts/hepta_fixed_bazel.py verify-linux --directory "$RUNNER_TEMP/hepta-supervisor-measure"
+      - name: Retain source-bound results and bounded diagnostics
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fixed-linux-supervisor-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-supervisor-measure/pilot-state.json
+            ${{ runner.temp }}/hepta-supervisor-measure/native.json*
+            ${{ runner.temp }}/hepta-supervisor-measure/cache-readiness.json
+            ${{ runner.temp }}/hepta-supervisor-measure/selected-targets.json
+            ${{ runner.temp }}/hepta-supervisor-measure/diagnostics/**
+          if-no-files-found: error
+
+  fixed-windows-platform:
+    if: github.event_name == 'workflow_dispatch' && inputs.qualification-group == 'windows-platform'
+    runs-on: windows-latest
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Anchor diagnostic budget before checkout
+        run: python -c 'import time; print(f"HEPTA_PILOT_JOB_STARTED={time.monotonic()}")' >> "$GITHUB_ENV"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify exact manual source
+        run: python scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --lane source-head
+      - name: Prepare existing pinned native Windows environment
+        timeout-minutes: 8
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+      - name: Smoke test native MSVC header parser
+        timeout-minutes: 3
+        run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
+      - name: Compute remaining ACL/helper step budget
+        id: acl-budget
+        run: python scripts/hepta_fixed_bazel.py budget --github-output "$GITHUB_OUTPUT"
+      - name: Run fixed ACL/helper native targets
+        timeout-minutes: ${{ fromJSON(steps.acl-budget.outputs.minutes) }}
+        run: python scripts/hepta_fixed_bazel.py windows --group windows-acl-helper --directory "$RUNNER_TEMP/hepta-fixed-windows"
+      - name: Retain ACL/helper receipt before Core compilation
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fixed-windows-acl-helper-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-fixed-windows/windows-acl-helper.json
+            ${{ runner.temp }}/hepta-fixed-windows/windows-acl-helper.log
+            ${{ runner.temp }}/hepta-fixed-windows/windows-acl-helper.bep-tail.jsonl
+          if-no-files-found: error
+      - name: Compute remaining Core/Queue step budget
+        id: core-budget
+        if: always() && !cancelled() && steps.acl-budget.outcome == 'success'
+        run: python scripts/hepta_fixed_bazel.py budget --github-output "$GITHUB_OUTPUT"
+      - name: Run fixed Core/Queue native targets
+        if: always() && !cancelled() && steps.core-budget.outcome == 'success'
+        timeout-minutes: ${{ fromJSON(steps.core-budget.outputs.minutes) }}
+        run: python scripts/hepta_fixed_bazel.py windows --group windows-core-queue --directory "$RUNNER_TEMP/hepta-fixed-windows"
+      - name: Retain Core/Queue receipt
+        if: always()
+        timeout-minutes: 3
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fixed-windows-core-queue-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-fixed-windows/windows-core-queue.json
+            ${{ runner.temp }}/hepta-fixed-windows/windows-core-queue.log
+            ${{ runner.temp }}/hepta-fixed-windows/windows-core-queue.bep-tail.jsonl
+          if-no-files-found: error
+
+  reject-unknown-diagnostic:
+    if: inputs.qualification-group != '' && inputs.qualification-group != 'full' && inputs.qualification-group != 'linux-supervisor' && inputs.qualification-group != 'windows-platform'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - run: echo 'Unknown explicit qualification group' >&2; exit 1
