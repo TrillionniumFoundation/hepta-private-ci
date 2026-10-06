@@ -121,11 +121,17 @@ class IdentityTests(unittest.TestCase):
     def test_dirty_source_never_dispatches(self):
         (self.repo / "input").write_text("unreviewed\n")
         marker = self.root / "effect"
-        with patch.dict(os.environ, {
-            "SOURCE_SHA": self.source,
-            "TESTED_SHA": self.source,
-            "HEPTA_CI_LANE": "source-head",
-        }), contextlib.redirect_stdout(io.StringIO()):
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "SOURCE_SHA": self.source,
+                    "TESTED_SHA": self.source,
+                    "HEPTA_CI_LANE": "source-head",
+                },
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
             result = executor.run(
                 self.root / "record.json",
                 [sys.executable, "-c", f"open({str(marker)!r}, 'w').write('effect')"],
@@ -134,11 +140,17 @@ class IdentityTests(unittest.TestCase):
         self.assertFalse(marker.exists())
 
     def test_command_source_mutation_still_fails(self):
-        with patch.dict(os.environ, {
-            "SOURCE_SHA": self.source,
-            "TESTED_SHA": self.source,
-            "HEPTA_CI_LANE": "source-head",
-        }), contextlib.redirect_stdout(io.StringIO()):
+        with (
+            patch.dict(
+                os.environ,
+                {
+                    "SOURCE_SHA": self.source,
+                    "TESTED_SHA": self.source,
+                    "HEPTA_CI_LANE": "source-head",
+                },
+            ),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
             result = executor.run(
                 self.root / "record.json",
                 [sys.executable, "-c", "open('input', 'w').write('changed')"],

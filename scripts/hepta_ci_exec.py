@@ -31,7 +31,10 @@ def identity() -> dict:
     # Status supplies one HEAD observation together with the dirty-worktree
     # check. Do not traverse upstream history just to capture that identity.
     status = git(
-        "status", "--porcelain=v2", "--branch", "--no-ahead-behind",
+        "status",
+        "--porcelain=v2",
+        "--branch",
+        "--no-ahead-behind",
         "--untracked-files=normal",
     ).splitlines()
     commit = next(
