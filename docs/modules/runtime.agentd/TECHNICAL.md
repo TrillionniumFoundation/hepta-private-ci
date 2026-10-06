@@ -82,6 +82,15 @@ The bounded components are:
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
+The shared `AgentdMethod::AutomationExecuteEffect` stores its signed final-use
+grant behind heap indirection rather than inflating every control-method value.
+`AgentdRequest::automation_execute_effect` retains its owned-grant API, and the
+Agentd effect host still borrows and verifies the same signed grant. The V2 JSON
+field names, signed payload, frame limits and unknown-field rejection are
+unchanged; `automation_effect_wire_round_trip_is_strict_and_bounded` compares the
+complete serialized request with the pre-indirection wire layout. This storage
+choice does not grant execution authority or redefine a protocol version.
+
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
 
 The default daemon in `codex-rs/hepta-agentd/src/runtime.rs` supervises its tasks through the existing `RuntimeTasks` host. The composition registers required tasks and invokes the automation-owned constructor; adding a normal optional task no longer adds a central completion enum or cleanup branch. Optional failure invokes its owner-local quarantine callback, while a failed quarantine, writer error or generation fence stops the host. Retirement uses cooperative cancellation and acknowledged owner cleanup, not a timeout relabeled as success.
