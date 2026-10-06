@@ -44,6 +44,7 @@ test('capture contract keeps all static assertions and distinguishes counts',asy
    else if(fixtures)assert.ok(checks.includes('visible-message-count')&&checks.includes('owner-message-order'));
   }
   for(const name of ['robrix-draft-before-theme','robrix-Obsidian-after-resize','robrix-Lunar-after-resize','robrix-theme-round-trip','robrix-console-round-trip'])assert.ok(plan.find(item=>item.name===name).draft);
+  for(const theme of ['Aurora','Obsidian','Lunar'])assert.ok(plan.find(item=>item.name===`robrix-${theme}-after-resize`).assertTheme,'Responsive replacement must show the actual selected theme label');
   assert.ok(plan.find(item=>item.name==='robrix-theme-round-trip').kept);
   if(fixtures){assert.equal(plan.filter(item=>item.jump).length,2);assert.ok(plan.at(-1).lastMessage);assert.ok(plan[0].lastMessage);}
  }

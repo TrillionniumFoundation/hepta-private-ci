@@ -141,6 +141,13 @@ jobs:
           test "$remaining" -ge 30
           budget=$(( remaining < 600 ? remaining : 600 ))
           python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/browser-inputs.json" --timeout-seconds "$budget" -- bash -euo pipefail -c 'cd apps/hepta-control-ui; npx --no-install playwright install --with-deps chromium firefox webkit; sudo apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim python3-pil; dpkg-query -W tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim python3-pil'
+      - name: Verify strengthened pixel regression contracts
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 180 ? remaining : 180 ))
+          python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/pixel-contract-tests.json" --timeout-seconds "$budget" -- bash -euo pipefail -c 'python3 -m unittest discover -s apps/hepta-control-ui/test -p test_lunar_heading_pixels.py -v; node --test apps/hepta-control-ui/test/robrix-pixel-plan.test.mjs'
       - name: Exercise unchanged default browser suite and retain actual pixels
         run: |
           set -euo pipefail
@@ -156,6 +163,14 @@ jobs:
           test "$remaining" -ge 30
           budget=$(( remaining < 600 ? remaining : 600 ))
           python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/default-pixels.json" --timeout-seconds "$budget" -- node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-default default
+      - name: Require raw Lunar heading and brand ink after responsive replacement
+        if: always() && steps.canonical_build.outcome == 'success'
+        run: |
+          set -euo pipefail
+          remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
+          test "$remaining" -ge 30
+          budget=$(( remaining < 120 ? remaining : 120 ))
+          python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/lunar-pixels.json" --timeout-seconds "$budget" -- python3 apps/hepta-control-ui/tools/verify-lunar-heading-pixels.py apps/hepta-control-ui/test-results/robrix-default "$SOURCE_SHA" --output "$DIAGNOSTIC_ROOT/lunar-pixel-results.json"
       - name: Require complete browser records with no font failures
         if: always() && steps.canonical_build.outcome == 'success'
         run: |

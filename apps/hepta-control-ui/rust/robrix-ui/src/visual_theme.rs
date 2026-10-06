@@ -274,5 +274,11 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                 script_apply_eval!(cx,widget,{draw_bg +: {color: #(surface) accent: #(accent) secondary: #(secondary)}});
             }
         }
+        // Adaptive/Dock children may be created during the current Draw. Their
+        // first frame used template colors/text; ordinary setter redraws are
+        // suppressed by the SDK during Draw. This runs only once per widget
+        // identity and selected theme, so one explicit repaint settles the new
+        // appearance without a perpetual redraw loop or editor reconstruction.
+        cx.redraw_area_in_draw(widget.area());
     }
 }

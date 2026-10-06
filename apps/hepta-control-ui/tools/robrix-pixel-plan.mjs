@@ -6,7 +6,7 @@ export function captureSchedule(initialWidth,fixtures){
  for(const theme of ['Aurora','Obsidian','Lunar']){
   add(`robrix-${theme}-${width}`,theme,true);
   width=width===1280?640:1280;
-  add(`robrix-${theme}-after-resize`,theme);
+  add(`robrix-${theme}-after-resize`,theme,true);
   if(theme==='Aurora'){hasDraft=true;add('robrix-draft-before-theme',theme);}
  }
  add('robrix-theme-round-trip','Aurora',true);
