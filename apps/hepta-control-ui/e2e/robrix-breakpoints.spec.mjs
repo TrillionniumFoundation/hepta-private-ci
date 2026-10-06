@@ -4,7 +4,7 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {screenshotWordCenter,readScreenshotText,prepareVerifiedRegionForOcr} from '../tools/verify-robrix-pixels.mjs';
-import {breakpointWidths,breakpointThemes,headingRegion,navigationRegion,requireObservedPoint,consoleRegion,themeTextRegion,requireThemeText,requireAuthorityWarning} from '../tools/robrix-breakpoint-plan.mjs';
+import {breakpointWidths,breakpointThemes,headingRegion,navigationRegion,requireObservedPoint,consoleRegion,themeTextRegion,requireThemeText,requireAuthorityWarning,observationHeadingRegion,requireObservationHeading} from '../tools/robrix-breakpoint-plan.mjs';
 for(const theme of breakpointThemes)for(const width of breakpointWidths)test(`Console breakpoint ${theme} ${width}`,async({page},testInfo)=>{
  const sourceSha=execFileSync('git',['--no-replace-objects','rev-parse','--verify','HEAD^{commit}'],{encoding:'utf8'}).trim();
  // Known existing compact composer position at759x800, not an OCR-observed target.
@@ -48,7 +48,7 @@ for(const theme of breakpointThemes)for(const width of breakpointWidths)test(`Co
   await page.mouse.move(width-35,400);await page.mouse.wheel(0,-3000);await frame();
   const top=await capture('console-top');
   const topText=await regionText(top,'console-top-body',consoleRegion(top.row.viewport,theme));
-  expect(topText).toMatch(/Runtime\s+observations/i);expect(topText).toMatch(/Production\s+owner/i);expect(topText).toMatch(/Not\s+requested/i);
+  requireObservationHeading(await regionText(top,'observation-heading-line',observationHeadingRegion(top.row.viewport,theme)));expect(topText).toMatch(/Production\s+owner/i);expect(topText).toMatch(/Not\s+requested/i);
   const crop=testInfo.outputPath('console-heading.png');const observed=await prepareVerifiedRegionForOcr(top.path,crop,headingRegion(page.viewportSize(),theme),page.viewportSize());expect(observed.sourcePngSha256).toBe(top.row.pngSha256);
   const heading=await readScreenshotText(observed.rawPath??crop,{layout:'block'});expect(heading.trim()).toMatch(/^Console\s*$/i);
   await page.mouse.move(width-35,500);await page.mouse.wheel(0,3000);await frame();

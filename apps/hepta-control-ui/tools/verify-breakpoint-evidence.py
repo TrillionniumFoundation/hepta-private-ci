@@ -7,10 +7,13 @@ from pathlib import Path
 import struct
 
 
-def verify(root, source):
+def verify(root, source, scope):
+    assert scope in ('all', '759-only')
+    widths = (360, 759, 760, 761) if scope == 'all' else (759,)
+    expected_cases = 3 * len(widths)
     report = json.loads((root / 'robrix-breakpoints-results.json').read_text())
     stats = report['stats']
-    assert stats['expected'] == 12 and all(stats[key] == 0 for key in ('unexpected', 'skipped', 'flaky'))
+    assert stats['expected'] == expected_cases and all(stats[key] == 0 for key in ('unexpected', 'skipped', 'flaky'))
     rows = []
     for path in sorted((root / 'robrix-breakpoints').glob('*/breakpoint-evidence.json')):
         data = json.loads(path.read_text())
@@ -38,10 +41,11 @@ def verify(root, source):
             if name in ('console-top', 'console-bottom'):
                 assert viewport['width'] == data['targetWidth'] and item['theme'] == data['theme']
         rows.append({'theme': data['theme'], 'width': data['targetWidth'], 'captures': len(captures)})
-    expected = {(theme, width) for theme in ('Aurora', 'Obsidian', 'Lunar') for width in (360, 759, 760, 761)}
-    assert len(rows) == 12 and {(row['theme'], row['width']) for row in rows} == expected
+    expected = {(theme, width) for theme in ('Aurora', 'Obsidian', 'Lunar') for width in widths}
+    assert len(rows) == expected_cases and {(row['theme'], row['width']) for row in rows} == expected
     return {'sourceSha': source, 'passed': True, 'subjects': rows,
-            'scope': '12 new Chromium breakpoint cases only; no physical IME, accessibility, native host or live owner qualification'}
+            'caseScope': scope, 'expectedCases': expected_cases,
+            'scope': 'Source-bound selected Chromium breakpoint cases only; no physical IME, accessibility, native host or live owner qualification'}
 
 
 if __name__ == '__main__':
@@ -49,7 +53,8 @@ if __name__ == '__main__':
     p.add_argument('root', type=Path)
     p.add_argument('source')
     p.add_argument('--output', required=True, type=Path)
+    p.add_argument('--scope', choices=('all', '759-only'), default='all')
     args = p.parse_args()
-    result = verify(args.root, args.source)
+    result = verify(args.root, args.source, args.scope)
     args.output.write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result, indent=2))

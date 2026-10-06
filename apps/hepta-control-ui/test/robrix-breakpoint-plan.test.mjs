@@ -32,3 +32,9 @@ test('fixed source regions stay within the exact reviewed viewports',()=>{
  assert.deepEqual(themeTextRegion({width:759,height:800},point),{left:297,top:108,width:140,height:20});
  assert.throws(()=>themeTextRegion({width:760,height:800},point));
 });
+import {observationHeadingRegion,requireObservationHeading} from '../tools/robrix-breakpoint-plan.mjs';
+test('observation heading has a separate fixed source line and cannot be shortened',()=>{
+ assert.deepEqual(observationHeadingRegion({width:759,height:800},'Lunar'),{left:16,top:160,width:727,height:56});
+ requireObservationHeading('Runtime observations\n');
+ for(const text of ['Runtime','observations','Runtime observation','Runtime observations incomplete'])assert.throws(()=>requireObservationHeading(text));
+});

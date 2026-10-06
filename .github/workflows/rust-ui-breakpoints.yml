@@ -1,4 +1,4 @@
-name: Rust UI new breakpoint acceptance
+name: Rust UI remaining759px breakpoint acceptance
 'on':
   push:
     branches:
@@ -22,7 +22,7 @@ jobs:
       HEPTA_CI_LANE: source-head
       SOURCE_SHA: ${{ github.sha }}
       TESTED_SHA: ${{ github.sha }}
-      REVIEWED_WORKFLOW_SHA256: ddc11e7d96b58dbfcf688d593930387519b6fa5e04fb48466492e69a9e7c288b
+      REVIEWED_WORKFLOW_SHA256: 5b18ec963cc9360af6edbb17c28cd7a1e505d4360d7ecb0dc36e92aa801d4739
     steps:
     - name: Anchor shared execution deadline before checkout
       shell: bash
@@ -46,9 +46,9 @@ jobs:
         cat > "$DIAGNOSTIC_ROOT/source-guard.py" <<'PYGUARD'
         import hashlib, json, os, re, subprocess, sys
         from pathlib import Path
-        EXPECTED_PARENT = 'a9baf482696ea6a8462bfba6bae0fca3f3ab6108'
+        EXPECTED_PARENT = '80cd64dddb535dc035bac623f8ffe04ec7986994'
         WORKFLOW = '.github/workflows/rust-ui-breakpoints.yml'
-        EXPECTED_BLOBS = {'apps/hepta-control-ui/playwright.breakpoints.config.mjs': '9312ff3fe97442569ff13a3faeefef088b3791dc', 'apps/hepta-control-ui/e2e/robrix-breakpoints.spec.mjs': 'c227d7b8c5f0a38202b2b4ee27debe8675d18204', 'apps/hepta-control-ui/tools/robrix-breakpoint-plan.mjs': 'f60ca8173238fe4b595a7c3f05ae38e04b4f4658', 'apps/hepta-control-ui/tools/verify-breakpoint-evidence.py': '059bfa9be341e0147bb869a3729250ac9a77a568', 'apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs': 'f59e57b74150e20d74d569f19f1762f6ed48420f'}
+        EXPECTED_BLOBS = {'apps/hepta-control-ui/playwright.breakpoints.config.mjs': '9312ff3fe97442569ff13a3faeefef088b3791dc', 'apps/hepta-control-ui/e2e/robrix-breakpoints.spec.mjs': '1bc30de3f249685e478d1fa457766f2a1b87fab4', 'apps/hepta-control-ui/tools/robrix-breakpoint-plan.mjs': '09be909aa472026ce8c23fa43107ea701726a84d', 'apps/hepta-control-ui/tools/verify-breakpoint-evidence.py': '544c275b277adb825a4e0e65b25cc1ee09e2f9f6', 'apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs': '5a6c71291c3c1b261af8041eba62e8e5fe294f38'}
         # Reviewed-source consistency only; this self-check is not a security signature.
         git = lambda *args: subprocess.check_output(['git', '--no-replace-objects', *args])
         source = os.environ['SOURCE_SHA']
@@ -62,7 +62,7 @@ jobs:
         tree = trees[0]
         paths = sorted([WORKFLOW, *EXPECTED_BLOBS])
         changes = git('diff-tree', '--no-commit-id', '--name-status', '-r', '--no-renames', EXPECTED_PARENT, commit).decode().splitlines()
-        modified = sorted([WORKFLOW, 'apps/hepta-control-ui/e2e/robrix-breakpoints.spec.mjs', 'apps/hepta-control-ui/tools/robrix-breakpoint-plan.mjs', 'apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs'])
+        modified = sorted([WORKFLOW, 'apps/hepta-control-ui/e2e/robrix-breakpoints.spec.mjs', 'apps/hepta-control-ui/tools/robrix-breakpoint-plan.mjs', 'apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs', 'apps/hepta-control-ui/tools/verify-breakpoint-evidence.py'])
         assert sorted(changes) == ['M\t' + path for path in modified], 'Expected exact reviewed modified paths'
         entries = {}
         for item in git('ls-tree', '-r', '-z', commit, '--', *paths).split(b'\0'):
@@ -79,7 +79,7 @@ jobs:
         assert matches == 1, 'Expected exactly one workflow fingerprint field'
         assert hashlib.sha256(normalized).hexdigest() == os.environ['REVIEWED_WORKFLOW_SHA256'], 'Other reviewed workflow bytes changed'
         assert git('status', '--porcelain', '--untracked-files=normal') == b'', 'Source checkout changed'
-        result = {'sourceSha': commit, 'sourceTree': tree, 'parents': parents, 'blobs': entries, 'workflowNormalizedSha256': os.environ['REVIEWED_WORKFLOW_SHA256'], 'dirty': False}
+        result = {'caseScope': '759-only (three new complete flows)', 'sourceSha': commit, 'sourceTree': tree, 'parents': parents, 'blobs': entries, 'workflowNormalizedSha256': os.environ['REVIEWED_WORKFLOW_SHA256'], 'dirty': False}
         output = Path(sys.argv[1])
         if len(sys.argv) == 3:
             before = json.loads(Path(sys.argv[2]).read_text())
@@ -136,20 +136,20 @@ jobs:
         test "$remaining" -ge 30
         budget=$(( remaining < 120 ? remaining : 120 ))
         python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/check-breakpoint-source-contracts.json" --timeout-seconds "$budget" -- node --test apps/hepta-control-ui/test/robrix-breakpoint-plan.test.mjs
-    - name: Run twelve new breakpoint cases
+    - name: Run three remaining759px cases
       run: |
         set -euo pipefail
         remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
         test "$remaining" -ge 30
         budget=$(( remaining < 900 ? remaining : 900 ))
-        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/run-twelve-new-breakpoint-cases.json" --timeout-seconds "$budget" -- bash -euo pipefail -c 'cd apps/hepta-control-ui; npx --no-install playwright test --config=playwright.breakpoints.config.mjs'
-    - name: Require all twelve source bound results
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/run-three-759px-cases.json" --timeout-seconds "$budget" -- bash -euo pipefail -c 'cd apps/hepta-control-ui; npx --no-install playwright test --config=playwright.breakpoints.config.mjs --grep " 759$"'
+    - name: Require three source bound759px results
       run: |
         set -euo pipefail
         remaining=$(( DIAGNOSTIC_DEADLINE - $(date +%s) ))
         test "$remaining" -ge 30
         budget=$(( remaining < 120 ? remaining : 120 ))
-        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/require-all-twelve-source-bound-results.json" --timeout-seconds "$budget" -- python3 apps/hepta-control-ui/tools/verify-breakpoint-evidence.py apps/hepta-control-ui/test-results "$SOURCE_SHA" --output "$DIAGNOSTIC_ROOT/breakpoint-results.json"
+        python3 scripts/hepta_ci_exec.py --output "$DIAGNOSTIC_ROOT/require-three-759px-results.json" --timeout-seconds "$budget" -- python3 apps/hepta-control-ui/tools/verify-breakpoint-evidence.py apps/hepta-control-ui/test-results "$SOURCE_SHA" --scope 759-only --output "$DIAGNOSTIC_ROOT/breakpoint-results.json"
       if: always() && steps.canonical_build.outcome == 'success'
     - id: bounded_pixels
       name: Bound raw browser artifact size without changing evidence

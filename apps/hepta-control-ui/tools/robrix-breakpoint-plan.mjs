@@ -42,3 +42,10 @@ export function requireAuthorityWarning(text){
  // Semantic content is exact; OCR punctuation is retained separately for visual review.
  return{fullWarningWords:true,observedClausePunctuation:match[1],observedTerminalPunctuation:match[2]};
 }
+export function observationHeadingRegion(viewport,theme){
+ const body=consoleRegion(viewport,theme),padding=viewport.width<760?16:24;
+ return{left:body.left+padding,top:body.top+padding,width:body.width-2*padding,height:56};
+}
+export function requireObservationHeading(text){
+ assert.match(text.trim(),/^Runtime\s+observations$/i,'Complete Runtime observations heading is mandatory');
+}
