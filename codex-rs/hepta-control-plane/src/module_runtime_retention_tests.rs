@@ -261,7 +261,7 @@ fn failed_rollback_is_atomic_including_generation_fences() {
             generation(3),
             Digest32::of_bytes(b"rollback"),
         ),
-        Err(RuntimeModuleRegistryError::AuthoritativeWriterConflict(_))
+        Err(RuntimeModuleRegistryError::MissingWriterHandoff)
     ));
     assert_eq!(registry.records, before.records);
     assert_eq!(registry.active, before.active);
@@ -294,4 +294,50 @@ fn pending_candidate_pins_its_own_predecessor_payload() {
             .record(&first.module_id, first.generation)
             .is_none()
     );
+}
+
+#[test]
+fn digest_only_rollback_cannot_substitute_for_either_generations_state_handoff() {
+    for predecessor_has_state in [false, true] {
+        for hazard in 0..4 {
+            let mut registry = RuntimeModuleRegistryV1::new();
+            let mut first = abi("retained-writer", 1, None);
+            let mut second = abi("retained-writer", 2, Some(&first));
+            let guarded = if predecessor_has_state {
+                &mut first
+            } else {
+                &mut second
+            };
+            match hazard {
+                0 => guarded.state_class = RuntimeModuleStateClassV1::Stateful,
+                1 => guarded.state_class = RuntimeModuleStateClassV1::ExternalStateful,
+                2 => {
+                    guarded.authoritative_domains.insert(id("retained-facts"));
+                }
+                3 => {
+                    guarded.effect_scope.insert(id("external-effect"));
+                }
+                _ => unreachable!(),
+            }
+            promote(&mut registry, first);
+            promote(&mut registry, second.clone());
+            let before = registry.clone();
+            assert_eq!(
+                registry.rollback_active_to_predecessor_content(
+                    &second.module_id,
+                    second.generation,
+                    generation(3),
+                    Digest32::of_bytes(b"genuine-regression-is-not-a-state-handoff"),
+                ),
+                Err(RuntimeModuleRegistryError::MissingWriterHandoff),
+                "predecessor_has_state={predecessor_has_state}, hazard={hazard}"
+            );
+            assert_eq!(registry.records, before.records);
+            assert_eq!(registry.active, before.active);
+            assert_eq!(registry.generation_fences, before.generation_fences);
+            registry
+                .register_candidate(abi("retained-writer", 3, Some(&second)))
+                .expect("rejected rollback must not consume the next generation");
+        }
+    }
 }
