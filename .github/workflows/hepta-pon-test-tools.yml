@@ -1,0 +1,32 @@
+name: hepta-pon-test-tools
+on:
+  push:
+    branches: [dev/hepta-pon-test-tools-20261006]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Install repository-pinned native test drivers
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Retain exact tools and versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/test-tools"
+          cp "$(command -v just)" "$RUNNER_TEMP/test-tools/just"
+          cp "$(command -v cargo-nextest)" "$RUNNER_TEMP/test-tools/cargo-nextest"
+          just --version > "$RUNNER_TEMP/test-tools/just.version"
+          cargo nextest --version > "$RUNNER_TEMP/test-tools/nextest.version"
+          sha256sum "$RUNNER_TEMP/test-tools/just" "$RUNNER_TEMP/test-tools/cargo-nextest" > "$RUNNER_TEMP/test-tools/SHA256SUMS"
+      - name: Upload only public test executables
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-pon-test-tools
+          path: ${{ runner.temp }}/test-tools/
+          if-no-files-found: error
+          retention-days: 7
