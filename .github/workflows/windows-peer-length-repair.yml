@@ -1,0 +1,389 @@
+name: Windows peer length repair qualification
+'on':
+  push:
+    branches:
+    - dot/windows-peer-length-repair-20261006
+permissions:
+  contents: read
+concurrency:
+  group: windows-peer-length-repair-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  matrixd-peer:
+    runs-on: windows-latest
+    timeout-minutes: 55
+    environment:
+      name: bazel
+      deployment: false
+    defaults:
+      run:
+        shell: bash
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      TESTED_SHA: ${{ github.sha }}
+      HEPTA_CI_LANE: source-head
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      with:
+        ref: ${{ github.sha }}
+        fetch-depth: 0
+        persist-credentials: false
+    - name: Select evidence directory outside source
+      run: echo "PEER_EVIDENCE=$RUNNER_TEMP/windows-peer-length-repair" >> "$GITHUB_ENV"
+    - name: Record clean exact source
+      run: |
+        python - <<'PY'
+        import json, os, pathlib, subprocess, sys
+        sys.path.insert(0, 'scripts')
+        import hepta_ci_candidate
+        root = pathlib.Path.cwd().resolve()
+        evidence = pathlib.Path(os.environ['PEER_EVIDENCE']).resolve()
+        assert not evidence.is_relative_to(root)
+        evidence.mkdir(parents=True, exist_ok=False)
+        assert not subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'])
+        expected_paths = ['codex-rs/uds/src/lib.rs', 'codex-rs/uds/src/windows_peer_pid.rs', 'codex-rs/uds/src/windows_peer_pid_tests.rs', 'codex-rs/uds/src/windows_peer_sid_tests.rs', '.github/workflows/windows-peer-length-repair.yml']
+        changed_paths = subprocess.check_output(['git', '--no-replace-objects', 'diff', '--name-only', 'e8ea11951b63016a83ee95f0363ba3e84337bc0a', 'HEAD'], text=True).splitlines()
+        assert set(changed_paths) == set(expected_paths)
+        record = hepta_ci_candidate.candidate_plan(source=os.environ['SOURCE_SHA'], tested=os.environ['TESTED_SHA'], lane='source-head')
+        record['review_base'] = 'e8ea11951b63016a83ee95f0363ba3e84337bc0a'
+        record['changed_paths'] = sorted(changed_paths)
+        (evidence / 'source-before.json').write_text(json.dumps(record, sort_keys=True))
+        PY
+    - name: Prepare isolated native build paths without changing host security
+      id: native_paths
+      timeout-minutes: 2
+      run: |
+        python - <<'PYCODE'
+        import json, os, pathlib
+        root = pathlib.Path(os.environ['RUNNER_TEMP']) / 'bq'
+        paths = {
+            'CI_BUILD_ROOT': root,
+            'BAZEL_OUTPUT_BASE': root / 'o',
+            'BAZEL_OUTPUT_USER_ROOT': root / 'b',
+            'BAZEL_REPOSITORY_CACHE': root / 'repository-cache',
+            'BAZEL_REPO_CONTENTS_CACHE': root / 'repo-contents',
+            'CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR': root / 'execution-logs',
+            'TEMP': root / 'tmp',
+            'TMP': root / 'tmp',
+        }
+        for path in paths.values():
+            path.mkdir(parents=True, exist_ok=True)
+        with open(os.environ['GITHUB_ENV'], 'a') as stream:
+            for name, path in paths.items():
+                stream.write(name + '=' + str(path) + '\n')
+            stream.write('CODEX_REPO_ROOT=' + os.environ['GITHUB_WORKSPACE'] + '\n')
+            stream.write('CARGO_NET_GIT_FETCH_WITH_CLI=true\n')
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+            stream.write('output-base=' + str(paths['BAZEL_OUTPUT_BASE']) + '\n')
+        policy = {}
+        for name in ('unprivileged_userns_clone', 'apparmor_restrict_unprivileged_userns'):
+            path = pathlib.Path('/proc/sys/kernel') / name
+            policy[name] = path.read_text().strip() if path.is_file() else 'absent'
+        evidence = pathlib.Path(os.environ['PEER_EVIDENCE'])
+        (evidence / 'native-security-policy.json').write_text(json.dumps(policy, sort_keys=True) + '\n')
+        PYCODE
+    - name: Install pinned Bazelisk without restoring or saving build caches
+      timeout-minutes: 3
+      uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+      with:
+        bazelisk-version: 1.28.1
+        output-base: ${{ steps.native_paths.outputs.output-base }}
+        bazelisk-cache: false
+        disk-cache: false
+        repository-cache: false
+        external-cache: false
+        cache-save: false
+    - name: Install pinned DotSlash
+      timeout-minutes: 3
+      uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+    - name: Install pinned just
+      timeout-minutes: 3
+      uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+      with:
+        tool: just@1.51.0
+    - name: Make DotSlash available at the stable Windows tool path
+      timeout-minutes: 1
+      shell: pwsh
+      run: Copy-Item (Get-Command dotslash).Source -Destination "$env:LOCALAPPDATA\Microsoft\WindowsApps\dotslash.exe"
+    - name: Enable Git long paths for native Windows tool inputs
+      timeout-minutes: 1
+      shell: pwsh
+      run: git config --global core.longpaths true
+    - name: Expose MSVC SDK environment (Windows)
+      timeout-minutes: 3
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        # Bazel exec-side Rust build scripts do not reliably inherit the MSVC developer
+        # shell on GitHub-hosted Windows runners, so discover the latest VS install and
+        # ask `VsDevCmd.bat` to materialize the x64/x64 compiler + SDK environment.
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        if (-not (Test-Path $vswhere)) {
+          throw "vswhere.exe not found"
+        }
+
+        $installPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null
+        if (-not $installPath) {
+          throw "Could not locate a Visual Studio installation with VC tools"
+        }
+
+        $vsDevCmd = Join-Path $installPath 'Common7\Tools\VsDevCmd.bat'
+        if (-not (Test-Path $vsDevCmd)) {
+          throw "VsDevCmd.bat not found at $vsDevCmd"
+        }
+
+        # Keep the export surface explicit: these are the paths and SDK roots that the
+        # MSVC toolchain probes need later when Bazel runs Windows exec-platform build
+        # scripts such as `aws-lc-sys`.
+        $varsToExport = @(
+          'INCLUDE',
+          'LIB',
+          'LIBPATH',
+          'PATH',
+          'UCRTVersion',
+          'UniversalCRTSdkDir',
+          'VCINSTALLDIR',
+          'VCToolsInstallDir',
+          'WindowsLibPath',
+          'WindowsSdkBinPath',
+          'WindowsSdkDir',
+          'WindowsSDKLibVersion',
+          'WindowsSDKVersion'
+        )
+        $requiredVars = @(
+          'INCLUDE',
+          'LIB',
+          'LIBPATH',
+          'UniversalCRTSdkDir',
+          'VCToolsInstallDir',
+          'WindowsSdkDir'
+        )
+
+        # `VsDevCmd.bat` is a batch file, so invoke it under `cmd.exe`, suppress its
+        # banner, then dump the resulting environment with `set`. Re-export only the
+        # approved keys into `GITHUB_ENV` so later steps inherit the same MSVC context.
+        # Windows environment names are case-insensitive, but Git Bash variable lookup
+        # is not. Normalize every accepted key to the canonical spelling above before
+        # handing it to the shell wrapper.
+        $envLines = & cmd.exe /c ('"{0}" -no_logo -arch=x64 -host_arch=x64 >nul && set' -f $vsDevCmd)
+        if ($LASTEXITCODE -ne 0) {
+          throw "VsDevCmd.bat failed with exit code $LASTEXITCODE"
+        }
+
+        # PowerShell hashtable keys are case-insensitive, matching Windows
+        # environment semantics while retaining the canonical key chosen above.
+        $exportedValues = @{}
+        foreach ($line in $envLines) {
+          if ($line -notmatch '^(.*?)=(.*)$') {
+            continue
+          }
+
+          $inputName = $matches[1]
+          $value = $matches[2]
+          $canonicalName = $varsToExport |
+            Where-Object { $_ -ieq $inputName } |
+            Select-Object -First 1
+          if ($null -eq $canonicalName) {
+            continue
+          }
+
+          if ($exportedValues.ContainsKey($canonicalName) -and
+              $exportedValues[$canonicalName] -cne $value) {
+            throw "VsDevCmd.bat returned conflicting values for $canonicalName"
+          }
+          $exportedValues[$canonicalName] = $value
+        }
+
+        $missingVars = @(
+          $requiredVars | Where-Object {
+            -not $exportedValues.ContainsKey($_) -or
+            [string]::IsNullOrWhiteSpace($exportedValues[$_])
+          }
+        )
+        if ($missingVars.Count -ne 0) {
+          throw "VsDevCmd.bat did not provide required variables: $($missingVars -join ', ')"
+        }
+
+        foreach ($canonicalName in $varsToExport) {
+          if ($exportedValues.ContainsKey($canonicalName)) {
+            "$canonicalName=$($exportedValues[$canonicalName])" |
+              Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          }
+        }
+    - name: Compute cache-stable Windows Bazel PATH
+      timeout-minutes: 1
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: ./.github/scripts/compute-bazel-windows-path.ps1
+    - name: Prepare ordinary short directory required by existing socket fixture
+      timeout-minutes: 1
+      run: |
+        python - <<'PYCODE'
+        import os, pathlib
+        base = pathlib.Path(os.environ['BAZEL_OUTPUT_BASE'])
+        assert os.name == 'nt' and base.is_absolute() and base.drive
+        # Existing Matrixd test uses /tmp on the test executable's drive.
+        # Create only the ordinary directory; no volume/security/ACL changes.
+        pathlib.Path(base.anchor, 'tmp').mkdir(exist_ok=True)
+        PYCODE
+    - name: Smoke test native MSVC header parser
+      timeout-minutes: 3
+      run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
+    - name: Execute exact UDS and Matrix daemon targets
+      timeout-minutes: 40
+      run: |
+        export HEPTA_BAZEL_BASH="$(cygpath -w "$BASH")"
+        python - <<'PYCODE'
+        import json, os, pathlib, subprocess, sys
+        evidence = pathlib.Path(os.environ['PEER_EVIDENCE']).resolve()
+        bash = pathlib.Path(os.environ['HEPTA_BAZEL_BASH'])
+        if bash.name.lower() == 'bash':
+            bash = bash.with_name(bash.name + '.exe')
+        assert bash.is_absolute() and bash.name.lower() == 'bash.exe' and bash.is_file()
+        command = [str(bash), '.github/scripts/run-bazel-ci.sh',
+            '--print-failed-action-summary', '--print-failed-test-logs',
+            '--windows-msvc-host-platform', '--remote-download-toplevel', '--',
+            'test', '--platforms=//:windows_x86_64_msvc', '--nocache_test_results',
+            '--keep_going', '--flaky_test_attempts=1', '--runs_per_test=1',
+            '--test_tag_filters=-argument-comment-lint', '--test_verbose_timeout_warnings',
+            '--test_output=all', '--test_env=HEPTA_WINDOWS_PEER_DIAGNOSTICS=1', '--build_metadata=COMMIT_SHA=' + os.environ['TESTED_SHA'],
+            '--build_event_json_file=' + (evidence / 'tests.bep.jsonl').as_posix(), '--',
+            '//codex-rs/uds:uds-unit-tests',
+            '//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests']
+        (evidence / 'command.json').write_text(json.dumps(command))
+        kept = 0
+        truncated = False
+        with (evidence / 'command.log').open('xb') as log, subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
+            while chunk := os.read(process.stdout.fileno(), 65536):
+                saved = chunk[:max(0, 64 * 1024**2 - kept)]
+                log.write(saved)
+                kept += len(saved)
+                truncated |= len(saved) != len(chunk)
+                sys.stdout.buffer.write(saved)
+                sys.stdout.buffer.flush()
+            code = process.wait()
+        (evidence / 'command.exit').write_text(str(code))
+        (evidence / 'capture.json').write_text(json.dumps({'bytes': kept, 'truncated': truncated, 'timeout_owner': 'Actions step'}))
+        sys.exit(code or (2 if truncated else 0))
+        PYCODE
+    - name: Verify source and retain exact passing logs and XML
+      if: always() && !cancelled()
+      timeout-minutes: 3
+      run: |
+        python - <<'PY'
+        import hashlib, json, os, pathlib, re, shutil, subprocess, sys, xml.etree.ElementTree as ET
+        sys.path.insert(0, 'scripts')
+        import hepta_ci_candidate
+        evidence = pathlib.Path(os.environ['PEER_EVIDENCE']).resolve()
+        assert not subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal'])
+        expected_paths = ['codex-rs/uds/src/lib.rs', 'codex-rs/uds/src/windows_peer_pid.rs', 'codex-rs/uds/src/windows_peer_pid_tests.rs', 'codex-rs/uds/src/windows_peer_sid_tests.rs', '.github/workflows/windows-peer-length-repair.yml']
+        changed_paths = subprocess.check_output(['git', '--no-replace-objects', 'diff', '--name-only', 'e8ea11951b63016a83ee95f0363ba3e84337bc0a', 'HEAD'], text=True).splitlines()
+        assert set(changed_paths) == set(expected_paths)
+        after = hepta_ci_candidate.candidate_plan(source=os.environ['SOURCE_SHA'], tested=os.environ['TESTED_SHA'], lane='source-head')
+        after['review_base'] = 'e8ea11951b63016a83ee95f0363ba3e84337bc0a'
+        after['changed_paths'] = sorted(changed_paths)
+        (evidence / 'source-after.json').write_text(json.dumps(after, sort_keys=True))
+        assert after == json.loads((evidence / 'source-before.json').read_text())
+        labels = {
+          '//codex-rs/uds:uds-unit-tests': 'codex-rs/uds/uds-unit-tests',
+          '//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests': 'codex-rs/hepta-matrixd/hepta-matrixd-unit-tests',
+        }
+        base = pathlib.Path(os.environ['BAZEL_OUTPUT_BASE']).resolve()
+        testlogs = base / 'execroot/_main/bazel-out/windows_x86_64_msvc-fastbuild/testlogs'
+        records = {}
+        def verify_named_cases(text, expected_count, required):
+            names = re.findall(r'^test ([A-Za-z0-9_:]+) \.\.\. ok$', text, re.MULTILINE)
+            summaries = re.findall(r'^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored; (\d+) measured; (\d+) filtered out;', text, re.MULTILINE)
+            assert summaries == [(str(expected_count), '0', '0', '0', '0')]
+            assert len(names) == expected_count and len(set(names)) == expected_count
+            assert set(required).issubset(names)
+            assert 'skipping test:' not in text.lower()
+            return {'passed': expected_count, 'failed': 0, 'ignored': 0, 'filtered': 0, 'required_names': sorted(required)}
+        expected_tests = {
+            '//codex-rs/uds:uds-unit-tests': (24, ['windows_peer_pid::tests::exact_size_success_needs_one_query', 'windows_peer_pid::tests::zero_length_requires_complete_matching_confirmation', 'windows_peer_pid::tests::api_failure_preserves_original_os_error_before_output_validation', 'windows_peer_pid::tests::confirmation_api_failure_preserves_its_os_error', 'windows_peer_pid::tests::malformed_positive_lengths_reject_without_confirmation', 'windows_peer_pid::tests::zero_pid_rejects_with_either_accepted_length', 'windows_peer_pid::tests::confirmation_changed_pid_or_length_rejects', 'windows_peer_pid::tests::partial_confirmation_writes_reject_every_short_width', 'windows_peer_pid::tests::every_partial_byte_subset_fails_for_both_reported_lengths_and_edge_pids', 'windows_peer_pid::tests::every_retained_single_bit_fails_even_if_length_claims_full_output', 'windows_peer_pid::tests::every_sampled_malformed_confirmation_length_fails_without_retry', 'windows_peer_pid::tests::windows_pending_wouldblock_and_failure_values_propagate_without_retry', 'windows_peer_pid::tests::api_boundary_accepts_only_exact_success_and_preserves_captured_failure', 'windows_peer_pid::tests::api_boundary_rejects_unknown_nonzero_or_inconsistent_status', 'windows_peer_sid_tests::matching_complete_sids_pass_the_existing_owner_gate', 'windows_peer_sid_tests::different_complete_sids_still_fail_closed', 'windows_peer_sid_tests::equal_final_rid_does_not_authorize_a_different_sid_authority', 'lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms']),
+            '//codex-rs/hepta-matrixd:hepta-matrixd-unit-tests': (32, ['control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity']),
+        }
+        for label, relative in labels.items():
+            destination = evidence / label.split(':')[-1]
+            destination.mkdir(exist_ok=False)
+            records[label] = {}
+            for filename in ('test.log', 'test.xml'):
+                source = testlogs / relative / filename
+                assert source.resolve().is_relative_to(base) and source.is_file()
+                assert source.stat().st_size <= 16 * 1024 * 1024
+                shutil.copyfile(source, destination / filename)
+                records[label][filename] = hashlib.sha256((destination / filename).read_bytes()).hexdigest()
+            tree = ET.parse(destination / 'test.xml').getroot()
+            records[label]['xml_root'] = dict(tree.attrib)
+            records[label]['testcases'] = len(list(tree.iter('testcase')))
+        named_failures = []
+        for label, (count, required) in expected_tests.items():
+            try:
+                log = evidence / label.split(':')[-1] / 'test.log'
+                records[label]['rust_cases'] = verify_named_cases(log.read_text(encoding='utf-8'), count, required)
+            except (AssertionError, UnicodeError):
+                records[label]['named_gate_failed'] = True
+                named_failures.append(label)
+        (evidence / 'test-files.json').write_text(json.dumps(records, sort_keys=True))
+        assert not named_failures, 'named/count gates failed; raw target logs retained'
+        bep = evidence / 'tests.bep.jsonl'
+        assert bep.stat().st_size <= 32 * 1024 * 1024
+        summaries = {}
+        with bep.open(encoding='utf-8') as stream:
+            for line in stream:
+                event = json.loads(line)
+                label = event.get('id', {}).get('testSummary', {}).get('label')
+                if label in labels:
+                    assert label not in summaries
+                    summaries[label] = event['testSummary']
+        assert set(summaries) == set(labels)
+        for summary in summaries.values():
+            assert summary['overallStatus'] == 'PASSED'
+            assert summary['totalRunCount'] == 1 and summary.get('totalNumCached', 0) == 0
+        assert (evidence / 'command.exit').read_text().strip() == '0'
+        assert json.loads((evidence / 'capture.json').read_text())['truncated'] is False
+        (evidence / 'verified.json').write_text(json.dumps({'source': after, 'targets': summaries, 'scope': 'exact Matrix daemon target; failure evidence is not qualification'}, sort_keys=True))
+        PY
+    - name: Stage bounded evidence upload
+      if: always()
+      timeout-minutes: 3
+      run: |
+        python - <<'PY'
+        import hashlib, json, os, pathlib
+        root = pathlib.Path(os.environ['PEER_EVIDENCE']).resolve()
+        upload = root / 'upload'
+        upload.mkdir(parents=True, exist_ok=False)
+        limits = {name: 1024**2 for name in ('source-before.json', 'source-after.json', 'command.exit', 'command.json', 'capture.json', 'test-files.json', 'verified.json', 'native-security-policy.json')}
+        limits.update({'command.log': 64 * 1024**2, 'tests.bep.jsonl': 32 * 1024**2})
+        for target in ('uds-unit-tests', 'hepta-matrixd-unit-tests'):
+            for file in ('test.log', 'test.xml'):
+                limits[target + '/' + file] = 16 * 1024**2
+        records = {}
+        total = 0
+        for name, limit in limits.items():
+            source = root / name
+            if not source.is_file() or source.is_symlink() or not source.resolve().is_relative_to(root):
+                records[name] = {'retained': False, 'reason': 'missing or unsafe path'}
+                continue
+            with source.open('rb') as stream:
+                data = stream.read(limit + 1)
+            if len(data) > limit:
+                records[name] = {'retained': False, 'reason': 'exceeds per-file bound', 'limit': limit}
+                continue
+            total += len(data)
+            assert total <= 192 * 1024**2
+            destination = upload / name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            destination.write_bytes(data)
+            records[name] = {'retained': True, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+        (upload / 'upload-manifest.json').write_text(json.dumps(records, sort_keys=True))
+        PY
+    - name: Upload source-bound test evidence
+      if: always()
+      timeout-minutes: 3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: windows-peer-length-repair-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/windows-peer-length-repair/upload
+        if-no-files-found: error
