@@ -1,0 +1,61 @@
+name: hepta-pon-readonly-export
+on:
+  push:
+    branches: [dev/hepta-pon-readonly-export-20261006]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: 6d635e3933e4da87112df42f3951fffdc068099d
+    steps:
+      - name: Checkout exact source without persisted credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Retain exact Git objects and source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/source-export"
+          git bundle create "$RUNNER_TEMP/source-export/source.bundle" HEAD
+          git bundle verify "$RUNNER_TEMP/source-export/source.bundle"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/source-export/source.txt"
+          sha256sum "$RUNNER_TEMP/source-export/source.bundle" > "$RUNNER_TEMP/source-export/source.sha256"
+      - name: Upload exact source transport
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-source-6d635e39
+          path: ${{ runner.temp }}/source-export/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Fetch pinned public offline build inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_HOME="$RUNNER_TEMP/offline-cargo"
+          mkdir -p "$CARGO_HOME" "$RUNNER_TEMP/toolchain-export"
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy --component rust-src
+          rustup run 1.96.0 rustc -Vv > "$RUNNER_TEMP/toolchain-export/rustc.txt"
+          rustup run 1.96.0 cargo fetch --locked --manifest-path codex-rs/Cargo.toml
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          sysroot="$(rustup run 1.96.0 rustc --print sysroot)"
+          tar -C "$sysroot" -czf "$RUNNER_TEMP/toolchain-export/rust-1.96.0-x64.tar.gz" .
+          tar -C "$CARGO_HOME" -czf "$RUNNER_TEMP/toolchain-export/cargo-inputs.tar.gz" registry git
+          sha256sum "$RUNNER_TEMP/toolchain-export/"*.tar.gz > "$RUNNER_TEMP/toolchain-export/archives.sha256"
+      - name: Upload public offline build inputs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-toolchain-1.96.0
+          path: ${{ runner.temp }}/toolchain-export/
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
