@@ -19,11 +19,35 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Install pinned native test tools
+      - name: Retrieve the two immutable single-owner patches
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/publication-observations"
+          python3 - <<'PY'
+          import base64, hashlib, json, os
+          from pathlib import Path
+          import urllib.request
+          out = Path(os.environ['RUNNER_TEMP']) / 'publication-observations'
+          out.mkdir()
+          for name, sha in [('red.patch', '4f2efc150cfa3a58a32d5dd0b3e8839743e21adb'),
+                            ('green.patch', '4575d29a3df59c8fd8589453043c7251a9cbc020')]:
+              request = urllib.request.Request(
+                  'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/' + sha,
+                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                           'Accept': 'application/vnd.github+json'})
+              with urllib.request.urlopen(request, timeout=30) as stream:
+                  value = json.load(stream)
+              assert value['sha'] == sha and value['encoding'] == 'base64'
+              raw = base64.b64decode(value['content'])
+              assert hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == sha
+              (out / name).write_bytes(raw)
+          PY
+      - name: Install pinned native test tools without delivery credentials
+        shell: bash
+        run: |
+          set -euo pipefail
           printf 'CARGO_HOME=%s/hepta-cargo\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           printf 'CARGO_TARGET_DIR=%s/hepta-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy --component rust-src
@@ -33,18 +57,13 @@ jobs:
           rustup run 1.96.0 cargo install --locked cargo-nextest --version 0.9.103 --root "$RUNNER_TEMP/hepta-tools"
           echo "$RUNNER_TEMP/hepta-tools/bin" >> "$GITHUB_PATH"
           rustup run 1.96.0 rustc -Vv > "$RUNNER_TEMP/publication-observations/rustc.txt"
-      - name: Actual owner regression without delivery credentials
+      - name: Execute actual old-owner failure and corrected-owner tests
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import hashlib
-          import json
-          import os
+          import hashlib, json, os, subprocess, time
           from pathlib import Path
-          import subprocess
-          import time
-
           repo = Path.cwd()
           out = Path(os.environ['RUNNER_TEMP']) / 'publication-observations'
           relative = 'codex-rs/hepta-learning-artifacts/src/owner_service.rs'
@@ -61,23 +80,30 @@ jobs:
           def identity():
               assert not git('status', '--porcelain'), 'source changed during execution'
               return {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}')}
-          def replace_once(text, old, new):
-              assert text.count(old) == 1, 'exact source splice differs'
-              return text.replace(old, new, 1)
-          def command(label, args, cwd):
+          def command(label, args):
               before = identity()
-              started = time.monotonic_ns()
+              start = time.monotonic_ns()
               with (out / (label + '.log')).open('wb') as stream:
-                  process = subprocess.run(args, cwd=cwd, stdout=stream, stderr=subprocess.STDOUT)
+                  p = subprocess.run(args, cwd=repo / 'codex-rs', stdout=stream, stderr=subprocess.STDOUT)
               after = identity()
               assert before == after
-              record = {'label': label, 'argv': args, 'exit_code': process.returncode,
-                        'wall_ns': time.monotonic_ns() - started, 'source_before': before,
-                        'source_after': after}
-              result['commands'].append(record)
+              result['commands'].append({'label': label, 'argv': args, 'exit_code': p.returncode,
+                  'wall_ns': time.monotonic_ns() - start, 'source_before': before, 'source_after': after})
               save()
-              return process.returncode, (out / (label + '.log')).read_text(errors='replace')
-          def commit(message):
+              return p.returncode, (out / (label + '.log')).read_text(errors='replace')
+          def apply_and_commit(name, message):
+              patch = (out / name).read_bytes()
+              subprocess.run(['git', 'apply', '--check', '-'], input=patch, check=True)
+              subprocess.run(['git', 'apply', '-'], input=patch, check=True)
+              assert set(git('diff', '--name-only').splitlines()) == {relative}
+              with (out / (name + '.format.log')).open('wb') as stream:
+                  subprocess.run(['just', 'fmt'], cwd=repo / 'codex-rs', stdout=stream,
+                                 stderr=subprocess.STDOUT, check=True)
+              (out / (name + '.formatted.diff')).write_bytes(subprocess.check_output(['git', 'diff']))
+              unrelated = [p for p in git('diff', '--name-only').splitlines() if p != relative]
+              result[name + '_mechanical_paths_restored'] = unrelated
+              if unrelated:
+                  subprocess.run(['git', 'restore', '--', *unrelated], check=True)
               assert set(git('diff', '--name-only').splitlines()) == {relative}
               subprocess.run(['git', 'diff', '--check'], check=True)
               subprocess.run(['git', 'add', '--', relative], check=True)
@@ -91,104 +117,29 @@ jobs:
           assert hashlib.sha1(b'blob ' + str(len(original)).encode() + b'\0' + original).hexdigest() == '1427589355efa2ea3ac12cc076d0e9a028b29f0b'
           (out / 'owner-service-before.rs').write_bytes(original)
           subprocess.run(['git', 'switch', '-c', branch], check=True)
-          text = original.decode()
-          old = '        let retry = service.publish(request.clone()).fixture("terminal retry");\n'
-          regression = '''        let mut changed_payload = request.clone();
-                  changed_payload.payload[0] ^= 1;
-                  let mut truncated = request.clone();
-                  truncated.payload.truncate(truncated.payload.len() - 1);
-                  let mut extended = request.clone();
-                  extended.payload.push(0);
-                  let mut changed_manifest = request.clone();
-                  changed_manifest.admission.validated_manifest.manifest.training_code_digest =
-                      digest("changed-code-with-retained-admission-digest");
-                  let mut changed_admission_time = request.clone();
-                  changed_admission_time.admission.admitted_at += 1;
-                  let before_conflicts = service.registry().snapshot().head_digest;
-                  for changed in [changed_payload, truncated, extended, changed_manifest, changed_admission_time] {
-                      assert!(matches!(service.publish(changed), Err(LearningArtifactOwnerServiceError::RequestMismatch)),
-                          "same publication operation must refuse changed request bytes");
-                      assert_eq!(service.registry().snapshot().head_digest, before_conflicts);
-                      assert!(service.recovery_required().is_none());
-                  }
-          '''
-          lines = regression.splitlines()
-          regression = '\n'.join([lines[0]] + [line[10:] if line.startswith('          ') else line for line in lines[1:]]) + '\n'
-          text = replace_once(text, old, regression + old)
-          text = replace_once(text, '        let current = request.signed_current_head;\n',
-                              '        let current = request.signed_current_head.clone();\n')
-          text = replace_once(text, '        let reopened = LearningArtifactOwnerService::open(',
-                              '        let mut reopened = LearningArtifactOwnerService::open(')
-          marker = '        assert!(reopened.recovery_required().is_none());\n'
-          cold = '''        let mut changed_after_reopen = request.clone();
-                  changed_after_reopen.payload[0] ^= 1;
-                  assert!(matches!(reopened.publish(changed_after_reopen), Err(LearningArtifactOwnerServiceError::RequestMismatch)),
-                      "cold retry must bind the original publication bytes");
-                  assert_eq!(reopened.publish(request.clone()).fixture("cold exact retry"), receipt);
-                  let mut historical = request.clone();
-                  historical.now = 2_000;
-                  assert_eq!(reopened.publish(historical).fixture("historical receipt after manifest expiry"), receipt);
-          '''
-          lines = cold.splitlines()
-          cold = '\n'.join([lines[0]] + [line[10:] if line.startswith('          ') else line for line in lines[1:]]) + '\n'
-          text = replace_once(text, marker, marker + cold)
-          path.write_text(text)
-          subprocess.run(['rustup', 'run', '1.96.0', 'rustfmt', '--edition', '2024', str(path)], check=True)
-          result['red_source'] = commit('test(artifacts): bind completed publication retries to actual request bytes\n\nKeep the existing actual publication/reopen test and add changed payload, extent, manifest and admission-time controls plus exact cold and expired historical receipt replay. This test-only predecessor is expected to fail on the old owner; it is not a production release.')
-          test = ['just', 'test', '-p', 'codex-hepta-learning-artifacts', '--locked',
-                  '-E', 'test(=owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head)', '--status-level', 'pass']
-          code, log = command('red-owner-retry', test, repo / 'codex-rs')
-          assert code != 0 and 'same publication operation must refuse changed request bytes' in log, 'old implementation did not reproduce the requested failure'
+          result['red_source'] = apply_and_commit('red.patch',
+              'test(artifacts): reject changed bytes on completed publication retries\n\nExtend the existing actual publication/reopen test without deleting assertions. Cover changed payload, extent, manifest and admission time, unchanged complete registry, exact cold replay and receipt history after expiry. This test-only predecessor must fail the old owner and is not a release.')
+          code, log = command('red-owner-retry', ['just', 'test', '-p', 'codex-hepta-learning-artifacts',
+              '--locked', '-E', 'test(=owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head)', '--status-level', 'pass'])
+          assert code != 0 and 'same publication operation must refuse changed request bytes' in log, 'native old-owner assertion was not reproduced'
           result['red_reproduced'] = True
-          text = path.read_text()
-          old = '    Ok(())\n}\n\nfn rebuild_transaction('
-          guard = '''    // Revalidate the immutable admission at its original time and head.
-              // An acknowledged replay observes an old fact, not new publication
-              // authority: a later expiry or withdrawal must not erase that receipt.
-              crate::verify_artifact_admission_v3(
-                  &request.admission,
-                  checkpoint.withdrawal_head_digest,
-                  request.admission.admitted_at,
-              )
-              .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
-              let manifest = &request.admission.validated_manifest.manifest;
-              if u64::try_from(request.payload.len()).ok() != Some(manifest.encoded_size_bytes)
-                  || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
-              {
-                  return Err(LearningArtifactOwnerServiceError::RequestMismatch);
-              }
-              Ok(())
-          }
-
-          fn rebuild_transaction('''
-          lines = guard.splitlines()
-          guard = '\n'.join([lines[0]] + [line[10:] if line.startswith('          ') else line for line in lines[1:]])
-          text = replace_once(text, old, guard)
-          path.write_text(text)
-          subprocess.run(['just', 'fmt'], cwd=repo / 'codex-rs', check=True)
-          (out / 'full-formatter.diff').write_bytes(subprocess.check_output(['git', 'diff']))
-          unrelated = [p for p in git('diff', '--name-only').splitlines() if p != relative]
-          if unrelated:
-              subprocess.run(['git', 'restore', '--', *unrelated], check=True)
-          result['formatter_unrelated_paths_restored'] = unrelated
-          result['candidate'] = commit('fix(artifacts): verify historical admission and payload before replaying publication checkpoints\n\nBind immutable admission fields and actual payload length/digest even when the original operation is already acknowledged. Use the original admission time/head solely for historical integrity; normal incomplete publication still rechecks current withdrawal and expiry before continuing. Return RequestMismatch without overwriting or revoking the old receipt. Preserve the existing owner, journal, schema, authority posture and every original test. No new export grant, PoN adapter, trainer, registry or production activation.')
-          code, log = command('green-owner-crate', ['just', 'test', '-p', 'codex-hepta-learning-artifacts', '--locked', '--status-level', 'pass'], repo / 'codex-rs')
-          assert code == 0 and 'named_owner_service_publishes_retries_and_reopens_from_current_head' in log, 'full owner tests did not execute successfully'
-          code, log = command('scoped-clippy', ['cargo', 'clippy', '--locked', '-p', 'codex-hepta-learning-artifacts', '--all-targets', '--', '-D', 'warnings'], repo / 'codex-rs')
+          result['candidate'] = apply_and_commit('green.patch',
+              'fix(artifacts): verify original admission and payload before checkpoint replay\n\nRevalidate immutable admission fields and actual payload length/digest even after acknowledgement. Original admission time/head is historical integrity, not current publication authority; incomplete publication retains all later current checks. Return RequestMismatch without changing the old receipt or registry. Keep the existing owner/journal/schema and original tests. No new export grant, PoN adapter, trainer, registry or production activation.')
+          code, log = command('green-owner-crate', ['just', 'test', '-p', 'codex-hepta-learning-artifacts', '--locked', '--status-level', 'pass'])
+          assert code == 0 and 'named_owner_service_publishes_retries_and_reopens_from_current_head' in log, 'full scoped owner tests failed or were not executed'
+          code, log = command('scoped-clippy', ['cargo', 'clippy', '--locked', '-p', 'codex-hepta-learning-artifacts', '--all-targets', '--', '-D', 'warnings'])
           assert code == 0
-          code, log = command('scoped-format', ['cargo', 'fmt', '-p', 'codex-hepta-learning-artifacts', '--', '--check'], repo / 'codex-rs')
+          code, log = command('scoped-format', ['cargo', 'fmt', '-p', 'codex-hepta-learning-artifacts', '--', '--check'])
           assert code == 0
           assert set(git('diff', '--name-only', base, 'HEAD').splitlines()) == {relative}
           result['candidate_after'] = identity()
           assert result['candidate'] == result['candidate_after']
           (out / 'product.patch').write_bytes(subprocess.check_output(['git', 'diff', '--binary', base, 'HEAD']))
           (out / 'owner-service-after.rs').write_bytes(path.read_bytes())
-          binaries = []
-          for binary in (Path(os.environ['CARGO_TARGET_DIR']) / 'debug/deps').glob('codex_hepta_learning_artifacts-*'):
-              if binary.is_file() and os.access(binary, os.X_OK):
-                  binaries.append({'name': binary.name, 'sha256': hashlib.sha256(binary.read_bytes()).hexdigest()})
-          result['test_binaries'] = binaries
-          assert binaries
+          result['test_binaries'] = [{'name': b.name, 'sha256': hashlib.sha256(b.read_bytes()).hexdigest()}
+              for b in (Path(os.environ['CARGO_TARGET_DIR']) / 'debug/deps').glob('codex_hepta_learning_artifacts-*')
+              if b.is_file() and os.access(b, os.X_OK)]
+          assert result['test_binaries']
           result['passed'] = True
           result['branch'] = branch
           save()
@@ -201,11 +152,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import base64
-          import json
-          import os
+          import base64, json, os, subprocess
           from pathlib import Path
-          import subprocess
           def git(*args):
               return subprocess.check_output(['git', *args], text=True).strip()
           path = Path(os.environ['RUNNER_TEMP']) / 'publication-observations/result.json'
@@ -219,12 +167,11 @@ jobs:
           assert set(git('diff', '--name-only', result['base'], 'HEAD').splitlines()) == {
               'codex-rs/hepta-learning-artifacts/src/owner_service.rs'}
           assert result['branch'] == 'fix/artifact-publication-retry-binding-20261007'
-          token = os.environ['GH_TOKEN']
-          auth = 'AUTHORIZATION: basic ' + base64.b64encode(('x-access-token:' + token).encode()).decode()
+          auth = 'AUTHORIZATION: basic ' + base64.b64encode(('x-access-token:' + os.environ['GH_TOKEN']).encode()).decode()
           os.environ.update(GIT_CONFIG_COUNT='1', GIT_CONFIG_KEY_0='http.https://github.com/.extraheader',
                             GIT_CONFIG_VALUE_0=auth, GIT_TERMINAL_PROMPT='0')
           ref = 'refs/heads/' + result['branch']
-          assert not git('ls-remote', '--heads', 'origin', ref), 'refuse to overwrite a concurrently created product branch'
+          assert not git('ls-remote', '--heads', 'origin', ref), 'refuse to overwrite another product branch'
           subprocess.run(['git', 'push', 'origin', 'HEAD:' + ref], check=True)
           assert git('ls-remote', '--heads', 'origin', ref).split()[0] == result['candidate']['commit']
           result['delivered'] = True
