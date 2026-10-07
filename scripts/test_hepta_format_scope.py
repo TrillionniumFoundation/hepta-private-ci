@@ -227,6 +227,106 @@ class FormatterScopeTests(unittest.TestCase):
                     check=True,
                 )
 
+    def test_rust_check_batches_sources_without_crossing_owner_or_config_context(self):
+        for owner, edition in (("first", "2024"), ("other", "2021")):
+            self.write(
+                f"codex-rs/{owner}/Cargo.toml",
+                f'[package]\nname="{owner}"\nedition="{edition}"\n',
+            )
+        paths = [
+            "codex-rs/first/src/a.rs",
+            "codex-rs/first/src/b.rs",
+            "codex-rs/first/src/nested/c.rs",
+            "codex-rs/other/src/d.rs",
+        ]
+        for path in paths:
+            self.write(path, "pub fn entry() {}\n")
+        (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        with patch.object(
+            FMT.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess((), 0, stdout=""),
+        ) as runner:
+            self.assertEqual(
+                FMT.run_formatter_group(group), FMT.FormatterResult("Rust", "", 0)
+            )
+        self.assertEqual(
+            [(call.args[0], call.kwargs["cwd"]) for call in runner.call_args_list],
+            [
+                (
+                    (*group.commands[0].args, group.commands[1].args[-1]),
+                    self.root / "codex-rs/first",
+                ),
+                (group.commands[2].args, self.root / "codex-rs/first"),
+                (group.commands[3].args, self.root / "codex-rs/other"),
+            ],
+        )
+
+    def test_rust_check_splits_long_unicode_arguments_without_losing_inputs(self):
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        paths = [f"codex-rs/owner/src/{'界' * 30}{i:03}.rs" for i in range(100)]
+        for path in paths:
+            self.write(path, "pub fn entry() {}\n")
+        (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        with patch.object(
+            FMT.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess((), 0, stdout=""),
+        ) as runner:
+            self.assertEqual(FMT.run_formatter_group(group).returncode, 0)
+        args = [call.args[0] for call in runner.call_args_list]
+        self.assertGreater(len(args), 1)
+        self.assertLess(len(args), len(paths))
+        self.assertEqual(
+            [path for command in args for path in command[command.index("--") + 1 :]],
+            [command.args[-1] for command in group.commands],
+        )
+        for command in args:
+            self.assertLessEqual(
+                sum(2 * len(os.fsencode(arg)) + 3 for arg in command), 16000
+            )
+
+    def test_rust_check_batch_failure_is_reported(self):
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        paths = ["codex-rs/owner/src/a.rs", "codex-rs/owner/src/b.rs"]
+        (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        with patch.object(
+            FMT.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess((), 1, stdout="parse error\n"),
+        ) as runner:
+            result = FMT.run_formatter_group(group)
+        self.assertEqual(runner.call_count, 1)
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.name, "Rust")
+        self.assertIn("parse error\n", result.output)
+        for path in paths:
+            self.assertIn(str(self.root / path), result.output)
+
+    def test_rust_fix_preserves_per_file_stop_on_failure(self):
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        paths = [f"codex-rs/owner/src/{name}.rs" for name in ("a", "b", "c")]
+        (group,) = FMT.scoped_formatter_groups(paths, check=False)
+        with patch.object(
+            FMT.subprocess,
+            "run",
+            side_effect=[
+                subprocess.CompletedProcess((), 0, stdout=""),
+                subprocess.CompletedProcess((), 1, stdout="parse error\n"),
+            ],
+        ) as runner:
+            self.assertEqual(FMT.run_formatter_group(group).returncode, 1)
+        self.assertEqual(
+            [call.args[0] for call in runner.call_args_list],
+            [command.args for command in group.commands[:2]],
+        )
+
     def test_rust_formatter_executes_in_owner_context_without_touching_neighbor(self):
         import json
 

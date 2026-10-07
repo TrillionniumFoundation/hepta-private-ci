@@ -167,7 +167,33 @@ def formatter_groups(*, check: bool) -> tuple[FormatterGroup, ...]:
 
 def run_formatter_group(group: FormatterGroup) -> FormatterResult:
     """Run one formatter group sequentially and return its buffered output."""
+    commands: list[Command] = []
     for command in group.commands:
+        prefix = command.args[:-1]
+        if (
+            group.name == "Rust"
+            and prefix
+            and prefix[0] == "rustfmt"
+            and "--check" in prefix
+            and prefix[-1] == "--"
+            and commands
+        ):
+            previous = commands[-1]
+            combined = (*previous.args, command.args[-1])
+            # Keep configuration/toolchain context and leave room for quoting
+            # within Windows command-line limits. Only checks may examine
+            # more selected files after a formatting error.
+            if (
+                previous.cwd == command.cwd
+                and previous.args[: len(prefix)] == prefix
+                and Path(previous.args[-1]).parent == Path(command.args[-1]).parent
+                and sum(2 * len(os.fsencode(arg)) + 3 for arg in combined) <= 16000
+            ):
+                commands[-1] = Command(combined, command.cwd)
+                continue
+        commands.append(command)
+
+    for command in commands:
         try:
             process = subprocess.run(
                 command.args,
