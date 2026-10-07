@@ -66,6 +66,19 @@ fn output() -> NativeRunOutput {
     }
 }
 
+#[test]
+fn appended_reconciliation_reason_stays_within_durable_utf8_byte_limit() {
+    let note = format!("grace observed: {}", "界".repeat(1024));
+    let reason = append_stop_reason(
+        Some("provider interruption observed".to_string()),
+        note.clone(),
+    );
+
+    assert!(reason.len() <= MAX_STOP_REASON_BYTES);
+    assert!(reason.is_char_boundary(reason.len()));
+    assert!(reason.ends_with(truncate_utf8(&note, MAX_STOP_REASON_BYTES - 2)));
+}
+
 fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification {
     ServerNotification::TurnCompleted(TurnCompletedNotification {
         thread_id: thread.to_string(),
