@@ -1,0 +1,115 @@
+name: PoN sealed image source 20261008
+on:
+  push:
+    branches: [fix/agentd-pon-sealed-execution-20261008]
+    paths: [.github/workflows/pon-sealed-source-20261008.yml]
+permissions:
+  contents: write
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Bind existing host to immutable bytes without a new dependency or owner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = 507c861633c93c160b2b3fa06ec40f2be03dced6
+          python3 - <<'PY'
+          from pathlib import Path
+          def once(s,a,b):
+              assert s.count(a)==1,(a,s.count(a))
+              return s.replace(a,b,1)
+          p=Path('codex-rs/hepta-contracts/src/lib.rs');s=p.read_text()
+          s=once(s,'mod verified_use_witness;','mod verified_use_witness;\nmod verified_executable;\npub use verified_executable::VerifiedExecutableImage;')
+          p.write_text(s)
+          p=Path('codex-rs/hepta-agentd/src/automation_effect_host.rs');s=p.read_text()
+          s=once(s,'use codex_hepta_contracts::Sha256Digest;','use codex_hepta_contracts::Sha256Digest;\nuse codex_hepta_contracts::VerifiedExecutableImage;')
+          s=once(s,'        verify_pinned_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;\n','')
+          s=once(s,'    fn command(&self, operation: &str) -> Command {\n        let mut command = Command::new(&self.binary);','    fn command(&self, operation: &str, image: &VerifiedExecutableImage) -> Command {\n        let mut command = image.command();')
+          marker='        let Ok(runtime) = tokio::runtime::Handle::try_current() else {'
+          s=once(s,marker,'''        let Ok(image) = VerifiedExecutableImage::open(
+                      &self.binary,
+                      &self.binary_sha256,
+                      MAX_PON_BINARY_BYTES,
+                      deadline,
+                  ) else {
+                      return PonInvocation::BeforeStart;
+                  };
+          '''+marker)
+          s=once(s,'            self.command(operation),','            self.command(operation, &image),')
+          a=s.index('    fn invoke(');b=s.index('    fn block_digest(',a)
+          invoke=s[a:b]
+          invoke=once(invoke,'        match runtime.block_on(pon_process::run(','        let result = match runtime.block_on(pon_process::run(')
+          assert invoke.endswith('        }\n    }\n\n')
+          invoke=invoke[:-len('        }\n    }\n\n')]+'''        };
+                  // Retain the actual sealed object until every pipe and the direct
+                  // child have reached the bounded terminal exchange outcome.
+                  drop(image);
+                  result
+              }
+
+          '''
+          s=s[:a]+invoke+s[b:]
+          a=s.index('fn verify_pinned_binary(');b=s.index('fn pon_contract_digest(',a)
+          s=s[:a]+'''fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
+              let deadline = Instant::now().checked_add(Duration::from_secs(30))
+                  .ok_or_else(|| AgentdError::Invalid("PoN executable deadline".into()))?;
+              VerifiedExecutableImage::open(path, expected, MAX_PON_BINARY_BYTES, deadline)?;
+              Ok(())
+          }
+
+          '''+s[b:]
+          if 'Sha256::' not in s:
+              s=s.replace('use sha2::Digest;\n','').replace('use sha2::Sha256;\n','')
+          if 'thread::' not in s:s=s.replace('use std::thread;\n','')
+          s=once(s,'#[cfg(all(test, unix))]\n#[path = "automation_effect_host_pon_tests.rs"]','#[cfg(all(test, target_os = "linux"))]\n#[path = "automation_effect_host_pon_tests.rs"]')
+          p.write_text(s)
+          p=Path('codex-rs/hepta-agentd/PON_BOUNDARY_REPAIR_20261008.md')
+          with p.open('a') as f:f.write('''
+
+          ## Sealed-byte execution continuation
+
+          The PoN adapter now executes a held Linux sealed image from the existing
+          provider byte-identity contract. The same nonblocking/no-follow source
+          descriptor is type/permission/length checked, copied within a fixed byte
+          bound, and closed. The copy receives write/grow/shrink/seal seals before
+          its actual bytes are SHA-256 checked. Only a read-only descriptor remains
+          at execution. Atomic path replacement and same-inode rewriting cannot
+          change the held image. The host keeps that image through the bounded
+          child exchange, under the original operation deadline. No key, journal,
+          global cache or process supervisor is introduced. Existing rustix/sha2
+          dependencies in the contracts crate are reused; Cargo/Bazel dependency
+          graphs are unchanged.
+
+          This PoN local provider now requires Linux memfd sealing and access to its
+          host proc descriptor path. Unsupported systems reject before provider
+          contact rather than silently executing a mutable path; the HTTP provider
+          is unchanged. Linux-specific process fixtures cover the implemented route;
+          a separate contract test requires Unsupported on other platforms. Dynamic
+          libraries, script interpreters, environment, local ptrace privilege and
+          the kernel remain trusted. This binds executable bytes, not all execution
+          dependencies and not Chain storage or current Hepta final-use authority.
+          Blocking filesystem syscalls are not made physically preemptible by the
+          between-chunk deadline checks. Real device/OS acceptance remains separate.
+          ''')
+          Path('.github/workflows/pon-sealed-source-20261008.yml').unlink()
+          PY
+      - name: Format changed Rust under the existing toolchain
+        shell: bash
+        run: |
+          cd codex-rs
+          rustfmt --edition 2024 hepta-contracts/src/verified_executable.rs hepta-contracts/src/verified_executable_tests.rs hepta-contracts/src/lib.rs hepta-agentd/src/automation_effect_host.rs
+      - name: Publish scoped candidate without replacing a concurrent head
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git add codex-rs/hepta-contracts/src/verified_executable.rs codex-rs/hepta-contracts/src/verified_executable_tests.rs codex-rs/hepta-contracts/src/lib.rs codex-rs/hepta-agentd/src/automation_effect_host.rs codex-rs/hepta-agentd/PON_BOUNDARY_REPAIR_20261008.md .github/workflows/pon-sealed-source-20261008.yml
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -s -m 'fix(agentd): execute the exact sealed PoN binary image through the bounded exchange' -m 'Linux image sealing binds checked bytes to execution. Preserve effect identity, final-use ownership and post-entry Unknown. No mutable-path fallback, second owner, dependency addition, deployment or independent acceptance.'
+          git push origin HEAD:refs/heads/fix/agentd-pon-sealed-execution-20261008
+          git show --stat --oneline HEAD
