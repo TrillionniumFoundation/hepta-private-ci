@@ -290,6 +290,21 @@ fn validate_request_against_checkpoint(
     {
         return Err(LearningArtifactOwnerServiceError::RequestMismatch);
     }
+    // Revalidate the immutable admission at its original time and head.
+    // An acknowledged replay observes an old fact, not new publication
+    // authority: a later expiry or withdrawal must not erase that receipt.
+    crate::verify_artifact_admission_v3(
+        &request.admission,
+        checkpoint.withdrawal_head_digest,
+        request.admission.admitted_at,
+    )
+    .map_err(|_| LearningArtifactOwnerServiceError::RequestMismatch)?;
+    let manifest = &request.admission.validated_manifest.manifest;
+    if u64::try_from(request.payload.len()).ok() != Some(manifest.encoded_size_bytes)
+        || Digest32::of_bytes(&request.payload) != manifest.bytes_digest
+    {
+        return Err(LearningArtifactOwnerServiceError::RequestMismatch);
+    }
     Ok(())
 }
 
