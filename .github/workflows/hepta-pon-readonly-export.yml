@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      SOURCE_SHA: 6d635e3933e4da87112df42f3951fffdc068099d
+      SOURCE_SHA: a48b99ec46995f70f50c173c9ab358d603c6d115
     steps:
       - name: Checkout exact source without persisted credentials
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -31,7 +31,7 @@ jobs:
       - name: Upload exact source transport
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-source-6d635e39
+          name: hepta-source-a48b99ec
           path: ${{ runner.temp }}/source-export/
           if-no-files-found: error
           retention-days: 7
@@ -50,12 +50,67 @@ jobs:
           sysroot="$(rustup run 1.96.0 rustc --print sysroot)"
           tar -C "$sysroot" -czf "$RUNNER_TEMP/toolchain-export/rust-1.96.0-x64.tar.gz" .
           tar -C "$CARGO_HOME" -czf "$RUNNER_TEMP/toolchain-export/cargo-inputs.tar.gz" registry git
-          sha256sum "$RUNNER_TEMP/toolchain-export/"*.tar.gz > "$RUNNER_TEMP/toolchain-export/archives.sha256"
-      - name: Upload public offline build inputs
+          cd "$RUNNER_TEMP/toolchain-export"
+          sha256sum *.tar.gz > archives.sha256
+          split -b 240M -d -a 2 rust-1.96.0-x64.tar.gz rust.part-
+          split -b 240M -d -a 2 cargo-inputs.tar.gz cargo.part-
+          sha256sum *.part-* > parts.sha256
+          test "$(find . -maxdepth 1 -name 'rust.part-*' | wc -l)" -le 2
+          test "$(find . -maxdepth 1 -name 'cargo.part-*' | wc -l)" -le 4
+      - name: Upload pinned input manifests
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-offline-toolchain-1.96.0
-          path: ${{ runner.temp }}/toolchain-export/
+          name: hepta-input-manifests
+          path: |
+            ${{ runner.temp }}/toolchain-export/*.sha256
+            ${{ runner.temp }}/toolchain-export/rustc.txt
           if-no-files-found: error
+          retention-days: 7
+      - name: Upload Rust chunk zero
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-rust-part-00
+          path: ${{ runner.temp }}/toolchain-export/rust.part-00
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Upload Rust chunk one if present
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-rust-part-01
+          path: ${{ runner.temp }}/toolchain-export/rust.part-01
+          if-no-files-found: ignore
+          retention-days: 7
+          compression-level: 0
+      - name: Upload Cargo chunk zero
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cargo-part-00
+          path: ${{ runner.temp }}/toolchain-export/cargo.part-00
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
+      - name: Upload Cargo chunk one if present
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cargo-part-01
+          path: ${{ runner.temp }}/toolchain-export/cargo.part-01
+          if-no-files-found: ignore
+          retention-days: 7
+          compression-level: 0
+      - name: Upload Cargo chunk two if present
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cargo-part-02
+          path: ${{ runner.temp }}/toolchain-export/cargo.part-02
+          if-no-files-found: ignore
+          retention-days: 7
+          compression-level: 0
+      - name: Upload Cargo chunk three if present
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cargo-part-03
+          path: ${{ runner.temp }}/toolchain-export/cargo.part-03
+          if-no-files-found: ignore
           retention-days: 7
           compression-level: 0
