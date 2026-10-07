@@ -442,11 +442,22 @@ impl AgentdProviderEffectAdapter {
         let wire_payload = wire_payload?.to_vec();
         let adapter = adapter.clone();
         let intent = intent.clone();
-        tokio::task::spawn_blocking(move || adapter.observe_blocking(intent, wire_payload))
-            .await
-            .ok()
-            .flatten()
+        let expected = intent.clone();
+        let observation =
+            tokio::task::spawn_blocking(move || adapter.observe_blocking(intent, wire_payload))
+                .await
+                .ok()
+                .flatten()?;
+        chain_observation_matches_intent(&observation, &expected).then_some(observation)
     }
+}
+
+fn chain_observation_matches_intent(
+    observation: &crate::AutomationEffectChainObservation,
+    intent: &ProviderEffectIntent,
+) -> bool {
+    observation.provider_effect_key.as_deref() == Some(intent.key.as_str())
+        && observation.payload_sha256.as_deref() == Some(intent.payload_sha256.as_str())
 }
 
 fn lower_hex_32(value: &str) -> bool {
@@ -1946,6 +1957,57 @@ mod tests {
         let mut inconsistent = value;
         inconsistent["result"]["active_chain_member"] = Value::Bool(true);
         assert!(parse_pon_chain_observation(&inconsistent, 3, &format!("{}03", "00".repeat(63))).is_none());
+    }
+
+    #[test]
+    fn pon_chain_observation_binding_requires_exact_durable_effect_and_payload() {
+        let value = serde_json::json!({
+            "result": {
+                "schema": "pon-native-exact-packet-observation-v3",
+                "block": "11".repeat(32),
+                "stored_exact": true,
+                "block_height": 7,
+                "block_chainwork_hex": format!("{}01", "00".repeat(63)),
+                "active_tip": "22".repeat(32),
+                "active_tip_height": 11,
+                "active_tip_chainwork_hex": format!("{}05", "00".repeat(63)),
+                "active_chain_member": true,
+                "active_depth": 4,
+                "active_work_depth_hex": format!("{}04", "00".repeat(63)),
+                "active_membership_sql_lookups": 2,
+                "active_membership_sql_budget": 1024,
+                "generation": 9,
+                "local_target_only": true,
+                "global_absence_authority": false,
+                "confirmation_authority": false,
+                "finality_authority": false,
+                "execution_authority": false,
+                "production_activation": false
+            }
+        });
+        let mut observation = parse_pon_chain_observation(
+            &value,
+            3,
+            &format!("{}03", "00".repeat(63)),
+        )
+        .expect("valid observation");
+        let key = ProviderEffectKey::for_operation("provider/fixture-v1", "run-1", "step-1")
+            .expect("provider key");
+        let intent = ProviderEffectIntent::new(
+            key,
+            Sha256Digest::for_bytes(b"exact-durable-wire"),
+        );
+        assert!(!chain_observation_matches_intent(&observation, &intent));
+        observation.provider_effect_key = Some(intent.key.as_str().to_owned());
+        observation.payload_sha256 = Some(intent.payload_sha256.as_str().to_owned());
+        assert!(chain_observation_matches_intent(&observation, &intent));
+
+        let mut wrong_key = observation.clone();
+        wrong_key.provider_effect_key = Some("provider/fixture-v1:other".to_string());
+        assert!(!chain_observation_matches_intent(&wrong_key, &intent));
+        let mut wrong_payload = observation;
+        wrong_payload.payload_sha256 = Some(Sha256Digest::for_bytes(b"other-wire").as_str().to_owned());
+        assert!(!chain_observation_matches_intent(&wrong_payload, &intent));
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
