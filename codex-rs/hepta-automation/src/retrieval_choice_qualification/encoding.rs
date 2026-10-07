@@ -1,5 +1,5 @@
 //! Qualification-only retained-byte accounting, not an authorization or codec
-//! for native TaskFlow event hashes. This module is not registered yet.
+//! for native TaskFlow event hashes. Only explicit qualification tests include it.
 //!
 //! Callers must supply the complete retained row inventory and actual producer
 //! encoding. This layer cannot prove observation authenticity or missing rows.

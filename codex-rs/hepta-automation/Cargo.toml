@@ -17,6 +17,8 @@ default = []
 # taskflow_kernel helpers. The durable production step outbox is default code
 # and remains authority-free by itself.
 taskflow-structural-qualification = []
+# Private owner-root fixtures exist only in this crate's explicit unit-test profile.
+qualification-retrieval-choice = ["taskflow-structural-qualification"]
 
 [lints]
 workspace = true

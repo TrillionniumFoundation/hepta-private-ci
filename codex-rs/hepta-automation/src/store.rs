@@ -60,6 +60,37 @@ impl AutomationStore {
         root: PathBuf,
         owner_agent_id: AgentId,
     ) -> Result<Self, AutomationError> {
+        Self::open_root_inner(
+            root,
+            owner_agent_id,
+            #[cfg(all(test, feature = "qualification-retrieval-choice"))]
+            /*capability*/
+            None,
+        )
+        .await
+    }
+
+    #[cfg(all(test, feature = "qualification-retrieval-choice"))]
+    pub(crate) async fn open_qualification_root(
+        capability: &crate::retrieval_choice_qualification::FixtureRootCapability,
+    ) -> Result<Self, AutomationError> {
+        Self::open_root_inner(
+            capability.root().to_path_buf(),
+            capability.owner().clone(),
+            Some(capability),
+        )
+        .await
+    }
+
+    async fn open_root_inner(
+        root: PathBuf,
+        owner_agent_id: AgentId,
+        #[cfg(all(test, feature = "qualification-retrieval-choice"))] capability: Option<
+            &crate::retrieval_choice_qualification::FixtureRootCapability,
+        >,
+    ) -> Result<Self, AutomationError> {
+        #[cfg(all(test, feature = "qualification-retrieval-choice"))]
+        crate::retrieval_choice_qualification::check_root(&root, &owner_agent_id, capability)?;
         let root = create_private_directory(&root)?;
         let path = root.join(AUTOMATION_DB_FILENAME);
         let sqlite_home = AbsolutePathBuf::try_from(root).map_err(|_| AutomationError::Invalid)?;
@@ -67,6 +98,14 @@ impl AutomationStore {
             .open_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
+        #[cfg(all(test, feature = "qualification-retrieval-choice"))]
+        if let Err(error) =
+            crate::retrieval_choice_qualification::check_pool(&pool, &owner_agent_id, capability)
+                .await
+        {
+            pool.close().await;
+            return Err(error);
+        }
         if let Err(error) = reconcile_legacy_migration_ids(&pool).await {
             pool.close().await;
             return Err(error);

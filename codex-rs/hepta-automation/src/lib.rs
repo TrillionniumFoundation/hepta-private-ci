@@ -20,6 +20,8 @@ mod lifecycle;
 mod model;
 mod neural_circuit;
 mod operation_destination;
+#[cfg(all(test, feature = "qualification-retrieval-choice"))]
+mod retrieval_choice_qualification;
 mod schedule_v2;
 mod scheduler;
 mod store;

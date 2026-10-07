@@ -1772,3 +1772,7 @@ fn corrupt(message: impl Into<String>) -> TaskFlowError {
 fn is_constraint(error: &sqlx::Error) -> bool {
     matches!(error, sqlx::Error::Database(database) if database.is_unique_violation() || database.is_foreign_key_violation() || database.is_check_violation())
 }
+
+#[cfg(all(test, feature = "qualification-retrieval-choice"))]
+#[path = "retrieval_choice_qualification/owner_mutations.rs"]
+mod retrieval_choice_mutations;
