@@ -643,6 +643,38 @@ mod tests {
         );
 
         let receipt = service.publish(request.clone()).fixture("publish");
+        let mut changed_payload = request.clone();
+        changed_payload.payload[0] ^= 1;
+        let mut truncated = request.clone();
+        truncated.payload.truncate(truncated.payload.len() - 1);
+        let mut extended = request.clone();
+        extended.payload.push(0);
+        let mut changed_manifest = request.clone();
+        changed_manifest
+            .admission
+            .validated_manifest
+            .manifest
+            .training_code_digest = digest("changed-code-with-retained-admission-digest");
+        let mut changed_admission_time = request.clone();
+        changed_admission_time.admission.admitted_at += 1;
+        let before_conflicts = service.registry().snapshot();
+        for changed in [
+            changed_payload,
+            truncated,
+            extended,
+            changed_manifest,
+            changed_admission_time,
+        ] {
+            assert!(
+                matches!(
+                    service.publish(changed),
+                    Err(LearningArtifactOwnerServiceError::RequestMismatch)
+                ),
+                "same publication operation must refuse changed request bytes"
+            );
+            assert_eq!(service.registry().snapshot(), before_conflicts);
+            assert!(service.recovery_required().is_none());
+        }
         let retry = service.publish(request.clone()).fixture("terminal retry");
         assert_eq!(retry, receipt);
         let current_view = service
@@ -654,24 +686,48 @@ mod tests {
         );
         assert!(!current_view.witness_digest().is_zero());
         assert!(!current_view.trust_digest().is_zero());
-        let current = request.signed_current_head;
+        let current = request.signed_current_head.clone();
         drop(service);
 
-        let reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
-            root: directory.0.clone(),
-            trust: trust(&key, scope_digest),
-            writer_lease: lease(&key, scope_digest),
-            required_current_head: Some(current),
-            withdrawal_registry: withdrawals,
-            storage_binding: digest("binding"),
-            now: 21,
-        })
-        .fixture("reopen service");
+        let mut reopened =
+            LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+                root: directory.0.clone(),
+                trust: trust(&key, scope_digest),
+                writer_lease: lease(&key, scope_digest),
+                required_current_head: Some(current),
+                withdrawal_registry: withdrawals,
+                storage_binding: digest("binding"),
+                now: 21,
+            })
+            .fixture("reopen service");
         assert_eq!(
             reopened.registry().snapshot().head_digest,
             receipt.registry_head_digest
         );
         assert!(reopened.recovery_required().is_none());
+        let mut changed_after_reopen = request.clone();
+        changed_after_reopen.payload[0] ^= 1;
+        assert!(
+            matches!(
+                reopened.publish(changed_after_reopen),
+                Err(LearningArtifactOwnerServiceError::RequestMismatch)
+            ),
+            "cold retry must bind the original publication bytes"
+        );
+        assert_eq!(
+            reopened
+                .publish(request.clone())
+                .fixture("cold exact retry"),
+            receipt
+        );
+        let mut historical = request;
+        historical.now = 2_000;
+        assert_eq!(
+            reopened
+                .publish(historical)
+                .fixture("historical receipt after manifest expiry"),
+            receipt
+        );
         assert_eq!(
             reopened
                 .current_registry_view(21)
