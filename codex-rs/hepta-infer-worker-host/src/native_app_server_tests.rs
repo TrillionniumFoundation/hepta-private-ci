@@ -70,7 +70,7 @@ fn output() -> NativeRunOutput {
 fn appended_reconciliation_reason_stays_within_durable_utf8_byte_limit() {
     let note = format!("grace observed: {}", "界".repeat(1024));
     let reason = append_stop_reason(
-        Some("provider interruption observed".to_string()),
+        Some(format!("provider interruption: {}", "界".repeat(1024))),
         note.clone(),
     );
 
