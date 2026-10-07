@@ -7,12 +7,17 @@
 
 use std::collections::BTreeMap;
 use std::fs;
+use std::io::Read;
+use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::process::Command;
+use std::process::Stdio;
 use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
+use std::time::Instant;
 
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
@@ -33,6 +38,8 @@ use codex_hepta_contracts::ProviderEffectAck;
 use codex_hepta_contracts::ProviderEffectAckStatus;
 use codex_hepta_contracts::ProviderEffectAdapter;
 use codex_hepta_contracts::ProviderEffectDispatch;
+use codex_hepta_contracts::ProviderEffectFuture;
+use codex_hepta_contracts::ProviderEffectIdempotencyCapability;
 use codex_hepta_contracts::ProviderEffectIntent;
 use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
@@ -45,6 +52,9 @@ use http::HeaderMap;
 use http::HeaderName;
 use http::HeaderValue;
 use serde::Deserialize;
+use serde_json::Value;
+use sha2::Digest;
+use sha2::Sha256;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
@@ -53,6 +63,504 @@ const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
+const AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION: u32 = 2;
+const PON_PROVIDER_KIND: &str = "trillionnium-pon-local-v1";
+const MAX_PON_BINARY_BYTES: u64 = 256 * 1024 * 1024;
+const MAX_PON_PROCESS_OUTPUT_BYTES: usize = 64 * 1024;
+
+#[derive(Clone, Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct AutomationEffectHostFileV2 {
+    schema_version: u32,
+    provider_kind: String,
+    provider_scope: String,
+    destination_id: String,
+    final_use_scope_sha256: String,
+    chain_binary: PathBuf,
+    chain_binary_sha256: String,
+    chain_store: PathBuf,
+    chain_state_backend: String,
+    chain_genesis_time: u64,
+    chain_evaluation_policy: String,
+    chain_task_profile: String,
+    chain_model_profile: String,
+    chain_workers: u64,
+    timeout_ms: u64,
+    contract_id: String,
+    contract_sha256: String,
+    contract_authority_epoch: u64,
+    contract_signature_hex: String,
+    contract_verifying_key_hex: String,
+    final_use_signer_id: String,
+    final_use_verifying_key_hex: String,
+    final_use_revocations_file: PathBuf,
+}
+
+enum AutomationEffectHostFile {
+    Http(AutomationEffectHostFileV1),
+    Pon(AutomationEffectHostFileV2),
+}
+
+#[derive(Clone)]
+enum AgentdProviderEffectAdapter {
+    Http(HttpProviderEffectAdapter),
+    Pon(PonLocalProviderEffectAdapter),
+}
+
+impl std::fmt::Debug for AgentdProviderEffectAdapter {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Http(adapter) => formatter.debug_tuple("Http").field(adapter).finish(),
+            Self::Pon(adapter) => formatter.debug_tuple("Pon").field(adapter).finish(),
+        }
+    }
+}
+
+impl ProviderEffectAdapter for AgentdProviderEffectAdapter {
+    fn capability(&self) -> ProviderEffectIdempotencyCapability {
+        match self {
+            Self::Http(adapter) => adapter.capability(),
+            Self::Pon(adapter) => adapter.capability(),
+        }
+    }
+
+    fn dispatch<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        match self {
+            Self::Http(adapter) => adapter.dispatch(intent),
+            Self::Pon(adapter) => adapter.dispatch(intent),
+        }
+    }
+
+    fn dispatch_with_payload<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+        wire_payload: &'a [u8],
+    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        match self {
+            Self::Http(adapter) => adapter.dispatch_with_payload(intent, wire_payload),
+            Self::Pon(adapter) => adapter.dispatch_with_payload(intent, wire_payload),
+        }
+    }
+
+    fn lookup<'a>(
+        &'a self,
+        key: &'a ProviderEffectKey,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        match self {
+            Self::Http(adapter) => adapter.lookup(key),
+            Self::Pon(adapter) => adapter.lookup(key),
+        }
+    }
+
+    fn lookup_for_intent<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        match self {
+            Self::Http(adapter) => adapter.lookup_for_intent(intent),
+            Self::Pon(adapter) => adapter.lookup_for_intent(intent),
+        }
+    }
+
+    fn lookup_for_reconciliation<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+        wire_payload: Option<&'a [u8]>,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        match self {
+            Self::Http(adapter) => adapter.lookup_for_reconciliation(intent, wire_payload),
+            Self::Pon(adapter) => adapter.lookup_for_reconciliation(intent, wire_payload),
+        }
+    }
+}
+
+#[derive(Clone)]
+struct PonLocalProviderEffectAdapter {
+    binary: PathBuf,
+    binary_sha256: Sha256Digest,
+    store: PathBuf,
+    state_backend: String,
+    genesis_time: u64,
+    evaluation_policy: String,
+    task_profile: String,
+    model_profile: String,
+    workers: u64,
+    timeout: Duration,
+}
+
+impl std::fmt::Debug for PonLocalProviderEffectAdapter {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter
+            .debug_struct("PonLocalProviderEffectAdapter")
+            .field("binary", &self.binary)
+            .field("binary_sha256", &self.binary_sha256)
+            .field("store", &self.store)
+            .field("state_backend", &self.state_backend)
+            .field("genesis_time", &self.genesis_time)
+            .field("evaluation_policy", &self.evaluation_policy)
+            .field("task_profile", &self.task_profile)
+            .field("model_profile", &self.model_profile)
+            .field("workers", &self.workers)
+            .field("timeout", &self.timeout)
+            .finish()
+    }
+}
+
+enum PonInvocation {
+    BeforeStart,
+    Unknown,
+    Value(Value),
+}
+
+impl PonLocalProviderEffectAdapter {
+    fn validate_paths(&self) -> Result<(), ()> {
+        verify_pinned_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;
+        let canonical_store = self.store.canonicalize().map_err(|_| ())?;
+        if canonical_store != self.store || !canonical_store.is_dir() {
+            return Err(());
+        }
+        let database = self.store.join("native.sqlite");
+        let metadata = fs::symlink_metadata(&database).map_err(|_| ())?;
+        if metadata.file_type().is_symlink() || !metadata.is_file() {
+            return Err(());
+        }
+        Ok(())
+    }
+
+    fn command(&self, operation: &str) -> Command {
+        let mut command = Command::new(&self.binary);
+        command
+            .arg(operation)
+            .arg("--development")
+            .arg("--store")
+            .arg(&self.store)
+            .arg("--state-backend")
+            .arg(&self.state_backend)
+            .arg("--genesis-time")
+            .arg(self.genesis_time.to_string())
+            .arg("--evaluation-policy")
+            .arg(&self.evaluation_policy)
+            .arg("--task-profile")
+            .arg(&self.task_profile)
+            .arg("--model-profile")
+            .arg(&self.model_profile)
+            .arg("--workers")
+            .arg(self.workers.to_string())
+            .arg("--packet-stdin")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped());
+        command
+    }
+
+    fn invoke(&self, operation: &str, wire_payload: &[u8]) -> PonInvocation {
+        if self.validate_paths().is_err() {
+            return PonInvocation::BeforeStart;
+        }
+        let mut child = match self.command(operation).spawn() {
+            Ok(child) => child,
+            Err(_) => return PonInvocation::BeforeStart,
+        };
+        let stdout = child.stdout.take();
+        let stderr = child.stderr.take();
+        let stdout_reader = stdout.map(|stream| {
+            thread::spawn(move || drain_process_output(stream, MAX_PON_PROCESS_OUTPUT_BYTES))
+        });
+        let stderr_reader = stderr.map(|stream| {
+            thread::spawn(move || drain_process_output(stream, MAX_PON_PROCESS_OUTPUT_BYTES))
+        });
+        let write_ok = child
+            .stdin
+            .take()
+            .is_some_and(|mut input| input.write_all(wire_payload).is_ok());
+        if !write_ok {
+            let _ = child.kill();
+            let _ = child.wait();
+            join_process_reader(stdout_reader);
+            join_process_reader(stderr_reader);
+            return PonInvocation::Unknown;
+        }
+        let deadline = Instant::now() + self.timeout;
+        let status = loop {
+            match child.try_wait() {
+                Ok(Some(status)) => break Some(status),
+                Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
+                Ok(None) => {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    break None;
+                }
+                Err(_) => {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    break None;
+                }
+            }
+        };
+        let stdout = join_process_reader(stdout_reader);
+        let _stderr = join_process_reader(stderr_reader);
+        let Some(status) = status else {
+            return PonInvocation::Unknown;
+        };
+        if !status.success() {
+            return PonInvocation::Unknown;
+        }
+        let Some(stdout) = stdout.filter(|bytes| bytes.len() <= MAX_PON_PROCESS_OUTPUT_BYTES) else {
+            return PonInvocation::Unknown;
+        };
+        match serde_json::from_slice(&stdout) {
+            Ok(value) => PonInvocation::Value(value),
+            Err(_) => PonInvocation::Unknown,
+        }
+    }
+
+    fn block_digest(value: &Value) -> Option<Sha256Digest> {
+        let block = value
+            .get("result")?
+            .get("block")?
+            .as_str()?;
+        if block.len() != 64
+            || !block
+                .bytes()
+                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        {
+            return None;
+        }
+        let mut binding = b"trillionnium.pon.block.v1\0".to_vec();
+        binding.extend_from_slice(block.as_bytes());
+        Some(Sha256Digest::for_bytes(&binding))
+    }
+
+    fn dispatch_blocking(
+        &self,
+        intent: ProviderEffectIntent,
+        wire_payload: Vec<u8>,
+    ) -> ProviderEffectDispatch {
+        if Sha256Digest::for_bytes(&wire_payload) != intent.payload_sha256 {
+            return ProviderEffectDispatch::NotDispatched {
+                reason_code: "pon_packet_payload_binding_invalid".to_string(),
+            };
+        }
+        match self.invoke("submit", &wire_payload) {
+            PonInvocation::BeforeStart => ProviderEffectDispatch::NotDispatched {
+                reason_code: "pon_local_owner_unavailable_before_start".to_string(),
+            },
+            PonInvocation::Unknown => ProviderEffectDispatch::Unknown,
+            PonInvocation::Value(value) => {
+                let Some(operation) = Self::block_digest(&value) else {
+                    return ProviderEffectDispatch::Unknown;
+                };
+                ProviderEffectDispatch::Ack(ProviderEffectAck::new(
+                    intent.key,
+                    intent.payload_sha256,
+                    operation,
+                    ProviderEffectAckStatus::Completed,
+                ))
+            }
+        }
+    }
+
+    fn lookup_blocking(
+        &self,
+        intent: ProviderEffectIntent,
+        wire_payload: Vec<u8>,
+    ) -> ProviderEffectLookup {
+        if Sha256Digest::for_bytes(&wire_payload) != intent.payload_sha256 {
+            return ProviderEffectLookup::Conflict {
+                observed_payload_sha256: Some(Sha256Digest::for_bytes(&wire_payload)),
+            };
+        }
+        let PonInvocation::Value(value) = self.invoke("packet-status", &wire_payload) else {
+            return ProviderEffectLookup::Unknown;
+        };
+        let Some(result) = value.get("result") else {
+            return ProviderEffectLookup::Unknown;
+        };
+        if result.get("schema").and_then(Value::as_str)
+            != Some("pon-native-exact-packet-observation-v2")
+            || result.get("global_absence_authority").and_then(Value::as_bool) != Some(false)
+            || result.get("confirmation_authority").and_then(Value::as_bool) != Some(false)
+            || result.get("finality_authority").and_then(Value::as_bool) != Some(false)
+            || result.get("execution_authority").and_then(Value::as_bool) != Some(false)
+        {
+            return ProviderEffectLookup::Unknown;
+        }
+        if result.get("stored_exact").and_then(Value::as_bool) != Some(true) {
+            // Local absence cannot prove NotDispatched on another peer and must
+            // never authorize a second physical send.
+            return ProviderEffectLookup::Unknown;
+        }
+        let Some(operation) = Self::block_digest(&value) else {
+            return ProviderEffectLookup::Unknown;
+        };
+        ProviderEffectLookup::Ack(ProviderEffectAck::new(
+            intent.key,
+            intent.payload_sha256,
+            operation,
+            ProviderEffectAckStatus::Completed,
+        ))
+    }
+}
+
+impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
+    fn capability(&self) -> ProviderEffectIdempotencyCapability {
+        ProviderEffectIdempotencyCapability::KeyAndStatusLookup
+    }
+
+    fn dispatch<'a>(
+        &'a self,
+        _intent: &'a ProviderEffectIntent,
+    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        Box::pin(async {
+            ProviderEffectDispatch::NotDispatched {
+                reason_code: "pon_exact_packet_bytes_required".to_string(),
+            }
+        })
+    }
+
+    fn dispatch_with_payload<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+        wire_payload: &'a [u8],
+    ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        let adapter = self.clone();
+        let intent = intent.clone();
+        let wire_payload = wire_payload.to_vec();
+        Box::pin(async move {
+            tokio::task::spawn_blocking(move || adapter.dispatch_blocking(intent, wire_payload))
+                .await
+                .unwrap_or(ProviderEffectDispatch::Unknown)
+        })
+    }
+
+    fn lookup<'a>(
+        &'a self,
+        _key: &'a ProviderEffectKey,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        Box::pin(async { ProviderEffectLookup::Unknown })
+    }
+
+    fn lookup_for_reconciliation<'a>(
+        &'a self,
+        intent: &'a ProviderEffectIntent,
+        wire_payload: Option<&'a [u8]>,
+    ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
+        let Some(wire_payload) = wire_payload else {
+            return Box::pin(async { ProviderEffectLookup::Unknown });
+        };
+        let adapter = self.clone();
+        let intent = intent.clone();
+        let wire_payload = wire_payload.to_vec();
+        Box::pin(async move {
+            tokio::task::spawn_blocking(move || adapter.lookup_blocking(intent, wire_payload))
+                .await
+                .unwrap_or(ProviderEffectLookup::Unknown)
+        })
+    }
+}
+
+fn drain_process_output(mut stream: impl Read, limit: usize) -> Vec<u8> {
+    let mut retained = Vec::new();
+    let mut buffer = [0_u8; 4096];
+    loop {
+        let Ok(read) = stream.read(&mut buffer) else {
+            retained.clear();
+            return retained;
+        };
+        if read == 0 {
+            return retained;
+        }
+        if retained.len() <= limit {
+            let remaining = limit.saturating_add(1).saturating_sub(retained.len());
+            retained.extend_from_slice(&buffer[..read.min(remaining)]);
+        }
+    }
+}
+
+fn join_process_reader(
+    reader: Option<thread::JoinHandle<Vec<u8>>>,
+) -> Option<Vec<u8>> {
+    reader.and_then(|reader| reader.join().ok())
+}
+
+fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
+    if !path.is_absolute() {
+        return Err(AgentdError::Invalid(
+            "PoN binary path must be absolute".to_string(),
+        ));
+    }
+    let canonical = path.canonicalize()?;
+    if canonical != path {
+        return Err(AgentdError::Invalid(
+            "PoN binary must be canonical and symlink-free".to_string(),
+        ));
+    }
+    let metadata = fs::symlink_metadata(path)?;
+    if metadata.file_type().is_symlink()
+        || !metadata.is_file()
+        || metadata.len() == 0
+        || metadata.len() > MAX_PON_BINARY_BYTES
+    {
+        return Err(AgentdError::Invalid(
+            "PoN binary identity is invalid".to_string(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if metadata.permissions().mode() & 0o022 != 0
+            || metadata.permissions().mode() & 0o111 == 0
+        {
+            return Err(AgentdError::Invalid(
+                "PoN binary permissions are unsafe".to_string(),
+            ));
+        }
+    }
+    let mut file = fs::File::open(path)?;
+    let mut hasher = Sha256::new();
+    let mut buffer = [0_u8; 64 * 1024];
+    loop {
+        let read = file.read(&mut buffer)?;
+        if read == 0 {
+            break;
+        }
+        hasher.update(&buffer[..read]);
+    }
+    let digest = hasher.finalize();
+    let observed =
+        Sha256Digest::parse(format!("{digest:x}")).map_err(AgentdError::Invalid)?;
+    if &observed != expected {
+        return Err(AgentdError::GenerationFenced(
+            "PoN binary digest changed".to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn pon_contract_digest(config: &AutomationEffectHostFileV2) -> Result<Sha256Digest, AgentdError> {
+    let value = serde_json::json!({
+        "schema":"hepta-agentd-pon-provider-contract-v1",
+        "provider_kind":config.provider_kind,
+        "provider_scope":config.provider_scope,
+        "destination_id":config.destination_id,
+        "chain_binary":config.chain_binary,
+        "chain_binary_sha256":config.chain_binary_sha256,
+        "chain_store":config.chain_store,
+        "chain_state_backend":config.chain_state_backend,
+        "chain_genesis_time":config.chain_genesis_time,
+        "chain_evaluation_policy":config.chain_evaluation_policy,
+        "chain_task_profile":config.chain_task_profile,
+        "chain_model_profile":config.chain_model_profile,
+        "chain_workers":config.chain_workers,
+        "timeout_ms":config.timeout_ms,
+    });
+    let mut bytes = b"hepta.agentd.pon-provider-contract.v1\0".to_vec();
+    bytes.extend_from_slice(&serde_json::to_vec(&value)?);
+    Ok(Sha256Digest::for_bytes(&bytes))
+}
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
@@ -71,7 +579,7 @@ pub(crate) struct AgentdAutomationEffectHost {
     revocations_file: PathBuf,
     // Serialize refreshes; the existing durable authority owns the only head.
     revocation_refresh: Arc<Mutex<()>>,
-    adapter: HttpProviderEffectAdapter,
+    adapter: AgentdProviderEffectAdapter,
 }
 
 impl std::fmt::Debug for AgentdAutomationEffectHost {
@@ -111,7 +619,10 @@ struct AutomationEffectHostFileV1 {
 
 impl AgentdAutomationEffectHost {
     pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
-        let config = read_host_file(path)?;
+        let config = match read_host_file(path)? {
+            AutomationEffectHostFile::Http(config) => config,
+            AutomationEffectHostFile::Pon(config) => return Self::open_pon(identity, config),
+        };
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
             return Err(AgentdError::Invalid(
                 "unsupported automation effect host schema".to_string(),
@@ -212,7 +723,123 @@ impl AgentdAutomationEffectHost {
             authority,
             revocations_file: config.final_use_revocations_file,
             revocation_refresh: Arc::new(Mutex::new(())),
-            adapter,
+            adapter: AgentdProviderEffectAdapter::Http(adapter),
+        })
+    }
+
+    fn open_pon(
+        identity: &AgentdIdentity,
+        config: AutomationEffectHostFileV2,
+    ) -> Result<Self, AgentdError> {
+        if config.schema_version != AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION
+            || config.provider_kind != PON_PROVIDER_KIND
+        {
+            return Err(AgentdError::Invalid(
+                "unsupported PoN automation effect host schema".to_string(),
+            ));
+        }
+        validate_host_identifier("provider_scope", &config.provider_scope)?;
+        validate_host_identifier("destination_id", &config.destination_id)?;
+        validate_host_identifier("chain_evaluation_policy", &config.chain_evaluation_policy)?;
+        validate_host_identifier("chain_task_profile", &config.chain_task_profile)?;
+        validate_host_identifier("chain_model_profile", &config.chain_model_profile)?;
+        if !matches!(config.chain_state_backend.as_str(), "legacy-v2" | "authenticated-v1")
+            || config.chain_genesis_time == 0
+            || !(1..=64).contains(&config.chain_workers)
+            || config.timeout_ms == 0
+            || config.timeout_ms > 30_000
+        {
+            return Err(AgentdError::Invalid(
+                "PoN automation effect host limits are invalid".to_string(),
+            ));
+        }
+        let final_use_scope_digest = Sha256Digest::parse(config.final_use_scope_sha256.clone())
+            .map_err(AgentdError::Invalid)?;
+        let binary_digest =
+            Sha256Digest::parse(config.chain_binary_sha256.clone()).map_err(AgentdError::Invalid)?;
+        verify_pinned_binary(&config.chain_binary, &binary_digest)?;
+        if !config.chain_store.is_absolute()
+            || config.chain_store.canonicalize()? != config.chain_store
+            || !config.chain_store.join("native.sqlite").is_file()
+        {
+            return Err(AgentdError::Invalid(
+                "PoN store must be an existing canonical Node namespace".to_string(),
+            ));
+        }
+        let declared_contract_digest =
+            Sha256Digest::parse(config.contract_sha256.clone()).map_err(AgentdError::Invalid)?;
+        if pon_contract_digest(&config)? != declared_contract_digest {
+            return Err(AgentdError::Invalid(
+                "PoN provider contract digest mismatch".to_string(),
+            ));
+        }
+        let contract_signature =
+            decode_hex_array::<64>(&config.contract_signature_hex, "contract_signature_hex")?;
+        let contract_verifying_key = decode_hex_array::<32>(
+            &config.contract_verifying_key_hex,
+            "contract_verifying_key_hex",
+        )?;
+        HttpProviderEffectContractAttestation::verify_signed(
+            config.contract_id.clone(),
+            declared_contract_digest,
+            config.contract_authority_epoch,
+            &contract_signature,
+            &contract_verifying_key,
+        )
+        .map_err(AgentdError::Invalid)?;
+
+        if !config.final_use_revocations_file.is_absolute() {
+            return Err(AgentdError::Invalid(
+                "final_use_revocations_file must be absolute".to_string(),
+            ));
+        }
+        let initial_revocations = read_revocations_file(&config.final_use_revocations_file)?;
+        let final_use_verifying_key = decode_hex_array::<32>(
+            &config.final_use_verifying_key_hex,
+            "final_use_verifying_key_hex",
+        )?;
+        let authority_root = identity
+            .layout
+            .automation_root()
+            .join("final-use-authority");
+        fs::create_dir_all(&authority_root)?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;
+        }
+        let authority = FinalUseAuthority::open_state_dir(
+            &authority_root,
+            config.final_use_signer_id,
+            final_use_verifying_key,
+            initial_revocations,
+        )
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "open automation final-use authority state: {error}"
+            ))
+        })?;
+        let adapter = PonLocalProviderEffectAdapter {
+            binary: config.chain_binary,
+            binary_sha256: binary_digest,
+            store: config.chain_store,
+            state_backend: config.chain_state_backend,
+            genesis_time: config.chain_genesis_time,
+            evaluation_policy: config.chain_evaluation_policy,
+            task_profile: config.chain_task_profile,
+            model_profile: config.chain_model_profile,
+            workers: config.chain_workers,
+            timeout: Duration::from_millis(config.timeout_ms),
+        };
+        Ok(Self {
+            agent_id: identity.agent_id.clone(),
+            provider_scope: config.provider_scope,
+            destination_id: config.destination_id,
+            final_use_scope_digest,
+            authority,
+            revocations_file: config.final_use_revocations_file,
+            revocation_refresh: Arc::new(Mutex::new(())),
+            adapter: AgentdProviderEffectAdapter::Pon(adapter),
         })
     }
 
@@ -247,7 +874,7 @@ impl AgentdAutomationEffectHost {
         let binding = intent
             .final_use_binding()
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;
-        let mut driver = HttpAuthorizedEffectDriver {
+        let mut driver = AgentdAuthorizedEffectDriver {
             adapter: self.adapter.clone(),
             provider_scope: self.provider_scope.clone(),
             destination_id: self.destination_id.clone(),
@@ -478,13 +1105,13 @@ impl AgentdAutomationEffectHost {
     }
 }
 
-struct HttpAuthorizedEffectDriver {
-    adapter: HttpProviderEffectAdapter,
+struct AgentdAuthorizedEffectDriver {
+    adapter: AgentdProviderEffectAdapter,
     provider_scope: String,
     destination_id: String,
 }
 
-impl AuthorizedEffectDriver for HttpAuthorizedEffectDriver {
+impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
     fn recovery_key(
         &self,
         intent: &AuthorizedEffectIntent,
@@ -601,13 +1228,24 @@ fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -
     Sha256Digest::for_bytes(&bytes)
 }
 
-fn read_host_file(path: &Path) -> Result<AutomationEffectHostFileV1, AgentdError> {
+fn read_host_file(path: &Path) -> Result<AutomationEffectHostFile, AgentdError> {
     let bytes = read_protected_file(
         path,
         MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES,
         "automation effect host file",
     )?;
-    Ok(serde_json::from_slice(&bytes)?)
+    let value: Value = serde_json::from_slice(&bytes)?;
+    match value.get("schema_version").and_then(Value::as_u64) {
+        Some(version) if version == AUTOMATION_EFFECT_HOST_SCHEMA_VERSION as u64 => {
+            Ok(AutomationEffectHostFile::Http(serde_json::from_value(value)?))
+        }
+        Some(version) if version == AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION as u64 => {
+            Ok(AutomationEffectHostFile::Pon(serde_json::from_value(value)?))
+        }
+        _ => Err(AgentdError::Invalid(
+            "unsupported automation effect host schema".to_string(),
+        )),
+    }
 }
 
 fn read_revocations_file(path: &Path) -> Result<FinalUseRevocations, AgentdError> {
