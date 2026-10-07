@@ -1260,6 +1260,8 @@ mod tests {
             AgentdPayload::AutomationEffectReconcile(AutomationEffectReconcileSnapshot {
                 state: AutomationEffectReconcileState::Indeterminate,
                 effect: None,
+                // No terminal effect means no current chain observation is attached.
+                chain: None,
             });
         let response_bytes = serde_json::to_vec(&response).expect("serialize effect response");
         assert_eq!(
@@ -1417,3 +1419,7 @@ mod tests {
 #[cfg(test)]
 #[path = "objective_tests.rs"]
 mod objective_tests;
+
+#[cfg(test)]
+#[path = "chain_observation_tests.rs"]
+mod chain_observation_tests;
