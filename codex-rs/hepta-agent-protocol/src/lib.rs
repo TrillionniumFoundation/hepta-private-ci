@@ -740,6 +740,14 @@ pub struct AutomationEffectChainObservation {
     pub confirmation_policy_min_depth: u64,
     pub confirmation_policy_min_work_depth_hex: String,
     pub confirmation_policy_satisfied: bool,
+    /// Exact durable provider-effect occurrence whose original wire bytes were
+    /// used for this observation. Older responses may omit this binding.
+    #[serde(default)]
+    pub provider_effect_key: Option<String>,
+    /// SHA-256 of the exact durable provider wire bytes used by packet-status.
+    /// This is an effect binding only; it grants no selection or final-use authority.
+    #[serde(default)]
+    pub payload_sha256: Option<String>,
     pub owner_generation: u64,
     pub local_target_only: bool,
     pub global_absence_authority: bool,
@@ -1270,6 +1278,7 @@ mod tests {
             AgentdPayload::AutomationEffectReconcile(AutomationEffectReconcileSnapshot {
                 state: AutomationEffectReconcileState::Indeterminate,
                 effect: None,
+                chain: None,
             });
         let response_bytes = serde_json::to_vec(&response).expect("serialize effect response");
         assert_eq!(
