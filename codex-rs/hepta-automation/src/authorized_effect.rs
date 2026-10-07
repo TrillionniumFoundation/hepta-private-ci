@@ -207,6 +207,12 @@ pub struct AuthorizedEffectPending {
     pub attempt: u32,
     pub intent_digest: Sha256Digest,
     pub payload_digest: Sha256Digest,
+    /// Exact provider occurrence key durably frozen before external contact.
+    /// Legacy pre-v20 attempts may not have this field.
+    pub provider_effect_key: Option<ProviderEffectKey>,
+    /// Exact immutable provider bytes for recovery/audit. Legacy pre-v20
+    /// attempts retain digest-only recovery and expose `None` here.
+    pub wire_payload: Option<Vec<u8>>,
     pub binding_digest: Sha256Digest,
     pub destination_id: String,
     pub authority_epoch: u64,
@@ -222,6 +228,8 @@ impl From<EffectDispatchAttempt> for AuthorizedEffectPending {
             attempt: value.attempt,
             intent_digest: value.intent_digest,
             payload_digest: value.payload_digest,
+            provider_effect_key: value.provider_effect_key,
+            wire_payload: value.wire_payload,
             binding_digest: value.binding_digest,
             destination_id: value.destination_id,
             authority_epoch: value.authority_epoch,
@@ -281,6 +289,7 @@ pub struct AuthorizedEffectRequest<'a> {
     /// Exact immutable provider bytes whose digest is bound by `intent` and
     /// the signed final-use grant. Drivers must send these bytes unchanged.
     pub wire_payload: &'a [u8],
+    pub provider_effect_key: &'a ProviderEffectKey,
     pub binding: &'a FinalUseBinding,
 }
 
@@ -290,6 +299,22 @@ pub struct AuthorizedEffectRequest<'a> {
 /// their own bounded I/O deadline and return `Indeterminate` after ambiguous
 /// provider contact.
 pub trait AuthorizedEffectDriver {
+    /// Return the exact provider occurrence key used by physical dispatch.
+    /// This pure local step runs before the final-use nonce and durable attempt
+    /// are consumed, so recovery never reconstructs provider identity from
+    /// mutable process configuration.
+    fn recovery_key(
+        &self,
+        intent: &AuthorizedEffectIntent,
+    ) -> Result<ProviderEffectKey, AuthorizedEffectDriverError> {
+        ProviderEffectKey::for_operation(
+            &intent.destination_id,
+            &intent.run_id,
+            &intent.step_id,
+        )
+        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)
+    }
+
     fn dispatch(
         &mut self,
         request: &AuthorizedEffectRequest<'_>,
@@ -712,6 +737,7 @@ impl AutomationStore {
             };
         }
 
+        let provider_effect_key = driver.recovery_key(intent)?;
         let token = authority
             .claim(signed_grant, expected_binding)
             .map_err(AuthorizedEffectError::FinalUse)?;
@@ -723,6 +749,8 @@ impl AutomationStore {
                 intent.attempt,
                 &intent_digest,
                 payload_digest,
+                &provider_effect_key,
+                wire_payload,
                 &binding_digest,
                 &expected_binding.destination_id,
                 signed_grant.grant.authority_epoch,
@@ -757,6 +785,7 @@ impl AutomationStore {
             intent,
             intent_digest: &intent_digest,
             wire_payload,
+            provider_effect_key: &provider_effect_key,
             binding: expected_binding,
         };
         let provider = match authority
@@ -940,6 +969,8 @@ impl AutomationStore {
                 intent.attempt,
                 &intent_digest,
                 payload_digest,
+                &provider_intent.key,
+                wire_payload,
                 &binding_digest,
                 &expected_binding.destination_id,
                 signed_grant.grant.authority_epoch,
