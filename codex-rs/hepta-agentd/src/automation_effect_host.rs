@@ -1813,15 +1813,16 @@ mod tests {
         assert!(!observation.finality_authority);
 
         let mut active = value.clone();
+        let expected_work_depth = format!("{}04", "00".repeat(63));
         active["result"]["active_chain_member"] = Value::Bool(true);
         active["result"]["active_depth"] = Value::from(4_u64);
         active["result"]["active_work_depth_hex"] =
-            Value::String(format!("{}04", "00".repeat(63)));
+            Value::String(expected_work_depth.clone());
         let observed = parse_pon_chain_observation(&active).expect("valid work depth");
         assert_eq!(observed.schema_version, 2);
         assert_eq!(
             observed.active_work_depth_hex.as_deref(),
-            Some(format!("{}04", "00".repeat(63)).as_str())
+            Some(expected_work_depth.as_str())
         );
 
         let mut forged_work = active;
