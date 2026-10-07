@@ -486,15 +486,6 @@ fn join_process_reader(
     reader.and_then(|reader| reader.join().ok())
 }
 
-fn lower_hex(bytes: &[u8]) -> String {
-    let mut out = String::with_capacity(bytes.len() * 2);
-    for byte in bytes {
-        use std::fmt::Write as _;
-        let _ = write!(&mut out, "{byte:02x}");
-    }
-    out
-}
-
 fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
     if !path.is_absolute() {
         return Err(AgentdError::Invalid(
@@ -538,9 +529,9 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
         }
         hasher.update(&buffer[..read]);
     }
-    let observed = Sha256Digest::parse(format!("sha256:{}", lower_hex(&hasher.finalize())))
-        .or_else(|_| Sha256Digest::parse(lower_hex(&hasher.finalize())))
-        .map_err(AgentdError::Invalid)?;
+    let digest = hasher.finalize();
+    let observed =
+        Sha256Digest::parse(format!("{digest:x}")).map_err(AgentdError::Invalid)?;
     if &observed != expected {
         return Err(AgentdError::GenerationFenced(
             "PoN binary digest changed".to_string(),
