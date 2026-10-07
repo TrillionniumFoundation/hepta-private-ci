@@ -322,7 +322,11 @@ impl AgentdAutomationEffectHost {
             }
         }
         let provider_intent = self.provider_intent(&pending)?;
-        match self.adapter.lookup_for_intent(&provider_intent).await {
+        match self
+            .adapter
+            .lookup_for_reconciliation(&provider_intent, pending.wire_payload.as_deref())
+            .await
+        {
             ProviderEffectLookup::Ack(ack) => {
                 let Some(receipt) = terminal_receipt_from_ack(&ack) else {
                     return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
