@@ -713,11 +713,38 @@ pub enum AutomationEffectReconcileState {
     ProvenAbsent,
 }
 
+/// Current read-only Chain observation attached to an already-owned effect.
+///
+/// This is not a provider acknowledgement, final-use token, confirmation/finality
+/// certificate, or proof that another peer did not receive the packet.  It exists
+/// so callers can distinguish an irreversible local submit fact from current
+/// active-chain state after a reorganization.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationEffectChainObservation {
+    pub schema_version: u32,
+    pub block_id: String,
+    pub stored_exact: bool,
+    pub block_height: Option<u64>,
+    pub active_tip: String,
+    pub active_tip_height: u64,
+    pub active_chain_member: bool,
+    pub active_depth: Option<u64>,
+    pub owner_generation: u64,
+    pub local_target_only: bool,
+    pub global_absence_authority: bool,
+    pub confirmation_authority: bool,
+    pub finality_authority: bool,
+    pub execution_authority: bool,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AutomationEffectReconcileSnapshot {
     pub state: AutomationEffectReconcileState,
     pub effect: Option<AutomationEffectSnapshot>,
+    #[serde(default)]
+    pub chain: Option<AutomationEffectChainObservation>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
