@@ -30,3 +30,29 @@ existing distinct authorities and fresh explicit protocol contexts.
 Physical power loss, independent WAN operators, sustained public capacity,
 and model efficacy are not claimed by these local pipe fixtures. No release,
 production, branch protection or deployment setting is changed.
+
+
+## Sealed-byte execution continuation
+
+The PoN adapter now executes a held Linux sealed image from the existing
+provider byte-identity contract. The same nonblocking/no-follow source
+descriptor is type/permission/length checked, copied within a fixed byte
+bound, and closed. The copy receives write/grow/shrink/seal seals before
+its actual bytes are SHA-256 checked. Only a read-only descriptor remains
+at execution. Atomic path replacement and same-inode rewriting cannot
+change the held image. The host keeps that image through the bounded
+child exchange, under the original operation deadline. No key, journal,
+global cache or process supervisor is introduced. Existing rustix/sha2
+dependencies in the contracts crate are reused; Cargo/Bazel dependency
+graphs are unchanged.
+
+This PoN local provider now requires Linux memfd sealing and access to its
+host proc descriptor path. Unsupported systems reject before provider
+contact rather than silently executing a mutable path; the HTTP provider
+is unchanged. Linux-specific process fixtures cover the implemented route;
+a separate contract test requires Unsupported on other platforms. Dynamic
+libraries, script interpreters, environment, local ptrace privilege and
+the kernel remain trusted. This binds executable bytes, not all execution
+dependencies and not Chain storage or current Hepta final-use authority.
+Blocking filesystem syscalls are not made physically preemptible by the
+between-chunk deadline checks. Real device/OS acceptance remains separate.
