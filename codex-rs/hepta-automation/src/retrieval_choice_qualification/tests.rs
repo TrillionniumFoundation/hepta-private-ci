@@ -179,12 +179,15 @@ async fn missing_immutability_trigger_rejects_reopen_with_valid_binding_row() {
 async fn weakened_trigger_rejects_reopen_without_changing_binding_row() {
     let root = FixtureRoot::new_synthetic(owner().unwrap()).await.unwrap();
     let connection = root.connection().await.unwrap();
+    // Keep the DROP and replacement CREATE on one SQLite connection.
+    let mut tamper = connection.store.taskflow_pool().begin().await.unwrap();
     sqlx::query("DROP TRIGGER qualification_binding_no_update")
-        .execute(connection.store.taskflow_pool())
+        .execute(&mut *tamper)
         .await
         .unwrap();
     sqlx::query("CREATE TRIGGER qualification_binding_no_update BEFORE UPDATE ON qualification_retrieval_binding WHEN 0 BEGIN SELECT RAISE(ABORT, 'qualification binding is immutable'); END")
-        .execute(connection.store.taskflow_pool()).await.unwrap();
+        .execute(&mut *tamper).await.unwrap();
+    tamper.commit().await.unwrap();
     let correlation: String = sqlx::query_scalar(
         "SELECT correlation_id FROM qualification_retrieval_binding WHERE singleton = 1",
     )
@@ -695,13 +698,16 @@ async fn historical_prepare_rejects_corrupt_claimed_tail() {
     let claim = connection.claim_command(&prepare).unwrap();
     connection.phase(&claim).await.unwrap();
     let pool = connection.store.taskflow_pool();
+    // Controller-only DDL and corruption share one connection and commit.
+    let mut tamper = pool.begin().await.unwrap();
     // Controller-only corruption; restore the trigger before exercising replay.
     sqlx::query("DROP TRIGGER taskflow_step_outbox_no_update")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
-    sqlx::query("UPDATE taskflow_step_outbox SET event_digest = '0000000000000000000000000000000000000000000000000000000000000000' WHERE event_kind = 'claimed'").execute(pool).await.unwrap();
-    sqlx::query("CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_update\nBEFORE UPDATE ON taskflow_step_outbox\nBEGIN\n    SELECT RAISE(ABORT, 'TaskFlow step outbox is append-only');\nEND;").execute(pool).await.unwrap();
+    sqlx::query("UPDATE taskflow_step_outbox SET event_digest = '0000000000000000000000000000000000000000000000000000000000000000' WHERE event_kind = 'claimed'").execute(&mut *tamper).await.unwrap();
+    sqlx::query("CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_update\nBEFORE UPDATE ON taskflow_step_outbox\nBEGIN\n    SELECT RAISE(ABORT, 'TaskFlow step outbox is append-only');\nEND;").execute(&mut *tamper).await.unwrap();
+    tamper.commit().await.unwrap();
     let before = counts(&connection).await.unwrap();
     assert!(matches!(
         connection.phase(&prepare).await,
@@ -716,16 +722,19 @@ async fn historical_replay_rejects_corrupt_registry_definition() {
     let (_root, connection, prepare) = setup().await.unwrap();
     connection.phase(&prepare).await.unwrap();
     let pool = connection.store.taskflow_pool();
+    // Controller-only DDL and corruption share one connection and commit.
+    let mut tamper = pool.begin().await.unwrap();
     // Controller-only corruption; restore the trigger before exercising replay.
     sqlx::query("DROP TRIGGER taskflow_definitions_no_update")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
     sqlx::query("UPDATE taskflow_definitions SET definition_json = '{}'")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
-    sqlx::query("CREATE TRIGGER taskflow_definitions_no_update\nBEFORE UPDATE ON taskflow_definitions\nBEGIN\n    SELECT RAISE(ABORT, 'TaskFlow definitions are immutable');\nEND;").execute(pool).await.unwrap();
+    sqlx::query("CREATE TRIGGER taskflow_definitions_no_update\nBEFORE UPDATE ON taskflow_definitions\nBEGIN\n    SELECT RAISE(ABORT, 'TaskFlow definitions are immutable');\nEND;").execute(&mut *tamper).await.unwrap();
+    tamper.commit().await.unwrap();
     let before = counts(&connection).await.unwrap();
     assert!(matches!(
         connection.phase(&prepare).await,
@@ -740,15 +749,18 @@ async fn corrupted_choice_command_column_rejects_canonical_replay() {
     let (_root, connection, prepare) = setup().await.unwrap();
     connection.phase(&prepare).await.unwrap();
     let pool = connection.store.taskflow_pool();
+    // Controller-only DDL and corruption share one connection and commit.
+    let mut tamper = pool.begin().await.unwrap();
     sqlx::query("DROP TRIGGER qualification_choices_no_update")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
     sqlx::query("UPDATE qualification_retrieval_choices SET command_id = 'badcmd01'")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
-    sqlx::query("CREATE TRIGGER qualification_choices_no_update\nBEFORE UPDATE ON qualification_retrieval_choices BEGIN\n    SELECT RAISE(ABORT, 'qualification choice is immutable');\nEND;").execute(pool).await.unwrap();
+    sqlx::query("CREATE TRIGGER qualification_choices_no_update\nBEFORE UPDATE ON qualification_retrieval_choices BEGIN\n    SELECT RAISE(ABORT, 'qualification choice is immutable');\nEND;").execute(&mut *tamper).await.unwrap();
+    tamper.commit().await.unwrap();
     check_pool(
         pool,
         connection.store.owner_agent_id(),
@@ -772,15 +784,18 @@ async fn corrupted_claim_command_column_rejects_canonical_replay() {
     let claim = connection.claim_command(&prepare).unwrap();
     connection.phase(&claim).await.unwrap();
     let pool = connection.store.taskflow_pool();
+    // Controller-only DDL and corruption share one connection and commit.
+    let mut tamper = pool.begin().await.unwrap();
     sqlx::query("DROP TRIGGER qualification_claims_no_update")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
     sqlx::query("UPDATE qualification_retrieval_claims SET command_id = 'badcmd01'")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
-    sqlx::query("CREATE TRIGGER qualification_claims_no_update\nBEFORE UPDATE ON qualification_retrieval_claims BEGIN\n    SELECT RAISE(ABORT, 'qualification claim is immutable');\nEND;").execute(pool).await.unwrap();
+    sqlx::query("CREATE TRIGGER qualification_claims_no_update\nBEFORE UPDATE ON qualification_retrieval_claims BEGIN\n    SELECT RAISE(ABORT, 'qualification claim is immutable');\nEND;").execute(&mut *tamper).await.unwrap();
+    tamper.commit().await.unwrap();
     check_pool(
         pool,
         connection.store.owner_agent_id(),
@@ -803,15 +818,18 @@ async fn corrupted_choice_activation_column_rejects_canonical_replay() {
     connection.phase(&prepare).await.unwrap();
     let claim = connection.claim_command(&prepare).unwrap();
     let pool = connection.store.taskflow_pool();
+    // Controller-only DDL and corruption share one connection and commit.
+    let mut tamper = pool.begin().await.unwrap();
     sqlx::query("DROP TRIGGER qualification_choices_no_update")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
     sqlx::query("UPDATE qualification_retrieval_choices SET activation_id = 'badact01'")
-        .execute(pool)
+        .execute(&mut *tamper)
         .await
         .unwrap();
-    sqlx::query("CREATE TRIGGER qualification_choices_no_update\nBEFORE UPDATE ON qualification_retrieval_choices BEGIN\n    SELECT RAISE(ABORT, 'qualification choice is immutable');\nEND;").execute(pool).await.unwrap();
+    sqlx::query("CREATE TRIGGER qualification_choices_no_update\nBEFORE UPDATE ON qualification_retrieval_choices BEGIN\n    SELECT RAISE(ABORT, 'qualification choice is immutable');\nEND;").execute(&mut *tamper).await.unwrap();
+    tamper.commit().await.unwrap();
     check_pool(
         pool,
         connection.store.owner_agent_id(),

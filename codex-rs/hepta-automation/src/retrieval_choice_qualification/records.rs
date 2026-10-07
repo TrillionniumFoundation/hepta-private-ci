@@ -247,7 +247,7 @@ mod tests {
                 "{field}"
             );
         }
-        let mut missing = value.clone();
+        let mut missing = value;
         missing["fence"].as_object_mut().unwrap().remove("owner_id");
         assert!(serde_json::from_value::<PhaseCommand>(missing).is_err());
         let text = serde_json::to_string(&original).unwrap();
