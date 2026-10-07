@@ -383,11 +383,14 @@ impl PonLocalProviderEffectAdapter {
         let PonInvocation::Value(value) = self.invoke("packet-status", &wire_payload) else {
             return None;
         };
-        parse_pon_chain_observation(
+        let mut observation = parse_pon_chain_observation(
             &value,
             self.min_confirmation_depth,
             &self.min_confirmation_work_depth_hex,
-        )
+        )?;
+        observation.provider_effect_key = Some(intent.key.as_str().to_owned());
+        observation.payload_sha256 = Some(intent.payload_sha256.as_str().to_owned());
+        Some(observation)
     }
 
     fn lookup_blocking(
@@ -611,7 +614,7 @@ fn parse_pon_chain_observation(
             .as_deref()
             .is_some_and(|depth| depth >= min_confirmation_work_depth_hex);
     Some(crate::AutomationEffectChainObservation {
-        schema_version: 2,
+        schema_version: 3,
         block_id,
         stored_exact,
         block_height,
@@ -627,6 +630,8 @@ fn parse_pon_chain_observation(
         confirmation_policy_min_depth: min_confirmation_depth,
         confirmation_policy_min_work_depth_hex: min_confirmation_work_depth_hex.to_string(),
         confirmation_policy_satisfied,
+        provider_effect_key: None,
+        payload_sha256: None,
         owner_generation,
         local_target_only: true,
         global_absence_authority: false,
@@ -1888,7 +1893,9 @@ mod tests {
         active["result"]["active_work_depth_hex"] =
             Value::String(expected_work_depth.clone());
         let observed = parse_pon_chain_observation(&active, 3, &format!("{}03", "00".repeat(63))).expect("valid work depth");
-        assert_eq!(observed.schema_version, 2);
+        assert_eq!(observed.schema_version, 3);
+        assert_eq!(observed.provider_effect_key, None);
+        assert_eq!(observed.payload_sha256, None);
         assert_eq!(
             observed.active_work_depth_hex.as_deref(),
             Some(expected_work_depth.as_str())
