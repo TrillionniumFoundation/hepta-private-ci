@@ -9,8 +9,11 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     env:
-      SOURCE_SHA: a48b99ec46995f70f50c173c9ab358d603c6d115
+      SOURCE_SHA: b78777b9eb606786f7ac6c8a551f97e2c8af3479
+      PRODUCT_BRANCH: fix/agentd-pon-bounded-exchange-20261007
       CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - name: Checkout exact existing owner without persisted credentials
@@ -19,31 +22,28 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Retrieve the two immutable single-owner patches
+      - name: Retrieve immutable repair transport
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pon-observations"
           python3 - <<'PY'
-          import base64, hashlib, json, os
+          import base64, hashlib, json, os, subprocess, urllib.request
           from pathlib import Path
-          import urllib.request
-          out = Path(os.environ['RUNNER_TEMP']) / 'publication-observations'
-          out.mkdir()
-          for name, sha in [('red.patch', 'a724faa11187b71d4d246d166b6e857db84b450a'),
-                            ('green.patch', '4575d29a3df59c8fd8589453043c7251a9cbc020')]:
-              request = urllib.request.Request(
-                  'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/' + sha,
-                  headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
-                           'Accept': 'application/vnd.github+json'})
-              with urllib.request.urlopen(request, timeout=30) as stream:
-                  value = json.load(stream)
-              assert value['sha'] == sha and value['encoding'] == 'base64'
-              raw = base64.b64decode(value['content'])
-              assert hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == sha
-              (out / name).write_bytes(raw)
+          sha='220794b2f30504d6206cfcc1acfeed568da32b47'
+          request=urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+          with urllib.request.urlopen(request,timeout=30) as response: value=json.load(response)
+          raw=base64.b64decode(value['content'])
+          assert value['sha']==sha and value['encoding']=='base64'
+          assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==sha
+          compile(raw,'repair.py','exec')
+          (Path(os.environ['RUNNER_TEMP'])/'repair.py').write_bytes(raw)
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==os.environ['SOURCE_SHA']
+          assert not subprocess.check_output(['git','status','--porcelain'],text=True).strip()
           PY
+          git switch -c "$PRODUCT_BRANCH"
       - name: Install repository-pinned native test tools without delivery credentials
         shell: bash
         run: |
@@ -57,136 +57,86 @@ jobs:
           rustup run 1.95.0 cargo install --locked just --version 1.51.0 --root "$RUNNER_TEMP/hepta-tools"
           rustup run 1.95.0 cargo install --locked cargo-nextest --version 0.9.103 --root "$RUNNER_TEMP/hepta-tools"
           echo "$RUNNER_TEMP/hepta-tools/bin" >> "$GITHUB_PATH"
-          cd codex-rs
-          rustc -Vv > "$RUNNER_TEMP/publication-observations/rustc.txt"
-          cargo -V > "$RUNNER_TEMP/publication-observations/cargo.txt"
-          rustup show active-toolchain > "$RUNNER_TEMP/publication-observations/active-toolchain.txt"
-      - name: Execute actual old-owner failure and corrected-owner tests
+          rustc -Vv > "$RUNNER_TEMP/pon-observations/rustc.txt"
+      - name: Reproduce real old-owner pipe and observation failures
         shell: bash
         run: |
           set -euo pipefail
+          python3 "$RUNNER_TEMP/repair.py" regressions
           python3 - <<'PY'
-          import hashlib, json, os, subprocess, time
+          import json, os, subprocess
           from pathlib import Path
-          repo = Path.cwd()
-          out = Path(os.environ['RUNNER_TEMP']) / 'publication-observations'
-          relative = 'codex-rs/hepta-learning-artifacts/src/owner_service.rs'
-          path = repo / relative
-          base = os.environ['SOURCE_SHA']
-          branch = 'fix/artifact-publication-retry-binding-20261007'
-          result = {'schema': 'hepta-publication-retry-native-v1', 'base': base,
-                    'passed': False, 'delivered': False, 'ordinary_hepta_pon_entry': False,
-                    'model_benefit': False, 'production_activation': False, 'commands': []}
-          def save():
-              (out / 'result.json').write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
-          def git(*args):
-              return subprocess.check_output(['git', *args], text=True).strip()
-          def identity():
-              assert not git('status', '--porcelain'), 'source changed during execution'
-              return {'commit': git('rev-parse', 'HEAD'), 'tree': git('rev-parse', 'HEAD^{tree}')}
-          def command(label, args):
-              before = identity()
-              start = time.monotonic_ns()
-              with (out / (label + '.log')).open('wb') as stream:
-                  p = subprocess.run(args, cwd=repo / 'codex-rs', stdout=stream, stderr=subprocess.STDOUT)
-              after = identity()
-              assert before == after
-              result['commands'].append({'label': label, 'argv': args, 'exit_code': p.returncode,
-                  'wall_ns': time.monotonic_ns() - start, 'source_before': before, 'source_after': after})
-              save()
-              return p.returncode, (out / (label + '.log')).read_text(errors='replace')
-          def apply_and_commit(name, message):
-              patch = (out / name).read_bytes()
-              subprocess.run(['git', 'apply', '--check', '-'], input=patch, check=True)
-              subprocess.run(['git', 'apply', '-'], input=patch, check=True)
-              assert set(git('diff', '--name-only').splitlines()) == {relative}
-              with (out / (name + '.format.log')).open('wb') as stream:
-                  subprocess.run(['just', 'fmt'], cwd=repo / 'codex-rs', stdout=stream,
-                                 stderr=subprocess.STDOUT, check=True)
-              (out / (name + '.formatted.diff')).write_bytes(subprocess.check_output(['git', 'diff']))
-              unrelated = [p for p in git('diff', '--name-only').splitlines() if p != relative]
-              result[name + '_mechanical_paths_restored'] = unrelated
-              if unrelated:
-                  subprocess.run(['git', 'restore', '--', *unrelated], check=True)
-              assert set(git('diff', '--name-only').splitlines()) == {relative}
-              subprocess.run(['git', 'diff', '--check'], check=True)
-              subprocess.run(['git', 'add', '--', relative], check=True)
-              subprocess.run(['git', '-c', 'user.name=OpenAI', '-c', 'user.email=noreply@openai.com',
-                              'commit', '-m', message], check=True)
-              return identity()
-          save()
-          assert 'GH_TOKEN' not in os.environ and 'GITHUB_TOKEN' not in os.environ
-          assert identity()['commit'] == base
-          original = path.read_bytes()
-          assert hashlib.sha1(b'blob ' + str(len(original)).encode() + b'\0' + original).hexdigest() == '1427589355efa2ea3ac12cc076d0e9a028b29f0b'
-          (out / 'owner-service-before.rs').write_bytes(original)
-          subprocess.run(['git', 'switch', '-c', branch], check=True)
-          result['red_source'] = apply_and_commit('red.patch',
-              'test(artifacts): reject changed bytes on completed publication retries\n\nExtend the existing actual publication/reopen test without deleting assertions. Cover changed payload, extent, manifest and admission time, unchanged complete registry, exact cold replay and receipt history after expiry. This test-only predecessor must fail the old owner and is not a release.')
-          code, log = command('red-owner-retry', ['just', 'test', '-p', 'codex-hepta-learning-artifacts',
-              '--locked', '-E', 'test(=owner_service::tests::named_owner_service_publishes_retries_and_reopens_from_current_head)', '--status-level', 'pass'])
-          assert code != 0 and 'same publication operation must refuse changed request bytes' in log, 'native old-owner assertion was not reproduced'
-          result['red_reproduced'] = True
-          result['candidate'] = apply_and_commit('green.patch',
-              'fix(artifacts): verify original admission and payload before checkpoint replay\n\nRevalidate immutable admission fields and actual payload length/digest even after acknowledgement. Original admission time/head is historical integrity, not current publication authority; incomplete publication retains all later current checks. Return RequestMismatch without changing the old receipt or registry. Keep the existing owner/journal/schema and original tests. No new export grant, PoN adapter, trainer, registry or production activation.')
-          code, log = command('green-owner-crate', ['just', 'test', '-p', 'codex-hepta-learning-artifacts', '--locked', '--status-level', 'pass'])
-          assert code == 0 and 'named_owner_service_publishes_retries_and_reopens_from_current_head' in log, 'full scoped owner tests failed or were not executed'
-          code, log = command('scoped-clippy', ['cargo', 'clippy', '--locked', '-p', 'codex-hepta-learning-artifacts', '--all-targets', '--', '-D', 'warnings'])
-          assert code == 0
-          code, log = command('scoped-format', ['cargo', 'fmt', '-p', 'codex-hepta-learning-artifacts', '--', '--check'])
-          assert code == 0
-          assert set(git('diff', '--name-only', base, 'HEAD').splitlines()) == {relative}
-          result['candidate_after'] = identity()
-          assert result['candidate'] == result['candidate_after']
-          (out / 'product.patch').write_bytes(subprocess.check_output(['git', 'diff', '--binary', base, 'HEAD']))
-          (out / 'owner-service-after.rs').write_bytes(path.read_bytes())
-          result['test_binaries'] = [{'name': b.name, 'sha256': hashlib.sha256(b.read_bytes()).hexdigest()}
-              for b in (Path(os.environ['CARGO_TARGET_DIR']) / 'debug/deps').glob('codex_hepta_learning_artifacts-*')
-              if b.is_file() and os.access(b, os.X_OK)]
-          assert result['test_binaries']
-          result['passed'] = True
-          result['branch'] = branch
-          save()
-          print(json.dumps(result, indent=2, sort_keys=True))
+          out=Path(os.environ['RUNNER_TEMP'])/'pon-observations'
+          args=['just','test','-p','codex-hepta-agentd','--locked','--lib','-E','test(pon_lifecycle_tests)','--status-level','pass']
+          with (out/'old-owner.log').open('wb') as log: result=subprocess.run(args,cwd='codex-rs',stdout=log,stderr=subprocess.STDOUT)
+          raw=(out/'old-owner.log').read_text(errors='replace')
+          print(raw[-15000:])
+          reproduced=result.returncode!=0 and 'stdin escaped original deadline' in raw and 'forged depth accepted' in raw
+          (out/'old-owner.json').write_text(json.dumps({'command':args,'exit':result.returncode,'intended_regressions_reproduced':reproduced}))
+          assert reproduced,'old owner did not execute intended native regressions'
           PY
-      - name: Deliver only the exact successfully tested new branch
+      - name: Repair the existing adapter and freeze source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/repair.py" repair
+          just fmt 2>&1 | tee "$RUNNER_TEMP/pon-observations/format.log"
+          python3 - <<'PY'
+          import subprocess
+          expected={'codex-rs/hepta-agentd/src/automation_effect_host.rs','codex-rs/hepta-agentd/src/automation_effect_host_pon_process.rs','codex-rs/hepta-agentd/src/automation_effect_host_pon_tests.rs'}
+          changed=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          untracked=set(subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines())
+          assert changed|untracked==expected,(changed,untracked)
+          subprocess.run(['git','add',*sorted(expected)],check=True)
+          PY
+          git diff --cached --check
+          git config user.name 'Trillionnium CI'
+          git config user.email 'trillionnium-ci@users.noreply.github.com'
+          git commit -m 'fix(agentd): bound entire PoN pipe exchange and verify exact chain depth' -m 'Keep the existing TaskFlow intent, final-use owner, exact packet and historical ACK semantics. Stdin, both bounded output streams and direct child exit share the original deadline; post-entry failures remain Unknown. No detached pipe readers or blocking stdin before the deadline. Validate exact tip/depth arithmetic against Chain v2. No new journal, provider endpoint, model installer, consensus or activation.'
+          git show -s --format='%H%n%T%n%P' HEAD | tee "$RUNNER_TEMP/pon-observations/source.txt"
+          git diff "$SOURCE_SHA" HEAD --binary > "$RUNNER_TEMP/pon-observations/product.patch"
+          echo "CANDIDATE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          test -z "$(git status --porcelain)"
+      - name: Run repaired actual Agentd crate tests and scoped Clippy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          cd codex-rs
+          just test -p codex-hepta-agentd --locked --status-level pass 2>&1 | tee "$RUNNER_TEMP/pon-observations/agentd-green.log"
+          cargo clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings 2>&1 | tee "$RUNNER_TEMP/pon-observations/clippy.log"
+          cargo fmt -p codex-hepta-agentd -- --check 2>&1 | tee "$RUNNER_TEMP/pon-observations/format-check.log"
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+      - name: Deliver only exact tested new development branch
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import base64, json, os, subprocess
+          import base64,json,os,subprocess
           from pathlib import Path
-          def git(*args):
-              return subprocess.check_output(['git', *args], text=True).strip()
-          path = Path(os.environ['RUNNER_TEMP']) / 'publication-observations/result.json'
-          result = json.loads(path.read_text())
-          assert result['passed'] is True and result['red_reproduced'] is True
-          assert result['base'] == os.environ['SOURCE_SHA']
-          assert result['candidate'] == result['candidate_after']
-          assert git('rev-parse', 'HEAD') == result['candidate']['commit']
-          assert git('rev-parse', 'HEAD^{tree}') == result['candidate']['tree']
-          assert not git('status', '--porcelain')
-          assert set(git('diff', '--name-only', result['base'], 'HEAD').splitlines()) == {
-              'codex-rs/hepta-learning-artifacts/src/owner_service.rs'}
-          assert result['branch'] == 'fix/artifact-publication-retry-binding-20261007'
-          auth = 'AUTHORIZATION: basic ' + base64.b64encode(('x-access-token:' + os.environ['GH_TOKEN']).encode()).decode()
-          os.environ.update(GIT_CONFIG_COUNT='1', GIT_CONFIG_KEY_0='http.https://github.com/.extraheader',
-                            GIT_CONFIG_VALUE_0=auth, GIT_TERMINAL_PROMPT='0')
-          ref = 'refs/heads/' + result['branch']
-          assert not git('ls-remote', '--heads', 'origin', ref), 'refuse to overwrite another product branch'
-          subprocess.run(['git', 'push', 'origin', 'HEAD:' + ref], check=True)
-          assert git('ls-remote', '--heads', 'origin', ref).split()[0] == result['candidate']['commit']
-          result['delivered'] = True
-          path.write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
-          print(json.dumps(result, indent=2, sort_keys=True))
+          def git(*args): return subprocess.check_output(['git',*args],text=True).strip()
+          sha=git('rev-parse','HEAD');assert sha==os.environ['CANDIDATE_SHA']
+          assert not git('status','--porcelain')
+          expected={'codex-rs/hepta-agentd/src/automation_effect_host.rs','codex-rs/hepta-agentd/src/automation_effect_host_pon_process.rs','codex-rs/hepta-agentd/src/automation_effect_host_pon_tests.rs'}
+          assert set(git('diff','--name-only',os.environ['SOURCE_SHA'],'HEAD').splitlines())==expected
+          ref='refs/heads/'+os.environ['PRODUCT_BRANCH']
+          auth=base64.b64encode(('x-access-token:'+os.environ['GH_TOKEN']).encode()).decode()
+          os.environ.update(GIT_CONFIG_COUNT='1',GIT_CONFIG_KEY_0='http.https://github.com/.extraheader',GIT_CONFIG_VALUE_0='AUTHORIZATION: basic '+auth,GIT_TERMINAL_PROMPT='0')
+          assert not git('ls-remote','--heads','origin',ref),'refuse another remote head'
+          subprocess.run(['git','push','origin','HEAD:'+ref],check=True)
+          assert git('ls-remote','--heads','origin',ref).split()[0]==sha
+          result={'result':'DELIVERED','base':os.environ['SOURCE_SHA'],'commit':sha,'tree':git('rev-parse','HEAD^{tree}'),'branch':os.environ['PRODUCT_BRANCH'],'scope':'scoped-agentd-native-tests-only','cross_repository_end_to_end':False,'full_required_ci_passed':False,'merged':False,'production_activation':False}
+          (Path(os.environ['RUNNER_TEMP'])/'pon-observations/delivery.json').write_text(json.dumps(result,indent=2))
+          print(json.dumps(result))
           PY
-      - name: Preserve real failures and exact-source observations
+      - name: Retain exact-source successes and failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-publication-retry-native
-          path: ${{ runner.temp }}/publication-observations/
+          name: hepta-pon-bounded-exchange-${{ github.run_id }}
+          path: ${{ runner.temp }}/pon-observations/
           if-no-files-found: error
           retention-days: 30
