@@ -363,6 +363,20 @@ impl PonLocalProviderEffectAdapter {
         }
     }
 
+    fn observe_blocking(
+        &self,
+        intent: ProviderEffectIntent,
+        wire_payload: Vec<u8>,
+    ) -> Option<crate::AutomationEffectChainObservation> {
+        if Sha256Digest::for_bytes(&wire_payload) != intent.payload_sha256 {
+            return None;
+        }
+        let PonInvocation::Value(value) = self.invoke("packet-status", &wire_payload) else {
+            return None;
+        };
+        parse_pon_chain_observation(&value)
+    }
+
     fn lookup_blocking(
         &self,
         intent: ProviderEffectIntent,
@@ -376,19 +390,10 @@ impl PonLocalProviderEffectAdapter {
         let PonInvocation::Value(value) = self.invoke("packet-status", &wire_payload) else {
             return ProviderEffectLookup::Unknown;
         };
-        let Some(result) = value.get("result") else {
+        let Some(observation) = parse_pon_chain_observation(&value) else {
             return ProviderEffectLookup::Unknown;
         };
-        if result.get("schema").and_then(Value::as_str)
-            != Some("pon-native-exact-packet-observation-v2")
-            || result.get("global_absence_authority").and_then(Value::as_bool) != Some(false)
-            || result.get("confirmation_authority").and_then(Value::as_bool) != Some(false)
-            || result.get("finality_authority").and_then(Value::as_bool) != Some(false)
-            || result.get("execution_authority").and_then(Value::as_bool) != Some(false)
-        {
-            return ProviderEffectLookup::Unknown;
-        }
-        if result.get("stored_exact").and_then(Value::as_bool) != Some(true) {
+        if !observation.stored_exact {
             // Local absence cannot prove NotDispatched on another peer and must
             // never authorize a second physical send.
             return ProviderEffectLookup::Unknown;
@@ -403,6 +408,89 @@ impl PonLocalProviderEffectAdapter {
             ProviderEffectAckStatus::Completed,
         ))
     }
+}
+
+impl AgentdProviderEffectAdapter {
+    async fn current_chain_observation(
+        &self,
+        intent: &ProviderEffectIntent,
+        wire_payload: Option<&[u8]>,
+    ) -> Option<crate::AutomationEffectChainObservation> {
+        let Self::Pon(adapter) = self else {
+            return None;
+        };
+        let wire_payload = wire_payload?.to_vec();
+        let adapter = adapter.clone();
+        let intent = intent.clone();
+        tokio::task::spawn_blocking(move || adapter.observe_blocking(intent, wire_payload))
+            .await
+            .ok()
+            .flatten()
+    }
+}
+
+fn lower_hex_32(value: &str) -> bool {
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+}
+
+fn parse_pon_chain_observation(
+    value: &Value,
+) -> Option<crate::AutomationEffectChainObservation> {
+    let result = value.get("result")?;
+    if result.get("schema")?.as_str()? != "pon-native-exact-packet-observation-v2"
+        || result.get("local_target_only")?.as_bool()? != true
+        || result.get("global_absence_authority")?.as_bool()? != false
+        || result.get("confirmation_authority")?.as_bool()? != false
+        || result.get("finality_authority")?.as_bool()? != false
+        || result.get("execution_authority")?.as_bool()? != false
+        || result.get("production_activation")?.as_bool()? != false
+    {
+        return None;
+    }
+    let block_id = result.get("block")?.as_str()?.to_string();
+    let active_tip = result.get("active_tip")?.as_str()?.to_string();
+    if !lower_hex_32(&block_id) || !lower_hex_32(&active_tip) {
+        return None;
+    }
+    let stored_exact = result.get("stored_exact")?.as_bool()?;
+    let active_chain_member = result.get("active_chain_member")?.as_bool()?;
+    let block_height = match result.get("block_height")? {
+        Value::Null => None,
+        value => Some(value.as_u64()?),
+    };
+    let active_depth = match result.get("active_depth")? {
+        Value::Null => None,
+        value => Some(value.as_u64()?),
+    };
+    let active_tip_height = result.get("active_tip_height")?.as_u64()?;
+    let owner_generation = result.get("generation")?.as_u64()?;
+    if owner_generation == 0
+        || (!stored_exact && (block_height.is_some() || active_chain_member || active_depth.is_some()))
+        || (stored_exact && block_height.is_none())
+        || (active_chain_member != active_depth.is_some())
+        || block_height.is_some_and(|height| height > active_tip_height && active_chain_member)
+    {
+        return None;
+    }
+    Some(crate::AutomationEffectChainObservation {
+        schema_version: 1,
+        block_id,
+        stored_exact,
+        block_height,
+        active_tip,
+        active_tip_height,
+        active_chain_member,
+        active_depth,
+        owner_generation,
+        local_target_only: true,
+        global_absence_authority: false,
+        confirmation_authority: false,
+        finality_authority: false,
+        execution_authority: false,
+    })
 }
 
 impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
@@ -564,7 +652,10 @@ fn pon_contract_digest(config: &AutomationEffectHostFileV2) -> Result<Sha256Dige
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-    Observed(TaskFlowStepReceipt),
+    Observed {
+        receipt: TaskFlowStepReceipt,
+        chain: Option<crate::AutomationEffectChainObservation>,
+    },
     Indeterminate,
     ProvenAbsent,
 }
@@ -940,7 +1031,18 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
+                    let provider_intent = self.provider_intent(&pending)?;
+                    let chain = self
+                        .adapter
+                        .current_chain_observation(
+                            &provider_intent,
+                            pending.wire_payload.as_deref(),
+                        )
+                        .await;
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed {
+                        receipt,
+                        chain,
+                    });
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -974,7 +1076,17 @@ impl AgentdAutomationEffectHost {
                         ))
                     })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
+                        let chain = self
+                            .adapter
+                            .current_chain_observation(
+                                &provider_intent,
+                                pending.wire_payload.as_deref(),
+                            )
+                            .await;
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed {
+                            receipt,
+                            chain,
+                        })
                     }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
@@ -1573,6 +1685,45 @@ mod tests {
             output.push(char::from(HEX[usize::from(byte & 0x0f)]));
         }
         output
+    }
+
+    #[test]
+    fn pon_chain_observation_keeps_reorg_state_separate_from_terminal_effect() {
+        let block = "11".repeat(32);
+        let tip = "22".repeat(32);
+        let value = serde_json::json!({
+            "result": {
+                "schema": "pon-native-exact-packet-observation-v2",
+                "block": block,
+                "stored_exact": true,
+                "block_height": 7,
+                "active_tip": tip,
+                "active_tip_height": 11,
+                "active_chain_member": false,
+                "active_depth": null,
+                "generation": 9,
+                "local_target_only": true,
+                "global_absence_authority": false,
+                "confirmation_authority": false,
+                "finality_authority": false,
+                "execution_authority": false,
+                "production_activation": false
+            }
+        });
+        let observation = parse_pon_chain_observation(&value).expect("valid reorg observation");
+        assert!(observation.stored_exact);
+        assert!(!observation.active_chain_member);
+        assert_eq!(observation.active_depth, None);
+        assert!(!observation.confirmation_authority);
+        assert!(!observation.finality_authority);
+
+        let mut invalid = value.clone();
+        invalid["result"]["confirmation_authority"] = Value::Bool(true);
+        assert!(parse_pon_chain_observation(&invalid).is_none());
+
+        let mut inconsistent = value;
+        inconsistent["result"]["active_chain_member"] = Value::Bool(true);
+        assert!(parse_pon_chain_observation(&inconsistent).is_none());
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
