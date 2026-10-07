@@ -436,11 +436,61 @@ fn lower_hex_32(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
+fn lower_hex_64(value: &str) -> bool {
+    value.len() == 128
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+}
+
+fn work_bytes(value: &str) -> Option<[u8; 64]> {
+    if !lower_hex_64(value) {
+        return None;
+    }
+    let mut bytes = [0_u8; 64];
+    for (index, byte) in bytes.iter_mut().enumerate() {
+        let offset = index * 2;
+        *byte = u8::from_str_radix(&value[offset..offset + 2], 16).ok()?;
+    }
+    Some(bytes)
+}
+
+fn work_difference_hex(tip: &str, block: &str) -> Option<String> {
+    let tip = work_bytes(tip)?;
+    let block = work_bytes(block)?;
+    if tip < block {
+        return None;
+    }
+    let mut out = [0_u8; 64];
+    let mut borrow = 0_u16;
+    for index in (0..64).rev() {
+        let left = u16::from(tip[index]);
+        let right = u16::from(block[index]) + borrow;
+        if left >= right {
+            out[index] = (left - right) as u8;
+            borrow = 0;
+        } else {
+            out[index] = (256 + left - right) as u8;
+            borrow = 1;
+        }
+    }
+    if borrow != 0 {
+        return None;
+    }
+    const HEX: &[u8; 16] = b"0123456789abcdef";
+    let mut encoded = String::with_capacity(128);
+    for byte in out {
+        encoded.push(char::from(HEX[usize::from(byte >> 4)]));
+        encoded.push(char::from(HEX[usize::from(byte & 0x0f)]));
+    }
+    Some(encoded)
+}
+
 fn parse_pon_chain_observation(
     value: &Value,
 ) -> Option<crate::AutomationEffectChainObservation> {
     let result = value.get("result")?;
-    if result.get("schema")?.as_str()? != "pon-native-exact-packet-observation-v2"
+    if result.get("schema")?.as_str()? != "pon-native-exact-packet-observation-v3"
         || result.get("local_target_only")?.as_bool()? != true
         || result.get("global_absence_authority")?.as_bool()? != false
         || result.get("confirmation_authority")?.as_bool()? != false
@@ -452,7 +502,14 @@ fn parse_pon_chain_observation(
     }
     let block_id = result.get("block")?.as_str()?.to_string();
     let active_tip = result.get("active_tip")?.as_str()?.to_string();
-    if !lower_hex_32(&block_id) || !lower_hex_32(&active_tip) {
+    let active_tip_chainwork_hex = result
+        .get("active_tip_chainwork_hex")?
+        .as_str()?
+        .to_string();
+    if !lower_hex_32(&block_id)
+        || !lower_hex_32(&active_tip)
+        || !lower_hex_64(&active_tip_chainwork_hex)
+    {
         return None;
     }
     let stored_exact = result.get("stored_exact")?.as_bool()?;
@@ -461,29 +518,82 @@ fn parse_pon_chain_observation(
         Value::Null => None,
         value => Some(value.as_u64()?),
     };
+    let block_chainwork_hex = match result.get("block_chainwork_hex")? {
+        Value::Null => None,
+        value => {
+            let value = value.as_str()?.to_string();
+            if !lower_hex_64(&value) {
+                return None;
+            }
+            Some(value)
+        }
+    };
     let active_depth = match result.get("active_depth")? {
         Value::Null => None,
         value => Some(value.as_u64()?),
     };
+    let active_work_depth_hex = match result.get("active_work_depth_hex")? {
+        Value::Null => None,
+        value => {
+            let value = value.as_str()?.to_string();
+            if !lower_hex_64(&value) {
+                return None;
+            }
+            Some(value)
+        }
+    };
     let active_tip_height = result.get("active_tip_height")?.as_u64()?;
+    let active_membership_sql_budget = result
+        .get("active_membership_sql_budget")?
+        .as_u64()?;
+    let active_membership_sql_lookups = match result.get("active_membership_sql_lookups")? {
+        Value::Null => None,
+        value => Some(value.as_u64()?),
+    };
     let owner_generation = result.get("generation")?.as_u64()?;
     if owner_generation == 0
-        || (!stored_exact && (block_height.is_some() || active_chain_member || active_depth.is_some()))
-        || (stored_exact && block_height.is_none())
+        || active_membership_sql_budget != 1024
+        || (!stored_exact
+            && (block_height.is_some()
+                || block_chainwork_hex.is_some()
+                || active_chain_member
+                || active_depth.is_some()
+                || active_work_depth_hex.is_some()
+                || active_membership_sql_lookups.is_some()))
+        || (stored_exact
+            && (block_height.is_none()
+                || block_chainwork_hex.is_none()
+                || !active_membership_sql_lookups
+                    .is_some_and(|lookups| (2..=active_membership_sql_budget).contains(&lookups))))
         || (active_chain_member != active_depth.is_some())
+        || (active_chain_member != active_work_depth_hex.is_some())
         || block_height.is_some_and(|height| height > active_tip_height && active_chain_member)
     {
         return None;
     }
+    if active_chain_member {
+        let expected = work_difference_hex(
+            &active_tip_chainwork_hex,
+            block_chainwork_hex.as_deref()?,
+        )?;
+        if active_work_depth_hex.as_deref()? != expected {
+            return None;
+        }
+    }
     Some(crate::AutomationEffectChainObservation {
-        schema_version: 1,
+        schema_version: 2,
         block_id,
         stored_exact,
         block_height,
+        block_chainwork_hex,
         active_tip,
         active_tip_height,
+        active_tip_chainwork_hex,
         active_chain_member,
         active_depth,
+        active_work_depth_hex,
+        active_membership_sql_lookups,
+        active_membership_sql_budget,
         owner_generation,
         local_target_only: true,
         global_absence_authority: false,
@@ -1691,16 +1801,23 @@ mod tests {
     fn pon_chain_observation_keeps_reorg_state_separate_from_terminal_effect() {
         let block = "11".repeat(32);
         let tip = "22".repeat(32);
+        let block_work = format!("{}01", "00".repeat(63));
+        let tip_work = format!("{}05", "00".repeat(63));
         let value = serde_json::json!({
             "result": {
-                "schema": "pon-native-exact-packet-observation-v2",
+                "schema": "pon-native-exact-packet-observation-v3",
                 "block": block,
                 "stored_exact": true,
                 "block_height": 7,
+                "block_chainwork_hex": block_work,
                 "active_tip": tip,
                 "active_tip_height": 11,
+                "active_tip_chainwork_hex": tip_work,
                 "active_chain_member": false,
                 "active_depth": null,
+                "active_work_depth_hex": null,
+                "active_membership_sql_lookups": 2,
+                "active_membership_sql_budget": 1024,
                 "generation": 9,
                 "local_target_only": true,
                 "global_absence_authority": false,
@@ -1714,8 +1831,45 @@ mod tests {
         assert!(observation.stored_exact);
         assert!(!observation.active_chain_member);
         assert_eq!(observation.active_depth, None);
+        assert_eq!(observation.active_work_depth_hex, None);
+        assert_eq!(observation.active_membership_sql_lookups, Some(2));
+        assert_eq!(observation.active_membership_sql_budget, 1024);
         assert!(!observation.confirmation_authority);
         assert!(!observation.finality_authority);
+
+        let mut active = value.clone();
+        let expected_work_depth = format!("{}04", "00".repeat(63));
+        active["result"]["active_chain_member"] = Value::Bool(true);
+        active["result"]["active_depth"] = Value::from(4_u64);
+        active["result"]["active_work_depth_hex"] =
+            Value::String(expected_work_depth.clone());
+        let observed = parse_pon_chain_observation(&active).expect("valid work depth");
+        assert_eq!(observed.schema_version, 2);
+        assert_eq!(
+            observed.active_work_depth_hex.as_deref(),
+            Some(expected_work_depth.as_str())
+        );
+
+        let mut forged_work = active;
+        forged_work["result"]["active_work_depth_hex"] =
+            Value::String(format!("{}03", "00".repeat(63)));
+        assert!(parse_pon_chain_observation(&forged_work).is_none());
+
+        let mut invalid_lookup = value.clone();
+        invalid_lookup["result"]["active_membership_sql_lookups"] = Value::from(1025_u64);
+        assert!(parse_pon_chain_observation(&invalid_lookup).is_none());
+
+        let mut invalid_budget = value.clone();
+        invalid_budget["result"]["active_membership_sql_budget"] = Value::from(2048_u64);
+        assert!(parse_pon_chain_observation(&invalid_budget).is_none());
+
+        let mut invalid_work = value.clone();
+        invalid_work["result"]["block_chainwork_hex"] = Value::String("00".into());
+        assert!(parse_pon_chain_observation(&invalid_work).is_none());
+
+        let mut invalid_depth = value.clone();
+        invalid_depth["result"]["active_work_depth_hex"] = Value::String("gg".repeat(64));
+        assert!(parse_pon_chain_observation(&invalid_depth).is_none());
 
         let mut invalid = value.clone();
         invalid["result"]["confirmation_authority"] = Value::Bool(true);
