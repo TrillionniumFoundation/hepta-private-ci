@@ -605,6 +605,11 @@ fn parse_pon_chain_observation(
             return None;
         }
     }
+    let confirmation_policy_satisfied = active_chain_member
+        && active_depth.is_some_and(|depth| depth >= min_confirmation_depth)
+        && active_work_depth_hex
+            .as_deref()
+            .is_some_and(|depth| depth >= min_confirmation_work_depth_hex);
     Some(crate::AutomationEffectChainObservation {
         schema_version: 2,
         block_id,
@@ -621,11 +626,7 @@ fn parse_pon_chain_observation(
         active_membership_sql_budget,
         confirmation_policy_min_depth: min_confirmation_depth,
         confirmation_policy_min_work_depth_hex: min_confirmation_work_depth_hex.to_string(),
-        confirmation_policy_satisfied: active_chain_member
-            && active_depth.is_some_and(|depth| depth >= min_confirmation_depth)
-            && active_work_depth_hex
-                .as_deref()
-                .is_some_and(|depth| depth >= min_confirmation_work_depth_hex),
+        confirmation_policy_satisfied,
         owner_generation,
         local_target_only: true,
         global_absence_authority: false,
