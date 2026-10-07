@@ -733,6 +733,8 @@ pub struct AutomationEffectChainObservation {
     pub active_chain_member: bool,
     pub active_depth: Option<u64>,
     pub active_work_depth_hex: Option<String>,
+    pub active_membership_sql_lookups: Option<u64>,
+    pub active_membership_sql_budget: u64,
     pub owner_generation: u64,
     pub local_target_only: bool,
     pub global_absence_authority: bool,
