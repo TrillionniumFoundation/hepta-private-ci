@@ -454,16 +454,23 @@ impl AgentdAutomationEffectHost {
         &self,
         pending: &AuthorizedEffectPending,
     ) -> Result<ProviderEffectIntent, AgentdError> {
-        let key = ProviderEffectKey::for_operation(
+        let expected = ProviderEffectKey::for_operation(
             &self.provider_scope,
             &pending.run_id,
             &pending.step_id,
         )
         .map_err(|error| AgentdError::Invalid(format!("derive provider effect key: {error:?}")))?;
-        Ok(ProviderEffectIntent::new(
-            key,
-            pending.payload_digest.clone(),
-        ))
+        let key = match pending.provider_effect_key.as_ref() {
+            Some(durable) if durable == &expected => durable.clone(),
+            Some(_) => {
+                return Err(AgentdError::GenerationFenced(
+                    "pending effect provider key differs from the current host configuration"
+                        .to_string(),
+                ));
+            }
+            None => expected,
+        };
+        Ok(ProviderEffectIntent::new(key, pending.payload_digest.clone()))
     }
 }
 
@@ -474,6 +481,21 @@ struct HttpAuthorizedEffectDriver {
 }
 
 impl AuthorizedEffectDriver for HttpAuthorizedEffectDriver {
+    fn recovery_key(
+        &self,
+        intent: &AuthorizedEffectIntent,
+    ) -> Result<ProviderEffectKey, AuthorizedEffectDriverError> {
+        if intent.destination_id != self.destination_id {
+            return Err(AuthorizedEffectDriverError::BeforeProviderContact);
+        }
+        ProviderEffectKey::for_operation(
+            &self.provider_scope,
+            &intent.run_id,
+            &intent.step_id,
+        )
+        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)
+    }
+
     fn dispatch(
         &mut self,
         request: &AuthorizedEffectRequest<'_>,
@@ -481,13 +503,14 @@ impl AuthorizedEffectDriver for HttpAuthorizedEffectDriver {
         if request.intent.destination_id != self.destination_id {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
-        let key = ProviderEffectKey::for_operation(
-            &self.provider_scope,
-            &request.intent.run_id,
-            &request.intent.step_id,
-        )
-        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
-        let provider_intent = ProviderEffectIntent::new(key, request.intent.payload_digest.clone());
+        let expected = self.recovery_key(request.intent)?;
+        if request.provider_effect_key != &expected {
+            return Err(AuthorizedEffectDriverError::BeforeProviderContact);
+        }
+        let provider_intent = ProviderEffectIntent::new(
+            request.provider_effect_key.clone(),
+            request.intent.payload_digest.clone(),
+        );
         let adapter = self.adapter.clone();
         let wire_payload = request.wire_payload.to_vec();
         let spawn = thread::Builder::new()
@@ -1068,6 +1091,17 @@ mod tests {
             receipt.observation,
             Some(TaskFlowStepObservation::Succeeded)
         );
+        let durable_attempt = fixture
+            .store
+            .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
+            .await
+            .expect("read durable provider attempt")
+            .expect("provider attempt");
+        assert_eq!(
+            durable_attempt.provider_effect_key.as_ref(),
+            Some(&provider_key)
+        );
+        assert_eq!(durable_attempt.wire_payload.as_deref(), Some(WIRE));
 
         // Another trusted handle may advance the existing durable owner.
         // A host-local numeric cache must not accept the old on-disk feed.
