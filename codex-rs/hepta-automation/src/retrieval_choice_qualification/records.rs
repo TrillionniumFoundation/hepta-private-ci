@@ -1,3 +1,4 @@
+use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use serde::Deserialize;
 use serde::Serialize;
@@ -27,6 +28,7 @@ pub(crate) struct PhaseCommand {
     pub(crate) activation_id: String,
     pub(crate) node: String,
     pub(crate) revision: u64,
+    #[serde(deserialize_with = "deserialize_fence")]
     pub(crate) fence: TaskFlowFence,
     pub(crate) definition_digest: Sha256Digest,
     pub(crate) intent_digest: Sha256Digest,
@@ -35,6 +37,32 @@ pub(crate) struct PhaseCommand {
     pub(crate) prepare_digest: Option<Sha256Digest>,
     pub(crate) now_ms: u64,
     pub(crate) bootstrap_event_seq: u64,
+}
+
+// Fixture decode only. Serialization remains the actual TaskFlowFence derive,
+// and every decoded field passes through its existing validating constructor.
+fn deserialize_fence<'de, D>(deserializer: D) -> Result<TaskFlowFence, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Fields {
+        owner_agent_id: AgentId,
+        owner_id: String,
+        owner_epoch: u64,
+        generation: u64,
+        fencing_token: String,
+    }
+    let fields = Fields::deserialize(deserializer)?;
+    TaskFlowFence::new(
+        fields.owner_agent_id,
+        fields.owner_id,
+        fields.owner_epoch,
+        fields.generation,
+        fields.fencing_token,
+    )
+    .map_err(serde::de::Error::custom)
 }
 
 impl PhaseCommand {
@@ -156,4 +184,75 @@ pub(crate) enum PhaseFault {
     AfterCorrelationInsert,
     BeforeCommit,
     AfterCommitAckLoss,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn command() -> Result<PhaseCommand, Box<dyn std::error::Error>> {
+        Ok(PhaseCommand {
+            version: 1,
+            operation: PhaseOperation::Prepare,
+            command_id: "prep0001".to_owned(),
+            run_id: RUN_ID.to_owned(),
+            activation_id: "act00001".to_owned(),
+            node: ACTIVITY.to_owned(),
+            revision: 3,
+            fence: TaskFlowFence::new(
+                AgentId::parse("00000000-0000-4000-8000-000000000119")?,
+                "owner001",
+                /*owner_epoch*/ 1,
+                /*generation*/ 1,
+                "fence001",
+            )?,
+            definition_digest: Sha256Digest::for_bytes(b"definition"),
+            intent_digest: Sha256Digest::for_bytes(b"intent"),
+            payload_digest: Sha256Digest::for_bytes(b"payload"),
+            body_generation: 1,
+            prepare_digest: None,
+            now_ms: 1,
+            bootstrap_event_seq: 3,
+        })
+    }
+
+    #[test]
+    fn fixture_fence_roundtrip_preserves_actual_serialization_and_digest() {
+        let original = command().unwrap();
+        let actual_fence = serde_json::to_value(&original.fence).unwrap();
+        let (bytes, digest) = original.canonical().unwrap();
+        let encoded: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(encoded["fence"], actual_fence);
+        let decoded: PhaseCommand = serde_json::from_slice(&bytes).unwrap();
+        assert_eq!(decoded, original);
+        assert_eq!(decoded.canonical().unwrap(), (bytes, digest));
+    }
+
+    #[test]
+    fn fixture_fence_rejects_unknown_duplicate_missing_and_invalid_fields() {
+        let original = command().unwrap();
+        let value = serde_json::to_value(&original).unwrap();
+        for (field, bad) in [
+            ("owner_agent_id", serde_json::json!("invalid-agent")),
+            ("owner_id", serde_json::json!("")),
+            ("owner_epoch", serde_json::json!(0)),
+            ("generation", serde_json::json!(0)),
+            ("fencing_token", serde_json::json!("")),
+            ("unexpected", serde_json::json!(true)),
+        ] {
+            let mut malformed = value.clone();
+            malformed["fence"][field] = bad;
+            assert!(
+                serde_json::from_value::<PhaseCommand>(malformed).is_err(),
+                "{field}"
+            );
+        }
+        let mut missing = value.clone();
+        missing["fence"].as_object_mut().unwrap().remove("owner_id");
+        assert!(serde_json::from_value::<PhaseCommand>(missing).is_err());
+        let text = serde_json::to_string(&original).unwrap();
+        let duplicate = text.replace("\"owner_epoch\":1", "\"owner_epoch\":1,\"owner_epoch\":1");
+        assert_ne!(duplicate, text);
+        assert!(serde_json::from_str::<PhaseCommand>(&duplicate).is_err());
+    }
 }

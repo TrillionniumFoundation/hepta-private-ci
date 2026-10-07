@@ -2,7 +2,7 @@
 name: TaskFlow private owner qualification
 on:
   push:
-    branches: [dot/taskflow-owner-qualification-20261007]
+    branches: [dot/taskflow-owner-serde-20261007]
 permissions:
   contents: read
 concurrency:
@@ -11,7 +11,7 @@ concurrency:
 jobs:
   source-qualification:
     name: Default Automation and opt-in owner SQLite profile
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/taskflow-owner-qualification-20261007'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dot/taskflow-owner-serde-20261007'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -38,7 +38,7 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 2
           persist-credentials: false
-      - name: Verify exact raw parent and reviewed eleven-source/two-diagnostic owner scope
+      - name: Verify exact raw parent and reviewed one-source/two-diagnostic repair scope
         shell: bash
         timeout-minutes: 2
         run: python3 scripts/hepta_taskflow_owner_ci.py before
