@@ -129,6 +129,104 @@ class FormatterScopeTests(unittest.TestCase):
         )
         self.assertEqual(command.cwd, self.root / "codex-rs/example")
 
+    @unittest.skipIf(FMT.tomllib is None, "requires Python TOML reader")
+    def test_rust_batch_reuses_owner_edition_and_next_batch_sees_edits(self):
+        workspace = self.write(
+            "codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n'
+        )
+        self.write(
+            "codex-rs/owner/Cargo.toml",
+            '[package]\nname="owner"\nedition.workspace=true\n',
+        )
+        self.write(
+            "qualification/fixture/Cargo.toml",
+            '[package]\nname="fixture"\nedition="2021"\n',
+        )
+        paths = [
+            "codex-rs/owner/src/lib.rs",
+            "codex-rs/owner/src/other.rs",
+            "qualification/fixture/src/lib.rs",
+        ]
+        for path in paths:
+            self.write(path, "pub fn entry() {}\n")
+        expected = tuple(FMT.rust_file_command(path, check=True) for path in paths)
+        original_read = Path.read_text
+        reads = []
+
+        def read(path, *args, **kwargs):
+            reads.append(path)
+            return original_read(path, *args, **kwargs)
+
+        with patch.object(Path, "read_text", read):
+            (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        self.assertEqual(group.commands, expected)
+        self.assertEqual(reads.count(workspace), 1)
+
+        workspace.write_text('[workspace.package]\nedition="2021"\n')
+        (refreshed,) = FMT.scoped_formatter_groups(paths, check=True)
+        self.assertEqual(
+            refreshed.commands,
+            tuple(FMT.rust_file_command(path, check=True) for path in paths),
+        )
+        self.assertNotEqual(refreshed.commands[0], group.commands[0])
+
+    def test_rust_batch_fallback_runs_metadata_once_per_owner(self):
+        import json
+
+        paths = []
+        manifests = []
+        packages = []
+        for owner, edition in (("first", "2024"), ("other", "2021")):
+            manifest = self.write(
+                f"codex-rs/{owner}/Cargo.toml", f'[package]\nname="{owner}"\n'
+            )
+            manifests.append(manifest)
+            packages.append({"manifest_path": str(manifest), "edition": edition})
+            for name in ("lib", "other"):
+                path = f"codex-rs/{owner}/src/{name}.rs"
+                self.write(path, "pub fn entry() {}\n")
+                paths.append(path)
+        with (
+            patch.object(FMT, "tomllib", None),
+            patch.object(
+                FMT.subprocess,
+                "check_output",
+                return_value=json.dumps({"packages": packages}),
+            ) as metadata,
+        ):
+            (group,) = FMT.scoped_formatter_groups(paths, check=True)
+        self.assertEqual(metadata.call_count, 2)
+        self.assertEqual(
+            [Path(call.args[0][-1]) for call in metadata.call_args_list], manifests
+        )
+        self.assertEqual(
+            [
+                command.args[command.args.index("--edition") + 1]
+                for command in group.commands
+            ],
+            ["2024", "2024", "2021", "2021"],
+        )
+        self.assertEqual(
+            [command.cwd for command in group.commands],
+            [manifest.parent for manifest in manifests for _ in range(2)],
+        )
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink fixture")
+    def test_cached_rust_edition_still_checks_each_source_path(self):
+        self.write(
+            "codex-rs/owner/Cargo.toml", '[package]\nname="owner"\nedition="2024"\n'
+        )
+        self.write("codex-rs/owner/src/first.rs", "pub fn entry() {}\n")
+        with tempfile.TemporaryDirectory() as outside:
+            target = Path(outside) / "outside.rs"
+            target.write_text("pub fn outside() {}\n")
+            (self.root / "codex-rs/owner/src/second.rs").symlink_to(target)
+            with self.assertRaisesRegex(ValueError, "source escapes repository"):
+                FMT.scoped_formatter_groups(
+                    ["codex-rs/owner/src/first.rs", "codex-rs/owner/src/second.rs"],
+                    check=True,
+                )
+
     def test_rust_formatter_executes_in_owner_context_without_touching_neighbor(self):
         import json
 

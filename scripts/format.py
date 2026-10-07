@@ -233,7 +233,9 @@ def changed_paths(base: str | None = None) -> list[str]:
     return sorted(values)
 
 
-def rust_file_command(path: str, *, check: bool) -> Command:
+def rust_file_command(
+    path: str, *, check: bool, editions: dict[Path, str] | None = None
+) -> Command:
     manifest = next(
         (
             parent / "Cargo.toml"
@@ -243,7 +245,9 @@ def rust_file_command(path: str, *, check: bool) -> Command:
         None,
     )
     edition = "2021"
-    if manifest is not None and tomllib is None:
+    if manifest is not None and editions is not None and manifest in editions:
+        edition = editions[manifest]
+    elif manifest is not None and tomllib is None:
         metadata = json.loads(
             subprocess.check_output(
                 [
@@ -293,6 +297,8 @@ def rust_file_command(path: str, *, check: bool) -> Command:
                     break
             else:
                 raise ValueError(f"owning Rust workspace missing for {manifest}")
+    if manifest is not None and editions is not None:
+        editions[manifest] = str(edition)
     args = [
         "rustfmt",
         "--edition",
@@ -380,9 +386,15 @@ def scoped_formatter_groups(
         groups.append(just_formatter_group(check=check))
     rust = rust_configuration_scope(paths)
     if rust:
+        # Share edition discovery within this batch; the next call rereads edits.
+        editions: dict[Path, str] = {}
         groups.append(
             FormatterGroup(
-                "Rust", tuple(rust_file_command(path, check=check) for path in rust)
+                "Rust",
+                tuple(
+                    rust_file_command(path, check=check, editions=editions)
+                    for path in rust
+                ),
             )
         )
     build = [
