@@ -673,14 +673,14 @@ impl fmt::Display for FinalUseControlError {
 }
 impl std::error::Error for FinalUseControlError {}
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 mod tests {
     use super::*;
     use crate::FinalUseBinding;
+    use crate::private_state_tests::private_tempdir;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
     use std::collections::BTreeSet;
-    use std::os::unix::fs::PermissionsExt;
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
@@ -719,8 +719,7 @@ mod tests {
             .sign(&grant.signing_bytes().unwrap())
             .to_bytes()
             .to_vec();
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = private_tempdir().unwrap();
         let authority = FinalUseAuthority::open_state_dir(
             directory.path(),
             "security-owner".into(),
@@ -955,7 +954,12 @@ mod tests {
             ack: ack_a,
         };
         let partial = verifier
-            .verify(&feed_verifier, &signed_update, &[signed_a.clone()], 2_100)
+            .verify(
+                &feed_verifier,
+                &signed_update,
+                std::slice::from_ref(&signed_a),
+                2_100,
+            )
             .unwrap();
         assert!(!partial.converged());
         assert_eq!(partial.missing_nodes, vec!["node-b"]);
@@ -1070,7 +1074,12 @@ mod tests {
             Err(FinalUseControlError::InvalidRevocationAck)
         );
         assert_eq!(
-            verifier.verify(&feed_verifier, &signed_update, &[signed.clone()], 2_000),
+            verifier.verify(
+                &feed_verifier,
+                &signed_update,
+                std::slice::from_ref(&signed),
+                2_000
+            ),
             Err(FinalUseControlError::RevocationFeedStale)
         );
 

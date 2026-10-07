@@ -132,6 +132,8 @@ Migrations are deterministic and checksum-bound. Store open verifies required sc
 
 The current general authority-lease store starts at canonical store schema V2 because retired lease-ID revision lineage participates in the authoritative frontier. No schema-V1 general lease store was activated or released; V1 images are rejected rather than silently reinterpreted. Any future durable predecessor requires an explicit migration and frontier transition. FinalUse retains its separately documented V1 single-key compatibility format and V2 key-ring format.
 
+Both the FinalUse nonce/revocation owner and the general lease owner use the shared Windows private-state primitives for directory and file ownership, ACL, reparse-point and hard-link validation. Their Windows adapters retain the existing process lock, bounded decoding, file synchronization, write-through replacement and directory synchronization. Nonce append opens an existing journal without recreating missing replay history. Unix storage behavior, schemas and external frontier requirements are unchanged. The public-owner tests in `codex-rs/hepta-contracts/tests/private_state_owners.rs` cover reopen, exclusive ownership, replay/revocation persistence, missing-state failure and hard-link rejection on Unix and Windows; native platform execution is separate qualification evidence.
+
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model

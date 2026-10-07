@@ -1,10 +1,23 @@
 //! Physical storage regression tests; fixture admissions are not product authority.
 use std::io::Seek;
 use std::io::SeekFrom;
-use std::os::unix::fs::MetadataExt;
 
 use super::*;
 use crate::TestMust;
+
+#[cfg(unix)]
+fn physical_identity(path: &Path) -> (u64, u64) {
+    use std::os::unix::fs::MetadataExt;
+    let metadata = std::fs::metadata(path).must("file identity");
+    (metadata.dev(), metadata.ino())
+}
+
+#[cfg(windows)]
+fn physical_identity(path: &Path) -> (u64, u64) {
+    let file = File::open(path).must("file identity handle");
+    let information = winapi_util::file::information(&file).must("file identity");
+    (information.volume_serial_number(), information.file_index())
+}
 
 fn id(value: &str) -> StableId {
     StableId::new(value).must("test identity")
@@ -71,6 +84,7 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
         .must("seed actual payload bytes");
     let payload_file = path.join(payloads::FILE_NAME);
     let before = std::fs::metadata(&payload_file).must("payload metadata");
+    let payload_identity = physical_identity(&payload_file);
     let legacy_bytes = serde_json::to_vec(&stored_v2(owner.registry().must("registry")))
         .must("legacy serialization")
         .len();
@@ -84,11 +98,14 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
     assert_eq!(
         (
             before.len(),
-            before.ino(),
-            before.mtime(),
-            before.mtime_nsec()
+            payload_identity,
+            before.modified().must("payload modification time")
         ),
-        (after.len(), after.ino(), after.mtime(), after.mtime_nsec())
+        (
+            after.len(),
+            physical_identity(&payload_file),
+            after.modified().must("payload modification time")
+        )
     );
     let manifest = path.join("registry.json");
     let metadata_bytes = std::fs::metadata(&manifest).must("manifest").len();
@@ -107,14 +124,11 @@ fn metadata_changes_never_rewrite_old_payloads_and_reopen_never_rewrites_manifes
             .get(&payload_id)
             .must("owner payload"),
     ));
-    let manifest_inode = std::fs::metadata(&manifest).must("manifest").ino();
+    let manifest_identity = physical_identity(&manifest);
     drop(owner);
     let reopened = DurablePromptRegistry::open_state_dir(&path, 512).must("reopen");
     assert_eq!(reopened.registry().must("registry"), &expected);
-    assert_eq!(
-        std::fs::metadata(&manifest).must("manifest").ino(),
-        manifest_inode
-    );
+    assert_eq!(physical_identity(&manifest), manifest_identity);
     eprintln!(
         "PREG_V3_GROWTH payloads=64 raw_bytes={} legacy_snapshot_bytes={legacy_bytes} metadata_commit_bytes={metadata_bytes} old_payload_bytes_rewritten=0",
         64 * 16 * 1024
@@ -231,6 +245,8 @@ fn v2_migration_preserves_payloads_frontiers_and_semantic_identity() {
     file.write_all(&bytes).must("legacy bytes");
     file.sync_all().must("legacy sync");
     directory.sync_all().must("legacy directory sync");
+    // Migration replaces the legacy manifest; release its fixture writer first.
+    drop(file);
     let owner = DurablePromptRegistry::open_state_dir(&path, 64).must("migration");
     assert_eq!(owner.registry().must("registry"), &core);
     let manifest: serde_json::Value =

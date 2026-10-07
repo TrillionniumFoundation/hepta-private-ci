@@ -1022,6 +1022,6 @@ impl fmt::Display for FinalUseError {
 }
 impl std::error::Error for FinalUseError {}
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 #[path = "final_use_tests.rs"]
 mod tests;

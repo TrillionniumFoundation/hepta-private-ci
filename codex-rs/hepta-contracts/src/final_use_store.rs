@@ -536,6 +536,6 @@ fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 #[path = "final_use_store_tests.rs"]
 mod tests;

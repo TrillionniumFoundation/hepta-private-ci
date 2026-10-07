@@ -1,15 +1,6 @@
 use super::*;
+use crate::private_state_tests::private_tempdir;
 use pretty_assertions::assert_eq;
-#[cfg(unix)]
-use std::os::unix::fs::PermissionsExt;
-
-#[allow(clippy::unwrap_used)]
-fn private_tempdir() -> tempfile::TempDir {
-    let directory = tempfile::tempdir().unwrap();
-    #[cfg(unix)]
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-    directory
-}
 
 #[test]
 fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
@@ -17,7 +8,7 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
         StoreTrust::SingleKey([47; 32]),
         StoreTrust::IssuerKeyRing([91; 32]),
     ] {
-        let directory = private_tempdir();
+        let directory = private_tempdir().unwrap();
         let head = FinalUseRevocations {
             authority_epoch: 9,
             revision: 1,
@@ -62,7 +53,7 @@ fn legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims() {
 
 #[test]
 fn legacy_journal_keeps_trust_binding_and_exact_head_checks() {
-    let directory = private_tempdir();
+    let directory = private_tempdir().unwrap();
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,

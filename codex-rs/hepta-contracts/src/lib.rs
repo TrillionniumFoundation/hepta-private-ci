@@ -20,6 +20,8 @@ mod final_use;
 mod final_use_control;
 mod identity;
 mod memory;
+#[cfg(all(test, any(unix, windows)))]
+mod private_state_tests;
 mod provider;
 mod provider_effect;
 mod qualification_receipt;

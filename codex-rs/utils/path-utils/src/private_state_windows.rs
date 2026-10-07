@@ -12,6 +12,7 @@ use std::io;
 use std::os::windows::ffi::OsStringExt;
 use std::os::windows::fs::OpenOptionsExt;
 use std::os::windows::io::AsRawHandle;
+use std::os::windows::io::FromRawHandle;
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
@@ -21,38 +22,33 @@ use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
+use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
 use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::Security::ACCESS_ALLOWED_ACE;
 use windows_sys::Win32::Security::ACE_HEADER;
 use windows_sys::Win32::Security::ACL;
-use windows_sys::Win32::Security::ACL_REVISION;
 use windows_sys::Win32::Security::ACL_SIZE_INFORMATION;
 use windows_sys::Win32::Security::AclSizeInformation;
-use windows_sys::Win32::Security::AddAccessAllowedAceEx;
 use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
-use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
-use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::EqualSid;
 use windows_sys::Win32::Security::GENERIC_MAPPING;
 use windows_sys::Win32::Security::GetAce;
 use windows_sys::Win32::Security::GetAclInformation;
-use windows_sys::Win32::Security::GetLengthSid;
 use windows_sys::Win32::Security::GetTokenInformation;
-use windows_sys::Win32::Security::InitializeAcl;
 use windows_sys::Win32::Security::IsWellKnownSid;
 use windows_sys::Win32::Security::MapGenericMask;
-use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
-use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::Security::TOKEN_USER;
 use windows_sys::Win32::Security::TokenUser;
 use windows_sys::Win32::Security::WinBuiltinAdministratorsSid;
 use windows_sys::Win32::Security::WinCreatorOwnerSid;
 use windows_sys::Win32::Security::WinLocalSystemSid;
+use windows_sys::Win32::Storage::FileSystem::CREATE_NEW;
+use windows_sys::Win32::Storage::FileSystem::CreateDirectoryW;
+use windows_sys::Win32::Storage::FileSystem::CreateFileW;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
-use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 use windows_sys::Win32::Storage::FileSystem::FILE_APPEND_DATA;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_DIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
@@ -62,6 +58,9 @@ use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_DATA;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_EA;
@@ -74,6 +73,10 @@ use windows_sys::Win32::Storage::FileSystem::WRITE_OWNER;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
 use windows_sys::Win32::System::Threading::OpenProcessToken;
 
+#[path = "private_state_windows_security.rs"]
+mod creation_security;
+use creation_security::with_private_security;
+
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
 const INHERIT_ONLY_ACE: u8 = 0x08;
@@ -83,7 +86,7 @@ const INHERIT_ONLY_ACE: u8 = 0x08;
 pub enum PrivateFileAccess {
     /// Open an existing child for reads.
     Read,
-    /// Open an existing child for retained-owner reads and writes.
+    /// Open an existing child for reads and writes without recreating missing state.
     Write,
     /// Open or create a child for retained-owner reads and writes.
     Create,
@@ -91,68 +94,31 @@ pub enum PrivateFileAccess {
 
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
-    let created = match std::fs::create_dir(root) {
-        Ok(()) => true,
-        Err(error) if error.kind() == io::ErrorKind::AlreadyExists => false,
-        Err(error) => return Err(error),
-    };
-    reject_reparse_ancestry(root)?;
+    let path = wide_path(root)?;
+    // Creation, ancestry validation, and the retained open must use the same
+    // absolute/verbatim spelling, including when callers supply a relative root.
+    let root = PathBuf::from(std::ffi::OsString::from_wide(&path[..path.len() - 1]));
+    with_private_security(|security| {
+        if unsafe { CreateDirectoryW(path.as_ptr(), security) } == 0 {
+            let error = io::Error::last_os_error();
+            if error.kind() != io::ErrorKind::AlreadyExists {
+                return Err(error);
+            }
+        }
+        Ok(())
+    })?;
+    reject_reparse_ancestry(&root)?;
     let mut options = OpenOptions::new();
     options.read(true).write(true);
-    if created {
-        options.access_mode(FILE_GENERIC_READ | FILE_GENERIC_WRITE | WRITE_DAC);
-    }
     let directory = options
+        // Child operations resolve from this retained handle. Refuse delete
+        // sharing so its own path cannot be renamed between resolution and use;
+        // Windows also refuses renaming an ancestor with an open descendant.
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
-        .open(root)?;
-    if created {
-        install_private_dacl(&directory)?;
-    }
+        .open(&root)?;
     validate_handle(&directory, HandleKind::Directory)?;
     Ok(directory)
-}
-
-fn install_private_dacl(directory: &File) -> io::Result<()> {
-    let current_user = CurrentUser::read()?;
-    let sid_length = unsafe { GetLengthSid(current_user.sid()) } as usize;
-    if sid_length == 0 {
-        return Err(io::Error::last_os_error());
-    }
-    let acl_bytes = std::mem::size_of::<ACL>() + std::mem::size_of::<ACCESS_ALLOWED_ACE>()
-        - std::mem::size_of::<u32>()
-        + sid_length;
-    let mut storage = vec![0_u32; acl_bytes.div_ceil(std::mem::size_of::<u32>())];
-    let dacl = storage.as_mut_ptr().cast::<ACL>();
-    if unsafe { InitializeAcl(dacl, acl_bytes as u32, ACL_REVISION) } == 0 {
-        return Err(io::Error::last_os_error());
-    }
-    if unsafe {
-        AddAccessAllowedAceEx(
-            dacl,
-            ACL_REVISION,
-            OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
-            FILE_ALL_ACCESS,
-            current_user.sid(),
-        )
-    } == 0
-    {
-        return Err(io::Error::last_os_error());
-    }
-    let status = unsafe {
-        SetSecurityInfo(
-            directory.as_raw_handle() as HANDLE,
-            1, // SE_FILE_OBJECT
-            DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
-            ptr::null_mut(),
-            ptr::null_mut(),
-            dacl,
-            ptr::null_mut(),
-        )
-    };
-    if status != ERROR_SUCCESS {
-        return Err(io::Error::from_raw_os_error(status as i32));
-    }
-    Ok(())
 }
 
 /// Opens one normal-name child relative to the retained private directory.
@@ -162,21 +128,43 @@ pub fn open_private_state_child(
     access: PrivateFileAccess,
 ) -> io::Result<File> {
     let path = child_path(directory, name)?;
-    let mut options = OpenOptions::new();
-    match access {
-        PrivateFileAccess::Read => {
-            options.read(true);
-        }
-        PrivateFileAccess::Write => {
-            options.read(true).write(true);
-        }
+    let file = match access {
         PrivateFileAccess::Create => {
-            options.read(true).write(true).create(true);
+            let wide = wide_path(&path)?;
+            with_private_security(|security| {
+                let handle = unsafe {
+                    CreateFileW(
+                        wide.as_ptr(),
+                        FILE_GENERIC_READ | FILE_GENERIC_WRITE,
+                        FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                        security,
+                        CREATE_NEW,
+                        FILE_FLAG_OPEN_REPARSE_POINT,
+                        /*htemplatefile*/ 0,
+                    )
+                };
+                if handle != INVALID_HANDLE_VALUE {
+                    // Transfer the newly created, non-inheritable handle to File.
+                    return Ok(unsafe { File::from_raw_handle(handle as *mut c_void) });
+                }
+                let error = io::Error::last_os_error();
+                if error.kind() != io::ErrorKind::AlreadyExists {
+                    return Err(error);
+                }
+                // Existing state is never repaired, re-owned, or re-permissioned.
+                OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+                    .open(&path)
+            })?
         }
-    }
-    let file = options
-        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
-        .open(&path)?;
+        PrivateFileAccess::Read | PrivateFileAccess::Write => OpenOptions::new()
+            .read(true)
+            .write(access == PrivateFileAccess::Write)
+            .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(&path)?,
+    };
     validate_handle(&file, HandleKind::File)?;
     let opened = final_path(&file)?;
     if opened.parent() != path.parent() || opened.file_name() != path.file_name() {
@@ -226,8 +214,8 @@ pub fn replace_private_state_child(
             HandleKind::File,
         )?;
     }
-    let source = wide_path(&source);
-    let destination = wide_path(&destination);
+    let source = wide_path(&source)?;
+    let destination = wide_path(&destination)?;
     let replaced = unsafe {
         MoveFileExW(
             source.as_ptr(),
@@ -397,10 +385,29 @@ fn reject_reparse_ancestry(path: &Path) -> io::Result<()> {
     Ok(())
 }
 
-fn wide_path(path: &Path) -> Vec<u16> {
+fn wide_path(path: &Path) -> io::Result<Vec<u16>> {
     use std::os::windows::ffi::OsStrExt;
 
-    path.as_os_str().encode_wide().chain(Some(0)).collect()
+    if path.as_os_str().encode_wide().any(|unit| unit == 0) {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "path contains NUL",
+        ));
+    }
+    let absolute = std::path::absolute(path)?;
+    let mut wide: Vec<u16> = absolute.as_os_str().encode_wide().collect();
+    // Preserve Rust filesystem support for long paths when using Win32 directly.
+    if !wide.starts_with(&[92, 92, 63, 92]) {
+        let prefix = if wide.starts_with(&[92, 92]) {
+            wide.drain(..2);
+            r"\\?\UNC\"
+        } else {
+            r"\\?\"
+        };
+        wide.splice(..0, prefix.encode_utf16());
+    }
+    wide.push(0);
+    Ok(wide)
 }
 
 fn unsafe_state(message: &'static str) -> io::Error {
@@ -460,8 +467,13 @@ impl Drop for CurrentUser {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use windows_sys::Win32::Security::ACL_REVISION;
+    use windows_sys::Win32::Security::AddAccessAllowedAceEx;
     use windows_sys::Win32::Security::CreateWellKnownSid;
+    use windows_sys::Win32::Security::GetLengthSid;
+    use windows_sys::Win32::Security::InitializeAcl;
     use windows_sys::Win32::Security::WinWorldSid;
+    use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 
     fn world_sid() -> Vec<u32> {
         let mut length = 0;
@@ -551,4 +563,38 @@ mod tests {
         std::fs::hard_link(root.join("state"), root.join("other")).expect("create hard link");
         assert!(open_private_state_child(&directory, "state", PrivateFileAccess::Read).is_err());
     }
+
+    #[test]
+    fn retained_directory_pins_root_and_ancestor_until_drop() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let ancestor = temporary.path().join("ancestor");
+        std::fs::create_dir(&ancestor).expect("ancestor");
+        let root = ancestor.join("registry");
+        let directory = open_private_state_directory(&root).expect("private directory");
+        assert!(std::fs::rename(&root, ancestor.join("moved-registry")).is_err());
+        assert!(std::fs::rename(&ancestor, temporary.path().join("moved-ancestor")).is_err());
+
+        // Pinning the owner directory must not prevent durable child replacement.
+        let mut next =
+            open_private_state_child(&directory, "state.next", PrivateFileAccess::Create)
+                .expect("private child");
+        std::io::Write::write_all(&mut next, b"committed").expect("write state");
+        next.sync_all().expect("sync state");
+        replace_private_state_child(&directory, "state.next", "state").expect("replace state");
+        directory.sync_all().expect("sync directory");
+        assert_eq!(
+            std::fs::read(root.join("state")).expect("read state"),
+            b"committed"
+        );
+        drop(next);
+        drop(directory);
+        let moved_root = ancestor.join("moved-registry");
+        std::fs::rename(&root, &moved_root).expect("root released after drop");
+        std::fs::rename(&ancestor, temporary.path().join("moved-ancestor"))
+            .expect("ancestor released after drop");
+    }
 }
+
+#[cfg(test)]
+#[path = "private_state_windows_security_tests.rs"]
+mod security_tests;

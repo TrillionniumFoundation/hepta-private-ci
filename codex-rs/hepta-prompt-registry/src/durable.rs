@@ -1506,12 +1506,10 @@ impl fmt::Display for DurableRegistryError {
 
 impl std::error::Error for DurableRegistryError {}
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 mod tests {
     use crate::TestMust;
     use std::collections::BTreeSet;
-    use std::os::unix::fs::DirBuilderExt;
-    use std::os::unix::fs::OpenOptionsExt;
     use std::time::Instant;
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
@@ -1541,10 +1539,7 @@ mod tests {
     fn schema_v1_migrates_without_resurrecting_state() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&root)
-            .must("state dir");
+        drop(prepare_directory(&root).must("state dir"));
         let factor = StoredFactor {
             factor_id: "factor:1".to_owned(),
             proposer_id: "proposer:1".to_owned(),
@@ -1586,13 +1581,9 @@ mod tests {
             }],
         };
         let bytes = serde_json::to_vec(&stored).must("serialize legacy state");
-        let path = root.join("registry.json");
-        let mut file = std::fs::OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(path)
-            .must("legacy state");
+        let directory = prepare_directory(&root).must("private state directory");
+        let mut file =
+            open_private(&directory, "registry.json", Access::Create).must("legacy state");
         file.write_all(&bytes).must("legacy bytes");
         file.sync_all().must("legacy fsync");
         drop(file);
@@ -1653,10 +1644,7 @@ mod tests {
     fn schema_v1_migration_preserves_older_revocation_frontier_after_later_mutation() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry-frontier");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&root)
-            .must("state dir");
+        drop(prepare_directory(&root).must("state dir"));
         let stored = StoredV1 {
             schema: 1,
             revision: 5,
@@ -1691,13 +1679,9 @@ mod tests {
             bindings: Vec::new(),
         };
         let bytes = serde_json::to_vec(&stored).must("serialize legacy state");
-        let path = root.join("registry.json");
-        let mut file = std::fs::OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(path)
-            .must("legacy state");
+        let directory = prepare_directory(&root).must("private state directory");
+        let mut file =
+            open_private(&directory, "registry.json", Access::Create).must("legacy state");
         file.write_all(&bytes).must("legacy bytes");
         file.sync_all().must("legacy fsync");
         drop(file);
@@ -2603,10 +2587,7 @@ mod tests {
     fn failed_v1_migration_does_not_overwrite_predecessor_bytes() {
         let temporary = tempfile::tempdir().must("tempdir");
         let root = temporary.path().join("registry-bad-migration");
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&root)
-            .must("state dir");
+        drop(prepare_directory(&root).must("state dir"));
         let stored = StoredV1 {
             schema: 1,
             revision: 4,
@@ -2629,12 +2610,9 @@ mod tests {
         };
         let bytes = serde_json::to_vec(&stored).must("serialize invalid legacy state");
         let path = root.join("registry.json");
-        let mut file = std::fs::OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(&path)
-            .must("legacy state");
+        let directory = prepare_directory(&root).must("private state directory");
+        let mut file =
+            open_private(&directory, "registry.json", Access::Create).must("legacy state");
         file.write_all(&bytes).must("legacy bytes");
         file.sync_all().must("legacy fsync");
         drop(file);
@@ -2678,10 +2656,7 @@ mod tests {
                 .must("revoke factor");
             durable.registry().must("registry").snapshot_digest()
         };
-        std::fs::DirBuilder::new()
-            .mode(0o700)
-            .create(&restore_root)
-            .must("restore dir");
+        drop(prepare_directory(&restore_root).must("restore dir"));
         std::fs::copy(
             source_root.join("registry.json"),
             restore_root.join("registry.json"),
@@ -2835,6 +2810,6 @@ mod tests {
     }
 }
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 #[path = "durable_payloads_tests.rs"]
 mod payload_tests;

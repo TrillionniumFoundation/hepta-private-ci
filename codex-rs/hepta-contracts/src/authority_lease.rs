@@ -1242,10 +1242,10 @@ impl fmt::Display for AuthorityLeaseError {
 }
 impl std::error::Error for AuthorityLeaseError {}
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 mod tests {
     use super::*;
-    use std::os::unix::fs::PermissionsExt;
+    use crate::private_state_tests::private_tempdir;
     use std::sync::Arc;
     use std::sync::Mutex;
     use std::sync::mpsc;
@@ -1291,8 +1291,7 @@ mod tests {
 
     #[allow(clippy::unwrap_used)]
     fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = private_tempdir().unwrap();
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
@@ -1633,8 +1632,7 @@ mod tests {
 
     #[test]
     fn production_frontier_cas_detects_restored_local_snapshot() {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = private_tempdir().unwrap();
         let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
             AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
         )));
@@ -1667,8 +1665,7 @@ mod tests {
 
     #[test]
     fn external_frontier_ahead_after_local_commit_failure_fences_reopen() {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = private_tempdir().unwrap();
         let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
             AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
         )));
