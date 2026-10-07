@@ -8,12 +8,11 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::io::Read;
-use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::Arc;
 use std::process::Command;
 use std::process::Stdio;
+use std::sync::Arc;
 use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
@@ -58,6 +57,13 @@ use sha2::Sha256;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+
+#[path = "automation_effect_host_pon_process.rs"]
+mod pon_process;
+
+#[cfg(all(test, unix))]
+#[path = "automation_effect_host_pon_tests.rs"]
+mod pon_lifecycle_tests;
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
@@ -216,6 +222,23 @@ enum PonInvocation {
 }
 
 impl PonLocalProviderEffectAdapter {
+    fn block_digest(value: &Value) -> Option<Sha256Digest> {
+        let block = value
+            .get("result")?
+            .get("block")?
+            .as_str()?;
+        if block.len() != 64
+            || !block
+                .bytes()
+                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        {
+            return None;
+        }
+        let mut binding = b"trillionnium.pon.block.v1\0".to_vec();
+        binding.extend_from_slice(block.as_bytes());
+        Some(Sha256Digest::for_bytes(&binding))
+    }
+
     fn validate_paths(&self) -> Result<(), ()> {
         verify_pinned_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;
         let canonical_store = self.store.canonicalize().map_err(|_| ())?;
@@ -257,81 +280,32 @@ impl PonLocalProviderEffectAdapter {
     }
 
     fn invoke(&self, operation: &str, wire_payload: &[u8]) -> PonInvocation {
-        if self.validate_paths().is_err() {
+        let Some(deadline) = Instant::now().checked_add(self.timeout) else {
+            return PonInvocation::BeforeStart;
+        };
+        if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
             return PonInvocation::BeforeStart;
         }
-        let mut child = match self.command(operation).spawn() {
-            Ok(child) => child,
-            Err(_) => return PonInvocation::BeforeStart,
+        let Ok(runtime) = tokio::runtime::Handle::try_current() else {
+            return PonInvocation::BeforeStart;
         };
-        let stdout = child.stdout.take();
-        let stderr = child.stderr.take();
-        let stdout_reader = stdout.map(|stream| {
-            thread::spawn(move || drain_process_output(stream, MAX_PON_PROCESS_OUTPUT_BYTES))
-        });
-        let stderr_reader = stderr.map(|stream| {
-            thread::spawn(move || drain_process_output(stream, MAX_PON_PROCESS_OUTPUT_BYTES))
-        });
-        let write_ok = child
-            .stdin
-            .take()
-            .is_some_and(|mut input| input.write_all(wire_payload).is_ok());
-        if !write_ok {
-            let _ = child.kill();
-            let _ = child.wait();
-            join_process_reader(stdout_reader);
-            join_process_reader(stderr_reader);
-            return PonInvocation::Unknown;
+        // Provider methods enter here via their existing spawn_blocking scope.
+        // Hash/path verification is not preemptible, but no child may start if
+        // it consumed the original deadline. The entire pipe exchange uses the
+        // same deadline; stdout and stderr limits are equally authoritative.
+        match runtime.block_on(pon_process::run(
+            self.command(operation),
+            wire_payload,
+            deadline,
+            MAX_PON_PROCESS_OUTPUT_BYTES,
+        )) {
+            pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
+            pon_process::Outcome::Unknown => PonInvocation::Unknown,
+            pon_process::Outcome::Complete(stdout) => match serde_json::from_slice(&stdout) {
+                Ok(value) => PonInvocation::Value(value),
+                Err(_) => PonInvocation::Unknown,
+            },
         }
-        let deadline = Instant::now() + self.timeout;
-        let status = loop {
-            match child.try_wait() {
-                Ok(Some(status)) => break Some(status),
-                Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-                Ok(None) => {
-                    let _ = child.kill();
-                    let _ = child.wait();
-                    break None;
-                }
-                Err(_) => {
-                    let _ = child.kill();
-                    let _ = child.wait();
-                    break None;
-                }
-            }
-        };
-        let stdout = join_process_reader(stdout_reader);
-        let _stderr = join_process_reader(stderr_reader);
-        let Some(status) = status else {
-            return PonInvocation::Unknown;
-        };
-        if !status.success() {
-            return PonInvocation::Unknown;
-        }
-        let Some(stdout) = stdout.filter(|bytes| bytes.len() <= MAX_PON_PROCESS_OUTPUT_BYTES) else {
-            return PonInvocation::Unknown;
-        };
-        match serde_json::from_slice(&stdout) {
-            Ok(value) => PonInvocation::Value(value),
-            Err(_) => PonInvocation::Unknown,
-        }
-    }
-
-    fn block_digest(value: &Value) -> Option<Sha256Digest> {
-        let block = value
-            .get("result")?
-            .get("block")?
-            .as_str()?;
-        if block.len() != 64
-            || !block
-                .bytes()
-                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
-        {
-            return None;
-        }
-        let mut binding = b"trillionnium.pon.block.v1\0".to_vec();
-        binding.extend_from_slice(block.as_bytes());
-        Some(Sha256Digest::for_bytes(&binding))
     }
 
     fn dispatch_blocking(
@@ -436,9 +410,7 @@ fn lower_hex_32(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
-fn parse_pon_chain_observation(
-    value: &Value,
-) -> Option<crate::AutomationEffectChainObservation> {
+fn parse_pon_chain_observation(value: &Value) -> Option<crate::AutomationEffectChainObservation> {
     let result = value.get("result")?;
     if result.get("schema")?.as_str()? != "pon-native-exact-packet-observation-v2"
         || result.get("local_target_only")?.as_bool()? != true
@@ -468,10 +440,23 @@ fn parse_pon_chain_observation(
     let active_tip_height = result.get("active_tip_height")?.as_u64()?;
     let owner_generation = result.get("generation")?.as_u64()?;
     if owner_generation == 0
-        || (!stored_exact && (block_height.is_some() || active_chain_member || active_depth.is_some()))
+        || (!stored_exact
+            && (block_height.is_some() || active_chain_member || active_depth.is_some()))
         || (stored_exact && block_height.is_none())
         || (active_chain_member != active_depth.is_some())
         || block_height.is_some_and(|height| height > active_tip_height && active_chain_member)
+    {
+        return None;
+    }
+    let expected_depth = if active_chain_member {
+        active_tip_height.checked_sub(block_height?)
+    } else {
+        None
+    };
+    if active_depth != expected_depth
+        || (block_id == active_tip && !active_chain_member)
+        || (active_chain_member
+            && ((block_id == active_tip) != (block_height == Some(active_tip_height))))
     {
         return None;
     }
@@ -514,6 +499,13 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
         intent: &'a ProviderEffectIntent,
         wire_payload: &'a [u8],
     ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        if wire_payload.len() > 1024 * 1024 {
+            return Box::pin(async {
+                ProviderEffectDispatch::NotDispatched {
+                    reason_code: "pon_exact_packet_too_large".to_string(),
+                }
+            });
+        }
         let adapter = self.clone();
         let intent = intent.clone();
         let wire_payload = wire_payload.to_vec();
@@ -539,6 +531,9 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
         let Some(wire_payload) = wire_payload else {
             return Box::pin(async { ProviderEffectLookup::Unknown });
         };
+        if wire_payload.len() > 1024 * 1024 {
+            return Box::pin(async { ProviderEffectLookup::Unknown });
+        }
         let adapter = self.clone();
         let intent = intent.clone();
         let wire_payload = wire_payload.to_vec();
@@ -548,30 +543,6 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
                 .unwrap_or(ProviderEffectLookup::Unknown)
         })
     }
-}
-
-fn drain_process_output(mut stream: impl Read, limit: usize) -> Vec<u8> {
-    let mut retained = Vec::new();
-    let mut buffer = [0_u8; 4096];
-    loop {
-        let Ok(read) = stream.read(&mut buffer) else {
-            retained.clear();
-            return retained;
-        };
-        if read == 0 {
-            return retained;
-        }
-        if retained.len() <= limit {
-            let remaining = limit.saturating_add(1).saturating_sub(retained.len());
-            retained.extend_from_slice(&buffer[..read.min(remaining)]);
-        }
-    }
-}
-
-fn join_process_reader(
-    reader: Option<thread::JoinHandle<Vec<u8>>>,
-) -> Option<Vec<u8>> {
-    reader.and_then(|reader| reader.join().ok())
 }
 
 fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
@@ -599,8 +570,7 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o022 != 0
-            || metadata.permissions().mode() & 0o111 == 0
+        if metadata.permissions().mode() & 0o022 != 0 || metadata.permissions().mode() & 0o111 == 0
         {
             return Err(AgentdError::Invalid(
                 "PoN binary permissions are unsafe".to_string(),
@@ -618,8 +588,7 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
         hasher.update(&buffer[..read]);
     }
     let digest = hasher.finalize();
-    let observed =
-        Sha256Digest::parse(format!("{digest:x}")).map_err(AgentdError::Invalid)?;
+    let observed = Sha256Digest::parse(format!("{digest:x}")).map_err(AgentdError::Invalid)?;
     if &observed != expected {
         return Err(AgentdError::GenerationFenced(
             "PoN binary digest changed".to_string(),
@@ -834,8 +803,10 @@ impl AgentdAutomationEffectHost {
         validate_host_identifier("chain_evaluation_policy", &config.chain_evaluation_policy)?;
         validate_host_identifier("chain_task_profile", &config.chain_task_profile)?;
         validate_host_identifier("chain_model_profile", &config.chain_model_profile)?;
-        if !matches!(config.chain_state_backend.as_str(), "legacy-v2" | "authenticated-v1")
-            || config.chain_genesis_time == 0
+        if !matches!(
+            config.chain_state_backend.as_str(),
+            "legacy-v2" | "authenticated-v1"
+        ) || config.chain_genesis_time == 0
             || !(1..=64).contains(&config.chain_workers)
             || config.timeout_ms == 0
             || config.timeout_ms > 30_000
@@ -846,8 +817,8 @@ impl AgentdAutomationEffectHost {
         }
         let final_use_scope_digest = Sha256Digest::parse(config.final_use_scope_sha256.clone())
             .map_err(AgentdError::Invalid)?;
-        let binary_digest =
-            Sha256Digest::parse(config.chain_binary_sha256.clone()).map_err(AgentdError::Invalid)?;
+        let binary_digest = Sha256Digest::parse(config.chain_binary_sha256.clone())
+            .map_err(AgentdError::Invalid)?;
         verify_pinned_binary(&config.chain_binary, &binary_digest)?;
         if !config.chain_store.is_absolute()
             || config.chain_store.canonicalize()? != config.chain_store
@@ -1039,10 +1010,7 @@ impl AgentdAutomationEffectHost {
                             pending.wire_payload.as_deref(),
                         )
                         .await;
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed {
-                        receipt,
-                        chain,
-                    });
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed { receipt, chain });
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -1083,10 +1051,7 @@ impl AgentdAutomationEffectHost {
                                 pending.wire_payload.as_deref(),
                             )
                             .await;
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed {
-                            receipt,
-                            chain,
-                        })
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed { receipt, chain })
                     }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
@@ -1213,7 +1178,10 @@ impl AgentdAutomationEffectHost {
             }
             None => expected,
         };
-        Ok(ProviderEffectIntent::new(key, pending.payload_digest.clone()))
+        Ok(ProviderEffectIntent::new(
+            key,
+            pending.payload_digest.clone(),
+        ))
     }
 }
 
@@ -1231,12 +1199,8 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
         if intent.destination_id != self.destination_id {
             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
         }
-        ProviderEffectKey::for_operation(
-            &self.provider_scope,
-            &intent.run_id,
-            &intent.step_id,
-        )
-        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)
+        ProviderEffectKey::for_operation(&self.provider_scope, &intent.run_id, &intent.step_id)
+            .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)
     }
 
     fn dispatch(
@@ -1348,12 +1312,12 @@ fn read_host_file(path: &Path) -> Result<AutomationEffectHostFile, AgentdError> 
     )?;
     let value: Value = serde_json::from_slice(&bytes)?;
     match value.get("schema_version").and_then(Value::as_u64) {
-        Some(version) if version == AUTOMATION_EFFECT_HOST_SCHEMA_VERSION as u64 => {
-            Ok(AutomationEffectHostFile::Http(serde_json::from_value(value)?))
-        }
-        Some(version) if version == AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION as u64 => {
-            Ok(AutomationEffectHostFile::Pon(serde_json::from_value(value)?))
-        }
+        Some(version) if version == AUTOMATION_EFFECT_HOST_SCHEMA_VERSION as u64 => Ok(
+            AutomationEffectHostFile::Http(serde_json::from_value(value)?),
+        ),
+        Some(version) if version == AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION as u64 => Ok(
+            AutomationEffectHostFile::Pon(serde_json::from_value(value)?),
+        ),
         _ => Err(AgentdError::Invalid(
             "unsupported automation effect host schema".to_string(),
         )),
