@@ -1,0 +1,261 @@
+name: PoN boundary materialization 20261008
+on:
+  push:
+    branches: [fix/agentd-pon-architecture-boundaries-20261008]
+    paths: [.github/workflows/pon-boundary-materialization-20261008.yml]
+permissions:
+  contents: write
+concurrency:
+  group: pon-boundary-materialization-20261008
+  cancel-in-progress: false
+jobs:
+  materialize:
+    if: github.ref == 'refs/heads/fix/agentd-pon-architecture-boundaries-20261008'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Apply checked source transformation, not a build-time generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = f4165797e3a96a0a9d2b566e84c48880d2dfff29
+          git fetch --no-tags origin 32740b3662dcffdd905a1095d3ee7f402d9def13
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          base = 'f4165797e3a96a0a9d2b566e84c48880d2dfff29'
+          source = '32740b3662dcffdd905a1095d3ee7f402d9def13'
+          root = Path('codex-rs/hepta-agentd')
+          path = root / 'src/automation_effect_host.rs'
+          def show(ref, path):
+              return subprocess.check_output(['git','show',f'{ref}:{path}'], text=True)
+          def once(text, old, new):
+              assert text.count(old) == 1, ('anchor count', old, text.count(old))
+              return text.replace(old, new, 1)
+          current = path.read_text()
+          assert current == show(base, path)
+          prior = show(source, path)
+          current = once(current, 'use std::io::Write;\n', '')
+          marker = 'const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;'
+          modules = '#[path = "automation_effect_host_pon_process.rs"]\nmod pon_process;\n\n#[cfg(all(test, unix))]\n#[path = "automation_effect_host_pon_tests.rs"]\nmod pon_lifecycle_tests;\n\n'
+          current = once(current, marker, modules + marker)
+          start = current.index('    fn invoke(')
+          end = current.index('    fn block_digest(', start)
+          inherited = prior[prior.index('    fn invoke('):prior.index('    fn dispatch_blocking(')]
+          assert inherited.count('fn invoke(') == 1 and 'fn block_digest(' not in inherited
+          current = current[:start] + inherited + current[end:]
+          start = current.index('fn drain_process_output(')
+          end = current.index('fn verify_pinned_binary(', start)
+          current = current[:start] + current[end:]
+          current = once(current, '        let wire_payload = wire_payload?.to_vec();', '''        let wire_payload = wire_payload?;
+                  if wire_payload.len() > 1024 * 1024 {
+                      return None;
+                  }
+                  let wire_payload = wire_payload.to_vec();''')
+          anchor = '    if active_chain_member {\n        let expected = work_difference_hex('
+          guard = '''    // Height, identity and work are distinct checked facts. A plausible depth
+              // must not bypass the signed consumer's minimum-height policy.
+              let expected_depth = if active_chain_member {
+                  Some(active_tip_height.checked_sub(block_height?)?)
+              } else {
+                  None
+              };
+              if active_depth != expected_depth
+                  || (block_id == active_tip && !active_chain_member)
+                  || (active_chain_member
+                      && ((block_id == active_tip) != (block_height == Some(active_tip_height))))
+              {
+                  return None;
+              }
+          '''
+          current = once(current, anchor, guard + anchor)
+          current = once(current, '''        if active_work_depth_hex.as_deref()? != expected {
+                      return None;
+                  }''', '''        if active_work_depth_hex.as_deref()? != expected
+                      || (expected.bytes().all(|byte| byte == b'0') != (active_depth == Some(0)))
+                  {
+                      return None;
+                  }''')
+          start = current.index('impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {')
+          end = current.index('fn verify_pinned_binary(', start)
+          provider = current[start:end]
+          needle = '''        let adapter = self.clone();
+                  let intent = intent.clone();
+                  let wire_payload = wire_payload.to_vec();'''
+          # The dispatch and reconciliation methods are the only two owners of this clone.
+          assert provider.count(needle) == 2
+          provider = provider.replace(needle, '''        if wire_payload.len() > 1024 * 1024 {
+                      return Box::pin(async {
+                          ProviderEffectDispatch::NotDispatched {
+                              reason_code: "pon_exact_packet_too_large".to_string(),
+                          }
+                      });
+                  }
+          ''' + needle, 1)
+          marker = '''        let Some(wire_payload) = wire_payload else {
+                      return Box::pin(async { ProviderEffectLookup::Unknown });
+                  };'''
+          provider = once(provider, marker, marker + '''
+                  if wire_payload.len() > 1024 * 1024 {
+                      return Box::pin(async { ProviderEffectLookup::Unknown });
+                  }''')
+          current = current[:start] + provider + current[end:]
+          assert 'fn block_digest(' in current
+          assert 'chain_observation_matches_intent' in current
+          assert 'confirmation_policy_satisfied' in current
+          assert 'read_bounded' not in current and 'join_process_reader' not in current
+          path.write_text(current)
+          process = root / 'src/automation_effect_host_pon_process.rs'
+          process.write_text(show(source, process))
+          tests = root / 'src/automation_effect_host_pon_tests.rs'
+          inherited_tests = show(source, tests).split('fn observation() -> Value {')[0]
+          inherited_tests = once(inherited_tests, '        workers: 1,\n', '        workers: 1,\n        min_confirmation_depth: 1,\n        min_confirmation_work_depth_hex: format!("{}01", "00".repeat(63)),\n')
+          tests.write_text(inherited_tests + r'''
+          fn observation() -> Value {
+              json!({"result": {
+                  "schema": "pon-native-exact-packet-observation-v3",
+                  "block": "01".repeat(32), "stored_exact": true, "block_height": 5,
+                  "block_chainwork_hex": format!("{}01", "00".repeat(63)),
+                  "active_tip": "02".repeat(32), "active_tip_height": 7,
+                  "active_tip_chainwork_hex": format!("{}03", "00".repeat(63)),
+                  "active_chain_member": true, "active_depth": 2,
+                  "active_work_depth_hex": format!("{}02", "00".repeat(63)),
+                  "active_membership_sql_lookups": 2, "active_membership_sql_budget": 1024,
+                  "generation": 3, "local_target_only": true, "global_absence_authority": false,
+                  "confirmation_authority": false, "finality_authority": false,
+                  "execution_authority": false, "production_activation": false
+              }})
+          }
+
+          fn parse(value: &Value) -> Option<crate::AutomationEffectChainObservation> {
+              parse_pon_chain_observation(value, 1, &format!("{}01", "00".repeat(63)))
+          }
+
+          #[test]
+          fn pon_depth_must_equal_actual_height_difference_not_a_plausible_number() {
+              let value = observation();
+              assert!(parse(&value).unwrap().confirmation_policy_satisfied);
+              for depth in [0, 1, 3, u64::MAX] {
+                  let mut changed = value.clone();
+                  changed["result"]["active_depth"] = json!(depth);
+                  assert!(parse(&changed).is_none(), "forged height depth accepted");
+              }
+              let mut changed = value;
+              changed["result"]["active_work_depth_hex"] = json!("00".repeat(64));
+              assert!(parse(&changed).is_none(), "forged work depth accepted");
+          }
+
+          #[test]
+          fn pon_tip_identity_and_height_cannot_describe_two_different_active_blocks() {
+              let mut value = observation();
+              value["result"]["block_height"] = json!(7);
+              value["result"]["active_depth"] = json!(0);
+              value["result"]["block_chainwork_hex"] = value["result"]["active_tip_chainwork_hex"].clone();
+              value["result"]["active_work_depth_hex"] = json!("00".repeat(64));
+              assert!(parse(&value).is_none());
+              value["result"]["block"] = value["result"]["active_tip"].clone();
+              assert!(!parse(&value).unwrap().confirmation_policy_satisfied);
+              value["result"]["active_chain_member"] = json!(false);
+              value["result"]["active_depth"] = Value::Null;
+              value["result"]["active_work_depth_hex"] = Value::Null;
+              assert!(parse(&value).is_none());
+          }
+
+          #[test]
+          fn pon_inactive_fork_and_absent_packet_keep_non_authoritative_shapes() {
+              let mut value = observation();
+              value["result"]["active_chain_member"] = json!(false);
+              value["result"]["active_depth"] = Value::Null;
+              value["result"]["active_work_depth_hex"] = Value::Null;
+              value["result"]["block_height"] = json!(9);
+              let inactive = parse(&value).unwrap();
+              assert!(inactive.stored_exact && !inactive.active_chain_member);
+              assert!(!inactive.confirmation_policy_satisfied && !inactive.execution_authority);
+              value["result"]["stored_exact"] = json!(false);
+              for field in ["block_height", "block_chainwork_hex", "active_membership_sql_lookups"] {
+                  value["result"][field] = Value::Null;
+              }
+              let absent = parse(&value).unwrap();
+              assert!(!absent.stored_exact && !absent.global_absence_authority);
+              value["result"]["generation"] = json!(0);
+              assert!(parse(&value).is_none());
+          }
+
+          #[test]
+          fn pon_distinct_active_ancestor_cannot_have_zero_required_work_distance() {
+              let mut value = observation();
+              value["result"]["block_chainwork_hex"] = value["result"]["active_tip_chainwork_hex"].clone();
+              value["result"]["active_work_depth_hex"] = json!("00".repeat(64));
+              assert!(parse(&value).is_none());
+          }
+
+          #[tokio::test]
+          async fn pon_descendant_held_pipe_cannot_extend_the_exchange_deadline() {
+              // This trusted fixture descendant exits by itself. The adapter claims
+              // bounded pipe handling, not arbitrary descendant supervision.
+              let script = "#!/bin/sh\ncat >/dev/null\nsleep 1 &\nprintf '{\"ok\":true}'\nexit 0\n";
+              let (_directory, adapter) = fixture(script, Duration::from_millis(150));
+              let outcome = tokio::task::spawn_blocking(move || adapter.invoke("submit", b"packet"))
+                  .await.unwrap();
+              assert!(matches!(outcome, PonInvocation::Unknown));
+          }
+          ''')
+          (root / 'PON_BOUNDARY_REPAIR_20261008.md').write_text('''# PoN boundary repair, 2026-10-08
+
+          Source base: f4165797e3a96a0a9d2b566e84c48880d2dfff29 (PR1437).
+          Inherited bounded exchange: 32740b3662dcffdd905a1095d3ee7f402d9def13 (PR1434).
+
+          The existing Agentd host now uses the bounded asynchronous pipe exchange with
+          one original deadline and equal stdout/stderr bounds. Started-but-uncertain
+          work remains Unknown. Original exact effect/payload binding and signed
+          depth/work confirmation policy remain intact. Native observation parsing now
+          recomputes height depth, checks active-tip identity and requires positive
+          work distance for a distinct active ancestor. Oversized bytes reject before
+          adapter-owned copies. Tests cover full/blocked input, both output limits,
+          incomplete JSON, nonzero exit, inherited output pipes and contradictory
+          observation fields. Historical tests are adapted to the current v3 shape;
+          historical success is not inherited.
+
+          Validation must run on this delivered source: just fmt; just test -p
+          codex-hepta-agentd; just test -p codex-hepta-agent-protocol; scoped Clippy and
+          the ordinary architecture/required CI. Source materialization is not a test.
+
+          Remaining obligations are explicit: binary hash-to-execution object binding,
+          independently current artifact/withdrawal/selection/final-use checks, real
+          installation and three-generation consumer benefit. Chain owner_generation
+          is not a Hepta final-use generation and cannot be compared by casting them.
+          No second journal, supervisor, trainer, or registry is introduced. Model
+          parameter adoption does not authorize neuron code/topology replacement;
+          neither authorizes a consensus/verifier upgrade. Such upgrades require their
+          existing distinct authorities and fresh explicit protocol contexts.
+
+          Physical power loss, independent WAN operators, sustained public capacity,
+          and model efficacy are not claimed by these local pipe fixtures. No release,
+          production, branch protection or deployment setting is changed.
+          ''')
+          # This one-shot transport is removed; a clean checkout contains real source,
+          # not a source-rewriting build step or two maintained copies of the repair.
+          Path('.github/workflows/pon-boundary-materialization-20261008.yml').unlink()
+          PY
+      - name: Format changed Rust with the repository toolchain
+        continue-on-error: true
+        shell: bash
+        run: |
+          cd codex-rs
+          rustfmt --edition 2024 hepta-agentd/src/automation_effect_host.rs hepta-agentd/src/automation_effect_host_pon_process.rs hepta-agentd/src/automation_effect_host_pon_tests.rs
+      - name: Publish only the isolated source candidate, never main
+        shell: bash
+        env:
+          BRANCH: fix/agentd-pon-architecture-boundaries-20261008
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          git add codex-rs/hepta-agentd/src/automation_effect_host.rs codex-rs/hepta-agentd/src/automation_effect_host_pon_process.rs codex-rs/hepta-agentd/src/automation_effect_host_pon_tests.rs codex-rs/hepta-agentd/PON_BOUNDARY_REPAIR_20261008.md .github/workflows/pon-boundary-materialization-20261008.yml
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -s -m 'fix(agentd): converge bounded PoN exchange with exact v3 confirmation observations' -m 'Preserve TaskFlow and final-use ownership; check height/work/identity consistency, cap copies and retain post-start Unknown. Source candidate only: scoped native and prospective-merge acceptance remain required. Remove the one-shot materialization workflow; no build-time source rewriting remains.'
+          git push origin "HEAD:refs/heads/$BRANCH"
+          git show --stat --oneline HEAD
