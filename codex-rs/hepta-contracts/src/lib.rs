@@ -25,7 +25,9 @@ mod provider_effect;
 mod qualification_receipt;
 mod receipt;
 mod stable_id;
+mod verified_executable;
 mod verified_use_witness;
+pub use verified_executable::VerifiedExecutableImage;
 
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;

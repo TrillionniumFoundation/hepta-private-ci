@@ -36,14 +36,20 @@ impl VerifiedExecutableImage {
 
             let check_deadline = || {
                 if Instant::now() >= deadline {
-                    Err(io::Error::new(io::ErrorKind::TimedOut, "executable image deadline"))
+                    Err(io::Error::new(
+                        io::ErrorKind::TimedOut,
+                        "executable image deadline",
+                    ))
                 } else {
                     Ok(())
                 }
             };
             check_deadline()?;
             if !path.is_absolute() || path.canonicalize()? != path || max_bytes == 0 {
-                return Err(io::Error::new(io::ErrorKind::InvalidInput, "executable image path"));
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidInput,
+                    "executable image path",
+                ));
             }
             let source = rustix::fs::open(
                 path,
@@ -58,7 +64,10 @@ impl VerifiedExecutableImage {
                 || metadata.permissions().mode() & 0o022 != 0
                 || metadata.permissions().mode() & 0o111 == 0
             {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "executable image metadata"));
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "executable image metadata",
+                ));
             }
             let fd = rustix::fs::memfd_create(
                 c"hepta-provider-executable",
@@ -77,18 +86,27 @@ impl VerifiedExecutableImage {
                     io::Error::new(io::ErrorKind::InvalidData, "executable image length")
                 })?;
                 if length > max_bytes {
-                    return Err(io::Error::new(io::ErrorKind::InvalidData, "executable image limit"));
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "executable image limit",
+                    ));
                 }
                 image.write_all(&buffer[..n])?;
             }
             if length == 0 || length != metadata.len() {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "executable image changed length"));
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "executable image changed length",
+                ));
             }
             rustix::fs::fchmod(&image, Mode::from_bits_truncate(0o500))?;
             let seals = SealFlags::SEAL | SealFlags::SHRINK | SealFlags::GROW | SealFlags::WRITE;
             rustix::fs::fcntl_add_seals(&image, seals)?;
             if !rustix::fs::fcntl_get_seals(&image)?.contains(seals) {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "executable image seals"));
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "executable image seals",
+                ));
             }
             image.seek(SeekFrom::Start(0))?;
             let mut hasher = Sha256::new();
@@ -103,7 +121,10 @@ impl VerifiedExecutableImage {
             let observed = Sha256Digest::parse(format!("{:x}", hasher.finalize()))
                 .map_err(|error| io::Error::new(io::ErrorKind::InvalidData, error))?;
             if &observed != expected {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "executable image digest"));
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "executable image digest",
+                ));
             }
             // Close the writable descriptor before exec (ETXTBSY), retaining one
             // sealed, read-only descriptor. No inherited descriptor is needed:
@@ -111,12 +132,18 @@ impl VerifiedExecutableImage {
             let file = File::open(format!("/proc/self/fd/{}", image.as_raw_fd()))?;
             drop(image);
             check_deadline()?;
-            Ok(Self { file, original: path.to_owned() })
+            Ok(Self {
+                file,
+                original: path.to_owned(),
+            })
         }
         #[cfg(not(target_os = "linux"))]
         {
             let _ = (path, expected, max_bytes, deadline);
-            Err(io::Error::new(io::ErrorKind::Unsupported, "sealed executable image requires Linux"))
+            Err(io::Error::new(
+                io::ErrorKind::Unsupported,
+                "sealed executable image requires Linux",
+            ))
         }
     }
 
@@ -128,7 +155,9 @@ impl VerifiedExecutableImage {
             use std::os::fd::AsRawFd;
             use std::os::unix::process::CommandExt;
             let mut command = std::process::Command::new(format!(
-                "/proc/{}/fd/{}", std::process::id(), self.file.as_raw_fd()
+                "/proc/{}/fd/{}",
+                std::process::id(),
+                self.file.as_raw_fd()
             ));
             command.arg0(&self.original);
             command

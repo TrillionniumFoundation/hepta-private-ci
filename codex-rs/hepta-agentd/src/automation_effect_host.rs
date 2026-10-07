@@ -44,6 +44,7 @@ use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedExecutableImage;
 use codex_model_provider::HttpProviderEffectAdapter;
 use codex_model_provider::HttpProviderEffectConfig;
 use codex_model_provider::HttpProviderEffectContractAttestation;
@@ -52,8 +53,6 @@ use http::HeaderName;
 use http::HeaderValue;
 use serde::Deserialize;
 use serde_json::Value;
-use sha2::Digest;
-use sha2::Sha256;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
@@ -61,7 +60,7 @@ use crate::AgentdIdentity;
 #[path = "automation_effect_host_pon_process.rs"]
 mod pon_process;
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, target_os = "linux"))]
 #[path = "automation_effect_host_pon_tests.rs"]
 mod pon_lifecycle_tests;
 
@@ -232,7 +231,6 @@ enum PonInvocation {
 
 impl PonLocalProviderEffectAdapter {
     fn validate_paths(&self) -> Result<(), ()> {
-        verify_pinned_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;
         let canonical_store = self.store.canonicalize().map_err(|_| ())?;
         if canonical_store != self.store || !canonical_store.is_dir() {
             return Err(());
@@ -245,8 +243,8 @@ impl PonLocalProviderEffectAdapter {
         Ok(())
     }
 
-    fn command(&self, operation: &str) -> Command {
-        let mut command = Command::new(&self.binary);
+    fn command(&self, operation: &str, image: &VerifiedExecutableImage) -> Command {
+        let mut command = image.command();
         command
             .arg(operation)
             .arg("--development")
@@ -278,6 +276,14 @@ impl PonLocalProviderEffectAdapter {
         if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
             return PonInvocation::BeforeStart;
         }
+        let Ok(image) = VerifiedExecutableImage::open(
+            &self.binary,
+            &self.binary_sha256,
+            MAX_PON_BINARY_BYTES,
+            deadline,
+        ) else {
+            return PonInvocation::BeforeStart;
+        };
         let Ok(runtime) = tokio::runtime::Handle::try_current() else {
             return PonInvocation::BeforeStart;
         };
@@ -285,8 +291,8 @@ impl PonLocalProviderEffectAdapter {
         // Hash/path verification is not preemptible, but no child may start if
         // it consumed the original deadline. The entire pipe exchange uses the
         // same deadline; stdout and stderr limits are equally authoritative.
-        match runtime.block_on(pon_process::run(
-            self.command(operation),
+        let result = match runtime.block_on(pon_process::run(
+            self.command(operation, &image),
             wire_payload,
             deadline,
             MAX_PON_PROCESS_OUTPUT_BYTES,
@@ -297,7 +303,11 @@ impl PonLocalProviderEffectAdapter {
                 Ok(value) => PonInvocation::Value(value),
                 Err(_) => PonInvocation::Unknown,
             },
-        }
+        };
+        // Retain the actual sealed object until every pipe and the direct
+        // child have reached the bounded terminal exchange outcome.
+        drop(image);
+        result
     }
 
     fn block_digest(value: &Value) -> Option<Sha256Digest> {
@@ -709,54 +719,10 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
 }
 
 fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
-    if !path.is_absolute() {
-        return Err(AgentdError::Invalid(
-            "PoN binary path must be absolute".to_string(),
-        ));
-    }
-    let canonical = path.canonicalize()?;
-    if canonical != path {
-        return Err(AgentdError::Invalid(
-            "PoN binary must be canonical and symlink-free".to_string(),
-        ));
-    }
-    let metadata = fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink()
-        || !metadata.is_file()
-        || metadata.len() == 0
-        || metadata.len() > MAX_PON_BINARY_BYTES
-    {
-        return Err(AgentdError::Invalid(
-            "PoN binary identity is invalid".to_string(),
-        ));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o022 != 0 || metadata.permissions().mode() & 0o111 == 0
-        {
-            return Err(AgentdError::Invalid(
-                "PoN binary permissions are unsafe".to_string(),
-            ));
-        }
-    }
-    let mut file = fs::File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buffer = [0_u8; 64 * 1024];
-    loop {
-        let read = file.read(&mut buffer)?;
-        if read == 0 {
-            break;
-        }
-        hasher.update(&buffer[..read]);
-    }
-    let digest = hasher.finalize();
-    let observed = Sha256Digest::parse(format!("{digest:x}")).map_err(AgentdError::Invalid)?;
-    if &observed != expected {
-        return Err(AgentdError::GenerationFenced(
-            "PoN binary digest changed".to_string(),
-        ));
-    }
+    let deadline = Instant::now()
+        .checked_add(Duration::from_secs(30))
+        .ok_or_else(|| AgentdError::Invalid("PoN executable deadline".into()))?;
+    VerifiedExecutableImage::open(path, expected, MAX_PON_BINARY_BYTES, deadline)?;
     Ok(())
 }
 
