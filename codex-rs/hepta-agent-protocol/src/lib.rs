@@ -735,6 +735,11 @@ pub struct AutomationEffectChainObservation {
     pub active_work_depth_hex: Option<String>,
     pub active_membership_sql_lookups: Option<u64>,
     pub active_membership_sql_budget: u64,
+    /// Signed local confirmation policy result. This never represents
+    /// consensus finality, execution authority, or model-install authority.
+    pub confirmation_policy_min_depth: u64,
+    pub confirmation_policy_min_work_depth_hex: String,
+    pub confirmation_policy_satisfied: bool,
     pub owner_generation: u64,
     pub local_target_only: bool,
     pub global_absence_authority: bool,
