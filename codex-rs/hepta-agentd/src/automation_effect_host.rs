@@ -543,15 +543,28 @@ fn parse_pon_chain_observation(
         }
     };
     let active_tip_height = result.get("active_tip_height")?.as_u64()?;
+    let active_membership_sql_budget = result
+        .get("active_membership_sql_budget")?
+        .as_u64()?;
+    let active_membership_sql_lookups = match result.get("active_membership_sql_lookups")? {
+        Value::Null => None,
+        value => Some(value.as_u64()?),
+    };
     let owner_generation = result.get("generation")?.as_u64()?;
     if owner_generation == 0
+        || active_membership_sql_budget != 1024
         || (!stored_exact
             && (block_height.is_some()
                 || block_chainwork_hex.is_some()
                 || active_chain_member
                 || active_depth.is_some()
-                || active_work_depth_hex.is_some()))
-        || (stored_exact && (block_height.is_none() || block_chainwork_hex.is_none()))
+                || active_work_depth_hex.is_some()
+                || active_membership_sql_lookups.is_some()))
+        || (stored_exact
+            && (block_height.is_none()
+                || block_chainwork_hex.is_none()
+                || !active_membership_sql_lookups
+                    .is_some_and(|lookups| (2..=active_membership_sql_budget).contains(&lookups))))
         || (active_chain_member != active_depth.is_some())
         || (active_chain_member != active_work_depth_hex.is_some())
         || block_height.is_some_and(|height| height > active_tip_height && active_chain_member)
@@ -579,6 +592,8 @@ fn parse_pon_chain_observation(
         active_chain_member,
         active_depth,
         active_work_depth_hex,
+        active_membership_sql_lookups,
+        active_membership_sql_budget,
         owner_generation,
         local_target_only: true,
         global_absence_authority: false,
@@ -1801,6 +1816,8 @@ mod tests {
                 "active_chain_member": false,
                 "active_depth": null,
                 "active_work_depth_hex": null,
+                "active_membership_sql_lookups": 2,
+                "active_membership_sql_budget": 1024,
                 "generation": 9,
                 "local_target_only": true,
                 "global_absence_authority": false,
@@ -1815,6 +1832,8 @@ mod tests {
         assert!(!observation.active_chain_member);
         assert_eq!(observation.active_depth, None);
         assert_eq!(observation.active_work_depth_hex, None);
+        assert_eq!(observation.active_membership_sql_lookups, Some(2));
+        assert_eq!(observation.active_membership_sql_budget, 1024);
         assert!(!observation.confirmation_authority);
         assert!(!observation.finality_authority);
 
@@ -1835,6 +1854,14 @@ mod tests {
         forged_work["result"]["active_work_depth_hex"] =
             Value::String(format!("{}03", "00".repeat(63)));
         assert!(parse_pon_chain_observation(&forged_work).is_none());
+
+        let mut invalid_lookup = value.clone();
+        invalid_lookup["result"]["active_membership_sql_lookups"] = Value::from(1025_u64);
+        assert!(parse_pon_chain_observation(&invalid_lookup).is_none());
+
+        let mut invalid_budget = value.clone();
+        invalid_budget["result"]["active_membership_sql_budget"] = Value::from(2048_u64);
+        assert!(parse_pon_chain_observation(&invalid_budget).is_none());
 
         let mut invalid_work = value.clone();
         invalid_work["result"]["block_chainwork_hex"] = Value::String("00".into());
