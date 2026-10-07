@@ -63,14 +63,14 @@ const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
-const AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION: u32 = 2;
+const AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION: u32 = 3;
 const PON_PROVIDER_KIND: &str = "trillionnium-pon-local-v1";
 const MAX_PON_BINARY_BYTES: u64 = 256 * 1024 * 1024;
 const MAX_PON_PROCESS_OUTPUT_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct AutomationEffectHostFileV2 {
+struct AutomationEffectHostFileV3 {
     schema_version: u32,
     provider_kind: String,
     provider_scope: String,
@@ -85,6 +85,8 @@ struct AutomationEffectHostFileV2 {
     chain_task_profile: String,
     chain_model_profile: String,
     chain_workers: u64,
+    chain_min_confirmation_depth: u64,
+    chain_min_confirmation_work_depth_hex: String,
     timeout_ms: u64,
     contract_id: String,
     contract_sha256: String,
@@ -98,7 +100,7 @@ struct AutomationEffectHostFileV2 {
 
 enum AutomationEffectHostFile {
     Http(AutomationEffectHostFileV1),
-    Pon(AutomationEffectHostFileV2),
+    Pon(AutomationEffectHostFileV3),
 }
 
 #[derive(Clone)]
@@ -188,6 +190,8 @@ struct PonLocalProviderEffectAdapter {
     task_profile: String,
     model_profile: String,
     workers: u64,
+    min_confirmation_depth: u64,
+    min_confirmation_work_depth_hex: String,
     timeout: Duration,
 }
 
@@ -204,6 +208,11 @@ impl std::fmt::Debug for PonLocalProviderEffectAdapter {
             .field("task_profile", &self.task_profile)
             .field("model_profile", &self.model_profile)
             .field("workers", &self.workers)
+            .field("min_confirmation_depth", &self.min_confirmation_depth)
+            .field(
+                "min_confirmation_work_depth_hex",
+                &self.min_confirmation_work_depth_hex,
+            )
             .field("timeout", &self.timeout)
             .finish()
     }
@@ -374,7 +383,11 @@ impl PonLocalProviderEffectAdapter {
         let PonInvocation::Value(value) = self.invoke("packet-status", &wire_payload) else {
             return None;
         };
-        parse_pon_chain_observation(&value)
+        parse_pon_chain_observation(
+            &value,
+            self.min_confirmation_depth,
+            &self.min_confirmation_work_depth_hex,
+        )
     }
 
     fn lookup_blocking(
@@ -390,7 +403,11 @@ impl PonLocalProviderEffectAdapter {
         let PonInvocation::Value(value) = self.invoke("packet-status", &wire_payload) else {
             return ProviderEffectLookup::Unknown;
         };
-        let Some(observation) = parse_pon_chain_observation(&value) else {
+        let Some(observation) = parse_pon_chain_observation(
+            &value,
+            self.min_confirmation_depth,
+            &self.min_confirmation_work_depth_hex,
+        ) else {
             return ProviderEffectLookup::Unknown;
         };
         if !observation.stored_exact {
@@ -488,7 +505,15 @@ fn work_difference_hex(tip: &str, block: &str) -> Option<String> {
 
 fn parse_pon_chain_observation(
     value: &Value,
+    min_confirmation_depth: u64,
+    min_confirmation_work_depth_hex: &str,
 ) -> Option<crate::AutomationEffectChainObservation> {
+    if !(1..=4096).contains(&min_confirmation_depth)
+        || !lower_hex_64(min_confirmation_work_depth_hex)
+        || min_confirmation_work_depth_hex.bytes().all(|byte| byte == b'0')
+    {
+        return None;
+    }
     let result = value.get("result")?;
     if result.get("schema")?.as_str()? != "pon-native-exact-packet-observation-v3"
         || result.get("local_target_only")?.as_bool()? != true
@@ -580,6 +605,11 @@ fn parse_pon_chain_observation(
             return None;
         }
     }
+    let confirmation_policy_satisfied = active_chain_member
+        && active_depth.is_some_and(|depth| depth >= min_confirmation_depth)
+        && active_work_depth_hex
+            .as_deref()
+            .is_some_and(|depth| depth >= min_confirmation_work_depth_hex);
     Some(crate::AutomationEffectChainObservation {
         schema_version: 2,
         block_id,
@@ -594,6 +624,9 @@ fn parse_pon_chain_observation(
         active_work_depth_hex,
         active_membership_sql_lookups,
         active_membership_sql_budget,
+        confirmation_policy_min_depth: min_confirmation_depth,
+        confirmation_policy_min_work_depth_hex: min_confirmation_work_depth_hex.to_string(),
+        confirmation_policy_satisfied,
         owner_generation,
         local_target_only: true,
         global_absence_authority: false,
@@ -738,9 +771,9 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
     Ok(())
 }
 
-fn pon_contract_digest(config: &AutomationEffectHostFileV2) -> Result<Sha256Digest, AgentdError> {
+fn pon_contract_digest(config: &AutomationEffectHostFileV3) -> Result<Sha256Digest, AgentdError> {
     let value = serde_json::json!({
-        "schema":"hepta-agentd-pon-provider-contract-v1",
+        "schema":"hepta-agentd-pon-provider-contract-v2",
         "provider_kind":config.provider_kind,
         "provider_scope":config.provider_scope,
         "destination_id":config.destination_id,
@@ -753,9 +786,11 @@ fn pon_contract_digest(config: &AutomationEffectHostFileV2) -> Result<Sha256Dige
         "chain_task_profile":config.chain_task_profile,
         "chain_model_profile":config.chain_model_profile,
         "chain_workers":config.chain_workers,
+        "chain_min_confirmation_depth":config.chain_min_confirmation_depth,
+        "chain_min_confirmation_work_depth_hex":config.chain_min_confirmation_work_depth_hex,
         "timeout_ms":config.timeout_ms,
     });
-    let mut bytes = b"hepta.agentd.pon-provider-contract.v1\0".to_vec();
+    let mut bytes = b"hepta.agentd.pon-provider-contract.v2\0".to_vec();
     bytes.extend_from_slice(&serde_json::to_vec(&value)?);
     Ok(Sha256Digest::for_bytes(&bytes))
 }
@@ -930,7 +965,7 @@ impl AgentdAutomationEffectHost {
 
     fn open_pon(
         identity: &AgentdIdentity,
-        config: AutomationEffectHostFileV2,
+        config: AutomationEffectHostFileV3,
     ) -> Result<Self, AgentdError> {
         if config.schema_version != AUTOMATION_EFFECT_HOST_PON_SCHEMA_VERSION
             || config.provider_kind != PON_PROVIDER_KIND
@@ -947,6 +982,12 @@ impl AgentdAutomationEffectHost {
         if !matches!(config.chain_state_backend.as_str(), "legacy-v2" | "authenticated-v1")
             || config.chain_genesis_time == 0
             || !(1..=64).contains(&config.chain_workers)
+            || !(1..=4096).contains(&config.chain_min_confirmation_depth)
+            || !lower_hex_64(&config.chain_min_confirmation_work_depth_hex)
+            || config
+                .chain_min_confirmation_work_depth_hex
+                .bytes()
+                .all(|byte| byte == b'0')
             || config.timeout_ms == 0
             || config.timeout_ms > 30_000
         {
@@ -1030,6 +1071,8 @@ impl AgentdAutomationEffectHost {
             task_profile: config.chain_task_profile,
             model_profile: config.chain_model_profile,
             workers: config.chain_workers,
+            min_confirmation_depth: config.chain_min_confirmation_depth,
+            min_confirmation_work_depth_hex: config.chain_min_confirmation_work_depth_hex,
             timeout: Duration::from_millis(config.timeout_ms),
         };
         Ok(Self {
@@ -1827,13 +1870,14 @@ mod tests {
                 "production_activation": false
             }
         });
-        let observation = parse_pon_chain_observation(&value).expect("valid reorg observation");
+        let observation = parse_pon_chain_observation(&value, 3, &format!("{}03", "00".repeat(63))).expect("valid reorg observation");
         assert!(observation.stored_exact);
         assert!(!observation.active_chain_member);
         assert_eq!(observation.active_depth, None);
         assert_eq!(observation.active_work_depth_hex, None);
         assert_eq!(observation.active_membership_sql_lookups, Some(2));
         assert_eq!(observation.active_membership_sql_budget, 1024);
+        assert!(!observation.confirmation_policy_satisfied);
         assert!(!observation.confirmation_authority);
         assert!(!observation.finality_authority);
 
@@ -1843,41 +1887,58 @@ mod tests {
         active["result"]["active_depth"] = Value::from(4_u64);
         active["result"]["active_work_depth_hex"] =
             Value::String(expected_work_depth.clone());
-        let observed = parse_pon_chain_observation(&active).expect("valid work depth");
+        let observed = parse_pon_chain_observation(&active, 3, &format!("{}03", "00".repeat(63))).expect("valid work depth");
         assert_eq!(observed.schema_version, 2);
         assert_eq!(
             observed.active_work_depth_hex.as_deref(),
             Some(expected_work_depth.as_str())
         );
+        assert_eq!(observed.confirmation_policy_min_depth, 3);
+        assert!(observed.confirmation_policy_satisfied);
+
+        let under_depth = parse_pon_chain_observation(
+            &active,
+            5,
+            &format!("{}03", "00".repeat(63)),
+        )
+        .expect("valid observation below configured depth");
+        assert!(!under_depth.confirmation_policy_satisfied);
+        let under_work = parse_pon_chain_observation(
+            &active,
+            3,
+            &format!("{}05", "00".repeat(63)),
+        )
+        .expect("valid observation below configured work");
+        assert!(!under_work.confirmation_policy_satisfied);
 
         let mut forged_work = active;
         forged_work["result"]["active_work_depth_hex"] =
             Value::String(format!("{}03", "00".repeat(63)));
-        assert!(parse_pon_chain_observation(&forged_work).is_none());
+        assert!(parse_pon_chain_observation(&forged_work, 3, &format!("{}03", "00".repeat(63))).is_none());
 
         let mut invalid_lookup = value.clone();
         invalid_lookup["result"]["active_membership_sql_lookups"] = Value::from(1025_u64);
-        assert!(parse_pon_chain_observation(&invalid_lookup).is_none());
+        assert!(parse_pon_chain_observation(&invalid_lookup, 3, &format!("{}03", "00".repeat(63))).is_none());
 
         let mut invalid_budget = value.clone();
         invalid_budget["result"]["active_membership_sql_budget"] = Value::from(2048_u64);
-        assert!(parse_pon_chain_observation(&invalid_budget).is_none());
+        assert!(parse_pon_chain_observation(&invalid_budget, 3, &format!("{}03", "00".repeat(63))).is_none());
 
         let mut invalid_work = value.clone();
         invalid_work["result"]["block_chainwork_hex"] = Value::String("00".into());
-        assert!(parse_pon_chain_observation(&invalid_work).is_none());
+        assert!(parse_pon_chain_observation(&invalid_work, 3, &format!("{}03", "00".repeat(63))).is_none());
 
         let mut invalid_depth = value.clone();
         invalid_depth["result"]["active_work_depth_hex"] = Value::String("gg".repeat(64));
-        assert!(parse_pon_chain_observation(&invalid_depth).is_none());
+        assert!(parse_pon_chain_observation(&invalid_depth, 3, &format!("{}03", "00".repeat(63))).is_none());
 
         let mut invalid = value.clone();
         invalid["result"]["confirmation_authority"] = Value::Bool(true);
-        assert!(parse_pon_chain_observation(&invalid).is_none());
+        assert!(parse_pon_chain_observation(&invalid, 3, &format!("{}03", "00".repeat(63))).is_none());
 
         let mut inconsistent = value;
         inconsistent["result"]["active_chain_member"] = Value::Bool(true);
-        assert!(parse_pon_chain_observation(&inconsistent).is_none());
+        assert!(parse_pon_chain_observation(&inconsistent, 3, &format!("{}03", "00".repeat(63))).is_none());
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
