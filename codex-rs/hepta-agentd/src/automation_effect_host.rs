@@ -522,7 +522,10 @@ fn parse_pon_chain_observation(
         Value::Null => None,
         value => {
             let value = value.as_str()?.to_string();
-            lower_hex_64(&value).then_some(value)
+            if !lower_hex_64(&value) {
+                return None;
+            }
+            Some(value)
         }
     };
     let active_depth = match result.get("active_depth")? {
@@ -533,7 +536,10 @@ fn parse_pon_chain_observation(
         Value::Null => None,
         value => {
             let value = value.as_str()?.to_string();
-            lower_hex_64(&value).then_some(value)
+            if !lower_hex_64(&value) {
+                return None;
+            }
+            Some(value)
         }
     };
     let active_tip_height = result.get("active_tip_height")?.as_u64()?;
@@ -1829,6 +1835,14 @@ mod tests {
         forged_work["result"]["active_work_depth_hex"] =
             Value::String(format!("{}03", "00".repeat(63)));
         assert!(parse_pon_chain_observation(&forged_work).is_none());
+
+        let mut invalid_work = value.clone();
+        invalid_work["result"]["block_chainwork_hex"] = Value::String("00".into());
+        assert!(parse_pon_chain_observation(&invalid_work).is_none());
+
+        let mut invalid_depth = value.clone();
+        invalid_depth["result"]["active_work_depth_hex"] = Value::String("gg".repeat(64));
+        assert!(parse_pon_chain_observation(&invalid_depth).is_none());
 
         let mut invalid = value.clone();
         invalid["result"]["confirmation_authority"] = Value::Bool(true);
