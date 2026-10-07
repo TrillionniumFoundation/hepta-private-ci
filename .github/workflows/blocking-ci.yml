@@ -126,6 +126,15 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 40
+    env:
+      # Keep native qualification within a bounded, disposable build budget.
+      # Incremental/debug artifacts are rebuildable and otherwise accumulate
+      # quickly enough to turn a valid test into an Errno28 runner failure.
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -153,6 +162,17 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Record native disk budget before compilation
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$CARGO_TARGET_DIR"
+          {
+            date -u +%FT%TZ
+            df -h "$RUNNER_TEMP" "$GITHUB_WORKSPACE"
+            du -sh "$CARGO_TARGET_DIR" "$GITHUB_WORKSPACE" 2>/dev/null || true
+          } | tee "$RUNNER_TEMP/native-resource-before.txt"
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -164,6 +184,17 @@ jobs:
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
+      - name: Record native disk budget after compilation
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            date -u +%FT%TZ
+            df -h "$RUNNER_TEMP" "$GITHUB_WORKSPACE"
+            du -sh "$CARGO_TARGET_DIR" "$GITHUB_WORKSPACE" 2>/dev/null || true
+          } | tee "$RUNNER_TEMP/native-resource-after.txt"
+
       - name: Retain dependency plan and real command output
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -172,6 +203,8 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/native-resource-before.txt
+            ${{ runner.temp }}/native-resource-after.txt
           if-no-files-found: error
           retention-days: 14
 

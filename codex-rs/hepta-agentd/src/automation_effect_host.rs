@@ -223,10 +223,7 @@ enum PonInvocation {
 
 impl PonLocalProviderEffectAdapter {
     fn block_digest(value: &Value) -> Option<Sha256Digest> {
-        let block = value
-            .get("result")?
-            .get("block")?
-            .as_str()?;
+        let block = value.get("result")?.get("block")?.as_str()?;
         if block.len() != 64
             || !block
                 .bytes()
