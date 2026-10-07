@@ -33,19 +33,15 @@ jobs:
           rustup run 1.96.0 cargo install --locked cargo-nextest --version 0.9.103 --root "$RUNNER_TEMP/hepta-tools"
           echo "$RUNNER_TEMP/hepta-tools/bin" >> "$GITHUB_PATH"
           rustup run 1.96.0 rustc -Vv > "$RUNNER_TEMP/publication-observations/rustc.txt"
-      - name: Actual owner regression and exact tested delivery
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Actual owner regression without delivery credentials
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import base64
           import hashlib
           import json
           import os
           from pathlib import Path
-          import shutil
           import subprocess
           import time
 
@@ -89,6 +85,7 @@ jobs:
                               'commit', '-m', message], check=True)
               return identity()
           save()
+          assert 'GH_TOKEN' not in os.environ and 'GITHUB_TOKEN' not in os.environ
           assert identity()['commit'] == base
           original = path.read_bytes()
           assert hashlib.sha1(b'blob ' + str(len(original)).encode() + b'\0' + original).hexdigest() == '1427589355efa2ea3ac12cc076d0e9a028b29f0b'
@@ -115,7 +112,6 @@ jobs:
                       assert!(service.recovery_required().is_none());
                   }
           '''
-          # The embedded block has workflow indentation, normalized before insertion.
           lines = regression.splitlines()
           regression = '\n'.join([lines[0]] + [line[10:] if line.startswith('          ') else line for line in lines[1:]]) + '\n'
           text = replace_once(text, old, regression + old)
@@ -137,7 +133,6 @@ jobs:
           cold = '\n'.join([lines[0]] + [line[10:] if line.startswith('          ') else line for line in lines[1:]]) + '\n'
           text = replace_once(text, marker, marker + cold)
           path.write_text(text)
-          # Format the changed file with the repository's fixed formatter; no unrelated files are rewritten here.
           subprocess.run(['rustup', 'run', '1.96.0', 'rustfmt', '--edition', '2024', str(path)], check=True)
           result['red_source'] = commit('test(artifacts): bind completed publication retries to actual request bytes\n\nKeep the existing actual publication/reopen test and add changed payload, extent, manifest and admission-time controls plus exact cold and expired historical receipt replay. This test-only predecessor is expected to fail on the old owner; it is not a production release.')
           test = ['just', 'test', '-p', 'codex-hepta-learning-artifacts', '--locked',
@@ -172,8 +167,6 @@ jobs:
           path.write_text(text)
           subprocess.run(['just', 'fmt'], cwd=repo / 'codex-rs', check=True)
           (out / 'full-formatter.diff').write_bytes(subprocess.check_output(['git', 'diff']))
-          # Restore only unrelated mechanical formatter output from this clean,
-          # pinned checkout; no preexisting user edits or tests are discarded.
           unrelated = [p for p in git('diff', '--name-only').splitlines() if p != relative]
           if unrelated:
               subprocess.run(['git', 'restore', '--', *unrelated], check=True)
@@ -197,18 +190,45 @@ jobs:
           result['test_binaries'] = binaries
           assert binaries
           result['passed'] = True
+          result['branch'] = branch
           save()
+          print(json.dumps(result, indent=2, sort_keys=True))
+          PY
+      - name: Deliver only the exact successfully tested new branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          path = Path(os.environ['RUNNER_TEMP']) / 'publication-observations/result.json'
+          result = json.loads(path.read_text())
+          assert result['passed'] is True and result['red_reproduced'] is True
+          assert result['base'] == os.environ['SOURCE_SHA']
+          assert result['candidate'] == result['candidate_after']
+          assert git('rev-parse', 'HEAD') == result['candidate']['commit']
+          assert git('rev-parse', 'HEAD^{tree}') == result['candidate']['tree']
+          assert not git('status', '--porcelain')
+          assert set(git('diff', '--name-only', result['base'], 'HEAD').splitlines()) == {
+              'codex-rs/hepta-learning-artifacts/src/owner_service.rs'}
+          assert result['branch'] == 'fix/artifact-publication-retry-binding-20261007'
           token = os.environ['GH_TOKEN']
           auth = 'AUTHORIZATION: basic ' + base64.b64encode(('x-access-token:' + token).encode()).decode()
           os.environ.update(GIT_CONFIG_COUNT='1', GIT_CONFIG_KEY_0='http.https://github.com/.extraheader',
                             GIT_CONFIG_VALUE_0=auth, GIT_TERMINAL_PROMPT='0')
-          ref = 'refs/heads/' + branch
+          ref = 'refs/heads/' + result['branch']
           assert not git('ls-remote', '--heads', 'origin', ref), 'refuse to overwrite a concurrently created product branch'
           subprocess.run(['git', 'push', 'origin', 'HEAD:' + ref], check=True)
           assert git('ls-remote', '--heads', 'origin', ref).split()[0] == result['candidate']['commit']
           result['delivered'] = True
-          result['branch'] = branch
-          save()
+          path.write_text(json.dumps(result, indent=2, sort_keys=True) + '\n')
           print(json.dumps(result, indent=2, sort_keys=True))
           PY
       - name: Preserve real failures and exact-source observations
