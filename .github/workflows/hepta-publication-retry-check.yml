@@ -31,7 +31,7 @@ jobs:
           import urllib.request
           out = Path(os.environ['RUNNER_TEMP']) / 'publication-observations'
           out.mkdir()
-          for name, sha in [('red.patch', '4f2efc150cfa3a58a32d5dd0b3e8839743e21adb'),
+          for name, sha in [('red.patch', 'a724faa11187b71d4d246d166b6e857db84b450a'),
                             ('green.patch', '4575d29a3df59c8fd8589453043c7251a9cbc020')]:
               request = urllib.request.Request(
                   'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/' + sha,
@@ -44,19 +44,23 @@ jobs:
               assert hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest() == sha
               (out / name).write_bytes(raw)
           PY
-      - name: Install pinned native test tools without delivery credentials
+      - name: Install repository-pinned native test tools without delivery credentials
         shell: bash
         run: |
           set -euo pipefail
           printf 'CARGO_HOME=%s/hepta-cargo\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           printf 'CARGO_TARGET_DIR=%s/hepta-target\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
-          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy --component rust-src
+          python3 -c 'import tomllib; from pathlib import Path; assert tomllib.loads(Path("codex-rs/rust-toolchain.toml").read_text())["toolchain"]["channel"] == "1.95.0"'
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy --component rust-src
           export CARGO_HOME="$RUNNER_TEMP/hepta-cargo"
           export CARGO_TARGET_DIR="$RUNNER_TEMP/hepta-tool-target"
-          rustup run 1.96.0 cargo install --locked just --version 1.51.0 --root "$RUNNER_TEMP/hepta-tools"
-          rustup run 1.96.0 cargo install --locked cargo-nextest --version 0.9.103 --root "$RUNNER_TEMP/hepta-tools"
+          rustup run 1.95.0 cargo install --locked just --version 1.51.0 --root "$RUNNER_TEMP/hepta-tools"
+          rustup run 1.95.0 cargo install --locked cargo-nextest --version 0.9.103 --root "$RUNNER_TEMP/hepta-tools"
           echo "$RUNNER_TEMP/hepta-tools/bin" >> "$GITHUB_PATH"
-          rustup run 1.96.0 rustc -Vv > "$RUNNER_TEMP/publication-observations/rustc.txt"
+          cd codex-rs
+          rustc -Vv > "$RUNNER_TEMP/publication-observations/rustc.txt"
+          cargo -V > "$RUNNER_TEMP/publication-observations/cargo.txt"
+          rustup show active-toolchain > "$RUNNER_TEMP/publication-observations/active-toolchain.txt"
       - name: Execute actual old-owner failure and corrected-owner tests
         shell: bash
         run: |
