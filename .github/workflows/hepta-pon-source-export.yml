@@ -1,0 +1,39 @@
+name: hepta-pon-source-export
+on:
+  push:
+    branches: [dev/hepta-pon-source-export-20261007]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SOURCE_SHA: a48b99ec46995f70f50c173c9ab358d603c6d115
+    steps:
+      - name: Checkout pinned owner source without credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Export source and exact identity within private repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/hepta-owner-source"
+          git show -s --format='%H%n%T%n%P' HEAD > "$RUNNER_TEMP/hepta-owner-source/source.txt"
+          tar -czf "$RUNNER_TEMP/hepta-owner-source/checkout.tar.gz" .
+          sha256sum "$RUNNER_TEMP/hepta-owner-source/checkout.tar.gz" > "$RUNNER_TEMP/hepta-owner-source/source.sha256"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+      - name: Retain private source transport
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-owner-source-a48b99e
+          path: ${{ runner.temp }}/hepta-owner-source/
+          retention-days: 7
+          compression-level: 0
+          if-no-files-found: error
