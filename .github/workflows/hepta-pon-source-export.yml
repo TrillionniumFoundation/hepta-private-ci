@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      SOURCE_SHA: a48b99ec46995f70f50c173c9ab358d603c6d115
+      SOURCE_SHA: b78777b9eb606786f7ac6c8a551f97e2c8af3479
     steps:
       - name: Checkout pinned owner source without credentials
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -36,7 +36,7 @@ jobs:
       - name: Retain source transport
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-owner-source-a48b99e
+          name: hepta-owner-source-b78777b
           path: ${{ runner.temp }}/hepta-owner-source/
           retention-days: 7
           compression-level: 0
