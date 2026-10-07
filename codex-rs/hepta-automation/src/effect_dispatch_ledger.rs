@@ -6,11 +6,14 @@
 //! fact. Keeping both immutable lets recovery repair the TaskFlow step without
 //! ever inferring terminality from process-local control flow.
 
+use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::Sha256Digest;
 use sqlx::Row;
 
 use crate::AutomationStore;
 use crate::TaskFlowError;
+
+const MAX_EFFECT_DISPATCH_WIRE_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum EffectDispatchObservationKind {
@@ -57,6 +60,12 @@ pub(crate) struct EffectDispatchAttempt {
     pub(crate) attempt: u32,
     pub(crate) intent_digest: Sha256Digest,
     pub(crate) payload_digest: Sha256Digest,
+    /// Exact provider occurrence key frozen before physical contact. Legacy
+    /// pre-v20 rows retain `None` and remain recovery-only.
+    pub(crate) provider_effect_key: Option<ProviderEffectKey>,
+    /// Exact immutable provider bytes frozen with the attempt. Legacy pre-v20
+    /// rows retain `None`; their digest-only recovery semantics are unchanged.
+    pub(crate) wire_payload: Option<Vec<u8>>,
     pub(crate) binding_digest: Sha256Digest,
     pub(crate) destination_id: String,
     pub(crate) authority_epoch: u64,
@@ -82,6 +91,8 @@ impl AutomationStore {
         attempt: u32,
         intent_digest: &Sha256Digest,
         payload_digest: &Sha256Digest,
+        provider_effect_key: &ProviderEffectKey,
+        wire_payload: &[u8],
         binding_digest: &Sha256Digest,
         destination_id: &str,
         authority_epoch: u64,
@@ -90,12 +101,22 @@ impl AutomationStore {
         record_command_id: &str,
         started_at_ms: u64,
     ) -> Result<EffectDispatchStart, TaskFlowError> {
+        if wire_payload.is_empty()
+            || wire_payload.len() > MAX_EFFECT_DISPATCH_WIRE_BYTES
+            || Sha256Digest::for_bytes(wire_payload) != *payload_digest
+            || ProviderEffectKey::parse(provider_effect_key.as_str().to_owned()).is_err()
+        {
+            return Err(TaskFlowError::Invalid(
+                "effect dispatch recovery material".to_string(),
+            ));
+        }
         let inserted = sqlx::query(
             "INSERT INTO taskflow_effect_dispatch_attempts (
                 owner_agent_id, run_id, step_id, attempt, intent_digest,
-                payload_digest, binding_digest, destination_id, authority_epoch,
-                grant_id, grant_nonce_digest, record_command_id, started_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                payload_digest, provider_effect_key, wire_payload, binding_digest,
+                destination_id, authority_epoch, grant_id, grant_nonce_digest,
+                record_command_id, started_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(self.taskflow_owner_agent_id().as_str())
         .bind(run_id)
@@ -103,6 +124,8 @@ impl AutomationStore {
         .bind(i64::from(attempt))
         .bind(intent_digest.as_str())
         .bind(payload_digest.as_str())
+        .bind(provider_effect_key.as_str())
+        .bind(wire_payload)
         .bind(binding_digest.as_str())
         .bind(destination_id)
         .bind(to_i64(authority_epoch)?)
@@ -136,6 +159,8 @@ impl AutomationStore {
                     })?;
                 if existing.intent_digest != *intent_digest
                     || existing.payload_digest != *payload_digest
+                    || existing.provider_effect_key.as_ref() != Some(provider_effect_key)
+                    || existing.wire_payload.as_deref() != Some(wire_payload)
                     || existing.binding_digest != *binding_digest
                     || existing.destination_id != destination_id
                     || existing.record_command_id != record_command_id
@@ -346,6 +371,38 @@ impl AutomationStore {
 fn effect_attempt_from_row(
     row: sqlx::sqlite::SqliteRow,
 ) -> Result<EffectDispatchAttempt, TaskFlowError> {
+    let provider_effect_key: Option<String> = row
+        .try_get("provider_effect_key")
+        .map_err(|_| TaskFlowError::Corrupt("effect provider key column".to_string()))?;
+    let wire_payload: Option<Vec<u8>> = row
+        .try_get("wire_payload")
+        .map_err(|_| TaskFlowError::Corrupt("effect wire payload column".to_string()))?;
+    let payload_digest_text: String = row
+        .try_get("payload_digest")
+        .map_err(|_| TaskFlowError::Corrupt("effect payload digest".to_string()))?;
+    let payload_digest = Sha256Digest::parse(payload_digest_text)
+        .map_err(|_| TaskFlowError::Corrupt("effect payload digest".to_string()))?;
+    let (provider_effect_key, wire_payload) = match (provider_effect_key, wire_payload) {
+        (None, None) => (None, None),
+        (Some(key), Some(bytes)) => {
+            if bytes.is_empty()
+                || bytes.len() > MAX_EFFECT_DISPATCH_WIRE_BYTES
+                || Sha256Digest::for_bytes(&bytes) != payload_digest
+            {
+                return Err(TaskFlowError::Corrupt(
+                    "effect recovery wire material".to_string(),
+                ));
+            }
+            let key = ProviderEffectKey::parse(key)
+                .map_err(|_| TaskFlowError::Corrupt("effect provider key".to_string()))?;
+            (Some(key), Some(bytes))
+        }
+        _ => {
+            return Err(TaskFlowError::Corrupt(
+                "partial effect recovery material".to_string(),
+            ));
+        }
+    };
     let observation_kind: Option<String> = row
         .try_get("observation")
         .map_err(|_| TaskFlowError::Corrupt("effect observation column".to_string()))?;
@@ -386,11 +443,9 @@ fn effect_attempt_from_row(
                 .map_err(|_| TaskFlowError::Corrupt("effect intent digest".to_string()))?,
         )
         .map_err(|_| TaskFlowError::Corrupt("effect intent digest".to_string()))?,
-        payload_digest: Sha256Digest::parse(
-            row.try_get::<String, _>("payload_digest")
-                .map_err(|_| TaskFlowError::Corrupt("effect payload digest".to_string()))?,
-        )
-        .map_err(|_| TaskFlowError::Corrupt("effect payload digest".to_string()))?,
+        payload_digest,
+        provider_effect_key,
+        wire_payload,
         binding_digest: Sha256Digest::parse(
             row.try_get::<String, _>("binding_digest")
                 .map_err(|_| TaskFlowError::Corrupt("effect binding digest".to_string()))?,
@@ -530,7 +585,14 @@ mod tests {
     async fn indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch() {
         let (_temp, layout, store, _fence) = prepared_store().await;
         let intent = Sha256Digest::for_bytes(b"effect-intent");
-        let payload = Sha256Digest::for_bytes(b"effect-payload");
+        let wire_payload = b"effect-payload";
+        let payload = Sha256Digest::for_bytes(wire_payload);
+        let provider_effect_key = ProviderEffectKey::for_operation(
+            "provider:test",
+            "effect-run",
+            "work",
+        )
+        .expect("provider effect key");
         let binding = Sha256Digest::for_bytes(b"effect-binding");
         let nonce = Sha256Digest::for_bytes(b"effect-nonce");
         let started = store
@@ -540,6 +602,8 @@ mod tests {
                 1,
                 &intent,
                 &payload,
+                &provider_effect_key,
+                wire_payload,
                 &binding,
                 "provider:test",
                 7,
@@ -585,6 +649,11 @@ mod tests {
             .expect("pending after reopen");
         assert_eq!(pending.len(), 1);
         assert_eq!(pending[0].grant_id, "grant-1");
+        assert_eq!(
+            pending[0].provider_effect_key.as_ref(),
+            Some(&provider_effect_key)
+        );
+        assert_eq!(pending[0].wire_payload.as_deref(), Some(wire_payload.as_slice()));
 
         let terminal = Sha256Digest::for_bytes(b"provider-terminal");
         let settled = reopened
