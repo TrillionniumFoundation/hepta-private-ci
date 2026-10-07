@@ -5,6 +5,10 @@ on:
 permissions:
   contents: read
 jobs:
+  inputs:
+    uses: ./.github/workflows/hepta-offline-build-inputs.yml
+    permissions:
+      contents: read
   export:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -17,7 +21,7 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 2
           persist-credentials: false
-      - name: Export source and exact identity within private repository
+      - name: Export source and exact identity in the source repository
         shell: bash
         run: |
           set -euo pipefail
@@ -29,7 +33,7 @@ jobs:
           sha256sum "$RUNNER_TEMP/hepta-owner-source/checkout.tar.gz" > "$RUNNER_TEMP/hepta-owner-source/source.sha256"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
-      - name: Retain private source transport
+      - name: Retain source transport
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-owner-source-a48b99e
