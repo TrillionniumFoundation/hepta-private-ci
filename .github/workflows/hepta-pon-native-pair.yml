@@ -33,9 +33,10 @@ jobs:
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
-      CHAIN_SOURCE_SHA: df717d7fb21a368cb5b4a240ef6221eaba977bc9
+      PYTHONDONTWRITEBYTECODE: "1"
+      CHAIN_SOURCE_SHA: 3de46a75222a0e304c096b4d510207b95e0b6cae
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'df717d7fb21a368cb5b4a240ef6221eaba977bc9' || '45fbc027cd3d6e89a2792dca73e36a70eae42cfd' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '3de46a75222a0e304c096b4d510207b95e0b6cae' || 'd8b37c5996f27480d716e939551e486886a25872' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -84,6 +85,14 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Prepare existing pinned model conformance environment
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/pon-model-env"
+          "$RUNNER_TEMP/pon-model-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r ../chain/formal/pon-nakamoto-v1/requirements.txt
+      - name: Require actual signed generation-sequence regressions
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-sequence.json" --minimum-tests 7 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence.py -v
       - name: Execute the native growth readback regression module
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-readback.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib growth_reservation_io::tests -- --nocapture
@@ -93,7 +102,7 @@ jobs:
         run: |
           set -euo pipefail
           cd ../chain
-          python3 scripts/ci/test_run_from_zero_native.py
+          python3 scripts/ci/test_run_from_zero_native.py 2>&1 | tee "$RUNNER_TEMP/pon-pair/from-zero-reader.log"
           python3 scripts/ci/run_from_zero_native.py --out "$RUNNER_TEMP/pon-pair/chain-from-zero-native"
       - name: Require paired native retained state and recovery
         run: |
