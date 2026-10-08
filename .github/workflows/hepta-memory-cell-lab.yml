@@ -1,0 +1,45 @@
+name: Memory Cell experimental evidence
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab*'
+      - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab/**'
+      - 'codex-rs/hepta-intelligence-eval/tests/memory_cell_lab*'
+      - '.github/workflows/hepta-memory-cell-lab.yml'
+permissions:
+  contents: read
+concurrency:
+  group: memory-cell-lab-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  native-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Compile the exact dependency-free lab and test target
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version
+          mkdir -p /tmp/hepta-memory-cell-bin
+          rustc --edition=2024 -O codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs -o /tmp/hepta-memory-cell-bin/lab
+          rustc --edition=2024 --test codex-rs/hepta-intelligence-eval/tests/memory_cell_lab.rs -o /tmp/hepta-memory-cell-bin/tests
+      - name: Execute native tests and explicit synthetic smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/hepta-memory-cell-bin/tests --nocapture
+          /tmp/hepta-memory-cell-bin/lab smoke /tmp/hepta-memory-cell-evidence
+          git rev-parse HEAD > /tmp/hepta-memory-cell-evidence/source-head.txt
+          rustc --version --verbose > /tmp/hepta-memory-cell-evidence/toolchain.txt
+          sha256sum /tmp/hepta-memory-cell-bin/lab /tmp/hepta-memory-cell-evidence/* > /tmp/hepta-memory-cell-sha256.txt
+          cp /tmp/hepta-memory-cell-sha256.txt /tmp/hepta-memory-cell-evidence/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: memory-cell-lab-evidence
+          path: /tmp/hepta-memory-cell-evidence
+          if-no-files-found: warn
