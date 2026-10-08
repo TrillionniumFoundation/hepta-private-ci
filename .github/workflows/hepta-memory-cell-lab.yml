@@ -14,46 +14,6 @@ concurrency:
   group: memory-cell-lab-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 jobs:
-  source-candidate:
-    if: github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: true
-      - uses: ./.github/actions/setup-ci
-      - name: Use repository formatting and scoped lint-fix entry points
-        env:
-          BASE: ${{ github.event.pull_request.base.sha }}
-        run: |
-          set -euo pipefail
-          git fetch --no-tags --depth=1 origin "$BASE"
-          just fmt --base "$BASE"
-          set +e
-          just fix -p codex-hepta-intelligence-eval --test memory_cell_lab --test memory_cell_controls --test memory_cell_transfer --test memory_cell_faults --test memory_cell_transport > /tmp/mcell-clippy.log 2>&1
-          result=$?
-          set -e
-          cat /tmp/mcell-clippy.log
-          echo "scoped_clippy_exit=$result"
-          just fmt --base "$BASE"
-          if git diff --quiet; then echo 'No source candidate changes'; exit 0; fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add codex-rs/hepta-intelligence-eval/examples/ codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs codex-rs/hepta-intelligence-eval/BUILD.bazel
-          if git diff --cached --quiet; then echo 'No in-scope source changes'; exit 0; fi
-          git commit -m 'style(learning.eval): apply repository formatting and scoped MemoryCell lint fixes'
-          git push origin "HEAD:refs/heads/codex/memory-cell-format-${GITHUB_RUN_ID}"
-          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: memory-cell-scoped-clippy-log
-          path: /tmp/mcell-clippy.log
-          if-no-files-found: warn
   workspace-validation:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -65,6 +25,16 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-nextest
+      - name: Check repository formatting without modifying source
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE" --check
+      - name: Require strict scoped Clippy
+        working-directory: codex-rs
+        run: cargo clippy -p codex-hepta-intelligence-eval --test memory_cell_lab --test memory_cell_controls --test memory_cell_transfer --test memory_cell_faults --test memory_cell_transport -- -D warnings
       - name: Run the existing learning.eval owner through just test
         run: |
           set -euo pipefail
@@ -87,6 +57,9 @@ jobs:
             rustc --edition=2024 --test "$source" -o "/tmp/hepta-memory-cell-bin/$(basename "$source" .rs)"
           done
       - name: Execute native tests, synthetic fixture and observed compiler experiment
+        env:
+          SOURCE_BRANCH_HEAD: ${{ github.event.pull_request.head.sha }}
+          INTEGRATION_BASE: ${{ github.event.pull_request.base.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -102,9 +75,12 @@ jobs:
               assert r['superiority_claim'] is False
               assert len(r['arms']) == 7
           PY
-          git rev-parse HEAD > /tmp/hepta-memory-cell-evidence/source-head.txt
-          git rev-parse HEAD^{tree} > /tmp/hepta-memory-cell-evidence/source-tree.txt
+          git rev-parse HEAD > /tmp/hepta-memory-cell-evidence/tested-merge-head.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-memory-cell-evidence/tested-merge-tree.txt
+          printf '%s\n' "$SOURCE_BRANCH_HEAD" > /tmp/hepta-memory-cell-evidence/source-branch-head.txt
+          printf '%s\n' "$INTEGRATION_BASE" > /tmp/hepta-memory-cell-evidence/integration-base.txt
           rustc --version --verbose > /tmp/hepta-memory-cell-evidence/toolchain.txt
+          sha256sum /tmp/hepta-memory-cell-bin/lab > /tmp/hepta-memory-cell-evidence/executable-sha256.txt
           find /tmp/hepta-memory-cell-evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/hepta-memory-cell-evidence/SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
