@@ -728,3 +728,6 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
             .is_err()
     );
 }
+
+#[path = "support/memory_training_cases.rs"]
+mod memory_training_cases;

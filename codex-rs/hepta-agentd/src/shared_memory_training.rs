@@ -32,14 +32,20 @@ pub enum SharedMemoryTrainingError {
     Invalid(&'static str),
 }
 impl fmt::Display for SharedMemoryTrainingError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "{self:?}") }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 impl std::error::Error for SharedMemoryTrainingError {}
 impl From<SharedTerminalCellError> for SharedMemoryTrainingError {
-    fn from(value: SharedTerminalCellError) -> Self { Self::Source(value) }
+    fn from(value: SharedTerminalCellError) -> Self {
+        Self::Source(value)
+    }
 }
 impl From<MemoryTrainingError> for SharedMemoryTrainingError {
-    fn from(value: MemoryTrainingError) -> Self { Self::Training(value) }
+    fn from(value: MemoryTrainingError) -> Self {
+        Self::Training(value)
+    }
 }
 
 /// Opaque source-admitted job. Its source receipt cannot be supplied by a trainer.
@@ -49,7 +55,9 @@ pub struct SharedMemoryTrainingV1 {
     source: SharedExperienceUseV1,
 }
 impl SharedMemoryTrainingV1 {
-    pub fn frozen(&self) -> &FrozenMemoryTrainingV1 { &self.frozen }
+    pub fn frozen(&self) -> &FrozenMemoryTrainingV1 {
+        &self.frozen
+    }
 }
 
 /// Immutable bytes awaiting the existing independent artifact admission path.
@@ -59,8 +67,12 @@ pub struct SharedMemoryTensorCandidateV1 {
     payload: Vec<u8>,
 }
 impl SharedMemoryTensorCandidateV1 {
-    pub fn candidate(&self) -> &MemoryTensorCandidateV1 { &self.candidate }
-    pub fn payload(&self) -> &[u8] { &self.payload }
+    pub fn candidate(&self) -> &MemoryTensorCandidateV1 {
+        &self.candidate
+    }
+    pub fn payload(&self) -> &[u8] {
+        &self.payload
+    }
 }
 
 /// A loaded candidate still requires current source and registry checks at use.
@@ -71,12 +83,42 @@ pub struct SharedMemoryTensorModelV1 {
 }
 
 impl AgentdSharedReplayHostV1 {
+    async fn revalidate_memory_source(
+        &self,
+        source: &SharedExperienceUseV1,
+        ledger: &LedgerWriter,
+        dataset: &DatasetSnapshotReceiptV3,
+        now: u64,
+    ) -> Result<(), SharedMemoryTrainingError> {
+        let current = self
+            .source
+            .read_shared_experience(&self.consumer, source.policy_id(), &self.purpose)
+            .await
+            .map_err(SharedTerminalCellError::Source)?;
+        if &current != source {
+            return Err(SharedMemoryTrainingError::Invalid("source use changed"));
+        }
+        ledger
+            .revalidate_dataset_snapshot(dataset, now)
+            .map_err(SharedTerminalCellError::Ledger)?;
+        Ok(())
+    }
+
     pub fn memory_parameter_scope_digest(&self) -> Result<Digest32, SharedMemoryTrainingError> {
-        let SharedExperiencePurposeV1::Replay { parameter_scope, artifact_consumer } = &self.purpose else {
-            return Err(SharedMemoryTrainingError::Invalid("training requires Replay purpose"));
+        let SharedExperiencePurposeV1::Replay {
+            parameter_scope,
+            artifact_consumer,
+        } = &self.purpose
+        else {
+            return Err(SharedMemoryTrainingError::Invalid(
+                "training requires Replay purpose",
+            ));
         };
         let mut bytes = b"hepta.memory-training.parameter-scope.v1\0".to_vec();
-        for part in [parameter_scope.as_bytes(), artifact_consumer.as_str().as_bytes()] {
+        for part in [
+            parameter_scope.as_bytes(),
+            artifact_consumer.as_str().as_bytes(),
+        ] {
             bytes.extend_from_slice(&(part.len() as u64).to_be_bytes());
             bytes.extend_from_slice(part);
         }
@@ -92,17 +134,39 @@ impl AgentdSharedReplayHostV1 {
         now: u64,
     ) -> Result<SharedMemoryTrainingV1, SharedMemoryTrainingError> {
         if profile.scope_digest != self.memory_parameter_scope_digest()? {
-            return Err(SharedMemoryTrainingError::Invalid("parameter scope mismatch"));
+            return Err(SharedMemoryTrainingError::Invalid(
+                "parameter scope mismatch",
+            ));
         }
-        let source = self.source.read_shared_experience(policy_id, &self.consumer, &self.purpose).await
+        let source = self
+            .source
+            .read_shared_experience(&self.consumer, policy_id, &self.purpose)
+            .await
             .map_err(SharedTerminalCellError::Source)?;
-        let support_digest = source.source_support_digest().as_str().parse()
+        let support_digest = source
+            .source_support_digest()
+            .as_str()
+            .parse()
             .map_err(|_| SharedMemoryTrainingError::Invalid("source support digest"))?;
-        let content_digest = source.memory().content_sha256.as_str().parse()
+        let content_digest = source
+            .memory()
+            .content_sha256
+            .as_str()
+            .parse()
             .map_err(|_| SharedMemoryTrainingError::Invalid("source content digest"))?;
-        let frozen = freeze_memory_training_from_owner_v1(ledger, dataset, profile,
-            MemoryTrainingSourceV1 { support_digest, content_digest, content: source.memory().content.clone() }, now)?;
-        self.revalidate(&source, ledger, dataset, now).await?;
+        let frozen = freeze_memory_training_from_owner_v1(
+            ledger,
+            dataset,
+            profile,
+            MemoryTrainingSourceV1 {
+                support_digest,
+                content_digest,
+                content: source.memory().content.clone(),
+            },
+            now,
+        )?;
+        self.revalidate_memory_source(&source, ledger, dataset, now)
+            .await?;
         Ok(SharedMemoryTrainingV1 { frozen, source })
     }
 
@@ -114,10 +178,22 @@ impl AgentdSharedReplayHostV1 {
         payload: Vec<u8>,
         now: u64,
     ) -> Result<SharedMemoryTensorCandidateV1, SharedMemoryTrainingError> {
-        self.revalidate(&prepared.source, ledger, prepared.frozen.dataset(), now).await?;
-        let candidate = finish_memory_training_from_owner_v1(ledger, prepared.frozen, observation, &payload, now)?;
-        self.revalidate(&prepared.source, ledger, candidate.frozen().dataset(), now).await?;
-        Ok(SharedMemoryTensorCandidateV1 { candidate, source: prepared.source, payload })
+        self.revalidate_memory_source(&prepared.source, ledger, prepared.frozen.dataset(), now)
+            .await?;
+        let candidate = finish_memory_training_from_owner_v1(
+            ledger,
+            prepared.frozen,
+            observation,
+            &payload,
+            now,
+        )?;
+        self.revalidate_memory_source(&prepared.source, ledger, candidate.frozen().dataset(), now)
+            .await?;
+        Ok(SharedMemoryTensorCandidateV1 {
+            candidate,
+            source: prepared.source,
+            payload,
+        })
     }
 
     pub async fn load_memory_tensor(
@@ -125,22 +201,48 @@ impl AgentdSharedReplayHostV1 {
         candidate: SharedMemoryTensorCandidateV1,
         ledger: &LedgerWriter,
         loaded: LoadedPinnedCandidate,
-        current: &VerifiedCurrentRegistryViewV1,
+        current: VerifiedCurrentRegistryViewV1,
         now: u64,
     ) -> Result<SharedMemoryTensorModelV1, SharedMemoryTrainingError> {
-        self.revalidate(&candidate.source, ledger, candidate.candidate.frozen().dataset(), now).await?;
+        self.revalidate_memory_source(
+            &candidate.source,
+            ledger,
+            candidate.candidate.frozen().dataset(),
+            now,
+        )
+        .await?;
         let profile = candidate.candidate.frozen().profile();
-        let manifest = &loaded.manifest;
-        if manifest.artifact_id != profile.artifact_id || manifest.kind != ArtifactKind::Parameters
-            || manifest.generation != profile.generation || manifest.objective_digest != profile.objective_digest
-            || manifest.support_digest != candidate.candidate.frozen().dataset().snapshot.dataset_digest
-            || manifest.compatibility_digest != profile.base_digest || manifest.producer_id != profile.producer_id
+        let manifest = &loaded.spec().manifest;
+        if manifest.artifact_id != profile.artifact_id
+            || manifest.kind != ArtifactKind::Parameters
+            || manifest.generation != profile.generation
+            || manifest.objective_digest != profile.objective_digest
+            || manifest.support_digest
+                != candidate
+                    .candidate
+                    .frozen()
+                    .dataset()
+                    .snapshot
+                    .dataset_digest
+            || manifest.compatibility_digest != profile.base_digest
+            || manifest.producer_id != profile.producer_id
             || manifest.content_digest != candidate.candidate.observation().payload_digest
-            || manifest.encoded_size_bytes != candidate.payload.len() as u64 || loaded.payload != candidate.payload
-        { return Err(SharedMemoryTrainingError::Invalid("loaded artifact identity/lineage mismatch")); }
+            || manifest.encoded_size_bytes != candidate.payload.len() as u64
+            || loaded.bytes() != candidate.payload
+        {
+            return Err(SharedMemoryTrainingError::Invalid(
+                "loaded artifact identity/lineage mismatch",
+            ));
+        }
         let mut pinned = RevalidatingCandidate::new(loaded);
-        pinned.with_current(current, now, |_| ()).map_err(|_| SharedMemoryTrainingError::Invalid("current artifact rejected"))?;
-        Ok(SharedMemoryTensorModelV1 { candidate: candidate.candidate, source: candidate.source, pinned })
+        pinned
+            .with_current(current, |_| ())
+            .map_err(|_| SharedMemoryTrainingError::Invalid("current artifact rejected"))?;
+        Ok(SharedMemoryTensorModelV1 {
+            candidate: candidate.candidate,
+            source: candidate.source,
+            pinned,
+        })
     }
 
     /// The trusted consumer must be bounded and side-effect-free. State/effect
@@ -149,14 +251,28 @@ impl AgentdSharedReplayHostV1 {
         &self,
         model: &mut SharedMemoryTensorModelV1,
         ledger: &LedgerWriter,
-        current: &VerifiedCurrentRegistryViewV1,
+        current: VerifiedCurrentRegistryViewV1,
         now: u64,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, SharedMemoryTrainingError> {
-        self.revalidate(&model.source, ledger, model.candidate.frozen().dataset(), now).await?;
-        let result = model.pinned.with_current(current, now, |loaded| consume(&loaded.payload))
+        self.revalidate_memory_source(
+            &model.source,
+            ledger,
+            model.candidate.frozen().dataset(),
+            now,
+        )
+        .await?;
+        let result = model
+            .pinned
+            .with_current(current, consume)
             .map_err(|_| SharedMemoryTrainingError::Invalid("current artifact rejected"))?;
-        self.revalidate(&model.source, ledger, model.candidate.frozen().dataset(), now).await?;
+        self.revalidate_memory_source(
+            &model.source,
+            ledger,
+            model.candidate.frozen().dataset(),
+            now,
+        )
+        .await?;
         Ok(result)
     }
 }

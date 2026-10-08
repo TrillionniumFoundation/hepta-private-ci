@@ -56,12 +56,24 @@ impl fmt::Debug for FrozenMemoryTrainingV1 {
     }
 }
 impl FrozenMemoryTrainingV1 {
-    pub fn profile(&self) -> &MemoryTrainingProfileV1 { &self.profile }
-    pub fn dataset(&self) -> &DatasetSnapshotReceiptV3 { &self.dataset }
-    pub fn source_text(&self) -> &str { &self.content }
-    pub fn source_support(&self) -> Digest32 { self.source_support }
-    pub fn content_digest(&self) -> Digest32 { self.content_digest }
-    pub fn job_digest(&self) -> Digest32 { self.job_digest }
+    pub fn profile(&self) -> &MemoryTrainingProfileV1 {
+        &self.profile
+    }
+    pub fn dataset(&self) -> &DatasetSnapshotReceiptV3 {
+        &self.dataset
+    }
+    pub fn source_text(&self) -> &str {
+        &self.content
+    }
+    pub fn source_support(&self) -> Digest32 {
+        self.source_support
+    }
+    pub fn content_digest(&self) -> Digest32 {
+        self.content_digest
+    }
+    pub fn job_digest(&self) -> Digest32 {
+        self.job_digest
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -85,8 +97,12 @@ pub struct MemoryTensorCandidateV1 {
     observation: MemoryTrainingObservationV1,
 }
 impl MemoryTensorCandidateV1 {
-    pub fn frozen(&self) -> &FrozenMemoryTrainingV1 { &self.frozen }
-    pub fn observation(&self) -> &MemoryTrainingObservationV1 { &self.observation }
+    pub fn frozen(&self) -> &FrozenMemoryTrainingV1 {
+        &self.frozen
+    }
+    pub fn observation(&self) -> &MemoryTrainingObservationV1 {
+        &self.observation
+    }
 }
 
 #[derive(Debug)]
@@ -95,11 +111,15 @@ pub enum MemoryTrainingError {
     Invalid(&'static str),
 }
 impl fmt::Display for MemoryTrainingError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "{self:?}") }
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 impl std::error::Error for MemoryTrainingError {}
 impl From<ProductionLedgerError> for MemoryTrainingError {
-    fn from(value: ProductionLedgerError) -> Self { Self::Ledger(value) }
+    fn from(value: ProductionLedgerError) -> Self {
+        Self::Ledger(value)
+    }
 }
 
 pub fn freeze_memory_training_from_owner_v1(
@@ -112,18 +132,34 @@ pub fn freeze_memory_training_from_owner_v1(
     ledger.revalidate_dataset_snapshot(dataset, now)?;
     if Some(profile.generation.get()) != profile.predecessor_generation.get().checked_add(1)
         || profile.objective_digest != dataset.snapshot.objective_digest
-        || [profile.objective_digest, profile.base_digest, profile.encoder_digest,
-            profile.trainer_digest, profile.scope_digest, source.support_digest, source.content_digest]
-            .iter().copied().any(Digest32::is_zero)
-        || profile.maximum_steps == 0 || profile.maximum_steps > 256
-        || profile.maximum_tokens_per_step < 2 || profile.maximum_tokens_per_step > 4096
-        || profile.maximum_payload_bytes == 0 || profile.maximum_payload_bytes > 64 * 1024 * 1024
-        || profile.expires_at <= now || profile.expires_at - now > 3600
-        || source.content.is_empty() || source.content.len() > 1024 * 1024
+        || [
+            profile.objective_digest,
+            profile.base_digest,
+            profile.encoder_digest,
+            profile.trainer_digest,
+            profile.scope_digest,
+            source.support_digest,
+            source.content_digest,
+        ]
+        .iter()
+        .copied()
+        .any(Digest32::is_zero)
+        || profile.maximum_steps == 0
+        || profile.maximum_steps > 256
+        || profile.maximum_tokens_per_step < 2
+        || profile.maximum_tokens_per_step > 4096
+        || profile.maximum_payload_bytes == 0
+        || profile.maximum_payload_bytes > 64 * 1024 * 1024
+        || profile.expires_at <= now
+        || profile.expires_at - now > 3600
+        || source.content.is_empty()
+        || source.content.len() > 1024 * 1024
         || Digest32::of_bytes(source.content.as_bytes()) != source.content_digest
         || dataset.snapshot.source_record_digests.len() > 4096
     {
-        return Err(MemoryTrainingError::Invalid("training profile/source bounds"));
+        return Err(MemoryTrainingError::Invalid(
+            "training profile/source bounds",
+        ));
     }
     let mut decisions = 0;
     for record in ledger.read_dataset_records(dataset, now)? {
@@ -131,29 +167,53 @@ pub fn freeze_memory_training_from_owner_v1(
             if value.support_digest != source.support_digest
                 || value.objective_digest != profile.objective_digest
             {
-                return Err(MemoryTrainingError::Invalid("source support/objective mismatch"));
+                return Err(MemoryTrainingError::Invalid(
+                    "source support/objective mismatch",
+                ));
             }
             decisions += 1;
         }
     }
     if decisions == 0 {
-        return Err(MemoryTrainingError::Invalid("no authenticated source decision"));
+        return Err(MemoryTrainingError::Invalid(
+            "no authenticated source decision",
+        ));
     }
     let mut bytes = b"hepta.memory-training.job.v1\0".to_vec();
     for id in [&profile.job_id, &profile.artifact_id, &profile.producer_id] {
         bytes.extend_from_slice(&(id.as_str().len() as u64).to_be_bytes());
         bytes.extend_from_slice(id.as_str().as_bytes());
     }
-    for digest in [dataset.snapshot.dataset_digest, source.support_digest, source.content_digest,
-        profile.objective_digest, profile.base_digest, profile.encoder_digest,
-        profile.trainer_digest, profile.scope_digest]
-    { bytes.extend_from_slice(digest.as_array()); }
-    for n in [profile.predecessor_generation.get(), profile.generation.get(),
-        u64::from(profile.maximum_steps), u64::from(profile.maximum_tokens_per_step),
-        profile.maximum_payload_bytes, profile.expires_at]
-    { bytes.extend_from_slice(&n.to_be_bytes()); }
-    Ok(FrozenMemoryTrainingV1 { profile, dataset: dataset.clone(), source_support: source.support_digest,
-        content_digest: source.content_digest, content: source.content, job_digest: Digest32::of_bytes(&bytes) })
+    for digest in [
+        dataset.snapshot.dataset_digest,
+        source.support_digest,
+        source.content_digest,
+        profile.objective_digest,
+        profile.base_digest,
+        profile.encoder_digest,
+        profile.trainer_digest,
+        profile.scope_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    for n in [
+        profile.predecessor_generation.get(),
+        profile.generation.get(),
+        u64::from(profile.maximum_steps),
+        u64::from(profile.maximum_tokens_per_step),
+        profile.maximum_payload_bytes,
+        profile.expires_at,
+    ] {
+        bytes.extend_from_slice(&n.to_be_bytes());
+    }
+    Ok(FrozenMemoryTrainingV1 {
+        profile,
+        dataset: dataset.clone(),
+        source_support: source.support_digest,
+        content_digest: source.content_digest,
+        content: source.content,
+        job_digest: Digest32::of_bytes(&bytes),
+    })
 }
 
 /// Validate a trainer observation and exact payload after rechecking the owner.
@@ -168,21 +228,32 @@ pub fn finish_memory_training_from_owner_v1(
 ) -> Result<MemoryTensorCandidateV1, MemoryTrainingError> {
     ledger.revalidate_dataset_snapshot(&frozen.dataset, now)?;
     let p = &frozen.profile;
-    if now >= p.expires_at || observation.job_digest != frozen.job_digest
+    if now >= p.expires_at
+        || observation.job_digest != frozen.job_digest
         || observation.base_digest != p.base_digest
         || observation.frozen_base_after_digest != p.base_digest
         || observation.encoder_digest != p.encoder_digest
         || observation.trainer_digest != p.trainer_digest
         || observation.payload_digest != Digest32::of_bytes(payload)
         || observation.payload_bytes != payload.len() as u64
-        || payload.is_empty() || observation.payload_bytes > p.maximum_payload_bytes
-        || observation.completed_steps == 0 || observation.completed_steps > p.maximum_steps
+        || payload.is_empty()
+        || observation.payload_bytes > p.maximum_payload_bytes
+        || observation.completed_steps == 0
+        || observation.completed_steps > p.maximum_steps
         || observation.consumed_tokens < u64::from(observation.completed_steps) * 2
-        || observation.consumed_tokens > u64::from(observation.completed_steps) * u64::from(p.maximum_tokens_per_step)
-        || observation.trainable_parameters == 0 || observation.trainable_parameters > 16_777_216
-        || observation.changed_parameters == 0 || observation.changed_parameters > observation.trainable_parameters
+        || observation.consumed_tokens
+            > u64::from(observation.completed_steps) * u64::from(p.maximum_tokens_per_step)
+        || observation.trainable_parameters == 0
+        || observation.trainable_parameters > 16_777_216
+        || observation.changed_parameters == 0
+        || observation.changed_parameters > observation.trainable_parameters
     {
-        return Err(MemoryTrainingError::Invalid("trainer observation/payload binding"));
+        return Err(MemoryTrainingError::Invalid(
+            "trainer observation/payload binding",
+        ));
     }
-    Ok(MemoryTensorCandidateV1 { frozen, observation })
+    Ok(MemoryTensorCandidateV1 {
+        frozen,
+        observation,
+    })
 }

@@ -22,12 +22,20 @@ class IsolationTests(unittest.TestCase):
             torch.testing.assert_close(single, together)
 
     def test_small_family_partition_has_no_empty_phase_and_ignores_answers(self):
-        questions = tuple(Question(str(i), str(i), str(i), "query", "2024") for i in range(10))
-        benchmark = Benchmark("locomo", "digest", (), questions, {}, {str(i): str(i) for i in range(10)})
+        questions = tuple(
+            Question(str(i), str(i), str(i), "query", "2024") for i in range(10)
+        )
+        benchmark = Benchmark(
+            "locomo", "digest", (), questions, {}, {str(i): str(i) for i in range(10)}
+        )
         phases = [benchmark.partition(q) for q in questions]
-        self.assertEqual([phases.count(p) for p in ("train", "select", "test")], [6, 2, 2])
+        self.assertEqual(
+            [phases.count(p) for p in ("train", "select", "test")], [6, 2, 2]
+        )
         for question in reversed(questions):
-            self.assertEqual(benchmark.partition(question), phases[int(question.identity)])
+            self.assertEqual(
+                benchmark.partition(question), phases[int(question.identity)]
+            )
 
     def test_actual_tensor_export_is_bound_and_reports_quantized_inputs(self):
         rng = np.random.default_rng(5)
@@ -39,7 +47,10 @@ class IsolationTests(unittest.TestCase):
             export_native(model, output, "a" * 64, "b" * 64, "c" * 64, x)
             artifact = json.loads((output / "circuit.json").read_text())
             parity = json.loads((output / "parity.json").read_text())
-            self.assertEqual(artifact["semantic_weight"], model.semantic.weight.detach().flatten().tolist())
+            self.assertEqual(
+                artifact["semantic_weight"],
+                model.semantic.weight.detach().flatten().tolist(),
+            )
             self.assertEqual(len(parity["vectors"]), 12)
             self.assertEqual(artifact["scope_digest"], "c" * 64)
             with self.assertRaises(ValueError):

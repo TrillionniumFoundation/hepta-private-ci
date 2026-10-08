@@ -16,7 +16,9 @@ class CompositionTests(unittest.TestCase):
         poisoned = y.copy()
         poisoned[24:] = 1 - poisoned[24:]
         other = fit(x, poisoned, split, steps=8)
-        self.assertEqual(len({model.trainable_budget for model, _, _ in arms.values()}), 1)
+        self.assertEqual(
+            len({model.trainable_budget for model, _, _ in arms.values()}), 1
+        )
         for name, (model, values, receipt) in arms.items():
             self.assertEqual(state_digest(model), state_digest(other[name][0]))
             np.testing.assert_array_equal(values, other[name][1])

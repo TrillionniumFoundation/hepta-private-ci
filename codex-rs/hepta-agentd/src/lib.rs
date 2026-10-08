@@ -241,3 +241,12 @@ pub use topology_plasticity_host::rollover_agentd_topology_writer_v1;
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
 use state::AgentdState;
+
+mod memory_trainer_process;
+mod shared_memory_training;
+pub use memory_trainer_process::MemoryTrainerProcessConfigV1;
+pub use memory_trainer_process::MemoryTrainerProcessV1;
+pub use shared_memory_training::SharedMemoryTensorCandidateV1;
+pub use shared_memory_training::SharedMemoryTensorModelV1;
+pub use shared_memory_training::SharedMemoryTrainingError;
+pub use shared_memory_training::SharedMemoryTrainingV1;
