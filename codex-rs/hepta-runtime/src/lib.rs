@@ -7,6 +7,7 @@
 
 #![forbid(unsafe_code)]
 
+mod cell_split;
 mod organs;
 mod topology_execution;
 
@@ -48,6 +49,19 @@ use sqlx::SqliteConnection;
 use sqlx::sqlite::SqliteConnectOptions;
 use zeroize::Zeroizing;
 
+pub use cell_split::CellSplitCheckpointV1;
+pub use cell_split::CellSplitChildInputV1;
+pub use cell_split::CellSplitChildMigrationV1;
+pub use cell_split::CellSplitChildSpecV1;
+pub use cell_split::CellSplitChildStateV1;
+pub use cell_split::CellSplitCommittedStateV1;
+pub use cell_split::CellSplitFailPointV1;
+pub use cell_split::CellSplitInFlightMessageV1;
+pub use cell_split::CellSplitMigrationError;
+pub use cell_split::CellSplitMigrationOwnerV1;
+pub use cell_split::CellSplitParentStateV1;
+pub use cell_split::CellSplitPhaseV1;
+pub use cell_split::CellSplitPlanV1;
 pub use topology_execution::RuntimeTopologyApplyReceiptV1;
 pub use topology_execution::RuntimeTopologyApplyRequestV1;
 pub use topology_execution::RuntimeTopologyExecutionError;
