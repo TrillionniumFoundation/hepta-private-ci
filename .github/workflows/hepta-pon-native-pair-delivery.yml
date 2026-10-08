@@ -1,0 +1,145 @@
+name: Hepta exact native PoN pair delivery
+on:
+  push:
+    branches: [ci/agentd-pon-native-pair-20261008]
+    paths: [.github/workflows/hepta-pon-native-pair-delivery.yml]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.publish.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: control
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: eceaa3697cc873142b73121e9e3fb868c4772357
+          path: source
+          persist-credentials: true
+      - name: Apply only the exact retained product patch
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = eceaa3697cc873142b73121e9e3fb868c4772357
+          test "$(git rev-parse HEAD^{tree})" = 40b102bc4fb2e2f8f5d7a52026005015a0825074
+          mkdir -p "$RUNNER_TEMP/retained"
+          # The retained upload has one accidental leading space on a diff header.
+          # Normalize that transport character only; require the original local digest.
+          sed 's/^ diff --git /diff --git /' ../control/.delivery/pon-native-pair-20261008.patch > "$RUNNER_TEMP/retained/input.patch"
+          echo '2b8e7fd03d8f7321e7ee66717acee4f03e62539f02ed0289cfbacfb002f47661  input.patch' | (cd "$RUNNER_TEMP/retained" && sha256sum -c -)
+          git apply --check "$RUNNER_TEMP/retained/input.patch"
+          git apply "$RUNNER_TEMP/retained/input.patch"
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+          rustfmt +1.95.0 --edition 2024 --config-path codex-rs/rustfmt.toml codex-rs/hepta-agentd/src/automation_effect_host_pon_process.rs codex-rs/hepta-agentd/src/automation_effect_host_pon_native_tests.rs codex-rs/hepta-agentd/src/automation_effect_host_pon_chain_tests.rs
+          git add codex-rs/hepta-agentd/src/automation_effect_host_pon_process.rs codex-rs/hepta-agentd/src/automation_effect_host_pon_native_tests.rs codex-rs/hepta-agentd/src/automation_effect_host_pon_chain_tests.rs
+          python3 - <<'PY'
+          import subprocess
+          expected={f'codex-rs/hepta-agentd/src/automation_effect_host_pon_{name}.rs' for name in ('process','native_tests','chain_tests')}
+          actual=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          assert actual==expected,(actual,expected)
+          assert not subprocess.check_output(['git','diff','--name-only'],text=True).strip()
+          PY
+          git diff --cached --check
+      - name: Publish one new non-main candidate without force
+        id: publish
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          target=feat/agentd-pon-native-pair-20261008
+          test -z "$(git ls-remote --heads origin "refs/heads/$target")"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "$target"
+          git commit -s -m 'test(agentd): repair full-owner compile and exercise actual native PoN reconciliation' -m 'Exact continuation of eceaa3697cc873142b73121e9e3fb868c4772357. Preserve the sealed executable and one deadline. Add actual Chain submit/lost-ACK/confirmation/heavier-reorg tests through the existing adapter; no second journal or model-install authority. Execution results belong to the exact delivery run, not this commit message.'
+          git push origin "HEAD:refs/heads/$target"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/retained/identity.txt"
+          git archive --format=tar.gz HEAD > "$RUNNER_TEMP/retained/source.tar.gz"
+          git diff HEAD^ HEAD > "$RUNNER_TEMP/retained/formatted.patch"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-native-pair-source
+          path: ${{ runner.temp }}/retained/
+          if-no-files-found: error
+          retention-days: 7
+  native:
+    needs: source
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    env:
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      HEPTA_PON_CHAIN_SOURCE: 376676974c537064b65b5507cbee2e2c7de00c91
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ needs.source.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: 376676974c537064b65b5507cbee2e2c7de00c91
+          path: paired-chain
+          persist-credentials: false
+      - name: Native prerequisites and pinned identities
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '${{ needs.source.outputs.sha }}'
+          test "$(git -C paired-chain rev-parse HEAD)" = "$HEPTA_PON_CHAIN_SOURCE"
+          (cd paired-chain && bash scripts/project-preflight.sh --audit)
+          mkdir -p "$RUNNER_TEMP/results"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/results/hepta-identity.txt"
+          git -C paired-chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/results/chain-identity.txt"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve existing verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Build the actual pinned native Chain executable
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 build --locked --release --manifest-path paired-chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node
+          binary="$(realpath paired-chain/trillionnium/target/release/trnm-pon-node)"
+          digest="$(sha256sum "$binary" | cut -d' ' -f1)"
+          echo "HEPTA_PON_CHAIN_BINARY=$binary" >> "$GITHUB_ENV"
+          echo "HEPTA_PON_CHAIN_SHA256=$digest" >> "$GITHUB_ENV"
+          printf '%s\n' "$digest" > "$RUNNER_TEMP/results/chain-binary.sha256"
+      - name: Compile the complete Agentd owner and execute native boundary regressions
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/results/pon-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_)' --no-capture
+      - name: Force the actual Chain pair test; missing input is failure
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/results/pon-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_sealed_submit_reconcile_confirm_reorg)' --run-ignored only --no-capture
+      - name: Confirm unchanged tested source
+        run: |
+          git diff --exit-code
+          git -C paired-chain diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-native-pair-${{ matrix.runner }}
+          path: ${{ runner.temp }}/results/
+          if-no-files-found: error
+          retention-days: 7
