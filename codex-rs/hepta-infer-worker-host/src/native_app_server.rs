@@ -933,7 +933,7 @@ impl AppServerModelDriver {
             .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
-            output.stop_reason = Some(reason.clone());
+            output.stop_reason = Some(truncate_utf8(&reason, MAX_STOP_REASON_BYTES).to_string());
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
                 if let Ok(cancelled) = owner
                     .run_cancel(

@@ -77,6 +77,11 @@ fn appended_reconciliation_reason_stays_within_durable_utf8_byte_limit() {
     assert!(reason.len() <= MAX_STOP_REASON_BYTES);
     assert!(reason.is_char_boundary(reason.len()));
     assert!(reason.ends_with(truncate_utf8(&note, MAX_STOP_REASON_BYTES - 2)));
+
+    let observation_failure = "界".repeat(2048);
+    let bounded_failure = truncate_utf8(&observation_failure, MAX_STOP_REASON_BYTES);
+    assert_eq!(bounded_failure.len(), MAX_STOP_REASON_BYTES - 1);
+    assert!(bounded_failure.is_char_boundary(bounded_failure.len()));
 }
 
 fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification {
