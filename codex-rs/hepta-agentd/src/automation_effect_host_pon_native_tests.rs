@@ -154,8 +154,8 @@ async fn sealed_adapter_output_limits_nonzero_and_partial_are_unknown() -> TestR
 #[tokio::test]
 async fn sealed_adapter_dispatch_retains_preentry_versus_unknown() -> TestResult {
     let (_directory, adapter) = fixture(Duration::from_secs(2))?;
-    let key =
-        ProviderEffectKey::for_operation("pon-fixture", "run", "step").map_err(io::Error::other)?;
+    let key = ProviderEffectKey::for_operation("pon-fixture", "run", "step")
+        .map_err(|error| io::Error::other(format!("{error:?}")))?;
     let intent = ProviderEffectIntent::new(key, Sha256Digest::for_bytes(b"packet"));
     let current = adapter.clone();
     let accepted_intent = intent.clone();
