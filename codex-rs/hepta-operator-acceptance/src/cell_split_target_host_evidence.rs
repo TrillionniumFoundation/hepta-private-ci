@@ -481,7 +481,7 @@ impl CellSplitTargetHostEvidenceRecorderV1 {
             || p.target_host_nonce.is_empty()
             || !digest_shape(&p.target_host_attestation_digest)
             || p.parent_generation == 0
-            || p.child_generation != p.parent_generation.saturating_add(1)
+            || p.parent_generation.checked_add(1) != Some(p.child_generation)
             || !digest_shape(&p.parent_artifact_digest)
             || !digest_shape(&p.child_artifact_digest)
         {
@@ -679,7 +679,7 @@ fn replay_payload(
         || payload.target_host_nonce.is_empty()
         || !digest_shape(&payload.target_host_attestation_digest)
         || payload.parent_generation == 0
-        || payload.child_generation != payload.parent_generation.saturating_add(1)
+        || payload.parent_generation.checked_add(1) != Some(payload.child_generation)
         || !digest_shape(&payload.parent_artifact_digest)
         || !digest_shape(&payload.child_artifact_digest)
         || payload.events.is_empty()

@@ -116,6 +116,24 @@ fn complete_recorder() -> CellSplitTargetHostEvidenceV1 {
     recorder.finish().expect("finish evidence")
 }
 
+#[test]
+fn generation_overflow_is_rejected_before_evidence_recording() {
+    let result = CellSplitTargetHostEvidenceRecorderV1::new(
+        "split.overflow",
+        "host.overflow",
+        "nonce-overflow",
+        ATTESTATION,
+        u64::MAX,
+        u64::MAX,
+        PARENT,
+        CHILD,
+    );
+    assert!(matches!(
+        result,
+        Err(CellSplitTargetHostEvidenceErrorV1::Invalid(_))
+    ));
+}
+
 fn key(seed: u8) -> SigningKey {
     SigningKey::from_bytes(&[seed; 32])
 }
