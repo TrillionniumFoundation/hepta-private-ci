@@ -1,0 +1,24 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-cell-roles"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_cell_roles"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-control-plane = { path = "../hepta-control-plane" }
+codex-hepta-plasticity = { path = "../hepta-plasticity" }
+codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
+codex-hepta-intuition = { path = "../hepta-intuition" }
+codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
+codex-hepta-ndu = { path = "../hepta-ndu" }
+codex-hepta-neuron = { path = "../hepta-neuron" }
+codex-hepta-types = { path = "../hepta-types" }

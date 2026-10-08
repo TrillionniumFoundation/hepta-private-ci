@@ -10,6 +10,12 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+mod cell_role_qualification_replay;
+mod cell_split_automation;
+mod cell_split_evaluation;
+mod cell_split_lifecycle;
+mod cell_split_planner;
+mod cell_split_resources;
 mod closure;
 mod durable_holdout;
 mod fenced_holdout;
@@ -39,6 +45,51 @@ mod signed_evaluation;
 mod temporal_evaluation;
 mod temporal_fold;
 
+#[cfg(test)]
+#[path = "cell_split_lifecycle_tests.rs"]
+mod cell_split_lifecycle_tests;
+
+#[cfg(test)]
+#[path = "cell_split_ledger_owner_tests.rs"]
+mod cell_split_ledger_owner_tests;
+
+pub use cell_role_qualification_replay::CELL_ROLE_QUALIFICATION_REPLAY_SCHEMA_V1;
+pub use cell_role_qualification_replay::CellRoleQualificationReplayV1;
+pub use cell_split_automation::CELL_SPLIT_TASKFLOW_ID_V1;
+pub use cell_split_automation::CellSplitAutomationErrorV1;
+pub use cell_split_automation::CellSplitAutomationExecutorV1;
+pub use cell_split_automation::CellSplitAutomationJournalOwnerV1;
+pub use cell_split_automation::CellSplitAutomationOutcomeV1;
+pub use cell_split_automation::CellSplitInMemoryJournalOwnerV1;
+pub use cell_split_automation::CellSplitLearningLedgerJournalOwnerV1;
+pub use cell_split_automation::CellSplitProposalReceiptV1;
+pub use cell_split_automation::CellSplitProposalSignalV1;
+pub use cell_split_automation::CellSplitProposalSourceV1;
+pub use cell_split_automation::CellSplitProposalTriggerV1;
+pub use cell_split_automation::CellSplitTaskFlowJournalOwnerV1;
+pub use cell_split_automation::run_cell_split_automation_v1;
+pub use cell_split_evaluation::CellSplitEvaluationErrorV1;
+pub use cell_split_evaluation::CellSplitEvaluationProfileV1;
+pub use cell_split_evaluation::CellSplitEvaluationRequestV1;
+pub use cell_split_evaluation::CellSplitLongHorizonEvaluationReceiptV1;
+pub use cell_split_evaluation::cell_split_bound_estimand_digest_v1;
+pub use cell_split_evaluation::evaluate_cell_split_long_horizon_v1;
+pub use cell_split_lifecycle::CellSplitCanaryReceiptV1;
+pub use cell_split_lifecycle::CellSplitEvaluationDispositionV1;
+pub use cell_split_lifecycle::CellSplitLifecycleErrorV1;
+pub use cell_split_lifecycle::CellSplitLifecycleEventV1;
+pub use cell_split_lifecycle::CellSplitLifecycleJournalV1;
+pub use cell_split_lifecycle::CellSplitLifecycleStateV1;
+pub use cell_split_planner::CellSplitGovernedPlannerV1;
+pub use cell_split_planner::CellSplitPlannerContextV1;
+pub use cell_split_planner::CellSplitPlannerErrorV1;
+pub use cell_split_planner::CellSplitProposalPolicyV1;
+pub use cell_split_planner::CellSplitTelemetryObservationV1;
+pub use cell_split_planner::CellSplitTelemetrySourceV1;
+pub use cell_split_planner::cell_split_signal_from_telemetry_v1;
+pub use cell_split_planner::collect_cell_split_signal_v1;
+pub use cell_split_resources::CellSplitResourceEvidenceOriginV1;
+pub use cell_split_resources::CellSplitResourceReceiptV1;
 pub use closure::CrossFoldPartitionV1;
 pub use closure::CrossFoldPlanReceiptV1;
 pub use closure::CrossFoldPlanV1;

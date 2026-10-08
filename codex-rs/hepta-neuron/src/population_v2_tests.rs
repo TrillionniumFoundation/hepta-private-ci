@@ -148,3 +148,31 @@ fn every_activation_requires_a_registered_temporal_projection() {
         Some(PopulationSparseError::InvalidConfig)
     );
 }
+
+#[test]
+fn cell_split_supports_distinct_temporal_and_activation_partitions() {
+    let config = config();
+    let (checkpoint, _) = checked(population_sparse_tick_v2(&config, &tick(1, 10), None));
+    let plan = checked(CellStateSplitPlanV1::new(
+        checked(codex_hepta_types::StableId::new("cell.parent")),
+        vec![
+            checked(codex_hepta_types::StableId::new("cell.child.a")),
+            checked(codex_hepta_types::StableId::new("cell.child.b")),
+        ],
+        vec![
+            Digest32::of_bytes(b"population-scope-a"),
+            Digest32::of_bytes(b"population-scope-b"),
+        ],
+        generation(7),
+        generation(8),
+        vec![vec![0], vec![1]],
+        vec![vec![0, 2, 4], vec![1, 3, 5]],
+    ));
+    let children = checked(checkpoint.split_state_v1(&plan));
+    assert_eq!(children.len(), 2);
+    assert_eq!(children[0].temporal_q24.len(), 1);
+    assert_eq!(children[1].temporal_q24.len(), 1);
+    assert_eq!(children[0].activation_q24.len(), 3);
+    assert_eq!(children[1].activation_q24.len(), 3);
+    assert!(children.iter().all(|child| child.verify_digest()));
+}
