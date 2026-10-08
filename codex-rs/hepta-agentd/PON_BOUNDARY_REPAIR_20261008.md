@@ -30,3 +30,29 @@ existing distinct authorities and fresh explicit protocol contexts.
 Physical power loss, independent WAN operators, sustained public capacity,
 and model efficacy are not claimed by these local pipe fixtures. No release,
 production, branch protection or deployment setting is changed.
+
+## Latest exact-pair convergence (no second authority)
+
+The stacked Hepta integration source is PR #1444 at
+`a36dfbb2dd09fec95751522b6e4fc96598b18f14`. Its installed PoN
+process exchange, exact v3 observation parser, sealed immutable ELF
+execution object and same-candidate pipe/height/work/effect tests are retained
+unchanged. PR #1445 was developed separately against the older PR #1437;
+its bounded-process fixes cannot replace the sealed execution owner. Both
+sides were inspected; no historical or parallel PR pass is inherited.
+
+The paired CI pins Chain PR #248 `560d44ac28fee7b073d1740e372839ab52f057b6` and the
+matching GitHub prospective merge `6731581b65a6300e5c2bb73566d582227ee932b7` against its
+base `bf2f6c72cb4881545f03b6ebe55a5e5e6a7af988`, in both x64/ARM64 and source/merge
+lanes. That Chain PR fixes the *historical cost-report checker* after new
+hostile/honest-arrival overlap screening without editing evidence or relaxing
+current work admission. The pair still executes the actual Chain binary,
+native growth-readback selectors, Agentd sealed submit/reconcile/reorg and
+explicit negative process tests. Run results MUST be read from this final
+Hepta head and its prospective merge, not PR #1444's earlier successful pair.
+
+This is an exact-source integration increment only: no public-network hardness,
+new native storage capacity activation, genuine third-party model training/
+adoption, independently operated WAN campaign, physical power-loss, public
+service SLA, final-use override, production consensus, or release is accepted.
+
