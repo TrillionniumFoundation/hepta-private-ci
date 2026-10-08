@@ -4,7 +4,7 @@ on:
     paths:
       - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab*'
       - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab/**'
-      - 'codex-rs/hepta-intelligence-eval/tests/memory_cell_lab*'
+      - 'codex-rs/hepta-intelligence-eval/tests/memory_cell_*'
       - '.github/workflows/hepta-memory-cell-lab.yml'
 permissions:
   contents: read
@@ -16,28 +16,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Compile the exact dependency-free lab and test target
+      - name: Compile the exact dependency-free lab and test targets
         shell: bash
         run: |
           set -euo pipefail
           rustc --version
           mkdir -p /tmp/hepta-memory-cell-bin
           rustc --edition=2024 -O codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs -o /tmp/hepta-memory-cell-bin/lab
-          rustc --edition=2024 --test codex-rs/hepta-intelligence-eval/tests/memory_cell_lab.rs -o /tmp/hepta-memory-cell-bin/tests
+          for source in codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs; do
+            rustc --edition=2024 --test "$source" -o "/tmp/hepta-memory-cell-bin/$(basename "$source" .rs)"
+          done
       - name: Execute native tests and explicit synthetic smoke
         shell: bash
         run: |
           set -euo pipefail
-          /tmp/hepta-memory-cell-bin/tests --nocapture
+          for test in /tmp/hepta-memory-cell-bin/memory_cell_*; do "$test" --nocapture; done
           /tmp/hepta-memory-cell-bin/lab smoke /tmp/hepta-memory-cell-evidence
           git rev-parse HEAD > /tmp/hepta-memory-cell-evidence/source-head.txt
           rustc --version --verbose > /tmp/hepta-memory-cell-evidence/toolchain.txt
           sha256sum /tmp/hepta-memory-cell-bin/lab /tmp/hepta-memory-cell-evidence/* > /tmp/hepta-memory-cell-sha256.txt
           cp /tmp/hepta-memory-cell-sha256.txt /tmp/hepta-memory-cell-evidence/SHA256SUMS
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: memory-cell-lab-evidence

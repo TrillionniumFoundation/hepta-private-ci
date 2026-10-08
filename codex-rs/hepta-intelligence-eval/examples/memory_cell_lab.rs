@@ -3,6 +3,10 @@
 mod data;
 #[path = "memory_cell_lab/model.rs"]
 mod model;
+#[path = "memory_cell_lab/retrieval.rs"]
+mod retrieval;
+#[path = "memory_cell_lab/controls.rs"]
+mod controls;
 use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
@@ -17,17 +21,31 @@ fn main() -> Result<(), Box<dyn Error>> {
     let rows = data::parse(&corpus)?;
     fs::create_dir(&output)?;
     fs::write(output.join("corpus.tsv"), &corpus)?;
-    let mut bundle = model::Bundle::new(rows[0].query.scope.clone(), &[8])?;
-    let mut meter = model::Meter::default();
-    bundle.train(&rows, &mut meter, 8_000_000)?;
-    fs::write(output.join("shared.bundle"), bundle.encode())?;
-    let clean = model::Bundle::decode(&fs::read_to_string(output.join("shared.bundle"))?)?;
-    let future: Vec<_> = rows.iter().filter(|r| r.split == data::Split::FutureA).collect();
-    let mut correct = 0;
-    for row in &future {
-        let p = clean.infer(&row.query)?;
-        correct += usize::from([model::argmax(&p[0]), model::argmax(&p[1])] == row.targets);
+    fs::write(output.join("protocol.txt"), "MCELL-LAB-1\nselection=select-only\ntrain-ops-estimate-ceiling=8000000\nprimary-capacity-pair=static_2x4,dynamic_equal_capacity\nencoder=hashed-words-32:v1\nproduction-authority=false\n")?;
+    for arm in controls::train_arms(&rows)? {
+        if let Some(bundle) = &arm.bundle {
+            let bytes = bundle.encode();
+            let clean = model::Bundle::decode(&bytes)?;
+            if clean != *bundle { return Err("bundle roundtrip mismatch".into()); }
+            fs::write(output.join(format!("{}.bundle", arm.name)), bytes)?;
+        }
+        for split in [data::Split::FutureA, data::Split::FutureB, data::Split::Retention] {
+            let future: Vec<_> = rows.iter().filter(|r| r.split == split).collect();
+            let mut correct = 0;
+            let mut read_ops = 0;
+            let mut refs = 0;
+            let mut scans = 0;
+            for row in &future {
+                let result = controls::predict(&arm, &rows, &row.query)?;
+                let p = result.probabilities;
+                correct += usize::from([model::argmax(&p[0]), model::argmax(&p[1])] == row.targets);
+                read_ops += result.ops_estimate;
+                refs += result.evidence.len();
+                scans += result.scanned;
+            }
+            println!("arm={} split={split:?} correct={correct}/{} train_ops_estimate={} train_us={} read_ops_estimate={read_ops} evidence_refs={refs} scanned={scans} decisions={:?}", arm.name, future.len(), arm.meter.train_ops, arm.training_micros, arm.decisions);
+        }
     }
-    println!("qualification_only=true future_a={correct}/{} train_updates={} train_ops_estimate={}", future.len(), meter.updates, meter.train_ops);
+    println!("qualification_only=true superiority_claim=false");
     Ok(())
 }
