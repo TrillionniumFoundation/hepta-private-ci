@@ -601,6 +601,23 @@ The following additional work packages are source-planning envelopes introduced 
 - `ASM-3-STATE-MIGRATION-QUALIFICATION`
 - `EMB-3-HIL-SIM-TO-REAL-QUALIFICATION`
 
+### DecisionCell split evaluation boundary
+
+`CellSplitEvaluationRequestV1` composes a typed `CellSplitV1` with the existing
+sealed product temporal evaluation, signed observed-time windows and an
+independent resource observer. It requires utility, retention, task coverage,
+negative transfer, latency, memory, communication, training cost, failure and
+rollback metric roles. `CellSplitLifecycleJournalV1` records the bounded
+proposal/evaluation/canary/retention/quarantine/retirement state machine and
+rejects replay after terminal retire or rollback. These APIs produce evidence
+only; artifact install, CNS route mutation, selection and activation remain
+owned by their respective modules.
+
+`hepta-operator-acceptance::CellSplitTargetHostHarnessV1` is a durable JSON
+source-simulation fixture for restart, rollback, no-resurrection, dispatch
+fence and resource-budget checks. Its origin and production flags are fixed to
+source simulation; it cannot be used as a target-host or production receipt.
+
 ## 17. Source implementation receipt
 
 The bootstrap source-location obligation for `learning.eval` is implemented by work package `LRN-2-CAUSAL-EVALUATION` in:

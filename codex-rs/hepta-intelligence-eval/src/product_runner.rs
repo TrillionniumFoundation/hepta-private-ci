@@ -242,7 +242,9 @@ pub struct ProductTemporalEvaluationReceiptV1 {
 }
 
 impl ProductTemporalEvaluationReceiptV1 {
-    fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
+    /// Revalidate all sealed estimator, support, confidence and execution
+    /// digests before a typed CellSplit evaluator consumes this receipt.
+    pub fn validate_integrity(&self) -> Result<(), ProductEvaluationError> {
         self.product_plan.validate_integrity()?;
         self.candidate.validate_integrity()?;
         self.baseline.validate_integrity()?;

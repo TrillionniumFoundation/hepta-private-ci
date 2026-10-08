@@ -101,6 +101,7 @@ pub use taskflow::TaskFlowDefinition;
 pub use taskflow::TaskFlowDefinitionReceipt;
 pub use taskflow::TaskFlowEdgeSpec;
 pub use taskflow::TaskFlowError;
+pub use taskflow::TaskFlowEvent;
 pub use taskflow::TaskFlowFence;
 pub use taskflow::TaskFlowNodeKind;
 pub use taskflow::TaskFlowNodeSpec;

@@ -127,6 +127,40 @@ This is a process-local read-only replacement, not a crash-durable transaction,
 a data migration, or an autonomous policy selecting which organs should change.
 It does not add a second lifecycle implementation or an authoritative store.
 
+## DecisionCell split route binding
+
+`CellSplitRouteControllerV1` is the narrow CNS boundary for a typed
+`CellSplitV1`. It binds the split's parent organ and concrete predecessor
+`CnsRouteV1` to the route actually admitted by the current host, then requires
+one concrete successor route for every child. The port-binding digest is
+calculated from CNS identity, generation, hierarchy identity, source path,
+output port, all target paths and the host's actual target input-port indices;
+it is checked against the split's port binding, so a digest cannot stand in for
+an unobserved route. Child input, termination and ABI set digests are likewise
+recomputed from the admitted candidate host.
+
+Child activation calls the existing generation replacement (or its
+`OrganStateMigrationV1` variant). The candidate is started and state migration
+finishes before the predecessor is stopped and before child routes are stored.
+If that operation fails, children remain undispatchable and the controller is
+quarantined. A successful cutover advances generation and fences the cached
+parent route; parent dispatch is rejected even when a successor keeps a shadow
+organ. Child dispatch requires the exact admitted child route and the route
+predicate revision selected by the external router, and returns a bounded
+The fence record also carries the split's pre-evaluation subject digest, so a
+restart cannot reuse a tombstone with altered child routing metadata.
+`CellSplitRouteSelectionV1` carries the selected child scope, predicate
+revision and fallback revision into dispatch. The adapter verifies all three
+against the admitted child and returns a `CellSplitDispatchReceiptV1`
+containing child identity, generation, scope, predicate revision, payload
+digest and delivery count.
+
+The adapter does not evaluate predicates, choose candidates, write a registry,
+mint authority, or claim crash-durable restart/non-resurrection evidence. Those
+remain owners of routing, governance, artifact/state persistence and target
+host qualification. A durable route-fence receipt must be supplied by those
+owners before recovery can claim that a retired parent cannot return.
+
 Before a future effectful or stateful profile is admitted, its owner must provide
 final-use authorization, bounded I/O, trustworthy terminal observation, unknown
 outcome reconciliation and persistent writer handoff. Replacing the graph must

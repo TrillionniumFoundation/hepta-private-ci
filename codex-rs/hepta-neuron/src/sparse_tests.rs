@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
 fn checked<T, E: fmt::Debug>(result: Result<T, E>) -> T {
@@ -126,6 +127,172 @@ fn saturation_and_eligibility_l1_projection_are_counted() {
     let (next, receipt) = checked(sparse_tick(&cfg, &tick, Some(&state)));
     assert_eq!(next.temporal, vec![H; 5]);
     assert_eq!(receipt.projection_count, 6);
+}
+
+#[test]
+fn cell_split_projects_all_state_vectors_and_binds_child_context() {
+    let cfg = config();
+    let (parent, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    let parent_digest = parent.digest();
+    let parent_config_digest = parent.config;
+    let parent_scope = parent.scope;
+    let parent_objective = parent.objective;
+    let parent_body = parent.body;
+    let candidate_generation = Generation::new(2).expect("candidate generation");
+    let plan = CellStateSplitPlanV1::shared_partition(
+        StableId::new("cell:parent").expect("parent id"),
+        vec![
+            StableId::new("cell:child:a").expect("child a id"),
+            StableId::new("cell:child:b").expect("child b id"),
+        ],
+        vec![
+            Digest32::of_bytes(b"scope:a"),
+            Digest32::of_bytes(b"scope:b"),
+        ],
+        cfg.generation,
+        candidate_generation,
+        vec![vec![0, 1], vec![2, 3, 4]],
+    )
+    .expect("split plan");
+
+    let children = parent.split_state_v1(&plan).expect("child projections");
+    assert_eq!(children.len(), 2);
+    for (index, child) in children.iter().enumerate() {
+        assert_eq!(child.parent_cell_id, plan.parent_cell_id);
+        assert_eq!(child.child_cell_id, plan.child_cell_ids[index]);
+        assert_eq!(child.child_scope, plan.child_scopes[index]);
+        assert_eq!(child.parent_generation, cfg.generation);
+        assert_eq!(child.candidate_generation, candidate_generation);
+        assert_eq!(child.parent_checkpoint_digest, parent_digest);
+        assert_eq!(child.parent_config_digest, parent_config_digest);
+        assert_eq!(child.parent_scope, parent_scope);
+        assert_eq!(child.objective_digest, parent_objective);
+        assert_eq!(child.body_digest, parent_body);
+        assert_eq!(child.sequence, parent.sequence);
+        assert!(child.verify_digest());
+    }
+    assert_eq!(children[0].temporal_q24, parent.temporal[..2].to_vec());
+    assert_eq!(children[1].temporal_q24, parent.temporal[2..].to_vec());
+    assert_eq!(children[0].activation_q24, parent.activation[..2].to_vec());
+    assert_eq!(children[1].activation_q24, parent.activation[2..].to_vec());
+    assert_eq!(
+        children[0].eligibility_q24,
+        parent.eligibility[..2].to_vec()
+    );
+    assert_eq!(
+        children[1].eligibility_q24,
+        parent.eligibility[2..].to_vec()
+    );
+}
+
+#[test]
+fn cell_split_rejects_overlapping_or_incomplete_state_partitions() {
+    let cfg = config();
+    let (parent, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    let overlapping = CellStateSplitPlanV1::shared_partition(
+        StableId::new("cell:parent").expect("parent id"),
+        vec![
+            StableId::new("cell:child:a").expect("child a id"),
+            StableId::new("cell:child:b").expect("child b id"),
+        ],
+        vec![
+            Digest32::of_bytes(b"scope:a"),
+            Digest32::of_bytes(b"scope:b"),
+        ],
+        cfg.generation,
+        Generation::new(2).expect("candidate generation"),
+        vec![vec![0, 1, 2], vec![2, 3, 4]],
+    )
+    .expect("shape-only plan");
+    assert!(matches!(
+        parent.split_state_v1(&overlapping),
+        Err(CellStateSplitError::InvalidPlan("overlapping partition"))
+    ));
+
+    let incomplete = CellStateSplitPlanV1::shared_partition(
+        StableId::new("cell:parent").expect("parent id"),
+        vec![
+            StableId::new("cell:child:a").expect("child a id"),
+            StableId::new("cell:child:b").expect("child b id"),
+        ],
+        vec![
+            Digest32::of_bytes(b"scope:a"),
+            Digest32::of_bytes(b"scope:b"),
+        ],
+        cfg.generation,
+        Generation::new(2).expect("candidate generation"),
+        vec![vec![0, 1], vec![2, 3]],
+    )
+    .expect("shape-only plan");
+    assert!(matches!(
+        parent.split_state_v1(&incomplete),
+        Err(CellStateSplitError::InvalidPlan("incomplete partition"))
+    ));
+}
+
+#[test]
+fn cell_split_rejects_duplicate_identity_scope_and_corrupt_parent_checkpoint() {
+    let cfg = config();
+    let duplicate_id = CellStateSplitPlanV1::shared_partition(
+        StableId::new("cell:parent").expect("parent id"),
+        vec![
+            StableId::new("cell:child").expect("child id"),
+            StableId::new("cell:child").expect("duplicate child id"),
+        ],
+        vec![
+            Digest32::of_bytes(b"scope:a"),
+            Digest32::of_bytes(b"scope:b"),
+        ],
+        cfg.generation,
+        Generation::new(2).expect("candidate generation"),
+        vec![vec![0, 1], vec![2, 3, 4]],
+    );
+    assert!(matches!(
+        duplicate_id,
+        Err(CellStateSplitError::InvalidPlan(
+            "duplicate or parent child id"
+        ))
+    ));
+
+    let duplicate_scope = CellStateSplitPlanV1::shared_partition(
+        StableId::new("cell:parent").expect("parent id"),
+        vec![
+            StableId::new("cell:child:a").expect("child a id"),
+            StableId::new("cell:child:b").expect("child b id"),
+        ],
+        vec![Digest32::of_bytes(b"scope"), Digest32::of_bytes(b"scope")],
+        cfg.generation,
+        Generation::new(2).expect("candidate generation"),
+        vec![vec![0, 1], vec![2, 3, 4]],
+    );
+    assert!(matches!(
+        duplicate_scope,
+        Err(CellStateSplitError::InvalidPlan(
+            "duplicate or empty child scope"
+        ))
+    ));
+
+    let (mut parent, _) = checked(sparse_tick(&cfg, &input(1), /*previous*/ None));
+    parent.digest = Digest32::ZERO;
+    let valid_plan = CellStateSplitPlanV1::shared_partition(
+        StableId::new("cell:parent").expect("parent id"),
+        vec![
+            StableId::new("cell:child:a").expect("child a id"),
+            StableId::new("cell:child:b").expect("child b id"),
+        ],
+        vec![
+            Digest32::of_bytes(b"scope:a"),
+            Digest32::of_bytes(b"scope:b"),
+        ],
+        cfg.generation,
+        Generation::new(2).expect("candidate generation"),
+        vec![vec![0, 1], vec![2, 3, 4]],
+    )
+    .expect("valid split plan");
+    assert_eq!(
+        parent.split_state_v1(&valid_plan),
+        Err(CellStateSplitError::InvalidCheckpoint)
+    );
 }
 
 #[test]

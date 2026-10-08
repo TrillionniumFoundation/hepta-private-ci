@@ -15,6 +15,8 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod cell_split;
+mod cell_state_migration;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -28,6 +30,22 @@ mod runtime_types;
 mod sparse;
 mod witness;
 
+pub use cell_split::CellStateSplitChildV1;
+/// Explicit alias distinguishing the q24 vector payload from the semantic
+/// policy contract with the same name in `codex_hepta_types`.
+pub use cell_split::CellStateSplitChildV1 as NeuronCellStateSplitChildV1;
+pub use cell_split::CellStateSplitError;
+pub use cell_split::CellStateSplitPlanV1;
+pub use cell_split::CellStateSplitPlanV1 as NeuronCellStateSplitPlanV1;
+pub use cell_split::MAX_CELL_SPLIT_CHILDREN_V1;
+pub use cell_split::canonical_partition_digest_v1;
+pub use cell_state_migration::CellStateBatchReceiptV1;
+pub use cell_state_migration::CellStateCasReceiptV1;
+pub use cell_state_migration::CellStateMigrationErrorV1;
+pub use cell_state_migration::CellStateMigrationPhaseV1;
+pub use cell_state_migration::CellStateMigrationReceiptV1;
+pub use cell_state_migration::CellStateMigrationV1;
+pub use cell_state_migration::encode_cell_state_v1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
@@ -108,6 +126,10 @@ pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::sparse_tick;
 pub use witness::FileAnchorWitnessStore;
+
+#[cfg(test)]
+#[path = "cell_state_migration_tests.rs"]
+mod cell_state_migration_tests;
 
 const MAX_FEATURES: usize = 4_096;
 
