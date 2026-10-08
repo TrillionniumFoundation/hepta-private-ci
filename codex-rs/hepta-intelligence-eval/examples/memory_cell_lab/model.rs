@@ -1,5 +1,11 @@
 //! Tiny trainable two-head backend for controlled experiments, not installed inference.
-use super::data::{CLASSES, ENCODER, Episode, Query, Split, WIDTH, features};
+use super::data::CLASSES;
+use super::data::ENCODER;
+use super::data::Episode;
+use super::data::Query;
+use super::data::Split;
+use super::data::WIDTH;
+use super::data::features;
 use std::collections::BTreeSet;
 
 #[derive(Clone, Debug, PartialEq)]
