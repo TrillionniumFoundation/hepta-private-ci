@@ -1,0 +1,94 @@
+name: Hepta native PoN pair
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-contracts/**
+      - .github/workflows/hepta-pon-native-pair.yml
+permissions:
+  contents: read
+concurrency:
+  group: hepta-pon-pair-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  pair:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: hepta
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: source-head
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      HEPTA_PON_CHAIN_SOURCE: 376676974c537064b65b5507cbee2e2c7de00c91
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: hepta
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: 376676974c537064b65b5507cbee2e2c7de00c91
+          path: chain
+          persist-credentials: false
+      - name: Prepare native prerequisites and immutable pair identities
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git -C ../chain rev-parse HEAD)" = "$HEPTA_PON_CHAIN_SOURCE"
+          (cd ../chain && bash scripts/project-preflight.sh --audit)
+          mkdir -p "$RUNNER_TEMP/pon-pair"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-pair/hepta-identity.txt"
+          git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-pair/chain-identity.txt"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve existing verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Build the actual pinned native Chain executable
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node
+          binary="$(realpath ../chain/trillionnium/target/release/trnm-pon-node)"
+          digest="$(sha256sum "$binary" | cut -d' ' -f1)"
+          echo "HEPTA_PON_CHAIN_BINARY=$binary" >> "$GITHUB_ENV"
+          echo "HEPTA_PON_CHAIN_SHA256=$digest" >> "$GITHUB_ENV"
+          printf '%s\n' "$digest" > "$RUNNER_TEMP/pon-pair/chain-binary.sha256"
+      - name: Compile complete Agentd and run subprocess and observation regressions
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_)' --no-capture
+      - name: Execute the actual Chain pair including the explicitly ignored selector
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_sealed_submit_reconcile_confirm_reorg)' --run-ignored only --no-capture
+      - name: Preserve exact tested source and scope
+        if: always()
+        run: |
+          git diff --exit-code
+          git -C ../chain diff --exit-code
+          printf 'Actual local native pair only. No TaskFlow model installation, future efficacy, independent operators, WAN, physical power loss, production or prospective-merge credit.\n' > "$RUNNER_TEMP/pon-pair/SCOPE.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-pon-pair-${{ matrix.runner }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pon-pair/
+          if-no-files-found: error
+          retention-days: 14
