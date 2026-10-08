@@ -99,3 +99,11 @@ pub(super) async fn run(
     let _ = tokio::time::timeout(Duration::from_millis(250), child.wait()).await;
     Outcome::Unknown
 }
+
+#[cfg(all(
+    test,
+    target_os = "linux",
+    any(target_arch = "x86_64", target_arch = "aarch64")
+))]
+#[path = "automation_effect_host_pon_native_tests.rs"]
+mod native_tests;
