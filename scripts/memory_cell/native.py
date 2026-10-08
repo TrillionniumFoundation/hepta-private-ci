@@ -50,6 +50,7 @@ class Target:
     category: str
     evidence: tuple[str, ...]
     unanswerable: bool
+    unresolved_evidence: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -59,7 +60,6 @@ class Benchmark:
     documents: tuple[Document, ...]
     questions: tuple[Question, ...]
     targets: dict[str, Target]
-    # Root-connected families, not an arbitrary new root name for every copy.
     families: dict[str, str]
 
     def history(self, query: Question) -> tuple[Document, ...]:
@@ -70,7 +70,7 @@ class Benchmark:
         return "train" if bucket < 6 else "select" if bucket < 8 else "test"
 
 
-def load(path: Path, kind: str, expected_sha256: str | None = None) -> Benchmark:
+def load(path: Path, kind: str, expected_sha256: str | None = None, *, allow_unresolved_evidence: bool = False) -> Benchmark:
     with path.open("rb") as stream:
         payload = stream.read(MAX_BYTES + 1)
     if len(payload) > MAX_BYTES:
@@ -95,9 +95,7 @@ def load(path: Path, kind: str, expected_sha256: str | None = None) -> Benchmark
         if kind == "longmemeval":
             qid = text(sample["question_id"], "question id", 256)
             scope = f"longmemeval:{qid}"
-            sessions = sample["haystack_sessions"]
-            ids = sample["haystack_session_ids"]
-            dates = sample["haystack_dates"]
+            sessions, ids, dates = sample["haystack_sessions"], sample["haystack_session_ids"], sample["haystack_dates"]
             if not len(sessions) == len(ids) == len(dates) or len(ids) > 10_000 or len(set(ids)) != len(ids):
                 raise ValueError("misaligned/duplicate sessions")
             known = set()
@@ -110,7 +108,6 @@ def load(path: Path, kind: str, expected_sha256: str | None = None) -> Benchmark
                 for turn in turns:
                     if turn["role"] not in ("user", "assistant", "system"):
                         raise ValueError("unknown history role")
-                    # Never copy has_answer or any other benchmark label.
                     clean.append((turn["role"], text(turn["content"], "turn")))
                 root = "session:" + digest((sid, clean))
                 identity = f"{scope}/{sid}"
@@ -120,9 +117,10 @@ def load(path: Path, kind: str, expected_sha256: str | None = None) -> Benchmark
             query = Question(scope, scope, scope, text(sample["question"], "question"),
                              text(sample["question_date"], "question date", 256))
             support = tuple(f"{scope}/{sid}" for sid in sample["answer_session_ids"])
-            if not set(support).issubset(known):
-                raise ValueError("dangling LongMemEval evidence")
-            target = Target(str(sample["answer"]), text(sample["question_type"], "question type", 128), support, qid.endswith("_abs"))
+            missing = tuple(sorted(set(support) - known))
+            if missing and not allow_unresolved_evidence:
+                raise ValueError(f"dangling LongMemEval evidence: {missing[:4]}")
+            target = Target(str(sample["answer"]), text(sample["question_type"], "question type", 128), support, qid.endswith("_abs"), missing)
             queries.append(query)
             if query.identity in targets:
                 raise ValueError("duplicate question")
@@ -157,13 +155,13 @@ def load(path: Path, kind: str, expected_sha256: str | None = None) -> Benchmark
                 if category not in (1, 2, 3, 4, 5):
                     raise ValueError("unknown LoCoMo category")
                 evidence = tuple(f"{family}/{x}" for x in qa.get("evidence", []))
-                if not set(evidence).issubset(known):
-                    raise ValueError("dangling LoCoMo evidence")
+                missing = tuple(sorted(set(evidence) - known))
+                if missing and not allow_unresolved_evidence:
+                    raise ValueError(f"dangling LoCoMo evidence: {missing[:4]}")
                 queries.append(Question(qid, family, family, text(qa["question"], "question"), conversation[sessions[-1] + "_date_time"]))
                 if qid in targets:
                     raise ValueError("duplicate sample/question")
-                # Adversarial answers are distractors, NEVER an expected factual answer.
-                targets[qid] = Target(None if category == 5 else str(qa["answer"]), str(category), evidence, category == 5)
+                targets[qid] = Target(None if category == 5 else str(qa["answer"]), str(category), evidence, category == 5, missing)
         else:
             raise ValueError("unsupported native benchmark")
         if len(docs) > 250_000 or len(queries) > 20_000:
