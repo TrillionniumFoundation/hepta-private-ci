@@ -7,6 +7,7 @@ on:
       - 'codex-rs/hepta-neuron/**'
       - 'codex-rs/hepta-bellman-operator/**'
       - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
       - 'codex-rs/hepta-intelligence-eval/**'
 permissions:
   contents: read
@@ -33,3 +34,89 @@ jobs:
           name: memory-cell-owner-source-inputs
           path: /tmp/memory-cell-source
           if-no-files-found: error
+  native-models:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Install isolated pinned CPU model environment
+        run: |
+          python3 -m venv /tmp/mcell-python
+          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+      - name: Check native adapters and train-only ablations
+        run: /tmp/mcell-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v
+      - name: Stage public pinned weights and benchmark data
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          HF_HUB_DISABLE_XET: '1'
+        run: /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs
+      - name: Run original-format benchmarks with actual pretrained LoRA
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/mcell-native
+          cp /tmp/mcell-inputs/staging.json /tmp/mcell-native/staging.json
+          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs /tmp/mcell-native/locomo locomo --qa-limit 2
+          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs /tmp/mcell-native/longmemeval longmemeval --qa-limit 2
+          git rev-parse HEAD > /tmp/mcell-native/tested-commit.txt
+          /tmp/mcell-python/bin/pip freeze > /tmp/mcell-native/python-lock.txt
+          find /tmp/mcell-native -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/mcell-native/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-native-model-evidence
+          path: /tmp/mcell-native
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-laya-training-pairs
+          path: /tmp/mcell-native/locomo/laya-pairs.json
+          if-no-files-found: error
+  laya-pretrained:
+    needs: native-models
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-laya-training-pairs
+          path: /tmp/laya-pairs
+      - name: Install and stage the pinned Laya checkpoint
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          HF_HUB_DISABLE_XET: '1'
+        run: |
+          python3 -m venv /tmp/mcell-python
+          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py laya /tmp/laya-inputs
+      - name: Train actual Laya scorer tensors and record held-out outputs
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          /tmp/mcell-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          import torch
+          from laya_backend import train_and_measure
+          torch.set_num_threads(2)
+          train_and_measure(Path('/tmp/laya-inputs/laya'), Path('/tmp/laya-inputs/laya_common.py'), json.loads(Path('/tmp/laya-pairs/laya-pairs.json').read_text()), Path('/tmp/laya-evidence'))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-laya-pretrained-evidence
+          path: /tmp/laya-evidence
+          if-no-files-found: warn
