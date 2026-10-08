@@ -1,0 +1,35 @@
+name: MemoryCell owner and benchmark continuation
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-cell-continuation.yml'
+      - 'scripts/memory_cell/**'
+      - 'codex-rs/hepta-neuron/**'
+      - 'codex-rs/hepta-bellman-operator/**'
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-intelligence-eval/**'
+permissions:
+  contents: read
+concurrency:
+  group: memory-cell-continuation-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  source-inputs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Retain exact reviewed owner sources, not credentials or runtime data
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-cell-source
+          git archive --format=tar.gz HEAD AGENTS.md justfile defs.bzl codex-rs/Cargo.toml codex-rs/rust-toolchain.toml codex-rs/hepta-neuron codex-rs/hepta-bellman-operator codex-rs/hepta-infer-core codex-rs/hepta-infer-worker codex-rs/hepta-learning-artifacts codex-rs/hepta-cognitive-store codex-rs/hepta-agentd codex-rs/hepta-intelligence-eval codex-rs/hepta-types docs/modules docs/learning docs/hnmf scripts .github/workflows > /tmp/memory-cell-source/owner-inputs.tar.gz
+          git rev-parse HEAD > /tmp/memory-cell-source/tested-commit.txt
+          sha256sum /tmp/memory-cell-source/owner-inputs.tar.gz > /tmp/memory-cell-source/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-owner-source-inputs
+          path: /tmp/memory-cell-source
+          if-no-files-found: error
