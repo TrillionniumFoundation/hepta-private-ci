@@ -33,9 +33,9 @@ jobs:
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
-      CHAIN_SOURCE_SHA: 50db8e4645ea32788f1e488c065231ff5736f238
+      CHAIN_SOURCE_SHA: df717d7fb21a368cb5b4a240ef6221eaba977bc9
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '50db8e4645ea32788f1e488c065231ff5736f238' || 'fcc06db4b1a3c0fa90aca1579019c08a4b35e37b' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'df717d7fb21a368cb5b4a240ef6221eaba977bc9' || '45fbc027cd3d6e89a2792dca73e36a70eae42cfd' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -107,7 +107,9 @@ jobs:
             sealed_adapter_success_observes_full_payload_and_eof \
             sealed_adapter_blocked_stdin_and_descendant_obey_deadline \
             sealed_adapter_output_limits_nonzero_and_partial_are_unknown \
-            sealed_adapter_dispatch_retains_preentry_versus_unknown; do
+            sealed_adapter_dispatch_retains_preentry_versus_unknown \
+            sealed_adapter_child_environment_is_closed \
+            sealed_exchange_strips_real_preload_before_execution; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test($selector)" --no-capture || failed=1
           done
           exit "$failed"
