@@ -21,6 +21,7 @@ const CHILD: &str = r#"
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 static void delay_ms(long ms) {
@@ -89,7 +90,7 @@ fn fixture(
         .arg(&binary)
         .output()?;
     if !output.status.success() {
-        return Err(io::Error::other(String::from_utf8_lossy(&output.stderr)).into());
+        return Err(io::Error::other(String::from_utf8_lossy(&output.stderr).into_owned()).into());
     }
     fs::set_permissions(&binary, fs::Permissions::from_mode(0o700))?;
     let binary_sha256 = Sha256Digest::for_bytes(&fs::read(&binary)?);
@@ -114,10 +115,9 @@ fn fixture(
 #[tokio::test]
 async fn sealed_adapter_success_observes_full_payload_and_eof() -> TestResult {
     let (_directory, adapter) = fixture(Duration::from_secs(2))?;
-    let result = tokio::task::spawn_blocking(move || {
-        adapter.invoke("packet-status", &vec![1; 1024 * 1024])
-    })
-    .await?;
+    let result =
+        tokio::task::spawn_blocking(move || adapter.invoke("packet-status", &vec![1; 1024 * 1024]))
+            .await?;
     match result {
         PonInvocation::Value(value) => assert_eq!(value["bytes"], 1024 * 1024),
         _ => panic!("complete sealed ELF exchange failed"),
@@ -130,10 +130,9 @@ async fn sealed_adapter_blocked_stdin_and_descendant_obey_deadline() -> TestResu
     for operation in ["blocked-stdin", "descendant"] {
         let (_directory, adapter) = fixture(Duration::from_millis(500))?;
         let started = Instant::now();
-        let result = tokio::task::spawn_blocking(move || {
-            adapter.invoke(operation, &vec![1; 1024 * 1024])
-        })
-        .await?;
+        let result =
+            tokio::task::spawn_blocking(move || adapter.invoke(operation, &vec![1; 1024 * 1024]))
+                .await?;
         assert!(matches!(result, PonInvocation::Unknown));
         assert!(started.elapsed() < Duration::from_secs(2));
     }
@@ -145,8 +144,8 @@ async fn sealed_adapter_output_limits_nonzero_and_partial_are_unknown() -> TestR
     let (_directory, adapter) = fixture(Duration::from_secs(2))?;
     for operation in ["stdout-overrun", "stderr-overrun", "submit", "partial-json"] {
         let adapter = adapter.clone();
-        let result = tokio::task::spawn_blocking(move || adapter.invoke(operation, b"packet"))
-            .await?;
+        let result =
+            tokio::task::spawn_blocking(move || adapter.invoke(operation, b"packet")).await?;
         assert!(matches!(result, PonInvocation::Unknown));
     }
     Ok(())
@@ -155,8 +154,8 @@ async fn sealed_adapter_output_limits_nonzero_and_partial_are_unknown() -> TestR
 #[tokio::test]
 async fn sealed_adapter_dispatch_retains_preentry_versus_unknown() -> TestResult {
     let (_directory, adapter) = fixture(Duration::from_secs(2))?;
-    let key = ProviderEffectKey::for_operation("pon-fixture", "run", "step")
-        .map_err(io::Error::other)?;
+    let key =
+        ProviderEffectKey::for_operation("pon-fixture", "run", "step").map_err(io::Error::other)?;
     let intent = ProviderEffectIntent::new(key, Sha256Digest::for_bytes(b"packet"));
     let current = adapter.clone();
     let accepted_intent = intent.clone();
@@ -169,6 +168,9 @@ async fn sealed_adapter_dispatch_retains_preentry_versus_unknown() -> TestResult
         adapter.dispatch_blocking(intent, b"different-wire".to_vec())
     })
     .await?;
-    assert!(matches!(outcome, ProviderEffectDispatch::NotDispatched { .. }));
+    assert!(matches!(
+        outcome,
+        ProviderEffectDispatch::NotDispatched { .. }
+    ));
     Ok(())
 }
