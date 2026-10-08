@@ -28,14 +28,48 @@ fn fixture(script: &str, timeout: Duration) -> (tempfile::TempDir, PonLocalProvi
     (directory, adapter)
 }
 
+// Script fixtures exercise the pipe boundary directly; production accepts only
+// a sealed native ELF. They are not evidence that a script is deployable.
+fn invoke_pipe_fixture(
+    adapter: &PonLocalProviderEffectAdapter,
+    operation: &str,
+    payload: &[u8],
+) -> PonInvocation {
+    let deadline = Instant::now() + adapter.timeout;
+    let runtime = tokio::runtime::Handle::current();
+    match runtime.block_on(pon_process::run(
+        adapter.command(operation, &adapter.binary),
+        payload,
+        deadline,
+        MAX_PON_PROCESS_OUTPUT_BYTES,
+    )) {
+        pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
+        pon_process::Outcome::Unknown => PonInvocation::Unknown,
+        pon_process::Outcome::Complete(bytes) => match serde_json::from_slice(&bytes) {
+            Ok(value) => PonInvocation::Value(value),
+            Err(_) => PonInvocation::Unknown,
+        },
+    }
+}
+
+#[tokio::test]
+async fn pon_script_cannot_cross_production_executable_boundary() {
+    let (_directory, adapter) = fixture("#!/bin/sh\nexit 0\n", Duration::from_secs(2));
+    let outcome = tokio::task::spawn_blocking(move || adapter.invoke("submit", b"packet"))
+        .await
+        .unwrap();
+    assert!(matches!(outcome, PonInvocation::BeforeStart));
+}
+
 #[tokio::test]
 async fn pon_blocked_stdin_is_part_of_the_original_operation_deadline() {
     let (_directory, adapter) = fixture("#!/bin/sh\nexec sleep 5\n", Duration::from_millis(150));
     let started = Instant::now();
-    let outcome =
-        tokio::task::spawn_blocking(move || adapter.invoke("submit", &vec![1; 1024 * 1024]))
-            .await
-            .unwrap();
+    let outcome = tokio::task::spawn_blocking(move || {
+        invoke_pipe_fixture(&adapter, "submit", &vec![1; 1024 * 1024])
+    })
+    .await
+    .unwrap();
     assert!(matches!(outcome, PonInvocation::Unknown));
     assert!(
         started.elapsed() < Duration::from_secs(2),
@@ -47,9 +81,11 @@ async fn pon_blocked_stdin_is_part_of_the_original_operation_deadline() {
 async fn pon_stderr_limit_cannot_be_hidden_by_small_success_stdout() {
     let script = "#!/bin/sh\ncat >/dev/null\nhead -c 65537 /dev/zero >&2\nprintf '{\"ok\":true}'\n";
     let (_directory, adapter) = fixture(script, Duration::from_secs(2));
-    let outcome = tokio::task::spawn_blocking(move || adapter.invoke("packet-status", b"packet"))
-        .await
-        .unwrap();
+    let outcome = tokio::task::spawn_blocking(move || {
+        invoke_pipe_fixture(&adapter, "packet-status", b"packet")
+    })
+    .await
+    .unwrap();
     assert!(
         matches!(outcome, PonInvocation::Unknown),
         "stderr overrun was accepted"
@@ -60,10 +96,11 @@ async fn pon_stderr_limit_cannot_be_hidden_by_small_success_stdout() {
 async fn pon_success_drains_both_pipes_and_observes_stdin_eof() {
     let script = "#!/bin/sh\ncat >/dev/null\nprintf diagnostic >&2\nprintf '{\"ok\":true}'\n";
     let (_directory, adapter) = fixture(script, Duration::from_secs(2));
-    let outcome =
-        tokio::task::spawn_blocking(move || adapter.invoke("packet-status", &vec![2; 1024 * 1024]))
-            .await
-            .unwrap();
+    let outcome = tokio::task::spawn_blocking(move || {
+        invoke_pipe_fixture(&adapter, "packet-status", &vec![2; 1024 * 1024])
+    })
+    .await
+    .unwrap();
     match outcome {
         PonInvocation::Value(value) => assert_eq!(value, json!({"ok": true})),
         PonInvocation::Unknown | PonInvocation::BeforeStart => {
@@ -80,9 +117,10 @@ async fn pon_stdout_limit_nonzero_exit_and_partial_json_remain_unknown() {
         "#!/bin/sh\ncat >/dev/null\nprintf '{'\n",
     ] {
         let (_directory, adapter) = fixture(script, Duration::from_secs(2));
-        let outcome = tokio::task::spawn_blocking(move || adapter.invoke("submit", b"packet"))
-            .await
-            .unwrap();
+        let outcome =
+            tokio::task::spawn_blocking(move || invoke_pipe_fixture(&adapter, "submit", b"packet"))
+                .await
+                .unwrap();
         assert!(matches!(outcome, PonInvocation::Unknown));
     }
 }
@@ -175,8 +213,9 @@ async fn pon_descendant_held_pipe_cannot_extend_the_exchange_deadline() {
     // bounded pipe handling, not arbitrary descendant supervision.
     let script = "#!/bin/sh\ncat >/dev/null\nsleep 1 &\nprintf '{\"ok\":true}'\nexit 0\n";
     let (_directory, adapter) = fixture(script, Duration::from_millis(150));
-    let outcome = tokio::task::spawn_blocking(move || adapter.invoke("submit", b"packet"))
-        .await
-        .unwrap();
+    let outcome =
+        tokio::task::spawn_blocking(move || invoke_pipe_fixture(&adapter, "submit", b"packet"))
+            .await
+            .unwrap();
     assert!(matches!(outcome, PonInvocation::Unknown));
 }

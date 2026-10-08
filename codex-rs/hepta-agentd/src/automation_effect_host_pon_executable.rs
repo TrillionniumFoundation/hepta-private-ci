@@ -21,7 +21,10 @@ impl PinnedExecutable {
         &self.path
     }
 
-    #[cfg(not(all(target_os = "linux", any(target_arch = "x86_64", target_arch = "aarch64"))))]
+    #[cfg(not(all(
+        target_os = "linux",
+        any(target_arch = "x86_64", target_arch = "aarch64")
+    )))]
     pub(super) fn prepare(
         _source: &Path,
         _expected_sha256: &str,
@@ -33,7 +36,10 @@ impl PinnedExecutable {
         ))
     }
 
-    #[cfg(all(target_os = "linux", any(target_arch = "x86_64", target_arch = "aarch64")))]
+    #[cfg(all(
+        target_os = "linux",
+        any(target_arch = "x86_64", target_arch = "aarch64")
+    ))]
     pub(super) fn prepare(
         source: &Path,
         expected_sha256: &str,
@@ -43,7 +49,10 @@ impl PinnedExecutable {
     }
 }
 
-#[cfg(all(target_os = "linux", any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(all(
+    target_os = "linux",
+    any(target_arch = "x86_64", target_arch = "aarch64")
+))]
 mod linux {
     use super::*;
     use sha2::Digest;
@@ -81,7 +90,10 @@ mod linux {
 
     fn check_deadline(deadline: Instant) -> io::Result<()> {
         if Instant::now() >= deadline {
-            return Err(io::Error::new(io::ErrorKind::TimedOut, "PoN executable deadline"));
+            return Err(io::Error::new(
+                io::ErrorKind::TimedOut,
+                "PoN executable deadline",
+            ));
         }
         Ok(())
     }
@@ -93,7 +105,10 @@ mod linux {
     ) -> io::Result<PinnedExecutable> {
         check_deadline(deadline)?;
         if !source.is_absolute() || source.canonicalize()? != source {
-            return Err(io::Error::new(io::ErrorKind::InvalidInput, "PoN executable path"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "PoN executable path",
+            ));
         }
         // NOFOLLOW closes the final-component symlink race. NONBLOCK prevents
         // a replacement FIFO from blocking open before fstat rejects it.
@@ -103,14 +118,25 @@ mod linux {
             .open(source)?;
         let metadata = input.metadata()?;
         let mode = metadata.permissions().mode();
-        if !metadata.is_file() || metadata.len() == 0 || metadata.len() > MAX_BYTES
-            || mode & 0o022 != 0 || mode & 0o111 == 0
+        if !metadata.is_file()
+            || metadata.len() == 0
+            || metadata.len() > MAX_BYTES
+            || mode & 0o022 != 0
+            || mode & 0o111 == 0
         {
-            return Err(io::Error::new(io::ErrorKind::InvalidInput, "PoN executable metadata"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "PoN executable metadata",
+            ));
         }
         // SAFETY: a static NUL-terminated name and Linux-defined flags are
         // passed. Success returns a new descriptor owned only by this call.
-        let raw = unsafe { memfd_create(c"hepta-pon-executable".as_ptr(), MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_EXEC) };
+        let raw = unsafe {
+            memfd_create(
+                c"hepta-pon-executable".as_ptr(),
+                MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_EXEC,
+            )
+        };
         if raw < 0 {
             return Err(io::Error::last_os_error());
         }
@@ -123,10 +149,17 @@ mod linux {
         loop {
             check_deadline(deadline)?;
             let n = input.read(&mut buffer)?;
-            if n == 0 { break; }
-            total = total.checked_add(n as u64).ok_or_else(|| io::Error::other("PoN executable length"))?;
+            if n == 0 {
+                break;
+            }
+            total = total
+                .checked_add(n as u64)
+                .ok_or_else(|| io::Error::other("PoN executable length"))?;
             if total > MAX_BYTES {
-                return Err(io::Error::new(io::ErrorKind::InvalidData, "PoN executable length"));
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "PoN executable length",
+                ));
             }
             file.write_all(&buffer[..n])?;
         }
@@ -147,18 +180,26 @@ mod linux {
         let mut magic = [0_u8; 4];
         file.read_exact(&mut magic)?;
         if magic != *b"\x7fELF" {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "PoN executable must be ELF, not an interpreter script"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "PoN executable must be ELF, not an interpreter script",
+            ));
         }
         file.seek(SeekFrom::Start(0))?;
         let mut hash = Sha256::new();
         loop {
             check_deadline(deadline)?;
             let n = file.read(&mut buffer)?;
-            if n == 0 { break; }
+            if n == 0 {
+                break;
+            }
             hash.update(&buffer[..n]);
         }
         if format!("{:x}", hash.finalize()) != expected_sha256 {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "PoN executable digest mismatch"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "PoN executable digest mismatch",
+            ));
         }
         check_deadline(deadline)?;
         // The child inherits this fd until ELF exec; CLOEXEC then closes it.
@@ -168,6 +209,10 @@ mod linux {
     }
 }
 
-#[cfg(all(test, target_os = "linux", any(target_arch = "x86_64", target_arch = "aarch64")))]
+#[cfg(all(
+    test,
+    target_os = "linux",
+    any(target_arch = "x86_64", target_arch = "aarch64")
+))]
 #[path = "automation_effect_host_pon_executable_tests.rs"]
 mod tests;

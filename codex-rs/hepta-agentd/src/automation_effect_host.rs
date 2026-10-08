@@ -58,6 +58,8 @@ use sha2::Sha256;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 
+#[path = "automation_effect_host_pon_executable.rs"]
+mod pon_executable;
 #[path = "automation_effect_host_pon_process.rs"]
 mod pon_process;
 
@@ -232,7 +234,6 @@ enum PonInvocation {
 
 impl PonLocalProviderEffectAdapter {
     fn validate_paths(&self) -> Result<(), ()> {
-        verify_pinned_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;
         let canonical_store = self.store.canonicalize().map_err(|_| ())?;
         if canonical_store != self.store || !canonical_store.is_dir() {
             return Err(());
@@ -245,8 +246,8 @@ impl PonLocalProviderEffectAdapter {
         Ok(())
     }
 
-    fn command(&self, operation: &str) -> Command {
-        let mut command = Command::new(&self.binary);
+    fn command(&self, operation: &str, executable: &Path) -> Command {
+        let mut command = Command::new(executable);
         command
             .arg(operation)
             .arg("--development")
@@ -278,6 +279,13 @@ impl PonLocalProviderEffectAdapter {
         if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
             return PonInvocation::BeforeStart;
         }
+        let Ok(executable) = pon_executable::PinnedExecutable::prepare(
+            &self.binary,
+            self.binary_sha256.as_str(),
+            deadline,
+        ) else {
+            return PonInvocation::BeforeStart;
+        };
         let Ok(runtime) = tokio::runtime::Handle::try_current() else {
             return PonInvocation::BeforeStart;
         };
@@ -286,7 +294,7 @@ impl PonLocalProviderEffectAdapter {
         // it consumed the original deadline. The entire pipe exchange uses the
         // same deadline; stdout and stderr limits are equally authoritative.
         match runtime.block_on(pon_process::run(
-            self.command(operation),
+            self.command(operation, executable.path()),
             wire_payload,
             deadline,
             MAX_PON_PROCESS_OUTPUT_BYTES,
