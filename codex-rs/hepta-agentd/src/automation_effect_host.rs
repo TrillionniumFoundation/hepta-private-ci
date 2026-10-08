@@ -60,6 +60,10 @@ use crate::AgentdIdentity;
 #[path = "automation_effect_host_pon_process.rs"]
 mod pon_process;
 
+#[cfg(all(test, unix))]
+#[path = "automation_effect_host_pon_tests.rs"]
+mod pon_lifecycle_tests;
+
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
