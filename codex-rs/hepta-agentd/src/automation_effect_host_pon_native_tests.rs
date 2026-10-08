@@ -19,10 +19,13 @@ const CHILD: &str = r#"
 #define _POSIX_C_SOURCE 200809L
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+extern char **environ;
 
 static void delay_ms(long ms) {
     struct timespec t = { ms / 1000, (ms % 1000) * 1000000 };
@@ -50,6 +53,18 @@ int main(int argc, char **argv) {
         if (n < 0) return 3;
         if (n == 0) break;
         total += (unsigned long)n;
+    }
+    if (strcmp(argv[1], "environment") == 0) {
+        size_t count = 0;
+        while (environ[count] != NULL) ++count;
+        const char *locale = getenv("LC_ALL");
+        const char *zone = getenv("TZ");
+        int isolated = count == 2 && locale != NULL && zone != NULL &&
+            strcmp(locale, "C") == 0 && strcmp(zone, "UTC") == 0;
+        int n = snprintf(buffer, sizeof buffer,
+            "{\"isolated\":%s,\"bytes\":%lu}", isolated ? "true" : "false", total);
+        if (n <= 0 || (size_t)n >= sizeof buffer) return 6;
+        return write_all(STDOUT_FILENO, buffer, (size_t)n);
     }
     if (strcmp(argv[1], "descendant") == 0) {
         pid_t child = fork();
@@ -172,5 +187,87 @@ async fn sealed_adapter_dispatch_retains_preentry_versus_unknown() -> TestResult
         outcome,
         ProviderEffectDispatch::NotDispatched { .. }
     ));
+    Ok(())
+}
+
+#[tokio::test]
+async fn sealed_adapter_child_environment_is_closed() -> TestResult {
+    let (_directory, adapter) = fixture(Duration::from_secs(2))?;
+    let result =
+        tokio::task::spawn_blocking(move || adapter.invoke("environment", b"packet")).await?;
+    match result {
+        PonInvocation::Value(value) => {
+            assert_eq!(value, serde_json::json!({"isolated": true, "bytes": 6}));
+        }
+        _ => panic!("sealed environment observation failed"),
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn sealed_exchange_strips_real_preload_before_execution() -> TestResult {
+    let (directory, adapter) = fixture(Duration::from_secs(3))?;
+    let source = directory.path().join("preload.c");
+    let library = directory.path().join("preload.so");
+    let marker = directory.path().join("preload-entered");
+    fs::write(
+        &source,
+        r#"
+#include <stdio.h>
+#include <stdlib.h>
+__attribute__((constructor)) static void injected(void) {
+    const char *path = getenv("HEPTA_PON_TEST_MARKER");
+    if (path == NULL) return;
+    FILE *file = fopen(path, "wb");
+    if (file != NULL) { fputs("loaded", file); fclose(file); }
+}
+"#,
+    )?;
+    let built = Command::new("cc")
+        .args(["-std=c11", "-shared", "-fPIC", "-Wall", "-Wextra", "-Werror"])
+        .arg(&source)
+        .arg("-o")
+        .arg(&library)
+        .output()?;
+    if !built.status.success() {
+        return Err(io::Error::other(String::from_utf8_lossy(&built.stderr).into_owned()).into());
+    }
+    let executable = super::super::pon_executable::PinnedExecutable::prepare(
+        &adapter.binary,
+        adapter.binary_sha256.as_str(),
+        Instant::now() + Duration::from_secs(3),
+    )?;
+    // Positive attack control: the exact sealed ELF still loads an ambient DSO
+    // without the exchange boundary. This control never touches process-global
+    // environment or another test's files.
+    let mut unisolated = Command::new(executable.path());
+    unisolated
+        .arg("environment")
+        .env_clear()
+        .env("LD_PRELOAD", &library)
+        .env("HEPTA_PON_TEST_MARKER", &marker);
+    let control = unisolated.output()?;
+    assert!(control.status.success());
+    assert_eq!(fs::read(&marker)?, b"loaded");
+    assert_eq!(
+        serde_json::from_slice::<serde_json::Value>(&control.stdout)?,
+        serde_json::json!({"isolated": false, "bytes": 0}),
+    );
+    fs::remove_file(&marker)?;
+    let result = super::run(
+        unisolated,
+        b"packet",
+        Instant::now() + Duration::from_secs(3),
+        super::super::MAX_PON_PROCESS_OUTPUT_BYTES,
+    )
+    .await;
+    match result {
+        super::Outcome::Complete(stdout) => assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&stdout)?,
+            serde_json::json!({"isolated": true, "bytes": 6}),
+        ),
+        _ => panic!("isolated sealed exchange failed"),
+    }
+    assert!(!marker.try_exists()?);
     Ok(())
 }
