@@ -4,7 +4,8 @@
 use super::super::AgentdProviderEffectAdapter;
 use super::super::PonLocalProviderEffectAdapter;
 use super::super::pon_executable::PinnedExecutable;
-use super::{Outcome, run};
+use super::Outcome;
+use super::run;
 use codex_hepta_contracts::ProviderEffectDispatch;
 use codex_hepta_contracts::ProviderEffectIntent;
 use codex_hepta_contracts::ProviderEffectKey;
