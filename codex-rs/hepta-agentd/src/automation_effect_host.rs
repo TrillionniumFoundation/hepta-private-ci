@@ -8,14 +8,12 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::io::Read;
-use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::process::Command;
 use std::process::Stdio;
 use std::sync::Mutex;
-use std::thread;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -58,6 +56,13 @@ use sha2::Sha256;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+
+#[path = "automation_effect_host_pon_process.rs"]
+mod pon_process;
+
+#[cfg(all(test, unix))]
+#[path = "automation_effect_host_pon_tests.rs"]
+mod pon_lifecycle_tests;
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
@@ -266,63 +271,27 @@ impl PonLocalProviderEffectAdapter {
     }
 
     fn invoke(&self, operation: &str, wire_payload: &[u8]) -> PonInvocation {
-        if self.validate_paths().is_err() {
+        let Some(deadline) = Instant::now().checked_add(self.timeout) else {
+            return PonInvocation::BeforeStart;
+        };
+        if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
             return PonInvocation::BeforeStart;
         }
-        let mut child = match self.command(operation).spawn() {
-            Ok(child) => child,
-            Err(_) => return PonInvocation::BeforeStart,
+        let Ok(runtime) = tokio::runtime::Handle::try_current() else {
+            return PonInvocation::BeforeStart;
         };
-        let stdout = child.stdout.take();
-        let stderr = child.stderr.take();
-        let stdout_reader = stdout.map(|stream| {
-            thread::spawn(move || drain_process_output(stream, MAX_PON_PROCESS_OUTPUT_BYTES))
-        });
-        let stderr_reader = stderr.map(|stream| {
-            thread::spawn(move || drain_process_output(stream, MAX_PON_PROCESS_OUTPUT_BYTES))
-        });
-        let write_ok = child
-            .stdin
-            .take()
-            .is_some_and(|mut input| input.write_all(wire_payload).is_ok());
-        if !write_ok {
-            let _ = child.kill();
-            let _ = child.wait();
-            join_process_reader(stdout_reader);
-            join_process_reader(stderr_reader);
-            return PonInvocation::Unknown;
-        }
-        let deadline = Instant::now() + self.timeout;
-        let status = loop {
-            match child.try_wait() {
-                Ok(Some(status)) => break Some(status),
-                Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-                Ok(None) => {
-                    let _ = child.kill();
-                    let _ = child.wait();
-                    break None;
-                }
-                Err(_) => {
-                    let _ = child.kill();
-                    let _ = child.wait();
-                    break None;
-                }
-            }
-        };
-        let stdout = join_process_reader(stdout_reader);
-        let _stderr = join_process_reader(stderr_reader);
-        let Some(status) = status else {
-            return PonInvocation::Unknown;
-        };
-        if !status.success() {
-            return PonInvocation::Unknown;
-        }
-        let Some(stdout) = stdout.filter(|bytes| bytes.len() <= MAX_PON_PROCESS_OUTPUT_BYTES) else {
-            return PonInvocation::Unknown;
-        };
-        match serde_json::from_slice(&stdout) {
-            Ok(value) => PonInvocation::Value(value),
-            Err(_) => PonInvocation::Unknown,
+        match runtime.block_on(pon_process::run(
+            self.command(operation),
+            wire_payload,
+            deadline,
+            MAX_PON_PROCESS_OUTPUT_BYTES,
+        )) {
+            pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
+            pon_process::Outcome::Unknown => PonInvocation::Unknown,
+            pon_process::Outcome::Complete(stdout) => match serde_json::from_slice(&stdout) {
+                Ok(value) => PonInvocation::Value(value),
+                Err(_) => PonInvocation::Unknown,
+            },
         }
     }
 
@@ -610,7 +579,15 @@ fn parse_pon_chain_observation(
     {
         return None;
     }
+    // Active ancestry binds all independent status fields to one exact tip.
+    // Work-distance equality alone does not authenticate the height claim.
     if active_chain_member {
+        let expected_height_depth = active_tip_height.checked_sub(block_height?)?;
+        if active_depth != Some(expected_height_depth)
+            || ((block_id == active_tip) != (expected_height_depth == 0))
+        {
+            return None;
+        }
         let expected = work_difference_hex(
             &active_tip_chainwork_hex,
             block_chainwork_hex.as_deref()?,
@@ -618,6 +595,9 @@ fn parse_pon_chain_observation(
         if active_work_depth_hex.as_deref()? != expected {
             return None;
         }
+    }
+    if block_id == active_tip && !active_chain_member {
+        return None;
     }
     let confirmation_policy_satisfied = active_chain_member
         && active_depth.is_some_and(|depth| depth >= min_confirmation_depth)
@@ -707,30 +687,6 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
                 .unwrap_or(ProviderEffectLookup::Unknown)
         })
     }
-}
-
-fn drain_process_output(mut stream: impl Read, limit: usize) -> Vec<u8> {
-    let mut retained = Vec::new();
-    let mut buffer = [0_u8; 4096];
-    loop {
-        let Ok(read) = stream.read(&mut buffer) else {
-            retained.clear();
-            return retained;
-        };
-        if read == 0 {
-            return retained;
-        }
-        if retained.len() <= limit {
-            let remaining = limit.saturating_add(1).saturating_sub(retained.len());
-            retained.extend_from_slice(&buffer[..read.min(remaining)]);
-        }
-    }
-}
-
-fn join_process_reader(
-    reader: Option<thread::JoinHandle<Vec<u8>>>,
-) -> Option<Vec<u8>> {
-    reader.and_then(|reader| reader.join().ok())
 }
 
 fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
