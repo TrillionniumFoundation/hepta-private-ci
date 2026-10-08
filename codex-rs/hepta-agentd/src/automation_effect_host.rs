@@ -8,12 +8,10 @@
 use std::collections::BTreeMap;
 use std::fs;
 use std::io::Read;
-use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::process::Command;
-use std::process::Stdio;
 use std::sync::Mutex;
 use std::thread;
 use std::time::Duration;
@@ -58,6 +56,13 @@ use sha2::Sha256;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
+
+#[path = "automation_effect_host_pon_process.rs"]
+mod pon_process;
+
+#[cfg(all(test, unix))]
+#[path = "automation_effect_host_pon_tests.rs"]
+mod pon_lifecycle_tests;
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
 const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
@@ -225,8 +230,10 @@ enum PonInvocation {
 }
 
 impl PonLocalProviderEffectAdapter {
-    fn validate_paths(&self) -> Result<(), ()> {
-        verify_pinned_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;
+    fn validate_paths(&self) -> Result<fs::File, ()> {
+        // Hash the exact open executable that this operation will execute.
+        let executable =
+            open_verified_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;
         let canonical_store = self.store.canonicalize().map_err(|_| ())?;
         if canonical_store != self.store || !canonical_store.is_dir() {
             return Err(());
@@ -236,11 +243,11 @@ impl PonLocalProviderEffectAdapter {
         if metadata.file_type().is_symlink() || !metadata.is_file() {
             return Err(());
         }
-        Ok(())
+        Ok(executable)
     }
 
-    fn command(&self, operation: &str) -> Command {
-        let mut command = Command::new(&self.binary);
+    fn command(&self, operation: &str, executable: &Path) -> Command {
+        let mut command = Command::new(executable);
         command
             .arg(operation)
             .arg("--development")
@@ -266,63 +273,51 @@ impl PonLocalProviderEffectAdapter {
     }
 
     fn invoke(&self, operation: &str, wire_payload: &[u8]) -> PonInvocation {
-        if self.validate_paths().is_err() {
+        let Some(deadline) = Instant::now().checked_add(self.timeout) else {
+            return PonInvocation::BeforeStart;
+        };
+        if wire_payload.len() > 1024 * 1024 {
             return PonInvocation::BeforeStart;
         }
-        let mut child = match self.command(operation).spawn() {
-            Ok(child) => child,
-            Err(_) => return PonInvocation::BeforeStart,
+        let executable = match self.validate_paths() {
+            Ok(file) => file,
+            Err(()) => return PonInvocation::BeforeStart,
         };
-        let stdout = child.stdout.take();
-        let stderr = child.stderr.take();
-        let stdout_reader = stdout.map(|stream| {
-            thread::spawn(move || drain_process_output(stream, MAX_PON_PROCESS_OUTPUT_BYTES))
-        });
-        let stderr_reader = stderr.map(|stream| {
-            thread::spawn(move || drain_process_output(stream, MAX_PON_PROCESS_OUTPUT_BYTES))
-        });
-        let write_ok = child
-            .stdin
-            .take()
-            .is_some_and(|mut input| input.write_all(wire_payload).is_ok());
-        if !write_ok {
-            let _ = child.kill();
-            let _ = child.wait();
-            join_process_reader(stdout_reader);
-            join_process_reader(stderr_reader);
-            return PonInvocation::Unknown;
-        }
-        let deadline = Instant::now() + self.timeout;
-        let status = loop {
-            match child.try_wait() {
-                Ok(Some(status)) => break Some(status),
-                Ok(None) if Instant::now() < deadline => thread::sleep(Duration::from_millis(5)),
-                Ok(None) => {
-                    let _ = child.kill();
-                    let _ = child.wait();
-                    break None;
-                }
-                Err(_) => {
-                    let _ = child.kill();
-                    let _ = child.wait();
-                    break None;
-                }
-            }
+        let Ok(runtime) = tokio::runtime::Handle::try_current() else {
+            return PonInvocation::BeforeStart;
         };
-        let stdout = join_process_reader(stdout_reader);
-        let _stderr = join_process_reader(stderr_reader);
-        let Some(status) = status else {
-            return PonInvocation::Unknown;
+        // Linux uses the parent process's verified open file object, not the
+        // mutable pathname from the configuration. Retain its descriptor until
+        // the subprocess exchange is complete, including script interpreters.
+        #[cfg(target_os = "linux")]
+        let executable_path = {
+            use std::os::fd::AsRawFd;
+            PathBuf::from(format!(
+                "/proc/{}/fd/{}",
+                std::process::id(),
+                executable.as_raw_fd()
+            ))
         };
-        if !status.success() {
-            return PonInvocation::Unknown;
-        }
-        let Some(stdout) = stdout.filter(|bytes| bytes.len() <= MAX_PON_PROCESS_OUTPUT_BYTES) else {
-            return PonInvocation::Unknown;
-        };
-        match serde_json::from_slice(&stdout) {
-            Ok(value) => PonInvocation::Value(value),
-            Err(_) => PonInvocation::Unknown,
+        // Other hosts retain the existing file-path startup contract; they
+        // must not claim the Linux same-object-exec property.
+        #[cfg(not(target_os = "linux"))]
+        let executable_path = self.binary.clone();
+        // Called from the existing spawn_blocking scope: stdin and both pipe
+        // reads are under the one deadline; no fresh retry is authorized.
+        let outcome = runtime.block_on(pon_process::run(
+            self.command(operation, &executable_path),
+            wire_payload,
+            deadline,
+            MAX_PON_PROCESS_OUTPUT_BYTES,
+        ));
+        drop(executable);
+        match outcome {
+            pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
+            pon_process::Outcome::Unknown => PonInvocation::Unknown,
+            pon_process::Outcome::Complete(stdout) => match serde_json::from_slice(&stdout) {
+                Ok(value) => PonInvocation::Value(value),
+                Err(_) => PonInvocation::Unknown,
+            },
         }
     }
 
@@ -611,6 +606,14 @@ fn parse_pon_chain_observation(
         return None;
     }
     if active_chain_member {
+        // The asserted distance, actual tip identity, and cumulative-work delta
+        // must describe one and the same active ancestry relation.
+        let expected_depth = active_tip_height.checked_sub(block_height?)?;
+        if active_depth? != expected_depth
+            || ((block_id == active_tip) != (expected_depth == 0))
+        {
+            return None;
+        }
         let expected = work_difference_hex(
             &active_tip_chainwork_hex,
             block_chainwork_hex.as_deref()?,
@@ -618,6 +621,9 @@ fn parse_pon_chain_observation(
         if active_work_depth_hex.as_deref()? != expected {
             return None;
         }
+    } else if block_id == active_tip {
+        // An advertised tip cannot simultaneously be reported off-chain.
+        return None;
     }
     let confirmation_policy_satisfied = active_chain_member
         && active_depth.is_some_and(|depth| depth >= min_confirmation_depth)
@@ -673,6 +679,13 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
         intent: &'a ProviderEffectIntent,
         wire_payload: &'a [u8],
     ) -> ProviderEffectFuture<'a, ProviderEffectDispatch> {
+        if wire_payload.len() > 1024 * 1024 {
+            return Box::pin(async {
+                ProviderEffectDispatch::NotDispatched {
+                    reason_code: "pon_exact_packet_too_large".to_string(),
+                }
+            });
+        }
         let adapter = self.clone();
         let intent = intent.clone();
         let wire_payload = wire_payload.to_vec();
@@ -698,6 +711,9 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
         let Some(wire_payload) = wire_payload else {
             return Box::pin(async { ProviderEffectLookup::Unknown });
         };
+        if wire_payload.len() > 1024 * 1024 {
+            return Box::pin(async { ProviderEffectLookup::Unknown });
+        }
         let adapter = self.clone();
         let intent = intent.clone();
         let wire_payload = wire_payload.to_vec();
@@ -709,31 +725,10 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
     }
 }
 
-fn drain_process_output(mut stream: impl Read, limit: usize) -> Vec<u8> {
-    let mut retained = Vec::new();
-    let mut buffer = [0_u8; 4096];
-    loop {
-        let Ok(read) = stream.read(&mut buffer) else {
-            retained.clear();
-            return retained;
-        };
-        if read == 0 {
-            return retained;
-        }
-        if retained.len() <= limit {
-            let remaining = limit.saturating_add(1).saturating_sub(retained.len());
-            retained.extend_from_slice(&buffer[..read.min(remaining)]);
-        }
-    }
-}
-
-fn join_process_reader(
-    reader: Option<thread::JoinHandle<Vec<u8>>>,
-) -> Option<Vec<u8>> {
-    reader.and_then(|reader| reader.join().ok())
-}
-
-fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
+fn open_verified_binary(
+    path: &Path,
+    expected: &Sha256Digest,
+) -> Result<fs::File, AgentdError> {
     if !path.is_absolute() {
         return Err(AgentdError::Invalid(
             "PoN binary path must be absolute".to_string(),
@@ -767,6 +762,24 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
         }
     }
     let mut file = fs::File::open(path)?;
+    let opened = file.metadata()?;
+    if !opened.is_file() || opened.len() != metadata.len() {
+        return Err(AgentdError::Invalid(
+            "PoN opened binary object changed".to_string(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if opened.dev() != metadata.dev()
+            || opened.ino() != metadata.ino()
+            || opened.mode() != metadata.mode()
+        {
+            return Err(AgentdError::Invalid(
+                "PoN verified file does not match opened executable".to_string(),
+            ));
+        }
+    }
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 64 * 1024];
     loop {
@@ -784,7 +797,11 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
             "PoN binary digest changed".to_string(),
         ));
     }
-    Ok(())
+    Ok(file)
+}
+
+fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
+    open_verified_binary(path, expected).map(|_| ())
 }
 
 fn pon_contract_digest(config: &AutomationEffectHostFileV3) -> Result<Sha256Digest, AgentdError> {
