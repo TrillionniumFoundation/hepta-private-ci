@@ -3,11 +3,14 @@
 mod data;
 #[path = "../examples/memory_cell_lab/model.rs"]
 mod model;
-use data::{Episode, Split};
-use model::{Bundle, Meter};
+use data::Episode;
+use data::Split;
+use model::Bundle;
+use model::Meter;
 
 fn corpus() -> Vec<Episode> {
-    data::parse(&data::smoke_corpus()).unwrap()
+    data::parse(&data::smoke_corpus())
+        .unwrap_or_else(|error| panic!("invalid smoke corpus: {error}"))
 }
 
 #[test]
@@ -74,6 +77,7 @@ fn static_and_shared_capacity_are_exactly_equal() {
     let shared = Bundle::new("lab-public".into(), &[8]).unwrap();
     let static_cells = Bundle::new("lab-public".into(), &[4, 4]).unwrap();
     assert_eq!(shared.parameters(), static_cells.parameters());
+    assert_eq!(model::argmax(&[0.1, 0.9]), 1);
     assert!(model::Cell::new(0).is_err());
 }
 

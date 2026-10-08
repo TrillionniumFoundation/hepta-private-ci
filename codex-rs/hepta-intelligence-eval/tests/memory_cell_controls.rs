@@ -23,6 +23,17 @@ fn all_controls_use_bounded_compute_and_future_labels_cannot_select_topology() {
     let second = controls::train_arms(&poisoned).unwrap();
     for (a, b) in first.iter().zip(&second) {
         assert_eq!(a.bundle, b.bundle);
+        assert_eq!(a.name, b.name);
+        assert_eq!(a.training_micros > 0, a.bundle.is_some());
+        if let Some(bundle) = &a.bundle {
+            assert_eq!(model::Bundle::decode(&bundle.encode()).unwrap(), *bundle);
+        }
+        assert!(
+            controls::predict(a, &rows, &rows[128].query)
+                .unwrap()
+                .ops_estimate
+                > 0
+        );
         assert_eq!(a.decisions, b.decisions);
         assert_eq!(a.meter, b.meter);
         assert!(a.meter.train_ops <= controls::TRAIN_CEILING);

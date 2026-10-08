@@ -1,6 +1,8 @@
 //! Source-clustered measurement. These unsigned lab reports cannot grant acceptance.
-use super::controls::{Arm, predict};
-use super::data::{CLASSES, Episode, Split};
+use super::controls::Arm;
+use super::controls::predict;
+use super::data::Episode;
+use super::data::Split;
 use super::model::argmax;
 use std::collections::BTreeMap;
 use std::fmt::Write;
@@ -109,9 +111,9 @@ pub fn evaluate(arm: &Arm, rows: &[Episode], split: Split) -> Result<Summary, St
         let p = recall.probabilities;
         let predicted = [argmax(&p[0]), argmax(&p[1])];
         let mut brier = 0.0;
-        for head in 0..2 {
-            for class in 0..CLASSES {
-                brier += (p[head][class] - f64::from(class == row.targets[head])).powi(2) / 2.0;
+        for (head, head_probabilities) in p.iter().enumerate() {
+            for (class, probability) in head_probabilities.iter().enumerate() {
+                brier += (*probability - f64::from(class == row.targets[head])).powi(2) / 2.0;
             }
         }
         scores.push(Score {

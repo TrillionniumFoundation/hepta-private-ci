@@ -1,5 +1,11 @@
 //! Tiny trainable two-head backend for controlled experiments, not installed inference.
-use super::data::{CLASSES, ENCODER, Episode, Query, Split, WIDTH, features};
+use super::data::CLASSES;
+use super::data::ENCODER;
+use super::data::Episode;
+use super::data::Query;
+use super::data::Split;
+use super::data::WIDTH;
+use super::data::features;
 use std::collections::BTreeSet;
 
 #[derive(Clone, Debug, PartialEq)]
@@ -84,9 +90,9 @@ impl Cell {
             .collect();
         let p = self.infer(&row.query);
         let mut dh = vec![0.0; self.rank];
-        for head in 0..2 {
-            for class in 0..CLASSES {
-                let error = p[head][class] - f64::from(class == row.targets[head]);
+        for (head, head_probabilities) in p.iter().enumerate() {
+            for (class, probability) in head_probabilities.iter().enumerate() {
+                let error = *probability - f64::from(class == row.targets[head]);
                 let offset = self.rank * (WIDTH + head * CLASSES + class);
                 for j in 0..self.rank {
                     dh[j] += error * self.weights[offset + j];

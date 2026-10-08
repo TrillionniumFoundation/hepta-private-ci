@@ -1,7 +1,13 @@
 //! Bounded BM25 + frozen-feature cosine reciprocal-rank-fusion control.
 //! This is a transparent small-corpus control, not a claim to be the best RAG system.
-use super::data::{CLASSES, Episode, Query, Split, features, words};
-use std::collections::{BTreeMap, BTreeSet};
+use super::data::CLASSES;
+use super::data::Episode;
+use super::data::Query;
+use super::data::Split;
+use super::data::features;
+use super::data::words;
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 pub struct Recall {
     pub probabilities: [[f64; CLASSES]; 2],
