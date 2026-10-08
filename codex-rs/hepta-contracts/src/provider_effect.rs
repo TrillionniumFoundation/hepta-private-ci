@@ -2464,8 +2464,7 @@ mod tests {
             _intent: &'a ProviderEffectIntent,
             wire_payload: Option<&'a [u8]>,
         ) -> ProviderEffectFuture<'a, ProviderEffectLookup> {
-            *self.observed.lock().expect("lookup capture") =
-                wire_payload.map(ToOwned::to_owned);
+            *self.observed.lock().expect("lookup capture") = wire_payload.map(ToOwned::to_owned);
             Box::pin(std::future::ready(ProviderEffectLookup::Unknown))
         }
     }
@@ -2478,9 +2477,7 @@ mod tests {
         };
         let wire: &[u8] = b"exact-recovery-wire";
         assert_eq!(
-            adapter
-                .lookup_for_reconciliation(&intent, Some(wire))
-                .await,
+            adapter.lookup_for_reconciliation(&intent, Some(wire)).await,
             ProviderEffectLookup::Unknown
         );
         assert_eq!(

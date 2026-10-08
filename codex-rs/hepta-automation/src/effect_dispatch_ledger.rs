@@ -587,12 +587,9 @@ mod tests {
         let intent = Sha256Digest::for_bytes(b"effect-intent");
         let wire_payload = b"effect-payload";
         let payload = Sha256Digest::for_bytes(wire_payload);
-        let provider_effect_key = ProviderEffectKey::for_operation(
-            "provider:test",
-            "effect-run",
-            "work",
-        )
-        .expect("provider effect key");
+        let provider_effect_key =
+            ProviderEffectKey::for_operation("provider:test", "effect-run", "work")
+                .expect("provider effect key");
         let binding = Sha256Digest::for_bytes(b"effect-binding");
         let nonce = Sha256Digest::for_bytes(b"effect-nonce");
         let started = store
@@ -653,7 +650,10 @@ mod tests {
             pending[0].provider_effect_key.as_ref(),
             Some(&provider_effect_key)
         );
-        assert_eq!(pending[0].wire_payload.as_deref(), Some(wire_payload.as_slice()));
+        assert_eq!(
+            pending[0].wire_payload.as_deref(),
+            Some(wire_payload.as_slice())
+        );
 
         let terminal = Sha256Digest::for_bytes(b"provider-terminal");
         let settled = reopened
