@@ -17,7 +17,7 @@ jobs:
   source-candidate:
     if: github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: write
     steps:
@@ -25,75 +25,50 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: true
-      - name: Prepare isolated formatting and input-hardening candidate (never update main or PR head)
-        shell: bash
+      - uses: ./.github/actions/setup-ci
+      - name: Use repository formatting and scoped lint-fix entry points
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
-          python3 - <<'PY'
-          from pathlib import Path
-          root = Path('codex-rs/hepta-intelligence-eval')
-          data = root / 'examples/memory_cell_lab/data.rs'
-          s = data.read_text()
-          s = s.replace('workspace variant {i}', 'workspace variant {window}-{i}')
-          if 'duplicate query across splits' not in s:
-              s = s.replace('let mut roots = BTreeMap::new();', 'let mut roots = BTreeMap::new();\n    let mut inputs = BTreeMap::new();')
-              needle = '        if let Some(prior) = roots.insert(&e.root, e.split) {'
-              s = s.replace(needle, '        let key = (&e.query.scope, e.query.domain, &e.query.text);\n        if let Some(prior) = inputs.insert(key, e.split) {\n            if prior != e.split { return Err("duplicate query across splits".into()); }\n        }\n' + needle)
-          data.write_text(s)
-          controls = root / 'examples/memory_cell_lab/controls.rs'
-          s = controls.read_text()
-          if 'eligible_roots' not in s:
-              s = s.replace('    if parent.scope != candidate.scope', '    let eligible_roots: std::collections::BTreeSet<_> = rows.iter().filter(|r| r.split == Split::Train).map(|r| r.root.clone()).collect();\n    if parent.scope != candidate.scope')
-              s = s.replace('candidate.generation != parent.generation + 1', 'Some(candidate.generation) != parent.generation.checked_add(1)')
-              s = s.replace('candidate.roots != parent.roots', '!parent.roots.is_subset(&candidate.roots) || !candidate.roots.is_subset(&eligible_roots)')
-              s = s.replace('parent.generation + 1;', 'parent.generation.checked_add(1).ok_or("generation overflow")?;')
-          controls.write_text(s)
-          test = root / 'tests/memory_cell_faults.rs'
-          s = test.read_text()
-          if '#![cfg(target_os = "linux")]' not in s:
-              s = '#![cfg(target_os = "linux")]\n' + s
-          test.write_text(s)
-          main = root / 'examples/memory_cell_lab.rs'
-          s = main.read_text()
-          if 'mod transfer;' not in s:
-              s = s.replace('use std::error::Error;', '#[path = "memory_cell_lab/transfer.rs"]\nmod transfer;\nuse std::error::Error;')
-              needle = '    let usage = '
-              start = s.index(needle)
-              s = s[:start] + '''    if args.first().map(String::as_str) == Some("infer-transfer") {
-                  return match args.as_slice() {
-                      [_, input, output] => transfer::infer(Path::new(input), Path::new(output), None).map_err(Into::into),
-                      [_, input, output, revoked] => transfer::infer(Path::new(input), Path::new(output), Some(Path::new(revoked))).map_err(Into::into),
-                      _ => Err("usage: infer-transfer INPUT_DIR OUTPUT.tsv [CURRENT_REVOCATIONS]".into()),
-                  };
-              }
-          ''' + s[start:]
-              needle = '    let text = report::experiment_report'
-              start = s.index(needle)
-              s = s[:start] + '''    let transfer_bundle = arms.iter().find(|a| a.name == "dynamic_equal_capacity").and_then(|a| a.bundle.as_ref()).ok_or("missing transfer bundle")?;
-              transfer::export(transfer_bundle, &rows, &output.join("transfer-input"), &output.join("transfer-expected.tsv"))?;
-          ''' + s[start:]
-          main.write_text(s)
-          test = root / 'tests/memory_cell_lab.rs'
-          s = test.read_text()
-          if 'duplicate_observations_do_not_hide_behind_new_root_names' not in s:
-              s += '''
-          #[test]
-          fn duplicate_observations_do_not_hide_behind_new_root_names() {
-              let mut rows = corpus();
-              rows[64].query = rows[0].query.clone();
-              assert!(data::validate(&rows).is_err());
-          }
-          '''
-          test.write_text(s)
-          PY
-          rustfmt --edition=2024 codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs codex-rs/hepta-intelligence-eval/examples/memory_cell_lab/*.rs codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          set +e
+          just fix -p codex-hepta-intelligence-eval --test memory_cell_lab --test memory_cell_controls --test memory_cell_transfer --test memory_cell_faults --test memory_cell_transport > /tmp/mcell-clippy.log 2>&1
+          result=$?
+          set -e
+          cat /tmp/mcell-clippy.log
+          echo "scoped_clippy_exit=$result"
+          just fmt --base "$BASE"
           if git diff --quiet; then echo 'No source candidate changes'; exit 0; fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add codex-rs/hepta-intelligence-eval/examples/ codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs
-          git commit -m 'fix(learning.eval): harden split provenance and normalize MemoryCell experiment source'
+          git add codex-rs/hepta-intelligence-eval/examples/ codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs codex-rs/hepta-intelligence-eval/BUILD.bazel
+          if git diff --cached --quiet; then echo 'No in-scope source changes'; exit 0; fi
+          git commit -m 'style(learning.eval): apply repository formatting and scoped MemoryCell lint fixes'
           git push origin "HEAD:refs/heads/codex/memory-cell-format-${GITHUB_RUN_ID}"
           echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-scoped-clippy-log
+          path: /tmp/mcell-clippy.log
+          if-no-files-found: warn
+  workspace-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Run the existing learning.eval owner through just test
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-intelligence-eval --test memory_cell_lab --test memory_cell_controls --test memory_cell_transfer --test memory_cell_faults --test memory_cell_transport
   native-experiment:
     runs-on: ubuntu-latest
     timeout-minutes: 15
