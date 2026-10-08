@@ -39,7 +39,8 @@ class PersistentIndex:
             if self.meta["cut"] != expected_cut or self.meta["schema"] != "hepta.memory-index.v1":
                 raise ValueError("index cut/schema mismatch")
             records = self.db.execute("SELECT record, vector FROM docs ORDER BY rowid").fetchall()
-            self.documents = tuple(Document(**json.loads(row[0])) for row in records)
+            decoded = [json.loads(row[0]) for row in records]
+            self.documents = tuple(Document(**(d | {"assets": tuple(d["assets"])})) for d in decoded)
             if not records or digest([asdict(d) for d in self.documents]) != self.meta["source_digest"]:
                 raise ValueError("index source projection corruption")
             self.vectors = np.stack([np.frombuffer(row[1], dtype="<f4") for row in records])
@@ -59,7 +60,6 @@ class PersistentIndex:
         if vectors.ndim != 2 or vectors.shape[0] != len(documents) or not 1 <= vectors.shape[1] <= 4096 or not np.isfinite(vectors).all():
             raise ValueError("index embedding shape/value")
         vectors = vectors / np.maximum(np.linalg.norm(vectors, axis=1, keepdims=True), 1e-12)
-        # Exclusive creation prevents accidental overwrite of another snapshot.
         with path.open("xb"):
             pass
         db = sqlite3.connect(path)
@@ -108,7 +108,6 @@ class PersistentIndex:
             for rank, i in enumerate(channel):
                 scores[i] = scores.get(i, 0.0) + weight / (policy.rrf_constant + rank)
         ranked = sorted(scores, key=lambda i: (-scores[i], self.documents[i].identity))[:policy.top_k]
-        # Caller must supply the current cut on every query; an index is never authority.
         return [self.documents[i] for i in ranked], {
             "query_ns": time.perf_counter_ns() - start, "dense_dot_products": len(self.documents),
             "lexical_candidates": len(lexical), "dense_candidates": len(dense),
@@ -121,7 +120,7 @@ class PersistentIndex:
 
 
 def tune_policy(cases, targets, indices, embeddings, cut, revoked):
-    """Only caller-supplied selection families are admissible; audit IDs returned."""
+    """Only selection families may tune. Chunk hits are scored at native source granularity."""
     if not cases or any(partition != "select" for _, partition in cases):
         raise ValueError("tuning requires a nonempty selection-only view")
     candidates = [RetrievalPolicy(top_k=top_k, lexical_weight=weight)
@@ -134,7 +133,9 @@ def tune_policy(cases, targets, indices, embeddings, cut, revoked):
             if truth.unanswerable or not truth.evidence:
                 continue
             docs, _ = indices[q.scope].query(q, embeddings[q.identity], policy, current_cut=cut, revoked=revoked)
-            recalls.append(len({d.identity for d in docs}.intersection(truth.evidence)) / len(set(truth.evidence)))
+            recalled = {d.identity.split("#chunk:", 1)[0] for d in docs}
+            support = {identity.split("#chunk:", 1)[0] for identity in truth.evidence}
+            recalls.append(len(recalled.intersection(support)) / len(support))
         records.append((sum(recalls) / len(recalls) if recalls else -1.0, policy))
     best = max(records, key=lambda pair: (pair[0], -pair[1].top_k, pair[1].lexical_weight))
     if best[0] < 0:
