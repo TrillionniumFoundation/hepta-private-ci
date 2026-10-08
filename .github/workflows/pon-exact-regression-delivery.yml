@@ -1,0 +1,57 @@
+name: PoN exact regression delivery
+on:
+  push:
+    branches: [fix/agentd-pon-executable-object-20261008]
+    paths: [.github/workflows/pon-exact-regression-delivery.yml]
+permissions:
+  contents: write
+jobs:
+  deliver:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/fix/agentd-pon-executable-object-20261008'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 2
+      - name: Add explicit actual-owner regressions without reducing existing gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = 98ff4c0cd318ba678a06d73ccaf13d4d4480d367
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          p=Path('.github/workflows/hepta-architecture-convergence.yml')
+          assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip() == 'e8b67d007047ae9cb38f7248dae40b9eae739034'
+          s=p.read_text()
+          marker='      - name: Module lifecycle generations and migration rollback\n'
+          assert s.count(marker)==1
+          commands='''          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/pon-native-adapter.json" --minimum-tests 4 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib automation_effect_host::pon_process::native_tests -- --nocapture
+                    python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/pon-executable-object.json" --minimum-tests 5 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib automation_effect_host::pon_executable::tests -- --nocapture
+                    python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/pon-bounded-pipes.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib automation_effect_host::pon_tests -- --nocapture
+                    python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/pon-effect-observations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib automation_effect_host::tests -- --nocapture
+          '''
+          # Normalize only the extra source-literal indentation; the YAML run
+          # block retains its existing ten-space command indentation.
+          commands='\n'.join('          '+line.strip() for line in commands.splitlines() if line.strip())+'\n'
+          p.write_text(s.replace(marker,commands+marker,1))
+          Path('.github/workflows/pon-exact-regression-delivery.yml').unlink()
+          PY
+          cd codex-rs
+          rustfmt --edition 2024 --config skip_children=true hepta-agent-protocol/src/lib.rs hepta-agentd/src/lib.rs hepta-agentd/src/state_control.rs hepta-automation/src/authorized_effect.rs hepta-automation/src/effect_dispatch_ledger.rs hepta-contracts/src/provider_effect.rs
+          cargo fmt -- --config imports_granularity=Item --check
+          cd ..
+          python3 - <<'PY'
+          import subprocess
+          paths=set(subprocess.check_output(['git','diff','--name-only'],text=True).splitlines())
+          allowed={'.github/workflows/pon-exact-regression-delivery.yml','.github/workflows/hepta-architecture-convergence.yml','codex-rs/hepta-agent-protocol/src/lib.rs','codex-rs/hepta-agentd/src/lib.rs','codex-rs/hepta-agentd/src/state_control.rs','codex-rs/hepta-automation/src/authorized_effect.rs','codex-rs/hepta-automation/src/effect_dispatch_ledger.rs','codex-rs/hepta-contracts/src/provider_effect.rs'}
+          assert paths <= allowed,paths-allowed
+          PY
+          git diff --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/workflows/pon-exact-regression-delivery.yml .github/workflows/hepta-architecture-convergence.yml codex-rs/hepta-agent-protocol/src/lib.rs codex-rs/hepta-agentd/src/lib.rs codex-rs/hepta-agentd/src/state_control.rs codex-rs/hepta-automation/src/authorized_effect.rs codex-rs/hepta-automation/src/effect_dispatch_ledger.rs codex-rs/hepta-contracts/src/provider_effect.rs
+          git commit -s -m 'ci(agentd): require real sealed-adapter tests and format inherited effect stack'
+          git push origin HEAD:refs/heads/fix/agentd-pon-executable-object-20261008
+          git rev-parse HEAD HEAD^{tree}
