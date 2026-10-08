@@ -307,12 +307,8 @@ pub trait AuthorizedEffectDriver {
         &self,
         intent: &AuthorizedEffectIntent,
     ) -> Result<ProviderEffectKey, AuthorizedEffectDriverError> {
-        ProviderEffectKey::for_operation(
-            &intent.destination_id,
-            &intent.run_id,
-            &intent.step_id,
-        )
-        .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)
+        ProviderEffectKey::for_operation(&intent.destination_id, &intent.run_id, &intent.step_id)
+            .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)
     }
 
     fn dispatch(
