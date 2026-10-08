@@ -56,3 +56,38 @@ new native storage capacity activation, genuine third-party model training/
 adoption, independently operated WAN campaign, physical power-loss, public
 service SLA, final-use override, production consensus, or release is accepted.
 
+## Current closed environment and actual main-target pair
+
+The preceding sections retain earlier increments, not the current source tuple.
+PR #1454 continues the sealed owner from PR #1449. The last pre-spawn boundary
+in `automation_effect_host_pon_process.rs` clears inherited and explicitly
+staged environment variables and installs only `LC_ALL=C` and `TZ=UTC`.
+All supported runtime inputs are the existing pinned arguments and exact
+stdin. There is no environment pass-through, PATH-based binary fallback,
+new permission, or HTTP-provider change. Existing deadlines, output limits,
+pre-entry refusal and post-entry Unknown semantics are unchanged.
+
+Sealing only the ELF does not prevent ambient dynamic-loader injection.
+The existing native ELF test fixture now enumerates the actual environment;
+a separate compiled shared-library constructor proves that the same sealed
+ELF is affected by an unisolated `LD_PRELOAD` positive control. The actual
+hardened exchange must consume its payload, expose exactly the closed
+environment and leave no injected marker. Both tests run through the existing
+native pair lanes with nonempty selectors. System loader/libraries, working
+directory, inherited file descriptors and the host kernel remain trusted;
+this change is not a sandbox or a complete execution-dependency attestation.
+
+The current pair workflow pins Chain PR #253 head
+`df717d7fb21a368cb5b4a240ef6221eaba977bc9`, main base
+`9fedf7ecbbe07177069c030592b4e03dcffebb81`, and actual main merge
+`45fbc027cd3d6e89a2792dca73e36a70eae42cfd`. Hepta also targets main.
+Read each repository's exact tested head/tree/ordered merge parents and actual
+results from that run. All original sealed submit/reconciliation/confirmation/
+reorganization and growth tests remain required; prior pair success does not
+qualify the new environment or this source tuple.
+
+A local compiled C/Linux sealed-object injection/refusal experiment was run;
+that is not compiled Rust or a real Chain/Hepta acceptance run. Current hosted
+native and full blocking gates remain separate. Public PoN work qualification,
+independent prospective generations, physical power loss, long-term data
+availability, independently operated WAN capacity and production remain open.
