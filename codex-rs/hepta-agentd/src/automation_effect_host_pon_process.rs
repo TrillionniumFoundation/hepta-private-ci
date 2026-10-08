@@ -34,7 +34,7 @@ async fn read_bounded(mut stream: impl AsyncRead + Unpin, limit: usize) -> io::R
 }
 
 pub(super) async fn run(
-    command: Command,
+    mut command: Command,
     payload: &[u8],
     deadline: Instant,
     output_limit: usize,
@@ -42,6 +42,13 @@ pub(super) async fn run(
     if Instant::now() >= deadline {
         return Outcome::BeforeStart;
     }
+    // The sealed ELF identity does not cover ambient loader configuration or
+    // inherited credentials. This private PoN path takes all runtime inputs
+    // through its pinned arguments and exact stdin; no caller environment is
+    // part of that contract. Clear even explicit mappings at the last boundary
+    // before spawn. System loader/libraries and the host remain trusted: this
+    // is environment isolation, not a new sandbox or execution capability.
+    command.env_clear().env("LC_ALL", "C").env("TZ", "UTC");
     let mut command = tokio::process::Command::from(command);
     command
         .kill_on_drop(true)
