@@ -3,8 +3,10 @@
 mod data;
 #[path = "../examples/memory_cell_lab/model.rs"]
 mod model;
-use data::{Episode, Split};
-use model::{Bundle, Meter};
+use data::Episode;
+use data::Split;
+use model::Bundle;
+use model::Meter;
 
 fn corpus() -> Vec<Episode> {
     data::parse(&data::smoke_corpus()).unwrap()

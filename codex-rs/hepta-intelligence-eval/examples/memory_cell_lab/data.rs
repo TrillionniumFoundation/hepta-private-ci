@@ -1,5 +1,6 @@
 //! Read-only experiment inputs, not a cognitive.store writer or wire protocol.
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 pub const WIDTH: usize = 32;
 pub const CLASSES: usize = 4;
@@ -111,15 +112,15 @@ pub fn validate(rows: &[Episode]) -> Result<(), String> {
             return Err("scope mixing or duplicate episode".into());
         }
         let key = (&e.query.scope, e.query.domain, &e.query.text);
-        if let Some(prior) = inputs.insert(key, e.split) {
-            if prior != e.split {
-                return Err("duplicate query across splits".into());
-            }
+        if let Some(prior) = inputs.insert(key, e.split)
+            && prior != e.split
+        {
+            return Err("duplicate query across splits".into());
         }
-        if let Some(prior) = roots.insert(&e.root, e.split) {
-            if prior != e.split {
-                return Err(format!("root crosses data splits: {}", e.root));
-            }
+        if let Some(prior) = roots.insert(&e.root, e.split)
+            && prior != e.split
+        {
+            return Err(format!("root crosses data splits: {}", e.root));
         }
         ranges
             .entry(e.split)

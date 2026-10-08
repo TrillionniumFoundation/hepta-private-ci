@@ -2,10 +2,15 @@
 //! Real child-process crashes/OS locks on one host; NOT a multi-host qualification.
 #[path = "../examples/memory_cell_lab/faults.rs"]
 mod faults;
-use faults::{Crash, LabNode, Operation};
+use faults::Crash;
+use faults::LabNode;
+use faults::Operation;
 use std::fs;
-use std::path::{Path, PathBuf};
-use std::process::{Command, ExitStatus, Stdio};
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::Command;
+use std::process::ExitStatus;
+use std::process::Stdio;
 
 struct Fixture(PathBuf);
 impl Fixture {

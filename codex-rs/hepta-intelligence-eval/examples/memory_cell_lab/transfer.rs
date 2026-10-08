@@ -1,10 +1,16 @@
 //! Artifact-only transport exercises. The current revocation view is separate
 //! from the copied model and never inferred from its learned parameters.
-use super::data::{Episode, Query, Split};
-use super::model::{Bundle, argmax};
+use super::data::Episode;
+use super::data::Query;
+use super::data::Split;
+use super::model::Bundle;
+use super::model::argmax;
 use std::collections::BTreeSet;
-use std::fs::{self, File, OpenOptions};
-use std::io::{Read, Write};
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::{self};
+use std::io::Read;
+use std::io::Write;
 use std::path::Path;
 
 fn read_bounded(path: &Path) -> Result<String, String> {

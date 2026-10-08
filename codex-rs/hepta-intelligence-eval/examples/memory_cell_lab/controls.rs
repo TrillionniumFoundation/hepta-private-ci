@@ -1,6 +1,10 @@
 //! Predeclared controls and capacity-matched, next-generation topology candidates.
-use super::data::{Episode, Query, Split};
-use super::model::{Bundle, Meter, argmax};
+use super::data::Episode;
+use super::data::Query;
+use super::data::Split;
+use super::model::Bundle;
+use super::model::Meter;
+use super::model::argmax;
 
 pub const TRAIN_CEILING: u64 = 8_000_000;
 
@@ -75,7 +79,7 @@ pub fn admit_topology(
 }
 
 pub fn split(parent: &Bundle) -> Result<Bundle, String> {
-    if parent.cells.len() != 1 || parent.cells[0].rank % 2 != 0 {
+    if parent.cells.len() != 1 || !parent.cells[0].rank.is_multiple_of(2) {
         return Err("split requires one even-rank parent".into());
     }
     let half = parent.cells[0].rank / 2;

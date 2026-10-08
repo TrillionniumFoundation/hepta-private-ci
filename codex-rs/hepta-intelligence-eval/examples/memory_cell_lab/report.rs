@@ -1,6 +1,9 @@
 //! Source-clustered measurement. These unsigned lab reports cannot grant acceptance.
-use super::controls::{Arm, predict};
-use super::data::{CLASSES, Episode, Split};
+use super::controls::Arm;
+use super::controls::predict;
+use super::data::CLASSES;
+use super::data::Episode;
+use super::data::Split;
 use super::model::argmax;
 use std::collections::BTreeMap;
 use std::fmt::Write;

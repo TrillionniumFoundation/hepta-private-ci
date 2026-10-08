@@ -1,10 +1,13 @@
 //! Filesystem-backed fault model for qualification, NOT a production store.
 //! Mutating calls require the harness's OS flock. A separate control file models
 //! the current owner fence/revocation frontier and is never restored from a cell backup.
-use std::collections::{BTreeMap, BTreeSet};
-use std::fs::{self, File};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::fs::File;
+use std::fs::{self};
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Crash {
