@@ -190,10 +190,16 @@ impl ControlDispatchReceiptV1 {
         if self.sequence == 0 || self.authority.grants_any() || self.execution_allowed {
             return Err(ControlOwnerErrorV1::AuthorityGranted);
         }
-        if let Some(digest) = self.restart_reconciliation_digest
-            && digest.is_zero()
-        {
-            return Err(ControlOwnerErrorV1::EmptyDigest("restart reconciliation"));
+        match (self.status, self.restart_reconciliation_digest) {
+            (ControlDispatchStatusV1::Reconciled, None) => {
+                return Err(ControlOwnerErrorV1::ReconciliationMissing);
+            }
+            (ControlDispatchStatusV1::Reconciled, Some(digest)) if digest.is_zero() => {
+                return Err(ControlOwnerErrorV1::EmptyDigest("restart reconciliation"));
+            }
+            (ControlDispatchStatusV1::Reconciled, Some(_)) => {}
+            (_, Some(_)) => return Err(ControlOwnerErrorV1::UnexpectedReconciliation),
+            (_, None) => {}
         }
         Ok(())
     }
@@ -234,6 +240,9 @@ pub enum ControlOwnerErrorV1 {
     Expired,
     IdempotencyKeyConflict,
     TerminalReceiptMissing,
+    TerminalReceiptConflict,
+    ReconciliationMissing,
+    UnexpectedReconciliation,
     DurableIo,
     InvalidDurableSnapshot,
 }
@@ -542,6 +551,18 @@ impl ControlRoleOwnerV1 for InMemoryControlRoleOwnerV1 {
             .get(dispatch_id)
             .cloned()
             .ok_or(ControlOwnerErrorV1::MissingDispatch)?;
+        // A worker may retry a forward after its durable write succeeded.  The
+        // terminal and reconciled states are immutable observations, so the
+        // existing receipt is the idempotent answer.  A prepared record still
+        // has to pass the current expiry and generation/fence checks below.
+        if matches!(
+            record.receipt.status,
+            ControlDispatchStatusV1::Forwarded
+                | ControlDispatchStatusV1::Terminal
+                | ControlDispatchStatusV1::Reconciled
+        ) {
+            return Ok(record.receipt);
+        }
         if record.receipt.status != ControlDispatchStatusV1::Prepared {
             return Err(ControlOwnerErrorV1::InvalidPhase);
         }
@@ -590,6 +611,15 @@ impl ControlRoleOwnerV1 for InMemoryControlRoleOwnerV1 {
             .get(dispatch_id)
             .cloned()
             .ok_or(ControlOwnerErrorV1::MissingDispatch)?;
+        if matches!(
+            record.receipt.status,
+            ControlDispatchStatusV1::Terminal | ControlDispatchStatusV1::Reconciled
+        ) {
+            if record.receipt.terminal_receipt_digest == terminal_receipt_digest {
+                return Ok(record.receipt);
+            }
+            return Err(ControlOwnerErrorV1::TerminalReceiptConflict);
+        }
         if record.receipt.status != ControlDispatchStatusV1::Forwarded {
             return Err(ControlOwnerErrorV1::InvalidPhase);
         }
@@ -621,6 +651,9 @@ impl ControlRoleOwnerV1 for InMemoryControlRoleOwnerV1 {
             .get(dispatch_id)
             .cloned()
             .ok_or(ControlOwnerErrorV1::MissingDispatch)?;
+        if record.receipt.status == ControlDispatchStatusV1::Reconciled {
+            return Ok(record.receipt);
+        }
         if !matches!(record.receipt.status, ControlDispatchStatusV1::Terminal) {
             return if record.receipt.status == ControlDispatchStatusV1::Forwarded {
                 Err(ControlOwnerErrorV1::TerminalReceiptMissing)
@@ -1065,6 +1098,18 @@ mod tests {
         assert_eq!(reconciled.status, ControlDispatchStatusV1::Reconciled);
         assert!(reconciled.restart_reconciliation_digest.is_some());
         assert_ne!(forwarded, reconciled);
+        let mut invalid = reconciled.clone();
+        invalid.restart_reconciliation_digest = None;
+        assert_eq!(
+            invalid.validate(),
+            Err(ControlOwnerErrorV1::ReconciliationMissing)
+        );
+        let mut invalid = forwarded.clone();
+        invalid.restart_reconciliation_digest = Some(digest("unexpected-reconciliation"));
+        assert_eq!(
+            invalid.validate(),
+            Err(ControlOwnerErrorV1::UnexpectedReconciliation)
+        );
     }
 
     #[test]
@@ -1160,6 +1205,48 @@ mod tests {
     }
 
     #[test]
+    fn terminal_and_reconciliation_retries_are_idempotent() {
+        let mut owner = InMemoryControlRoleOwnerV1::default();
+        let prepared = owner
+            .prepare(intent(ControlOperationKindV1::Communication))
+            .expect("prepare");
+        let forwarded = owner.forward(&prepared.dispatch_id).expect("forward");
+        assert_eq!(
+            owner.forward(&prepared.dispatch_id).expect("forward retry"),
+            forwarded
+        );
+        let terminal_digest = digest("terminal.retry");
+        let terminal = owner
+            .record_terminal(&prepared.dispatch_id, terminal_digest)
+            .expect("terminal");
+        assert_eq!(
+            owner
+                .record_terminal(&prepared.dispatch_id, terminal_digest)
+                .expect("terminal retry"),
+            terminal
+        );
+        assert_eq!(
+            owner.record_terminal(&prepared.dispatch_id, digest("other")),
+            Err(ControlOwnerErrorV1::TerminalReceiptConflict)
+        );
+        let reconciled = owner
+            .reconcile_restart(&prepared.dispatch_id)
+            .expect("reconcile");
+        assert_eq!(
+            owner
+                .reconcile_restart(&prepared.dispatch_id)
+                .expect("reconcile retry"),
+            reconciled
+        );
+        assert_eq!(
+            owner
+                .forward(&prepared.dispatch_id)
+                .expect("late forward retry"),
+            reconciled
+        );
+    }
+
+    #[test]
     fn durable_control_owner_reopens_terminal_chain_and_rejects_tamper() {
         let path = std::env::temp_dir().join(format!(
             "hepta-control-owner-{}-{}.bin",
@@ -1184,13 +1271,27 @@ mod tests {
         owner
             .record_terminal(&prepared.dispatch_id, digest("terminal"))
             .expect("terminal");
-        let restored = DurableControlRoleOwnerV1::open(&path).expect("reload");
+        let mut restored = DurableControlRoleOwnerV1::open(&path).expect("reload");
         let reconciled = restored
             .inner()
             .records
             .get(&prepared.dispatch_id)
             .expect("record");
         assert_eq!(reconciled.receipt.status, ControlDispatchStatusV1::Terminal);
+        let terminal = restored
+            .record_terminal(&prepared.dispatch_id, digest("terminal"))
+            .expect("terminal retry after restart");
+        assert_eq!(terminal.status, ControlDispatchStatusV1::Terminal);
+        let reconciliation = restored
+            .reconcile_restart(&prepared.dispatch_id)
+            .expect("reconcile after restart");
+        assert_eq!(reconciliation.status, ControlDispatchStatusV1::Reconciled);
+        assert_eq!(
+            restored
+                .reconcile_restart(&prepared.dispatch_id)
+                .expect("reconcile retry after restart"),
+            reconciliation
+        );
         let mut bytes = std::fs::read(&path).expect("read");
         *bytes.last_mut().expect("bytes") ^= 0x40;
         std::fs::write(&path, bytes).expect("tamper");

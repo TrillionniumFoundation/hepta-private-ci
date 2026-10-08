@@ -926,7 +926,7 @@ mod tests {
         let parameter_manifest = manifest(&definition);
         let parent_id = parameter_manifest.parent_artifact_id.clone();
         let parent = ArtifactManifest {
-            artifact_id: parent_id.clone(),
+            artifact_id: parent_id,
             kind: ArtifactKind::Parameters,
             generation: Generation::new(1).expect("generation"),
             predecessor_id: None,

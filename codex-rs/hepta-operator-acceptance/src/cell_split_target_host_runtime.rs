@@ -98,10 +98,12 @@ pub struct LocalCellSplitTargetHostRuntimeV1 {
     power_loss_witness: PathBuf,
     parent_route_snapshot: PathBuf,
     parent_state_snapshot: PathBuf,
+    publication: PathBuf,
     parent_route_bytes: Vec<u8>,
     parent_state_bytes: Vec<u8>,
     resource_sample: CellSplitTargetResourceSampleV1,
     child_generation: u64,
+    parent_generation: u64,
     child_digest: Option<String>,
     counter: u64,
     last_timestamp: u128,
@@ -139,7 +141,9 @@ impl LocalCellSplitTargetHostRuntimeV1 {
         let power_loss_witness = power_loss_witness.into();
         let parent_route_snapshot = route.with_extension("local-target-host.parent-route");
         let parent_state_snapshot = state.with_extension("local-target-host.parent-state");
+        let publication = route.with_extension("local-target-host.publication");
         if parent_generation == 0
+            || parent_generation == u64::MAX
             || resource_sample.hardware_model.is_empty()
             || resource_sample.measurement_source.is_empty()
             || resource_sample.measurement_source.contains("simulation")
@@ -166,6 +170,7 @@ impl LocalCellSplitTargetHostRuntimeV1 {
             &power_loss_witness,
             &parent_route_snapshot,
             &parent_state_snapshot,
+            &publication,
         ] {
             if !path.is_absolute() || path.parent() != Some(root.as_path()) {
                 return Err(LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
@@ -185,12 +190,57 @@ impl LocalCellSplitTargetHostRuntimeV1 {
             &parent_route_bytes,
             &parent_state_bytes,
         )?;
+        let initial_publication = match read_optional(&publication)? {
+            Some(bytes) => {
+                verify_publication(&bytes, &initial_route_bytes, &initial_state_bytes)?;
+                bytes
+            }
+            None => {
+                let bytes = make_publication_bytes(
+                    parent_generation,
+                    "",
+                    &initial_route_bytes,
+                    &initial_state_bytes,
+                    "parent",
+                );
+                let temporary = temporary_path(&publication);
+                crate::durable::write_private_atomic_replace(&publication, &temporary, &bytes)
+                    .map_err(|error| {
+                        LocalCellSplitTargetHostRuntimeErrorV1::Invalid(error.to_string())
+                    })?;
+                bytes
+            }
+        };
+        if initial_publication.is_empty() {
+            return Err(LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
+                "publication fence is empty".into(),
+            ));
+        }
         let parent_artifact_bytes = read_existing(&parent_artifact)?;
         if parent_artifact_bytes.is_empty() {
             return Err(LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
                 "parent artifact is empty".into(),
             ));
         }
+        let child_digest = match read_optional(&tombstone)? {
+            Some(bytes) => {
+                let text = String::from_utf8_lossy(&bytes);
+                let digest = line_value(&text, "child").ok_or_else(|| {
+                    LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
+                        "tombstone does not identify its child artifact".into(),
+                    )
+                })?;
+                let generation =
+                    line_value(&text, "generation").and_then(|value| value.parse::<u64>().ok());
+                if generation != Some(parent_generation + 1) || digest.len() != 64 {
+                    return Err(LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
+                        "tombstone generation or child digest is invalid".into(),
+                    ));
+                }
+                Some(digest.to_string())
+            }
+            None => None,
+        };
         Ok(Self {
             child_artifact,
             state,
@@ -201,9 +251,11 @@ impl LocalCellSplitTargetHostRuntimeV1 {
             parent_state_snapshot,
             parent_route_bytes,
             parent_state_bytes,
+            publication,
             resource_sample,
-            child_generation: parent_generation.saturating_add(1),
-            child_digest: None,
+            child_generation: parent_generation + 1,
+            parent_generation,
+            child_digest,
             counter: 0,
             last_timestamp: 0,
         })
@@ -257,13 +309,65 @@ impl LocalCellSplitTargetHostRuntimeV1 {
         path: &Path,
         bytes: &[u8],
     ) -> Result<(), LocalCellSplitTargetHostRuntimeErrorV1> {
-        let temporary = path.with_extension("local-target-host.tmp");
+        let temporary = temporary_path(path);
         crate::durable::write_private_atomic_replace(path, &temporary, bytes)
             .map_err(|error| LocalCellSplitTargetHostRuntimeErrorV1::Invalid(error.to_string()))
     }
 
     fn route_digest(&self) -> Result<String, LocalCellSplitTargetHostRuntimeErrorV1> {
         Ok(digest_bytes(&read_existing(&self.route)?))
+    }
+
+    fn ensure_not_tombstoned(&self) -> Result<(), LocalCellSplitTargetHostRuntimeErrorV1> {
+        if read_optional(&self.tombstone)?.is_some() {
+            return Err(LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
+                "cell generation is tombstoned and cannot be reused".into(),
+            ));
+        }
+        Ok(())
+    }
+
+    fn publish_pair(
+        &self,
+        route_bytes: &[u8],
+        state_bytes: &[u8],
+        artifact_digest: &str,
+        generation: u64,
+        status: &str,
+    ) -> Result<(), LocalCellSplitTargetHostRuntimeErrorV1> {
+        self.atomic_write(&self.route, route_bytes)?;
+        self.atomic_write(&self.state, state_bytes)?;
+        let publication = make_publication_bytes(
+            generation,
+            artifact_digest,
+            route_bytes,
+            state_bytes,
+            status,
+        );
+        self.atomic_write(&self.publication, &publication)
+    }
+
+    fn verify_active_pair(
+        &self,
+        artifact_digest: &str,
+        generation: u64,
+        status: &str,
+    ) -> Result<(Vec<u8>, Vec<u8>), LocalCellSplitTargetHostRuntimeErrorV1> {
+        let route = read_existing(&self.route)?;
+        let state = read_existing(&self.state)?;
+        let publication = read_existing(&self.publication)?;
+        verify_publication(&publication, &route, &state)?;
+        let publication_text = String::from_utf8_lossy(&publication);
+        let expected_generation = generation.to_string();
+        if line_value(&publication_text, "generation") != Some(expected_generation.as_str())
+            || line_value(&publication_text, "artifact") != Some(artifact_digest)
+            || line_value(&publication_text, "status") != Some(status)
+        {
+            return Err(LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
+                "durable route/state publication fence does not match expected generation".into(),
+            ));
+        }
+        Ok((route, state))
     }
 }
 
@@ -273,11 +377,19 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
     fn load_child_artifact(
         &mut self,
     ) -> Result<CellSplitTargetHostOperationReceiptV1, Self::Error> {
+        self.ensure_not_tombstoned()?;
         let bytes = read_existing(&self.child_artifact)?;
         if bytes.is_empty() {
             return Err(Self::Error::Invalid("child artifact is empty".into()));
         }
         let digest = digest_bytes(&bytes);
+        if let Some(previous) = self.child_digest.as_deref()
+            && previous != digest
+        {
+            return Err(Self::Error::Invalid(
+                "child artifact changed after it was loaded".into(),
+            ));
+        }
         self.child_digest = Some(digest.clone());
         Ok(self.operation(
             "artifact-load",
@@ -291,14 +403,15 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
     }
 
     fn route_cutover(&mut self) -> Result<CellSplitTargetHostOperationReceiptV1, Self::Error> {
+        self.ensure_not_tombstoned()?;
         let child = self.child_digest()?;
+        let _ = self.verify_active_pair("", self.parent_generation, "parent")?;
         let previous = self.route_digest()?;
         let route_bytes = format!(
             "generation={}\nartifact={}\npredecessor={}\n",
             self.child_generation, child, previous
         )
         .into_bytes();
-        self.atomic_write(&self.route, &route_bytes)?;
         let state_before = read_existing(&self.state)?;
         let state_bytes = format!(
             "predecessor={}\nroute={}\nartifact={}\nstate={}\n",
@@ -308,7 +421,13 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
             digest_bytes(&state_before)
         )
         .into_bytes();
-        self.atomic_write(&self.state, &state_bytes)?;
+        self.publish_pair(
+            &route_bytes,
+            &state_bytes,
+            &child,
+            self.child_generation,
+            "active",
+        )?;
         Ok(self.operation(
             "route-cutover",
             child,
@@ -321,6 +440,7 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
     }
 
     fn restart_recover(&mut self) -> Result<CellSplitTargetHostOperationReceiptV1, Self::Error> {
+        self.ensure_not_tombstoned()?;
         let child = match self.child_digest.clone() {
             Some(digest) => digest,
             None => {
@@ -333,10 +453,18 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
                 digest
             }
         };
-        let route = read_existing(&self.route)?;
-        let state = read_existing(&self.state)?;
+        let (route, state) = self.verify_active_pair(&child, self.child_generation, "active")?;
         let route_text = String::from_utf8_lossy(&route);
-        if !route_text.contains(&child) || state.is_empty() {
+        let generation =
+            line_value(&route_text, "generation").and_then(|value| value.parse::<u64>().ok());
+        let route_artifact = line_value(&route_text, "artifact");
+        let state_text = String::from_utf8_lossy(&state);
+        let state_route = line_value(&state_text, "route");
+        let recovered_route_digest = digest_bytes(&route);
+        if generation != Some(self.child_generation)
+            || route_artifact != Some(child.as_str())
+            || state_route != Some(recovered_route_digest.as_str())
+        {
             return Err(Self::Error::Invalid(
                 "restart did not recover child route and state".into(),
             ));
@@ -353,6 +481,7 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
     }
 
     fn power_loss_recover(&mut self) -> Result<CellSplitTargetHostOperationReceiptV1, Self::Error> {
+        self.ensure_not_tombstoned()?;
         let witness = read_existing(&self.power_loss_witness)
             .map_err(|_| Self::Error::Invalid("external power-loss witness is required".into()))?;
         if witness.is_empty() {
@@ -361,8 +490,7 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
             ));
         }
         let child = self.child_digest()?;
-        let route = read_existing(&self.route)?;
-        let state = read_existing(&self.state)?;
+        let (route, state) = self.verify_active_pair(&child, self.child_generation, "active")?;
         Ok(self.operation(
             "power-loss-recover",
             child,
@@ -375,7 +503,9 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
     }
 
     fn rollback(&mut self) -> Result<CellSplitTargetHostOperationReceiptV1, Self::Error> {
+        self.ensure_not_tombstoned()?;
         let child = self.child_digest()?;
+        let _ = self.verify_active_pair(&child, self.child_generation, "active")?;
         let previous = self.route_digest()?;
         let parent_route = read_existing(&self.parent_route_snapshot)?;
         let parent_state = read_existing(&self.parent_state_snapshot)?;
@@ -384,8 +514,13 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
                 "parent route/state snapshot changed after initialization".into(),
             ));
         }
-        self.atomic_write(&self.route, &parent_route)?;
-        self.atomic_write(&self.state, &parent_state)?;
+        self.publish_pair(
+            &parent_route,
+            &parent_state,
+            "",
+            self.parent_generation,
+            "parent",
+        )?;
         let route_digest = digest_bytes(&parent_route);
         Ok(self.operation(
             "rollback",
@@ -399,8 +534,9 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
     }
 
     fn commit_tombstone(&mut self) -> Result<CellSplitTargetHostOperationReceiptV1, Self::Error> {
+        self.ensure_not_tombstoned()?;
         let child = self.child_digest()?;
-        let route = read_existing(&self.route)?;
+        let (route, state) = self.verify_active_pair("", self.parent_generation, "parent")?;
         if route != self.parent_route_bytes {
             return Err(Self::Error::Invalid(
                 "tombstone requires the parent route after rollback".into(),
@@ -414,6 +550,9 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
         )
         .into_bytes();
         self.atomic_write(&self.tombstone, &bytes)?;
+        let publication =
+            make_publication_bytes(self.child_generation, &child, &route, &state, "tombstoned");
+        self.atomic_write(&self.publication, &publication)?;
         let digest = digest_bytes(&bytes);
         Ok(self.operation(
             "tombstone",
@@ -433,8 +572,18 @@ impl CellSplitTargetHostRuntimeV1 for LocalCellSplitTargetHostRuntimeV1 {
         let route = read_existing(&self.route)?;
         let tombstone = read_existing(&self.tombstone)?;
         let parent_route = read_existing(&self.parent_route_snapshot)?;
+        let publication = read_existing(&self.publication)?;
+        let tombstone_text = String::from_utf8_lossy(&tombstone);
+        let tombstone_child = line_value(&tombstone_text, "child");
+        let tombstone_generation =
+            line_value(&tombstone_text, "generation").and_then(|value| value.parse::<u64>().ok());
+        let publication_text = String::from_utf8_lossy(&publication);
+        let tombstoned_status = line_value(&publication_text, "status") == Some("tombstoned");
         if route != parent_route
             || tombstone.is_empty()
+            || tombstone_child != Some(child.as_str())
+            || tombstone_generation != Some(self.child_generation)
+            || !tombstoned_status
             || String::from_utf8_lossy(&route).contains(&child)
         {
             return Err(Self::Error::Invalid(
@@ -489,6 +638,67 @@ fn read_existing(path: &Path) -> Result<Vec<u8>, LocalCellSplitTargetHostRuntime
         .map_err(|error| LocalCellSplitTargetHostRuntimeErrorV1::Invalid(error.to_string()))
 }
 
+fn read_optional(path: &Path) -> Result<Option<Vec<u8>>, LocalCellSplitTargetHostRuntimeErrorV1> {
+    match std::fs::symlink_metadata(path) {
+        Ok(metadata) => {
+            if metadata.file_type().is_symlink() || !metadata.is_file() {
+                return Err(LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
+                    "optional runtime file must be a regular file".into(),
+                ));
+            }
+            read_existing(path).map(Some)
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(error) => Err(LocalCellSplitTargetHostRuntimeErrorV1::Io(error)),
+    }
+}
+
+fn temporary_path(path: &Path) -> PathBuf {
+    let file_name = path
+        .file_name()
+        .map_or_else(|| "runtime-file".into(), std::ffi::OsStr::to_os_string);
+    let mut temporary = file_name;
+    temporary.push(".tmp");
+    path.with_file_name(temporary)
+}
+
+fn make_publication_bytes(
+    generation: u64,
+    artifact_digest: &str,
+    route: &[u8],
+    state: &[u8],
+    status: &str,
+) -> Vec<u8> {
+    format!(
+        "generation={generation}\nartifact={artifact_digest}\nroute={}\nstate={}\nstatus={status}\n",
+        digest_bytes(route),
+        digest_bytes(state),
+    )
+    .into_bytes()
+}
+
+fn verify_publication(
+    publication: &[u8],
+    route: &[u8],
+    state: &[u8],
+) -> Result<(), LocalCellSplitTargetHostRuntimeErrorV1> {
+    let text = String::from_utf8_lossy(publication);
+    let route_digest = line_value(&text, "route");
+    let state_digest = line_value(&text, "state");
+    let expected_route_digest = digest_bytes(route);
+    let expected_state_digest = digest_bytes(state);
+    if route_digest != Some(expected_route_digest.as_str())
+        || state_digest != Some(expected_state_digest.as_str())
+        || line_value(&text, "generation").is_none()
+        || line_value(&text, "status").is_none()
+    {
+        return Err(LocalCellSplitTargetHostRuntimeErrorV1::Invalid(
+            "route/state publication fence is invalid or stale".into(),
+        ));
+    }
+    Ok(())
+}
+
 fn load_or_write_parent_snapshot(
     path: &Path,
     initial: &[u8],
@@ -503,7 +713,7 @@ fn load_or_write_parent_snapshot(
             read_existing(path)
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
-            let temporary = path.with_extension("local-target-host.tmp");
+            let temporary = temporary_path(path);
             crate::durable::write_private_atomic_replace(path, &temporary, initial).map_err(
                 |error| LocalCellSplitTargetHostRuntimeErrorV1::Invalid(error.to_string()),
             )?;

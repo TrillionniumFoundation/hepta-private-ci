@@ -342,7 +342,7 @@ fn local_runtime_performs_real_file_lifecycle_and_requires_external_power_witnes
         route,
         tombstone,
         power_loss,
-        resource,
+        resource.clone(),
         7,
     )
     .expect("local runtime");
@@ -485,7 +485,7 @@ fn local_runtime_reopens_after_process_restart_and_rolls_back_from_persisted_par
         &route,
         &tombstone,
         &power_loss,
-        resource,
+        resource.clone(),
         7,
     )
     .expect("reopened runtime");
@@ -495,6 +495,97 @@ fn local_runtime_reopens_after_process_restart_and_rolls_back_from_persisted_par
     reopened.rollback().expect("rollback");
     reopened.commit_tombstone().expect("tombstone");
     reopened.verify_no_resurrection().expect("no resurrection");
+    let error = reopened
+        .load_child_artifact()
+        .expect_err("a tombstoned generation must not be loadable again");
+    assert!(error.to_string().contains("tombstoned"));
+    drop(reopened);
+    let mut reopened_after_tombstone = LocalCellSplitTargetHostRuntimeV1::new(
+        root,
+        &parent_artifact,
+        &child_artifact,
+        &state,
+        &route,
+        &tombstone,
+        &power_loss,
+        resource,
+        7,
+    )
+    .expect("tombstone can be verified after process restart");
+    reopened_after_tombstone
+        .verify_no_resurrection()
+        .expect("persisted tombstone blocks resurrection after restart");
+}
+
+#[test]
+fn local_runtime_rejects_route_state_pair_tampering_on_reopen() {
+    let directory = tempdir().expect("tempdir");
+    let root = directory.path();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(root, fs::Permissions::from_mode(0o700)).expect("private directory");
+    }
+    let parent_artifact = root.join("parent.artifact");
+    let child_artifact = root.join("child.artifact");
+    let state = root.join("state.snapshot");
+    let route = root.join("route.snapshot");
+    let tombstone = root.join("tombstone.snapshot");
+    let power_loss = root.join("power-loss.witness");
+    fs::write(&parent_artifact, b"parent").expect("parent");
+    fs::write(&child_artifact, b"child").expect("child");
+    fs::write(&state, b"state").expect("state");
+    fs::write(&route, b"parent-route").expect("route");
+    fs::write(&power_loss, b"external-power-loss").expect("power loss");
+    #[cfg(unix)]
+    make_private(&[
+        &parent_artifact,
+        &child_artifact,
+        &state,
+        &route,
+        &power_loss,
+    ]);
+    let resource = CellSplitTargetResourceSampleV1 {
+        hardware: CellSplitTargetHardwareV1::Cpu,
+        hardware_model: "host-cpu".to_string(),
+        measurement_source: "external-counter".to_string(),
+        hardware_attestation_digest: ATTESTATION.to_string(),
+        sample_count: 1,
+        latency_micros: 1,
+        memory_bytes: 1,
+        communication_bytes: 1,
+        training_micros: 1,
+        migration_micros: 1,
+    };
+    let mut runtime = LocalCellSplitTargetHostRuntimeV1::new(
+        root,
+        &parent_artifact,
+        &child_artifact,
+        &state,
+        &route,
+        &tombstone,
+        &power_loss,
+        resource.clone(),
+        7,
+    )
+    .expect("runtime");
+    runtime.load_child_artifact().expect("load");
+    runtime.route_cutover().expect("cutover");
+    drop(runtime);
+    fs::write(&state, b"tampered-state").expect("tamper state");
+    let error = LocalCellSplitTargetHostRuntimeV1::new(
+        root,
+        parent_artifact,
+        child_artifact,
+        state,
+        route,
+        tombstone,
+        power_loss,
+        resource,
+        7,
+    )
+    .expect_err("a publication fence must reject a mismatched route/state pair");
+    assert!(error.to_string().contains("publication fence"));
 }
 
 #[test]
