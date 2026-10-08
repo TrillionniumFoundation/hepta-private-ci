@@ -29,7 +29,7 @@ jobs:
               s = s.replace('for class in 0..CLASSES {', 'for (class, probability) in head_probabilities.iter().enumerate() {')
               s = s.replace('p[head][class]', '*probability')
               if name == 'report.rs':
-                  s = s.replace('use super::data::CLASSES;\n', '')
+                  s = s.replace('use super::data::CLASSES;\n', '').replace('{CLASSES, Episode, Split}', '{Episode, Split}')
               path.write_text(s)
           path = root / 'tests/memory_cell_lab.rs'
           s = path.read_text().replace('data::parse(&data::smoke_corpus()).unwrap()', 'data::parse(&data::smoke_corpus()).unwrap_or_else(|error| panic!("invalid smoke corpus: {error}"))')
@@ -60,6 +60,8 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          just fix -p codex-hepta-intelligence-eval --test memory_cell_lab --test memory_cell_controls --test memory_cell_transfer --test memory_cell_faults --test memory_cell_transport
           just fmt --base "$BASE"
           cd codex-rs
           cargo clippy -p codex-hepta-intelligence-eval --test memory_cell_lab --test memory_cell_controls --test memory_cell_transfer --test memory_cell_faults --test memory_cell_transport -- -D warnings
