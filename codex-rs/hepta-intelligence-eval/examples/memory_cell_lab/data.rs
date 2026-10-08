@@ -65,7 +65,10 @@ pub fn parse(input: &str) -> Result<Vec<Episode>, String> {
         if f[..11].iter().any(|s| s.chars().any(char::is_control)) {
             return Err("control character in metadata".into());
         }
-        let number = |i: usize| f[i].parse::<usize>().map_err(|_| "invalid number".to_owned());
+        let number = |i: usize| {
+            f[i].parse::<usize>()
+                .map_err(|_| "invalid number".to_owned())
+        };
         let domain = number(8)?;
         let targets = [number(9)?, number(10)?];
         if domain > 1 || targets.iter().any(|v| *v >= CLASSES) {
@@ -75,10 +78,19 @@ pub fn parse(input: &str) -> Result<Vec<Episode>, String> {
             return Err("commit must be an exact 40-character hex reference".into());
         }
         rows.push(Episode {
-            id: f[0].into(), root: f[1].into(), split: Split::parse(f[2])?,
+            id: f[0].into(),
+            root: f[1].into(),
+            split: Split::parse(f[2])?,
             time: f[3].parse().map_err(|_| "invalid timestamp")?,
-            commit: f[5].into(), environment: f[6].into(), evidence: f[7].into(),
-            query: Query { scope: f[4].into(), domain, text: f[11].into() }, targets,
+            commit: f[5].into(),
+            environment: f[6].into(),
+            evidence: f[7].into(),
+            query: Query {
+                scope: f[4].into(),
+                domain,
+                text: f[11].into(),
+            },
+            targets,
         });
         if rows.len() > 20_000 {
             return Err("corpus exceeds 20000 episodes".into());
@@ -92,21 +104,38 @@ pub fn validate(rows: &[Episode]) -> Result<(), String> {
     let scope = rows.first().ok_or("empty corpus")?.query.scope.as_str();
     let mut ids = BTreeSet::new();
     let mut roots = BTreeMap::new();
+    let mut inputs = BTreeMap::new();
     let mut ranges: BTreeMap<Split, (u64, u64)> = BTreeMap::new();
     for e in rows {
         if e.query.scope != scope || !ids.insert(&e.id) {
             return Err("scope mixing or duplicate episode".into());
+        }
+        let key = (&e.query.scope, e.query.domain, &e.query.text);
+        if let Some(prior) = inputs.insert(key, e.split) {
+            if prior != e.split {
+                return Err("duplicate query across splits".into());
+            }
         }
         if let Some(prior) = roots.insert(&e.root, e.split) {
             if prior != e.split {
                 return Err(format!("root crosses data splits: {}", e.root));
             }
         }
-        ranges.entry(e.split).and_modify(|r| {
-            r.0 = r.0.min(e.time); r.1 = r.1.max(e.time);
-        }).or_insert((e.time, e.time));
+        ranges
+            .entry(e.split)
+            .and_modify(|r| {
+                r.0 = r.0.min(e.time);
+                r.1 = r.1.max(e.time);
+            })
+            .or_insert((e.time, e.time));
     }
-    for split in [Split::Train, Split::Select, Split::FutureA, Split::FutureB, Split::Retention] {
+    for split in [
+        Split::Train,
+        Split::Select,
+        Split::FutureA,
+        Split::FutureB,
+        Split::Retention,
+    ] {
         if !ranges.contains_key(&split) {
             return Err(format!("missing split {split:?}"));
         }
@@ -125,7 +154,10 @@ pub fn validate(rows: &[Episode]) -> Result<(), String> {
 
 pub fn words(text: &str) -> Vec<String> {
     text.split(|c: char| !c.is_alphanumeric())
-        .filter(|w| !w.is_empty()).take(512).map(str::to_lowercase).collect()
+        .filter(|w| !w.is_empty())
+        .take(512)
+        .map(str::to_lowercase)
+        .collect()
 }
 
 pub fn features(q: &Query) -> [f64; WIDTH] {
@@ -134,25 +166,37 @@ pub fn features(q: &Query) -> [f64; WIDTH] {
     x[1] = q.domain as f64;
     for w in words(&q.text) {
         // Non-cryptographic feature hashing ONLY; never an integrity/authority digest.
-        let h = w.bytes().fold(2166136261u32, |a, b| (a ^ u32::from(b)).wrapping_mul(16777619));
+        let h = w.bytes().fold(2166136261u32, |a, b| {
+            (a ^ u32::from(b)).wrapping_mul(16777619)
+        });
         x[2 + h as usize % (WIDTH - 2)] += 1.0;
     }
     let norm = x[2..].iter().map(|v| v * v).sum::<f64>().sqrt().max(1.0);
-    for v in &mut x[2..] { *v /= norm; }
+    for v in &mut x[2..] {
+        *v /= norm;
+    }
     x
 }
 
 pub fn smoke_corpus() -> String {
     let mut s = format!("{HEADER}\n");
-    let symptoms = ["ownership moved value", "borrow mutable reference", "unresolved module import", "mismatched return type"];
-    for (window, name) in ["train", "select", "future-a", "future-b", "retention"].iter().enumerate() {
+    let symptoms = [
+        "ownership moved value",
+        "borrow mutable reference",
+        "unresolved module import",
+        "mismatched return type",
+    ];
+    for (window, name) in ["train", "select", "future-a", "future-b", "retention"]
+        .iter()
+        .enumerate()
+    {
         for i in 0..64 {
             let class = i % CLASSES;
             let domain = (i / CLASSES) % 2;
             let procedure = (class + domain) % CLASSES;
             let time = 1000 + window * 100 + i;
             s.push_str(&format!(
-                "e{window}-{i}\tr{window}-{i}\t{name}\t{time}\tlab-public\t0000000000000000000000000000000000000000\tsynthetic-not-a-build\tfixture:{window}:{i}\t{domain}\t{class}\t{procedure}\t{} workspace variant {i}\n", symptoms[class]));
+                "e{window}-{i}\tr{window}-{i}\t{name}\t{time}\tlab-public\t0000000000000000000000000000000000000000\tsynthetic-not-a-build\tfixture:{window}:{i}\t{domain}\t{class}\t{procedure}\t{} workspace variant {window}-{i}\n", symptoms[class]));
         }
     }
     s

@@ -1,3 +1,4 @@
+#![cfg(target_os = "linux")]
 //! Real child-process crashes/OS locks on one host; NOT a multi-host qualification.
 #[path = "../examples/memory_cell_lab/faults.rs"]
 mod faults;
@@ -9,25 +10,43 @@ use std::process::{Command, ExitStatus, Stdio};
 struct Fixture(PathBuf);
 impl Fixture {
     fn new(name: &str) -> Self {
-        let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
-        let root = std::env::temp_dir().join(format!("hepta-cell-{name}-{}-{nonce}", std::process::id()));
-        LabNode::bootstrap(&root).unwrap(); Self(root)
+        let nonce = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root =
+            std::env::temp_dir().join(format!("hepta-cell-{name}-{}-{nonce}", std::process::id()));
+        LabNode::bootstrap(&root).unwrap();
+        Self(root)
     }
-    fn node(&self) -> LabNode { LabNode::open(&self.0) }
+    fn node(&self) -> LabNode {
+        LabNode::open(&self.0)
+    }
 }
-impl Drop for Fixture { fn drop(&mut self) { let _ = fs::remove_dir_all(&self.0); } }
+impl Drop for Fixture {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.0);
+    }
+}
 
 fn worker(root: &Path, operation: &str, fault: &str) -> Command {
     let mut cmd = Command::new("flock");
-    cmd.arg("-w").arg("10").arg(root.join("writer.lock"))
+    cmd.arg("-w")
+        .arg("10")
+        .arg(root.join("writer.lock"))
         .arg(std::env::current_exe().unwrap())
         .args(["--exact", "node_worker", "--ignored", "--nocapture"])
-        .env("MCELL_NODE", root).env("MCELL_OPERATION", operation).env("MCELL_FAULT", fault)
-        .stdout(Stdio::null()).stderr(Stdio::null());
+        .env("MCELL_NODE", root)
+        .env("MCELL_OPERATION", operation)
+        .env("MCELL_FAULT", fault)
+        .stdout(Stdio::null())
+        .stderr(Stdio::null());
     cmd
 }
 fn run(root: &Path, operation: &str, fault: &str) -> ExitStatus {
-    worker(root, operation, fault).status().expect("Linux flock and child-process execution required")
+    worker(root, operation, fault)
+        .status()
+        .expect("Linux flock and child-process execution required")
 }
 
 #[test]
@@ -45,12 +64,24 @@ fn duplicate_delivery_and_conflicting_payload_survive_reopen() {
 #[test]
 fn two_processes_cannot_commit_one_checkpoint_twice() {
     let f = Fixture::new("cas");
-    let mut a = worker(&f.0, "publish~op1~1~0~a~r1~-", "never").spawn().unwrap();
-    let mut b = worker(&f.0, "publish~op2~1~0~b~r2~-", "never").spawn().unwrap();
-    let successes = usize::from(a.wait().unwrap().success()) + usize::from(b.wait().unwrap().success());
+    let mut a = worker(&f.0, "publish~op1~1~0~a~r1~-", "never")
+        .spawn()
+        .unwrap();
+    let mut b = worker(&f.0, "publish~op2~1~0~b~r2~-", "never")
+        .spawn()
+        .unwrap();
+    let successes =
+        usize::from(a.wait().unwrap().success()) + usize::from(b.wait().unwrap().success());
     assert_eq!(successes, 1);
     let state = f.node().read().unwrap();
-    assert_eq!((state.revision, state.operations.len(), state.artifacts.len()), (1, 1, 1));
+    assert_eq!(
+        (
+            state.revision,
+            state.operations.len(),
+            state.artifacts.len()
+        ),
+        (1, 1, 1)
+    );
 }
 
 #[test]
@@ -68,7 +99,10 @@ fn split_crashes_leave_old_or_complete_new_graph_and_ack_loss_is_idempotent() {
     let commit = "commit-split~op3~1~2~-~-~-";
     assert_eq!(run(&f.0, commit, "after").code(), Some(87));
     let complete = f.node().read().unwrap();
-    assert_eq!(complete.active, ["left".into(), "right".into()].into_iter().collect());
+    assert_eq!(
+        complete.active,
+        ["left".into(), "right".into()].into_iter().collect()
+    );
     assert_eq!(complete.graph_generation, 2);
     assert!(run(&f.0, commit, "never").success());
     assert_eq!(complete, f.node().read().unwrap());
@@ -128,8 +162,12 @@ fn node_worker() {
     let root = PathBuf::from(std::env::var("MCELL_NODE").unwrap());
     let operation = Operation::parse(&std::env::var("MCELL_OPERATION").unwrap()).unwrap();
     let crash = match std::env::var("MCELL_FAULT").unwrap().as_str() {
-        "never" => Crash::Never, "before" => Crash::BeforePublish, "after" => Crash::AfterPublish,
+        "never" => Crash::Never,
+        "before" => Crash::BeforePublish,
+        "after" => Crash::AfterPublish,
         _ => panic!("unknown fault"),
     };
-    if LabNode::open(&root).apply(&operation, crash).is_err() { std::process::exit(3); }
+    if LabNode::open(&root).apply(&operation, crash).is_err() {
+        std::process::exit(3);
+    }
 }

@@ -6,17 +6,24 @@ mod model;
 use data::{Episode, Split};
 use model::{Bundle, Meter};
 
-fn corpus() -> Vec<Episode> { data::parse(&data::smoke_corpus()).unwrap() }
+fn corpus() -> Vec<Episode> {
+    data::parse(&data::smoke_corpus()).unwrap()
+}
 
 #[test]
 fn real_gradient_updates_and_loss_falls_without_test_labels() {
     let rows = corpus();
     let mut bundle = Bundle::new("lab-public".into(), &[8]).unwrap();
     let original = bundle.clone();
-    let loss = |b: &Bundle| rows.iter().filter(|r| r.split == Split::Train).map(|r| {
-        let p = b.infer(&r.query).unwrap();
-        -p[0][r.targets[0]].ln() - p[1][r.targets[1]].ln()
-    }).sum::<f64>();
+    let loss = |b: &Bundle| {
+        rows.iter()
+            .filter(|r| r.split == Split::Train)
+            .map(|r| {
+                let p = b.infer(&r.query).unwrap();
+                -p[0][r.targets[0]].ln() - p[1][r.targets[1]].ln()
+            })
+            .sum::<f64>()
+    };
     let before = loss(&bundle);
     let mut meter = Meter::default();
     bundle.train(&rows, &mut meter, 8_000_000).unwrap();
@@ -25,10 +32,14 @@ fn real_gradient_updates_and_loss_falls_without_test_labels() {
     assert!(meter.train_ops <= 8_000_000 && meter.updates > 0);
     let mut poisoned = rows.clone();
     for row in &mut poisoned {
-        if row.split != Split::Train { row.targets = [3, 3]; }
+        if row.split != Split::Train {
+            row.targets = [3, 3];
+        }
     }
     let mut other = original;
-    other.train(&poisoned, &mut Meter::default(), 8_000_000).unwrap();
+    other
+        .train(&poisoned, &mut Meter::default(), 8_000_000)
+        .unwrap();
     assert_eq!(bundle, other);
 }
 
@@ -64,4 +75,11 @@ fn static_and_shared_capacity_are_exactly_equal() {
     let static_cells = Bundle::new("lab-public".into(), &[4, 4]).unwrap();
     assert_eq!(shared.parameters(), static_cells.parameters());
     assert!(model::Cell::new(0).is_err());
+}
+
+#[test]
+fn duplicate_observations_do_not_hide_behind_new_root_names() {
+    let mut rows = corpus();
+    rows[64].query = rows[0].query.clone();
+    assert!(data::validate(&rows).is_err());
 }

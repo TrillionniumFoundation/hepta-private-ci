@@ -38,8 +38,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
     if args.first().map(String::as_str) == Some("infer-transfer") {
         return match args.as_slice() {
-            [_, input, output] => transfer::infer(Path::new(input), Path::new(output), None)
-                .map_err(Into::into),
+            [_, input, output] => {
+                transfer::infer(Path::new(input), Path::new(output), None).map_err(Into::into)
+            }
             [_, input, output, revoked] => transfer::infer(
                 Path::new(input),
                 Path::new(output),
@@ -49,7 +50,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             _ => Err("usage: infer-transfer INPUT_DIR OUTPUT.tsv [CURRENT_REVOCATIONS]".into()),
         };
     }
-    let usage = "usage: memory_cell_lab smoke OUT | run CORPUS.tsv OUT | build-smoke GENERATOR_SHA OUT";
+    let usage =
+        "usage: memory_cell_lab smoke OUT | run CORPUS.tsv OUT | build-smoke GENERATOR_SHA OUT";
     let output = PathBuf::from(args.last().ok_or(usage)?);
     if !matches!(
         args.first().map(String::as_str),
@@ -113,7 +115,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let actual_bytes = retained_bytes(&output)?;
     fs::write(
         output.join("storage.txt"),
-        format!("retained_regular_file_bytes_before_this_receipt={actual_bytes}\nincludes_corpus_all_control_artifacts_and_compiler_observations=true\n"),
+        format!(
+            "retained_regular_file_bytes_before_this_receipt={actual_bytes}\nincludes_corpus_all_control_artifacts_and_compiler_observations=true\n"
+        ),
     )?;
     println!("qualification_only=true superiority_claim=false");
     Ok(())

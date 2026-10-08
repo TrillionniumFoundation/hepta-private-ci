@@ -1,11 +1,11 @@
+#[path = "../examples/memory_cell_lab/controls.rs"]
+mod controls;
 #[path = "../examples/memory_cell_lab/data.rs"]
 mod data;
 #[path = "../examples/memory_cell_lab/model.rs"]
 mod model;
 #[path = "../examples/memory_cell_lab/retrieval.rs"]
 mod retrieval;
-#[path = "../examples/memory_cell_lab/controls.rs"]
-mod controls;
 
 #[test]
 fn all_controls_use_bounded_compute_and_future_labels_cannot_select_topology() {
@@ -13,7 +13,10 @@ fn all_controls_use_bounded_compute_and_future_labels_cannot_select_topology() {
     let first = controls::train_arms(&rows).unwrap();
     let mut poisoned = rows.clone();
     for r in &mut poisoned {
-        if matches!(r.split, data::Split::FutureA | data::Split::FutureB | data::Split::Retention) {
+        if matches!(
+            r.split,
+            data::Split::FutureA | data::Split::FutureB | data::Split::Retention
+        ) {
             r.targets = [3, 3];
         }
     }
@@ -24,18 +27,35 @@ fn all_controls_use_bounded_compute_and_future_labels_cannot_select_topology() {
         assert_eq!(a.meter, b.meter);
         assert!(a.meter.train_ops <= controls::TRAIN_CEILING);
         let prediction = controls::predict(a, &rows, &rows[128].query).unwrap();
-        assert!(prediction.probabilities.iter().flatten().all(|p| p.is_finite()));
+        assert!(
+            prediction
+                .probabilities
+                .iter()
+                .flatten()
+                .all(|p| p.is_finite())
+        );
     }
-    assert_eq!(first[0].bundle.as_ref().unwrap().parameters(), first[1].bundle.as_ref().unwrap().parameters());
-    assert_eq!(first[0].bundle.as_ref().unwrap().parameters(), first[4].bundle.as_ref().unwrap().parameters());
-    assert_eq!(first[2].bundle.as_ref().unwrap().parameters(), first[3].bundle.as_ref().unwrap().parameters());
+    assert_eq!(
+        first[0].bundle.as_ref().unwrap().parameters(),
+        first[1].bundle.as_ref().unwrap().parameters()
+    );
+    assert_eq!(
+        first[0].bundle.as_ref().unwrap().parameters(),
+        first[4].bundle.as_ref().unwrap().parameters()
+    );
+    assert_eq!(
+        first[2].bundle.as_ref().unwrap().parameters(),
+        first[3].bundle.as_ref().unwrap().parameters()
+    );
 }
 
 #[test]
 fn split_and_merge_preserve_budget_lineage_and_reject_wrong_generation() {
     let rows = data::parse(&data::smoke_corpus()).unwrap();
     let mut parent = model::Bundle::new("lab-public".into(), &[8]).unwrap();
-    parent.train(&rows, &mut model::Meter::default(), 500_000).unwrap();
+    parent
+        .train(&rows, &mut model::Meter::default(), 500_000)
+        .unwrap();
     let children = controls::split(&parent).unwrap();
     assert_eq!(children.parameters(), parent.parameters());
     assert_eq!(children.roots, parent.roots);
