@@ -8,6 +8,8 @@
 #![forbid(unsafe_code)]
 
 mod cell_split;
+mod cell_split_bundle_owner;
+mod cell_split_wire;
 mod organs;
 mod topology_execution;
 
@@ -62,6 +64,13 @@ pub use cell_split::CellSplitMigrationOwnerV1;
 pub use cell_split::CellSplitParentStateV1;
 pub use cell_split::CellSplitPhaseV1;
 pub use cell_split::CellSplitPlanV1;
+pub use cell_split_bundle_owner::CellSplitParameterBundleSetMigrationOwnerV1;
+pub use cell_split_wire::CELL_SPLIT_SNAPSHOT_WIRE_PRODUCER_V1;
+pub use cell_split_wire::CELL_SPLIT_SNAPSHOT_WIRE_SCHEMA_V1;
+pub use cell_split_wire::CellSplitSnapshotWireV1;
+pub use cell_split_wire::CellSplitWireErrorV1;
+pub use cell_split_wire::decode_cell_split_snapshot_wire_v1;
+pub use cell_split_wire::encode_cell_split_snapshot_wire_v1;
 pub use topology_execution::RuntimeTopologyApplyReceiptV1;
 pub use topology_execution::RuntimeTopologyApplyRequestV1;
 pub use topology_execution::RuntimeTopologyExecutionError;

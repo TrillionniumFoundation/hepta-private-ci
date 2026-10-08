@@ -351,3 +351,26 @@ fn missing_child_is_rejected_before_any_snapshot() {
         Err(CellSplitMigrationError::PartialChild { child_id }) if child_id == "child-b"
     ));
 }
+
+#[test]
+fn stale_snapshot_is_rejected_without_mutating_the_parent() {
+    let parent = parent();
+    let original = parent.clone();
+    let mut owner = CellSplitMigrationOwnerV1::new_in_memory(
+        plan(&parent),
+        digest("handoff"),
+        parent,
+        children(),
+    )
+    .expect("owner");
+    let snapshot = owner.snapshot(generation(7)).expect("snapshot");
+    let mut stale = snapshot.clone();
+    stale.push(b' ');
+    assert!(owner.migrate(&stale, generation(7), generation(8)).is_err());
+    assert_eq!(owner.state().parent, original);
+    assert!(
+        owner
+            .rollback(&snapshot, generation(7), generation(8))
+            .is_ok()
+    );
+}

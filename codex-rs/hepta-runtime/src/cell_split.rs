@@ -8,6 +8,7 @@
 //! fails the complete split. A small logically append-only witness journal makes a
 //! prepared-but-uncommitted transition visible after restart.
 
+use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs;
@@ -16,6 +17,9 @@ use std::path::PathBuf;
 
 use codex_hepta_control_plane::OrganMigrationError;
 use codex_hepta_control_plane::OrganStateMigrationV1;
+use codex_hepta_learning_artifacts::CellParameterBundleOwnerV1;
+use codex_hepta_learning_artifacts::CellParameterBundlePublishRequestV1;
+use codex_hepta_learning_artifacts::CellParameterBundleV1;
 use codex_hepta_types::Digest32;
 
 #[path = "cell_split_persistence.rs"]
@@ -183,6 +187,7 @@ pub enum CellSplitMigrationError {
     ImmutableWeightsChanged { child_id: String },
     CacheGenerationMismatch { child_id: String },
     CompareAndSwap,
+    ParameterBundleReceiptMismatch,
     JournalCorrupt,
     JournalIo,
     Quarantined,
@@ -210,6 +215,9 @@ pub struct CellSplitMigrationOwnerV1 {
     before_state: Option<CellSplitCommittedStateV1>,
     snapshot: Option<Vec<u8>>,
     failpoint: Option<CellSplitFailPointV1>,
+    parameter_bundle_owner: Option<CellParameterBundleOwnerV1>,
+    parameter_bundle_candidates: BTreeMap<String, CellParameterBundleV1>,
+    before_parameter_bundle_owner: Option<CellParameterBundleOwnerV1>,
 }
 
 impl CellSplitMigrationOwnerV1 {
@@ -220,7 +228,33 @@ impl CellSplitMigrationOwnerV1 {
         parent: CellSplitParentStateV1,
         children: Vec<Box<dyn CellSplitChildMigrationV1>>,
     ) -> Result<Self, CellSplitMigrationError> {
+        Self::new_in_memory_with_parameter_bundles(
+            plan,
+            handoff_plan_digest,
+            parent,
+            children,
+            None,
+            Vec::new(),
+        )
+    }
+
+    /// Construct a split owner with a CAS-owned candidate bundle set. The
+    /// bundle candidates are supplied by an independent selector and are
+    /// committed only after every child state has passed validation.
+    pub fn new_in_memory_with_parameter_bundles(
+        plan: CellSplitPlanV1,
+        handoff_plan_digest: Digest32,
+        parent: CellSplitParentStateV1,
+        children: Vec<Box<dyn CellSplitChildMigrationV1>>,
+        parameter_bundle_owner: Option<CellParameterBundleOwnerV1>,
+        parameter_bundle_candidates: Vec<CellParameterBundleV1>,
+    ) -> Result<Self, CellSplitMigrationError> {
         validate_plan(&plan, &parent, &children)?;
+        let parameter_bundle_candidates = validate_parameter_bundle_candidates(
+            &plan,
+            parameter_bundle_owner.as_ref(),
+            parameter_bundle_candidates,
+        )?;
         Ok(Self {
             plan,
             handoff_plan_digest,
@@ -239,6 +273,9 @@ impl CellSplitMigrationOwnerV1 {
             before_state: None,
             snapshot: None,
             failpoint: None,
+            parameter_bundle_owner,
+            parameter_bundle_candidates,
+            before_parameter_bundle_owner: None,
         })
     }
 
@@ -252,7 +289,36 @@ impl CellSplitMigrationOwnerV1 {
         parent: CellSplitParentStateV1,
         children: Vec<Box<dyn CellSplitChildMigrationV1>>,
     ) -> Result<Self, CellSplitMigrationError> {
-        let mut owner = Self::new_in_memory(plan, handoff_plan_digest, parent, children)?;
+        Self::create_persistent_with_parameter_bundles(
+            path,
+            plan,
+            handoff_plan_digest,
+            parent,
+            children,
+            None,
+            Vec::new(),
+        )
+    }
+
+    /// Create a durable split owner whose CAS owner is persisted in the same
+    /// hash-chained envelope as the migration state.
+    pub fn create_persistent_with_parameter_bundles(
+        path: impl AsRef<Path>,
+        plan: CellSplitPlanV1,
+        handoff_plan_digest: Digest32,
+        parent: CellSplitParentStateV1,
+        children: Vec<Box<dyn CellSplitChildMigrationV1>>,
+        parameter_bundle_owner: Option<CellParameterBundleOwnerV1>,
+        parameter_bundle_candidates: Vec<CellParameterBundleV1>,
+    ) -> Result<Self, CellSplitMigrationError> {
+        let mut owner = Self::new_in_memory_with_parameter_bundles(
+            plan,
+            handoff_plan_digest,
+            parent,
+            children,
+            parameter_bundle_owner,
+            parameter_bundle_candidates,
+        )?;
         owner.journal_path = Some(path.as_ref().to_owned());
         owner.persist(CellSplitPhaseV1::Empty)?;
         Ok(owner)
@@ -272,7 +338,7 @@ impl CellSplitMigrationOwnerV1 {
         let envelope: PersistedEnvelope =
             serde_json::from_slice(&bytes).map_err(|_| CellSplitMigrationError::JournalCorrupt)?;
         validate_envelope(&envelope)?;
-        let state = decode_state(&envelope.state)?;
+        let (state, parameter_bundle_owner) = decode_state(&envelope.state)?;
         validate_plan(&plan, &state.parent, &children)?;
         if envelope.writer_fence != plan.predecessor_writer_fence
             && envelope.writer_fence != plan.successor_writer_fence
@@ -305,11 +371,44 @@ impl CellSplitMigrationOwnerV1 {
             before_state: None,
             snapshot: None,
             failpoint: None,
+            parameter_bundle_owner,
+            parameter_bundle_candidates: BTreeMap::new(),
+            before_parameter_bundle_owner: None,
         })
+    }
+
+    /// Reopen a durable owner with the independently selected bundle
+    /// candidates needed for a future migration. The owner snapshot in the
+    /// envelope remains authoritative; the supplied candidates are never
+    /// trusted until they pass the same CAS and lineage checks.
+    pub fn reopen_persistent_with_parameter_bundles(
+        path: impl AsRef<Path>,
+        plan: CellSplitPlanV1,
+        handoff_plan_digest: Digest32,
+        children: Vec<Box<dyn CellSplitChildMigrationV1>>,
+        parameter_bundle_candidates: Vec<CellParameterBundleV1>,
+    ) -> Result<Self, CellSplitMigrationError> {
+        let mut owner = Self::reopen_persistent(path, plan, handoff_plan_digest, children)?;
+        owner.parameter_bundle_candidates = validate_parameter_bundle_candidates(
+            &owner.plan,
+            owner.parameter_bundle_owner.as_ref(),
+            parameter_bundle_candidates,
+        )?;
+        Ok(owner)
     }
 
     pub fn state(&self) -> &CellSplitCommittedStateV1 {
         &self.state
+    }
+
+    #[must_use]
+    pub fn plan(&self) -> &CellSplitPlanV1 {
+        &self.plan
+    }
+
+    #[must_use]
+    pub fn parameter_bundle_owner(&self) -> Option<&CellParameterBundleOwnerV1> {
+        self.parameter_bundle_owner.as_ref()
     }
 
     pub fn phase(&self) -> CellSplitPhaseV1 {
@@ -348,7 +447,7 @@ impl CellSplitMigrationOwnerV1 {
     }
 
     fn persist(&mut self, phase: CellSplitPhaseV1) -> Result<(), CellSplitMigrationError> {
-        let persisted = encode_state(&self.state)?;
+        let persisted = encode_state(&self.state, self.parameter_bundle_owner.as_ref())?;
         let next_sequence = self
             .journal
             .sequence
@@ -435,7 +534,7 @@ impl OrganStateMigrationV1 for CellSplitMigrationOwnerV1 {
                         child_id: "parent".to_owned(),
                     });
                 }
-                let persisted = encode_state(&self.state)?;
+                let persisted = encode_state(&self.state, self.parameter_bundle_owner.as_ref())?;
                 let snapshot = PersistedSnapshot {
                     version: JOURNAL_VERSION,
                     plan_digest: plan_digest(&self.plan).to_string(),
@@ -451,6 +550,7 @@ impl OrganStateMigrationV1 for CellSplitMigrationOwnerV1 {
                     });
                 }
                 self.before_state = Some(self.state.clone());
+                self.before_parameter_bundle_owner = self.parameter_bundle_owner.clone();
                 self.snapshot = Some(bytes.clone());
                 self.phase = CellSplitPhaseV1::Prepared;
                 self.persist(CellSplitPhaseV1::Prepared)?;
@@ -523,8 +623,14 @@ impl OrganStateMigrationV1 for CellSplitMigrationOwnerV1 {
                     self.failpoint = None;
                     return Err(CellSplitMigrationError::CompareAndSwap);
                 }
+                let staged_parameter_bundle_owner = self.stage_parameter_bundles()?;
                 self.state.children = prepared;
-                self.persist(CellSplitPhaseV1::Committed)?;
+                let previous_parameter_bundle_owner = self.parameter_bundle_owner.clone();
+                self.parameter_bundle_owner = staged_parameter_bundle_owner;
+                if let Err(error) = self.persist(CellSplitPhaseV1::Committed) {
+                    self.parameter_bundle_owner = previous_parameter_bundle_owner;
+                    return Err(error);
+                }
                 self.phase = CellSplitPhaseV1::Committed;
                 Ok(())
             })();
@@ -569,6 +675,7 @@ impl OrganStateMigrationV1 for CellSplitMigrationOwnerV1 {
                 .take()
                 .ok_or(CellSplitMigrationError::RollbackFailed)?;
             self.state = previous;
+            self.parameter_bundle_owner = self.before_parameter_bundle_owner.take();
             self.snapshot = None;
             self.phase = CellSplitPhaseV1::RolledBack;
             if let Err(error) = self.persist(CellSplitPhaseV1::RolledBack) {
@@ -578,6 +685,52 @@ impl OrganStateMigrationV1 for CellSplitMigrationOwnerV1 {
             Ok(())
         })();
         result.map_err(to_organ_error)
+    }
+}
+
+impl CellSplitMigrationOwnerV1 {
+    fn stage_parameter_bundles(
+        &self,
+    ) -> Result<Option<CellParameterBundleOwnerV1>, CellSplitMigrationError> {
+        let Some(owner) = self.parameter_bundle_owner.as_ref() else {
+            if !self.parameter_bundle_candidates.is_empty() {
+                return Err(CellSplitMigrationError::InvalidState(
+                    "parameter bundle owner is missing",
+                ));
+            }
+            return Ok(None);
+        };
+        if self.parameter_bundle_candidates.len() != self.plan.children.len() {
+            return Err(CellSplitMigrationError::PartialChild {
+                child_id: "parameter-bundle-set".to_owned(),
+            });
+        }
+        let mut staged = owner.clone();
+        let mut expected_head_digest = staged.head_digest();
+        for spec in &self.plan.children {
+            let bundle = self
+                .parameter_bundle_candidates
+                .get(&spec.child_id)
+                .ok_or_else(|| CellSplitMigrationError::PartialChild {
+                    child_id: spec.child_id.clone(),
+                })?;
+            let receipt = staged
+                .publish(CellParameterBundlePublishRequestV1 {
+                    operation_id: bundle.bundle_id.clone(),
+                    expected_head_digest,
+                    bundle: bundle.clone(),
+                })
+                .map_err(|_| CellSplitMigrationError::ParameterBundleReceiptMismatch)?;
+            if receipt.bundle_id != bundle.bundle_id
+                || receipt.bundle_digest != bundle.bundle_digest
+                || receipt.predecessor_head_digest != expected_head_digest
+                || receipt.authority.grants_any()
+            {
+                return Err(CellSplitMigrationError::ParameterBundleReceiptMismatch);
+            }
+            expected_head_digest = receipt.head_digest;
+        }
+        Ok(Some(staged))
     }
 }
 
@@ -632,6 +785,48 @@ fn validate_plan(
     }
     validate_bytes(parent)?;
     Ok(())
+}
+
+fn validate_parameter_bundle_candidates(
+    plan: &CellSplitPlanV1,
+    owner: Option<&CellParameterBundleOwnerV1>,
+    candidates: Vec<CellParameterBundleV1>,
+) -> Result<BTreeMap<String, CellParameterBundleV1>, CellSplitMigrationError> {
+    if owner.is_none() && !candidates.is_empty() {
+        return Err(CellSplitMigrationError::InvalidState(
+            "parameter bundle owner is missing",
+        ));
+    }
+    if owner.is_some() && candidates.len() != plan.children.len() {
+        return Err(CellSplitMigrationError::PartialChild {
+            child_id: "parameter-bundle-set".to_owned(),
+        });
+    }
+    let mut by_child = BTreeMap::new();
+    for bundle in candidates {
+        bundle
+            .validate()
+            .map_err(|_| CellSplitMigrationError::InvalidState("parameter bundle candidate"))?;
+        if bundle.identity.generation.get() != plan.candidate_generation {
+            return Err(CellSplitMigrationError::GenerationFence);
+        }
+        if let Some(owner) = owner
+            && bundle.identity.scope_digest != owner.scope_digest()
+        {
+            return Err(CellSplitMigrationError::InvalidState(
+                "parameter bundle scope",
+            ));
+        }
+        let child_id = bundle.identity.child_id.to_string();
+        if !plan.children.iter().any(|spec| spec.child_id == child_id)
+            || by_child.insert(child_id, bundle).is_some()
+        {
+            return Err(CellSplitMigrationError::PartialChild {
+                child_id: "parameter-bundle-identity".to_owned(),
+            });
+        }
+    }
+    Ok(by_child)
 }
 
 fn validate_bytes(parent: &CellSplitParentStateV1) -> Result<(), CellSplitMigrationError> {

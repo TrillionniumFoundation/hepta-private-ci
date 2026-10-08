@@ -12,6 +12,10 @@ use super::cell_parameter_bundle::{
     CellParameterBundlePublishRequestV1, CellParameterBundleReceiptV1, CellParameterBundleV1,
     digest_head,
 };
+use super::cell_parameter_bundle_wire::{
+    CellParameterBundleOwnerSnapshotWireV1, CellParameterBundleWireErrorV1,
+    decode_cell_parameter_bundle_owner_snapshot_v1, encode_cell_parameter_bundle_owner_snapshot_v1,
+};
 
 const MAX_BUNDLES: usize = 4_096;
 
@@ -53,6 +57,60 @@ impl CellParameterBundleOwnerV1 {
     #[must_use]
     pub fn records(&self) -> &[CellParameterBundleV1] {
         &self.records
+    }
+
+    /// Return the immutable receipts in sequence order for durable snapshots.
+    #[must_use]
+    pub fn receipts(&self) -> Vec<CellParameterBundleReceiptV1> {
+        let mut receipts: Vec<_> = self.receipts.values().cloned().collect();
+        receipts.sort_by_key(|receipt| receipt.sequence);
+        receipts
+    }
+
+    /// Encode the complete owner journal state. The bytes are a transport DTO;
+    /// decoding still rebuilds the CAS chain and replays every receipt.
+    pub fn snapshot_wire(&self) -> Result<Vec<u8>, CellParameterBundleWireErrorV1> {
+        encode_cell_parameter_bundle_owner_snapshot_v1(self)
+    }
+
+    /// Reopen an owner only after rebuilding its immutable records and exact
+    /// receipt chain. Any missing, forged, or reordered receipt fails closed.
+    pub fn reopen_wire(bytes: &[u8]) -> Result<Self, CellParameterBundleWireErrorV1> {
+        let snapshot = decode_cell_parameter_bundle_owner_snapshot_v1(bytes)?;
+        Self::from_snapshot(snapshot)
+    }
+
+    pub(crate) fn from_snapshot(
+        snapshot: CellParameterBundleOwnerSnapshotWireV1,
+    ) -> Result<Self, CellParameterBundleWireErrorV1> {
+        let (scope_digest, head_digest, mut records, mut receipts) = snapshot.try_into_parts()?;
+        let mut owner = Self::new(scope_digest).map_err(CellParameterBundleWireErrorV1::Bundle)?;
+        if records.len() != receipts.len() {
+            return Err(CellParameterBundleWireErrorV1::ReceiptMismatch);
+        }
+        records.sort_by_key(|record| record.identity.generation);
+        receipts.sort_by_key(|receipt| receipt.sequence);
+        for receipt in receipts {
+            let bundle = records
+                .iter()
+                .find(|bundle| bundle.bundle_id == receipt.bundle_id)
+                .ok_or(CellParameterBundleWireErrorV1::ReceiptMismatch)?
+                .clone();
+            let replayed = owner
+                .publish(CellParameterBundlePublishRequestV1 {
+                    operation_id: receipt.operation_id.clone(),
+                    expected_head_digest: receipt.predecessor_head_digest,
+                    bundle,
+                })
+                .map_err(CellParameterBundleWireErrorV1::Bundle)?;
+            if replayed != receipt {
+                return Err(CellParameterBundleWireErrorV1::ReceiptMismatch);
+            }
+        }
+        if owner.head_digest != head_digest {
+            return Err(CellParameterBundleWireErrorV1::ReceiptMismatch);
+        }
+        Ok(owner)
     }
 
     #[must_use]

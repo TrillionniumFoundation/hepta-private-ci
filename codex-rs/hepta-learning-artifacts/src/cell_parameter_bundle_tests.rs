@@ -1,5 +1,8 @@
 use super::*;
 use crate::CellParameterBundleOwnerV1;
+use crate::decode_cell_parameter_bundle_owner_snapshot_v1;
+use crate::decode_cell_parameter_bundle_wire_v1;
+use crate::encode_cell_parameter_bundle_wire_v1;
 
 use codex_hepta_types::Generation;
 
@@ -295,4 +298,40 @@ fn rollback_is_a_new_generation_and_conflicts_fail_closed() {
         receipt.bundle_id
     );
     assert_eq!(first_receipt.sequence, 1);
+}
+
+#[test]
+fn bundle_wire_round_trip_rejects_unknown_fields_and_owner_receipt_drift() {
+    let bundle = genesis();
+    let encoded = encode_cell_parameter_bundle_wire_v1(&bundle).expect("wire");
+    assert_eq!(
+        decode_cell_parameter_bundle_wire_v1(&encoded).expect("decode"),
+        bundle
+    );
+
+    let mut unknown: serde_json::Value = serde_json::from_slice(&encoded).expect("json");
+    unknown["critical_unknown"] = serde_json::json!(true);
+    assert!(
+        decode_cell_parameter_bundle_wire_v1(&serde_json::to_vec(&unknown).expect("unknown wire"))
+            .is_err()
+    );
+
+    let mut owner = CellParameterBundleOwnerV1::new(bundle.identity.scope_digest).expect("owner");
+    let receipt = owner.append(Digest32::ZERO, bundle).expect("append");
+    let reopened =
+        CellParameterBundleOwnerV1::reopen_wire(&owner.snapshot_wire().expect("snapshot"))
+            .expect("reopen");
+    assert_eq!(reopened.records(), owner.records());
+    assert_eq!(reopened.head_digest(), owner.head_digest());
+    let mut snapshot: serde_json::Value =
+        serde_json::from_slice(&owner.snapshot_wire().expect("snapshot")).expect("json");
+    snapshot["receipts"][0]["head_digest"] =
+        serde_json::json!(Digest32::of_bytes(b"drift").to_string());
+    let drift = serde_json::to_vec(&snapshot).expect("drift wire");
+    assert!(decode_cell_parameter_bundle_owner_snapshot_v1(&drift).is_ok());
+    assert!(CellParameterBundleOwnerV1::reopen_wire(&drift).is_err());
+    assert_eq!(
+        owner.replay_receipt(&receipt).expect("receipt").head_digest,
+        receipt.head_digest
+    );
 }

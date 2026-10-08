@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
+use codex_hepta_learning_artifacts::CellParameterBundleOwnerV1;
 use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
@@ -39,6 +40,8 @@ pub(super) struct PersistedEnvelope {
 pub(super) struct PersistedCommittedState {
     pub(super) parent: PersistedParentState,
     pub(super) children: Vec<PersistedChildState>,
+    #[serde(default)]
+    pub(super) parameter_bundle_owner: Option<Vec<u8>>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -155,6 +158,7 @@ pub(super) fn write_atomic(
 
 pub(super) fn encode_state(
     state: &CellSplitCommittedStateV1,
+    parameter_bundle_owner: Option<&CellParameterBundleOwnerV1>,
 ) -> Result<PersistedCommittedState, CellSplitMigrationError> {
     Ok(PersistedCommittedState {
         parent: PersistedParentState {
@@ -193,52 +197,71 @@ pub(super) fn encode_state(
                 message_fence: child.message_fence.to_string(),
             })
             .collect(),
+        parameter_bundle_owner: parameter_bundle_owner
+            .map(CellParameterBundleOwnerV1::snapshot_wire)
+            .transpose()
+            .map_err(|_| CellSplitMigrationError::JournalCorrupt)?,
     })
 }
 
 pub(super) fn decode_state(
     state: &PersistedCommittedState,
-) -> Result<CellSplitCommittedStateV1, CellSplitMigrationError> {
-    Ok(CellSplitCommittedStateV1 {
-        parent: CellSplitParentStateV1 {
-            checkpoint: CellSplitCheckpointV1 {
-                generation: state.parent.checkpoint_generation,
-                digest: parse_digest(&state.parent.checkpoint_digest)?,
-                committed: state.parent.checkpoint_committed,
+) -> Result<
+    (
+        CellSplitCommittedStateV1,
+        Option<CellParameterBundleOwnerV1>,
+    ),
+    CellSplitMigrationError,
+> {
+    let owner = state
+        .parameter_bundle_owner
+        .as_deref()
+        .map(CellParameterBundleOwnerV1::reopen_wire)
+        .transpose()
+        .map_err(|_| CellSplitMigrationError::JournalCorrupt)?;
+    Ok((
+        CellSplitCommittedStateV1 {
+            parent: CellSplitParentStateV1 {
+                checkpoint: CellSplitCheckpointV1 {
+                    generation: state.parent.checkpoint_generation,
+                    digest: parse_digest(&state.parent.checkpoint_digest)?,
+                    committed: state.parent.checkpoint_committed,
+                },
+                selected_weights: parse_digest(&state.parent.selected_weights)?,
+                recurrent_state: state.parent.recurrent_state.clone(),
+                eligibility_state: state.parent.eligibility_state.clone(),
+                optimizer_state: state.parent.optimizer_state.clone(),
+                cache: state.parent.cache.clone(),
+                cache_generation: state.parent.cache_generation,
+                in_flight: state
+                    .parent
+                    .in_flight
+                    .iter()
+                    .map(|message| CellSplitInFlightMessageV1 {
+                        message_id: message.message_id.clone(),
+                        source_generation: message.source_generation,
+                        payload: message.payload.clone(),
+                    })
+                    .collect(),
             },
-            selected_weights: parse_digest(&state.parent.selected_weights)?,
-            recurrent_state: state.parent.recurrent_state.clone(),
-            eligibility_state: state.parent.eligibility_state.clone(),
-            optimizer_state: state.parent.optimizer_state.clone(),
-            cache: state.parent.cache.clone(),
-            cache_generation: state.parent.cache_generation,
-            in_flight: state
-                .parent
-                .in_flight
+            children: state
+                .children
                 .iter()
-                .map(|message| CellSplitInFlightMessageV1 {
-                    message_id: message.message_id.clone(),
-                    source_generation: message.source_generation,
-                    payload: message.payload.clone(),
+                .map(|child| {
+                    Ok(CellSplitChildStateV1 {
+                        child_id: child.child_id.clone(),
+                        candidate_weights: parse_digest(&child.candidate_weights)?,
+                        selected_weights: parse_digest(&child.selected_weights)?,
+                        recurrent_state: child.recurrent_state.clone(),
+                        eligibility_state: child.eligibility_state.clone(),
+                        optimizer_state: child.optimizer_state.clone(),
+                        cache: child.cache.clone(),
+                        cache_generation: child.cache_generation,
+                        message_fence: parse_digest(&child.message_fence)?,
+                    })
                 })
-                .collect(),
+                .collect::<Result<Vec<_>, CellSplitMigrationError>>()?,
         },
-        children: state
-            .children
-            .iter()
-            .map(|child| {
-                Ok(CellSplitChildStateV1 {
-                    child_id: child.child_id.clone(),
-                    candidate_weights: parse_digest(&child.candidate_weights)?,
-                    selected_weights: parse_digest(&child.selected_weights)?,
-                    recurrent_state: child.recurrent_state.clone(),
-                    eligibility_state: child.eligibility_state.clone(),
-                    optimizer_state: child.optimizer_state.clone(),
-                    cache: child.cache.clone(),
-                    cache_generation: child.cache_generation,
-                    message_fence: parse_digest(&child.message_fence)?,
-                })
-            })
-            .collect::<Result<Vec<_>, CellSplitMigrationError>>()?,
-    })
+        owner,
+    ))
 }
