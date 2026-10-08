@@ -56,3 +56,23 @@ new native storage capacity activation, genuine third-party model training/
 adoption, independently operated WAN campaign, physical power-loss, public
 service SLA, final-use override, production consensus, or release is accepted.
 
+
+## Seven-workstream convergence onto Chain #250
+
+The current stacked PoN pair runner is re-pinned to Chain PR #250 head
+`1bd94e331a238a94904e8c82749781a7173f4317`, its exact base
+`560d44ac28fee7b073d1740e372839ab52f057b6`, and the observed
+prospective merge `dc67f953356d514ac51df9ce477692b5d7bfeb37`.
+The previous Chain #248 tuple above remains historical; it is not a
+claim about the new source. Chain #250 adds a real non-tip packet-status
+height/work verification and heavier-branch reorganization test on the
+existing strict work-cost evidence/arrival screening owner. No new chain
+work rule or model authorization is introduced. x64/ARM64 and exact-head/
+base-merge paired CI must execute again on this exact combination.
+
+The previous #248 source's native sustained-service test reported a failed
+honest state equality assertion in one hosted run. Neither the new
+packet-status test nor a passing paired binary smoke erases that failure.
+Subsequent work must diagnose the actual full-state discrepancy and rerun
+the unweakened simultaneous honest/hostile arrival campaign. Independent
+operators, future model efficacy, production, and release remain false.
