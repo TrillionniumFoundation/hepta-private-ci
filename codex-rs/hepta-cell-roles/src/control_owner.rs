@@ -48,7 +48,7 @@ impl ControlOperationKindV1 {
         }
     }
 
-    const fn tag(self) -> u8 {
+    pub const fn tag(self) -> u8 {
         match self {
             Self::Planner => 0,
             Self::Router => 1,
@@ -245,6 +245,7 @@ pub enum ControlOwnerErrorV1 {
     UnexpectedReconciliation,
     DurableIo,
     InvalidDurableSnapshot,
+    BackendReceiptMismatch,
 }
 
 impl fmt::Display for ControlOwnerErrorV1 {
@@ -340,6 +341,20 @@ impl DurableControlRoleOwnerV1 {
         &self.inner
     }
 
+    /// Return the immutable dispatch intent that is bound to one durable
+    /// outbox identity. Downstream owners must submit this exact value; a
+    /// caller cannot construct a replacement payload after local forwarding.
+    #[must_use]
+    pub fn dispatch_intent(&self, dispatch_id: &StableId) -> Option<&ControlDispatchIntentV1> {
+        self.inner.dispatch_intent(dispatch_id)
+    }
+
+    /// Return the locally persisted receipt for one dispatch after reopen.
+    #[must_use]
+    pub fn dispatch_receipt(&self, dispatch_id: &StableId) -> Option<&ControlDispatchReceiptV1> {
+        self.inner.dispatch_receipt(dispatch_id)
+    }
+
     pub fn set_now_ms(&mut self, now_ms: u64) -> Result<(), ControlOwnerErrorV1> {
         let mut candidate = self.inner.clone();
         candidate.set_now_ms(now_ms);
@@ -410,6 +425,18 @@ impl ControlRoleOwnerV1 for DurableControlRoleOwnerV1 {
 }
 
 impl InMemoryControlRoleOwnerV1 {
+    /// Return the immutable dispatch intent bound to one outbox identity.
+    #[must_use]
+    pub fn dispatch_intent(&self, dispatch_id: &StableId) -> Option<&ControlDispatchIntentV1> {
+        self.records.get(dispatch_id).map(|record| &record.intent)
+    }
+
+    /// Return the local lifecycle receipt for one dispatch.
+    #[must_use]
+    pub fn dispatch_receipt(&self, dispatch_id: &StableId) -> Option<&ControlDispatchReceiptV1> {
+        self.records.get(dispatch_id).map(|record| &record.receipt)
+    }
+
     /// Set the owner clock used for expiry checks.  A production owner must
     /// source this value from its durable host clock, never from the request.
     pub fn set_now_ms(&mut self, now_ms: u64) {

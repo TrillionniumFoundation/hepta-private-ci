@@ -14,6 +14,8 @@ use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
 
+use codex_hepta_cell_roles::CellAdapterContextV1;
+use codex_hepta_cell_roles::LearnedRoleRuntimeInputV1;
 use codex_hepta_cell_roles::RoleQualificationArtifactReceiptV1;
 use codex_hepta_cell_roles::RoleQualificationEvidenceOriginV1;
 use codex_hepta_cell_roles::RoleQualificationFaultKindV1;
@@ -27,6 +29,7 @@ use codex_hepta_types::CellStepReceiptV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::is_generic_learned_role;
 use crate::ArtifactCasOwnerV1;
 use crate::ArtifactRegistry;
 use crate::ArtifactWriteReceiptV1;
@@ -37,7 +40,6 @@ use crate::StateTombstoneReceiptV1;
 use crate::TypedRoleArtifactReceiptV1;
 use crate::TypedRoleArtifactV1;
 use crate::TypedRoleOwnerErrorV1;
-use crate::is_generic_learned_role;
 
 pub const PRODUCTION_ROLE_QUALIFICATION_OWNER_SCHEMA_V1: &str =
     "hepta.learning-artifacts.production-role-qualification-owner.v1";
@@ -76,6 +78,89 @@ impl fmt::Display for RoleQualificationExecutorErrorV1 {
 }
 
 impl Error for RoleQualificationExecutorErrorV1 {}
+
+/// Executor for one real typed learned-role runtime output.
+///
+/// The caller supplies the concrete adapter input, the adapter context, and
+/// the exact bytes produced by its state owner.  This is the production bridge
+/// for Representation, Predictor, Value, Decision and Evaluator: it invokes
+/// the role adapter, verifies every definition/frontier binding, and only then
+/// hands the state-fenced step to [`ProductionRoleQualificationOwnerV1`].
+/// There is deliberately no fallback that hashes an input frontier into state
+/// bytes.
+#[derive(Clone, Debug)]
+pub struct AdapterRoleQualificationExecutorV1 {
+    input: LearnedRoleRuntimeInputV1,
+    context: CellAdapterContextV1,
+    state_bytes: Vec<u8>,
+    consumed: bool,
+}
+
+impl AdapterRoleQualificationExecutorV1 {
+    pub fn new(
+        input: LearnedRoleRuntimeInputV1,
+        context: CellAdapterContextV1,
+        state_bytes: Vec<u8>,
+    ) -> Result<Self, RoleQualificationExecutorErrorV1> {
+        if state_bytes.is_empty() {
+            return Err(RoleQualificationExecutorErrorV1::Binding("state bytes"));
+        }
+        if input.role() != context.role {
+            return Err(RoleQualificationExecutorErrorV1::Binding("runtime role"));
+        }
+        Ok(Self {
+            input,
+            context,
+            state_bytes,
+            consumed: false,
+        })
+    }
+}
+
+impl RoleQualificationStepExecutorV1 for AdapterRoleQualificationExecutorV1 {
+    fn execute_step(
+        &mut self,
+        definition: &CellDefinitionV2,
+        input_frontier_digest: Digest32,
+        predecessor_state_digest: Digest32,
+    ) -> Result<RoleQualificationExecutionV1, RoleQualificationExecutorErrorV1> {
+        if self.consumed {
+            return Err(RoleQualificationExecutorErrorV1::Unavailable);
+        }
+        let capability_digest = definition
+            .capability_digest()
+            .map_err(|_| RoleQualificationExecutorErrorV1::Binding("capability"))?;
+        if self.context.cell_id != definition.cell_id
+            || self.context.generation != definition.generation
+            || self.context.scope_digest != definition.scope_digest
+            || self.context.role != definition.role
+            || self.context.capability_digest != capability_digest
+            || self.context.input_frontier_digest != input_frontier_digest
+            || self.context.state_predecessor_digest != predecessor_state_digest
+        {
+            return Err(RoleQualificationExecutorErrorV1::Binding("runtime context"));
+        }
+        if self.input.role() != definition.role {
+            return Err(RoleQualificationExecutorErrorV1::Binding("runtime role"));
+        }
+        let execution = self
+            .input
+            .adapt(&self.context, &self.state_bytes)
+            .map_err(|_| RoleQualificationExecutorErrorV1::Unavailable)?;
+        if execution.receipt.state_predecessor_digest != predecessor_state_digest
+            || execution.receipt.state_successor_digest != Digest32::of_bytes(&self.state_bytes)
+        {
+            return Err(RoleQualificationExecutorErrorV1::Binding(
+                "runtime state fence",
+            ));
+        }
+        self.consumed = true;
+        Ok(RoleQualificationExecutionV1 {
+            step: execution.receipt,
+            state_bytes: self.state_bytes.clone(),
+        })
+    }
+}
 
 /// Errors produced while wiring the real artifact/state owners to the
 /// harness.  The trait implementation below intentionally maps these errors
@@ -297,8 +382,7 @@ where
         digest: Digest32,
     ) -> Result<StableId, ProductionRoleQualificationOwnerErrorV1> {
         StableId::new(format!(
-            "{domain}.{}.{}.{}",
-            self.definition.cell_id,
+            "{domain}.{}.{}",
             self.definition.generation.get(),
             digest
         ))

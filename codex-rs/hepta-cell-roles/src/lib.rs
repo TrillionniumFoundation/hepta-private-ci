@@ -10,9 +10,11 @@
 mod action_proposal;
 
 mod communication;
+mod control_backend;
 mod control_owner;
 mod decision;
 mod decision_owner;
+mod learned_runtime;
 
 pub use decision::DECISION_OWNER_MODULE;
 pub use decision::DECISION_SCHEMA_V1;
@@ -28,6 +30,11 @@ pub use decision_owner::DecisionCellExecutionV1;
 pub use decision_owner::DecisionCellOwnerErrorV1;
 pub use decision_owner::DecisionCellOwnerV1;
 pub use decision_owner::DecisionCellStateV1;
+pub use learned_runtime::LearnedRoleDecisionInputV1;
+pub use learned_runtime::LearnedRoleRuntimeErrorV1;
+pub use learned_runtime::LearnedRoleRuntimeExecutionV1;
+pub use learned_runtime::LearnedRoleRuntimeInputV1;
+pub use learned_runtime::LearnedRoleRuntimeOutputV1;
 
 pub use action_proposal::ACTION_PROPOSAL_EXECUTION_ALLOWED_V1;
 pub use action_proposal::ACTION_PROPOSAL_SCHEMA_V1;
@@ -48,6 +55,7 @@ pub use communication::CommunicationQualificationReceiptV1;
 pub use communication::CommunicationReplayReceiptV1;
 pub use communication::CommunicationResultV1;
 pub use communication::CommunicationRouteBindingV1;
+pub use control_backend::*;
 pub use control_owner::*;
 
 mod circuit_roles;
