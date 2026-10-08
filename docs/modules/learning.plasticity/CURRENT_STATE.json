@@ -73,6 +73,26 @@
       ]
     },
     {
+      "operation": "plan_cell_split_v1",
+      "state": "source_implemented_proposal_only_independent_roles_and_fail_closed_guardrails",
+      "sourcePath": "codex-rs/hepta-plasticity/src/cell_split.rs",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/cell_split_tests.rs::planner_emits_all_operations_and_no_change_competitor",
+        "codex-rs/hepta-plasticity/src/cell_split_tests.rs::planner_rejects_missing_signal_evidence_rollback_and_holdout",
+        "codex-rs/hepta-plasticity/src/cell_split_tests.rs::planner_rejects_stale_generation_and_generator_selection",
+        "codex-rs/hepta-plasticity/src/cell_split_tests.rs::planner_rejects_non_independent_roles_and_tampering",
+        "codex-rs/hepta-plasticity/src/cell_split_tests.rs::planner_is_deterministic_and_does_not_select"
+      ]
+    },
+    {
+      "operation": "verify_cell_split_v1",
+      "state": "source_implemented_deterministic_reconstruction_and_deny_all_validation",
+      "sourcePath": "codex-rs/hepta-plasticity/src/cell_split.rs",
+      "tests": [
+        "codex-rs/hepta-plasticity/src/cell_split_tests.rs::planner_rejects_non_independent_roles_and_tampering"
+      ]
+    },
+    {
       "operation": "durableproposalregistry",
       "state": "source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery",
       "sourcePath": "codex-rs/hepta-plasticity/src/durable_registry.rs",
