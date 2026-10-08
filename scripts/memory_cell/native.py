@@ -11,7 +11,7 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
-from sessions import normalize_sessions
+from sessions import normalize_sessions, source_id
 
 MAX_BYTES = 512 * 1024 * 1024
 
@@ -127,7 +127,7 @@ def load(
             ingress_issues.extend({"question_id": qid, **row} for row in duplicates)
             known = set()
             for turns, sid, date in normalized:
-                sid = text(sid, "session id", 256)
+                sid = text(sid, "session occurrence id", 512)
                 date = text(date, "session date", 256)
                 if not isinstance(turns, list) or not 1 <= len(turns) <= 10_000:
                     raise ValueError("invalid session turns")
@@ -136,9 +136,9 @@ def load(
                     if turn["role"] not in ("user", "assistant", "system"):
                         raise ValueError("unknown history role")
                     clean.append((turn["role"], text(turn["content"], "turn")))
-                root = "session:" + digest((sid, clean))
+                root = "session:" + digest(clean)
                 identity = f"{scope}/{sid}"
-                known.add(identity)
+                known.add(source_id(identity))
                 docs.append(
                     Document(
                         identity,

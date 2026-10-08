@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 
 from native import Document, Question, digest
+from sessions import source_id
 
 
 @dataclass(frozen=True)
@@ -218,8 +219,8 @@ def tune_policy(cases, targets, indices, embeddings, cut, revoked):
             docs, _ = indices[q.scope].query(
                 q, embeddings[q.identity], policy, current_cut=cut, revoked=revoked
             )
-            recalled = {d.identity.split("#chunk:", 1)[0] for d in docs}
-            support = {identity.split("#chunk:", 1)[0] for identity in truth.evidence}
+            recalled = {source_id(d.identity) for d in docs}
+            support = {source_id(identity) for identity in truth.evidence}
             recalls.append(len(recalled.intersection(support)) / len(support))
         records.append((sum(recalls) / len(recalls) if recalls else -1.0, policy))
     best = max(

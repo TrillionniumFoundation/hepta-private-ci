@@ -15,54 +15,13 @@ concurrency:
   group: memory-cell-continuation-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 jobs:
-  source-candidate:
-    if: github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
-    permissions:
-      contents: write
-    outputs:
-      sha: ${{ steps.candidate.outputs.sha }}
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          persist-credentials: true
-      - uses: ./.github/actions/setup-ci
-      - name: Prepare a separate review candidate; never update main or the PR head
-        id: candidate
-        env:
-          BASE: ${{ github.event.pull_request.base.sha }}
-        run: |
-          set -euo pipefail
-          python3 scripts/memory_cell/prepare_owner_candidate.py
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('codex-rs/hepta-agentd/src/shared_terminal_cell.rs')
-          s = p.read_text()
-          for field in ('source:', 'consumer:', 'purpose:'):
-              s = s.replace('        pub(super) ' + field, '        ' + field)
-          p.write_text(s)
-          PY
-          python3 -m pip install uv==0.8.22
-          git fetch --no-tags --depth=1 origin "$BASE"
-          just fmt --base "$BASE"
-          git add -u
-          if ! git diff --cached --quiet; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'feat(memory-owners): wire source-admitted training and native circuit execution'
-            git push origin "HEAD:refs/heads/codex/memory-owner-source-${GITHUB_RUN_ID}"
-          fi
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   source-inputs:
-    needs: source-candidate
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ needs.source-candidate.outputs.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - name: Retain exact source
         run: |
@@ -76,13 +35,12 @@ jobs:
           path: /tmp/memory-cell-source
           if-no-files-found: error
   native-models:
-    needs: source-candidate
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ needs.source-candidate.outputs.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - name: Install pinned CPU model environment
         run: |
@@ -129,8 +87,8 @@ jobs:
           path: /tmp/mcell-native/locomo/native-export
           if-no-files-found: error
   native-owner:
-    needs: [source-candidate, native-models]
-    if: always() && !cancelled() && needs.source-candidate.result == 'success'
+    needs: native-models
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -140,7 +98,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ needs.source-candidate.outputs.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -163,7 +121,6 @@ jobs:
           path: /tmp/neuron-owner-evidence
           if-no-files-found: warn
   training-owner:
-    needs: source-candidate
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
@@ -173,17 +130,19 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ needs.source-candidate.outputs.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-nextest
       - name: Compile and test the actual owning crates
-        run: |
-          just test -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host
-          just test -p codex-hepta-agentd --test terminal_cell_owner
+        run: just test -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host
+      - name: Test source-admitted candidate owner boundaries
+        if: ${{ !cancelled() }}
+        run: just test -p codex-hepta-agentd --test terminal_cell_owner
       - name: Stage real pretrained worker model
+        if: ${{ !cancelled() }}
         env:
           HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
           HF_HUB_DISABLE_XET: '1'
@@ -200,6 +159,7 @@ jobs:
           PY
           echo "HEPTA_MEMORY_PROGRAM=$GITHUB_WORKSPACE/scripts/memory_cell/owner_worker.py" >> "$GITHUB_ENV"
       - name: Real cognitive-store to ledger to offline LoRA to candidate and revocation
+        if: ${{ !cancelled() }}
         env:
           HEPTA_MEMORY_PYTHON: /tmp/mcell-python/bin/python
           HEPTA_MEMORY_MODEL_DIR: /tmp/mcell-inputs/reader
@@ -212,14 +172,14 @@ jobs:
           path: /tmp/training-owner-evidence
           if-no-files-found: warn
   laya-pretrained:
-    needs: [source-candidate, native-models]
-    if: always() && !cancelled() && needs.source-candidate.result == 'success'
+    needs: native-models
+    if: always() && !cancelled()
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ needs.source-candidate.outputs.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -254,4 +214,30 @@ jobs:
         with:
           name: memory-cell-laya-pretrained-evidence
           path: /tmp/laya-evidence
+          if-no-files-found: warn
+
+  source-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Check formatting and retain the exact formatter diff
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          git diff --binary > /tmp/memory-cell-format.patch
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-format-diagnostics
+          path: /tmp/memory-cell-format.patch
           if-no-files-found: warn

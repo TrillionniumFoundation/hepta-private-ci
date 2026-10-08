@@ -77,7 +77,11 @@ impl CognitiveTestHost {
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        helper_executable: PathBuf,
     ) -> TestResult<Self> {
+        if !helper_executable.is_absolute() || !helper_executable.is_file() {
+            return Err("test helper executable must be an existing absolute path".into());
+        }
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
@@ -133,7 +137,12 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                // The caller must enable the standard arg0 exec/fs helpers.
+                // Never infer a production CLI identity from a harness process.
+                codex_self_exe: Some(helper_executable),
+                ..Arg0DispatchPaths::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,

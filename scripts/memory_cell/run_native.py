@@ -16,6 +16,7 @@ from safetensors.torch import save_file
 from composition import export_native, fit
 from index import PersistentIndex, RetrievalPolicy, tune_policy
 from native import Document, digest, load
+from sessions import source_id
 from pretrained import Encoder, LoRAReader
 
 
@@ -28,10 +29,6 @@ def f1(hypothesis, answer):
     p, g = normalize(hypothesis), normalize(answer)
     common = sum((Counter(p) & Counter(g)).values())
     return 2 * common / (len(p) + len(g)) if p and g else float(p == g)
-
-
-def source_id(identity):
-    return identity.split("#chunk:", 1)[0]
 
 
 def chunks(history):
