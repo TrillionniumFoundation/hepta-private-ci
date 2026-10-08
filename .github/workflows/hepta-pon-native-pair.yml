@@ -87,6 +87,17 @@ jobs:
       - name: Execute the native growth readback regression module
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-readback.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib growth_reservation_io::tests -- --nocapture
+      - name: Require paired native pressure and complete state convergence
+        env:
+          RUSTUP_TOOLCHAIN: "1.95.0"
+        run: |
+          set -euo pipefail
+          cd ../chain
+          python3 scripts/ci/test_run_from_zero_native.py
+          python3 scripts/ci/run_from_zero_native.py --out "$RUNNER_TEMP/pon-pair/chain-from-zero-native"
+      - name: Require paired native retained state and recovery
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recovery.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test continuity_authenticated --test authenticated_storage_cli -- --nocapture --test-threads=1
       - name: Build the actual pinned native Chain executable
         run: |
           set -euo pipefail
