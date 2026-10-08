@@ -381,3 +381,19 @@ pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
 #[cfg(test)]
 #[path = "signed_qualification_e2e_tests.rs"]
 mod signed_qualification_e2e_tests;
+
+mod citation_audit;
+pub use citation_audit::CitationAuditCountsV1;
+pub use citation_audit::CitationAuditError;
+pub use citation_audit::CitationAuditJudgementV1;
+pub use citation_audit::CitationAuditRequestV1;
+pub use citation_audit::CitationClaimKindV1;
+pub use citation_audit::CitationClaimV1;
+pub use citation_audit::CitationJudgementV1;
+pub use citation_audit::CitationSourceV1;
+pub use citation_audit::CitationVerdictV1;
+pub use citation_audit::VerifiedCitationAuditV1;
+pub use citation_audit::citation_judgement_payload_v1;
+pub use citation_audit::citation_request_payload_v1;
+pub use citation_audit::validate_citation_judgement_v1;
+pub use citation_audit::verify_signed_citation_audit_v1;

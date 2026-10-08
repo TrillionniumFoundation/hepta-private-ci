@@ -8,7 +8,7 @@ import shutil
 import urllib.request
 from pathlib import Path
 
-from huggingface_hub import HfApi, hf_hub_download, snapshot_download
+from huggingface_hub import hf_hub_download, snapshot_download
 
 PINS = {
     "reader": (
@@ -22,6 +22,8 @@ PINS = {
     "laya": ("convaiinnovations/laya", "7b928d828b7b0e022f929d9bd2e44165aa270148"),
 }
 LAYA_SOURCE = "c7527708f9f5220c669d8aa385077cd28d04708a"
+LONGMEMEVAL_SOURCE = "98d7416c24c778c2fee6e6f3006e7a073259d48f"
+LONGMEMEVAL_SHA256 = "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442"
 LOCOMO_SOURCE = "3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376"
 
 
@@ -88,7 +90,7 @@ def prepare(root: Path, profile: str):
         }
     else:
         dataset = "xiaowu0162/longmemeval-cleaned"
-        revision = HfApi(token=False).dataset_info(dataset).sha
+        revision = LONGMEMEVAL_SOURCE
         if len(revision) != 40:
             raise ValueError("dataset revision not immutable")
         filename = "longmemeval_s_cleaned.json"
@@ -99,6 +101,8 @@ def prepare(root: Path, profile: str):
         )
         if path.stat().st_size > 512 * 1024 * 1024:
             raise ValueError("dataset size")
+        if hashlib.sha256(path.read_bytes()).hexdigest() != LONGMEMEVAL_SHA256:
+            raise ValueError("pinned LongMemEval content changed")
         shutil.copyfile(path, root / "longmemeval.json")
         record["longmemeval"] = {
             "repository": dataset,

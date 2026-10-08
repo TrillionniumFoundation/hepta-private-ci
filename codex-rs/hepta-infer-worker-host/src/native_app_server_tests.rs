@@ -398,26 +398,29 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
 }
 
 #[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source: String = include_str!("native_app_server.rs")
-        .chars()
-        .filter(|value| !value.is_whitespace())
-        .collect();
-    let durable_dispatch = source
+fn cognitive_final_use_revalidation_precedes_the_typed_turn_start_boundary() {
+    // This structural guard complements the actual mutation-race test below.
+    // Physical success is proved by observed requests there, not by this scan.
+    let source = include_str!("native_app_server.rs");
+    let (caller, boundary) = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("typed final-use boundary");
+    let dispatch = caller
         .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
+        .expect("durable dispatch");
+    let revalidation = caller
         .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
+        .expect("source-owner final-use revalidation");
+    let entry = caller
+        .find("verified_use.enter(&authority_binding)")
+        .expect("kernel final-use entry");
+    let send = caller
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("typed physical send");
+    assert!(dispatch < revalidation && revalidation < entry && entry < send);
+    assert!(boundary.contains("_entered: EnteredUseToken"));
+    assert!(boundary.contains(".request_typed_observed(ClientRequest::TurnStart"));
+    assert!(!caller.contains(".request_typed_observed(ClientRequest::TurnStart"));
 }
 
 #[cfg(unix)]

@@ -211,23 +211,7 @@ impl AgentdSharedReplayHostV1 {
             now,
         )
         .await?;
-        let profile = candidate.candidate.frozen().profile();
-        let manifest = &loaded.spec().manifest;
-        if manifest.artifact_id != profile.artifact_id
-            || manifest.kind != ArtifactKind::Parameters
-            || manifest.generation != profile.generation
-            || manifest.objective_digest != profile.objective_digest
-            || manifest.support_digest
-                != candidate
-                    .candidate
-                    .frozen()
-                    .dataset()
-                    .snapshot
-                    .dataset_digest
-            || manifest.compatibility_digest != profile.base_digest
-            || manifest.producer_id != profile.producer_id
-            || manifest.content_digest != candidate.candidate.observation().payload_digest
-            || manifest.encoded_size_bytes != candidate.payload.len() as u64
+        if !memory_manifest_matches(&candidate, &loaded.spec().manifest)
             || loaded.bytes() != candidate.payload
         {
             return Err(SharedMemoryTrainingError::Invalid(
@@ -276,3 +260,23 @@ impl AgentdSharedReplayHostV1 {
         Ok(result)
     }
 }
+
+fn memory_manifest_matches(
+    candidate: &SharedMemoryTensorCandidateV1,
+    manifest: &codex_hepta_learning_artifacts::ArtifactManifest,
+) -> bool {
+    let profile = candidate.candidate.frozen().profile();
+    manifest.artifact_id == profile.artifact_id
+        && manifest.kind == ArtifactKind::Parameters
+        && manifest.generation == profile.generation
+        && manifest.objective_digest == profile.objective_digest
+        && manifest.support_digest == candidate.candidate.frozen().dataset().snapshot.dataset_digest
+        && manifest.compatibility_digest == profile.base_digest
+        && manifest.producer_id == profile.producer_id
+        && manifest.content_digest == candidate.candidate.observation().payload_digest
+        && manifest.encoded_size_bytes == candidate.payload.len() as u64
+}
+
+#[path = "selected_memory.rs"]
+mod selected;
+pub use selected::SelectedMemoryTensorModelV1;

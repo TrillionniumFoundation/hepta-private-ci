@@ -39,6 +39,7 @@ def code_digest(directory):
         "pretrained.py",
         "requirements.txt",
         "sessions.py",
+        "tensor_contract.py",
     ):
         content = (directory / name).read_bytes()
         if len(content) > 256 * 1024:

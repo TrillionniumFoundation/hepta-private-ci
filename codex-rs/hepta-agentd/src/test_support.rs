@@ -161,6 +161,7 @@ impl CognitiveTestHost {
             }
             tokio::time::sleep(Duration::from_millis(10)).await;
         }
+        state.mark_runtime_prerequisites_ready()?;
         state.mark_app_server_ready()?;
 
         let client = AgentdClient::new(identity.control_socket.clone(), agent_id.clone(), 1)?;

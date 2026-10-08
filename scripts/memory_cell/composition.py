@@ -40,33 +40,39 @@ class CellCircuit(nn.Module):
             self.procedural.requires_grad_(False)
         elif mode == "frozen":
             self.requires_grad_(False)
+        elif mode == "no_message":
+            self.semantic.requires_grad_(False)
+            self.gate.requires_grad_(False)
 
     def forward(self, features):
-        message = torch.tanh(self.semantic(features))
-        gate = torch.sigmoid(self.gate(features))
         if self.mode == "no_message":
-            message = message * 0
-        elif self.mode == "shuffled_message":
-            # Fixed channel permutation within a request, never across scopes.
-            message = torch.roll(message, shifts=1, dims=-1)
+            message = features.new_zeros((*features.shape[:-1], self.semantic.out_features))
         elif self.mode == "flat_matched":
             message = torch.tanh(self.semantic(features) + self.gate(features))
-            gate = torch.ones_like(gate)
-        return self.procedural(torch.cat([features, message * gate], dim=-1)).squeeze(
-            -1
-        )
+        else:
+            message = torch.tanh(self.semantic(features))
+            gate = torch.sigmoid(self.gate(features))
+            if self.mode == "shuffled_message":
+                # A retrained architecture control; the post-training lesion is
+                # evaluated separately and never relearns a channel permutation.
+                message = torch.roll(message, shifts=1, dims=-1)
+            message = message * gate
+        return self.procedural(torch.cat([features, message], dim=-1)).squeeze(-1)
 
 
 def state_digest(model):
-    h = hashlib.sha256()
+    h = hashlib.sha256(b"hepta.memory-circuit.tensor-state.v2\0")
     for name, tensor in sorted(model.state_dict().items()):
-        h.update(name.encode())
+        header = json.dumps([name, str(tensor.dtype), list(tensor.shape)], separators=(",", ":")).encode()
+        h.update(len(header).to_bytes(8, "big"))
+        h.update(header)
         h.update(tensor.detach().cpu().contiguous().numpy().tobytes())
     return h.hexdigest()
 
 
 def fit(
-    features: np.ndarray, labels: np.ndarray, partitions: list[str], *, steps: int = 48
+    features: np.ndarray, labels: np.ndarray, partitions: list[str], *, steps: int = 48,
+    family_ids: list[str] | None = None,
 ):
     if (
         not 1 <= steps <= 512
@@ -85,19 +91,38 @@ def fit(
     train = np.array([p == "train" for p in partitions])
     if train.sum() < 2 or len(set(labels[train].tolist())) != 2:
         raise ValueError("insufficient train-only class support")
+    weights = np.ones(int(train.sum()), dtype=np.float32)
+    family_count = None
+    if family_ids is not None:
+        if len(family_ids) != len(partitions):
+            raise ValueError("source-family alignment")
+        owner, counts = {}, {}
+        for family, phase in zip(family_ids, partitions, strict=True):
+            if not isinstance(family, str) or not 1 <= len(family) <= 1024:
+                raise ValueError("source-family identity")
+            if owner.setdefault(family, phase) != phase:
+                raise ValueError("source family crosses training/selection/test")
+            if phase == "train":
+                counts[family] = counts.get(family, 0) + 1
+        family_count = len(counts)
+        weights = np.asarray([1 / counts[f] for f, phase in zip(family_ids, partitions, strict=True) if phase == "train"], dtype=np.float32)
+        weights /= weights.mean()
+    sample_weights = torch.tensor(weights)
     x = torch.tensor(features[train], dtype=torch.float32)
     y = torch.tensor(labels[train], dtype=torch.float32)
     outputs = {}
     for mode in MODES:
-        torch.manual_seed(1729)
-        model = CellCircuit(features.shape[1], mode=mode)
+        with torch.random.fork_rng(devices=[]):
+            torch.manual_seed(1729)
+            model = CellCircuit(features.shape[1], mode=mode)
         original = copy.deepcopy(model.state_dict())
         start = time.perf_counter()
         optimized = [p for p in model.parameters() if p.requires_grad]
         optimizer = torch.optim.AdamW(optimized, lr=0.003) if optimized else None
         for _ in range(0 if mode == "frozen" else steps):
             optimizer.zero_grad(set_to_none=True)
-            loss = nn.functional.binary_cross_entropy_with_logits(model(x), y)
+            loss = nn.functional.binary_cross_entropy_with_logits(model(x), y, reduction="none")
+            loss = (loss * sample_weights).mean()
             if not torch.isfinite(loss):
                 raise ValueError("nonfinite composition loss")
             loss.backward()
@@ -121,6 +146,16 @@ def fit(
                 ),
                 "steps": 0 if mode == "frozen" else steps,
                 "train_examples": int(train.sum()),
+                "training_source_families": family_count,
+                "loss_weighting": "equal-source-family" if family_ids is not None else "fixture-row-mean",
+                "parameter_bytes": sum(p.numel() * p.element_size() for p in model.parameters()),
+                "optimizer_tensor_bytes": sum(
+                    v.numel() * v.element_size()
+                    for state in (optimizer.state.values() if optimizer else [])
+                    for v in state.values() if isinstance(v, torch.Tensor)
+                ),
+                "budget_kind": "equal-allocated-parameters-not-equal-effective-computation",
+                "message_semantics": "row-local-gated-semantic-representation",
                 "train_seconds": time.perf_counter() - start,
                 "artifact_digest": state_digest(model),
                 "message_permutation": "per-request-channels"

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
+import os
 import re
 import resource
 from collections import Counter
@@ -16,8 +18,10 @@ from safetensors.torch import save_file
 from composition import export_native, fit
 from index import PersistentIndex, RetrievalPolicy, tune_policy
 from native import Document, digest, load
+from benchmark_coverage import plan_coverage, partition as coverage_partition
+from lesions import evaluate_lesions
+from citation_audit import capture
 from sessions import source_id
-from pretrained import Encoder, LoRAReader
 
 
 def f1(hypothesis, answer):
@@ -29,6 +33,12 @@ def f1(hypothesis, answer):
     p, g = normalize(hypothesis), normalize(answer)
     common = sum((Counter(p) & Counter(g)).values())
     return 2 * common / (len(p) + len(g)) if p and g else float(p == g)
+
+
+def annotated_recall(selected, target):
+    if not target.evidence or target.unresolved_evidence:
+        return None
+    return len(set(selected).intersection(target.evidence)) / len(set(target.evidence))
 
 
 def chunks(history):
@@ -50,17 +60,36 @@ def chunks(history):
     return tuple(result)
 
 
-def run(staged: Path, output: Path, kind: str, qa_limit: int):
+def execution_binding(reader_identity: str, encoder_identity: str, backend_profile: str) -> dict:
+    script_names = ("run_native.py", "native.py", "sessions.py", "index.py", "pretrained.py", "composition.py", "lesions.py", "benchmark_coverage.py", "tensor_contract.py", "citation_audit.py")
+    return {
+        "source_commit": os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", "unrecorded"),
+        "code_digest": digest({name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest() for name in script_names}),
+        "reader_identity": reader_identity, "encoder_identity": encoder_identity,
+        "budget": {"adapter_steps": 4, "composition_steps": 48, "train_queries": 24, "selection_queries": 12,
+                   "input_tokens": 1024, "generated_tokens": 32, "train_tokens_per_step": 192},
+        "backend_profile": backend_profile,
+        "answer_protocol": "short-answer-with-delivered-E-labels-v1",
+    }
+
+
+def run(
+    staged: Path, output: Path, kind: str, qa_limit: int, *,
+    fold: int = 0, folds: int = 1, shard: int = 0, shards: int = 1,
+    all_questions: bool = False, backends=None,
+):
     if not 1 <= qa_limit <= 20_000:
         raise ValueError("QA budget")
     output.mkdir(parents=True, exist_ok=False)
     plan = {
         "schema": "hepta.native-memory-pilot.v1",
         "benchmark": kind,
-        "qa_limit": qa_limit,
+        "qa_limit": None if all_questions else qa_limit,
+        "fold": fold, "folds": folds, "shard": shard, "shards": shards,
+        "backend_profile": "pretrained-offline" if backends is None else "injected-test-fixture",
         "training_steps_per_query": 4,
         "composition_steps": 48,
-        "selection_rule": "source-family-ranked-sha256-60-20-20-v2",
+        "selection_rule": "external-test-only" if kind == "longmemeval" else "source-family-ranked-cross-fit" if folds > 1 else "source-family-ranked-sha256-60-20-20-v2",
         "primary_metric": "held-out annotated-evidence recall@8",
         "qa_metric": "diagnostic token F1, not official judge",
         "unresolved_annotations": "retain question and missing references; never manufacture supporting history",
@@ -75,6 +104,8 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
         kind,
         staging[kind]["sha256"],
         allow_unresolved_evidence=True,
+        session_conflicts="retain-versioned",
+        invalid_history="quarantine-question",
     )
     (output / "annotation-issues.json").write_text(
         json.dumps(
@@ -89,18 +120,20 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
     (output / "ingress-issues.json").write_text(
         json.dumps(benchmark.ingress_issues, indent=2)
     )
-    # LongMemEval is an external test-only benchmark: shared filler sessions are
-    # not split into bogus independent train/dev families to enable a score.
-    partition = (lambda q: "test") if kind == "longmemeval" else benchmark.partition
-    partitions = {
-        p: [q for q in benchmark.questions if partition(q) == p]
-        for p in ("train", "select", "test")
-    }
+    coverage = plan_coverage(
+        benchmark, folds=folds, shards=shards,
+        per_fold_limit=None if all_questions else qa_limit,
+    )
+    assigned = set(coverage.assigned(fold, shard))
+    (output / "ingress-failures.json").write_text(json.dumps(benchmark.ingress_failures, indent=2))
+    (output / "coverage-plan.json").write_text(json.dumps(coverage.content(), indent=2))
+    partition = lambda q: coverage_partition(benchmark, q, fold=fold, folds=folds)
+    partitions = {phase: [q for q in benchmark.questions if partition(q) == phase]
+                  for phase in ("train", "select", "test")}
     selected = []
-    for phase, bound in (("train", 24), ("select", 12), ("test", max(qa_limit, 12))):
-        selected.extend(
-            sorted(partitions[phase], key=lambda q: digest(q.identity))[:bound]
-        )
+    for phase, bound in (("train", 24), ("select", 12)):
+        selected.extend(sorted(partitions[phase], key=lambda q: digest(q.identity))[:bound])
+    selected.extend(sorted((q for q in partitions["test"] if q.identity in assigned), key=lambda q: digest(q.identity)))
     if not partitions["test"]:
         raise ValueError(
             "no root-connected held-out family; do not resplit to make a score"
@@ -115,27 +148,37 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
                 "evaluated_ids": [q.identity for q in selected],
                 "partition_counts": {p: len(q) for p, q in partitions.items()},
                 "external_test_only": kind == "longmemeval",
+                "coverage_digest": coverage.seal(),
             },
             indent=2,
         )
     )
-    encoder = Encoder(staged / "encoder")
+    if backends is None:
+        from pretrained import Encoder, LoRAReader
+        encoder, reader = Encoder(staged / "encoder"), LoRAReader(staged / "reader")
+    else:
+        encoder, reader = backends
+    binding = execution_binding(reader.identity, encoder.identity, plan["backend_profile"])
     indices, doc_vectors = {}, {}
     cut = benchmark.source_sha256
-    for scope in sorted({q.scope for q in selected}):
+    admissible = [q for q in selected if q.identity not in benchmark.ingress_failures]
+    for scope in sorted({q.scope for q in admissible}):
         history = chunks(tuple(d for d in benchmark.documents if d.scope == scope))
         vectors = encoder.encode([f"{d.observed_at}: {d.content}" for d in history])
         path = output / (digest(scope)[:20] + ".sqlite")
-        PersistentIndex.build(path, history, vectors, encoder.identity, cut)
-        indices[scope] = PersistentIndex(path, cut, set())
+        blob = PersistentIndex.build(path, history, vectors, encoder.identity, cut)
+        indices[scope] = PersistentIndex(
+            path, cut, set(), expected_file_digest=blob, expected_encoder=encoder.identity
+        )
         for doc, vector in zip(history, vectors, strict=True):
             doc_vectors[doc.identity] = vector
-    vectors = encoder.encode([q.content for q in selected])
-    query_vectors = {q.identity: v for q, v in zip(selected, vectors, strict=True)}
-    dev = [(q, "select") for q in selected if partition(q) == "select"]
+    vectors = encoder.encode([q.content for q in admissible]) if admissible else np.empty((0, 0), dtype=np.float32)
+    query_vectors = {q.identity: v for q, v in zip(admissible, vectors, strict=True)}
+    dev = [(q, "select") for q in admissible if partition(q) == "select" and not benchmark.targets[q.identity].unresolved_evidence]
     if dev and any(benchmark.targets[q.identity].evidence for q, _ in dev):
         policy, tuning = tune_policy(
-            dev, benchmark.targets, indices, query_vectors, cut, set()
+            dev, benchmark.targets, indices, query_vectors, cut, set(),
+            family_ids={q.identity: benchmark.families[q.family] for q, _ in dev},
         )
     else:
         policy, tuning = (
@@ -145,7 +188,7 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
     (output / "retrieval-tuning.json").write_text(json.dumps(tuning, indent=2))
     pair_features, labels, splits, pair_meta = [], [], [], []
     retrieval_report = []
-    for q in selected:
+    for q in admissible:
         candidates, receipt = indices[q.scope].query(
             q,
             query_vectors[q.identity],
@@ -160,14 +203,13 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
                 {
                     "id": q.identity,
                     "family": benchmark.families[q.family],
-                    "evidence_recall_at_8": len(hits.intersection(target.evidence))
-                    / len(set(target.evidence))
-                    if target.evidence
-                    else None,
+                    "evidence_recall_at_8": annotated_recall(hits, target),
                     "unresolved_evidence": list(target.unresolved_evidence),
                     "receipt": receipt,
                 }
             )
+        if partition(q) != "test" and target.unresolved_evidence:
+            continue  # Unresolved annotations cannot manufacture training negatives.
         for d in candidates:
             pair_features.append(query_vectors[q.identity] * doc_vectors[d.identity])
             labels.append(int(source_id(d.identity) in target.evidence))
@@ -176,11 +218,11 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
     (output / "retrieval-heldout.json").write_text(
         json.dumps(retrieval_report, indent=2)
     )
-    features, labels_array = np.asarray(pair_features), np.asarray(labels)
+    features, labels_array = np.asarray(pair_features, dtype=np.float32), np.asarray(labels)
     train_mask = np.asarray([p == "train" for p in splits], dtype=bool)
     trained_support = labels_array[train_mask]
     arms = (
-        fit(features, labels_array, splits)
+        fit(features, labels_array, splits, family_ids=[benchmark.families[q.family] for q, _ in pair_meta])
         if len(set(trained_support.tolist())) == 2
         else {}
     )
@@ -219,10 +261,7 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
                     "id": q.identity,
                     "family": benchmark.families[q.family],
                     "category": target.category,
-                    "evidence_recall": len(ids.intersection(target.evidence))
-                    / len(set(target.evidence))
-                    if target.evidence
-                    else None,
+                    "evidence_recall": annotated_recall(ids, target),
                     "selected": sorted(ids),
                 }
             )
@@ -249,38 +288,88 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
                 }
             )
     (output / "laya-pairs.json").write_text(json.dumps(pairs, indent=2))
-    reader = LoRAReader(staged / "reader")
-    test_queries = [q for q in selected if partition(q) == "test"][:qa_limit]
-    hypotheses = {
-        name: [] for name in ("no_memory", "rag", "rag_lora", "parametric_only")
-    }
+    if "joint" in arms:
+        lesions = evaluate_lesions(arms["joint"][0], features)
+        lesion_report = {key: value for key, value in lesions.items() if key != "probabilities"}
+        lesion_report["observations"] = {}
+        for lesion, probabilities in lesions["probabilities"].items():
+            observations = []
+            for q in selected:
+                if partition(q) != "test":
+                    continue
+                indices_for_query = [i for i, (pq, _) in enumerate(pair_meta) if pq.identity == q.identity]
+                ranked = sorted(indices_for_query, key=lambda i: (-float(probabilities[i]), pair_meta[i][1].identity))[:8]
+                hits = {source_id(pair_meta[i][1].identity) for i in ranked}
+                target = benchmark.targets[q.identity]
+                observations.append({"question_id": q.identity, "selected": sorted(hits),
+                    "annotated_evidence_recall_at_8": annotated_recall(hits, target)})
+            lesion_report["observations"][lesion] = observations
+        (output / "lesions.json").write_text(json.dumps(lesion_report, indent=2))
+    test_queries = [q for q in selected if partition(q) == "test"]
+    hypotheses = {name: [] for name in ("no_memory", "rag", "rag_lora", "parametric_only")}
+
+    def failed(query, error):
+        return {"question_id": query.identity, "status": "failed", "hypothesis": None,
+                "error_type": type(error).__name__, "error_digest": digest(str(error))}
+
+    def answer_for(name, query, context, **details):
+        try:
+            answer, receipt = reader.answer(query, context, revoked=set())
+            row = {"question_id": query.identity, "status": "succeeded",
+                   "hypothesis": answer, "receipt": receipt, **details}
+            try:
+                row["citation_audit"] = capture(
+                    query, answer, receipt,
+                    experiment_digest=digest((coverage.seal(), binding, name)),
+                    family_digest=digest(benchmark.families[query.family]),
+                )
+            except (ValueError, KeyError, TypeError, UnicodeError) as audit_error:
+                # Missing prompt evidence never becomes a positive citation score.
+                # Keep the original answer and record the separate audit failure.
+                row["citation_audit"] = {"status": "unavailable", "error_type": type(audit_error).__name__,
+                                         "error_digest": digest(str(audit_error)), "semantic_precision": None}
+            hypotheses[name].append(row)
+        except Exception as error:
+            hypotheses[name].append(failed(query, error))
+
     for query in test_queries:
-        candidates, retrieval_receipt = indices[query.scope].query(
-            query, query_vectors[query.identity], policy, current_cut=cut, revoked=set()
-        )
-        reader.reset(query.scope)
-        for name, context in (("no_memory", []), ("rag", candidates)):
-            answer, receipt = reader.answer(query, context, revoked=set())
-            hypotheses[name].append(
-                {
-                    "question_id": query.identity,
-                    "hypothesis": answer,
-                    "receipt": receipt,
-                }
+        if query.identity in benchmark.ingress_failures:
+            for name in hypotheses:
+                hypotheses[name].append({"question_id": query.identity, "status": "failed",
+                                        "hypothesis": None, **benchmark.ingress_failures[query.identity]})
+            continue
+        try:
+            reader.reset(query.scope)
+        except Exception as error:
+            for name in hypotheses:
+                hypotheses[name].append(failed(query, error))
+            continue
+        answer_for("no_memory", query, [])
+        try:
+            candidates, retrieval_receipt = indices[query.scope].query(
+                query, query_vectors[query.identity], policy, current_cut=cut, revoked=set()
             )
-        training = reader.adapt(benchmark.history(query), steps=4, revoked=set())
-        reader.save(output / ("lora-" + digest(query.identity)[:16]), training)
+        except Exception as error:
+            for name in ("rag", "rag_lora", "parametric_only"):
+                hypotheses[name].append(failed(query, error))
+            continue
+        answer_for("rag", query, candidates, retrieval=retrieval_receipt)
+        try:
+            training = reader.adapt(benchmark.history(query), steps=4, revoked=set())
+            adapter_path = output / ("lora-" + digest(query.identity))
+            manifest_sha = reader.save(adapter_path, training)
+            reader.reset(query.scope)
+            adoption = reader.load_candidate(
+                adapter_path, expected_manifest_sha256=manifest_sha, scope=query.scope,
+                allowed_roots={d.root for d in benchmark.history(query)}, revoked=set(),
+            )
+            training = {**training, "artifact_reload": adoption}
+        except Exception as error:
+            for name in ("rag_lora", "parametric_only"):
+                hypotheses[name].append(failed(query, error))
+            continue
         for name, context in (("rag_lora", candidates), ("parametric_only", [])):
-            answer, receipt = reader.answer(query, context, revoked=set())
-            hypotheses[name].append(
-                {
-                    "question_id": query.identity,
-                    "hypothesis": answer,
-                    "receipt": receipt,
-                    "training": training,
-                    "retrieval": retrieval_receipt,
-                }
-            )
+            answer_for(name, query, context, training=training, retrieval=retrieval_receipt)
     report = {
         "protocol": plan,
         "embedding_identity": encoder.identity,
@@ -296,7 +385,7 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
     for name, records in hypotheses.items():
         for row in records:
             truth = benchmark.targets[row["question_id"]]
-            row["diagnostic_token_f1"] = f1(row["hypothesis"], truth.answer)
+            row["diagnostic_token_f1"] = f1(row["hypothesis"], truth.answer) if row["status"] == "succeeded" else None
             row["category"], row["unanswerable"] = truth.category, truth.unanswerable
             row["unresolved_evidence"] = list(truth.unresolved_evidence)
         with (output / f"{name}-hypotheses.jsonl").open("x") as out:
@@ -307,7 +396,8 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
                             "question_id": row["question_id"].removeprefix(
                                 "longmemeval:"
                             ),
-                            "hypothesis": row["hypothesis"],
+                            "hypothesis": row["hypothesis"] if row["status"] == "succeeded" else "[MODEL_EXECUTION_FAILED]",
+                            "execution_status": row["status"],
                         }
                     )
                     + "\n"
@@ -318,7 +408,11 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
     report["retained_output_bytes_before_report"] = sum(
         p.stat().st_size for p in output.rglob("*") if p.is_file()
     )
-    (output / "report.json").write_text(json.dumps(report, indent=2))
+    report["execution_binding"] = binding
+    report["coverage_digest"] = coverage.seal()
+    report["fold"], report["shard"] = fold, shard
+    report["retained_bytes"] = report["retained_output_bytes_before_report"]
+    (output / "report.json").write_text(json.dumps(report, indent=2, allow_nan=False))
     print(
         json.dumps(
             {
@@ -331,6 +425,9 @@ def run(staged: Path, output: Path, kind: str, qa_limit: int):
             }
         )
     )
+    failures = sum(row["status"] == "failed" for records in hypotheses.values() for row in records)
+    if failures:
+        raise RuntimeError(f"{failures} model executions failed; complete failure records retained in report.json")
 
 
 if __name__ == "__main__":
@@ -339,6 +436,12 @@ if __name__ == "__main__":
     parser.add_argument("output", type=Path)
     parser.add_argument("kind", choices=["longmemeval", "locomo"])
     parser.add_argument("--qa-limit", type=int, default=2)
+    parser.add_argument("--fold", type=int, default=0)
+    parser.add_argument("--folds", type=int, default=1)
+    parser.add_argument("--shard", type=int, default=0)
+    parser.add_argument("--shards", type=int, default=1)
+    parser.add_argument("--all-questions", action="store_true")
     args = parser.parse_args()
     torch.set_num_threads(2)
-    run(args.staged, args.output, args.kind, args.qa_limit)
+    run(args.staged, args.output, args.kind, args.qa_limit, fold=args.fold, folds=args.folds,
+        shard=args.shard, shards=args.shards, all_questions=args.all_questions)

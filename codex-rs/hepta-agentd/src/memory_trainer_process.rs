@@ -117,6 +117,7 @@ impl MemoryTrainerProcessV1 {
             "pretrained.py",
             "requirements.txt",
             "sessions.py",
+            "tensor_contract.py",
         ] {
             let content = bounded_read(&directory.join(name), 256 * 1024)?;
             bytes.extend_from_slice(&(name.len() as u64).to_be_bytes());

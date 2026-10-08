@@ -6,6 +6,7 @@ mutable owner writes. Revoking any indexed support invalidates this projection.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sqlite3
@@ -35,10 +36,33 @@ class RetrievalPolicy:
             raise ValueError("invalid retrieval policy")
 
 
+MAX_VECTOR_BYTES = 512 * 1024 * 1024
+MAX_INDEX_BYTES = 2 * 1024 * 1024 * 1024
+
+
+def index_digest(path: Path) -> str:
+    """Physical projection identity, including the FTS shadow tables."""
+    if not 1 <= path.stat().st_size <= MAX_INDEX_BYTES:
+        raise ValueError("index file byte limit")
+    result = hashlib.sha256()
+    with path.open("rb") as source:
+        for block in iter(lambda: source.read(1024 * 1024), b""):
+            result.update(block)
+    return result.hexdigest()
+
+
 class PersistentIndex:
-    def __init__(self, path: Path, expected_cut: str, revoked: set[str]):
+    def __init__(
+        self, path: Path, expected_cut: str, revoked: set[str], *,
+        expected_file_digest: str, expected_encoder: str,
+    ):
+        # Caller binds these values from its immutable projection manifest, not
+        # from a possibly corrupted index's own metadata. Path is owner-protected.
+        if not expected_encoder or index_digest(path) != expected_file_digest:
+            raise ValueError("index artifact/encoder binding mismatch")
+        self.file_digest = expected_file_digest
         self.path = path
-        self.db = sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)
+        self.db = sqlite3.connect(path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
         try:
             self.db.execute("PRAGMA query_only=ON")
             self.meta = json.loads(
@@ -46,9 +70,20 @@ class PersistentIndex:
             )
             if (
                 self.meta["cut"] != expected_cut
-                or self.meta["schema"] != "hepta.memory-index.v1"
+                or self.meta["schema"] != "hepta.memory-index.v2"
+                or self.meta["encoder"] != expected_encoder
             ):
                 raise ValueError("index cut/schema mismatch")
+            count = self.db.execute("SELECT count(*) FROM docs").fetchone()[0]
+            shape = self.meta.get("shape")
+            if (not isinstance(shape, list) or len(shape) != 2
+                or any(type(n) is not int for n in shape)
+                or not 1 <= count == shape[0] <= 250_000
+                or not 1 <= shape[1] <= 4096
+                or shape[0] * shape[1] * 4 > MAX_VECTOR_BYTES):
+                raise ValueError("index dimensions exceed resource profile")
+            if self.db.execute("PRAGMA quick_check").fetchone()[0] != "ok":
+                raise ValueError("index database integrity")
             records = self.db.execute(
                 "SELECT record, vector FROM docs ORDER BY rowid"
             ).fetchall()
@@ -62,6 +97,11 @@ class PersistentIndex:
                 != self.meta["source_digest"]
             ):
                 raise ValueError("index source projection corruption")
+            lexical = self.db.execute("SELECT rowid, content FROM lexical ORDER BY rowid").fetchall()
+            if lexical != [(i, d.content) for i, d in enumerate(self.documents, 1)]:
+                raise ValueError("lexical projection does not match source records")
+            if len({d.identity for d in self.documents}) != count or {d.scope for d in self.documents} != {self.meta["scope"]}:
+                raise ValueError("index identity/scope mismatch")
             self.vectors = np.stack(
                 [np.frombuffer(row[1], dtype="<f4") for row in records]
             )
@@ -89,6 +129,7 @@ class PersistentIndex:
             not documents
             or len(documents) > 250_000
             or len({d.scope for d in documents}) != 1
+            or len({d.identity for d in documents}) != len(documents)
         ):
             raise ValueError("index count/scope mismatch")
         vectors = np.asarray(vectors, dtype="<f4")
@@ -97,6 +138,7 @@ class PersistentIndex:
             or vectors.shape[0] != len(documents)
             or not 1 <= vectors.shape[1] <= 4096
             or not np.isfinite(vectors).all()
+            or vectors.nbytes > MAX_VECTOR_BYTES
         ):
             raise ValueError("index embedding shape/value")
         vectors = vectors / np.maximum(
@@ -124,7 +166,7 @@ class PersistentIndex:
                     "INSERT INTO lexical(rowid,content) VALUES(?,?)", (i, doc.content)
                 )
             meta = {
-                "schema": "hepta.memory-index.v1",
+                "schema": "hepta.memory-index.v2",
                 "scope": documents[0].scope,
                 "cut": cut,
                 "encoder": encoder,
@@ -138,6 +180,7 @@ class PersistentIndex:
             db.commit()
         finally:
             db.close()
+        return index_digest(path)
 
     def revalidate(self, cut: str, revoked: set[str]):
         if cut != self.meta["cut"] or self.roots.intersection(revoked):
@@ -193,6 +236,8 @@ class PersistentIndex:
             "index_file_bytes": self.path.stat().st_size,
             "resident_vector_bytes": self.vectors.nbytes,
             "projection_cut": current_cut,
+            "index_artifact_digest": self.file_digest,
+            "encoder_identity": self.meta["encoder"],
             "policy": asdict(policy),
         }
 
@@ -200,28 +245,30 @@ class PersistentIndex:
         self.db.close()
 
 
-def tune_policy(cases, targets, indices, embeddings, cut, revoked):
+def tune_policy(cases, targets, indices, embeddings, cut, revoked, *, family_ids=None):
     """Only selection families may tune. Chunk hits are scored at native source granularity."""
     if not cases or any(partition != "select" for _, partition in cases):
         raise ValueError("tuning requires a nonempty selection-only view")
     candidates = [
         RetrievalPolicy(top_k=top_k, lexical_weight=weight)
-        for top_k in (4, 8, 16)
-        for weight in (0.0, 0.5, 1.0)
+        for top_k in (8,)
+        for weight in (0.0, 0.25, 0.5, 0.75, 1.0)
     ]
     records = []
     for policy in candidates:
-        recalls = []
+        family_recalls = {}
         for q, _ in cases:
             truth = targets[q.identity]
-            if truth.unanswerable or not truth.evidence:
+            if truth.unanswerable or not truth.evidence or truth.unresolved_evidence:
                 continue
             docs, _ = indices[q.scope].query(
                 q, embeddings[q.identity], policy, current_cut=cut, revoked=revoked
             )
             recalled = {source_id(d.identity) for d in docs}
             support = {source_id(identity) for identity in truth.evidence}
-            recalls.append(len(recalled.intersection(support)) / len(support))
+            family = family_ids[q.identity] if family_ids is not None else q.family
+            family_recalls.setdefault(family, []).append(len(recalled.intersection(support)) / len(support))
+        recalls = [sum(values) / len(values) for values in family_recalls.values()]
         records.append((sum(recalls) / len(recalls) if recalls else -1.0, policy))
     best = max(
         records, key=lambda pair: (pair[0], -pair[1].top_k, pair[1].lexical_weight)
@@ -230,5 +277,7 @@ def tune_policy(cases, targets, indices, embeddings, cut, revoked):
         raise ValueError("selection view has no supported evidence")
     return best[1], {
         "selection_ids": [q.identity for q, _ in cases],
+        "objective": "equal-source-family-mean-annotated-evidence-recall-at-8",
+        "selected_top_k": 8,
         "candidates": [{"recall": score, "policy": asdict(p)} for score, p in records],
     }

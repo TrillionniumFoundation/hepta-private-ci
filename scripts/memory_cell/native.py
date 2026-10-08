@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 from sessions import normalize_sessions, source_id
@@ -68,6 +68,7 @@ class Benchmark:
     targets: dict[str, Target]
     families: dict[str, str]
     ingress_issues: tuple[dict, ...] = ()
+    ingress_failures: dict[str, dict] = field(default_factory=dict)
 
     def history(self, query: Question) -> tuple[Document, ...]:
         return tuple(d for d in self.documents if d.scope == query.scope)
@@ -90,7 +91,11 @@ def load(
     expected_sha256: str | None = None,
     *,
     allow_unresolved_evidence: bool = False,
+    session_conflicts: str = "reject",
+    invalid_history: str = "reject",
 ) -> Benchmark:
+    if invalid_history not in ("reject", "quarantine-question"):
+        raise ValueError("unknown invalid-history profile")
     with path.open("rb") as stream:
         payload = stream.read(MAX_BYTES + 1)
     if len(payload) > MAX_BYTES:
@@ -114,6 +119,8 @@ def load(
     queries: list[Question] = []
     targets: dict[str, Target] = {}
     ingress_issues = []
+    ingress_failures = {}
+    session_origins = {}
     for sample in data:
         if kind == "longmemeval":
             qid = text(sample["question_id"], "question id", 256)
@@ -123,7 +130,31 @@ def load(
                 sample["haystack_session_ids"],
                 sample["haystack_dates"],
             )
-            normalized, duplicates = normalize_sessions(sessions, ids, dates)
+            try:
+                normalized, duplicates = normalize_sessions(
+                    sessions, ids, dates, conflict_policy=session_conflicts
+                )
+            except ValueError as error:
+                if invalid_history == "reject":
+                    raise
+                # Keep the native question/target and exact bad-history identity.
+                # No partial or fabricated history is released to any model arm.
+                ingress_failures[scope] = {
+                    "stage": "native-history-ingress",
+                    "error_type": type(error).__name__,
+                    "error_digest": digest(str(error)),
+                    "history_digest": digest((sessions, ids, dates)),
+                }
+                normalized, duplicates = [], [{
+                    "identity": scope,
+                    "disposition": "question-retained-history-quarantined",
+                    **ingress_failures[scope],
+                }]
+            original_ids = {
+                version: row["identity"]
+                for row in duplicates
+                for version in row.get("versioned_identities", [])
+            }
             ingress_issues.extend({"question_id": qid, **row} for row in duplicates)
             known = set()
             for turns, sid, date in normalized:
@@ -136,15 +167,18 @@ def load(
                     if turn["role"] not in ("user", "assistant", "system"):
                         raise ValueError("unknown history role")
                     clean.append((turn["role"], text(turn["content"], "turn")))
+                native_sid = original_ids.get(sid, source_id(sid))
+                # Repeated/edited copies of one native source are one family.
                 root = "session:" + digest(clean)
                 identity = f"{scope}/{sid}"
                 known.add(source_id(identity))
+                session_origins[identity] = native_sid
                 docs.append(
                     Document(
                         identity,
                         root,
                         scope,
-                        sid,
+                        native_sid,
                         date,
                         "\n".join(f"{role}: {content}" for role, content in clean),
                     )
@@ -156,7 +190,10 @@ def load(
                 text(sample["question"], "question"),
                 text(sample["question_date"], "question date", 256),
             )
-            support = tuple(f"{scope}/{sid}" for sid in sample["answer_session_ids"])
+            answer_ids = sample["answer_session_ids"]
+            if not isinstance(answer_ids, list) or len(answer_ids) > 10_000:
+                raise ValueError("invalid LongMemEval answer session IDs")
+            support = tuple(f"{scope}/{text(sid, 'answer session id', 256)}" for sid in answer_ids)
             missing = tuple(sorted(set(support) - known))
             if missing and not allow_unresolved_evidence:
                 raise ValueError(f"dangling LongMemEval evidence: {missing[:4]}")
@@ -260,12 +297,16 @@ def load(
     roots: dict[str, str] = {}
     for doc in docs:
         family = scope_family[doc.scope]
-        previous = roots.setdefault(doc.root, family)
-        left, right = sorted((find(previous), find(family)))
-        parents[right] = left
+        keys = [doc.root]
+        if kind == "longmemeval":
+            keys.append("native-session:" + digest(session_origins[doc.identity]))
+        for key in keys:
+            previous = roots.setdefault(key, family)
+            left, right = sorted((find(previous), find(family)))
+            parents[right] = left
     families = {family: find(family) for family in parents}
     return Benchmark(
-        kind, sha, tuple(docs), tuple(queries), targets, families, tuple(ingress_issues)
+        kind, sha, tuple(docs), tuple(queries), targets, families, tuple(ingress_issues), ingress_failures
     )
 
 

@@ -22,6 +22,7 @@ mod pinned;
 mod publication;
 mod registry;
 mod selection;
+mod selected;
 mod sensor_core_registry;
 mod storage;
 mod storage_hygiene;
@@ -152,3 +153,6 @@ pub use storage::write_registry_snapshot;
 pub use storage::write_registry_snapshot_beneath;
 pub use storage_hygiene::OrphanCleanupDispositionV1;
 pub use storage_hygiene::cleanup_zero_length_orphan_beneath;
+
+pub use selected::GuardedSelectedCandidateV1;
+pub use selected::load_guarded_selected_candidate_v1;

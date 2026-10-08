@@ -250,3 +250,5 @@ pub use shared_memory_training::SharedMemoryTensorCandidateV1;
 pub use shared_memory_training::SharedMemoryTensorModelV1;
 pub use shared_memory_training::SharedMemoryTrainingError;
 pub use shared_memory_training::SharedMemoryTrainingV1;
+
+pub use shared_memory_training::SelectedMemoryTensorModelV1;
