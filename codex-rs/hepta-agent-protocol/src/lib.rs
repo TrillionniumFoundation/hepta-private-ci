@@ -713,11 +713,56 @@ pub enum AutomationEffectReconcileState {
     ProvenAbsent,
 }
 
+/// Current read-only Chain observation attached to an already-owned effect.
+///
+/// This is not a provider acknowledgement, final-use token, confirmation/finality
+/// certificate, or proof that another peer did not receive the packet.  It exists
+/// so callers can distinguish an irreversible local submit fact from current
+/// active-chain state after a reorganization.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationEffectChainObservation {
+    pub schema_version: u32,
+    pub block_id: String,
+    pub stored_exact: bool,
+    pub block_height: Option<u64>,
+    pub block_chainwork_hex: Option<String>,
+    pub active_tip: String,
+    pub active_tip_height: u64,
+    pub active_tip_chainwork_hex: String,
+    pub active_chain_member: bool,
+    pub active_depth: Option<u64>,
+    pub active_work_depth_hex: Option<String>,
+    pub active_membership_sql_lookups: Option<u64>,
+    pub active_membership_sql_budget: u64,
+    /// Signed local confirmation policy result. This never represents
+    /// consensus finality, execution authority, or model-install authority.
+    pub confirmation_policy_min_depth: u64,
+    pub confirmation_policy_min_work_depth_hex: String,
+    pub confirmation_policy_satisfied: bool,
+    /// Exact durable provider-effect occurrence whose original wire bytes were
+    /// used for this observation. Older responses may omit this binding.
+    #[serde(default)]
+    pub provider_effect_key: Option<String>,
+    /// SHA-256 of the exact durable provider wire bytes used by packet-status.
+    /// This is an effect binding only; it grants no selection or final-use authority.
+    #[serde(default)]
+    pub payload_sha256: Option<String>,
+    pub owner_generation: u64,
+    pub local_target_only: bool,
+    pub global_absence_authority: bool,
+    pub confirmation_authority: bool,
+    pub finality_authority: bool,
+    pub execution_authority: bool,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AutomationEffectReconcileSnapshot {
     pub state: AutomationEffectReconcileState,
     pub effect: Option<AutomationEffectSnapshot>,
+    #[serde(default)]
+    pub chain: Option<AutomationEffectChainObservation>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -1233,6 +1278,7 @@ mod tests {
             AgentdPayload::AutomationEffectReconcile(AutomationEffectReconcileSnapshot {
                 state: AutomationEffectReconcileState::Indeterminate,
                 effect: None,
+                chain: None,
             });
         let response_bytes = serde_json::to_vec(&response).expect("serialize effect response");
         assert_eq!(
