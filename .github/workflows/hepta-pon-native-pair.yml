@@ -33,9 +33,10 @@ jobs:
       CARGO_BUILD_JOBS: '2'
       CARGO_PROFILE_TEST_DEBUG: '0'
       CARGO_PROFILE_DEV_DEBUG: '0'
-      CHAIN_SOURCE_SHA: 560d44ac28fee7b073d1740e372839ab52f057b6
-      CHAIN_BASE_SHA: bf2f6c72cb4881545f03b6ebe55a5e5e6a7af988
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '560d44ac28fee7b073d1740e372839ab52f057b6' || '6731581b65a6300e5c2bb73566d582227ee932b7' }}
+      CHAIN_SOURCE_SHA: 1bd94e331a238a94904e8c82749781a7173f4317
+      CHAIN_BASE_SHA: 560d44ac28fee7b073d1740e372839ab52f057b6
+      HEPTA_PON_CHAIN_SOURCE: >-
+        ${{ matrix.lane == 'source-head' && '1bd94e331a238a94904e8c82749781a7173f4317' || 'dc67f953356d514ac51df9ce477692b5d7bfeb37' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
