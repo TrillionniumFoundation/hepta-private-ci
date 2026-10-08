@@ -6,8 +6,8 @@ on:
       - 'scripts/memory_cell/**'
       - 'codex-rs/hepta-neuron/**'
       - 'codex-rs/hepta-bellman-operator/**'
-      - 'codex-rs/hepta-infer-core/**'
       - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/hepta-agentd/**'
       - 'codex-rs/hepta-intelligence-eval/**'
 permissions:
   contents: read
@@ -15,16 +15,57 @@ concurrency:
   group: memory-cell-continuation-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 jobs:
+  source-candidate:
+    if: github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.candidate.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Prepare a separate review candidate; never update main or the PR head
+        id: candidate
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/prepare_owner_candidate.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('codex-rs/hepta-agentd/src/shared_terminal_cell.rs')
+          s = p.read_text()
+          for field in ('source:', 'consumer:', 'purpose:'):
+              s = s.replace('        pub(super) ' + field, '        ' + field)
+          p.write_text(s)
+          PY
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          git add -u
+          if ! git diff --cached --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git commit -m 'feat(memory-owners): wire source-admitted training and native circuit execution'
+            git push origin "HEAD:refs/heads/codex/memory-owner-source-${GITHUB_RUN_ID}"
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   source-inputs:
+    needs: source-candidate
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          ref: ${{ needs.source-candidate.outputs.sha }}
           persist-credentials: false
-      - name: Retain exact reviewed source inputs
+      - name: Retain exact source
         run: |
-          set -euo pipefail
           mkdir -p /tmp/memory-cell-source
           git archive --format=tar.gz HEAD AGENTS.md justfile defs.bzl codex-rs docs scripts .github > /tmp/memory-cell-source/owner-inputs.tar.gz
           git rev-parse HEAD > /tmp/memory-cell-source/tested-commit.txt
@@ -35,25 +76,27 @@ jobs:
           path: /tmp/memory-cell-source
           if-no-files-found: error
   native-models:
+    needs: source-candidate
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          ref: ${{ needs.source-candidate.outputs.sha }}
           persist-credentials: false
-      - name: Install isolated pinned CPU model environment
+      - name: Install pinned CPU model environment
         run: |
           python3 -m venv /tmp/mcell-python
           /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
-      - name: Check native adapters and train-only ablations
+      - name: Native adapters and leakage/ablation tests
         run: /tmp/mcell-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v
-      - name: Stage public pinned weights and benchmark data
+      - name: Stage public pinned model and data inputs
         env:
           HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
           HF_HUB_DISABLE_XET: '1'
         run: /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs
-      - name: Run original-format benchmarks with actual pretrained LoRA
+      - name: Execute original-format public benchmark pilot
         env:
           HF_HUB_OFFLINE: '1'
           TRANSFORMERS_OFFLINE: '1'
@@ -62,10 +105,10 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/mcell-native
           cp /tmp/mcell-inputs/staging.json /tmp/mcell-native/staging.json
-          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs /tmp/mcell-native/locomo locomo --qa-limit 2
-          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs /tmp/mcell-native/longmemeval longmemeval --qa-limit 2
           git rev-parse HEAD > /tmp/mcell-native/tested-commit.txt
           /tmp/mcell-python/bin/pip freeze > /tmp/mcell-native/python-lock.txt
+          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs /tmp/mcell-native/locomo locomo --qa-limit 16
+          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs /tmp/mcell-native/longmemeval longmemeval --qa-limit 16
           find /tmp/mcell-native -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/mcell-native/SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -74,17 +117,109 @@ jobs:
           path: /tmp/mcell-native
           if-no-files-found: warn
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
         with:
           name: memory-cell-laya-training-pairs
           path: /tmp/mcell-native/locomo/laya-pairs.json
           if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-trained-native-circuit
+          path: /tmp/mcell-native/locomo/native-export
+          if-no-files-found: error
+  native-owner:
+    needs: [source-candidate, native-models]
+    if: always() && !cancelled() && needs.source-candidate.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source-candidate.outputs.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-trained-native-circuit
+          path: /tmp/circuit
+      - name: Test actual Neuron and execute trained parameters through the owner
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-neuron
+          cd codex-rs
+          cargo run -p codex-hepta-neuron --example memory_cell_owner -- /tmp/circuit /tmp/neuron-owner-evidence
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-native-owner-evidence
+          path: /tmp/neuron-owner-evidence
+          if-no-files-found: warn
+  training-owner:
+    needs: source-candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.source-candidate.outputs.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Compile and test the actual owning crates
+        run: |
+          just test -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host
+          just test -p codex-hepta-agentd --test terminal_cell_owner
+      - name: Stage real pretrained worker model
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          HF_HUB_DISABLE_XET: '1'
+        run: |
+          python3 -m venv /tmp/mcell-python
+          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs
+          PYTHONPATH=scripts/memory_cell /tmp/mcell-python/bin/python - <<'PY' >> "$GITHUB_ENV"
+          from pathlib import Path
+          from pretrained import file_inventory
+          from native import digest
+          print('HEPTA_MEMORY_BASE_DIGEST=' + digest(file_inventory(Path('/tmp/mcell-inputs/reader'))))
+          PY
+          echo "HEPTA_MEMORY_PROGRAM=$GITHUB_WORKSPACE/scripts/memory_cell/owner_worker.py" >> "$GITHUB_ENV"
+      - name: Real cognitive-store to ledger to offline LoRA to candidate and revocation
+        env:
+          HEPTA_MEMORY_PYTHON: /tmp/mcell-python/bin/python
+          HEPTA_MEMORY_MODEL_DIR: /tmp/mcell-inputs/reader
+          HEPTA_MEMORY_EVIDENCE_DIR: /tmp/training-owner-evidence
+        run: just test -p codex-hepta-agentd --test terminal_cell_owner --run-ignored all actual_pretrained_worker_consumes_cognitive_and_learning_owner_job
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cell-training-owner-evidence
+          path: /tmp/training-owner-evidence
+          if-no-files-found: warn
   laya-pretrained:
-    needs: native-models
+    needs: [source-candidate, native-models]
+    if: always() && !cancelled() && needs.source-candidate.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          ref: ${{ needs.source-candidate.outputs.sha }}
           persist-credentials: false
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
@@ -99,7 +234,7 @@ jobs:
           /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
           /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py laya /tmp/laya-inputs
-      - name: Train actual Laya scorer tensors and record held-out outputs
+      - name: Train actual Laya scorer tensors and retain held-out outputs
         env:
           HF_HUB_OFFLINE: '1'
           TRANSFORMERS_OFFLINE: '1'
