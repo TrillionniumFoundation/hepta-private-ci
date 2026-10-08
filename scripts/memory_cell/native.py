@@ -66,8 +66,13 @@ class Benchmark:
         return tuple(d for d in self.documents if d.scope == query.scope)
 
     def partition(self, query: Question) -> str:
-        bucket = int(digest(self.families[query.family])[:8], 16) % 10
-        return "train" if bucket < 6 else "select" if bucket < 8 else "test"
+        families = sorted(set(self.families.values()), key=digest)
+        if len(families) < 3:
+            raise ValueError("fewer than three independent source families")
+        rank = families.index(self.families[query.family])
+        train_end = min(len(families) - 2, max(1, len(families) * 6 // 10))
+        select_end = min(len(families) - 1, max(train_end + 1, len(families) * 8 // 10))
+        return "train" if rank < train_end else "select" if rank < select_end else "test"
 
 
 def load(path: Path, kind: str, expected_sha256: str | None = None, *, allow_unresolved_evidence: bool = False) -> Benchmark:

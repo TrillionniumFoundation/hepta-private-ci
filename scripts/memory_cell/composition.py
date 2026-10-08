@@ -1,30 +1,36 @@
-"""Learned two-cell evidence composition plus separately trained ablation controls.
-
-Input: the same frozen query/document features for every arm. Semantic messages
-are real differentiable activations, not an oracle category or target. The second
-cell consumes the message through a learned gate. No authority crosses tensors.
-"""
+"""Learned, scope-local messages and equal-allocation ablation controls."""
 from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import time
+from pathlib import Path
 
 import numpy as np
 import torch
 from torch import nn
 
+MODES = ("joint", "cell_only", "routing_only", "no_message", "shuffled_message", "frozen", "flat_matched")
+
 
 class CellCircuit(nn.Module):
     def __init__(self, dimension: int, *, mode: str):
         super().__init__()
-        if mode not in ("joint", "no_message", "shuffled_message", "frozen", "flat_matched"):
-            raise ValueError("unknown ablation")
+        if mode not in MODES or not 1 <= dimension <= 512:
+            raise ValueError("unknown ablation or input dimension")
         self.mode = mode
         self.semantic = nn.Linear(dimension, 16)
         self.gate = nn.Linear(dimension, 16)
         self.procedural = nn.Linear(dimension + 16, 1)
         self.trainable_budget = sum(p.numel() for p in self.parameters())
+        if mode == "cell_only":
+            self.gate.requires_grad_(False)
+        elif mode == "routing_only":
+            self.semantic.requires_grad_(False)
+            self.procedural.requires_grad_(False)
+        elif mode == "frozen":
+            self.requires_grad_(False)
 
     def forward(self, features):
         message = torch.tanh(self.semantic(features))
@@ -32,9 +38,9 @@ class CellCircuit(nn.Module):
         if self.mode == "no_message":
             message = message * 0
         elif self.mode == "shuffled_message":
-            message = torch.roll(message, shifts=1, dims=0)
+            # Fixed channel permutation within a request, never across scopes.
+            message = torch.roll(message, shifts=1, dims=-1)
         elif self.mode == "flat_matched":
-            # Same active tensors; an ungated feed-forward control, not idle padding.
             message = torch.tanh(self.semantic(features) + self.gate(features))
             gate = torch.ones_like(gate)
         return self.procedural(torch.cat([features, message * gate], dim=-1)).squeeze(-1)
@@ -51,37 +57,69 @@ def state_digest(model):
 def fit(features: np.ndarray, labels: np.ndarray, partitions: list[str], *, steps: int = 48):
     if not 1 <= steps <= 512 or len(features) != len(labels) or len(features) != len(partitions):
         raise ValueError("composition dataset/budget")
-    if not features.ndim == 2 or not np.isfinite(features).all() or not set(np.unique(labels)).issubset({0, 1}):
+    if features.ndim != 2 or not np.isfinite(features).all() or not set(np.unique(labels)).issubset({0, 1}):
         raise ValueError("composition values")
+    if not set(partitions).issubset({"train", "select", "test"}):
+        raise ValueError("unknown data partition")
     train = np.array([p == "train" for p in partitions])
     if train.sum() < 2 or len(set(labels[train].tolist())) != 2:
         raise ValueError("insufficient train-only class support")
     x = torch.tensor(features[train], dtype=torch.float32)
     y = torch.tensor(labels[train], dtype=torch.float32)
     outputs = {}
-    for mode in ("joint", "no_message", "shuffled_message", "frozen", "flat_matched"):
+    for mode in MODES:
         torch.manual_seed(1729)
         model = CellCircuit(features.shape[1], mode=mode)
         original = copy.deepcopy(model.state_dict())
         start = time.perf_counter()
-        optimizer = torch.optim.AdamW(model.parameters(), lr=0.003)
+        optimized = [p for p in model.parameters() if p.requires_grad]
+        optimizer = torch.optim.AdamW(optimized, lr=0.003) if optimized else None
         for _ in range(0 if mode == "frozen" else steps):
             optimizer.zero_grad(set_to_none=True)
-            logits = model(x)
-            loss = nn.functional.binary_cross_entropy_with_logits(logits, y)
+            loss = nn.functional.binary_cross_entropy_with_logits(model(x), y)
             if not torch.isfinite(loss):
                 raise ValueError("nonfinite composition loss")
             loss.backward()
-            nn.utils.clip_grad_norm_(model.parameters(), 1.0, error_if_nonfinite=True)
+            nn.utils.clip_grad_norm_(optimized, 1.0, error_if_nonfinite=True)
             optimizer.step()
         model.eval()
         with torch.no_grad():
             probabilities = model(torch.tensor(features, dtype=torch.float32)).sigmoid().numpy()
         outputs[mode] = (model, probabilities, {
             "parameter_budget": model.trainable_budget,
+            "optimizer_parameter_count": sum(p.numel() for p in optimized),
             "updated_parameters": sum(p.numel() for name, p in model.state_dict().items() if not torch.equal(original[name], p)),
             "steps": 0 if mode == "frozen" else steps,
             "train_examples": int(train.sum()), "train_seconds": time.perf_counter() - start,
             "artifact_digest": state_digest(model),
+            "message_permutation": "per-request-channels" if mode == "shuffled_message" else None,
         })
     return outputs
+
+
+def export_native(model, directory: Path, encoder_digest: str, dataset_digest: str, scope_digest: str, inputs: np.ndarray):
+    """Export the actual trained joint tensors plus Q24 parity inputs for Rust."""
+    if model.mode != "joint" or any(len(value) != 64 or any(c not in "0123456789abcdef" for c in value)
+                                    for value in (encoder_digest, dataset_digest, scope_digest)):
+        raise ValueError("native export profile/binding")
+    directory.mkdir(parents=True, exist_ok=False)
+    state = model.state_dict()
+    circuit = {"schema": "hepta.memory-circuit.v1", "encoder_digest": encoder_digest,
+               "dataset_digest": dataset_digest, "scope_digest": scope_digest,
+               "dimension": model.semantic.in_features, "hidden": model.semantic.out_features}
+    for name in ("semantic.weight", "semantic.bias", "gate.weight", "gate.bias", "procedural.weight"):
+        circuit[name.replace(".", "_")] = state[name].flatten().tolist()
+    circuit["procedural_bias"] = float(state["procedural.bias"].item())
+    payload = json.dumps(circuit, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    if len(payload) > 512 * 1024:
+        raise ValueError("native artifact byte bound")
+    (directory / "circuit.json").write_bytes(payload)
+    quantized = np.rint(inputs[:32] * (1 << 24)).astype(np.int64)
+    if quantized.ndim != 2 or quantized.shape[1] != circuit["dimension"] or np.abs(quantized).max() > 8 << 24:
+        raise ValueError("native input bound")
+    with torch.no_grad():
+        probabilities = model(torch.tensor(quantized / (1 << 24), dtype=torch.float32)).sigmoid().numpy()
+    vectors = [{"input_q24": values.tolist(), "expected_probability_q24": int(round(float(p) * (1 << 24)))}
+               for values, p in zip(quantized, probabilities, strict=True)]
+    (directory / "parity.json").write_text(json.dumps({"weights_sha256": hashlib.sha256(payload).hexdigest(),
+        "maximum_absolute_q24_error": 64, "vectors": vectors, "trained_tensor_digest": state_digest(model)}, indent=2))
