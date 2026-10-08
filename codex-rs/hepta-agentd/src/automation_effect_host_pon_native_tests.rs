@@ -224,7 +224,9 @@ __attribute__((constructor)) static void injected(void) {
 "#,
     )?;
     let built = Command::new("cc")
-        .args(["-std=c11", "-shared", "-fPIC", "-Wall", "-Wextra", "-Werror"])
+        .args([
+            "-std=c11", "-shared", "-fPIC", "-Wall", "-Wextra", "-Werror",
+        ])
         .arg(&source)
         .arg("-o")
         .arg(&library)
