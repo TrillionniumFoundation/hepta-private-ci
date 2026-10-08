@@ -4,7 +4,9 @@ use super::data::HEADER;
 use std::fs;
 use std::path::Path;
 use std::process::Command;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 fn compile(dir: &Path, name: &str, source: &str) -> Result<(bool, String), String> {
     let file = dir.join(format!("{name}.rs"));
