@@ -1,0 +1,42 @@
+name: PoN boundary source capture
+on:
+  push:
+    branches: [fix/agentd-pon-executable-object-20261008]
+    paths: [.github/workflows/pon-boundary-source-capture.yml]
+permissions:
+  contents: read
+jobs:
+  capture:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          path: hepta
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: 8275093f2c8672234b94494c32fdc8652ced83e8
+          fetch-depth: 1
+          persist-credentials: false
+          path: chain
+      - name: Preserve exact sources, not execution claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir out
+          git -C hepta rev-parse HEAD HEAD^{tree} > out/hepta-source.txt
+          git -C chain rev-parse HEAD HEAD^{tree} > out/chain-source.txt
+          git -C hepta archive --format=tar HEAD codex-rs/hepta-agentd codex-rs/hepta-contracts codex-rs/hepta-automation codex-rs/hepta-agent-protocol codex-rs/hepta-learning-artifacts codex-rs/hepta-plasticity codex-rs/hepta-neuron codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/justfile codex-rs/rust-toolchain.toml scripts .github/workflows .github/actions | gzip > out/hepta-source.tar.gz
+          git -C chain archive --format=tar HEAD | gzip > out/chain-source.tar.gz
+          sha256sum out/* > out/SHA256SUMS
+          cat out/hepta-source.txt out/chain-source.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pon-directed-boundary-sources
+          path: out/
+          if-no-files-found: error
+          retention-days: 7
