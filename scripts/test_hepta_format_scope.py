@@ -21,7 +21,7 @@ class FormatterScopeTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         patcher = patch.object(FMT, "REPO_ROOT", self.root)
         patcher.start()
         self.addCleanup(patcher.stop)
