@@ -9,19 +9,44 @@ mod retrieval;
 mod controls;
 #[path = "memory_cell_lab/report.rs"]
 mod report;
+#[path = "memory_cell_lab/build_observations.rs"]
+mod build_observations;
 use std::error::Error;
 use std::fs;
-use std::path::PathBuf;
+use std::io::Read;
+use std::path::{Path, PathBuf};
+
+fn retained_bytes(dir: &Path) -> std::io::Result<u64> {
+    let mut bytes = 0;
+    for entry in fs::read_dir(dir)? {
+        let entry = entry?;
+        let metadata = entry.metadata()?;
+        if metadata.is_dir() { bytes += retained_bytes(&entry.path())?; }
+        else if metadata.is_file() { bytes += metadata.len(); }
+    }
+    Ok(bytes)
+}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = std::env::args().skip(1).collect();
-    let (corpus, output, smoke) = match args.as_slice() {
-        [mode, out] if mode == "smoke" => (data::smoke_corpus(), PathBuf::from(out), true),
-        [mode, input, out] if mode == "run" => (fs::read_to_string(input)?, PathBuf::from(out), false),
-        _ => return Err("usage: memory_cell_lab smoke OUT | run CORPUS.tsv OUT".into()),
+    let usage = "usage: memory_cell_lab smoke OUT | run CORPUS.tsv OUT | build-smoke GENERATOR_SHA OUT";
+    let output = PathBuf::from(args.last().ok_or(usage)?);
+    if !matches!(args.first().map(String::as_str), Some("smoke" | "run" | "build-smoke")) {
+        return Err(usage.into());
+    }
+    // Refuse to overwrite a prior corpus, report, checkpoint or experiment directory.
+    fs::create_dir(&output)?;
+    let (corpus, smoke) = match args.as_slice() {
+        [mode, _] if mode == "smoke" => (data::smoke_corpus(), true),
+        [mode, input, _] if mode == "run" => {
+            let mut text = String::new();
+            fs::File::open(input)?.take(16 * 1024 * 1024 + 1).read_to_string(&mut text)?;
+            (text, false)
+        }
+        [mode, commit, _] if mode == "build-smoke" => (build_observations::generate(&output, commit)?, true),
+        _ => return Err(usage.into()),
     };
     let rows = data::parse(&corpus)?;
-    fs::create_dir(&output)?;
     fs::write(output.join("corpus.tsv"), &corpus)?;
     fs::write(output.join("protocol.txt"), concat!(
         "MCELL-LAB-1\nselection=select-only\ntrain-ops-estimate-ceiling=8000000\n",
@@ -35,7 +60,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         if let Some(bundle) = &arm.bundle {
             let path = output.join(format!("{}.bundle", arm.name));
             fs::write(&path, bundle.encode())?;
-            // Evaluate an artifact reload, not a live trainer object or its buffers.
             let clean = model::Bundle::decode(&fs::read_to_string(path)?)?;
             if clean != *bundle { return Err("bundle roundtrip mismatch".into()); }
             arm.bundle = Some(clean);
@@ -43,8 +67,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     let text = report::experiment_report(&arms, &rows, corpus.len(), smoke)?;
     fs::write(output.join("report.json"), text)?;
-    let actual_bytes: u64 = fs::read_dir(&output)?.map(|e| e.and_then(|e| e.metadata()).map(|m| m.len())).collect::<Result<Vec<_>, _>>()?.iter().sum();
-    fs::write(output.join("storage.txt"), format!("retained_regular_file_bytes_before_this_receipt={actual_bytes}\nincludes_corpus_and_all_control_artifacts=true\n"))?;
+    let actual_bytes = retained_bytes(&output)?;
+    fs::write(output.join("storage.txt"), format!("retained_regular_file_bytes_before_this_receipt={actual_bytes}\nincludes_corpus_all_control_artifacts_and_compiler_observations=true\n"))?;
     println!("qualification_only=true superiority_claim=false");
     Ok(())
 }

@@ -5,6 +5,8 @@ on:
       - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab*'
       - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab/**'
       - 'codex-rs/hepta-intelligence-eval/tests/memory_cell_*'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_LAB.md'
+      - 'codex-rs/hepta-intelligence-eval/BUILD.bazel'
       - '.github/workflows/hepta-memory-cell-lab.yml'
 permissions:
   contents: read
@@ -12,6 +14,86 @@ concurrency:
   group: memory-cell-lab-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 jobs:
+  source-candidate:
+    if: github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - name: Prepare isolated formatting and input-hardening candidate (never update main or PR head)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('codex-rs/hepta-intelligence-eval')
+          data = root / 'examples/memory_cell_lab/data.rs'
+          s = data.read_text()
+          s = s.replace('workspace variant {i}', 'workspace variant {window}-{i}')
+          if 'duplicate query across splits' not in s:
+              s = s.replace('let mut roots = BTreeMap::new();', 'let mut roots = BTreeMap::new();\n    let mut inputs = BTreeMap::new();')
+              needle = '        if let Some(prior) = roots.insert(&e.root, e.split) {'
+              s = s.replace(needle, '        let key = (&e.query.scope, e.query.domain, &e.query.text);\n        if let Some(prior) = inputs.insert(key, e.split) {\n            if prior != e.split { return Err("duplicate query across splits".into()); }\n        }\n' + needle)
+          data.write_text(s)
+          controls = root / 'examples/memory_cell_lab/controls.rs'
+          s = controls.read_text()
+          if 'eligible_roots' not in s:
+              s = s.replace('    if parent.scope != candidate.scope', '    let eligible_roots: std::collections::BTreeSet<_> = rows.iter().filter(|r| r.split == Split::Train).map(|r| r.root.clone()).collect();\n    if parent.scope != candidate.scope')
+              s = s.replace('candidate.generation != parent.generation + 1', 'Some(candidate.generation) != parent.generation.checked_add(1)')
+              s = s.replace('candidate.roots != parent.roots', '!parent.roots.is_subset(&candidate.roots) || !candidate.roots.is_subset(&eligible_roots)')
+              s = s.replace('parent.generation + 1;', 'parent.generation.checked_add(1).ok_or("generation overflow")?;')
+          controls.write_text(s)
+          test = root / 'tests/memory_cell_faults.rs'
+          s = test.read_text()
+          if '#![cfg(target_os = "linux")]' not in s:
+              s = '#![cfg(target_os = "linux")]\n' + s
+          test.write_text(s)
+          main = root / 'examples/memory_cell_lab.rs'
+          s = main.read_text()
+          if 'mod transfer;' not in s:
+              s = s.replace('use std::error::Error;', '#[path = "memory_cell_lab/transfer.rs"]\nmod transfer;\nuse std::error::Error;')
+              needle = '    let usage = '
+              start = s.index(needle)
+              s = s[:start] + '''    if args.first().map(String::as_str) == Some("infer-transfer") {
+                  return match args.as_slice() {
+                      [_, input, output] => transfer::infer(Path::new(input), Path::new(output), None).map_err(Into::into),
+                      [_, input, output, revoked] => transfer::infer(Path::new(input), Path::new(output), Some(Path::new(revoked))).map_err(Into::into),
+                      _ => Err("usage: infer-transfer INPUT_DIR OUTPUT.tsv [CURRENT_REVOCATIONS]".into()),
+                  };
+              }
+          ''' + s[start:]
+              needle = '    let text = report::experiment_report'
+              start = s.index(needle)
+              s = s[:start] + '''    let transfer_bundle = arms.iter().find(|a| a.name == "dynamic_equal_capacity").and_then(|a| a.bundle.as_ref()).ok_or("missing transfer bundle")?;
+              transfer::export(transfer_bundle, &rows, &output.join("transfer-input"), &output.join("transfer-expected.tsv"))?;
+          ''' + s[start:]
+          main.write_text(s)
+          test = root / 'tests/memory_cell_lab.rs'
+          s = test.read_text()
+          if 'duplicate_observations_do_not_hide_behind_new_root_names' not in s:
+              s += '''
+          #[test]
+          fn duplicate_observations_do_not_hide_behind_new_root_names() {
+              let mut rows = corpus();
+              rows[64].query = rows[0].query.clone();
+              assert!(data::validate(&rows).is_err());
+          }
+          '''
+          test.write_text(s)
+          PY
+          rustfmt --edition=2024 codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs codex-rs/hepta-intelligence-eval/examples/memory_cell_lab/*.rs codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs
+          if git diff --quiet; then echo 'No source candidate changes'; exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codex-rs/hepta-intelligence-eval/examples/ codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs
+          git commit -m 'fix(learning.eval): harden split provenance and normalize MemoryCell experiment source'
+          git push origin "HEAD:refs/heads/codex/memory-cell-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
   native-experiment:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -24,24 +106,127 @@ jobs:
         run: |
           set -euo pipefail
           rustc --version
-          mkdir -p /tmp/hepta-memory-cell-bin
+          mkdir -p /tmp/hepta-memory-cell-bin /tmp/hepta-memory-cell-evidence
           rustc --edition=2024 -O codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs -o /tmp/hepta-memory-cell-bin/lab
           for source in codex-rs/hepta-intelligence-eval/tests/memory_cell_*.rs; do
             rustc --edition=2024 --test "$source" -o "/tmp/hepta-memory-cell-bin/$(basename "$source" .rs)"
           done
-      - name: Execute native tests and explicit synthetic smoke
+      - name: Execute native tests, synthetic fixture and observed compiler experiment
         shell: bash
         run: |
           set -euo pipefail
-          for test in /tmp/hepta-memory-cell-bin/memory_cell_*; do "$test" --nocapture; done
-          /tmp/hepta-memory-cell-bin/lab smoke /tmp/hepta-memory-cell-evidence
+          for test in /tmp/hepta-memory-cell-bin/memory_cell_*; do "$test" --nocapture; done | tee /tmp/hepta-memory-cell-evidence/tests.log
+          /usr/bin/time -v -o /tmp/hepta-memory-cell-evidence/synthetic-resource.txt /tmp/hepta-memory-cell-bin/lab smoke /tmp/hepta-memory-cell-evidence/synthetic
+          /usr/bin/time -v -o /tmp/hepta-memory-cell-evidence/compiler-resource.txt /tmp/hepta-memory-cell-bin/lab build-smoke "$(git rev-parse HEAD)" /tmp/hepta-memory-cell-evidence/compiler
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in Path('/tmp/hepta-memory-cell-evidence').rglob('report.json'):
+              r = json.loads(p.read_text())
+              assert r['production_qualified'] is False
+              assert r['superiority_claim'] is False
+              assert len(r['arms']) == 7
+          PY
           git rev-parse HEAD > /tmp/hepta-memory-cell-evidence/source-head.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-memory-cell-evidence/source-tree.txt
           rustc --version --verbose > /tmp/hepta-memory-cell-evidence/toolchain.txt
-          sha256sum /tmp/hepta-memory-cell-bin/lab /tmp/hepta-memory-cell-evidence/* > /tmp/hepta-memory-cell-sha256.txt
-          cp /tmp/hepta-memory-cell-sha256.txt /tmp/hepta-memory-cell-evidence/SHA256SUMS
+          find /tmp/hepta-memory-cell-evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/hepta-memory-cell-evidence/SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: memory-cell-lab-evidence
           path: /tmp/hepta-memory-cell-evidence
           if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-transfer-input
+          path: /tmp/hepta-memory-cell-evidence/synthetic/transfer-input
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-transfer-expected
+          path: /tmp/hepta-memory-cell-evidence/synthetic/transfer-expected.tsv
+          if-no-files-found: error
+  clean-node:
+    needs: native-experiment
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [a, b]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-transfer-input
+          path: /tmp/memory-input
+      - name: Recall on a fresh runner without replay corpus or expected labels
+        run: |
+          set -euo pipefail
+          test "$(find /tmp/memory-input -type f | wc -l)" -eq 2
+          rustc --edition=2024 -O codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs -o /tmp/mcell-lab
+          /tmp/mcell-lab infer-transfer /tmp/memory-input /tmp/observed-${{ matrix.node }}.tsv
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-node-${{ matrix.node }}
+          path: /tmp/observed-${{ matrix.node }}.tsv
+  revoke-after-delivery:
+    needs: clean-node
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-transfer-input
+          path: /tmp/memory-input
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-cell-node-*
+          path: /tmp/node-results
+          merge-multiple: true
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-transfer-expected
+          path: /tmp/expected
+      - name: Verify parity independently and publish a newer revocation frontier
+        run: |
+          set -euo pipefail
+          diff -u /tmp/expected/transfer-expected.tsv /tmp/node-results/observed-a.tsv
+          diff -u /tmp/expected/transfer-expected.tsv /tmp/node-results/observed-b.tsv
+          python3 - <<'PY'
+          from pathlib import Path
+          lines = Path('/tmp/memory-input/model.bundle').read_text().splitlines()
+          assert lines[0] == 'MCELL-LAB-1' and int(lines[4]) > 0
+          Path('/tmp/current-revocations.txt').write_text('MCELL-REVOCATIONS-LAB-1\n' + lines[5] + '\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-cell-current-revocations
+          path: /tmp/current-revocations.txt
+  restore-old-artifact:
+    needs: revoke-after-delivery
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [a, b]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-transfer-input
+          path: /tmp/old-memory-input
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-cell-current-revocations
+          path: /tmp/current-control
+      - name: An old model copy cannot resurrect a revoked source
+        run: |
+          set -euo pipefail
+          rustc --edition=2024 -O codex-rs/hepta-intelligence-eval/examples/memory_cell_lab.rs -o /tmp/mcell-lab
+          if /tmp/mcell-lab infer-transfer /tmp/old-memory-input /tmp/resurrected.tsv /tmp/current-control/current-revocations.txt 2>/tmp/rejection.txt; then
+            echo 'Revoked artifact unexpectedly usable'; exit 1
+          fi
+          grep -F 'revoked training root' /tmp/rejection.txt
+          test ! -e /tmp/resurrected.tsv
