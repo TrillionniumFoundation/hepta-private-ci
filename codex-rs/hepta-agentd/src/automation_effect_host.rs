@@ -230,8 +230,10 @@ enum PonInvocation {
 }
 
 impl PonLocalProviderEffectAdapter {
-    fn validate_paths(&self) -> Result<(), ()> {
-        verify_pinned_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;
+    fn validate_paths(&self) -> Result<fs::File, ()> {
+        // Hash the exact open executable that this operation will execute.
+        let executable =
+            open_verified_binary(&self.binary, &self.binary_sha256).map_err(|_| ())?;
         let canonical_store = self.store.canonicalize().map_err(|_| ())?;
         if canonical_store != self.store || !canonical_store.is_dir() {
             return Err(());
@@ -241,11 +243,11 @@ impl PonLocalProviderEffectAdapter {
         if metadata.file_type().is_symlink() || !metadata.is_file() {
             return Err(());
         }
-        Ok(())
+        Ok(executable)
     }
 
-    fn command(&self, operation: &str) -> Command {
-        let mut command = Command::new(&self.binary);
+    fn command(&self, operation: &str, executable: &Path) -> Command {
+        let mut command = Command::new(executable);
         command
             .arg(operation)
             .arg("--development")
@@ -274,20 +276,42 @@ impl PonLocalProviderEffectAdapter {
         let Some(deadline) = Instant::now().checked_add(self.timeout) else {
             return PonInvocation::BeforeStart;
         };
-        if wire_payload.len() > 1024 * 1024 || self.validate_paths().is_err() {
+        if wire_payload.len() > 1024 * 1024 {
             return PonInvocation::BeforeStart;
         }
+        let executable = match self.validate_paths() {
+            Ok(file) => file,
+            Err(()) => return PonInvocation::BeforeStart,
+        };
         let Ok(runtime) = tokio::runtime::Handle::try_current() else {
             return PonInvocation::BeforeStart;
         };
-        // Called from the existing spawn_blocking scope: no process operation
-        // may escape the original deadline, including stdin and both pipe reads.
-        match runtime.block_on(pon_process::run(
-            self.command(operation),
+        // Linux uses the parent process's verified open file object, not the
+        // mutable pathname from the configuration. Retain its descriptor until
+        // the subprocess exchange is complete, including script interpreters.
+        #[cfg(target_os = "linux")]
+        let executable_path = {
+            use std::os::fd::AsRawFd;
+            PathBuf::from(format!(
+                "/proc/{}/fd/{}",
+                std::process::id(),
+                executable.as_raw_fd()
+            ))
+        };
+        // Other hosts retain the existing file-path startup contract; they
+        // must not claim the Linux same-object-exec property.
+        #[cfg(not(target_os = "linux"))]
+        let executable_path = self.binary.clone();
+        // Called from the existing spawn_blocking scope: stdin and both pipe
+        // reads are under the one deadline; no fresh retry is authorized.
+        let outcome = runtime.block_on(pon_process::run(
+            self.command(operation, &executable_path),
             wire_payload,
             deadline,
             MAX_PON_PROCESS_OUTPUT_BYTES,
-        )) {
+        ));
+        drop(executable);
+        match outcome {
             pon_process::Outcome::BeforeStart => PonInvocation::BeforeStart,
             pon_process::Outcome::Unknown => PonInvocation::Unknown,
             pon_process::Outcome::Complete(stdout) => match serde_json::from_slice(&stdout) {
@@ -701,7 +725,10 @@ impl ProviderEffectAdapter for PonLocalProviderEffectAdapter {
     }
 }
 
-fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
+fn open_verified_binary(
+    path: &Path,
+    expected: &Sha256Digest,
+) -> Result<fs::File, AgentdError> {
     if !path.is_absolute() {
         return Err(AgentdError::Invalid(
             "PoN binary path must be absolute".to_string(),
@@ -735,6 +762,24 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
         }
     }
     let mut file = fs::File::open(path)?;
+    let opened = file.metadata()?;
+    if !opened.is_file() || opened.len() != metadata.len() {
+        return Err(AgentdError::Invalid(
+            "PoN opened binary object changed".to_string(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        if opened.dev() != metadata.dev()
+            || opened.ino() != metadata.ino()
+            || opened.mode() != metadata.mode()
+        {
+            return Err(AgentdError::Invalid(
+                "PoN verified file does not match opened executable".to_string(),
+            ));
+        }
+    }
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 64 * 1024];
     loop {
@@ -752,7 +797,11 @@ fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), Agen
             "PoN binary digest changed".to_string(),
         ));
     }
-    Ok(())
+    Ok(file)
+}
+
+fn verify_pinned_binary(path: &Path, expected: &Sha256Digest) -> Result<(), AgentdError> {
+    open_verified_binary(path, expected).map(|_| ())
 }
 
 fn pon_contract_digest(config: &AutomationEffectHostFileV3) -> Result<Sha256Digest, AgentdError> {

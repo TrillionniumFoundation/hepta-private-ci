@@ -175,3 +175,27 @@ async fn pon_oversized_packet_never_launches_subprocess() {
         .unwrap();
     assert!(matches!(outcome, PonInvocation::BeforeStart));
 }
+
+#[cfg(target_os = "linux")]
+#[test]
+fn pon_verified_executable_fd_stays_on_original_object_after_path_swap() {
+    use std::os::fd::AsRawFd;
+    let (_directory, adapter) = fixture(
+        "#!/bin/sh\nprintf original\n",
+        Duration::from_secs(2),
+    );
+    let file = open_verified_binary(&adapter.binary, &adapter.binary_sha256)
+        .expect("open exact pinned original");
+    let executable = format!("/proc/{}/fd/{}", std::process::id(), file.as_raw_fd());
+    let displaced = adapter.store.join("displaced-original");
+    fs::rename(&adapter.binary, &displaced).expect("replace original pathname");
+    fs::write(&adapter.binary, "#!/bin/sh\nprintf substituted\n").expect("replacement");
+    fs::set_permissions(&adapter.binary, fs::Permissions::from_mode(0o700))
+        .expect("replacement permissions");
+
+    // A pathname-only spawn at this moment would run "substituted" instead.
+    let executed = Command::new(executable).output().expect("descriptor-backed exec");
+    assert!(executed.status.success());
+    assert_eq!(executed.stdout, b"original");
+    assert!(open_verified_binary(&adapter.binary, &adapter.binary_sha256).is_err());
+}
