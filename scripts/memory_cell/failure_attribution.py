@@ -9,7 +9,7 @@ unknown (``semantic_citation_precision`` is always ``None``).
 from __future__ import annotations
 
 import argparse
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 import json
 import math
 from pathlib import Path
@@ -151,7 +151,7 @@ def _parse_time(value: Any) -> float | None:
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
         if parsed.tzinfo is None:
-            parsed = parsed.replace(tzinfo=UTC)
+            parsed = parsed.replace(tzinfo=timezone.utc)
         return parsed.timestamp()
     except ValueError:
         return None
