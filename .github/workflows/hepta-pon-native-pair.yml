@@ -34,9 +34,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 63f6b60dea0e435e2f75cc92cc15908c6a3e04ad
+      CHAIN_SOURCE_SHA: d148a4158884fe3955ce99034e050b467eb349c7
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '63f6b60dea0e435e2f75cc92cc15908c6a3e04ad' || '8644e5282d050d3771248d9cd4e455a32b4f9f10' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'd148a4158884fe3955ce99034e050b467eb349c7' || 'e6b0982cc05980efb8477573412bbe1c85dfdbd8' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -95,6 +95,9 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-sequence.json" --minimum-tests 7 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-context.json" --minimum-tests 8 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence_context.py -v
+      - name: Require complete bounded native input and original pipe controls
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 15 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
       - name: Require complete CI observer and recent-window regressions
         run: |
           set -euo pipefail
@@ -106,6 +109,9 @@ jobs:
           for selector in native_branch_single_buffer_matches_original_wire native_branch_single_buffer_preserves_every_lift_depth; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "account_archive_prototype::native_primitive_tests::$selector" -- --exact --show-output --test-threads=1
           done
+      - name: Require complete authenticated snapshot retention and rollback controls
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-snapshots.json" --minimum-tests 16 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated_tests:: -- --show-output --test-threads=1
       - name: Execute the native growth readback regression module
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-readback.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib growth_reservation_io::tests -- --nocapture
