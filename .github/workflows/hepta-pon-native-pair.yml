@@ -34,9 +34,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: c664737f8b135f4a9b8aa9adcbd9c5738ca70238
+      CHAIN_SOURCE_SHA: 882e58d04352e46550cc77459d6904b20adad571
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'c664737f8b135f4a9b8aa9adcbd9c5738ca70238' || 'e2df6781718213b6e09a3562879e79b4cfbda0f9' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '882e58d04352e46550cc77459d6904b20adad571' || '3fde37feaaa50c4cc7104e2a7b9984237e9e563a' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -142,7 +142,13 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-overlap.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test public_v3_request_accounting actual_depletion::depleted_domain_serves_honest_block_during_rotating_public_false_work -- --exact --show-output --test-threads=1
       - name: Require paired native retained state and recovery
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recovery.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test continuity_authenticated --test authenticated_storage_cli -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recovery.json" --minimum-tests 8 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test continuity_authenticated --test authenticated_storage_cli -- --nocapture --test-threads=1
+      - name: Require every live cached-owner corruption and recovery control separately
+        run: |
+          set -euo pipefail
+          for selector in live_owner_rechecks_genesis_block_after_committed_damage_and_restore live_owner_rechecks_parent_work_after_real_admission live_owner_rechecks_record_limits_missing_rows_and_sql_types live_owner_snapshot_damage_rolls_back_admission_and_rejects_cold_open; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test authenticated_storage_cli "cached_owner_reads::$selector" -- --exact --show-output --test-threads=1
+          done
       - name: Build the actual pinned native Chain executable
         run: |
           set -euo pipefail
