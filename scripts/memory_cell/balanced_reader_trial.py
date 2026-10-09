@@ -1,9 +1,8 @@
-"""Fixed-evidence reader ablation, not a production adoption procedure.
+"""Fixed-evidence reader ablation, never a production adoption procedure.
 
-Three readers (adapter disabled, legacy objective, balanced counterfactual)
-receive the exact prior native/token selected windows and empty controls. The
-old choices are immutable inputs, not new rank improvements. All raw answers
-and unsigned citation requests precede scoring. Public development only.
+An opt-in candidate objective reuses the same original native/token/empty
+contexts. Both choices and labels are pinned; reader effects cannot be described
+as new ranking gains. Raw answers and unsigned requests are synced before scoring.
 """
 
 import argparse
@@ -14,8 +13,9 @@ import os
 from pathlib import Path
 import re
 
-from balanced_answer_learning import (PROFILE, WEIGHTS, MARGIN, CONTRAST_WEIGHT,
-                                      MAX_UPDATES, TOKEN_CEILING, fit_balanced)
+from balanced_answer_learning import (
+    PROFILE, WEIGHTS, MARGIN, CONTRAST_WEIGHT, MAX_UPDATES, TOKEN_CEILING, fit_balanced,
+)
 from native import Document, digest, load
 from native_citation import capture_native
 from selector_answering import ABSTAIN, GENERATION, SYSTEM
@@ -38,11 +38,15 @@ def write(path, value):
         os.fsync(stream.fileno())
 
 
-def report(records, expected):
-    if len(set(expected)) != len(expected) or len(records) != len(expected) * len(ARMS):
+def report(records, expected, *, candidate="balanced"):
+    if candidate not in ("balanced", "preference"):
+        raise ValueError("unregistered reader candidate")
+    readers = ("base", "legacy", candidate)
+    arms = tuple(f"{e}_{r}" for e in EVIDENCE for r in readers)
+    if len(set(expected)) != len(expected) or len(records) != len(expected) * len(arms):
         raise ValueError("balanced trial census size")
     if {(r["question_id"], r["arm"]) for r in records} != {
-        (q, a) for q in expected for a in ARMS
+        (q, a) for q in expected for a in arms
     }:
         raise ValueError("missing/duplicate balanced trial result")
     groups, profiles = {}, set()
@@ -56,33 +60,36 @@ def report(records, expected):
             raise ValueError("failed generation cannot have a success score")
         groups.setdefault(row["question_id"], {})[row["arm"]] = row
         if row["status"] == "succeeded":
-            profiles.add((row["receipt"]["base_identity"],
-                          row["receipt"]["prompt_profile"]))
+            profiles.add((row["receipt"]["base_identity"], row["receipt"]["prompt_profile"]))
     if len(profiles) != 1:
         raise ValueError("different base or decoder")
     for by_arm in groups.values():
-        first = by_arm[ARMS[0]]
+        first = by_arm[arms[0]]
         if any(any(r[k] != first[k] for k in ("family", "phase", "pool_digest"))
                for r in by_arm.values()):
             raise ValueError("changed query/family/pool")
+        if any(r.get("target_unanswerable") != first.get("target_unanswerable")
+               for r in by_arm.values()):
+            raise ValueError("answerability changed between model arms")
         for evidence in EVIDENCE:
-            subset = [by_arm[f"{evidence}_{reader}"] for reader in READERS]
+            subset = [by_arm[f"{evidence}_{reader}"] for reader in readers]
             if any(r["selected"] != subset[0]["selected"] for r in subset):
                 raise ValueError("reader contrast changed selection")
             receipts = [r["receipt"] for r in subset if r["status"] == "succeeded"]
             if any(any(r[k] != receipts[0][k] for k in
                        ("input_ids_digest", "delivered_evidence")) for r in receipts):
                 raise ValueError("reader contrast changed actual delivery")
-    summaries, contrasts = {}, {}
+    summaries, contrasts, reliance = {}, {}, {}
     for phase in sorted({r["phase"] for r in records}):
-        for arm in ARMS:
+        for arm in arms:
             rows = [r for r in records if (r["phase"], r["arm"]) == (phase, arm)]
             good = [r for r in rows if r["status"] == "succeeded"]
-            item = dict(planned=len(rows), succeeded=len(good), failed=len(rows)-len(good),
-                        emitted_markers=sum(len(re.findall(r"\[E[0-9]+\]", r["answer"]))
-                                            for r in good),
-                        exact_refusals=sum(r["answer"].strip() == ABSTAIN for r in good),
-                        semantic_citation_precision=None)
+            item = dict(
+                planned=len(rows), succeeded=len(good), failed=len(rows)-len(good),
+                emitted_markers=sum(len(re.findall(r"\[E[0-9]+\]", r["answer"])) for r in good),
+                exact_refusals=sum(r["answer"].strip() == ABSTAIN for r in good),
+                semantic_citation_precision=None,
+            )
             for label, flag in (("answerable", False), ("unanswerable", True)):
                 scored = [r for r in good if r.get("target_unanswerable") is flag
                           and r.get("f1") is not None]
@@ -90,7 +97,7 @@ def report(records, expected):
                     f1=sum(r["f1"] for r in scored)/len(scored) if scored else None)
             summaries[f"{phase}/{arm}"] = item
         for evidence in ("native", "token"):
-            for reader in ("legacy", "balanced"):
+            for reader in readers[1:]:
                 per_family, failed, unscored = {}, 0, 0
                 for by_arm in groups.values():
                     a, b = by_arm[f"{evidence}_base"], by_arm[f"{evidence}_{reader}"]
@@ -106,29 +113,59 @@ def report(records, expected):
                 n = len(per_family)
                 means = [sum(sum(v[i] for v in vs)/len(vs) for vs in per_family.values())/n
                          for i in (0, 1)] if n else [-1.0, 1.0]
-                # Four reader/evidence comparisons in each of three frozen phases.
                 radius = math.sqrt(2 * math.log(24 / 0.05) / n) if n else 2.0
                 baseline = summaries[f"{phase}/{evidence}_base"]["answerable"]["f1"]
-                candidate = summaries[f"{phase}/{evidence}_{reader}"]["answerable"]["f1"]
+                value = summaries[f"{phase}/{evidence}_{reader}"]["answerable"]["f1"]
                 contrasts[f"{phase}/{evidence}/{reader}"] = dict(
                     supplied_family_groups=n, missing_pairs=unscored, failed_pairs=failed,
                     family_delta_bounds=means,
                     simultaneous_95_interval=[max(-1, means[0]-radius), min(1, means[1]+radius)],
-                    observed_nonregression=(candidate is not None and baseline is not None
-                                            and candidate >= 0.98 * baseline),
-                    significance_established=(n >= 200 and means[0]-radius > 0))
-    return dict(summaries=summaries, answerable_contrasts=contrasts,
-                official_semantic_judge_executed=False, independent_acceptance=False,
-                production_accepted=False, deployment_fallback="unchanged",
-                prior_public_test_exposure=True)
+                    observed_nonregression=(not failed and not unscored and value is not None
+                                            and baseline is not None and value >= 0.98 * baseline),
+                    significance_established=(n >= 200 and means[0]-radius > 0),
+                )
+            for reader in readers:
+                pairs = [(g[f"{evidence}_{reader}"], g[f"empty_{reader}"])
+                         for g in groups.values() if g[arms[0]]["phase"] == phase
+                         and g[arms[0]].get("target_unanswerable") is False]
+                complete = [(a, b) for a, b in pairs if a.get("f1") is not None
+                            and b.get("f1") is not None]
+                reliance[f"{phase}/{evidence}/{reader}"] = dict(
+                    paired_cases=len(pairs), scored_pairs=len(complete),
+                    missing_pairs=len(pairs)-len(complete),
+                    conditional_f1_delta=sum(a["f1"]-b["f1"] for a, b in complete)/len(complete)
+                    if complete else None,
+                    diagnostic_only=True, independent_semantic_review=False,
+                )
+    return dict(
+        summaries=summaries, answerable_contrasts=contrasts,
+        evidence_vs_empty= reliance, candidate_objective=candidate,
+        official_semantic_judge_executed=False, independent_acceptance=False,
+        production_accepted=False, deployment_fallback="unchanged", prior_public_test_exposure=True,
+    )
 
 
-def run(staged, external, reference, prior_factorial, output):
+def run(staged, external, reference, prior_factorial, output, *, candidate="balanced"):
     import torch
     from peft import get_peft_model_state_dict
     from pretrained import file_inventory, frozen_digest
     from task_answer_learning import TaskAnswerReader, answer_examples, wire_source
 
+    if candidate not in ("balanced", "preference"):
+        raise ValueError("unregistered reader candidate")
+    readers = ("base", "legacy", candidate)
+    arms = tuple(f"{e}_{r}" for e in EVIDENCE for r in readers)
+    config = dict(profile=PROFILE, weights=WEIGHTS, margin=MARGIN,
+                  contrast=CONTRAST_WEIGHT, updates=MAX_UPDATES, tokens=TOKEN_CEILING)
+    fit_candidate = fit_balanced
+    if candidate == "preference":
+        import evidence_preference as method
+        config = dict(profile=method.PROFILE, weights=method.SFT_WEIGHTS,
+                      beta=method.BETA, context_margin=method.CONTEXT_MARGIN,
+                      preference_weight=method.PREFERENCE_WEIGHT,
+                      context_weight=method.CONTEXT_WEIGHT,
+                      updates=method.MAX_UPDATES, tokens=method.TOKEN_CEILING)
+        fit_candidate = method.fit_preference
     torch.set_num_threads(2)
     commit = os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", "")
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
@@ -155,14 +192,16 @@ def run(staged, external, reference, prior_factorial, output):
         or dev.sha256 != old["dataset_sha256"]["squad_dev"]):
         raise ValueError("changed training/selection/test cut")
     output.mkdir()
-    plan = dict(schema="hepta.balanced-reader.trial.v1", source_commit=commit,
+    plan = dict(
+        schema="hepta.matched-reader.trial.v2", source_commit=commit,
         reference_source=REFERENCE_SOURCE, reference_plan_digest=digest(frozen),
-        questions=old["questions"], dataset_sha256=old["dataset_sha256"], arms=ARMS,
-        training_profile=PROFILE, weights=WEIGHTS, margin=MARGIN, contrast=CONTRAST_WEIGHT,
-        balanced_macro_updates=MAX_UPDATES, legacy_updates=192, token_ceiling=TOKEN_CEILING,
+        questions=old["questions"], dataset_sha256=old["dataset_sha256"], arms=arms,
+        candidate_objective=candidate, candidate_config=config,
+        legacy_updates=192, legacy_token_ceiling=TOKEN_CEILING,
         generator_config=GENERATION, template_digest=digest(SYSTEM),
         actual_compute_not_assumed_equal=True, candidate_selection_unchanged=True,
-        production_accepted=False)
+        trained_candidate_not_auto_selected=True, production_accepted=False,
+    )
     write(output / "preregistered.json", plan)
     views = strict_json((reference / "source-views.json").read_text())
     expected_pools = strict_json((reference / "candidate-pools.json").read_text())
@@ -206,12 +245,12 @@ def run(staged, external, reference, prior_factorial, output):
     reader = TaskAnswerReader(staged / "reader")
     records, training = [], {}
     with (output / "raw-answers.jsonl").open("x", encoding="utf-8") as journal:
-        for variant in READERS:
+        for variant in readers:
             reader.reset("external-balanced-development")
             if variant != "base":
                 training[variant] = (reader.fit_answers(examples, cut, revoked=set(),
                     steps=192, token_ceiling=TOKEN_CEILING) if variant == "legacy" else
-                    fit_balanced(reader, examples, cut, revoked=set()))
+                    fit_candidate(reader, examples, cut, revoked=set()))
                 path = output / (variant + "-adapter")
                 manifest = reader.save(path, training[variant])
                 reader.reset("external-balanced-development")
@@ -244,7 +283,7 @@ def run(staged, external, reference, prior_factorial, output):
                 not torch.equal(v, state[k]) for k, v in get_peft_model_state_dict(reader.model).items()
             ):
                 raise ValueError("evaluation modified model")
-    # Only this post-journal section can access test reference answers.
+    # The synced full journal precedes any held-out answer scoring.
     for row in records:
         phase, qid = row["phase"], row["question_id"]
         target = dev.targets[qid] if phase == "squad_test" else native[phase].targets[qid]
@@ -255,7 +294,7 @@ def run(staged, external, reference, prior_factorial, output):
         row.update(answer_scores(row["answer"], answers, null) if row["status"] == "succeeded"
                    else dict(exact_match=None, f1=None))
     write(output / "scored-answers.json", records)
-    result = report(records, expected)
+    result = report(records, expected, candidate=candidate)
     result.update(source_commit=commit, training=training, ranking_retrained=False)
     write(output / "report.json", result)
     print(json.dumps(result, ensure_ascii=False, allow_nan=False))
@@ -268,5 +307,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("staged", "external", "reference", "prior_factorial", "output"):
         parser.add_argument(name, type=Path)
+    parser.add_argument("--candidate", choices=("balanced", "preference"), default="balanced")
     args = parser.parse_args()
-    run(args.staged, args.external, args.reference, args.prior_factorial, args.output)
+    run(args.staged, args.external, args.reference, args.prior_factorial, args.output,
+        candidate=args.candidate)
