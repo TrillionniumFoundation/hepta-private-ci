@@ -130,6 +130,11 @@ class FailureAttributionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             attribute([base(f1=float("nan"))], {"q": target()})
 
+    def test_missing_support_does_not_masquerade_as_ranking_failure(self):
+        row = base(answer="almost", f1=0.4)
+        result = attribute([row], {"q": target(evidence=())})
+        self.assertEqual(result["records"][0]["failure_stages"], ["generation"])
+
 
 if __name__ == "__main__":
     unittest.main()

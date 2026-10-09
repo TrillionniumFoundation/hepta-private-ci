@@ -211,9 +211,13 @@ def _failure_stages(
     if answerable is True:
         if selected is None:
             stages.append("retrieval_or_window")
-        elif candidates is not None and not support.intersection(candidates):
+        elif (
+            support
+            and candidates is not None
+            and not support.intersection(candidates)
+        ):
             stages.append("retrieval_or_window")
-        elif selected not in support:
+        elif support and selected not in support:
             stages.append("ranking")
         if row.get("answer", "").strip() == ABSTAIN:
             stages.append("abstention")
