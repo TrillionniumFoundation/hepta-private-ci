@@ -325,6 +325,7 @@ mod tests {
     fn capacity_duplicate_and_expired_fail_closed() {
         let mut conf = limits();
         conf.max_pending = 1;
+        conf.max_batch_size = 1;
         let mut q = BoundedMicrobatchSchedulerV1::new(conf).unwrap();
         q.enqueue(1, intent("a", "one", 1, 1, 50)).unwrap();
         assert_eq!(q.enqueue(1, intent("a", "one", 1, 1, 50)), Err(SchedulerErrorV1::DuplicateRequest));
