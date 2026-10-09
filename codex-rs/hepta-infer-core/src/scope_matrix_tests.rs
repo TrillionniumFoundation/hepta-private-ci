@@ -56,7 +56,7 @@ impl ScopeMatrixTargetV1 for FixtureHost {
 fn requires_all_four_exact_scope_counts() {
     let samples = run_scope_matrix_v1(&mut FixtureHost).expect("fixture");
     let sizes: Vec<_> = samples.iter().map(|s| s.scope_count).collect();
-    assert_eq!(sizes, SCOPE_MATRIX_V1);
+    assert_eq!(sizes.as_slice(), SCOPE_MATRIX_V1.as_slice());
     assert!(samples.iter().all(|s| s.evidence_class == ScopeMatrixEvidenceClassV1::SourceFixture));
 }
 
