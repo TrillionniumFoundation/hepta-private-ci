@@ -4,6 +4,8 @@ use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -18,6 +20,7 @@ use sha2::Sha256;
 use crate::SupervisorError;
 use crate::restart_budget::RestartBudgetState;
 use crate::restart_policy::RESTART_ATTEMPT_BUDGET;
+use crate::restart_policy::RESTART_RECOVERY_WINDOW;
 
 pub(crate) const RESTART_JOURNAL_SCHEMA_VERSION: u32 = 1;
 pub(crate) const RESTART_JOURNAL_FILE: &str = "supervisor-restart-budget.json";
@@ -307,6 +310,15 @@ pub(crate) fn write_main_restart_budget(
     write_record(run_root, record)
 }
 
+pub(crate) fn read_restart_journal(
+    run_root: &Path,
+) -> Result<Option<RestartBudgetJournal>, SupervisorError> {
+    let Some(record) = read_record(run_root)? else {
+        return Ok(None);
+    };
+    Ok(record.companion)
+}
+
 pub(crate) fn write_restart_journal(
     run_root: &Path,
     journal: &RestartBudgetJournal,
@@ -339,6 +351,44 @@ pub(crate) fn unix_millis_now() -> Result<u64, SupervisorError> {
     u64::try_from(millis).map_err(|_| {
         SupervisorError::Invalid("system time exceeds restart journal range".to_string())
     })
+}
+
+pub(crate) fn restore_window(
+    durable: &DurableRestartWindow,
+    now: Instant,
+    now_unix_millis: u64,
+) -> (u32, Option<Instant>, Option<u64>, bool) {
+    if durable.attempts == 0 {
+        return (0, None, None, false);
+    }
+    let Some(started_unix_millis) = durable.window_started_unix_millis else {
+        return (
+            RESTART_ATTEMPT_BUDGET,
+            Some(now),
+            Some(now_unix_millis),
+            true,
+        );
+    };
+    let Some(elapsed_millis) = now_unix_millis.checked_sub(started_unix_millis) else {
+        // Wall-clock rollback is not allowed to buy extra restart attempts.
+        return (
+            RESTART_ATTEMPT_BUDGET,
+            Some(now),
+            Some(now_unix_millis),
+            true,
+        );
+    };
+    if u128::from(elapsed_millis) >= RESTART_RECOVERY_WINDOW.as_millis() {
+        return (0, None, None, false);
+    }
+    let elapsed = Duration::from_millis(elapsed_millis);
+    let started = now.checked_sub(elapsed).unwrap_or(now);
+    (
+        durable.attempts,
+        Some(started),
+        Some(started_unix_millis),
+        durable.attempts >= RESTART_ATTEMPT_BUDGET,
+    )
 }
 
 fn valid_window(window: &DurableRestartWindow) -> bool {
