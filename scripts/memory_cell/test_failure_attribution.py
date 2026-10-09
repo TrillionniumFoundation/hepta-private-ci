@@ -112,14 +112,20 @@ class FailureAttributionTests(unittest.TestCase):
         )
         self.assertIsNone(result["stage_counts"]["time"]["semantic_citation_precision"])
 
-
     def test_missing_structural_evidence_remains_unattributed(self):
         receipt_only = base(
-            arm="receipt-only", candidate_source_ids=None, selected=None,
+            arm="receipt-only",
+            candidate_source_ids=None,
+            selected=None,
             receipt={"delivered_evidence": [{"original_id": "scope/good"}]},
-            answer="almost", f1=0.4,
+            answer="almost",
+            f1=0.4,
         )
-        missing_target = base(question_id="missing-target-evidence", arm="missing-target-evidence", selected=0)
+        missing_target = base(
+            question_id="missing-target-evidence",
+            arm="missing-target-evidence",
+            selected=0,
+        )
         result = attribute(
             [receipt_only, missing_target],
             {"q": target(), "missing-target-evidence": {"unanswerable": False}},
