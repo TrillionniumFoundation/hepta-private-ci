@@ -62,7 +62,10 @@ impl ScopeMatrixSampleV1 {
             || self.source_head_digest.is_zero()
             || self.runtime_manifest_digest.is_zero()
             || self.total_requests < self.scope_count as u64
-            || self.terminal_requests + self.indeterminate_requests > self.total_requests
+            || self
+                .terminal_requests
+                .checked_add(self.indeterminate_requests)
+                .is_none_or(|completed| completed > self.total_requests)
             || !self.model_latency.valid()
             || !self.end_to_end_latency.valid()
             || !self.journal_fsync_latency.valid()
@@ -90,6 +93,13 @@ pub trait ScopeMatrixTargetV1 {
     type Error;
 
     fn run_scope_count(&mut self, count: usize) -> Result<ScopeMatrixSampleV1, Self::Error>;
+
+    /// A trusted external verifier must validate host identity, signer keys,
+    /// observed process and the exact source/configuration tuple. The default
+    /// never treats self-asserted host/observer digests as production evidence.
+    fn verify_target_host(&self, _sample: &ScopeMatrixSampleV1) -> bool {
+        false
+    }
 }
 
 #[derive(Debug)]
@@ -112,6 +122,13 @@ pub fn run_scope_matrix_v1<R: ScopeMatrixTargetV1>(
         if observation.scope_count != count {
             return Err(ScopeMatrixRunErrorV1::Contract(
                 ScopeMatrixErrorV1::WrongScopeCount,
+            ));
+        }
+        if observation.evidence_class == ScopeMatrixEvidenceClassV1::TargetHost
+            && !target.verify_target_host(&observation)
+        {
+            return Err(ScopeMatrixRunErrorV1::Contract(
+                ScopeMatrixErrorV1::MissingHostEvidence,
             ));
         }
         samples.push(observation);
