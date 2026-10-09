@@ -496,7 +496,9 @@ impl DurableMemoryReadStateOwnerV1 {
     ) -> Result<StateCommitReceiptV1, DurableMemoryReadStateOwnerErrorV1> {
         let expected_snapshot = DurableStateOwnerV1::snapshot_digest(path.as_ref())?;
         if expected_snapshot.is_some() {
-            return Err(DurableMemoryReadStateOwnerErrorV1::Binding("initial checkpoint exists"));
+            return Err(DurableMemoryReadStateOwnerErrorV1::Binding(
+                "initial checkpoint exists",
+            ));
         }
         let mut candidate = self.clone();
         let receipt = candidate.seed_initial_state(
@@ -559,7 +561,9 @@ impl DurableMemoryReadStateOwnerV1 {
         receipt: &StateCommitReceiptV1,
     ) -> Result<Vec<u8>, DurableMemoryReadStateOwnerErrorV1> {
         self.validate_receipt(receipt)?;
-        Ok(self.state.reload_active(&self.definition.cell_id, receipt)?)
+        Ok(self
+            .state
+            .reload_active(&self.definition.cell_id, receipt)?)
     }
 
     pub fn persist(
@@ -597,7 +601,9 @@ impl DurableMemoryReadStateOwnerV1 {
             .iter()
             .find(|(cell_id, _)| *cell_id == owner.definition.cell_id)
             .map(|(_, digest)| *digest)
-            .ok_or(DurableMemoryReadStateOwnerErrorV1::Binding("active state head"))?;
+            .ok_or(DurableMemoryReadStateOwnerErrorV1::Binding(
+                "active state head",
+            ))?;
         if snapshot.active_heads.len() != 1
             || snapshot.entries.iter().any(|(receipt, _)| {
                 receipt.cell_id != owner.definition.cell_id
@@ -1052,31 +1058,46 @@ mod tests {
             )
             .expect("successor");
         let saved_digest = DurableStateOwnerV1::snapshot_digest(&path)
-            .expect("snapshot").expect("present");
-        assert!(state_owner.seed_initial_state_persisted(
-            &path, id("memory-read.state.reseed"), b"foreign".to_vec(), None, None,
-        ).is_err());
+            .expect("snapshot")
+            .expect("present");
+        assert!(
+            state_owner
+                .seed_initial_state_persisted(
+                    &path,
+                    id("memory-read.state.reseed"),
+                    b"foreign".to_vec(),
+                    None,
+                    None,
+                )
+                .is_err()
+        );
         assert_eq!(
             DurableStateOwnerV1::snapshot_digest(&path).expect("unchanged"),
             Some(saved_digest),
         );
         let mut reopened = DurableMemoryReadStateOwnerV1::reopen(
-            &path, definition.clone(), owner_id.clone(), key.clone(),
-        ).expect("reopen");
+            &path,
+            definition.clone(),
+            owner_id.clone(),
+            key.clone(),
+        )
+        .expect("reopen");
         assert_eq!(
             reopened.reload(&successor).expect("reload"),
             b"initial-state"
         );
         let mut foreign = definition.clone();
         foreign.cell_id = id("cell.foreign-memory-read");
-        assert!(DurableMemoryReadStateOwnerV1::reopen(
-            &path, foreign, owner_id.clone(), key.clone(),
-        ).is_err());
+        assert!(
+            DurableMemoryReadStateOwnerV1::reopen(&path, foreign, owner_id.clone(), key.clone(),)
+                .is_err()
+        );
         let mut future_generation = definition;
         future_generation.generation = Generation::new(2).expect("generation");
-        assert!(DurableMemoryReadStateOwnerV1::reopen(
-            &path, future_generation, owner_id, key,
-        ).is_err());
+        assert!(
+            DurableMemoryReadStateOwnerV1::reopen(&path, future_generation, owner_id, key,)
+                .is_err()
+        );
         reopened
             .rollback_persisted(&path, &initial)
             .expect("rollback");
