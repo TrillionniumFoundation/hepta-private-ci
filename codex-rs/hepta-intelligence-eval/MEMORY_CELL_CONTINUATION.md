@@ -177,3 +177,45 @@ Do not merge, activate, or claim superiority while any gate has missing,
 unverifiable, or failed evidence. Keep immutable failure artifacts and
 machine-readable non-qualification rather than presenting partial execution
 as successful production rollout.
+
+
+## Complete citation census and serving-time revocation
+
+A selected MemoryCell now requires `VerifiedMemoryCitationGateV1` in addition to
+its existing independently signed statistical selection. The public serving
+qualification cannot be constructed from a selection token alone. A signed
+observer census binds every attempted delivery, request digest, actual delivery
+log anchor, source cut, snapshot and observed interval to the selected decision.
+The verifier requires exact correspondence with the selected snapshots and its
+signed future-window evidence. It rejects missing deliveries/audits, wrong
+experiments, reused cuts, unknown or unresolved claims, and unsupported factual
+claims. Actual signed citation verdicts, not a reported percentage, supply the
+99% numerator and denominator. At least 200 non-vacuous source groups must
+remain after merging shared families and any shared delivered source roots;
+renaming a question or abstaining does not manufacture independent evidence.
+
+This is a consumer of the existing independent delivery observer, not a new
+census database or a signer. Its signatures authenticate that observer's
+attestation; real completeness and semantic judgement still require authentic
+upstream observations. Tests use explicit fixture keys and virtual time and
+cannot certify production. No fixture key, invented time, repeated CI or
+benchmark fold becomes a production snapshot or observed future window.
+
+The selected service additionally holds the existing fleet coordinator. It
+requires a fresh authority feed and a current signed acknowledgement for the
+specific node before compute, and the same authority epoch/revision after
+compute. Updates force retry with new authority, never reuse a stale model
+result. Trust and live audit-source withdrawals are rechecked at binding,
+execution and delivery. Final delivery occurs while fleet, artifact and trust
+owner guards remain held, removing the former gap between final revalidation
+and sending the answer. Source withdrawal wiring is a mandatory host callback to
+the live source owner; there is no default empty withdrawal set and callers must
+not populate it from request JSON. An unavailable source owner fails closed.
+
+Rollback must carry the predecessor's own current citation certificate, not the
+successor's certificate. Recovery and shutdown do not waive any certificate,
+source, fleet, artifact, generation or final-use check. The service remains an
+explicit supervised capability, not enabled by default or a substitute for
+Supervisor selection. Full production activation and cross-host qualification
+require actually wiring those current owners and retaining their independent
+signed deployment/recovery observations.

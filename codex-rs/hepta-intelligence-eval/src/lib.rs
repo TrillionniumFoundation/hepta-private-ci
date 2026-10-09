@@ -397,3 +397,11 @@ pub use citation_audit::citation_judgement_payload_v1;
 pub use citation_audit::citation_request_payload_v1;
 pub use citation_audit::validate_citation_judgement_v1;
 pub use citation_audit::verify_signed_citation_audit_v1;
+
+mod memory_citation_gate;
+pub use memory_citation_gate::MemoryCitationCensusV1;
+pub use memory_citation_gate::MemoryCitationGateCountsV1;
+pub use memory_citation_gate::MemorySnapshotCensusV1;
+pub use memory_citation_gate::VerifiedMemoryCitationGateV1;
+pub use memory_citation_gate::memory_citation_census_payload_v1;
+pub use memory_citation_gate::verify_memory_citation_census_v1;

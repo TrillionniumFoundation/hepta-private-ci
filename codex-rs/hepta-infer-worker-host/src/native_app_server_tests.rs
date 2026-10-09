@@ -500,7 +500,7 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         .await?;
     assert!(
         accepted.succeeded(),
-        "fresh context must reach a successful real TurnStart"
+        "fresh context must reach a successful real TurnStart: {accepted:?}"
     );
     assert!(
         accepted.output.contains("fresh context accepted"),
