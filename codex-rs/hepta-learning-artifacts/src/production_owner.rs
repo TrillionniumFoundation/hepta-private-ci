@@ -646,11 +646,13 @@ impl StateCheckpointOwnerV1 {
         if self.tombstones.contains_key(&cell_id) {
             return Err(ProductionOwnerError::StateTombstoned(cell_id));
         }
-        let history = self.entries.entry(cell_id.clone()).or_default();
-        if let Some(existing) = history
-            .iter()
-            .find(|entry| entry.receipt.operation_id == operation_id)
-        {
+        // Validate against the immutable current state before ever creating
+        // a history entry. A rejected first commit must leave no ghost cell
+        // that can later be tombstoned or exported as a partial snapshot.
+        let history = self.entries.get(&cell_id);
+        if let Some(existing) = history.and_then(|history| {
+            history.iter().find(|entry| entry.receipt.operation_id == operation_id)
+        }) {
             if existing.bytes == bytes
                 && existing.receipt.generation == generation
                 && existing.receipt.state_schema_digest == state_schema_digest
@@ -666,11 +668,10 @@ impl StateCheckpointOwnerV1 {
             .active_heads
             .get(&cell_id)
             .copied()
-            .or_else(|| history.last().map(|entry| entry.receipt.state_digest));
+            .or_else(|| history.and_then(|history| history.last().map(|entry| entry.receipt.state_digest)));
         if let Some(active_head) = active_head {
             let active_generation = history
-                .iter()
-                .find(|entry| entry.receipt.state_digest == active_head)
+                .and_then(|history| history.iter().find(|entry| entry.receipt.state_digest == active_head))
                 .map(|entry| entry.receipt.generation)
                 .ok_or(ProductionOwnerError::StateConflict(cell_id.clone()))?;
             // A byte-identical state can be committed in a newer generation.
@@ -678,9 +679,7 @@ impl StateCheckpointOwnerV1 {
             // older signed receipt with the same bytes must not reopen an old
             // generation after cutover or rollback.
             let highest_signed_generation = history
-                .iter()
-                .map(|entry| entry.receipt.generation)
-                .max()
+                .and_then(|history| history.iter().map(|entry| entry.receipt.generation).max())
                 .ok_or(ProductionOwnerError::StateConflict(cell_id.clone()))?;
             if predecessor_state_digest != active_head
                 || generation < active_generation
@@ -692,7 +691,7 @@ impl StateCheckpointOwnerV1 {
             return Err(ProductionOwnerError::StateConflict(cell_id));
         }
         let sequence = LogicalSequence::new(
-            u64::try_from(history.len())
+            u64::try_from(history.map_or(0, |history| history.len()))
                 .map_err(|_| ProductionOwnerError::InvalidSequence)?
                 .checked_add(1)
                 .ok_or(ProductionOwnerError::InvalidSequence)?,
@@ -716,10 +715,13 @@ impl StateCheckpointOwnerV1 {
         };
         receipt.receipt_digest = receipt.content_digest();
         receipt.signature = self.signing_key.sign(&receipt.signing_bytes()).to_bytes();
-        history.push(StateEntryV1 {
-            receipt: receipt.clone(),
-            bytes,
-        });
+        self.entries
+            .entry(receipt.cell_id.clone())
+            .or_default()
+            .push(StateEntryV1 {
+                receipt: receipt.clone(),
+                bytes,
+            });
         self.active_heads
             .insert(receipt.cell_id.clone(), receipt.state_digest);
         Ok(receipt)
@@ -790,7 +792,9 @@ impl StateCheckpointOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<StateTombstoneReceiptV1, ProductionOwnerError> {
-        if reason_digest.is_zero() || !self.entries.contains_key(&cell_id) {
+        if reason_digest.is_zero()
+            || !self.entries.get(&cell_id).is_some_and(|history| !history.is_empty())
+        {
             return Err(ProductionOwnerError::StateNotFound(cell_id));
         }
         if self.tombstones.contains_key(&cell_id) {
@@ -1134,6 +1138,32 @@ mod tests {
         load.verify_production(&key.verifying_key())
             .expect("production load verify");
         std::fs::remove_dir_all(root_path).expect("cleanup");
+    }
+
+    #[test]
+    fn rejected_first_commit_does_not_create_a_ghost_cell() {
+        let key = SigningKey::from_bytes(&[57; 32]);
+        let cell = id("cell.never-committed");
+        let mut owner = StateCheckpointOwnerV1::new(id("state.owner.ghost"), key)
+            .expect("owner");
+        assert_eq!(
+            owner.commit(
+                id("operation.rejected"), cell.clone(),
+                Generation::new(1).expect("generation"),
+                Digest32::of_bytes(b"schema"), Digest32::of_bytes(b"missing-parent"),
+                b"state".to_vec(), None, None,
+            ),
+            Err(ProductionOwnerError::StateConflict(cell.clone()))
+        );
+        assert!(owner.snapshot().entries.is_empty());
+        assert!(owner.snapshot().active_heads.is_empty());
+        assert_eq!(
+            owner.tombstone(
+                cell.clone(), Generation::new(1).expect("generation"),
+                Digest32::of_bytes(b"reason"),
+            ),
+            Err(ProductionOwnerError::StateNotFound(cell))
+        );
     }
 
     #[test]
