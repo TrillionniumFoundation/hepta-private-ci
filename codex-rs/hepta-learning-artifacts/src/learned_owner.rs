@@ -471,6 +471,18 @@ mod tests {
         let path = std::env::temp_dir().join(format!("hepta-role-state-{}", std::process::id()));
         let _ = std::fs::remove_file(&path);
         owner.persist(&path).expect("persist");
+        let saved_digest = DurableStateOwnerV1::snapshot_digest(&path)
+            .expect("snapshot").expect("present");
+        let mut fresh_instance = DurableLearnedRoleOwnerV1::new(
+            definition.clone(), id("owner.rep"), key.clone(),
+        ).expect("fresh");
+        assert!(fresh_instance.seed_initial_state_persisted(
+            &path, id("op.rep.reseed"), b"foreign-genesis".to_vec(), None, None,
+        ).is_err());
+        assert_eq!(
+            DurableStateOwnerV1::snapshot_digest(&path).expect("unchanged"),
+            Some(saved_digest),
+        );
         let reopened =
             DurableLearnedRoleOwnerV1::reopen(path.clone(), definition.clone(), id("owner.rep"), key.clone())
                 .expect("reopen");
