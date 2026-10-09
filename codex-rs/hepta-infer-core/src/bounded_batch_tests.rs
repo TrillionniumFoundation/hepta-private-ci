@@ -33,6 +33,7 @@ fn request(n: usize, lane: BatchLaneKeyV1, features: &SharedFeaturesQ24V1) -> Ba
 fn policy() -> BatchPolicyV1 {
     BatchPolicyV1 {
         max_pending: 8_192,
+        max_queued_feature_bytes: 256 * 1024 * 1024,
         max_batch_count: 4,
         max_batch_bytes: 128,
         max_queue_delay_ms: 5,
@@ -163,4 +164,19 @@ fn synthetic_scope_matrix() {
             started.elapsed().as_micros()
         );
     }
+}
+
+#[test]
+fn global_queued_byte_cap_is_enforced_without_mutation() {
+    let mut small = policy();
+    small.max_queued_feature_bytes = 16;
+    let mut queue = BoundedBatchSchedulerV1::new(small).expect("policy");
+    let features = SharedFeaturesQ24V1::new(vec![1, 2]).expect("features");
+    assert!(queue.admit(request(0, lane(1, "fence", "s"), &features)).expect("admit"));
+    assert_eq!(
+        queue.admit(request(1, lane(1, "fence", "s"), &features)),
+        Err(BatchError::CapacityExceeded)
+    );
+    assert_eq!(queue.pending_count(), 1);
+    assert_eq!(queue.queued_feature_bytes(), 16);
 }
