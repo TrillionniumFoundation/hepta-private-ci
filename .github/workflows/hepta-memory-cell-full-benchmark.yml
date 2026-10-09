@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       shards:
-        description: 'Bounded shards per fold (1..16); all native questions remain in the plan'
+        description: "Bounded shards per fold (1..16); all native questions remain in the plan"
         type: number
         default: 4
         required: true
@@ -41,8 +41,8 @@ jobs:
         env:
           SHARDS: ${{ inputs.shards || 4 }}
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          HF_HUB_DISABLE_XET: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_XET: "1"
           PYTHONPATH: scripts/memory_cell
         run: |
           set -euo pipefail
@@ -108,10 +108,10 @@ jobs:
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
       - name: Execute every assigned question using only offline staged models
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          TOKENIZERS_PARALLELISM: 'false'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          TOKENIZERS_PARALLELISM: "false"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
           BENCHMARK: ${{ matrix.kind }}
           FOLD: ${{ matrix.fold }}

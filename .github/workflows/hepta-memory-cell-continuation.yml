@@ -2,13 +2,13 @@ name: MemoryCell owner and benchmark continuation
 on:
   pull_request:
     paths:
-      - '.github/workflows/hepta-memory-cell-continuation.yml'
-      - 'scripts/memory_cell/**'
-      - 'codex-rs/hepta-neuron/**'
-      - 'codex-rs/hepta-bellman-operator/**'
-      - 'codex-rs/hepta-infer-worker-host/**'
-      - 'codex-rs/hepta-agentd/**'
-      - 'codex-rs/hepta-intelligence-eval/**'
+      - ".github/workflows/hepta-memory-cell-continuation.yml"
+      - "scripts/memory_cell/**"
+      - "codex-rs/hepta-neuron/**"
+      - "codex-rs/hepta-bellman-operator/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-intelligence-eval/**"
 permissions:
   contents: read
 concurrency:
@@ -55,14 +55,14 @@ jobs:
         run: /tmp/mcell-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v
       - name: Stage public pinned model and data inputs
         env:
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          HF_HUB_DISABLE_XET: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_XET: "1"
         run: /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py native /tmp/mcell-inputs
       - name: Execute original-format public benchmark pilot
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          TOKENIZERS_PARALLELISM: "false"
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
           BENCHMARK: ${{ matrix.kind }}
         run: |
@@ -97,9 +97,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_DEV_DEBUG: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -129,9 +129,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_DEV_DEBUG: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -149,8 +149,8 @@ jobs:
       - name: Stage real pretrained worker model
         if: ${{ !cancelled() }}
         env:
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          HF_HUB_DISABLE_XET: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_XET: "1"
         run: |
           python3 -m venv /tmp/mcell-python
           /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
@@ -192,8 +192,8 @@ jobs:
           path: /tmp/laya-pairs
       - name: Install and stage the pinned Laya checkpoint
         env:
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          HF_HUB_DISABLE_XET: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_XET: "1"
         run: |
           python3 -m venv /tmp/mcell-python
           /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
@@ -201,9 +201,9 @@ jobs:
           /tmp/mcell-python/bin/python scripts/memory_cell/prepare.py laya /tmp/laya-inputs
       - name: Train actual Laya scorer tensors and retain held-out outputs
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          TOKENIZERS_PARALLELISM: "false"
           PYTHONPATH: scripts/memory_cell
         run: |
           /tmp/mcell-python/bin/python - <<'PY'

@@ -2,12 +2,12 @@ name: Memory Cell experimental evidence
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab*'
-      - 'codex-rs/hepta-intelligence-eval/examples/memory_cell_lab/**'
-      - 'codex-rs/hepta-intelligence-eval/tests/memory_cell_*'
-      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_LAB.md'
-      - 'codex-rs/hepta-intelligence-eval/BUILD.bazel'
-      - '.github/workflows/hepta-memory-cell-lab.yml'
+      - "codex-rs/hepta-intelligence-eval/examples/memory_cell_lab*"
+      - "codex-rs/hepta-intelligence-eval/examples/memory_cell_lab/**"
+      - "codex-rs/hepta-intelligence-eval/tests/memory_cell_*"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LAB.md"
+      - "codex-rs/hepta-intelligence-eval/BUILD.bazel"
+      - ".github/workflows/hepta-memory-cell-lab.yml"
 permissions:
   contents: read
 concurrency:
