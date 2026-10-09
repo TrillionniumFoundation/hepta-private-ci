@@ -278,7 +278,9 @@ def run(staged, ranker, external, output, *, training_profile=LEGACY_PROFILE):
                 calibration=calibration,
                 selection_only=True,
                 selection_source_roots=sorted(
-                    frozenset().union(*(features[q.identity].roots for q in cuts["select"]))
+                    frozenset().union(
+                        *(features[q.identity].roots for q in cuts["select"])
+                    )
                 ),
                 adopted_for_production=False,
             ),
@@ -324,7 +326,9 @@ def run(staged, ranker, external, output, *, training_profile=LEGACY_PROFILE):
                     for item in group:
                         item["phase"] = phase
                         attempts.append(item)
-                        stream.write(json.dumps(item, ensure_ascii=False, allow_nan=False) + "\n")
+                        stream.write(
+                            json.dumps(item, ensure_ascii=False, allow_nan=False) + "\n"
+                        )
                     stream.flush()
                     os.fsync(stream.fileno())
         generator.verify_frozen()
@@ -398,11 +402,19 @@ if __name__ == "__main__":
     parser.add_argument("ranker", type=Path)
     parser.add_argument("external", type=Path)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--training-profile", choices=(LEGACY_PROFILE, PROFILE), default=LEGACY_PROFILE)
+    parser.add_argument(
+        "--training-profile", choices=(LEGACY_PROFILE, PROFILE), default=LEGACY_PROFILE
+    )
     args = parser.parse_args()
     torch.set_num_threads(2)
     try:
-        run(args.staged, args.ranker, args.external, args.output, training_profile=args.training_profile)
+        run(
+            args.staged,
+            args.ranker,
+            args.external,
+            args.output,
+            training_profile=args.training_profile,
+        )
     except Exception as error:
         if args.output.is_dir() and not (args.output / "FAILURE.json").exists():
             write(

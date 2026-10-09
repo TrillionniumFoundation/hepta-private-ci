@@ -6,7 +6,12 @@ from unittest.mock import patch
 
 import torch
 
-from masked_span_training import EvidenceOnlySpanHead, SpanLabels, masked_loss, masked_rows
+from masked_span_training import (
+    EvidenceOnlySpanHead,
+    SpanLabels,
+    masked_loss,
+    masked_rows,
+)
 from native import digest
 from selector_head import EvidenceHead, Features, TrainingCut
 from selector_windows import WindowBudget, candidate_windows
@@ -15,14 +20,21 @@ from test_span_supervision import corpus
 
 def example():
     feature = Features(
-        "q", "family", "encoder", "pool", ("a", "b", "c"),
+        "q",
+        "family",
+        "encoder",
+        "pool",
+        ("a", "b", "c"),
         frozenset(["root"]),
         torch.tensor([[1.0, 0.0], [0.0, 1.0], [2.0, 2.0]]),
         torch.tensor([0.2, -0.1, 4.0]),
     )
     cut = TrainingCut(
-        frozenset(["q"]), frozenset(["family"]), feature.roots,
-        frozenset(), "fixture-not-production-admission",
+        frozenset(["q"]),
+        frozenset(["family"]),
+        feature.roots,
+        frozenset(),
+        "fixture-not-production-admission",
     )
     return feature, cut, SpanLabels(feature, (0,), (1,), "annotation")
 
@@ -43,11 +55,16 @@ class MaskedSpanTrainingTests(unittest.TestCase):
         feature, cut, row = example()
         changed = feature.paired.clone()
         changed[2] = torch.tensor([-100.0, 100.0])
-        left, right = EvidenceOnlySpanHead(2, "encoder"), EvidenceOnlySpanHead(2, "encoder")
+        left, right = (
+            EvidenceOnlySpanHead(2, "encoder"),
+            EvidenceOnlySpanHead(2, "encoder"),
+        )
         left.fit((row,), cut, revoked=set(), steps=8)
         right.fit(
             (replace(row, features=replace(feature, paired=changed)),),
-            cut, revoked=set(), steps=8,
+            cut,
+            revoked=set(),
+            steps=8,
         )
         for name, value in left.state_dict().items():
             self.assertTrue(torch.equal(value, right.state_dict()[name]), name)
@@ -64,8 +81,11 @@ class MaskedSpanTrainingTests(unittest.TestCase):
             self.assertTrue(torch.equal(before[name], head.state_dict()[name]))
         encoded = head.export()
         restored = EvidenceHead.restore(
-            encoded, expected_digest=digest(encoded.hex()), encoder_identity="encoder",
-            allowed_roots={"root"}, revoked=set(),
+            encoded,
+            expected_digest=digest(encoded.hex()),
+            encoder_identity="encoder",
+            allowed_roots={"root"},
+            revoked=set(),
         )
         self.assertTrue(torch.equal(head(feature), restored(feature)))
         with self.assertRaises(ValueError):
@@ -85,16 +105,20 @@ class MaskedSpanTrainingTests(unittest.TestCase):
             original = {k: v.clone() for k, v in head.state_dict().items()}
             with self.assertRaises(ValueError):
                 head.fit((row, wrong), cut, revoked=set(), steps=2)
-            self.assertTrue(all(torch.equal(v, head.state_dict()[k]) for k, v in original.items()))
+            self.assertTrue(
+                all(torch.equal(v, head.state_dict()[k]) for k, v in original.items())
+            )
         with self.assertRaises(ValueError):
             EvidenceOnlySpanHead(2, "encoder").fit((row,), cut, revoked={"root"})
 
     def test_nonfinite_optimizer_quarantines_and_cannot_export(self):
         _, cut, row = example()
         head = EvidenceOnlySpanHead(2, "encoder")
+
         def poison(*args, **kwargs):
             with torch.no_grad():
                 head.residual.bias.fill_(float("nan"))
+
         with patch.object(torch.optim.AdamW, "step", poison):
             with self.assertRaises(ValueError):
                 head.fit((row,), cut, revoked=set(), steps=1)
@@ -107,32 +131,52 @@ class MaskedSpanTrainingTests(unittest.TestCase):
         pools, features = {}, {}
         for query in data.queries:
             pool = candidate_windows(
-                (data.documents[query.scope],), query, revoked=set(),
+                (data.documents[query.scope],),
+                query,
+                revoked=set(),
                 budget=WindowBudget(window_bytes=192, stride_bytes=96),
             )
             pools[query.identity] = pool
             features[query.identity] = Features(
-                query.identity, query.family, "encoder", pool.seal(),
-                tuple(w.identity() for w in pool.windows), frozenset([query.scope]),
-                torch.ones(len(pool.windows), 2), torch.zeros(len(pool.windows)),
+                query.identity,
+                query.family,
+                "encoder",
+                pool.seal(),
+                tuple(w.identity() for w in pool.windows),
+                frozenset([query.scope]),
+                torch.ones(len(pool.windows), 2),
+                torch.zeros(len(pool.windows)),
             )
         cut = TrainingCut(
             frozenset(q.identity for q in data.queries),
             frozenset(q.family for q in data.queries),
-            frozenset(q.scope for q in data.queries), frozenset(), "fixture",
+            frozenset(q.scope for q in data.queries),
+            frozenset(),
+            "fixture",
         )
         rows, notes = masked_rows(data.queries, data, pools, features, cut)
         self.assertTrue(rows[0].positive_indices)
         self.assertEqual(rows[0].negative_indices, ())
         self.assertTrue(notes[0]["unknown_ids"])
         self.assertEqual(rows[1].positive_indices, ())
-        self.assertEqual(rows[1].negative_indices, tuple(range(len(pools[data.queries[1].identity].windows))))
+        self.assertEqual(
+            rows[1].negative_indices,
+            tuple(range(len(pools[data.queries[1].identity].windows))),
+        )
         self.assertEqual(notes[1]["unknown_ids"], [])
+
         class Trap(dict):
             def __getitem__(self, key):
                 raise AssertionError("unauthorized labels read")
+
         with self.assertRaises(ValueError):
-            masked_rows(data.queries, replace(data, targets=Trap()), {}, {}, replace(cut, question_ids=frozenset()))
+            masked_rows(
+                data.queries,
+                replace(data, targets=Trap()),
+                {},
+                {},
+                replace(cut, question_ids=frozenset()),
+            )
 
 
 if __name__ == "__main__":

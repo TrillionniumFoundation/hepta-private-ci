@@ -67,7 +67,9 @@ def check_same_input_outputs(raw):
         )
         value = (row["answer"], receipt["generated_ids_digest"])
         if key in outputs and outputs[key] != value:
-            raise ValueError("same deterministic generator input produced arm-dependent output")
+            raise ValueError(
+                "same deterministic generator input produced arm-dependent output"
+            )
         outputs[key] = value
     return len(outputs)
 
@@ -120,7 +122,9 @@ def audit(experiment, expected_source):
         or any(v != 0 for v in head["state"]["null.bias"])
     ):
         raise ValueError("evidence-only training receipt or frozen null state mismatch")
-    if {r["question_id"] for r in labels} != set(plan["questions"]["train"]) or len(labels) != len(plan["questions"]["train"]):
+    if {r["question_id"] for r in labels} != set(plan["questions"]["train"]) or len(
+        labels
+    ) != len(plan["questions"]["train"]):
         raise ValueError("training label census is incomplete")
     for row in labels:
         pool = pools[row["question_id"]]
@@ -136,7 +140,8 @@ def audit(experiment, expected_source):
         for window in pool["windows"]:
             doc = documents[window["source_id"]]
             if (
-                doc["content"].encode()[window["start"]:window["end"]].decode() != window["text"]
+                doc["content"].encode()[window["start"] : window["end"]].decode()
+                != window["text"]
                 or doc["root"] != window["root"]
                 or doc["scope"] != window["scope"]
             ):
@@ -144,7 +149,9 @@ def audit(experiment, expected_source):
             windows_checked += 1
     for row in raw:
         pool, receipt = pools[row["question_id"]], row["receipt"]
-        if row["pool_digest"] != digest(pool) or row["candidate_ids"] != [Window(**w).identity() for w in pool["windows"]]:
+        if row["pool_digest"] != digest(pool) or row["candidate_ids"] != [
+            Window(**w).identity() for w in pool["windows"]
+        ]:
             raise ValueError("answer used a different candidate pool")
         if (
             receipt["generator_identity"] != report["generator_identity"]
@@ -157,21 +164,44 @@ def audit(experiment, expected_source):
         ):
             raise ValueError("generator identity, prompt or token budget drift")
         arm = row["arm"]
-        offset = selection["offsets"]["trained" if arm.startswith("trained") else "frozen"] if arm.endswith("calibrated") else 0.0
-        selected = choose(row["selector_logits"], row["candidate_ids"], allow_null=not arm.endswith("forced"), offset=offset)
+        offset = (
+            selection["offsets"]["trained" if arm.startswith("trained") else "frozen"]
+            if arm.endswith("calibrated")
+            else 0.0
+        )
+        selected = choose(
+            row["selector_logits"],
+            row["candidate_ids"],
+            allow_null=not arm.endswith("forced"),
+            offset=offset,
+        )
         if selected != row["selected"] or row["null_offset"] != offset:
             raise ValueError("saved decision does not match registered policy")
         sources = receipt["delivered_evidence"]
         if selected is None:
-            if sources or receipt["selector_abstention_was_still_generated"] is not True:
-                raise ValueError("abstention was not an actual empty-evidence generation")
+            if (
+                sources
+                or receipt["selector_abstention_was_still_generated"] is not True
+            ):
+                raise ValueError(
+                    "abstention was not an actual empty-evidence generation"
+                )
         else:
             window = pool["windows"][selected]
             if len(sources) != 1 or any(
                 sources[0][a] != window[b]
-                for a, b in (("original_id", "source_id"), ("root", "root"), ("scope", "scope"), ("excerpt", "text"), ("source_start", "start"), ("source_end", "end"))
+                for a, b in (
+                    ("original_id", "source_id"),
+                    ("root", "root"),
+                    ("scope", "scope"),
+                    ("excerpt", "text"),
+                    ("source_start", "start"),
+                    ("source_end", "end"),
+                )
             ):
-                raise ValueError("generator did not receive exactly the selected window")
+                raise ValueError(
+                    "generator did not receive exactly the selected window"
+                )
             deliveries += 1
     return dict(
         schema="hepta.masked-span.execution-check.v1",
@@ -204,7 +234,9 @@ if __name__ == "__main__":
     parser.add_argument("expected_source")
     args = parser.parse_args()
     result = audit(args.experiment, args.expected_source)
-    with (args.experiment / "execution-check.json").open("x", encoding="utf-8") as stream:
+    with (args.experiment / "execution-check.json").open(
+        "x", encoding="utf-8"
+    ) as stream:
         json.dump(result, stream, indent=2, ensure_ascii=False, allow_nan=False)
         stream.write("\n")
     print(json.dumps(result, ensure_ascii=False, allow_nan=False))

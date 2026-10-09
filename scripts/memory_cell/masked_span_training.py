@@ -133,7 +133,9 @@ class EvidenceOnlySpanHead(EvidenceHead):
         # Freezing null parameters does not freeze acceptance: evidence scores
         # may move. The forced-choice comparison remains the primary contrast.
         self.null.requires_grad_(False)
-        parameters = list(self.projection.parameters()) + list(self.residual.parameters())
+        parameters = list(self.projection.parameters()) + list(
+            self.residual.parameters()
+        )
         optimizer = torch.optim.AdamW(parameters, lr=0.001, weight_decay=0.01)
         losses, evaluated, labelled, started = [], 0, 0, time.perf_counter()
         try:
