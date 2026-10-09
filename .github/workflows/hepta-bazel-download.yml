@@ -45,6 +45,19 @@ jobs:
         env:
           USE_BAZEL_VERSION: 9.0.0
         run: python3 scripts/hepta_bazel_download_probe.py --out "$RUNNER_TEMP/zlib-probe"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+          enable-cache: false
+      - name: Verify the locked formatter without rewriting tested source
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/zlib-probe"
+          mkdir -p "$root"
+          sha256sum scripts/hepta_bazel_download_probe.py scripts/pyproject.toml scripts/uv.lock > "$root/format-inputs.sha256"
+          uv run --frozen --project scripts ruff --version > "$root/formatter-version.txt"
+          uv run --frozen --project scripts ruff format --stdin-filename scripts/hepta_bazel_download_probe.py < scripts/hepta_bazel_download_probe.py > "$root/formatter-candidate.py"
+          diff -u scripts/hepta_bazel_download_probe.py "$root/formatter-candidate.py" > "$root/formatter.diff"
       - name: Preserve source, results and every diagnostic
         if: always()
         run: |
@@ -62,6 +75,10 @@ jobs:
           path: |
             ${{ runner.temp }}/zlib-probe/report.json
             ${{ runner.temp }}/zlib-probe/source.txt
+            ${{ runner.temp }}/zlib-probe/format-inputs.sha256
+            ${{ runner.temp }}/zlib-probe/formatter-version.txt
+            ${{ runner.temp }}/zlib-probe/formatter-candidate.py
+            ${{ runner.temp }}/zlib-probe/formatter.diff
             ${{ runner.temp }}/zlib-probe/*/bazel.log
             ${{ runner.temp }}/zlib-probe/*/downloader.config
           if-no-files-found: error
