@@ -1,0 +1,93 @@
+name: MemoryCell source-grounded model development
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/grounded_*.py'
+      - 'scripts/memory_cell/test_grounded_*.py'
+      - '.github/workflows/hepta-memory-grounded-development.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-grounded-development-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  compare:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        kind: [locomo, longmemeval]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Install pinned offline worker dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/grounded-evidence
+          python3 -m venv /tmp/grounded-python
+          /tmp/grounded-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/grounded-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/grounded-python/bin/pip freeze > /tmp/grounded-evidence/python-lock.txt
+      - name: Run the complete regression set
+        run: |
+          set -euo pipefail
+          /tmp/grounded-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/grounded-evidence/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Verify previously pinned reader, encoder and native inputs
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          /tmp/grounded-python/bin/python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          from pretrained import file_inventory
+          from native import digest
+          root = Path('/tmp/memory-inputs')
+          for name, expected in [('reader', 'afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c'), ('encoder', '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a')]:
+              if digest(file_inventory(root / name)) != expected:
+                  raise ValueError('pinned model drift: ' + name)
+          staging = json.loads((root / 'staging.json').read_text())
+          for name in ['locomo', 'longmemeval']:
+              if hashlib.sha256((root / (name + '.json')).read_bytes()).hexdigest() != staging[name]['sha256']:
+                  raise ValueError('staged data drift')
+          if staging['longmemeval']['sha256'] != 'd6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442':
+              raise ValueError('native dataset pin mismatch')
+          PY
+      - name: Execute new model updates and both decoders without touching old results
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          KIND: ${{ matrix.kind }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/grounded-evidence/resources.txt /tmp/grounded-python/bin/python scripts/memory_cell/grounded_development.py /tmp/memory-inputs /tmp/grounded-evidence/comparison "$KIND" --count 4 2>&1 | tee /tmp/grounded-evidence/execution.log
+      - name: Retain exact source and all success/failure evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/grounded-evidence
+          git rev-parse HEAD > /tmp/grounded-evidence/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/grounded-evidence/tested-tree.txt
+          (cd /tmp/grounded-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-grounded-development-${{ matrix.kind }}
+          path: /tmp/grounded-evidence
+          if-no-files-found: error
