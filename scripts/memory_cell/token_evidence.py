@@ -190,9 +190,9 @@ class TokenEvidenceHead(nn.Module):
                 ):
                     raise ValueError("gold token outside source")
             seen.add(identity)
-            groups.setdefault(record.family, {}).setdefault(record.question_id, []).append(
-                (record, gold)
-            )
+            groups.setdefault(record.family, {}).setdefault(
+                record.question_id, []
+            ).append((record, gold))
         if self.quarantined or self.roots.intersection(cut.forbidden_roots | revoked):
             raise ValueError("unavailable ancestor training state")
         before = {k: v.clone() for k, v in self.state_dict().items()}
@@ -206,20 +206,28 @@ class TokenEvidenceHead(nn.Module):
                 group = questions[keys[visit % len(keys)]]
                 record, gold = group[(visit // len(keys)) % len(group)]
                 scores = self(record).log_softmax(0)
-                loss = -torch.logsumexp(
-                    torch.stack([scores[a, 0] + scores[b, 1] for a, b in gold]), 0
-                ) / 2
+                loss = (
+                    -torch.logsumexp(
+                        torch.stack([scores[a, 0] + scores[b, 1] for a, b in gold]), 0
+                    )
+                    / 2
+                )
                 if not torch.isfinite(loss):
                     raise ValueError("nonfinite token loss")
                 optimizer.zero_grad(set_to_none=True)
                 loss.backward()
-                nn.utils.clip_grad_norm_(self.parameters(), 1.0, error_if_nonfinite=True)
+                nn.utils.clip_grad_norm_(
+                    self.parameters(), 1.0, error_if_nonfinite=True
+                )
                 optimizer.step()
                 if any(not torch.isfinite(p).all() for p in self.parameters()):
                     raise ValueError("nonfinite token update")
                 losses.append(float(loss.detach()))
             self.roots.update(r.root for r, _ in rows)
-            delta = sum(float((v - before[k]).square().sum()) for k, v in self.state_dict().items())
+            delta = sum(
+                float((v - before[k]).square().sum())
+                for k, v in self.state_dict().items()
+            )
             if not math.isfinite(delta) or delta <= 0:
                 raise ValueError("no finite token update")
             self.receipt = dict(
@@ -245,11 +253,18 @@ class TokenEvidenceHead(nn.Module):
     def export(self):
         if self.quarantined or self.receipt is None:
             raise ValueError("no valid token artifact")
-        return json.dumps(dict(
-            schema="hepta.token-evidence-head.v1", dimension=self.dimension,
-            encoder=self.encoder_identity, roots=sorted(self.roots), training=self.receipt,
-            state={k: v.tolist() for k, v in self.state_dict().items()},
-        ), sort_keys=True, allow_nan=False).encode()
+        return json.dumps(
+            dict(
+                schema="hepta.token-evidence-head.v1",
+                dimension=self.dimension,
+                encoder=self.encoder_identity,
+                roots=sorted(self.roots),
+                training=self.receipt,
+                state={k: v.tolist() for k, v in self.state_dict().items()},
+            ),
+            sort_keys=True,
+            allow_nan=False,
+        ).encode()
 
     @classmethod
     def restore(cls, raw, *, expected_digest, encoder_identity, allowed_roots, revoked):
@@ -258,16 +273,22 @@ class TokenEvidenceHead(nn.Module):
         if len(raw) > 2 * 1024 * 1024 or digest(raw.hex()) != expected_digest:
             raise ValueError("token artifact bound/digest")
         data = strict_json(raw)
-        if data["schema"] != "hepta.token-evidence-head.v1" or data["encoder"] != encoder_identity:
+        if (
+            data["schema"] != "hepta.token-evidence-head.v1"
+            or data["encoder"] != encoder_identity
+        ):
             raise ValueError("token artifact profile")
         roots = set(data["roots"])
         if not roots.issubset(allowed_roots) or roots.intersection(revoked):
             raise ValueError("token artifact roots")
         model = cls(data["dimension"], encoder_identity)
-        state = {k: torch.tensor(v, dtype=torch.float32) for k, v in data["state"].items()}
+        state = {
+            k: torch.tensor(v, dtype=torch.float32) for k, v in data["state"].items()
+        }
         expected = model.state_dict()
         if set(state) != set(expected) or any(
-            v.shape != expected[k].shape or not torch.isfinite(v).all() for k, v in state.items()
+            v.shape != expected[k].shape or not torch.isfinite(v).all()
+            for k, v in state.items()
         ):
             raise ValueError("token artifact tensors")
         model.load_state_dict(state, strict=True)
