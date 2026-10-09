@@ -1,13 +1,15 @@
 //! Concrete selected-LoRA consumer, not an alternate installer or routing owner.
 //! The caller is the existing active module composition, and supplies CURRENT
 //! owners and node identity. Supervisor still owns durable cutover and recovery.
+use std::collections::BTreeSet;
+
 use super::*;
 use crate::MemoryServingProcessV1;
+use crate::MemoryServingQualificationV1;
 use crate::MemoryServingQueryV1;
 use crate::MemoryServingResultV1;
 use crate::memory_serving_process::MemoryServingJobV1;
 use codex_hepta_contracts::FinalUseBinding;
-use crate::MemoryServingQualificationV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_types::StableId;
 
@@ -84,16 +86,26 @@ impl AgentdSharedReplayHostV1 {
         owner: &LearningArtifactOwnerService,
         selector: &ArtifactSelectionVerifierV1,
         evidence_verifier: &LearningEvidenceVerifierV1,
+        withdrawn_audit_roots: &BTreeSet<Digest32>,
         clock: impl Fn() -> Result<u64, SharedMemoryTrainingError>,
     ) -> Result<(MemoryServingJobV1, Vec<u8>), SharedMemoryTrainingError> {
         qualified
-            .revalidate_current(evidence_verifier, clock()?)
-            .map_err(|_| SharedMemoryTrainingError::Invalid("stale independent memory qualification"))?;
+            .revalidate_current(evidence_verifier, withdrawn_audit_roots, clock()?)
+            .map_err(|_| {
+                SharedMemoryTrainingError::Invalid("stale independent memory qualification")
+            })?;
         let job = self.memory_serving_job(model, qualified, query, process, destination)?;
         job.binding()
             .map_err(|_| SharedMemoryTrainingError::Invalid("invalid memory serving request"))?;
         let payload = self
-            .with_current_selected_memory_tensor_v1(model, ledger, owner, selector, clock, <[u8]>::to_vec)
+            .with_current_selected_memory_tensor_v1(
+                model,
+                ledger,
+                owner,
+                selector,
+                clock,
+                <[u8]>::to_vec,
+            )
             .await?;
         model.unavailable = true;
         Ok((job, payload))
@@ -112,21 +124,34 @@ impl AgentdSharedReplayHostV1 {
         owner: &LearningArtifactOwnerService,
         selector: &ArtifactSelectionVerifierV1,
         evidence_verifier: &LearningEvidenceVerifierV1,
+        withdrawn_audit_roots: &BTreeSet<Digest32>,
         clock: impl Fn() -> Result<u64, SharedMemoryTrainingError>,
     ) -> Result<MemoryServingResultV1, SharedMemoryTrainingError> {
         if !model.unavailable || owner.recovery_required().is_some() {
             model.unavailable = true;
-            return Err(SharedMemoryTrainingError::Invalid("selected memory recovery required"));
+            return Err(SharedMemoryTrainingError::Invalid(
+                "selected memory recovery required",
+            ));
         }
         self.revalidate_memory_source(
-            &model.source, ledger, model.candidate.frozen().dataset(), clock()?,
-        ).await?;
+            &model.source,
+            ledger,
+            model.candidate.frozen().dataset(),
+            clock()?,
+        )
+        .await?;
         let now = clock()?;
-        qualified.revalidate_current(evidence_verifier, now)
-            .map_err(|_| SharedMemoryTrainingError::Invalid("qualification changed during serving"))?;
-        let current = owner.current_registry_view(now)
+        qualified
+            .revalidate_current(evidence_verifier, withdrawn_audit_roots, now)
+            .map_err(|_| {
+                SharedMemoryTrainingError::Invalid("qualification changed during serving")
+            })?;
+        let current = owner
+            .current_registry_view(now)
             .map_err(|_| SharedMemoryTrainingError::Invalid("current registry unavailable"))?;
-        model.pinned.with_current(selector, current, now, |_| ())
+        model
+            .pinned
+            .with_current(selector, current, now, |_| ())
             .map_err(|_| SharedMemoryTrainingError::Invalid("selection changed during serving"))?;
         model.unavailable = false;
         Ok(result)
