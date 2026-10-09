@@ -1,0 +1,186 @@
+name: PoN baseline repair staging
+on:
+  push:
+    branches: [test/pon-baseline-repair-stage-20261009]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  repair:
+    name: baseline repair (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-15
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Stage exact minimal native source corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = 86d8c0b53ead781d5151a1678b3639bd56e7f3c2
+          git diff --exit-code
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          out.mkdir()
+          changes={
+              'codex-rs/hepta-fleet/src/authority_port.rs': ('55e117dafe84709451a638bb8f6bafa41c38bd5a', [
+                  ('fn ledger() -> LeaseLedger {', 'fn ledger() -> Result<LeaseLedger, LeaseLedgerError> {'),
+                  ('            })\n            .unwrap();\n        ledger\n', '            })?;\n        Ok(ledger)\n'),
+                  ('let mut ledger = ledger();', 'let mut ledger = ledger().unwrap();')]),
+              'codex-rs/cli/src/main.rs': ('1bd3eb0bfb183f6a436ba56220906f91b49f0679', [
+                  ('            cli_main(arg0_paths, remote_control_disabled).await?;',
+                   '            Box::pin(cli_main(arg0_paths, remote_control_disabled)).await?;')])}
+          index={}
+          for name,(expected,replacements) in changes.items():
+              path=pathlib.Path(name)
+              raw=path.read_bytes()
+              # Verify canonical repository bytes, not Windows checkout newline conversion.
+              canonical=subprocess.check_output(['git','show','HEAD:'+name])
+              digest=hashlib.sha1(b'blob '+str(len(canonical)).encode()+b'\0'+canonical).hexdigest()
+              assert digest==expected, name
+              assert raw.replace(b'\r\n',b'\n')==canonical, name
+              text=canonical.decode()
+              for before,after in replacements:
+                  assert text.count(before)==1, (name,before)
+                  text=text.replace(before,after)
+              destination=out/'original'/name
+              destination.parent.mkdir(parents=True,exist_ok=True)
+              destination.write_bytes(canonical)
+              path.write_bytes(text.encode())
+              index[name]={'original_blob':expected,'replacements':len(replacements)}
+          (out/'source-changes.json').write_text(json.dumps(index,indent=2)+'\n')
+          (out/'source.txt').write_bytes(subprocess.check_output(['git','rev-parse','HEAD','HEAD^{tree}']))
+          PY
+      - name: Prepare original Bazel toolchains and native host environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: bazel-clippy
+      - name: Install original pinned Rust formatter and just
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - name: Format through original recipe and retain exact two-file patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && just fmt)
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          index=json.loads((out/'source-changes.json').read_text())
+          changed=subprocess.check_output(['git','diff','--name-only']).decode().splitlines()
+          assert sorted(changed)==sorted(index), changed
+          for name,row in index.items():
+              raw=pathlib.Path(name).read_bytes().replace(b'\r\n',b'\n')
+              original=(out/'original'/name).read_bytes()
+              assert raw.count(b'#[test]')==original.count(b'#[test]'), name
+              destination=out/'candidate'/name
+              destination.parent.mkdir(parents=True,exist_ok=True)
+              destination.write_bytes(raw)
+              row.update({'candidate_blob':hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest(),'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw),'retained_test_count':raw.count(b'#[test]')})
+          (out/'source-changes.json').write_text(json.dumps(index,indent=2)+'\n')
+          (out/'candidate.patch').write_bytes(subprocess.check_output(['git','diff','--',*index]))
+          PY
+      - name: Execute actual complete fleet unit target through original Bazel wrapper
+        if: runner.os != 'Windows'
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- test --test_output=all --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-test.log"
+      - name: Check original strict fleet Bazel Clippy target
+        if: runner.os != 'Windows'
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- build --config=clippy --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-clippy.log"
+      - name: Compile original Windows CLI release targets without increasing recursion limits
+        if: runner.os == 'Windows'
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --windows-msvc-host-platform --remote-download-toplevel -- build --platforms=//:windows_x86_64_msvc --compilation_mode=fastbuild --@rules_rust//rust/settings:extra_rustc_flag=-Cdebug-assertions=no --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebug-assertions=no --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/cli:codex //codex-rs/cli:hepta //codex-rs/cli:codex-bin-unit-tests-bin 2>&1 | tee "$RUNNER_TEMP/baseline-repair/cli-release.log"
+      - name: Execute original complete Windows CLI unit target
+        if: runner.os == 'Windows'
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel -- test --platforms=//:windows_x86_64_msvc --test_output=all --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/cli:codex-bin-unit-tests 2>&1 | tee "$RUNNER_TEMP/baseline-repair/cli-test.log"
+      - name: Preserve tested source blobs without any branch update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          index=json.loads((out/'source-changes.json').read_text())
+          assert sorted(subprocess.check_output(['git','diff','--name-only']).decode().splitlines())==sorted(index)
+          for name,row in index.items():
+              data=(out/'candidate'/name).read_bytes()
+              assert pathlib.Path(name).read_bytes().replace(b'\r\n',b'\n')==data
+              request=urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs',data=json.dumps({'content':data.decode(),'encoding':'utf-8'}).encode(),headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','Content-Type':'application/json'},method='POST')
+              with urllib.request.urlopen(request,timeout=60) as response:
+                  result=json.load(response)
+              assert result['sha']==row['candidate_blob']
+          (out/'stored-blobs.json').write_text(json.dumps({'blobs':{name:row['candidate_blob'] for name,row in index.items()},'branch_updated':False,'full_baseline_pass':False},indent=2)+'\n')
+          PY
+      - name: Retain all original failure and source boundaries
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,os,pathlib,subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          out.mkdir(exist_ok=True)
+          (out/'source-after.txt').write_bytes(subprocess.check_output(['git','rev-parse','HEAD','HEAD^{tree}']))
+          (out/'diff-after.patch').write_bytes(subprocess.check_output(['git','diff']))
+          (out/'SCOPE.txt').write_text('Staged two-source corrections on exact86d8c0b5: fallible fleet fixture and boxed CLI future layout. Original production authority, tests, recursion limits, lint rules, timeout/resource budgets and acceptance flags retained. No task spawn, scope widening, main merge, force push, branch update or deployment. Targeted staged results are not complete committed-source Bazel/SDK/V8 or paired acceptance. Windows directory, tool and session failures remain separate.\n')
+          with (out/'SHA256SUMS').open('w') as stream:
+              for path in sorted(out.rglob('*')):
+                  if path.is_file() and path.name!='SHA256SUMS':
+                      stream.write(hashlib.sha256(path.read_bytes()).hexdigest()+'  '+path.relative_to(out).as_posix()+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: baseline-repair-stage-${{ matrix.os }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/baseline-repair
+          if-no-files-found: error
+          retention-days: 14
