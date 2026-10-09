@@ -203,7 +203,8 @@ fn parse_group(
     if sequence != previous_sequence.checked_add(1).ok_or(MetricsJournalErrorV1::Corrupt)? {
         return Err(MetricsJournalErrorV1::Corrupt);
     }
-    if fields.next() != Some(previous_head.to_string().as_str()) {
+    let predecessor_hex = previous_head.to_string();
+    if fields.next() != Some(predecessor_hex.as_str()) {
         return Err(MetricsJournalErrorV1::Corrupt);
     }
     let head = fields.next().ok_or(MetricsJournalErrorV1::Corrupt)?;
