@@ -36,7 +36,11 @@ jobs:
           if-no-files-found: error
   native-models:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [locomo, longmemeval]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -59,29 +63,30 @@ jobs:
           HF_HUB_OFFLINE: '1'
           TRANSFORMERS_OFFLINE: '1'
           TOKENIZERS_PARALLELISM: 'false'
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          BENCHMARK: ${{ matrix.kind }}
         run: |
           set -euo pipefail
           mkdir -p /tmp/mcell-native
           cp /tmp/mcell-inputs/staging.json /tmp/mcell-native/staging.json
           git rev-parse HEAD > /tmp/mcell-native/tested-commit.txt
           /tmp/mcell-python/bin/pip freeze > /tmp/mcell-native/python-lock.txt
-          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs /tmp/mcell-native/locomo locomo --qa-limit 16
-          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs /tmp/mcell-native/longmemeval longmemeval --qa-limit 16
+          /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py /tmp/mcell-inputs "/tmp/mcell-native/$BENCHMARK" "$BENCHMARK" --qa-limit 16
           find /tmp/mcell-native -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > /tmp/mcell-native/SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: memory-cell-native-model-evidence
+          name: memory-cell-native-model-evidence-${{ matrix.kind }}
           path: /tmp/mcell-native
           if-no-files-found: warn
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
+        if: always() && matrix.kind == 'locomo'
         with:
           name: memory-cell-laya-training-pairs
           path: /tmp/mcell-native/locomo/laya-pairs.json
           if-no-files-found: error
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
+        if: always() && matrix.kind == 'locomo'
         with:
           name: memory-cell-trained-native-circuit
           path: /tmp/mcell-native/locomo/native-export
@@ -137,7 +142,7 @@ jobs:
         with:
           tool: cargo-nextest
       - name: Compile and test the actual owning crates
-        run: just test -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host
+        run: just test -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host
       - name: Test source-admitted candidate owner boundaries
         if: ${{ !cancelled() }}
         run: just test -p codex-hepta-agentd --test terminal_cell_owner
