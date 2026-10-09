@@ -25,21 +25,34 @@ is NOT claimed as a learning gain: only the same-window, same-response frozen/he
 comparison estimates the parameter contribution. A separate generator experiment
 is required before making claims about long-form answer quality.
 
+The reporter computes family-paired coverage, abstention and learning contrasts.
+Missing or duplicate question-arm records reject. In the abstention and learning
+contrasts, changed candidate IDs, pool digests or frozen feature digests reject
+instead of producing a spurious gain. Conservative confidence intervals are
+reported per dataset; family independence remains a data-admission assumption.
+
 ## Bounds and byte identity
 
 At most eight already-admitted ORIGINAL Documents, 16,384 scanned bytes in total,
-4,096 per source, 384-byte windows and 192-byte stride. A query-dependent lexical
-shortlist retains at most 32 windows. Full-document retrieval uses the existing
-persistent FTS5/BM25+dense index, held fixed across all arms. Its 256-token dense
-encoding profile is explicit and can itself miss evidence; it is not an oracle
-retriever. No answer or support annotation enters window generation or encoding.
-Normalized `#chunk:` documents reject rather than misrepresenting their offsets
-as original source bytes. The projection hashes inspected content, not an unread
-suffix. Unread character counts and scanned byte counts remain separate.
+4,096 per source, 384-byte windows and 192-byte stride. The remaining scan budget
+is divided among remaining sources, and each source's first admissible window is
+retained before a query-dependent lexical shortlist fills the 32-candidate cap.
+This prevents long early documents from excluding all later source prefixes.
+Full-document retrieval uses the existing persistent FTS5/BM25+dense index, held
+fixed across all arms. Its 256-token dense encoding profile is explicit and can
+itself miss evidence; it is not an oracle retriever.
+
+No answer or support annotation enters window generation or encoding. Normalized
+`#chunk:` documents reject rather than misrepresenting their offsets as original
+source bytes. Negative offsets, detached source bytes, changed question identity
+and withdrawn roots reject. The projection hashes inspected content, not an unread
+suffix. Unread character counts and scanned byte counts remain separate. Paired
+model inputs exceeding the 512-token bound fail rather than silently truncating
+candidate evidence.
 
 ## Supervision and permissions
 
-Only the predeclared LoCoMo training families supply source annotations. The
+Only predeclared LoCoMo training families supply native source annotations. The
 training cut binds permitted questions/families/roots and excluded holdout roots
 before any parameter updates. Family-balanced optimization prevents replicated
 questions in a large family from receiving extra family-level weight. Missing or
@@ -49,21 +62,26 @@ label. Explicit native unanswerability supplies no-answer supervision.
 These public datasets have already been exposed during development; family cuts
 do not turn them into new prospective evidence. Native document support is weak
 window-level supervision and other candidates are unlabelled distractors, not
-independently certified semantic negatives. `train_rows(reviewed_negatives=...)`
-also accepts pre-reviewed, exact-candidate-bound categories: same person/different
-time, same entity/different relation, superseded fact and nearby irrelevant text.
-Tests contain explicit examples of all four. No independent semantic reviews are
-manufactured for the native pilot. An owner must authenticate real admission and
-review before using nonpublic training inputs.
+independently certified semantic negatives. `train_rows(reviewed_windows=...)`
+also accepts already-admitted, exact-candidate-bound complete window labels via
+`ReviewedWindows`. Its pool and admission digests must match; its positive and
+negative sets must partition the entire candidate census. This path never reads
+native target annotations and can distinguish windows within the same document.
+Four negative categories are supported: same person/different time, same
+entity/different relation, superseded fact and nearby irrelevant text. Explicit
+fixtures exercise all four. No independent semantic reviews are manufactured for
+the native pilot: authenticating reviewer identity and permission is the existing
+owner's responsibility, not a new self-issued authority in this module.
 
 Frozen and trained abstention offsets use the same fixed seven-point selection
 search, weighted equally by source family. The candidate is chosen only with two
 or more selection families, a strict mean gain and no family regression. Raw
 trained results remain visible even when fallback chooses the frozen comparator.
-Model artifacts contain only bounded JSON tensors/metadata, encoder identity and
+Model artifacts contain bounded JSON tensors/metadata, encoder identity and
 ancestor training roots; no pickle or previous context. Restore validates digest,
 shape, finite values, exact encoder and current permitted/withdrawn roots. The
 selection receipt separately retains roots used to choose the decision policy.
+No-op or nonfinite training is rejected; failed training quarantines the head.
 
 ## Evaluation and non-claims
 
@@ -76,11 +94,11 @@ Literal matching and source-top1 are diagnostics, not semantic entailment.
 
 Reports retain actual encoder tokens/time, shared feature bytes, head parameter
 count/training cost, query/head timing, abstention, explicit unscored cases,
-source-family intervals and all failures. Five-arm family bounds assume the
-supplied family definitions; two LoCoMo test families and one LongMemEval connected
-component cannot satisfy production independent-sample requirements. No
-independently signed citation precision, prospective window, production acceptance
-or superiority flag is issued.
+source-family intervals and all failures. Two LoCoMo test families and one
+LongMemEval connected component cannot satisfy production independent-sample
+requirements. No independently signed citation precision, prospective window,
+production acceptance or superiority flag is issued. Previously observed results
+are not relabelled as untouched evidence after implementation refinements.
 
 Run with pinned staged inputs and a ranker downloaded at the revision/tensor pin
 in `relevance_ranker.py`, then disable network during execution:
@@ -92,7 +110,7 @@ HEPTA_MEMORY_TESTED_COMMIT="$(git rev-parse HEAD)" \
   python3 scripts/memory_cell/selector_development.py STAGED RANKER NEW_OUTPUT_DIR
 ```
 
-The read-only `hepta-memory-selector-development.yml` validates the complete
-Python regression suite and runs the exact pinned model experiment. It retains
-formatting diagnostics without editing source; existing required formatting,
-Architecture and blocking CI remain authoritative and unwaived.
+The retained `hepta-memory-selector-development.yml` is read-only. It validates
+the complete Python regression suite and runs the exact pinned model experiment.
+Temporary source-preparation files are removed after inspected adoption. Existing
+required formatting, Architecture and blocking CI remain authoritative and unwaived.
