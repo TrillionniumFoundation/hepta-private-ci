@@ -23,11 +23,21 @@ class LesionTests(unittest.TestCase):
         result = evaluate_lesions(model, x)
         self.assertEqual(set(result["probabilities"]), set(LESIONS))
         self.assertEqual(result["parameter_updates"], 0)
-        np.testing.assert_allclose(result["probabilities"]["intact"], model(torch.tensor(x)).sigmoid().detach().numpy())
-        self.assertFalse(np.array_equal(result["probabilities"]["intact"], result["probabilities"]["no_semantic_message"]))
+        np.testing.assert_allclose(
+            result["probabilities"]["intact"],
+            model(torch.tensor(x)).sigmoid().detach().numpy(),
+        )
+        self.assertFalse(
+            np.array_equal(
+                result["probabilities"]["intact"],
+                result["probabilities"]["no_semantic_message"],
+            )
+        )
         single = evaluate_lesions(model, x[:1])["probabilities"]
         for key in LESIONS:
-            np.testing.assert_allclose(single[key], result["probabilities"][key][:1], rtol=1e-6)
+            np.testing.assert_allclose(
+                single[key], result["probabilities"][key][:1], rtol=1e-6
+            )
         clean = clean_circuit(model)
         self.assertEqual(state_digest(clean), before)
         self.assertTrue(all(p.grad is None for p in clean.parameters()))
@@ -47,9 +57,19 @@ class LesionTests(unittest.TestCase):
         # Duplicating every sample of one correlated family must not buy it
         # extra training weight or manufacture independent source support.
         ix = [i for i, f in enumerate(families) if f == families[0]]
-        other = fit(np.concatenate([x, x[ix]]), np.concatenate([y, y[ix]]),
-                    phases + [phases[i] for i in ix], family_ids=families + [families[i] for i in ix], steps=2)
+        other = fit(
+            np.concatenate([x, x[ix]]),
+            np.concatenate([y, y[ix]]),
+            phases + [phases[i] for i in ix],
+            family_ids=families + [families[i] for i in ix],
+            steps=2,
+        )
         for name in base:
             for key, value in base[name][0].state_dict().items():
-                torch.testing.assert_close(value, other[name][0].state_dict()[key], atol=2e-6, rtol=2e-6)
-        self.assertEqual(base["joint"][2]["training_source_families"], other["joint"][2]["training_source_families"])
+                torch.testing.assert_close(
+                    value, other[name][0].state_dict()[key], atol=2e-6, rtol=2e-6
+                )
+        self.assertEqual(
+            base["joint"][2]["training_source_families"],
+            other["joint"][2]["training_source_families"],
+        )

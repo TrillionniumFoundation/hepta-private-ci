@@ -1,4 +1,5 @@
 """Collector tests validate predeclared coverage, not model quality or authority."""
+
 import copy
 import json
 import tempfile
@@ -12,7 +13,9 @@ from test_coverage import benchmark, receipts
 
 class CollectorTests(unittest.TestCase):
     def test_collector_uses_external_plan_and_retains_explicit_failure(self):
-        plan = plan_coverage(benchmark("longmemeval"), folds=1, shards=2, per_fold_limit=7)
+        plan = plan_coverage(
+            benchmark("longmemeval"), folds=1, shards=2, per_fold_limit=7
+        )
         records = receipts(plan)
         records[0]["results"]["rag"][0].update(
             status="failed", hypothesis=None, diagnostic_token_f1=None
@@ -20,11 +23,15 @@ class CollectorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             declared = root / "predeclared.json"
-            declared.write_text(json.dumps({
-                "schema": "hepta.memory-benchmark.preregistered.v1",
-                "coverage": plan.content(),
-                "execution_binding": {"code": "pinned"},
-            }))
+            declared.write_text(
+                json.dumps(
+                    {
+                        "schema": "hepta.memory-benchmark.preregistered.v1",
+                        "coverage": plan.content(),
+                        "execution_binding": {"code": "pinned"},
+                    }
+                )
+            )
             for i, value in enumerate(records):
                 shard = root / "shards" / str(i)
                 shard.mkdir(parents=True)
@@ -44,7 +51,9 @@ class CollectorTests(unittest.TestCase):
     def test_invalid_native_outcomes_cannot_become_scored_successes(self):
         from benchmark_coverage import aggregate
 
-        plan = plan_coverage(benchmark("longmemeval"), folds=1, shards=1, per_fold_limit=7)
+        plan = plan_coverage(
+            benchmark("longmemeval"), folds=1, shards=1, per_fold_limit=7
+        )
         for update in (
             {"diagnostic_token_f1": float("nan")},
             {"diagnostic_token_f1": True},

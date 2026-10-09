@@ -5,6 +5,7 @@ The binary payloads match learning.eval's citation_audit Rust module. Sign them
 through the existing learning evidence owner: this module has no signing key,
 trust issuer, production acceptance path, or default 'entailed' decision.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -22,7 +23,11 @@ def sha(data: bytes) -> str:
 
 
 def _digest(value):
-    if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value) or value == "0" * 64:
+    if (
+        not isinstance(value, str)
+        or not re.fullmatch(r"[0-9a-f]{64}", value)
+        or value == "0" * 64
+    ):
         raise ValueError("invalid digest")
     return bytes.fromhex(value)
 
@@ -43,8 +48,17 @@ def _uint(value, bits):
 
 
 def request_payload(request: dict) -> bytes:
-    expected = {"query_id", "scope", "experiment_digest", "family_digest", "prompt_digest",
-                "question", "question_time", "answer", "sources"}
+    expected = {
+        "query_id",
+        "scope",
+        "experiment_digest",
+        "family_digest",
+        "prompt_digest",
+        "question",
+        "question_time",
+        "answer",
+        "sources",
+    }
     if not isinstance(request, dict) or set(request) != expected:
         raise ValueError("unknown citation request")
     data = bytearray(b"hepta.memory-citation.request.v1\0")
@@ -59,7 +73,12 @@ def request_payload(request: dict) -> bytes:
     data += _uint(len(sources), 64)
     labels, identities = set(), set()
     for source in sources:
-        if not isinstance(source, dict) or set(source) != {"label", "id", "root", "excerpt"}:
+        if not isinstance(source, dict) or set(source) != {
+            "label",
+            "id",
+            "root",
+            "excerpt",
+        }:
             raise ValueError("unknown delivered source")
         label = source["label"]
         if not isinstance(label, str) or not re.fullmatch(r"E[1-9][0-9]{0,5}", label):
@@ -80,23 +99,44 @@ def judgement_payload(request: dict, judgement: dict) -> bytes:
     if not isinstance(judgement, dict) or set(judgement) != {"claims", "citations"}:
         raise ValueError("unknown citation judgement")
     claims, citations = judgement["claims"], judgement["citations"]
-    if not isinstance(claims, list) or not 1 <= len(claims) <= 512 or not isinstance(citations, list) or len(citations) > 512:
+    if (
+        not isinstance(claims, list)
+        or not 1 <= len(claims) <= 512
+        or not isinstance(citations, list)
+        or len(citations) > 512
+    ):
         raise ValueError("judgement bound")
-    data = bytearray(b"hepta.memory-citation.judgement.v1\0" + hashlib.sha256(raw).digest())
+    data = bytearray(
+        b"hepta.memory-citation.judgement.v1\0" + hashlib.sha256(raw).digest()
+    )
     data += _uint(len(claims), 64)
     for claim in claims:
-        if not isinstance(claim, dict) or set(claim) != {"start", "end", "kind"} or claim["kind"] not in KINDS:
+        if (
+            not isinstance(claim, dict)
+            or set(claim) != {"start", "end", "kind"}
+            or claim["kind"] not in KINDS
+        ):
             raise ValueError("unknown claim")
-        data += _uint(claim["start"], 32) + _uint(claim["end"], 32) + bytes([KINDS[claim["kind"]]])
+        data += (
+            _uint(claim["start"], 32)
+            + _uint(claim["end"], 32)
+            + bytes([KINDS[claim["kind"]]])
+        )
     data += _uint(len(citations), 64)
     for citation in citations:
-        if not isinstance(citation, dict) or set(citation) != {"start", "verdict"} or citation["verdict"] not in VERDICTS:
+        if (
+            not isinstance(citation, dict)
+            or set(citation) != {"start", "verdict"}
+            or citation["verdict"] not in VERDICTS
+        ):
             raise ValueError("unknown citation verdict")
         data += _uint(citation["start"], 32) + bytes([VERDICTS[citation["verdict"]]])
     return bytes(data)
 
 
-def validate_judgement(request: dict, judgement: dict, *, revoked_roots: set[str]) -> dict:
+def validate_judgement(
+    request: dict, judgement: dict, *, revoked_roots: set[str]
+) -> dict:
     """Structural diagnostic only. Production ingress also verifies BOTH actors.
 
     Spans are UTF-8 byte offsets. Every non-whitespace character must be reviewed,
@@ -116,7 +156,10 @@ def validate_judgement(request: dict, judgement: dict, *, revoked_roots: set[str
         if not position <= start < end <= len(answer):
             raise ValueError("overlapping or invalid claim span")
         try:
-            gap, text = answer[position:start].decode("utf-8"), answer[start:end].decode("utf-8")
+            gap, text = (
+                answer[position:start].decode("utf-8"),
+                answer[start:end].decode("utf-8"),
+            )
         except UnicodeError as error:
             raise ValueError("claim splits a UTF-8 character") from error
         if gap.strip(" \t\r\n") or not text.strip(" \t\r\n"):
@@ -132,7 +175,11 @@ def validate_judgement(request: dict, judgement: dict, *, revoked_roots: set[str
     for marker, citation in zip(markers, judgement["citations"], strict=True):
         if citation["start"] != marker.start():
             raise ValueError("citation occurrence ordering mismatch")
-        owners = [i for i, claim in enumerate(claims) if claim["start"] <= marker.start() and marker.end() <= claim["end"]]
+        owners = [
+            i
+            for i, claim in enumerate(claims)
+            if claim["start"] <= marker.start() and marker.end() <= claim["end"]
+        ]
         if len(owners) != 1 or claims[owners[0]]["kind"] != "factual":
             raise ValueError("citation outside a factual claim")
         verdict = citation["verdict"]
@@ -144,22 +191,48 @@ def validate_judgement(request: dict, judgement: dict, *, revoked_roots: set[str
             supported.add(owners[0])
         contradicted += verdict == "contradicted"
         unreviewed += verdict == "unreviewed"
-    return {"citations": len(markers), "entailed": entailed, "contradicted": contradicted,
-            "unreviewed_citations": unreviewed, "factual_claims": sum(c["kind"] == "factual" for c in claims),
-            "supported_factual_claims": len(supported), "unreviewed_claims": sum(c["kind"] == "unreviewed" for c in claims),
-            "diagnostic_precision_ppm": entailed * 1_000_000 // len(markers) if markers else None,
-            "signed_evaluator_verified": False, "production_accepted": False}
+    return {
+        "citations": len(markers),
+        "entailed": entailed,
+        "contradicted": contradicted,
+        "unreviewed_citations": unreviewed,
+        "factual_claims": sum(c["kind"] == "factual" for c in claims),
+        "supported_factual_claims": len(supported),
+        "unreviewed_claims": sum(c["kind"] == "unreviewed" for c in claims),
+        "diagnostic_precision_ppm": entailed * 1_000_000 // len(markers)
+        if markers
+        else None,
+        "signed_evaluator_verified": False,
+        "production_accepted": False,
+    }
 
 
-def capture(query, answer: str, receipt: dict, *, experiment_digest: str, family_digest: str) -> dict:
+def capture(
+    query, answer: str, receipt: dict, *, experiment_digest: str, family_digest: str
+) -> dict:
     """Called directly on the model's output receipt, before any gold scoring."""
-    request = {"query_id": query.identity, "scope": query.scope, "experiment_digest": experiment_digest,
-               "family_digest": family_digest, "prompt_digest": receipt.get("input_ids_sha256"),
-               "question": query.content, "question_time": query.observed_at, "answer": answer,
-               "sources": [{key: source[key] for key in ("label", "id", "root", "excerpt")}
-                           for source in receipt.get("delivered_evidence", [])]}
+    request = {
+        "query_id": query.identity,
+        "scope": query.scope,
+        "experiment_digest": experiment_digest,
+        "family_digest": family_digest,
+        "prompt_digest": receipt.get("input_ids_sha256"),
+        "question": query.content,
+        "question_time": query.observed_at,
+        "answer": answer,
+        "sources": [
+            {key: source[key] for key in ("label", "id", "root", "excerpt")}
+            for source in receipt.get("delivered_evidence", [])
+        ],
+    }
     encoded = request_payload(request)
-    return {"schema": "hepta.memory-citation.queue.v1", "request": request,
-            "request_sha256": sha(encoded), "judgement": None,
-            "generator_signature": None, "evaluator_signature": None,
-            "semantic_precision": None, "production_accepted": False}
+    return {
+        "schema": "hepta.memory-citation.queue.v1",
+        "request": request,
+        "request_sha256": sha(encoded),
+        "judgement": None,
+        "generator_signature": None,
+        "evaluator_signature": None,
+        "semantic_precision": None,
+        "production_accepted": False,
+    }
