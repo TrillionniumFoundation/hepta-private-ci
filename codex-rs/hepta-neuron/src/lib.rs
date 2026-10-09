@@ -28,6 +28,7 @@ mod qualification;
 mod runtime;
 mod runtime_types;
 mod sparse;
+mod stage_binding;
 mod witness;
 
 pub use cell_split::CellStateSplitChildV1;
@@ -126,6 +127,8 @@ pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::sparse_tick;
 pub use witness::FileAnchorWitnessStore;
+
+pub use stage_binding::{NeuronStageBindingErrorV1, NeuronStageBindingV1};
 
 #[cfg(test)]
 #[path = "cell_state_migration_tests.rs"]
