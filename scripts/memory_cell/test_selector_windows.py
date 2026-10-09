@@ -10,9 +10,17 @@ from selector_evaluation import coverage
 
 class SelectorWindowTests(unittest.TestCase):
     def setUp(self):
-        self.q = Question("q", "family", "scope", "Which city did Mara move to?", "2025")
-        self.doc = Document("native/doc", "root", "scope", "session", "2024",
-                            ("序言 introduction. " * 100) + "Mara moved to Kyoto in 2024. 后记。")
+        self.q = Question(
+            "q", "family", "scope", "Which city did Mara move to?", "2025"
+        )
+        self.doc = Document(
+            "native/doc",
+            "root",
+            "scope",
+            "session",
+            "2024",
+            ("序言 introduction. " * 100) + "Mara moved to Kyoto in 2024. 后记。",
+        )
 
     def test_tail_window_preserves_original_unicode_bytes_not_prefix_guess(self):
         prefix = candidate_windows((self.doc,), self.q, revoked=set(), profile="prefix")
@@ -20,24 +28,39 @@ class SelectorWindowTests(unittest.TestCase):
         self.assertFalse(any("Kyoto" in w.text for w in prefix.windows))
         self.assertTrue(any("Kyoto" in w.text for w in full.windows))
         for w in full.windows:
-            self.assertEqual(self.doc.content.encode()[w.start:w.end].decode(), w.text)
+            self.assertEqual(
+                self.doc.content.encode()[w.start : w.end].decode(), w.text
+            )
         target = Target("Kyoto", "single", (self.doc.identity,), False)
-        self.assertFalse(coverage((self.doc,), prefix, target)["candidate_literal_answer"])
+        self.assertFalse(
+            coverage((self.doc,), prefix, target)["candidate_literal_answer"]
+        )
         self.assertTrue(coverage((self.doc,), full, target)["candidate_literal_answer"])
-        self.assertEqual(full.seal(), candidate_windows((self.doc,), self.q, revoked=set()).seal())
+        self.assertEqual(
+            full.seal(), candidate_windows((self.doc,), self.q, revoked=set()).seal()
+        )
 
     def test_scan_candidate_caps_and_unread_suffix_are_explicit(self):
         budget = WindowBudget(scan_bytes=2048, per_source_bytes=1024, candidates=3)
-        docs = tuple(replace(self.doc, identity=str(i), content="🙂甲word " * 10000) for i in range(8))
+        docs = tuple(
+            replace(self.doc, identity=str(i), content="🙂甲word " * 10000)
+            for i in range(8)
+        )
         result = candidate_windows(docs, self.q, revoked=set(), budget=budget)
         self.assertLessEqual(result.scanned_bytes, 2048)
         self.assertLessEqual(len(result.windows), 3)
         self.assertTrue(all(s["unscanned_characters"] > 0 for s in result.inspected))
         self.assertLessEqual(result.enumerated_windows, 2048 // budget.stride_bytes + 8)
-        self.assertEqual(result.scanned_bytes, sum(len(s["excerpt"].encode()) for s in result.inspected))
+        self.assertEqual(
+            result.scanned_bytes,
+            sum(len(s["excerpt"].encode()) for s in result.inspected),
+        )
 
     def test_wrong_scope_query_withdrawal_and_normalized_chunk_reject(self):
-        for doc in (replace(self.doc, scope="private"), replace(self.doc, identity="doc#chunk:0")):
+        for doc in (
+            replace(self.doc, scope="private"),
+            replace(self.doc, identity="doc#chunk:0"),
+        ):
             with self.assertRaises(ValueError):
                 candidate_windows((doc,), self.q, revoked=set())
         with self.assertRaises(ValueError):
@@ -56,18 +79,48 @@ class SelectorWindowTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             result.revalidate(self.q, set())
 
+    def test_negative_original_offsets_cannot_be_smuggled_as_valid_slice(self):
+        result = candidate_windows((self.doc,), self.q, revoked=set())
+        forged = replace(
+            result.windows[0], start=-len(result.inspected[0]["excerpt"].encode())
+        )
+        with self.assertRaises(ValueError):
+            replace(result, windows=(forged,)).revalidate(self.q, set())
+
     def test_empty_pool_is_valid_but_not_evidence(self):
         result = candidate_windows((), self.q, revoked=set())
         self.assertEqual((result.windows, result.scanned_bytes), ((), 0))
         with self.assertRaises(ValueError):
-            candidate_windows((replace(self.doc, content="\0bad"),), self.q, revoked=set())
+            candidate_windows(
+                (replace(self.doc, content="\0bad"),), self.q, revoked=set()
+            )
         with self.assertRaises(ValueError):
-            candidate_windows((self.doc,), self.q, revoked=set(), budget=WindowBudget(candidates=True))
+            candidate_windows(
+                (self.doc,), self.q, revoked=set(), budget=WindowBudget(candidates=True)
+            )
+
+    def test_expansion_preserves_all_retrieved_source_prefixes(self):
+        docs = tuple(
+            replace(self.doc, identity=str(i), content="Mara Kyoto " * 2000)
+            for i in range(8)
+        )
+        prefix = candidate_windows(docs, self.q, revoked=set(), profile="prefix")
+        full = candidate_windows(docs, self.q, revoked=set())
+        key = lambda w: (w.source_id, w.start, w.end, w.text)
+        self.assertTrue(
+            {key(w) for w in prefix.windows}.issubset({key(w) for w in full.windows})
+        )
+        self.assertEqual(len(full.inspected), 8)
+        self.assertLessEqual(full.scanned_bytes, full.budget.scan_bytes)
 
     def test_annotation_values_cannot_change_candidates(self):
         before = candidate_windows((self.doc,), self.q, revoked=set())
         for answer in ("Kyoto", "Osaka", "poison"):
-            coverage((self.doc,), before, Target(answer, "single", (self.doc.identity,), False))
+            coverage(
+                (self.doc,),
+                before,
+                Target(answer, "single", (self.doc.identity,), False),
+            )
         self.assertEqual(before, candidate_windows((self.doc,), self.q, revoked=set()))
 
 
