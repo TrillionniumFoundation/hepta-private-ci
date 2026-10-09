@@ -2,9 +2,9 @@ name: MemoryCell complete LongMemEval adjudication handoff
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/adjudication_handoff.py'
-      - 'scripts/memory_cell/test_adjudication_handoff.py'
-      - '.github/workflows/hepta-memory-adjudication-handoff.yml'
+      - "scripts/memory_cell/adjudication_handoff.py"
+      - "scripts/memory_cell/test_adjudication_handoff.py"
+      - ".github/workflows/hepta-memory-adjudication-handoff.yml"
 permissions:
   contents: read
   actions: read

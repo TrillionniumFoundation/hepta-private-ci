@@ -2,8 +2,8 @@ name: MemoryCell exact factorial receipt
 on:
   pull_request:
     paths:
-      - '.github/workflows/hepta-memory-factorial-receipt.yml'
-      - 'scripts/memory_cell/factorial_receipt.py'
+      - ".github/workflows/hepta-memory-factorial-receipt.yml"
+      - "scripts/memory_cell/factorial_receipt.py"
 permissions:
   contents: read
   actions: read

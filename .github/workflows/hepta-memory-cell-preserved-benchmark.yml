@@ -44,8 +44,8 @@ jobs:
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
           PYTHONPATH: scripts/memory_cell
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
@@ -124,10 +124,10 @@ jobs:
           /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
       - name: Execute every assigned native question and retain failures
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
           HEPTA_MEMORY_TESTED_COMMIT: ${{ needs.preregister.outputs.source }}
           SHARD: ${{ matrix.shard }}
         run: |

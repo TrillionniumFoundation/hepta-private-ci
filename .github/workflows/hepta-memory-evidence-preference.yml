@@ -2,10 +2,10 @@ name: MemoryCell reference-anchored evidence preference
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/evidence_preference.py'
-      - 'scripts/memory_cell/test_evidence_preference*.py'
-      - 'scripts/memory_cell/balanced_reader_trial.py'
-      - '.github/workflows/hepta-memory-evidence-preference.yml'
+      - "scripts/memory_cell/evidence_preference.py"
+      - "scripts/memory_cell/test_evidence_preference*.py"
+      - "scripts/memory_cell/balanced_reader_trial.py"
+      - ".github/workflows/hepta-memory-evidence-preference.yml"
 permissions:
   contents: read
   actions: read
@@ -93,10 +93,10 @@ jobs:
       - name: Actual reference and actor training followed by matched fresh answers
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/preference-evidence/resources.txt /tmp/preference-python/bin/python scripts/memory_cell/balanced_reader_trial.py /tmp/memory-inputs /tmp/external /tmp/reference/experiment /tmp/factorial/experiment /tmp/preference-evidence/experiment --candidate preference 2>&1 | tee /tmp/preference-evidence/execution.log

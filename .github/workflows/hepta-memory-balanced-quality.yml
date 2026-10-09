@@ -2,12 +2,12 @@ name: MemoryCell balanced answers and citation confidence
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/balanced_*.py'
-      - 'scripts/memory_cell/test_balanced_*.py'
-      - 'codex-rs/hepta-intelligence-eval/src/citation_confidence*.rs'
-      - 'codex-rs/hepta-intelligence-eval/src/memory_citation_gate*.rs'
-      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_BALANCED.md'
-      - '.github/workflows/hepta-memory-balanced-quality.yml'
+      - "scripts/memory_cell/balanced_*.py"
+      - "scripts/memory_cell/test_balanced_*.py"
+      - "codex-rs/hepta-intelligence-eval/src/citation_confidence*.rs"
+      - "codex-rs/hepta-intelligence-eval/src/memory_citation_gate*.rs"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_BALANCED.md"
+      - ".github/workflows/hepta-memory-balanced-quality.yml"
 permissions:
   contents: read
   actions: read
@@ -141,10 +141,10 @@ jobs:
       - name: Execute base, legacy and balanced readers on identical fixed selections
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/balanced-evidence/resources.txt /tmp/balanced-python/bin/python scripts/memory_cell/balanced_reader_trial.py /tmp/memory-inputs /tmp/external /tmp/reference/experiment /tmp/factorial/experiment /tmp/balanced-evidence/experiment 2>&1 | tee /tmp/balanced-evidence/execution.log

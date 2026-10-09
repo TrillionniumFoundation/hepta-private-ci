@@ -2,10 +2,10 @@ name: MemoryCell masked spans and actual answer transfer
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/masked_span*.py'
-      - 'scripts/memory_cell/test_masked_span*.py'
-      - 'scripts/memory_cell/selector_end_to_end.py'
-      - '.github/workflows/hepta-memory-masked-span.yml'
+      - "scripts/memory_cell/masked_span*.py"
+      - "scripts/memory_cell/test_masked_span*.py"
+      - "scripts/memory_cell/selector_end_to_end.py"
+      - ".github/workflows/hepta-memory-masked-span.yml"
 permissions:
   contents: read
   actions: read
@@ -97,10 +97,10 @@ jobs:
       - name: Real frozen encoder, masked evidence gradients, same generator and zero-update native transfer
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/masked-evidence/resources.txt /tmp/masked-python/bin/python scripts/memory_cell/selector_end_to_end.py /tmp/memory-inputs /tmp/masked-ranker /tmp/masked-inputs /tmp/masked-evidence/experiment --training-profile external-span-masked-evidence-only-v1 2>&1 | tee /tmp/masked-evidence/execution.log

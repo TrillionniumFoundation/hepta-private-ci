@@ -2,9 +2,9 @@ name: MemoryCell source-grounded model development
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/grounded_*.py'
-      - 'scripts/memory_cell/test_grounded_*.py'
-      - '.github/workflows/hepta-memory-grounded-development.yml'
+      - "scripts/memory_cell/grounded_*.py"
+      - "scripts/memory_cell/test_grounded_*.py"
+      - ".github/workflows/hepta-memory-grounded-development.yml"
 permissions:
   contents: read
   actions: read
@@ -68,10 +68,10 @@ jobs:
           PY
       - name: Execute new model updates and both decoders without touching old results
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
           KIND: ${{ matrix.kind }}
         run: |

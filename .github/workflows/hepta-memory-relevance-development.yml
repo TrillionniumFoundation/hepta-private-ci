@@ -2,9 +2,9 @@ name: MemoryCell query-conditioned relevance development
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/relevance*.py'
-      - 'scripts/memory_cell/test_relevance*.py'
-      - '.github/workflows/hepta-memory-relevance-development.yml'
+      - "scripts/memory_cell/relevance*.py"
+      - "scripts/memory_cell/test_relevance*.py"
+      - ".github/workflows/hepta-memory-relevance-development.yml"
 permissions:
   contents: read
   actions: read
@@ -64,10 +64,10 @@ jobs:
           PY
       - name: Train on native training families; select then evaluate without network
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail

@@ -2,11 +2,11 @@ name: MemoryCell complete native evidence review
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/benchmark_review.py'
-      - 'scripts/memory_cell/test_benchmark_review.py'
-      - 'scripts/memory_cell/native_citation.py'
-      - 'scripts/memory_cell/test_native_citation.py'
-      - '.github/workflows/hepta-memory-cell-evidence-review.yml'
+      - "scripts/memory_cell/benchmark_review.py"
+      - "scripts/memory_cell/test_benchmark_review.py"
+      - "scripts/memory_cell/native_citation.py"
+      - "scripts/memory_cell/test_native_citation.py"
+      - ".github/workflows/hepta-memory-cell-evidence-review.yml"
 permissions:
   contents: read
   actions: read

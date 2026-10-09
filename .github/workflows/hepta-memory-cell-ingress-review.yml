@@ -2,8 +2,8 @@ name: MemoryCell pinned native ingress review
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/**'
-      - '.github/workflows/hepta-memory-cell-ingress-review.yml'
+      - "scripts/memory_cell/**"
+      - ".github/workflows/hepta-memory-cell-ingress-review.yml"
 permissions:
   contents: read
   actions: read

@@ -2,8 +2,8 @@ name: MemoryCell actual Supervisor observation
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-supervisor/**'
-      - '.github/workflows/hepta-memory-owner-observation.yml'
+      - "codex-rs/hepta-supervisor/**"
+      - ".github/workflows/hepta-memory-owner-observation.yml"
 permissions:
   contents: read
 concurrency:

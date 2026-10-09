@@ -2,12 +2,12 @@ name: MemoryCell external spans and matched generator
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/span_supervision.py'
-      - 'scripts/memory_cell/test_span_supervision.py'
-      - 'scripts/memory_cell/selector_answer*.py'
-      - 'scripts/memory_cell/test_selector_answer*.py'
-      - 'scripts/memory_cell/selector_end_to_end.py'
-      - '.github/workflows/hepta-memory-span-e2e.yml'
+      - "scripts/memory_cell/span_supervision.py"
+      - "scripts/memory_cell/test_span_supervision.py"
+      - "scripts/memory_cell/selector_answer*.py"
+      - "scripts/memory_cell/test_selector_answer*.py"
+      - "scripts/memory_cell/selector_end_to_end.py"
+      - ".github/workflows/hepta-memory-span-e2e.yml"
 permissions:
   contents: read
   actions: read
@@ -83,10 +83,10 @@ jobs:
       - name: Train span-supervised head then generate matched new answers
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/span-evidence/resources.txt /tmp/span-python/bin/python scripts/memory_cell/selector_end_to_end.py /tmp/memory-inputs /tmp/span-ranker /tmp/span-inputs /tmp/span-evidence/experiment 2>&1 | tee /tmp/span-evidence/execution.log

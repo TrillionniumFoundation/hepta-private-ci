@@ -2,11 +2,11 @@ name: MemoryCell token ranking and answer learning
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/token_*.py'
-      - 'scripts/memory_cell/task_answer_learning.py'
-      - 'scripts/memory_cell/test_token_*.py'
-      - 'scripts/memory_cell/test_task_answer_learning.py'
-      - '.github/workflows/hepta-memory-token-task.yml'
+      - "scripts/memory_cell/token_*.py"
+      - "scripts/memory_cell/task_answer_learning.py"
+      - "scripts/memory_cell/test_token_*.py"
+      - "scripts/memory_cell/test_task_answer_learning.py"
+      - ".github/workflows/hepta-memory-token-task.yml"
 permissions:
   contents: read
   actions: read
@@ -90,10 +90,10 @@ jobs:
       - name: Actual pretrained token-head and answer-LoRA factorial execution
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/token-evidence/resources.txt /tmp/token-python/bin/python scripts/memory_cell/token_task_trial.py /tmp/memory-inputs /tmp/token-ranker /tmp/external /tmp/reference/experiment /tmp/token-evidence/experiment 2>&1 | tee /tmp/token-evidence/execution.log
