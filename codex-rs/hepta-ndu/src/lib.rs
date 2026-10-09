@@ -25,6 +25,7 @@ mod projection_store;
 mod protocol;
 mod recursive;
 mod scoring;
+mod snapshot_ref;
 mod z_conversion;
 
 pub use coefficient_profile::AdmittedNduCoefficientProfileV1;
@@ -107,3 +108,5 @@ pub use z_conversion::ZCoordinateConventionV1;
 pub use z_conversion::ZQ24ConversionReceiptV1;
 pub use z_conversion::admit_z_conversion_profile;
 pub use z_conversion::convert_z_to_original_q24;
+
+pub use snapshot_ref::{NduSnapshotRefErrorV1, NduSnapshotRefV1};

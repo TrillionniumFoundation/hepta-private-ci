@@ -170,3 +170,35 @@ fn invalid_event_is_rejected_before_append() {
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }
+
+#[test]
+fn single_request_projection_preserves_other_records_and_replay() {
+    let path = path("isolated-projection");
+    {
+        let mut control = DurableInferenceControl::open(&path, 512).expect("owner");
+        for index in 0..128 {
+            let mut next = request();
+            next.request_id = format!("request.{index}");
+            control.submit(100, next).expect("submit");
+        }
+        let original = control.get("request.0").expect("unrelated").clone();
+        control
+            .reserve(100, "request.127", 1, reservation())
+            .expect("reserve");
+        assert_eq!(control.get("request.0"), Some(&original));
+        let before = fs::metadata(&path).expect("size").len();
+        assert_eq!(
+            control.cancel("request.127", 1),
+            Err(Error::StaleRevision)
+        );
+        assert_eq!(fs::metadata(&path).expect("size").len(), before);
+        assert_eq!(control.get("request.127").expect("record").revision, 2);
+    }
+    {
+        let control = DurableInferenceControl::open(&path, 512).expect("replay");
+        assert_eq!(control.get("request.0").expect("unrelated").revision, 1);
+        assert_eq!(control.get("request.127").expect("mutated").revision, 2);
+        assert_eq!(control.get("request.127").expect("mutated").state, RequestState::Reserved);
+    }
+    fs::remove_file(path).expect("cleanup");
+}

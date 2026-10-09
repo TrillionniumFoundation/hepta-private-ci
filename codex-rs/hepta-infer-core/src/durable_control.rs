@@ -433,14 +433,22 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
+        // Pre-validate on an isolated single-record projection. Cloning the
+        // entire journal index here made every mutation O(history size), even
+        // though an event only changes one request. Never publish the local
+        // successor until the event has been durably appended.
+        let request_id = event.request_id().to_string();
+        let mut projected = BTreeMap::new();
+        if let Some(current) = self.records.get(&request_id) {
+            projected.insert(request_id.clone(), current.clone());
+        }
+        apply_event(&mut projected, &event, /*replay*/ false)?;
+        let successor = projected
+            .remove(&request_id)
+            .ok_or(Error::RequestNotFound)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
-        let request_id = event.request_id().to_string();
-        self.records = next;
+        self.records.insert(request_id.clone(), successor);
         let record = self
             .records
             .get(&request_id)
