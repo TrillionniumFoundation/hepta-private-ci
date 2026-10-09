@@ -1,0 +1,59 @@
+name: PoN pinned build-script source lab
+on:
+  push:
+    branches: [diagnostic/pon-five-build-lab-20261009]
+    paths: [.github/workflows/pon-five-build-lab.yml]
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 3cd488e46e7f0bf807f6d160334c655edcf76502
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preserve exact source and checksum-qualified dependency archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess, tomllib, urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'pon-build-lab'
+          out.mkdir()
+          get=lambda *args: subprocess.check_output(['git',*args],text=True).strip()
+          sha=get('rev-parse','HEAD'); tree=get('rev-parse','HEAD^{tree}')
+          assert sha=='3cd488e46e7f0bf807f6d160334c655edcf76502'
+          assert tree=='c0efc8424edfaf361c72853e1445ce4602250acf'
+          assert not get('status','--porcelain','--untracked-files=no')
+          paths=['MODULE.bazel','MODULE.bazel.lock','.bazelrc','.bazelversion','.github','bazel','patches','scripts','modules','adapters','codex-rs/Cargo.toml','codex-rs/Cargo.lock']
+          with (out/'source.tar').open('wb') as dest:
+              subprocess.run(['git','archive','--format=tar',sha,*paths],stdout=dest,check=True)
+          subprocess.run(['gzip','-n',str(out/'source.tar')],check=True)
+          packages=tomllib.loads(pathlib.Path('codex-rs/Cargo.lock').read_text())['package']
+          pkg=next(p for p in packages if p['name']=='windows_x86_64_gnu' and p['version']=='0.52.6')
+          inputs=[('windows_x86_64_gnu-0.52.6.crate','https://static.crates.io/crates/windows_x86_64_gnu/windows_x86_64_gnu-0.52.6.crate',pkg['checksum']),('rules_rust-f19661ba.tar.gz','https://github.com/hermeticbuild/rules_rust/archive/f19661ba71f77c993ce1eb082053692610fe4313.tar.gz',base64.b64decode('2Omls/gtvOOdKgmcXazTqrCxf5zegAK6JMSRL/3J51c=').hex())]
+          receipts=[]
+          for name,url,expected in inputs:
+              with urllib.request.urlopen(url,timeout=90) as response:
+                  data=response.read(64*1024*1024+1)
+              assert len(data)<=64*1024*1024
+              digest=hashlib.sha256(data).hexdigest()
+              assert digest==expected,(name,digest,expected)
+              (out/name).write_bytes(data)
+              receipts.append({'file':name,'url':url,'sha256':digest,'bytes':len(data)})
+          assert not get('status','--porcelain','--untracked-files=no')
+          (out/'source.json').write_text(json.dumps({'sha':sha,'tree':tree,'archive_scope':paths,'dependencies':receipts,'diagnostic_only':True,'acceptance':False},indent=2)+'\n')
+          (out/'SCOPE.txt').write_text('Read-only pinned source/dependency preservation. No test or acceptance claim. No cache change, source rewrite, push, deployment or restart of any acceptance campaign.\n')
+          (out/'SHA256SUMS').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.name+'\n' for p in sorted(out.iterdir()) if p.is_file()))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: pon-build-lab-3cd-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pon-build-lab
+          compression-level: 0
+          retention-days: 7
+          if-no-files-found: error
