@@ -13,12 +13,15 @@ use std::error::Error;
 use std::fmt;
 use std::fs::File;
 use std::path::Path;
+use std::sync::Arc;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::CellDefinitionV2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::LogicalSequence;
+use codex_hepta_types::PhaseLatencyHistogramV1;
+use codex_hepta_types::PhaseLatencySnapshotV1;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer;
@@ -354,6 +357,14 @@ impl ArtifactLoadReceiptV1 {
 pub struct ArtifactCasOwnerV1 {
     owner_id: StableId,
     signing_key: SigningKey,
+    cas_latency: Arc<PhaseLatencyHistogramV1>,
+    signature_latency: Arc<PhaseLatencyHistogramV1>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ArtifactCasLatencySnapshotV1 {
+    pub cas: PhaseLatencySnapshotV1,
+    pub signature: PhaseLatencySnapshotV1,
 }
 
 impl ArtifactCasOwnerV1 {
@@ -364,7 +375,17 @@ impl ArtifactCasOwnerV1 {
         Ok(Self {
             owner_id,
             signing_key,
+            cas_latency: Arc::new(PhaseLatencyHistogramV1::default()),
+            signature_latency: Arc::new(PhaseLatencyHistogramV1::default()),
         })
+    }
+
+    /// Atomic, advisory measurements of CAS I/O and signing/verification.
+    pub fn latency_observations(&self) -> ArtifactCasLatencySnapshotV1 {
+        ArtifactCasLatencySnapshotV1 {
+            cas: self.cas_latency.snapshot(),
+            signature: self.signature_latency.snapshot(),
+        }
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -379,8 +400,9 @@ impl ArtifactCasOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<ArtifactWriteReceiptV1, ProductionOwnerError> {
-        let digest =
-            write_candidate_payload_beneath(root, &relative, registry, artifact_id, bytes)?;
+        let digest = self.cas_latency.time_result(|| {
+            write_candidate_payload_beneath(root, &relative, registry, artifact_id, bytes)
+        })?;
         let manifest = registry
             .manifest(artifact_id)
             .ok_or_else(|| ProductionOwnerError::ArtifactUnavailable(artifact_id.clone()))?;
@@ -399,7 +421,9 @@ impl ArtifactCasOwnerV1 {
             signature: [0; 64],
         };
         receipt.receipt_digest = receipt.content_digest();
-        receipt.signature = self.signing_key.sign(&receipt.signing_bytes()).to_bytes();
+        receipt.signature = self.signature_latency.time_value(|| {
+            self.signing_key.sign(&receipt.signing_bytes()).to_bytes()
+        });
         Ok(receipt)
     }
 
@@ -415,13 +439,17 @@ impl ArtifactCasOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<(Vec<u8>, ArtifactLoadReceiptV1), ProductionOwnerError> {
-        expected_write.verify(&self.signing_key.verifying_key())?;
+        self.signature_latency.time_result(|| {
+            expected_write.verify(&self.signing_key.verifying_key())
+        })?;
         if expected_write.artifact_id != *artifact_id
             || expected_write.path_digest != path_digest(relative)
         {
             return Err(ProductionOwnerError::PayloadMismatch);
         }
-        let bytes = read_candidate_payload(file, registry, artifact_id)?;
+        let bytes = self.cas_latency.time_result(|| {
+            read_candidate_payload(file, registry, artifact_id)
+        })?;
         let manifest = registry
             .manifest(artifact_id)
             .ok_or_else(|| ProductionOwnerError::ArtifactUnavailable(artifact_id.clone()))?;
@@ -447,7 +475,9 @@ impl ArtifactCasOwnerV1 {
             signature: [0; 64],
         };
         receipt.receipt_digest = receipt.content_digest();
-        receipt.signature = self.signing_key.sign(&receipt.signing_bytes()).to_bytes();
+        receipt.signature = self.signature_latency.time_value(|| {
+            self.signing_key.sign(&receipt.signing_bytes()).to_bytes()
+        });
         Ok((bytes, receipt))
     }
 }

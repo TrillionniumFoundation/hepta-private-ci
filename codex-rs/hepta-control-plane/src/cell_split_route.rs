@@ -18,6 +18,8 @@ use codex_hepta_types::CellSplitContractErrorV1;
 use codex_hepta_types::CellSplitV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::PhaseLatencyHistogramV1;
+use codex_hepta_types::PhaseLatencySnapshotV1;
 use codex_hepta_types::StableId;
 
 use crate::CnsDeliveryV1;
@@ -159,6 +161,7 @@ pub struct CellSplitRouteControllerV1 {
     children: BTreeMap<StableId, CellSplitChildRouteV1>,
     fence_receipt: Option<CellSplitRouteFenceReceiptV1>,
     phase: CellSplitRoutePhaseV1,
+    cns_cutover_latency: PhaseLatencyHistogramV1,
 }
 
 impl CellSplitRouteControllerV1 {
@@ -177,6 +180,7 @@ impl CellSplitRouteControllerV1 {
             children: BTreeMap::new(),
             fence_receipt: None,
             phase: CellSplitRoutePhaseV1::ParentActive,
+            cns_cutover_latency: PhaseLatencyHistogramV1::default(),
         })
     }
 
@@ -186,6 +190,10 @@ impl CellSplitRouteControllerV1 {
 
     pub fn phase(&self) -> CellSplitRoutePhaseV1 {
         self.phase
+    }
+
+    pub fn cns_latency_observations(&self) -> PhaseLatencySnapshotV1 {
+        self.cns_cutover_latency.snapshot()
     }
 
     pub fn parent_route(&self) -> &CnsRouteV1 {
@@ -261,11 +269,11 @@ impl CellSplitRouteControllerV1 {
         self.validate_child_routes(&next, &child_routes)?;
         let children = self.bind_child_routes(child_routes)?;
         let fence = CellSplitRouteFenceReceiptV1::new(&self.split, &self.parent_route)?;
-        if let Err(error) = self
-            .host
-            .replace_read_only_generation(expected, next)
-            .map_err(CellSplitRouteErrorV1::Runtime)
-        {
+        if let Err(error) = self.cns_cutover_latency.time_result(|| {
+            self.host
+                .replace_read_only_generation(expected, next)
+                .map_err(CellSplitRouteErrorV1::Runtime)
+        }) {
             self.phase = CellSplitRoutePhaseV1::Quarantined;
             return Err(error);
         }
@@ -288,11 +296,11 @@ impl CellSplitRouteControllerV1 {
         self.validate_child_routes(&next, &child_routes)?;
         let children = self.bind_child_routes(child_routes)?;
         let fence = CellSplitRouteFenceReceiptV1::new(&self.split, &self.parent_route)?;
-        if let Err(error) = self
-            .host
-            .replace_read_only_generation_with_migration(expected, next, migration)
-            .map_err(CellSplitRouteErrorV1::Runtime)
-        {
+        if let Err(error) = self.cns_cutover_latency.time_result(|| {
+            self.host
+                .replace_read_only_generation_with_migration(expected, next, migration)
+                .map_err(CellSplitRouteErrorV1::Runtime)
+        }) {
             self.phase = CellSplitRoutePhaseV1::Quarantined;
             return Err(error);
         }
