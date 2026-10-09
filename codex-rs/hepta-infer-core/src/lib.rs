@@ -9,6 +9,7 @@ pub mod bounded_batch;
 pub mod durable_control;
 pub mod metrics_batch;
 pub mod scoped_cache;
+pub mod scope_matrix;
 mod neuron_feature;
 
 pub use neuron_feature::NeuronFeatureContractError;
