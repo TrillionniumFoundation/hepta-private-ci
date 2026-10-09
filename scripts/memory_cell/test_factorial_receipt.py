@@ -6,10 +6,13 @@ from factorial_receipt import ABSTAIN, conditional, decode
 class FactorialReceiptTests(unittest.TestCase):
     def test_answerability_and_failures_keep_their_own_denominators(self):
         rows = [
-            dict(status="succeeded", f1=0.5, target_unanswerable=False,
-                 answer="Kyoto [E1]"),
-            dict(status="succeeded", f1=1.0, target_unanswerable=True,
-                 answer=ABSTAIN),
+            dict(
+                status="succeeded",
+                f1=0.5,
+                target_unanswerable=False,
+                answer="Kyoto [E1]",
+            ),
+            dict(status="succeeded", f1=1.0, target_unanswerable=True, answer=ABSTAIN),
             dict(status="failed", f1=None),
         ]
         result = conditional(rows)

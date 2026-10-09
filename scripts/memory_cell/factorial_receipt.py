@@ -40,9 +40,7 @@ def decode(raw):
 def conditional(rows):
     good = [r for r in rows if r["status"] == "succeeded"]
     scored = [r for r in good if r.get("f1") is not None]
-    if any(
-        type(r["f1"]) not in (int, float) or not 0 <= r["f1"] <= 1 for r in scored
-    ):
+    if any(type(r["f1"]) not in (int, float) or not 0 <= r["f1"] <= 1 for r in scored):
         raise ValueError("invalid diagnostic score")
 
     def mean(items):
@@ -60,9 +58,7 @@ def conditional(rows):
         answerable_f1=mean(answerable),
         unanswerable_scored=len(null),
         unanswerable_f1=mean(null),
-        exact_protocol_abstentions=sum(
-            r["answer"].strip() == ABSTAIN for r in good
-        ),
+        exact_protocol_abstentions=sum(r["answer"].strip() == ABSTAIN for r in good),
         emitted_citations=sum(
             len(re.findall(r"\[E[1-9][0-9]*\]", r["answer"])) for r in good
         ),
