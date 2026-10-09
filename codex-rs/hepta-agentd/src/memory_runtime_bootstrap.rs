@@ -29,6 +29,13 @@ pub(super) struct MemoryRuntimeBootstrapV1 {
     retire: OwnerCallback,
 }
 
+// Deliberately NOT a child of the shutdown token. Cancellation propagation may
+// visit readiness before the service's stop child; biased select alone cannot
+// close that race. Only a successful startup may explicitly release this gate.
+pub(super) fn startup_readiness_gate_v1() -> CancellationToken {
+    CancellationToken::new()
+}
+
 impl SelectedMemoryServiceV1 {
     /// Start this explicitly selected service inside the SAME lifecycle host
     /// as control, App Server and generation monitoring. Nothing is enabled by
@@ -112,8 +119,16 @@ mod tests {
 
     use super::*;
 
-    fn rejected() -> AgentdError {
-        AgentdError::GenerationFenced("test generation changed".to_string())
+    #[test]
+    fn failed_parent_startup_cannot_release_the_readiness_gate() {
+        let shutdown = CancellationToken::new();
+        let service_stop = shutdown.child_token();
+        let ready = startup_readiness_gate_v1();
+        shutdown.cancel();
+        assert!(service_stop.is_cancelled());
+        assert!(!ready.is_cancelled());
+        ready.cancel();
+        assert!(ready.is_cancelled());
     }
 
     #[tokio::test]
@@ -130,6 +145,10 @@ mod tests {
         .await;
         assert!(result.is_err());
         assert!(!polled.get());
+    }
+
+    fn rejected() -> AgentdError {
+        AgentdError::GenerationFenced("test generation changed".to_string())
     }
 
     #[tokio::test]

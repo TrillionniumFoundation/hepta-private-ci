@@ -252,7 +252,7 @@ async fn run_composed(
     }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
-    let memory_ready = cancellation.child_token();
+    let memory_ready = memory_bootstrap::startup_readiness_gate_v1();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
         Arc::clone(&state),
