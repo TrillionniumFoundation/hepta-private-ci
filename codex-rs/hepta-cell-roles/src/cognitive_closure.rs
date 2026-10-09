@@ -46,6 +46,21 @@ pub struct CognitiveClosureReceiptV1 {
 }
 
 impl CognitiveClosureReceiptV1 {
+    /// Recompute the canonical commitment from the full, typed receipt.
+    /// A nonzero digest alone is not proof that the fields survived replay.
+    #[must_use]
+    pub fn computed_digest(&self) -> Digest32 {
+        let mut bytes = COGNITIVE_CLOSURE_SCHEMA_V1.as_bytes().to_vec();
+        bytes.extend_from_slice(&self.generation.get().to_be_bytes());
+        bytes.extend_from_slice(self.scope_digest.as_array());
+        bytes.extend_from_slice(self.initial_frontier_digest.as_array());
+        bytes.extend_from_slice(self.final_frontier_digest.as_array());
+        for digest in &self.step_receipt_digests {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+
     pub fn validate(&self) -> Result<(), CognitiveClosureErrorV1> {
         for (label, digest) in [
             ("scope", self.scope_digest),
@@ -67,6 +82,9 @@ impl CognitiveClosureReceiptV1 {
         if self.authority.grants_any() {
             return Err(CognitiveClosureErrorV1::AuthorityGrant);
         }
+        if self.closure_digest != self.computed_digest() {
+            return Err(CognitiveClosureErrorV1::DigestMismatch);
+        }
         Ok(())
     }
 }
@@ -75,6 +93,7 @@ impl CognitiveClosureReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CognitiveClosureErrorV1 {
     EmptyDigest(&'static str),
+    DigestMismatch,
     AuthorityGrant,
     WrongStepCount,
     RoleMismatch {
@@ -178,23 +197,16 @@ pub fn compose_cognitive_closure_v1(
         expected_frontier = step.output_digest;
     }
 
-    let mut bytes = COGNITIVE_CLOSURE_SCHEMA_V1.as_bytes().to_vec();
-    bytes.extend_from_slice(&generation.get().to_be_bytes());
-    bytes.extend_from_slice(scope_digest.as_array());
-    bytes.extend_from_slice(initial_frontier.as_array());
-    bytes.extend_from_slice(expected_frontier.as_array());
-    for digest in step_receipt_digests {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    let receipt = CognitiveClosureReceiptV1 {
+    let mut receipt = CognitiveClosureReceiptV1 {
         generation,
         scope_digest,
         initial_frontier_digest: initial_frontier,
         final_frontier_digest: expected_frontier,
         step_receipt_digests,
-        closure_digest: Digest32::of_bytes(&bytes),
+        closure_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
+    receipt.closure_digest = receipt.computed_digest();
     receipt.validate()?;
     Ok(receipt)
 }
@@ -252,6 +264,29 @@ mod tests {
         assert_eq!(receipt.final_frontier_digest, digest(45));
         assert_eq!(receipt.step_receipt_digests.len(), 6);
         assert!(!receipt.closure_digest.is_zero());
+    }
+
+    #[test]
+    fn tampered_closure_fields_fail_digest_revalidation() {
+        let original = compose_cognitive_closure_v1(digest(10), &complete_steps())
+            .expect("closure");
+        assert!(original.validate().is_ok());
+
+        let mut forged = original.clone();
+        forged.final_frontier_digest = digest(99);
+        assert_eq!(forged.validate(), Err(CognitiveClosureErrorV1::DigestMismatch));
+
+        let mut forged = original.clone();
+        forged.step_receipt_digests[2] = digest(98);
+        assert_eq!(forged.validate(), Err(CognitiveClosureErrorV1::DigestMismatch));
+
+        let mut forged = original.clone();
+        forged.closure_digest = digest(97);
+        assert_eq!(forged.validate(), Err(CognitiveClosureErrorV1::DigestMismatch));
+
+        let mut forged = original;
+        forged.generation = Generation::new(4).expect("generation");
+        assert_eq!(forged.validate(), Err(CognitiveClosureErrorV1::DigestMismatch));
     }
 
     #[test]
