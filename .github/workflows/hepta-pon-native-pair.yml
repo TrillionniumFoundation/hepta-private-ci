@@ -152,7 +152,7 @@ jobs:
       - name: Build the actual pinned native Chain executable
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node --bin trnm-pon-node
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node
           binary="$(realpath ../chain/trillionnium/target/release/trnm-pon-node)"
           digest="$(sha256sum "$binary" | cut -d' ' -f1)"
           echo "HEPTA_PON_CHAIN_BINARY=$binary" >> "$GITHUB_ENV"
