@@ -29,8 +29,6 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_INCREMENTAL: "0"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/matrix-sdk-target
-      HEPTA_SDK_ARTIFACTS: ${{ runner.temp }}/sdk-qualification-artifacts
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       TESTED_SHA: ${{ matrix.source == 'base-merge' && github.sha || github.event.pull_request.head.sha || github.sha }}
@@ -46,6 +44,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export HEPTA_SDK_ARTIFACTS="$RUNNER_TEMP/sdk-qualification-artifacts"
+          printf 'CARGO_TARGET_DIR=%s/matrix-sdk-target\nHEPTA_SDK_ARTIFACTS=%s\n' "$RUNNER_TEMP" "$HEPTA_SDK_ARTIFACTS" >> "$GITHUB_ENV"
           mkdir -p "$HEPTA_SDK_ARTIFACTS"
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           if test "$SOURCE_KIND" = base-merge; then
@@ -108,8 +108,6 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_INCREMENTAL: "0"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/matrix-sdk-target
-      HEPTA_SDK_ARTIFACTS: ${{ runner.temp }}/matrix-source-artifacts
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       TESTED_SHA: ${{ matrix.source == 'base-merge' && github.sha || github.event.pull_request.head.sha || github.sha }}
@@ -125,6 +123,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export HEPTA_SDK_ARTIFACTS="$RUNNER_TEMP/matrix-source-artifacts"
+          printf 'CARGO_TARGET_DIR=%s/matrix-sdk-target\nHEPTA_SDK_ARTIFACTS=%s\n' "$RUNNER_TEMP" "$HEPTA_SDK_ARTIFACTS" >> "$GITHUB_ENV"
           mkdir -p "$HEPTA_SDK_ARTIFACTS"
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           if test "$SOURCE_KIND" = base-merge; then
