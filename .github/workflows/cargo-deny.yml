@@ -29,6 +29,8 @@ jobs:
         with:
           rust-version: 1.95.0
           manifest-path: ./codex-rs/Cargo.toml
+          # Omit repeated display graphs, never crates, features, checks or diagnostics.
+          command-arguments: --hide-inclusion-graph
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
