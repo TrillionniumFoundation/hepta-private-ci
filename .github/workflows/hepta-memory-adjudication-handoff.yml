@@ -52,6 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/memory-adjudication
+          test "$(git rev-parse HEAD)" = "$EXPORTER_COMMIT"
           /tmp/adjudication-python/bin/python scripts/memory_cell/adjudication_handoff.py \
             /tmp/preserved-plan/longmemeval.json /tmp/preserved-review/complete /tmp/memory-adjudication/handoff \
             --plan-sha256 9352f25e3510b94a8c8663eb8850471574585b96f5c56812ccdd094178f0fc2d \

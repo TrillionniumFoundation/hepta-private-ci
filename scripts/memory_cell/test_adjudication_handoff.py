@@ -104,15 +104,19 @@ class HandoffTests(unittest.TestCase):
         (self.review / "SHA256SUMS").write_text(manifest)
         return sha(manifest.encode())
 
-    def run_export(self, manifest=None, output=None):
+    def run_export(self, manifest=None, output=None, exporter_commit=None):
         return export(
             self.plan_path,
             self.review,
             output or self.root / "out",
             expected_plan_sha256=self.plan_hash,
             expected_manifest_sha256=manifest or self.seal(),
-            exporter_commit="b" * 40,
+            exporter_commit=exporter_commit or self.binding["source_commit"],
         )
+
+    def test_historical_execution_source_cannot_be_relabelled_as_current_head(self):
+        with self.assertRaisesRegex(ValueError, "execution source commit"):
+            self.run_export(exporter_commit="b" * 40)
 
     def test_complete_transfer_preserves_hypotheses_and_undefined_precision(self):
         result = self.run_export()

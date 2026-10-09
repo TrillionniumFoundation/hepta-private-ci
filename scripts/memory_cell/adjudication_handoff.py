@@ -73,6 +73,7 @@ def export(
         raise ValueError("pre-run plan pin mismatch")
     declared, plan_hash, _ = read_json(plan_path, MAX_FILE_BYTES)
     plan = decode_plan(declared["coverage"])
+    binding = declared["execution_binding"]
     if (
         declared["schema"] != "hepta.memory-benchmark.preregistered.v1"
         or plan.benchmark != "longmemeval"
@@ -80,6 +81,11 @@ def export(
         or len(plan.cases) != plan.native_total
     ):
         raise ValueError("complete native LongMemEval plan required")
+    # A handoff is only valid for the exact source that produced the native
+    # attempts.  In particular, do not let a later exporter HEAD re-label an
+    # older successful run as current-head evidence.
+    if binding.get("source_commit") != exporter_commit:
+        raise ValueError("execution source commit differs from exporter HEAD")
     manifest = read_bytes(review_root / "SHA256SUMS", 4096)
     if sha(manifest) != expected_manifest_sha256:
         raise ValueError("external review manifest pin mismatch")
@@ -95,7 +101,6 @@ def export(
     if any(sha(raw) != inventory[name] for name, raw in data.items()):
         raise ValueError("review file differs from pinned bytes")
     summary = lines(data["summary.json"].replace(b"\n", b" "))[0]
-    binding = declared["execution_binding"]
     coverage = summary["coverage"]
     if (
         summary["schema"] != "hepta.memory-benchmark.review-result.v1"
