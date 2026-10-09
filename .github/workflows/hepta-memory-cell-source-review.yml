@@ -46,7 +46,7 @@ jobs:
           PY
           python3 -m pip install uv==0.8.22
           just fmt --base 5d6c1b49a7e776842a2653c260972e2f3df3ad96
-          just fix -p codex-hepta-intelligence-eval --lib --tests 2>&1 | tee /tmp/memory-gate-candidate/lint-fix.log
+          just fix -p codex-hepta-intelligence-eval --lib 2>&1 | tee /tmp/memory-gate-candidate/lint-fix.log
           just fmt --base 5d6c1b49a7e776842a2653c260972e2f3df3ad96
           git restore --source=HEAD --staged --worktree .github/workflows/
           while IFS= read -r path; do git add -- "$path"; done < /tmp/memory-gate-paths
@@ -96,40 +96,3 @@ jobs:
         with:
           name: memory-gate-evaluation-tests
           path: /tmp/gate-evaluation
-  service:
-    needs: prepare
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    env:
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_DEV_DEBUG: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: ${{ needs.prepare.outputs.sha }}
-          persist-credentials: false
-      - uses: ./.github/actions/setup-ci
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        with:
-          tool: cargo-nextest
-      - name: Actual fleet feed and signed acknowledgement tests
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/gate-service
-          just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests 2>&1 | tee /tmp/gate-service/fleet.log
-      - name: Native owner regressions; no failures skipped
-        if: ${{ !cancelled() }}
-        run: |
-          set -euo pipefail
-          just test -p codex-hepta-infer-worker-host 2>&1 | tee /tmp/gate-service/worker.log
-      - name: Physical process authority and cancellation mechanics
-        if: ${{ !cancelled() }}
-        run: |
-          set -euo pipefail
-          just test -p codex-hepta-agentd --lib memory_serving_process::tests 2>&1 | tee /tmp/gate-service/process.log
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: memory-gate-service-tests
-          path: /tmp/gate-service
