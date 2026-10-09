@@ -662,7 +662,7 @@ impl AutomationStore {
         execution: AuthorizedEffectExecution<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
         let AuthorizedEffectExecution {
-            authority,
+            authority: execution_authority,
             intent,
             wire_payload,
             fence,
@@ -671,6 +671,7 @@ impl AutomationStore {
             command_id,
             now_ms,
         } = execution;
+        let authority: &FinalUseAuthority = execution_authority;
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -887,7 +888,7 @@ impl AutomationStore {
         execution: AuthorizedEffectExecution<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
         let AuthorizedEffectExecution {
-            authority,
+            authority: execution_authority,
             intent,
             wire_payload,
             fence,
@@ -896,6 +897,7 @@ impl AutomationStore {
             command_id,
             now_ms,
         } = execution;
+        let authority: &FinalUseAuthority = execution_authority;
         let provider_intent = provider_effect_intent(intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
