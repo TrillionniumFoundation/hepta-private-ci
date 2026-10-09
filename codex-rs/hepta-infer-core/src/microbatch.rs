@@ -7,6 +7,7 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
+use crate::SharedFeatureBufferV1;
 
 pub const MAX_SCHEDULER_PENDING: usize = 16_384;
 pub const MAX_MICROBATCH_SIZE: usize = 256;
@@ -26,6 +27,8 @@ pub struct InferenceIntentV1 {
     pub request_id: StableId,
     pub key: MicrobatchKeyV1,
     pub feature_digest: Digest32,
+    /// Optional immutable payload shared across batch consumers.
+    pub shared_features: Option<SharedFeatureBufferV1>,
     pub deadline_ms: u64,
 }
 
@@ -61,6 +64,7 @@ pub enum SchedulerErrorV1 {
     LaneCapacity,
     DuplicateRequest,
     EmptyDigest,
+    FeatureMismatch,
     InvalidFence,
     Expired,
     ClockRegressed,
@@ -134,6 +138,9 @@ impl BoundedMicrobatchSchedulerV1 {
         self.clock(now_ms)?;
         if intent.key.model_digest.is_zero() || intent.feature_digest.is_zero() {
             return Err(SchedulerErrorV1::EmptyDigest);
+        }
+        if intent.shared_features.as_ref().is_some_and(|buffer| buffer.digest() != intent.feature_digest) {
+            return Err(SchedulerErrorV1::FeatureMismatch);
         }
         if intent.key.route_fence == 0 || intent.key.authority_epoch == 0 {
             return Err(SchedulerErrorV1::InvalidFence);
@@ -278,6 +285,7 @@ mod tests {
                 authority_epoch: 1,
             },
             feature_digest: digest("feature"),
+            shared_features: None,
             deadline_ms: deadline,
         }
     }
@@ -299,6 +307,18 @@ mod tests {
         }
         assert_eq!(got.len(), 4);
         assert_eq!(q.pending(), 0);
+    }
+
+    #[test]
+    fn immutable_payload_is_shared_without_vector_copy() {
+        let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+        let buffer = SharedFeatureBufferV1::from_vec(vec![0, 1 << 24]).unwrap();
+        let mut request = intent("payload", "scope", 1, 1, 100);
+        request.feature_digest = buffer.digest();
+        request.shared_features = Some(buffer.clone());
+        q.enqueue(1, request).unwrap();
+        let plan = q.poll(11).unwrap().batch.unwrap();
+        assert!(plan.requests[0].shared_features.as_ref().unwrap().shares_allocation_with(&buffer));
     }
 
     #[test]

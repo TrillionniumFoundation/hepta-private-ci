@@ -43,6 +43,18 @@ where
         self.runtime.tick(&mut model, input)
     }
 
+    /// Digest-only read receipt bound to the NDU owner. The caller must have
+    /// independently validated the receipt before calling this method.
+    pub fn tick_bound(
+        &mut self,
+        input: NeuronTickInputV1,
+        snapshot: &codex_hepta_ndu::NduSnapshotRefV1,
+        admitted_read_receipt_digest: codex_hepta_types::Digest32,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        let mut model = InferenceControlModelPort::new(&mut self.inference_control);
+        self.runtime.tick_with_ndu_snapshot(&mut model, input, snapshot, admitted_read_receipt_digest)
+    }
+
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
     }

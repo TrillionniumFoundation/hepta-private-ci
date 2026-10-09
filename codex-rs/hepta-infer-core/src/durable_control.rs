@@ -231,11 +231,14 @@ impl DurableInferenceControl {
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
-            {
+            if records.len() + native.records.len() > capacity {
                 return Err(Error::CapacityExceeded);
             }
+        }
+        // Replay performs a single bounded cross-index check, not O(n) on
+        // every journal line (quadratic reopen cost).
+        if records.keys().any(|id| native.records.contains_key(id)) {
+            return Err(Error::CapacityExceeded);
         }
         #[cfg(unix)]
         {
@@ -435,12 +438,18 @@ impl DurableInferenceControl {
         }
         // Reject invalid transitions before durable append; a rejected command
         // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
+        // Only the affected record is cloned/validated before durable append.
+        // A failed append leaves memory unchanged and poisons this owner.
+        let request_id = event.request_id().to_string();
+        let mut candidate = BTreeMap::new();
+        if let Some(current) = self.records.get(&request_id) {
+            candidate.insert(request_id.clone(), current.clone());
+        }
+        apply_event(&mut candidate, &event, /*replay*/ false)?;
+        let next_record = candidate.remove(&request_id).ok_or(Error::RequestNotFound)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
-        let request_id = event.request_id().to_string();
-        self.records = next;
+        self.records.insert(request_id.clone(), next_record);
         let record = self
             .records
             .get(&request_id)
