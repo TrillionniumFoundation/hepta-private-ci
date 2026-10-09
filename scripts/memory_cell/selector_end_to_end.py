@@ -30,10 +30,12 @@ from selector_answering import (
 )
 from selector_answer_metrics import answer_scores, matched_report
 from span_supervision import SQUAD_REVISION, load_corpus, partitions, supervised_rows
+from masked_span_training import PROFILE, EvidenceOnlySpanHead, masked_rows
 
 READER_INVENTORY = "afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c"
 RETRIEVER_INVENTORY = "5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a"
 OFFSETS = (-8.0, -4.0, -2.0, 0.0, 2.0, 4.0, 8.0)
+LEGACY_PROFILE = "legacy-listwise-v1"
 
 
 def write(path, value):
@@ -84,10 +86,14 @@ def calibrate(head, questions, corpus, pools, features):
     return offsets, receipts
 
 
-def run(staged, ranker, external, output):
+def run(staged, ranker, external, output, *, training_profile=LEGACY_PROFILE):
     from index import PersistentIndex, RetrievalPolicy
     from pretrained import Encoder, file_inventory
 
+    if training_profile not in (LEGACY_PROFILE, PROFILE):
+        raise ValueError("unregistered span objective")
+    head_type = EvidenceOnlySpanHead if training_profile == PROFILE else EvidenceHead
+    labels_for = masked_rows if training_profile == PROFILE else supervised_rows
     commit = os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", "")
     if len(commit) != 40 or any(c not in "0123456789abcdef" for c in commit):
         raise ValueError("exact generating source required")
@@ -125,6 +131,8 @@ def run(staged, ranker, external, output):
     plan = dict(
         schema="hepta.external-span.same-generator.plan.v1",
         source_commit=commit,
+        training_profile=training_profile,
+        null_parameters_optimized=training_profile == LEGACY_PROFILE,
         external_annotation_revision=SQUAD_REVISION,
         dataset_sha256=dict(
             squad_train=train.sha256,
@@ -145,12 +153,18 @@ def run(staged, ranker, external, output):
             "frozen_calibrated vs trained_calibrated: same selection-only offset grid",
         ],
         calibration_offsets=OFFSETS,
+        native_transfer_parameter_updates=0,
+        native_transfer_recalibration=False,
         posthoc_hyperparameter_search=False,
         squad_context_is_supplied_not_retrieved=True,
         native_transfer_context_uses_fixed_hybrid_retrieval=True,
         annotation_origin="external crowdsourced SQuAD spans and unanswerability",
         external_public_license="CC-BY-SA-4.0; attribute SQuAD authors and dataset",
-        negative_semantics="outside annotated span, not independent per-window non-entailment certification",
+        negative_semantics=(
+            "only human-unanswerable paragraph windows; other unlabelled windows masked"
+            if training_profile == PROFILE
+            else "outside annotated span, not independent per-window non-entailment certification"
+        ),
         model_pretraining_overlap="unknown; public benchmark development not prospective evidence",
         production_accepted=False,
     )
@@ -241,9 +255,9 @@ def run(staged, ranker, external, output):
             forbidden,
             digest((plan, "public-external-training-cut-not-production-authority")),
         )
-        rows, dispositions = supervised_rows(cuts["train"], train, pools, features, cut)
+        rows, dispositions = labels_for(cuts["train"], train, pools, features, cut)
         write(output / "training-window-labels.json", dispositions)
-        head = EvidenceHead(pair_encoder.dimension, pair_encoder.identity)
+        head = head_type(pair_encoder.dimension, pair_encoder.identity)
         training = head.fit(rows, cut, revoked=set(), steps=plan["head_steps"])
         payload = head.export()
         (output / "head.json").write_bytes(payload)
@@ -254,6 +268,8 @@ def run(staged, ranker, external, output):
             allowed_roots=set(roots),
             revoked=set(),
         )
+        head.eval()
+        head.requires_grad_(False)
         offsets, calibration = calibrate(head, cuts["select"], train, pools, features)
         write(
             output / "selection.json",
@@ -261,6 +277,9 @@ def run(staged, ranker, external, output):
                 offsets=offsets,
                 calibration=calibration,
                 selection_only=True,
+                selection_source_roots=sorted(
+                    frozenset().union(*(features[q.identity].roots for q in cuts["select"]))
+                ),
                 adopted_for_production=False,
             ),
         )
@@ -269,6 +288,8 @@ def run(staged, ranker, external, output):
             staged / "reader", expected_inventory=READER_INVENTORY
         )
         attempts = []
+        journal = output / "raw-answers.jsonl"
+        journal.touch(exist_ok=False)
         # No Target/SpanTarget is passed into selection or generation.
         for phase in ("squad_test", "locomo", "longmemeval"):
             for q in cuts[phase]:
@@ -299,10 +320,17 @@ def run(staged, ranker, external, output):
                         offsets,
                         revoked=set(),
                     )
-                for item in group:
-                    item["phase"] = phase
-                    attempts.append(item)
+                with journal.open("a", encoding="utf-8") as stream:
+                    for item in group:
+                        item["phase"] = phase
+                        attempts.append(item)
+                        stream.write(json.dumps(item, ensure_ascii=False, allow_nan=False) + "\n")
+                    stream.flush()
+                    os.fsync(stream.fileno())
         generator.verify_frozen()
+        pair_encoder.verify_frozen()
+        if head.export() != payload:
+            raise ValueError("evaluation or transfer modified the trained head")
         # Create-only synced predictions exist before final scoring labels are read.
         write(output / "raw-answers.json", attempts)
         by_id = {q.identity: q for qs in cuts.values() for q in qs}
@@ -340,10 +368,14 @@ def run(staged, ranker, external, output):
         report = matched_report(attempts, expected)
         report.update(
             training=training,
+            training_profile=training_profile,
             generation_profile=generator.profile,
             generator_identity=generator.identity,
             external_window_supervision_rows=len(rows),
             planned_training_rows=len(cuts["train"]),
+            head_unchanged_during_evaluation=True,
+            native_transfer_parameter_updates=0,
+            native_transfer_recalibration=False,
             seconds=time.perf_counter() - started,
             training_dataset_sha256=train.sha256,
             final_prediction_sha256=digest(
@@ -366,10 +398,11 @@ if __name__ == "__main__":
     parser.add_argument("ranker", type=Path)
     parser.add_argument("external", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--training-profile", choices=(LEGACY_PROFILE, PROFILE), default=LEGACY_PROFILE)
     args = parser.parse_args()
     torch.set_num_threads(2)
     try:
-        run(args.staged, args.ranker, args.external, args.output)
+        run(args.staged, args.ranker, args.external, args.output, training_profile=args.training_profile)
     except Exception as error:
         if args.output.is_dir() and not (args.output / "FAILURE.json").exists():
             write(
