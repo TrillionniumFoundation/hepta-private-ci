@@ -54,8 +54,10 @@ def _receipt(row: Mapping[str, Any]) -> Mapping[str, Any]:
     return value
 
 
-def _target_sources(target: Any) -> set[str]:
-    values = _target_value(target, "evidence", ())
+def _target_sources(target: Any) -> set[str] | None:
+    values = _target_value(target, "evidence", None)
+    if values is None:
+        return None
     if not isinstance(values, (list, tuple, set)):
         raise ValueError("target evidence must be a sequence")
     result = {_source_key(value) for value in values}
@@ -81,14 +83,9 @@ def _candidate_sources(row: Mapping[str, Any]) -> set[str] | None:
     if values is None:
         values = row.get("candidate_sources")
     if values is None:
-        # Selector receipts carry original source IDs for each delivered window.
-        values = [
-            source.get("original_id", source.get("id"))
-            for source in _receipt(row).get("delivered_evidence", [])
-            if isinstance(source, Mapping)
-        ]
-        if not values:
-            return None
+        # Delivered evidence is an observation, not proof of the complete
+        # candidate pool. Keep candidate coverage unknown unless recorded.
+        return None
     if not isinstance(values, (list, tuple, set)):
         raise ValueError("candidate sources must be a sequence")
     result = {_source_key(value) for value in values}
@@ -109,21 +106,7 @@ def _selected_source(row: Mapping[str, Any]) -> str | None:
         if not 0 <= selected < len(candidates):
             raise ValueError("selected candidate index out of range")
         return _source_key(candidates[selected])
-    evidence = _receipt(row).get("delivered_evidence", [])
-    if (
-        isinstance(selected, int)
-        and isinstance(evidence, list)
-        and 0 <= selected < len(evidence)
-    ):
-        source = evidence[selected]
-        if isinstance(source, Mapping):
-            return _source_key(source.get("original_id", source.get("id")))
-    if (
-        isinstance(evidence, list)
-        and len(evidence) == 1
-        and isinstance(evidence[0], Mapping)
-    ):
-        return _source_key(evidence[0].get("original_id", evidence[0].get("id")))
+    # A receipt alone does not establish which candidate was selected.
     return None
 
 
@@ -145,7 +128,8 @@ def _parse_time(value: Any) -> float | None:
     if not isinstance(value, str) or not value.strip():
         return None
     try:
-        return float(value)
+        parsed = float(value)
+        return parsed if math.isfinite(parsed) else None
     except ValueError:
         pass
     try:
@@ -212,17 +196,22 @@ def _failure_stages(
     candidates = _candidate_sources(row)
     support = _target_sources(target)
     if answerable is True:
-        if selected is None:
-            stages.append("retrieval_or_window")
-        elif (
-            support and candidates is not None and not support.intersection(candidates)
+        if selected is not None and (
+            support
+            and candidates is not None
+            and not support.intersection(candidates)
         ):
             stages.append("retrieval_or_window")
-        elif support and selected not in support:
+        elif (
+            selected is not None
+            and support
+            and candidates is not None
+            and selected not in support
+        ):
             stages.append("ranking")
         if row.get("answer", "").strip() == ABSTAIN:
             stages.append("abstention")
-        elif score is not None and score < 1.0 and not stages:
+        elif selected is not None and score is not None and score < 1.0 and not stages:
             stages.append("generation")
     elif answerable is False and row.get("answer", "").strip() != ABSTAIN:
         stages.append("abstention")
@@ -306,14 +295,25 @@ def attribute(
             if stage in counts:
                 counts[stage]["failures"] += 1
         query_time, source_times = _time_values(raw, question)
+        candidates = _candidate_sources(raw)
+        support = _target_sources(target)
         for stage in STAGES:
             eligible = stage != "time" or (
                 query_time is not None and bool(source_times)
             )
             if stage == "citation_structure":
                 eligible = raw.get("citation_audit") is not None
-            if stage in ("retrieval_or_window", "ranking", "generation"):
-                eligible = answerable is True
+            if stage == "retrieval_or_window":
+                eligible = answerable is True and candidates is not None and support
+            if stage == "ranking":
+                eligible = (
+                    answerable is True
+                    and selected is not None
+                    and candidates is not None
+                    and support
+                )
+            if stage == "generation":
+                eligible = answerable is True and score is not None
             if stage == "abstention":
                 eligible = answerable is not None
             if eligible:

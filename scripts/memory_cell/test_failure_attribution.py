@@ -81,7 +81,7 @@ class FailureAttributionTests(unittest.TestCase):
         self.assertEqual(by_arm["ranking"]["failure_stages"], ["ranking"])
         self.assertEqual(by_arm["generation"]["failure_stages"], ["generation"])
         self.assertEqual(by_arm["abstain"]["failure_stages"], ["abstention"])
-        self.assertEqual(by_arm["retrieval"]["failure_stages"], ["retrieval_or_window"])
+        self.assertEqual(by_arm["retrieval"]["failure_stages"], [])
         self.assertEqual(by_arm["negative"]["failure_stages"], [])
         self.assertEqual(by_arm["negative-wrong"]["failure_stages"], ["abstention"])
         self.assertIn("history_ingress", by_arm["failed"]["failure_stages"])
@@ -111,6 +111,23 @@ class FailureAttributionTests(unittest.TestCase):
             result["stage_counts"]["citation_structure"]["semantic_citation_precision"]
         )
         self.assertIsNone(result["stage_counts"]["time"]["semantic_citation_precision"])
+
+
+    def test_missing_structural_evidence_remains_unattributed(self):
+        receipt_only = base(
+            arm="receipt-only", candidate_source_ids=None, selected=None,
+            receipt={"delivered_evidence": [{"original_id": "scope/good"}]},
+            answer="almost", f1=0.4,
+        )
+        missing_target = base(question_id="missing-target-evidence", arm="missing-target-evidence", selected=0)
+        result = attribute(
+            [receipt_only, missing_target],
+            {"q": target(), "missing-target-evidence": {"unanswerable": False}},
+        )
+        by_arm = {r["arm"]: r for r in result["records"]}
+        self.assertEqual(by_arm["receipt-only"]["failure_stages"], [])
+        self.assertEqual(by_arm["missing-target-evidence"]["failure_stages"], [])
+        self.assertEqual(result["stage_counts"]["ranking"]["eligible"], 0)
 
     def test_missing_or_duplicate_planned_attempts_reject(self):
         row = base()
