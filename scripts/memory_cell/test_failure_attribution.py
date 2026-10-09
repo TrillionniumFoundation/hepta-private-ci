@@ -108,9 +108,7 @@ class FailureAttributionTests(unittest.TestCase):
             result["records"][0]["failure_stages"], ["citation_structure", "time"]
         )
         self.assertIsNone(
-            result["stage_counts"]["citation_structure"][
-                "semantic_citation_precision"
-            ]
+            result["stage_counts"]["citation_structure"]["semantic_citation_precision"]
         )
         self.assertIsNone(result["stage_counts"]["time"]["semantic_citation_precision"])
 

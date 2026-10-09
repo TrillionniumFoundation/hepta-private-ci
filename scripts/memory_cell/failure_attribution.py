@@ -215,9 +215,7 @@ def _failure_stages(
         if selected is None:
             stages.append("retrieval_or_window")
         elif (
-            support
-            and candidates is not None
-            and not support.intersection(candidates)
+            support and candidates is not None and not support.intersection(candidates)
         ):
             stages.append("retrieval_or_window")
         elif support and selected not in support:
