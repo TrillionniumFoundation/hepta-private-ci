@@ -6,8 +6,12 @@
 
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
+pub mod microbatch;
+pub mod scoped_cache;
+pub mod shared_feature;
 mod neuron_feature;
 
+pub use shared_feature::SharedFeatureBufferV1;
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;
 pub use neuron_feature::NeuronFeatureReceiptV1;

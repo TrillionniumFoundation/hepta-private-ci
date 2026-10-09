@@ -9,6 +9,7 @@ mod canonical;
 mod governance_store;
 mod governance_validation;
 mod historical;
+pub mod metrics_group_commit;
 mod provider_claim;
 mod provider_effect_store;
 mod provider_insert;
