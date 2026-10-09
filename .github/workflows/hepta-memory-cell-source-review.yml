@@ -46,13 +46,15 @@ jobs:
           PY
           python3 -m pip install uv==0.8.22
           just fmt --base 5d6c1b49a7e776842a2653c260972e2f3df3ad96
+          just fix -p codex-hepta-intelligence-eval --lib --tests 2>&1 | tee /tmp/memory-gate-candidate/lint-fix.log
+          just fmt --base 5d6c1b49a7e776842a2653c260972e2f3df3ad96
           git restore --source=HEAD --staged --worktree .github/workflows/
           while IFS= read -r path; do git add -- "$path"; done < /tmp/memory-gate-paths
           if git diff --cached --name-only | grep -q '^.github/'; then echo 'Unexpected workflow mutation'; exit 1; fi
           git diff --cached --check
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'feat(memory-cell): enforce complete signed citation census and fleet delivery fence'
+          git commit -m 'feat(memory-cell): enforce signed citation census and fleet delivery fence with scoped lint fixes'
           git show --stat HEAD > /tmp/memory-gate-candidate/stat.txt
           git diff 5d6c1b49a7e776842a2653c260972e2f3df3ad96 HEAD --binary -- codex-rs > /tmp/memory-gate-candidate/implementation.patch
           git rev-parse HEAD > /tmp/memory-gate-candidate/sha.txt
