@@ -57,6 +57,7 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
+          python3 -m pip install uv==0.8.22
           git fetch --no-tags --depth=1 origin "$BASE"
           just fmt --base "$BASE"
           git diff --binary > /tmp/balanced-format.patch
