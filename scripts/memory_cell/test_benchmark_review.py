@@ -8,9 +8,15 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from benchmark_coverage import plan_coverage
-from benchmark_review import audit_entry, paired_diagnostics, read_json, review
+from benchmark_review import (
+    _validate_delivered_source_binding,
+    audit_entry,
+    paired_diagnostics,
+    read_json,
+    review,
+)
 from citation_audit import sha
-from native import digest
+from native import Document, Question, digest
 from native_citation import capture_native
 from test_coverage import benchmark, receipts
 
@@ -122,6 +128,48 @@ class BenchmarkReviewTests(unittest.TestCase):
         self.assertIsNone(item["judgement"])
         self.assertIsNone(item["generator_signature"])
         self.assertIsNone(item["semantic_precision"])
+
+    def test_delivered_evidence_rebinds_to_pinned_native_source_bytes(self):
+        question = Question("q", "family", "scope", "Which code?", "2024")
+        document = Document(
+            "scope/doc", "native-root", "scope", "session", "2024", "Blue code."
+        )
+        receipt = {
+            "delivered_evidence": [
+                {
+                    "id": "scope/doc",
+                    "root": "native-root",
+                    "excerpt": "Blue code.",
+                    "label": "E1",
+                }
+            ]
+        }
+        _validate_delivered_source_binding(receipt, question, (document,))
+        for field, value in (("id", "scope/other"), ("root", "wrong-root"), ("excerpt", "Wrong")):
+            altered = copy.deepcopy(receipt)
+            altered["delivered_evidence"][0][field] = value
+            with self.assertRaisesRegex(ValueError, "pinned|drift"):
+                _validate_delivered_source_binding(altered, question, (document,))
+
+    def test_delivered_native_chunk_rebinds_to_normalized_projection(self):
+        question = Question("q", "family", "scope", "Which code?", "2024")
+        words = " ".join(f"word-{i}" for i in range(200))
+        document = Document("scope/doc", "native-root", "scope", "session", "2024", words)
+        receipt = {
+            "delivered_evidence": [
+                {
+                    "id": "scope/doc#chunk:0",
+                    "root": "native-root",
+                    "excerpt": " ".join(f"word-{i}" for i in range(3)),
+                    "label": "E1",
+                }
+            ]
+        }
+        _validate_delivered_source_binding(receipt, question, (document,))
+        altered = copy.deepcopy(receipt)
+        altered["delivered_evidence"][0]["id"] = "scope/doc#chunk:1"
+        with self.assertRaisesRegex(ValueError, "offset|pinned"):
+            _validate_delivered_source_binding(altered, question, (document,))
 
     def test_answer_prompt_family_source_and_mapping_drift_reject(self):
         row, family = self.unsigned_input()
