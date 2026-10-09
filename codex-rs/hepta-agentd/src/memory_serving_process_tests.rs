@@ -287,43 +287,86 @@ fn changed_dependency_or_payload_rejects_before_execution() {
 #[cfg(target_os = "linux")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn runtime_retirement_waits_for_the_actual_child_and_rejects_old_generation() {
-    use codex_hepta_types::Generation;
     use crate::AgentdError;
     use crate::RuntimeTasks;
+    use codex_hepta_types::Generation;
 
-    let f = fixture("import os,sys,time\nfrom pathlib import Path\n(Path(sys.argv[2])/'child-started').write_text(str(os.getpid()))\ntime.sleep(30)\n");
-    let token = f.authority.claim(&f.signed, &f.signed.grant.binding).expect("fixture token");
+    let f = fixture(
+        "import os,sys,time\nfrom pathlib import Path\n(Path(sys.argv[2])/'child-started').write_text(str(os.getpid()))\ntime.sleep(30)\n",
+    );
+    let token = f
+        .authority
+        .claim(&f.signed, &f.signed.grant.binding)
+        .expect("fixture token");
     let cancellation = CancellationToken::new();
     let mut tasks = RuntimeTasks::new(cancellation, Duration::from_secs(2)).expect("runtime host");
     let process = f.process.clone();
     let generation = Generation::new(1).expect("generation");
     let job = f.job;
-    tasks.spawn_optional_service_generation(
-        "memory.serving.fixture", generation, None,
-        move |stop| async move {
-            let child_stop = stop.child_token();
-            let value = tokio::task::spawn_blocking(move || process.execute(job, b"adapter".to_vec(), token, child_stop))
-                .await.map_err(|error| AgentdError::Protocol(error.to_string()))?;
-            if stop.is_cancelled() { Ok(()) }
-            else { value.map(|_| ()).map_err(AgentdError::Protocol) }
-        }, || Ok(()), || Ok(()),
-    ).expect("admitted test service");
+    tasks
+        .spawn_optional_service_generation(
+            "memory.serving.fixture",
+            generation,
+            None,
+            move |stop| async move {
+                let child_stop = stop.child_token();
+                let value = tokio::task::spawn_blocking(move || {
+                    process.execute(job, b"adapter".to_vec(), token, child_stop)
+                })
+                .await
+                .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+                if stop.is_cancelled() {
+                    Ok(())
+                } else {
+                    value.map(|_| ()).map_err(AgentdError::Protocol)
+                }
+            },
+            || Ok(()),
+            || Ok(()),
+        )
+        .expect("admitted test service");
     let started = Instant::now();
     let pid = loop {
-        let marker = fs::read_dir(f.root.path().join("scratch")).expect("scratch")
-            .filter_map(Result::ok).map(|entry| entry.path().join("child-started"))
+        let marker = fs::read_dir(f.root.path().join("scratch"))
+            .expect("scratch")
+            .filter_map(Result::ok)
+            .map(|entry| entry.path().join("child-started"))
             .find(|path| path.is_file());
-        if let Some(marker) = marker { break fs::read_to_string(marker).expect("child PID"); }
-        assert!(started.elapsed() < Duration::from_secs(5), "child did not start");
+        if let Some(marker) = marker {
+            break fs::read_to_string(marker).expect("child PID");
+        }
+        assert!(
+            started.elapsed() < Duration::from_secs(5),
+            "child did not start"
+        );
         tokio::time::sleep(Duration::from_millis(10)).await;
     };
     assert!(Path::new("/proc").join(pid.trim()).exists());
-    tasks.retire_optional_generation("memory.serving.fixture", generation).await.expect("ack after reap");
-    assert!(!Path::new("/proc").join(pid.trim()).exists(), "retirement left a live child");
-    assert_eq!(fs::read_dir(f.root.path().join("scratch")).expect("scratch").count(), 0);
+    tasks
+        .retire_optional_generation("memory.serving.fixture", generation)
+        .await
+        .expect("ack after reap");
+    assert!(
+        !Path::new("/proc").join(pid.trim()).exists(),
+        "retirement left a live child"
+    );
+    assert_eq!(
+        fs::read_dir(f.root.path().join("scratch"))
+            .expect("scratch")
+            .count(),
+        0
+    );
     assert_eq!(tasks.active_count(), 0);
-    assert!(tasks.spawn_optional_service_generation(
-        "memory.serving.fixture", generation, Some(generation),
-        |_| async { Ok(()) }, || Ok(()), || Ok(()),
-    ).is_err());
+    assert!(
+        tasks
+            .spawn_optional_service_generation(
+                "memory.serving.fixture",
+                generation,
+                Some(generation),
+                |_| async { Ok(()) },
+                || Ok(()),
+                || Ok(()),
+            )
+            .is_err()
+    );
 }

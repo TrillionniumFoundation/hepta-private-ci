@@ -149,6 +149,9 @@ jobs:
       - name: Exercise concrete serving authority and process cancellation
         if: ${{ !cancelled() }}
         run: just test -p codex-hepta-agentd --lib memory_serving_process::tests
+      - name: Test selected serving against the actual fleet revocation owner
+        if: ${{ !cancelled() }}
+        run: just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests
       - name: Stage real pretrained worker model
         if: ${{ !cancelled() }}
         env:
