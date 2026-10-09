@@ -495,6 +495,11 @@ impl DurableMemoryReadStateOwnerV1 {
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<StateCommitReceiptV1, DurableMemoryReadStateOwnerErrorV1> {
         let expected_snapshot = DurableStateOwnerV1::snapshot_digest(path.as_ref())?;
+        if expected_snapshot.is_some() {
+            return Err(DurableMemoryReadStateOwnerErrorV1::Binding(
+                "initial checkpoint exists",
+            ));
+        }
         let mut candidate = self.clone();
         let receipt = candidate.seed_initial_state(
             operation_id,
@@ -556,7 +561,9 @@ impl DurableMemoryReadStateOwnerV1 {
         receipt: &StateCommitReceiptV1,
     ) -> Result<Vec<u8>, DurableMemoryReadStateOwnerErrorV1> {
         self.validate_receipt(receipt)?;
-        Ok(self.state.reload(&self.definition.cell_id, receipt)?)
+        Ok(self
+            .state
+            .reload_active(&self.definition.cell_id, receipt)?)
     }
 
     pub fn persist(
@@ -584,18 +591,34 @@ impl DurableMemoryReadStateOwnerV1 {
         owner_id: StableId,
         signing_key: SigningKey,
     ) -> Result<Self, DurableMemoryReadStateOwnerErrorV1> {
-        let snapshot = DurableStateOwnerV1::load(path.as_ref())?;
-        if !snapshot
+        // Reopen verifies signatures first. Inspect exactly that verified
+        // snapshot rather than an earlier unchecked read of the same path.
+        let owner = Self::new(definition, owner_id.clone(), signing_key.clone())?;
+        let state = DurableStateOwnerV1::reopen(path, owner_id, signing_key)?;
+        let snapshot = state.snapshot();
+        let active_head = snapshot
             .active_heads
             .iter()
-            .any(|(cell_id, _)| *cell_id == definition.cell_id)
+            .find(|(cell_id, _)| *cell_id == owner.definition.cell_id)
+            .map(|(_, digest)| *digest)
+            .ok_or(DurableMemoryReadStateOwnerErrorV1::Binding(
+                "active state head",
+            ))?;
+        if snapshot.active_heads.len() != 1
+            || snapshot.entries.iter().any(|(receipt, _)| {
+                receipt.cell_id != owner.definition.cell_id
+                    || receipt.state_schema_digest != owner.definition.state_schema_digest
+            })
+            || !snapshot.entries.iter().rev().any(|(receipt, _)| {
+                receipt.cell_id == owner.definition.cell_id
+                    && receipt.state_digest == active_head
+                    && receipt.generation == owner.definition.generation
+            })
         {
             return Err(DurableMemoryReadStateOwnerErrorV1::Binding(
-                "active state head",
+                "checkpoint definition",
             ));
         }
-        let state = DurableStateOwnerV1::reopen(path, owner_id.clone(), signing_key.clone())?;
-        let owner = Self::new(definition, owner_id, signing_key)?;
         Ok(Self { state, ..owner })
     }
 
@@ -1034,11 +1057,46 @@ mod tests {
                 None,
             )
             .expect("successor");
-        let mut reopened = DurableMemoryReadStateOwnerV1::reopen(&path, definition, owner_id, key)
-            .expect("reopen");
+        let saved_digest = DurableStateOwnerV1::snapshot_digest(&path)
+            .expect("snapshot")
+            .expect("present");
+        assert!(
+            state_owner
+                .seed_initial_state_persisted(
+                    &path,
+                    id("memory-read.state.reseed"),
+                    b"foreign".to_vec(),
+                    None,
+                    None,
+                )
+                .is_err()
+        );
+        assert_eq!(
+            DurableStateOwnerV1::snapshot_digest(&path).expect("unchanged"),
+            Some(saved_digest),
+        );
+        let mut reopened = DurableMemoryReadStateOwnerV1::reopen(
+            &path,
+            definition.clone(),
+            owner_id.clone(),
+            key.clone(),
+        )
+        .expect("reopen");
         assert_eq!(
             reopened.reload(&successor).expect("reload"),
             b"initial-state"
+        );
+        let mut foreign = definition.clone();
+        foreign.cell_id = id("cell.foreign-memory-read");
+        assert!(
+            DurableMemoryReadStateOwnerV1::reopen(&path, foreign, owner_id.clone(), key.clone(),)
+                .is_err()
+        );
+        let mut future_generation = definition;
+        future_generation.generation = Generation::new(2).expect("generation");
+        assert!(
+            DurableMemoryReadStateOwnerV1::reopen(&path, future_generation, owner_id, key,)
+                .is_err()
         );
         reopened
             .rollback_persisted(&path, &initial)

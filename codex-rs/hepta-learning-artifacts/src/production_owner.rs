@@ -646,38 +646,56 @@ impl StateCheckpointOwnerV1 {
         if self.tombstones.contains_key(&cell_id) {
             return Err(ProductionOwnerError::StateTombstoned(cell_id));
         }
-        let history = self.entries.entry(cell_id.clone()).or_default();
-        if let Some(existing) = history
-            .iter()
-            .find(|entry| entry.receipt.operation_id == operation_id)
-        {
+        // Validate against the immutable current state before ever creating
+        // a history entry. A rejected first commit must leave no ghost cell
+        // that can later be tombstoned or exported as a partial snapshot.
+        let history = self.entries.get(&cell_id);
+        if let Some(existing) = history.and_then(|history| {
+            history
+                .iter()
+                .find(|entry| entry.receipt.operation_id == operation_id)
+        }) {
             if existing.bytes == bytes
                 && existing.receipt.generation == generation
                 && existing.receipt.state_schema_digest == state_schema_digest
+                && existing.receipt.predecessor_state_digest == predecessor_state_digest
+                && existing.receipt.host_evidence_digest == host_evidence_digest
+                && existing.receipt.observer_evidence_digest == observer_evidence_digest
             {
                 return Ok(existing.receipt.clone());
             }
             return Err(ProductionOwnerError::StateConflict(cell_id));
         }
-        let active_head = self
-            .active_heads
-            .get(&cell_id)
-            .copied()
-            .or_else(|| history.last().map(|entry| entry.receipt.state_digest));
+        let active_head = self.active_heads.get(&cell_id).copied().or_else(|| {
+            history.and_then(|history| history.last().map(|entry| entry.receipt.state_digest))
+        });
         if let Some(active_head) = active_head {
             let active_generation = history
-                .iter()
-                .find(|entry| entry.receipt.state_digest == active_head)
+                .and_then(|history| {
+                    history
+                        .iter()
+                        .find(|entry| entry.receipt.state_digest == active_head)
+                })
                 .map(|entry| entry.receipt.generation)
                 .ok_or(ProductionOwnerError::StateConflict(cell_id.clone()))?;
-            if predecessor_state_digest != active_head || generation < active_generation {
+            // A byte-identical state can be committed in a newer generation.
+            // Never resolve its generation from the first matching digest: an
+            // older signed receipt with the same bytes must not reopen an old
+            // generation after cutover or rollback.
+            let highest_signed_generation = history
+                .and_then(|history| history.iter().map(|entry| entry.receipt.generation).max())
+                .ok_or(ProductionOwnerError::StateConflict(cell_id.clone()))?;
+            if predecessor_state_digest != active_head
+                || generation < active_generation
+                || generation < highest_signed_generation
+            {
                 return Err(ProductionOwnerError::StateConflict(cell_id));
             }
         } else if !predecessor_state_digest.is_zero() {
             return Err(ProductionOwnerError::StateConflict(cell_id));
         }
         let sequence = LogicalSequence::new(
-            u64::try_from(history.len())
+            u64::try_from(history.map_or(0, |history| history.len()))
                 .map_err(|_| ProductionOwnerError::InvalidSequence)?
                 .checked_add(1)
                 .ok_or(ProductionOwnerError::InvalidSequence)?,
@@ -701,10 +719,13 @@ impl StateCheckpointOwnerV1 {
         };
         receipt.receipt_digest = receipt.content_digest();
         receipt.signature = self.signing_key.sign(&receipt.signing_bytes()).to_bytes();
-        history.push(StateEntryV1 {
-            receipt: receipt.clone(),
-            bytes,
-        });
+        self.entries
+            .entry(receipt.cell_id.clone())
+            .or_default()
+            .push(StateEntryV1 {
+                receipt: receipt.clone(),
+                bytes,
+            });
         self.active_heads
             .insert(receipt.cell_id.clone(), receipt.state_digest);
         Ok(receipt)
@@ -715,6 +736,10 @@ impl StateCheckpointOwnerV1 {
         cell_id: &StableId,
         receipt: &StateCommitReceiptV1,
     ) -> Result<Vec<u8>, ProductionOwnerError> {
+        // Serving a tombstoned cell must not recover historical bytes.
+        if self.tombstones.contains_key(cell_id) {
+            return Err(ProductionOwnerError::StateTombstoned(cell_id.clone()));
+        }
         receipt.verify(&self.signing_key.verifying_key())?;
         let entry = self
             .entries
@@ -729,11 +754,51 @@ impl StateCheckpointOwnerV1 {
         Ok(entry.bytes.clone())
     }
 
+    /// Restore only the active state for serving. The ordinary `reload`
+    /// method can inspect historical signed bytes for audit/replay, but
+    /// production inference must never load a non-active predecessor or a
+    /// superseded generation simply because its signature is valid.
+    pub fn reload_active(
+        &self,
+        cell_id: &StableId,
+        receipt: &StateCommitReceiptV1,
+    ) -> Result<Vec<u8>, ProductionOwnerError> {
+        if self.tombstones.contains_key(cell_id) {
+            return Err(ProductionOwnerError::StateTombstoned(cell_id.clone()));
+        }
+        let active_digest = self
+            .active_heads
+            .get(cell_id)
+            .copied()
+            .ok_or_else(|| ProductionOwnerError::StateNotFound(cell_id.clone()))?;
+        let maximum_matching_generation = self
+            .entries
+            .get(cell_id)
+            .and_then(|history| {
+                history
+                    .iter()
+                    .filter(|entry| entry.receipt.state_digest == active_digest)
+                    .map(|entry| entry.receipt.generation)
+                    .max()
+            })
+            .ok_or_else(|| ProductionOwnerError::StateNotFound(cell_id.clone()))?;
+        if receipt.state_digest != active_digest
+            || receipt.generation != maximum_matching_generation
+        {
+            return Err(ProductionOwnerError::StateConflict(cell_id.clone()));
+        }
+        self.reload(cell_id, receipt)
+    }
+
     pub fn rollback(
         &mut self,
         cell_id: &StableId,
         target: &StateCommitReceiptV1,
     ) -> Result<Vec<u8>, ProductionOwnerError> {
+        // Tombstones are terminal, including for an old but valid signed target.
+        if self.tombstones.contains_key(cell_id) {
+            return Err(ProductionOwnerError::StateTombstoned(cell_id.clone()));
+        }
         target.verify(&self.signing_key.verifying_key())?;
         let history = self
             .entries
@@ -767,11 +832,24 @@ impl StateCheckpointOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<StateTombstoneReceiptV1, ProductionOwnerError> {
-        if reason_digest.is_zero() || !self.entries.contains_key(&cell_id) {
+        if reason_digest.is_zero()
+            || !self
+                .entries
+                .get(&cell_id)
+                .is_some_and(|history| !history.is_empty())
+        {
             return Err(ProductionOwnerError::StateNotFound(cell_id));
         }
         if self.tombstones.contains_key(&cell_id) {
             return Err(ProductionOwnerError::StateTombstoned(cell_id));
+        }
+        // A retirement generation may never precede a signed generation that
+        // this owner already committed, even when the active head was rolled back.
+        if self.entries[&cell_id]
+            .iter()
+            .any(|entry| entry.receipt.generation > generation)
+        {
+            return Err(ProductionOwnerError::StateConflict(cell_id));
         }
         let mut receipt = StateTombstoneReceiptV1 {
             cell_id: cell_id.clone(),
@@ -823,15 +901,43 @@ impl StateCheckpointOwnerV1 {
         let mut owner = Self::new(owner_id, signing_key)?;
         for (receipt, bytes) in snapshot.entries {
             receipt.verify(&owner.signing_key.verifying_key())?;
-            if Digest32::of_bytes(&bytes) != receipt.state_digest
+            if receipt.owner_id != owner.owner_id
+                || Digest32::of_bytes(&bytes) != receipt.state_digest
                 || bytes.len() as u64 != receipt.encoded_size_bytes
             {
                 return Err(ProductionOwnerError::InvalidReceipt);
             }
             let history = owner.entries.entry(receipt.cell_id.clone()).or_default();
+            // All signed events must be present in sequence. A missing signed
+            // middle event is not an acceptable predecessor on clean reopen.
+            let next_sequence = u64::try_from(history.len())
+                .ok()
+                .and_then(|value| value.checked_add(1))
+                .ok_or(ProductionOwnerError::InvalidReceipt)?;
+            if receipt.sequence.get() != next_sequence
+                || history
+                    .iter()
+                    .any(|entry| entry.receipt.operation_id == receipt.operation_id)
+            {
+                return Err(ProductionOwnerError::InvalidReceipt);
+            }
+            // Successors can refer to any *earlier* signed state following a
+            // rollback, but never to an absent, future or later-generation state.
+            if history.is_empty() {
+                if !receipt.predecessor_state_digest.is_zero() {
+                    return Err(ProductionOwnerError::InvalidReceipt);
+                }
+            } else if !history.iter().any(|entry| {
+                entry.receipt.state_digest == receipt.predecessor_state_digest
+                    && entry.receipt.generation <= receipt.generation
+            }) {
+                return Err(ProductionOwnerError::InvalidReceipt);
+            }
+            // Generation fencing is monotonic across the entire signed
+            // append-only history, not only across the active rollback head.
             if history
                 .last()
-                .is_some_and(|last| last.receipt.sequence >= receipt.sequence)
+                .is_some_and(|entry| entry.receipt.generation > receipt.generation)
             {
                 return Err(ProductionOwnerError::InvalidReceipt);
             }
@@ -846,7 +952,17 @@ impl StateCheckpointOwnerV1 {
         }
         for receipt in snapshot.tombstones {
             receipt.verify(&owner.signing_key.verifying_key())?;
-            if receipt.reason_digest.is_zero() || !owner.entries.contains_key(&receipt.cell_id) {
+            let history = owner
+                .entries
+                .get(&receipt.cell_id)
+                .ok_or(ProductionOwnerError::InvalidReceipt)?;
+            if receipt.owner_id != owner.owner_id
+                || receipt.reason_digest.is_zero()
+                || history
+                    .iter()
+                    .any(|entry| entry.receipt.generation > receipt.generation)
+                || owner.tombstones.contains_key(&receipt.cell_id)
+            {
                 return Err(ProductionOwnerError::InvalidReceipt);
             }
             owner.tombstones.insert(receipt.cell_id.clone(), receipt);
@@ -862,7 +978,9 @@ impl StateCheckpointOwnerV1 {
             {
                 return Err(ProductionOwnerError::InvalidReceipt);
             }
-            owner.active_heads.insert(cell_id, active_head);
+            if owner.active_heads.insert(cell_id, active_head).is_some() {
+                return Err(ProductionOwnerError::InvalidReceipt);
+            }
         }
         Ok(owner)
     }
@@ -1067,6 +1185,338 @@ mod tests {
         load.verify_production(&key.verifying_key())
             .expect("production load verify");
         std::fs::remove_dir_all(root_path).expect("cleanup");
+    }
+
+    #[test]
+    fn rejected_first_commit_does_not_create_a_ghost_cell() {
+        let key = SigningKey::from_bytes(&[57; 32]);
+        let cell = id("cell.never-committed");
+        let mut owner = StateCheckpointOwnerV1::new(id("state.owner.ghost"), key).expect("owner");
+        assert_eq!(
+            owner.commit(
+                id("operation.rejected"),
+                cell.clone(),
+                Generation::new(1).expect("generation"),
+                Digest32::of_bytes(b"schema"),
+                Digest32::of_bytes(b"missing-parent"),
+                b"state".to_vec(),
+                None,
+                None,
+            ),
+            Err(ProductionOwnerError::StateConflict(cell.clone()))
+        );
+        assert!(owner.snapshot().entries.is_empty());
+        assert!(owner.snapshot().active_heads.is_empty());
+        assert_eq!(
+            owner.tombstone(
+                cell.clone(),
+                Generation::new(1).expect("generation"),
+                Digest32::of_bytes(b"reason"),
+            ),
+            Err(ProductionOwnerError::StateNotFound(cell))
+        );
+    }
+
+    #[test]
+    fn idempotent_state_operation_cannot_change_attestation_or_predecessor() {
+        let key = SigningKey::from_bytes(&[53; 32]);
+        let mut owner =
+            StateCheckpointOwnerV1::new(id("state.owner.idempotent"), key).expect("owner");
+        let cell = id("cell.idempotent");
+        let operation = id("operation.idempotent");
+        let generation = Generation::new(1).expect("generation");
+        let schema = Digest32::of_bytes(b"schema");
+        let host = Some(Digest32::of_bytes(b"host.one"));
+        let observer = Some(Digest32::of_bytes(b"observer.one"));
+        let first = owner
+            .commit(
+                operation.clone(),
+                cell.clone(),
+                generation,
+                schema,
+                Digest32::ZERO,
+                b"state".to_vec(),
+                host,
+                observer,
+            )
+            .expect("first commit");
+        assert_eq!(
+            owner
+                .commit(
+                    operation.clone(),
+                    cell.clone(),
+                    generation,
+                    schema,
+                    Digest32::ZERO,
+                    b"state".to_vec(),
+                    host,
+                    observer,
+                )
+                .expect("identical retry"),
+            first
+        );
+        for (predecessor, new_host, new_observer) in [
+            (Digest32::of_bytes(b"foreign"), host, observer),
+            (
+                Digest32::ZERO,
+                Some(Digest32::of_bytes(b"host.other")),
+                observer,
+            ),
+            (
+                Digest32::ZERO,
+                host,
+                Some(Digest32::of_bytes(b"observer.other")),
+            ),
+        ] {
+            assert_eq!(
+                owner.commit(
+                    operation.clone(),
+                    cell.clone(),
+                    generation,
+                    schema,
+                    predecessor,
+                    b"state".to_vec(),
+                    new_host,
+                    new_observer,
+                ),
+                Err(ProductionOwnerError::StateConflict(cell.clone()))
+            );
+        }
+    }
+
+    #[test]
+    fn serving_reload_requires_current_state_and_current_generation() {
+        let key = SigningKey::from_bytes(&[58; 32]);
+        let cell = id("cell.active-only");
+        let schema = Digest32::of_bytes(b"schema");
+        let gen1 = Generation::new(1).expect("generation");
+        let gen2 = Generation::new(2).expect("generation");
+        let mut owner =
+            StateCheckpointOwnerV1::new(id("state.owner.active-only"), key).expect("owner");
+        let first = owner
+            .commit(
+                id("operation.active.1"),
+                cell.clone(),
+                gen1,
+                schema,
+                Digest32::ZERO,
+                b"first".to_vec(),
+                None,
+                None,
+            )
+            .expect("first");
+        let second = owner
+            .commit(
+                id("operation.active.2"),
+                cell.clone(),
+                gen1,
+                schema,
+                first.state_digest,
+                b"second".to_vec(),
+                None,
+                None,
+            )
+            .expect("second");
+        assert_eq!(
+            owner.reload_active(&cell, &second).expect("current"),
+            b"second"
+        );
+        assert_eq!(
+            owner.reload_active(&cell, &first),
+            Err(ProductionOwnerError::StateConflict(cell.clone()))
+        );
+        owner.rollback(&cell, &first).expect("rollback");
+        assert_eq!(
+            owner.reload_active(&cell, &first).expect("rollback head"),
+            b"first"
+        );
+        let third = owner
+            .commit(
+                id("operation.active.3"),
+                cell.clone(),
+                gen2,
+                schema,
+                first.state_digest,
+                b"first".to_vec(),
+                None,
+                None,
+            )
+            .expect("same bytes next generation");
+        assert_eq!(
+            owner.reload_active(&cell, &third).expect("latest gen"),
+            b"first"
+        );
+        assert_eq!(
+            owner.reload_active(&cell, &first),
+            Err(ProductionOwnerError::StateConflict(cell))
+        );
+    }
+
+    #[test]
+    fn byte_identical_state_cannot_downgrade_the_signed_generation() {
+        let key = SigningKey::from_bytes(&[56; 32]);
+        let owner_id = id("state.owner.generation-fence");
+        let cell = id("cell.generation-fence");
+        let schema = Digest32::of_bytes(b"schema");
+        let mut owner = StateCheckpointOwnerV1::new(owner_id.clone(), key.clone()).expect("owner");
+        let gen1 = Generation::new(1).expect("generation");
+        let gen2 = Generation::new(2).expect("generation");
+        let first = owner
+            .commit(
+                id("operation.generation.1"),
+                cell.clone(),
+                gen1,
+                schema,
+                Digest32::ZERO,
+                b"unchanged".to_vec(),
+                None,
+                None,
+            )
+            .expect("first");
+        let second = owner
+            .commit(
+                id("operation.generation.2"),
+                cell.clone(),
+                gen2,
+                schema,
+                first.state_digest,
+                b"unchanged".to_vec(),
+                None,
+                None,
+            )
+            .expect("second");
+        assert_eq!(second.state_digest, first.state_digest);
+        owner
+            .rollback(&cell, &first)
+            .expect("rollback to old state");
+        assert_eq!(
+            owner.commit(
+                id("operation.generation.downgrade"),
+                cell.clone(),
+                gen1,
+                schema,
+                first.state_digest,
+                b"changed".to_vec(),
+                None,
+                None,
+            ),
+            Err(ProductionOwnerError::StateConflict(cell.clone()))
+        );
+        owner
+            .commit(
+                id("operation.generation.3"),
+                cell.clone(),
+                gen2,
+                schema,
+                first.state_digest,
+                b"changed".to_vec(),
+                None,
+                None,
+            )
+            .expect("current generation");
+        StateCheckpointOwnerV1::from_snapshot(owner.snapshot(), owner_id, key)
+            .expect("signed generation monotonicity survives reopen");
+    }
+
+    #[test]
+    fn tombstone_rejects_signed_historical_reload_and_rollback_after_reopen() {
+        let key = SigningKey::from_bytes(&[54; 32]);
+        let owner_id = id("state.owner.terminal");
+        let cell = id("cell.terminal");
+        let mut owner = StateCheckpointOwnerV1::new(owner_id.clone(), key.clone()).expect("owner");
+        let first = owner
+            .commit(
+                id("operation.terminal"),
+                cell.clone(),
+                Generation::new(2).expect("generation"),
+                Digest32::of_bytes(b"schema"),
+                Digest32::ZERO,
+                b"state".to_vec(),
+                None,
+                None,
+            )
+            .expect("first commit");
+        assert!(matches!(
+            owner.tombstone(
+                cell.clone(),
+                Generation::new(1).expect("generation"),
+                Digest32::of_bytes(b"retire")
+            ),
+            Err(ProductionOwnerError::StateConflict(_))
+        ));
+        owner
+            .tombstone(
+                cell.clone(),
+                Generation::new(3).expect("generation"),
+                Digest32::of_bytes(b"retire"),
+            )
+            .expect("tombstone");
+        assert_eq!(
+            owner.reload(&cell, &first),
+            Err(ProductionOwnerError::StateTombstoned(cell.clone()))
+        );
+        assert_eq!(
+            owner.rollback(&cell, &first),
+            Err(ProductionOwnerError::StateTombstoned(cell.clone()))
+        );
+        let mut reopened = StateCheckpointOwnerV1::from_snapshot(owner.snapshot(), owner_id, key)
+            .expect("reopen tombstoned");
+        assert_eq!(
+            reopened.reload(&cell, &first),
+            Err(ProductionOwnerError::StateTombstoned(cell.clone()))
+        );
+        assert_eq!(
+            reopened.rollback(&cell, &first),
+            Err(ProductionOwnerError::StateTombstoned(cell))
+        );
+    }
+
+    #[test]
+    fn reopen_rejects_signed_history_gap_or_duplicate_head() {
+        let key = SigningKey::from_bytes(&[55; 32]);
+        let owner_id = id("state.owner.chain");
+        let cell = id("cell.chain");
+        let schema = Digest32::of_bytes(b"schema");
+        let generation = Generation::new(1).expect("generation");
+        let mut owner = StateCheckpointOwnerV1::new(owner_id.clone(), key.clone()).expect("owner");
+        let first = owner
+            .commit(
+                id("operation.chain.1"),
+                cell.clone(),
+                generation,
+                schema,
+                Digest32::ZERO,
+                b"state.first".to_vec(),
+                None,
+                None,
+            )
+            .expect("first");
+        owner
+            .commit(
+                id("operation.chain.2"),
+                cell.clone(),
+                generation,
+                schema,
+                first.state_digest,
+                b"state.second".to_vec(),
+                None,
+                None,
+            )
+            .expect("second");
+        let mut gap = owner.snapshot();
+        gap.entries.remove(0);
+        assert!(StateCheckpointOwnerV1::from_snapshot(gap, owner_id.clone(), key.clone()).is_err());
+        let mut duplicate = owner.snapshot();
+        duplicate
+            .active_heads
+            .push(duplicate.active_heads[0].clone());
+        assert!(
+            StateCheckpointOwnerV1::from_snapshot(duplicate, owner_id.clone(), key.clone())
+                .is_err()
+        );
+        let mut reordered = owner.snapshot();
+        reordered.entries.reverse();
+        assert!(StateCheckpointOwnerV1::from_snapshot(reordered, owner_id, key).is_err());
     }
 
     #[test]

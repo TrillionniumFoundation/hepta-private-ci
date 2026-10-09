@@ -218,6 +218,11 @@ impl DurableLearnedRoleOwnerV1 {
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<StateCommitReceiptV1, DurableLearnedRoleOwnerErrorV1> {
         let expected_snapshot = DurableStateOwnerV1::snapshot_digest(path.as_ref())?;
+        if expected_snapshot.is_some() {
+            return Err(DurableLearnedRoleOwnerErrorV1::Binding(
+                "initial checkpoint exists",
+            ));
+        }
         let mut candidate = self.clone();
         let receipt = candidate.seed_initial_state(
             operation_id,
@@ -240,7 +245,9 @@ impl DurableLearnedRoleOwnerV1 {
         {
             return Err(DurableLearnedRoleOwnerErrorV1::Binding("state receipt"));
         }
-        Ok(self.state.reload(&self.definition.cell_id, receipt)?)
+        Ok(self
+            .state
+            .reload_active(&self.definition.cell_id, receipt)?)
     }
 
     pub fn persist(
@@ -270,6 +277,32 @@ impl DurableLearnedRoleOwnerV1 {
     ) -> Result<Self, DurableLearnedRoleOwnerErrorV1> {
         let owner = Self::new(definition, owner_id.clone(), signing_key.clone())?;
         let state = DurableStateOwnerV1::reopen(path, owner_id, signing_key)?;
+        let snapshot = state.snapshot();
+        // A valid signature does not make a checkpoint belong to this cell.
+        // Never attach another role's or generation's durable state merely
+        // because it was signed by an otherwise trusted checkpoint owner.
+        let active_head = snapshot
+            .active_heads
+            .iter()
+            .find(|(cell_id, _)| *cell_id == owner.definition.cell_id)
+            .map(|(_, digest)| *digest)
+            .ok_or(DurableLearnedRoleOwnerErrorV1::Binding("active state head"))?;
+        if snapshot.active_heads.len() != 1
+            || snapshot.entries.iter().any(|(receipt, _)| {
+                receipt.cell_id != owner.definition.cell_id
+                    || receipt.state_schema_digest != owner.definition.state_schema_digest
+            })
+            || !snapshot.entries.iter().rev().any(|(receipt, _)| {
+                receipt.cell_id == owner.definition.cell_id
+                    && receipt.state_digest == active_head
+                    && receipt.generation == owner.definition.generation
+                    && receipt.state_schema_digest == owner.definition.state_schema_digest
+            })
+        {
+            return Err(DurableLearnedRoleOwnerErrorV1::Binding(
+                "checkpoint definition",
+            ));
+        }
         Ok(Self { state, ..owner })
     }
 
@@ -282,8 +315,13 @@ impl DurableLearnedRoleOwnerV1 {
         &mut self,
         receipt: &StateCommitReceiptV1,
     ) -> Result<Vec<u8>, DurableLearnedRoleOwnerErrorV1> {
-        if receipt.cell_id != self.definition.cell_id {
-            return Err(DurableLearnedRoleOwnerErrorV1::Binding("rollback cell"));
+        if receipt.cell_id != self.definition.cell_id
+            || receipt.generation != self.definition.generation
+            || receipt.state_schema_digest != self.definition.state_schema_digest
+        {
+            return Err(DurableLearnedRoleOwnerErrorV1::Binding(
+                "rollback definition",
+            ));
         }
         Ok(self.state.rollback(&self.definition.cell_id, receipt)?)
     }
@@ -441,12 +479,49 @@ mod tests {
         let path = std::env::temp_dir().join(format!("hepta-role-state-{}", std::process::id()));
         let _ = std::fs::remove_file(&path);
         owner.persist(&path).expect("persist");
-        let reopened =
-            DurableLearnedRoleOwnerV1::reopen(path.clone(), definition, id("owner.rep"), key)
-                .expect("reopen");
+        let saved_digest = DurableStateOwnerV1::snapshot_digest(&path)
+            .expect("snapshot")
+            .expect("present");
+        let mut fresh_instance =
+            DurableLearnedRoleOwnerV1::new(definition.clone(), id("owner.rep"), key.clone())
+                .expect("fresh");
+        assert!(
+            fresh_instance
+                .seed_initial_state_persisted(
+                    &path,
+                    id("op.rep.reseed"),
+                    b"foreign-genesis".to_vec(),
+                    None,
+                    None,
+                )
+                .is_err()
+        );
+        assert_eq!(
+            DurableStateOwnerV1::snapshot_digest(&path).expect("unchanged"),
+            Some(saved_digest),
+        );
+        let reopened = DurableLearnedRoleOwnerV1::reopen(
+            path.clone(),
+            definition.clone(),
+            id("owner.rep"),
+            key.clone(),
+        )
+        .expect("reopen");
         assert_eq!(
             reopened.reload(&receipt).expect("reloaded"),
             b"representation-state-v1"
+        );
+        let mut foreign = definition.clone();
+        foreign.cell_id = id("cell.foreign");
+        assert!(
+            DurableLearnedRoleOwnerV1::reopen(&path, foreign, id("owner.rep"), key.clone(),)
+                .is_err()
+        );
+        let mut next_generation = definition;
+        next_generation.generation = Generation::new(2).expect("generation");
+        assert!(
+            DurableLearnedRoleOwnerV1::reopen(&path, next_generation, id("owner.rep"), key,)
+                .is_err()
         );
         let _ = std::fs::remove_file(path);
     }
