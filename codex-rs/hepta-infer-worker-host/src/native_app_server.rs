@@ -788,6 +788,7 @@ impl AppServerModelDriver {
         // From here on, a missing acknowledgement is reconcile-only. Recovery
         // cannot recreate the local pre-effect proof that is deliberately lost.
         drop(pre_effect_abort);
+        let expected_turn_input = turn_params.input.clone();
         let response = timeout(
             send_budget,
             send_authorized_turn_start(&mut client, entered_use, turn_params),
@@ -968,6 +969,35 @@ impl AppServerModelDriver {
                     Some(existing) => format!("{existing}; {note}"),
                     None => note,
                 });
+            }
+        }
+        // A terminal event can precede the final assistant message delta. Never
+        // report success with an empty answer: read the original turn without
+        // creating a new turn/start, and verify its exact request binding.
+        if output.terminal_observed
+            && output.status == NativeRunStatus::Completed
+            && output.output.is_empty()
+        {
+            match reconcile_missing_terminal_message(
+                &mut client,
+                &output,
+                &binding,
+                request_id,
+                &expected_turn_input,
+            )
+            .await
+            {
+                Ok(message) => output.output = message,
+                Err(reason) => {
+                    output.status = NativeRunStatus::Indeterminate;
+                    output.boundary_status = NativeBoundaryStatus::Indeterminate;
+                    output.stop_reason = Some(
+                        format!("terminal output could not be verified: {reason}")
+                            .chars()
+                            .take(1024)
+                            .collect(),
+                    );
+                }
             }
         }
         if output.terminal_observed {
@@ -1415,6 +1445,73 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
         }),
     )
     .await;
+}
+
+/// Reconcile the content of an already completed turn after a missing delta.
+/// Neither this read nor a failure can create a second model invocation.
+async fn reconcile_missing_terminal_message(
+    client: &mut RemoteAppServerClient,
+    output: &NativeRunOutput,
+    binding: &CodexTurnBinding,
+    request_id: &str,
+    expected_input: &[UserInput],
+) -> std::result::Result<String, String> {
+    let observed = timeout(
+        RPC_TIMEOUT,
+        client.request_typed_observed_response::<ThreadReadResponse>(
+            ClientRequest::ThreadRead {
+                request_id: RequestId::Integer(60),
+                params: ThreadReadParams {
+                    thread_id: output.thread_id.clone(),
+                    include_turns: true,
+                },
+            },
+        ),
+    )
+    .await
+    .map_err(|_| "thread/read timed out".to_string())?
+    .map_err(|error| format!("thread/read failed: {error}"))?;
+
+    if observed.response().thread.model_provider != output.model_provider {
+        return Err("reconciliation model provider drifted".to_string());
+    }
+    let receipt = adapt_observed_thread_read_reconciliation(
+        &binding.intent,
+        request_id,
+        expected_input,
+        &observed,
+    )
+    .map_err(|error| format!("thread/read binding invalid: {error}"))?
+    .ok_or_else(|| "original turn not yet terminal".to_string())?;
+
+    if receipt.turn_id.as_ref().map(StableId::as_str) != Some(output.turn_id.as_str())
+        || receipt.status != AdapterStatus::Succeeded
+        || receipt.correlation_digest.is_none()
+    {
+        return Err("reconciliation does not prove the exact successful turn".to_string());
+    }
+    // The notification digest and the thread/read digest attest different
+    // observations; never compare them as if the raw payloads were identical.
+    let turn = observed
+        .response()
+        .thread
+        .turns
+        .iter()
+        .find(|turn| turn.id == output.turn_id)
+        .ok_or_else(|| "verified turn disappeared".to_string())?;
+    let mut message = String::new();
+    for item in &turn.items {
+        if let ThreadItem::AgentMessage { text, .. } = item {
+            if text.len() > MAX_OUTPUT_BYTES.saturating_sub(message.len()) {
+                return Err("reconciled output exceeds byte budget".to_string());
+            }
+            message.push_str(text);
+        }
+    }
+    if message.trim().is_empty() {
+        return Err("terminal turn has no verifiable assistant message".to_string());
+    }
+    Ok(message)
 }
 
 fn observe_event(

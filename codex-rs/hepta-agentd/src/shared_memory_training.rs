@@ -270,7 +270,13 @@ fn memory_manifest_matches(
         && manifest.kind == ArtifactKind::Parameters
         && manifest.generation == profile.generation
         && manifest.objective_digest == profile.objective_digest
-        && manifest.support_digest == candidate.candidate.frozen().dataset().snapshot.dataset_digest
+        && manifest.support_digest
+            == candidate
+                .candidate
+                .frozen()
+                .dataset()
+                .snapshot
+                .dataset_digest
         && manifest.compatibility_digest == profile.base_digest
         && manifest.producer_id == profile.producer_id
         && manifest.content_digest == candidate.candidate.observation().payload_digest

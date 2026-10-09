@@ -46,7 +46,9 @@ class CellCircuit(nn.Module):
 
     def forward(self, features):
         if self.mode == "no_message":
-            message = features.new_zeros((*features.shape[:-1], self.semantic.out_features))
+            message = features.new_zeros(
+                (*features.shape[:-1], self.semantic.out_features)
+            )
         elif self.mode == "flat_matched":
             message = torch.tanh(self.semantic(features) + self.gate(features))
         else:
@@ -63,7 +65,9 @@ class CellCircuit(nn.Module):
 def state_digest(model):
     h = hashlib.sha256(b"hepta.memory-circuit.tensor-state.v2\0")
     for name, tensor in sorted(model.state_dict().items()):
-        header = json.dumps([name, str(tensor.dtype), list(tensor.shape)], separators=(",", ":")).encode()
+        header = json.dumps(
+            [name, str(tensor.dtype), list(tensor.shape)], separators=(",", ":")
+        ).encode()
         h.update(len(header).to_bytes(8, "big"))
         h.update(header)
         h.update(tensor.detach().cpu().contiguous().numpy().tobytes())
@@ -71,7 +75,11 @@ def state_digest(model):
 
 
 def fit(
-    features: np.ndarray, labels: np.ndarray, partitions: list[str], *, steps: int = 48,
+    features: np.ndarray,
+    labels: np.ndarray,
+    partitions: list[str],
+    *,
+    steps: int = 48,
     family_ids: list[str] | None = None,
 ):
     if (
@@ -105,7 +113,14 @@ def fit(
             if phase == "train":
                 counts[family] = counts.get(family, 0) + 1
         family_count = len(counts)
-        weights = np.asarray([1 / counts[f] for f, phase in zip(family_ids, partitions, strict=True) if phase == "train"], dtype=np.float32)
+        weights = np.asarray(
+            [
+                1 / counts[f]
+                for f, phase in zip(family_ids, partitions, strict=True)
+                if phase == "train"
+            ],
+            dtype=np.float32,
+        )
         weights /= weights.mean()
     sample_weights = torch.tensor(weights)
     x = torch.tensor(features[train], dtype=torch.float32)
@@ -121,7 +136,9 @@ def fit(
         optimizer = torch.optim.AdamW(optimized, lr=0.003) if optimized else None
         for _ in range(0 if mode == "frozen" else steps):
             optimizer.zero_grad(set_to_none=True)
-            loss = nn.functional.binary_cross_entropy_with_logits(model(x), y, reduction="none")
+            loss = nn.functional.binary_cross_entropy_with_logits(
+                model(x), y, reduction="none"
+            )
             loss = (loss * sample_weights).mean()
             if not torch.isfinite(loss):
                 raise ValueError("nonfinite composition loss")
@@ -147,12 +164,17 @@ def fit(
                 "steps": 0 if mode == "frozen" else steps,
                 "train_examples": int(train.sum()),
                 "training_source_families": family_count,
-                "loss_weighting": "equal-source-family" if family_ids is not None else "fixture-row-mean",
-                "parameter_bytes": sum(p.numel() * p.element_size() for p in model.parameters()),
+                "loss_weighting": "equal-source-family"
+                if family_ids is not None
+                else "fixture-row-mean",
+                "parameter_bytes": sum(
+                    p.numel() * p.element_size() for p in model.parameters()
+                ),
                 "optimizer_tensor_bytes": sum(
                     v.numel() * v.element_size()
                     for state in (optimizer.state.values() if optimizer else [])
-                    for v in state.values() if isinstance(v, torch.Tensor)
+                    for v in state.values()
+                    if isinstance(v, torch.Tensor)
                 ),
                 "budget_kind": "equal-allocated-parameters-not-equal-effective-computation",
                 "message_semantics": "row-local-gated-semantic-representation",

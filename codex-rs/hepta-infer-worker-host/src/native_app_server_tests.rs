@@ -502,7 +502,13 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
     );
-    assert!(accepted.output.contains("fresh context accepted"));
+    assert!(
+        accepted.output.contains("fresh context accepted"),
+        "verified final text missing: status={:?}; output={:?}; stop={:?}",
+        accepted.status,
+        accepted.output,
+        accepted.stop_reason,
+    );
     let accepted_record = durable
         .native_record(ACCEPT_REQUEST_ID)
         .cloned()

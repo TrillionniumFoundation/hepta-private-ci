@@ -145,11 +145,16 @@ def load(
                     "error_digest": digest(str(error)),
                     "history_digest": digest((sessions, ids, dates)),
                 }
-                normalized, duplicates = [], [{
-                    "identity": scope,
-                    "disposition": "question-retained-history-quarantined",
-                    **ingress_failures[scope],
-                }]
+                normalized, duplicates = (
+                    [],
+                    [
+                        {
+                            "identity": scope,
+                            "disposition": "question-retained-history-quarantined",
+                            **ingress_failures[scope],
+                        }
+                    ],
+                )
             original_ids = {
                 version: row["identity"]
                 for row in duplicates
@@ -193,7 +198,9 @@ def load(
             answer_ids = sample["answer_session_ids"]
             if not isinstance(answer_ids, list) or len(answer_ids) > 10_000:
                 raise ValueError("invalid LongMemEval answer session IDs")
-            support = tuple(f"{scope}/{text(sid, 'answer session id', 256)}" for sid in answer_ids)
+            support = tuple(
+                f"{scope}/{text(sid, 'answer session id', 256)}" for sid in answer_ids
+            )
             missing = tuple(sorted(set(support) - known))
             if missing and not allow_unresolved_evidence:
                 raise ValueError(f"dangling LongMemEval evidence: {missing[:4]}")
@@ -306,7 +313,14 @@ def load(
             parents[right] = left
     families = {family: find(family) for family in parents}
     return Benchmark(
-        kind, sha, tuple(docs), tuple(queries), targets, families, tuple(ingress_issues), ingress_failures
+        kind,
+        sha,
+        tuple(docs),
+        tuple(queries),
+        targets,
+        families,
+        tuple(ingress_issues),
+        ingress_failures,
     )
 
 

@@ -53,8 +53,13 @@ def index_digest(path: Path) -> str:
 
 class PersistentIndex:
     def __init__(
-        self, path: Path, expected_cut: str, revoked: set[str], *,
-        expected_file_digest: str, expected_encoder: str,
+        self,
+        path: Path,
+        expected_cut: str,
+        revoked: set[str],
+        *,
+        expected_file_digest: str,
+        expected_encoder: str,
     ):
         # Caller binds these values from its immutable projection manifest, not
         # from a possibly corrupted index's own metadata. Path is owner-protected.
@@ -62,7 +67,9 @@ class PersistentIndex:
             raise ValueError("index artifact/encoder binding mismatch")
         self.file_digest = expected_file_digest
         self.path = path
-        self.db = sqlite3.connect(path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+        self.db = sqlite3.connect(
+            path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True
+        )
         try:
             self.db.execute("PRAGMA query_only=ON")
             self.meta = json.loads(
@@ -76,11 +83,14 @@ class PersistentIndex:
                 raise ValueError("index cut/schema mismatch")
             count = self.db.execute("SELECT count(*) FROM docs").fetchone()[0]
             shape = self.meta.get("shape")
-            if (not isinstance(shape, list) or len(shape) != 2
+            if (
+                not isinstance(shape, list)
+                or len(shape) != 2
                 or any(type(n) is not int for n in shape)
                 or not 1 <= count == shape[0] <= 250_000
                 or not 1 <= shape[1] <= 4096
-                or shape[0] * shape[1] * 4 > MAX_VECTOR_BYTES):
+                or shape[0] * shape[1] * 4 > MAX_VECTOR_BYTES
+            ):
                 raise ValueError("index dimensions exceed resource profile")
             if self.db.execute("PRAGMA quick_check").fetchone()[0] != "ok":
                 raise ValueError("index database integrity")
@@ -97,10 +107,14 @@ class PersistentIndex:
                 != self.meta["source_digest"]
             ):
                 raise ValueError("index source projection corruption")
-            lexical = self.db.execute("SELECT rowid, content FROM lexical ORDER BY rowid").fetchall()
+            lexical = self.db.execute(
+                "SELECT rowid, content FROM lexical ORDER BY rowid"
+            ).fetchall()
             if lexical != [(i, d.content) for i, d in enumerate(self.documents, 1)]:
                 raise ValueError("lexical projection does not match source records")
-            if len({d.identity for d in self.documents}) != count or {d.scope for d in self.documents} != {self.meta["scope"]}:
+            if len({d.identity for d in self.documents}) != count or {
+                d.scope for d in self.documents
+            } != {self.meta["scope"]}:
                 raise ValueError("index identity/scope mismatch")
             self.vectors = np.stack(
                 [np.frombuffer(row[1], dtype="<f4") for row in records]
@@ -267,7 +281,9 @@ def tune_policy(cases, targets, indices, embeddings, cut, revoked, *, family_ids
             recalled = {source_id(d.identity) for d in docs}
             support = {source_id(identity) for identity in truth.evidence}
             family = family_ids[q.identity] if family_ids is not None else q.family
-            family_recalls.setdefault(family, []).append(len(recalled.intersection(support)) / len(support))
+            family_recalls.setdefault(family, []).append(
+                len(recalled.intersection(support)) / len(support)
+            )
         recalls = [sum(values) / len(values) for values in family_recalls.values()]
         records.append((sum(recalls) / len(recalls) if recalls else -1.0, policy))
     best = max(

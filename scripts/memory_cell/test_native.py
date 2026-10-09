@@ -83,14 +83,26 @@ class NativeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as root:
             p = Path(root) / "index.sqlite"
             blob = PersistentIndex.build(p, docs, np.eye(2), "fixed-encoder-sha", "cut")
-            index = PersistentIndex(p, "cut", set(), expected_file_digest=blob, expected_encoder="fixed-encoder-sha")
+            index = PersistentIndex(
+                p,
+                "cut",
+                set(),
+                expected_file_digest=blob,
+                expected_encoder="fixed-encoder-sha",
+            )
             first, receipt = index.query(
                 q, np.array([1, 0]), RetrievalPolicy(), current_cut="cut", revoked=set()
             )
             self.assertEqual(first[0], docs[0])
             self.assertGreater(receipt["index_file_bytes"], 0)
             index.close()
-            index = PersistentIndex(p, "cut", set(), expected_file_digest=blob, expected_encoder="fixed-encoder-sha")
+            index = PersistentIndex(
+                p,
+                "cut",
+                set(),
+                expected_file_digest=blob,
+                expected_encoder="fixed-encoder-sha",
+            )
             second, _ = index.query(
                 q, np.array([1, 0]), RetrievalPolicy(), current_cut="cut", revoked=set()
             )

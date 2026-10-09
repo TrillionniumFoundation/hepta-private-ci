@@ -46,29 +46,48 @@ impl AgentdSharedReplayHostV1 {
         clock: impl Fn() -> Result<u64, SharedMemoryTrainingError>,
     ) -> Result<SelectedMemoryTensorModelV1, SharedMemoryTrainingError> {
         if owner.recovery_required().is_some() {
-            return Err(SharedMemoryTrainingError::Invalid("artifact recovery required"));
+            return Err(SharedMemoryTrainingError::Invalid(
+                "artifact recovery required",
+            ));
         }
         self.revalidate_memory_source(
-            &candidate.source, ledger, candidate.candidate.frozen().dataset(), clock()?,
-        ).await?;
+            &candidate.source,
+            ledger,
+            candidate.candidate.frozen().dataset(),
+            clock()?,
+        )
+        .await?;
         let now = clock()?;
-        let current = owner.current_registry_view(now)
+        let current = owner
+            .current_registry_view(now)
             .map_err(|_| SharedMemoryTrainingError::Invalid("current registry unavailable"))?;
-        let selected = selector.verify(selection, &current, now)
+        let selected = selector
+            .verify(selection, &current, now)
             .map_err(|_| SharedMemoryTrainingError::Invalid("independent selection rejected"))?;
         let mut pinned = load_guarded_selected_candidate_v1(
-            snapshot_file, payload_file, selected, selector, clock()?,
-        ).map_err(|_| SharedMemoryTrainingError::Invalid("selected tensor load rejected"))?;
+            snapshot_file,
+            payload_file,
+            selected,
+            selector,
+            clock()?,
+        )
+        .map_err(|_| SharedMemoryTrainingError::Invalid("selected tensor load rejected"))?;
         if !memory_manifest_matches(&candidate, pinned.manifest()) {
-            return Err(SharedMemoryTrainingError::Invalid("selected training lineage mismatch"));
+            return Err(SharedMemoryTrainingError::Invalid(
+                "selected training lineage mismatch",
+            ));
         }
         let now = clock()?;
-        let current = owner.current_registry_view(now)
+        let current = owner
+            .current_registry_view(now)
             .map_err(|_| SharedMemoryTrainingError::Invalid("current registry unavailable"))?;
-        let exact = pinned.with_current(selector, current, now, |bytes| bytes == candidate.payload)
+        let exact = pinned
+            .with_current(selector, current, now, |bytes| bytes == candidate.payload)
             .map_err(|_| SharedMemoryTrainingError::Invalid("selected payload unavailable"))?;
         if !exact {
-            return Err(SharedMemoryTrainingError::Invalid("selected training payload mismatch"));
+            return Err(SharedMemoryTrainingError::Invalid(
+                "selected training payload mismatch",
+            ));
         }
         let mut model = SelectedMemoryTensorModelV1 {
             candidate: candidate.candidate,
@@ -77,8 +96,14 @@ impl AgentdSharedReplayHostV1 {
             unavailable: false,
         };
         self.with_current_selected_memory_tensor_v1(
-            &mut model, ledger, owner, selector, clock, |_| (),
-        ).await?;
+            &mut model,
+            ledger,
+            owner,
+            selector,
+            clock,
+            |_| (),
+        )
+        .await?;
         Ok(model)
     }
 
@@ -97,25 +122,43 @@ impl AgentdSharedReplayHostV1 {
     ) -> Result<T, SharedMemoryTrainingError> {
         if model.unavailable || owner.recovery_required().is_some() {
             model.unavailable = true;
-            return Err(SharedMemoryTrainingError::Invalid("selected memory unavailable"));
+            return Err(SharedMemoryTrainingError::Invalid(
+                "selected memory unavailable",
+            ));
         }
         model.unavailable = true;
         self.revalidate_memory_source(
-            &model.source, ledger, model.candidate.frozen().dataset(), clock()?,
-        ).await?;
+            &model.source,
+            ledger,
+            model.candidate.frozen().dataset(),
+            clock()?,
+        )
+        .await?;
         let now = clock()?;
-        let current = owner.current_registry_view(now)
+        let current = owner
+            .current_registry_view(now)
             .map_err(|_| SharedMemoryTrainingError::Invalid("current registry unavailable"))?;
-        let value = model.pinned.with_current(selector, current, now, consume)
+        let value = model
+            .pinned
+            .with_current(selector, current, now, consume)
             .map_err(|_| SharedMemoryTrainingError::Invalid("selected payload unavailable"))?;
         self.revalidate_memory_source(
-            &model.source, ledger, model.candidate.frozen().dataset(), clock()?,
-        ).await?;
+            &model.source,
+            ledger,
+            model.candidate.frozen().dataset(),
+            clock()?,
+        )
+        .await?;
         let now = clock()?;
-        let current = owner.current_registry_view(now)
+        let current = owner
+            .current_registry_view(now)
             .map_err(|_| SharedMemoryTrainingError::Invalid("current registry unavailable"))?;
-        model.pinned.with_current(selector, current, now, |_| ())
-            .map_err(|_| SharedMemoryTrainingError::Invalid("selection changed during computation"))?;
+        model
+            .pinned
+            .with_current(selector, current, now, |_| ())
+            .map_err(|_| {
+                SharedMemoryTrainingError::Invalid("selection changed during computation")
+            })?;
         model.unavailable = false;
         Ok(value)
     }

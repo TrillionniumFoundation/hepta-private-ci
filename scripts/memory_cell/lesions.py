@@ -1,4 +1,5 @@
 """Post-training interventions: immutable learned weights, no retraining or routing leak."""
+
 from __future__ import annotations
 
 import copy
@@ -8,7 +9,13 @@ import torch
 
 from composition import CellCircuit, state_digest
 
-LESIONS = ("intact", "no_semantic_message", "ungated_message", "permuted_channels", "no_direct_features")
+LESIONS = (
+    "intact",
+    "no_semantic_message",
+    "ungated_message",
+    "permuted_channels",
+    "no_direct_features",
+)
 
 
 @torch.no_grad()
@@ -32,7 +39,13 @@ def evaluate_lesions(model: CellCircuit, features: np.ndarray) -> dict:
             message = torch.roll(semantic, shifts=1, dims=-1) * gates
         elif lesion == "no_direct_features":
             direct = torch.zeros_like(x)
-        probabilities[lesion] = model.procedural(torch.cat([direct, message], dim=-1)).squeeze(-1).sigmoid().cpu().numpy()
+        probabilities[lesion] = (
+            model.procedural(torch.cat([direct, message], dim=-1))
+            .squeeze(-1)
+            .sigmoid()
+            .cpu()
+            .numpy()
+        )
     if state_digest(model) != before:
         raise RuntimeError("inference intervention changed learned parameters")
     return {

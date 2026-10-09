@@ -48,14 +48,18 @@ impl GuardedSelectedCandidateV1 {
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, ArtifactSelectionError> {
         if self.closed {
-            return Err(ArtifactSelectionError::Load(PinnedCandidateLoadError::Unavailable));
+            return Err(ArtifactSelectionError::Load(
+                PinnedCandidateLoadError::Unavailable,
+            ));
         }
         self.closed = true;
         if now < self.last_checked_at {
             return Err(ArtifactSelectionError::SelectionContext);
         }
         verifier.revalidate_selection(&self.selected, now)?;
-        let result = self.candidate.with_current(current, consume)
+        let result = self
+            .candidate
+            .with_current(current, consume)
             .map_err(ArtifactSelectionError::Load)?;
         // Unwinding from consume keeps this cache closed.
         self.last_checked_at = now;
