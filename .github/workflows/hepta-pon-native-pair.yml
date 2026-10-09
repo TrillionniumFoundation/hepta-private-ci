@@ -34,9 +34,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 9f5ebd9283457358fcec067fe0452005fa232b42
+      CHAIN_SOURCE_SHA: 63f6b60dea0e435e2f75cc92cc15908c6a3e04ad
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '9f5ebd9283457358fcec067fe0452005fa232b42' || '671d561f1a656e26bae97bc3f40f366ba3edccc7' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '63f6b60dea0e435e2f75cc92cc15908c6a3e04ad' || '8644e5282d050d3771248d9cd4e455a32b4f9f10' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -100,6 +100,12 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ci-execution.json" --minimum-tests 35 -- python3 ../chain/scripts/ci/test_ci_execution.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recent-window.json" --minimum-tests 13 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::error_boundary_tests -- --nocapture --test-threads=1
+      - name: Require exact account branch-byte and complete lifting regressions
+        run: |
+          set -euo pipefail
+          for selector in native_branch_single_buffer_matches_original_wire native_branch_single_buffer_preserves_every_lift_depth; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "account_archive_prototype::native_primitive_tests::$selector" -- --exact --show-output --test-threads=1
+          done
       - name: Execute the native growth readback regression module
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-readback.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib growth_reservation_io::tests -- --nocapture
