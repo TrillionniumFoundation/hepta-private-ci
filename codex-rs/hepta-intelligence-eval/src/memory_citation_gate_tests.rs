@@ -36,6 +36,7 @@ struct Fixture {
 #[derive(Clone, Copy)]
 enum Data {
     Valid,
+    SmallPerfect,
     ReusedRoot,
     WrongExperiment,
     LowPrecision,
@@ -128,11 +129,16 @@ impl Fixture {
                 observer: dummy,
             },
         };
+        let per_snapshot = if matches!(data, Data::SmallPerfect) {
+            70
+        } else {
+            120
+        };
         for snapshot in 0..3 {
             let starts = 1 + snapshot as u64 * 25;
             let mut requests = Vec::new();
-            for row in 0..70 {
-                let i = snapshot * 70 + row;
+            for row in 0..per_snapshot {
+                let i = snapshot * per_snapshot + row;
                 let extra = matches!(data, Data::LowPrecision) && i < 3;
                 let abstain = matches!(data, Data::Abstain);
                 let answer = if abstain {
@@ -221,7 +227,7 @@ impl Fixture {
                 delivery_log_head: d(&format!("log-{snapshot}")),
                 starts_unix_micros: starts,
                 ends_unix_micros: starts + 20,
-                attempted_deliveries: 70,
+                attempted_deliveries: per_snapshot as u64,
                 request_digests: requests,
             });
             if snapshot > 0 {
@@ -230,7 +236,7 @@ impl Fixture {
                     snapshot_id,
                     starts_unix_micros: starts,
                     ends_unix_micros: starts + 20,
-                    observation_count: 70,
+                    observation_count: per_snapshot as u64,
                     observed_source_cut: cut,
                 });
             }
@@ -289,12 +295,12 @@ fn complete_signed_census_counts_unique_sources_and_is_not_authority() {
     assert_eq!(
         gate.counts(),
         MemoryCitationGateCountsV1 {
-            audited_deliveries: 210,
-            independent_source_groups: 210,
+            audited_deliveries: 360,
+            independent_source_groups: 360,
             snapshots: 3,
-            citations: 210,
-            entailed: 210,
-            factual_claims: 210
+            citations: 360,
+            entailed: 360,
+            factual_claims: 360
         }
     );
     assert_eq!(gate.authority(), AuthorityPosture::DENY_ALL);
@@ -391,4 +397,24 @@ fn forged_signature_and_generator_as_census_observer_are_rejected() {
             .is_err()
         );
     }
+}
+
+#[test]
+fn signed_perfect_but_small_census_is_not_99_percent_confidence() {
+    let f = Fixture::new(Data::SmallPerfect);
+    assert!(matches!(
+        f.check(),
+        Err(CitationAuditError::Invalid("insufficient family-level citation confidence"))
+    ));
+}
+
+#[test]
+fn signed_micro_precision_above_99_percent_can_still_fail_confidence() {
+    // 360 entailed of 363 citations: observed precision > 99%, with three
+    // distinct family errors. Complete authentic signatures are insufficient.
+    let f = Fixture::new(Data::LowPrecision);
+    assert!(matches!(
+        f.check(),
+        Err(CitationAuditError::Invalid("insufficient family-level citation confidence"))
+    ));
 }

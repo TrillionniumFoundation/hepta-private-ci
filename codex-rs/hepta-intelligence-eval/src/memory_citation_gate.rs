@@ -19,6 +19,9 @@ use crate::SelfEvolutionSelectionReceiptV1;
 use crate::VerifiedCitationAuditV1;
 use crate::VerifiedSelfEvolutionSelectionV1;
 
+#[path = "citation_confidence.rs"]
+mod confidence;
+
 const MAX_AUDITS: usize = 20_000;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -334,12 +337,18 @@ fn verify_census(
             ));
         }
     }
-    let citation_groups = audits
-        .iter()
-        .enumerate()
-        .filter(|(_, audit)| audit.counts().citations > 0)
-        .map(|(index, _)| representative(&mut parent, index))
-        .collect::<BTreeSet<_>>();
+    // A repeated correct citation cannot mask a bad member of its source family.
+    let mut citation_groups = BTreeMap::new();
+    for (index, audit) in audits.iter().enumerate() {
+        let c = audit.counts();
+        if c.citations > 0 {
+            let complete = c.entailed == c.citations;
+            citation_groups
+                .entry(representative(&mut parent, index))
+                .and_modify(|good: &mut bool| *good &= complete)
+                .or_insert(complete);
+        }
+    }
     counts.independent_source_groups = citation_groups.len() as u64;
     if counts.independent_source_groups < 200
         || counts.citations == 0
@@ -350,6 +359,17 @@ fn verify_census(
             "insufficient citation support or precision",
         ));
     }
+    if !confidence::passes_99_at_95(
+        citation_groups.values().filter(|good| **good).count(),
+        citation_groups.len(),
+    ) {
+        return Err(CitationAuditError::Invalid(
+            "insufficient family-level citation confidence",
+        ));
+    }
+    // Qualifier policy is part of the receipt identity; older point-estimate
+    // receipts must not impersonate the strengthened owner result.
+    seal.extend_from_slice(b"hepta.memory-citation.family-binomial-99-at-95.v1\0");
     Ok(VerifiedMemoryCitationGateV1 {
         decision_digest: census.selection_digest,
         candidate_digest: selection.candidate_artifact_digest,
