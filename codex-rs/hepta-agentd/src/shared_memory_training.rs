@@ -286,3 +286,11 @@ fn memory_manifest_matches(
 #[path = "selected_memory.rs"]
 mod selected;
 pub use selected::SelectedMemoryTensorModelV1;
+
+pub use selected::MemoryServingHandleV1;
+pub use selected::MemoryServingOwnerHandlesV1;
+pub use selected::SelectedMemoryServiceV1;
+
+#[path = "memory_serving_qualification.rs"]
+mod serving_qualification;
+pub use serving_qualification::MemoryServingQualificationV1;

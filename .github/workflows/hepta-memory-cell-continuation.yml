@@ -146,6 +146,9 @@ jobs:
       - name: Test source-admitted candidate owner boundaries
         if: ${{ !cancelled() }}
         run: just test -p codex-hepta-agentd --test terminal_cell_owner
+      - name: Exercise concrete serving authority and process cancellation
+        if: ${{ !cancelled() }}
+        run: just test -p codex-hepta-agentd --lib memory_serving_process::tests
       - name: Stage real pretrained worker model
         if: ${{ !cancelled() }}
         env:
@@ -170,6 +173,14 @@ jobs:
           HEPTA_MEMORY_MODEL_DIR: /tmp/mcell-inputs/reader
           HEPTA_MEMORY_EVIDENCE_DIR: /tmp/training-owner-evidence
         run: just test -p codex-hepta-agentd --test terminal_cell_owner --run-ignored all actual_pretrained_worker_consumes_cognitive_and_learning_owner_job
+      - name: Run trained adapter through the actual native serving consumer
+        if: ${{ !cancelled() }}
+        env:
+          HEPTA_MEMORY_PYTHON: /tmp/mcell-python/bin/python
+          HEPTA_MEMORY_MODEL_DIR: /tmp/mcell-inputs/reader
+          HEPTA_MEMORY_EVIDENCE_DIR: /tmp/training-owner-evidence
+          HEPTA_MEMORY_SERVING_PROGRAM: ${{ github.workspace }}/scripts/memory_cell/serving_worker.py
+        run: just test -p codex-hepta-agentd --lib --run-ignored all real_pretrained_adapter_runs_through_native_effect_consumer
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

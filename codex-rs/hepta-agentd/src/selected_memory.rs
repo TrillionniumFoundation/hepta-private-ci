@@ -166,3 +166,9 @@ impl AgentdSharedReplayHostV1 {
 
 #[path = "selected_memory_serving.rs"]
 mod serving;
+
+#[path = "selected_memory_service.rs"]
+mod service;
+pub use service::MemoryServingHandleV1;
+pub use service::MemoryServingOwnerHandlesV1;
+pub use service::SelectedMemoryServiceV1;

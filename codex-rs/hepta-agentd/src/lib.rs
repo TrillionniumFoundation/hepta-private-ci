@@ -258,3 +258,9 @@ pub use memory_serving_process::MemoryServingProcessConfigV1;
 pub use memory_serving_process::MemoryServingProcessV1;
 pub use memory_serving_process::MemoryServingQueryV1;
 pub use memory_serving_process::MemoryServingResultV1;
+
+pub use shared_memory_training::MemoryServingHandleV1;
+pub use shared_memory_training::MemoryServingOwnerHandlesV1;
+pub use shared_memory_training::SelectedMemoryServiceV1;
+
+pub use shared_memory_training::MemoryServingQualificationV1;

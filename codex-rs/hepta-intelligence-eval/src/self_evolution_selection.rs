@@ -160,9 +160,32 @@ pub struct VerifiedSelfEvolutionRollbackV1 {
     evaluator: VerifiedLearningEvidenceV1,
     regression_evidence_digest: Digest32,
     rollback_generation: Generation,
+    rollback_digest: Digest32,
+    admitted_at: u64,
 }
 
 impl VerifiedSelfEvolutionRollbackV1 {
+    /// A rollback restores previously admitted bytes, but its new authorization
+    /// must remain live. It cannot outlive current selector/evaluator trust.
+    pub fn revalidate_current(
+        &self,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), SelfEvolutionSelectionError> {
+        if verifier.trust_digest() != self.selection.receipt.evaluation_trust_digest
+            || now < self.admitted_at
+        {
+            return Err(SelfEvolutionSelectionError::BindingMismatch);
+        }
+        verify_verified_role_separation(&self.selection.selector, &self.evaluator, now)?;
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn rollback_digest(&self) -> Digest32 {
+        self.rollback_digest
+    }
+
     #[must_use]
     pub fn selection(&self) -> &VerifiedSelfEvolutionSelectionV1 {
         &self.selection
@@ -403,11 +426,17 @@ pub fn admit_self_evolution_rollback_v1(
         .candidate_generation
         .next()
         .map_err(|_| SelfEvolutionSelectionError::GenerationMismatch)?;
+    let mut signed_bytes = b"hepta.intelligence-eval.verified-rollback.v1\0".to_vec();
+    signed_bytes.extend_from_slice(&payload);
+    signed_bytes.extend_from_slice(&evaluator_evidence.signing_bytes());
+    signed_bytes.extend_from_slice(&evaluator_evidence.signature);
     Ok(VerifiedSelfEvolutionRollbackV1 {
         selection: selection.clone(),
         evaluator,
         regression_evidence_digest,
         rollback_generation,
+        rollback_digest: Digest32::of_bytes(&signed_bytes),
+        admitted_at: now,
     })
 }
 

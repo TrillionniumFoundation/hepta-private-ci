@@ -203,9 +203,8 @@ fn selector_and_rollback_are_opaque_independent_admissions() {
         LearningEvidenceRoleV1::Selector,
         &selector_payload,
     );
-    let selected =
-        admit_self_evolution_selection_v1(prepared, &selector_evidence, &verifier, 50)
-            .expect("independent selection");
+    let selected = admit_self_evolution_selection_v1(prepared, &selector_evidence, &verifier, 50)
+        .expect("independent selection");
     assert_eq!(selected.selector_id(), &id("selector"));
     assert!(selected.revalidate_current(&verifier, 50).is_ok());
     assert!(selected.revalidate_current(&verifier, 90).is_ok());
@@ -222,16 +221,15 @@ fn selector_and_rollback_are_opaque_independent_admissions() {
         LearningEvidenceRoleV1::Evaluator,
         &rollback_payload,
     );
-    let rollback = admit_self_evolution_rollback_v1(
-        &selected,
-        regression,
-        &rollback_evidence,
-        &verifier,
-        50,
-    )
-    .expect("independent rollback");
+    let rollback =
+        admit_self_evolution_rollback_v1(&selected, regression, &rollback_evidence, &verifier, 50)
+            .expect("independent rollback");
     assert_eq!(rollback.rollback_generation(), generation(9));
     assert_eq!(rollback.evaluator_id(), &id("evaluator"));
+    assert!(!rollback.rollback_digest().is_zero());
+    assert!(rollback.revalidate_current(&verifier, 50).is_ok());
+    assert!(rollback.revalidate_current(&verifier, 49).is_err());
+    assert!(rollback.revalidate_current(&verifier, 91).is_err());
 }
 
 #[test]
