@@ -416,6 +416,8 @@ pub enum CellProductionOwnerErrorV1 {
     AlreadyCommitted,
     NotCommitted,
     Tombstoned,
+    /// In-memory reconstruction cannot attest a real host or power-loss event.
+    TargetHostEvidenceUnavailable,
 }
 
 impl fmt::Display for CellProductionOwnerErrorV1 {
@@ -454,6 +456,9 @@ impl InMemoryCellProductionOwnerV1 {
             .validate()
             .map_err(CellProductionOwnerErrorV1::Definition)?;
         artifact.validate()?;
+        if artifact.origin == RoleQualificationEvidenceOriginV1::TargetHostMeasurement {
+            return Err(CellProductionOwnerErrorV1::TargetHostEvidenceUnavailable);
+        }
         if initial_state_digest.is_zero() {
             return Err(CellProductionOwnerErrorV1::EmptyDigest("initial state"));
         }
@@ -1011,6 +1016,17 @@ mod tests {
             digest(35),
         )
         .expect("owner")
+    }
+
+    #[test]
+    fn in_memory_owner_cannot_mint_target_host_measurement_origin() {
+        let mut fake = owner().artifact.clone();
+        fake.origin = RoleQualificationEvidenceOriginV1::TargetHostMeasurement;
+        fake.observer_evidence_digest = Some(digest(80));
+        assert_eq!(
+            InMemoryCellProductionOwnerV1::new(definition(), fake, digest(35)),
+            Err(CellProductionOwnerErrorV1::TargetHostEvidenceUnavailable)
+        );
     }
 
     #[test]
