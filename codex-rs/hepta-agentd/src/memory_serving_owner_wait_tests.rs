@@ -37,7 +37,7 @@ async fn already_cancelled_read_does_not_poll_even_a_ready_owner() {
 async fn cancellation_releases_an_earlier_owner_while_a_later_owner_is_locked() {
     let first = Arc::new(Mutex::new(()));
     let second = Arc::new(Mutex::new(()));
-    let second_guard = second.lock().await;
+    let second_guard = second.clone().lock_owned().await;
     let stop = CancellationToken::new();
     let (entered, observed) = oneshot::channel();
     let worker_first = Arc::clone(&first);
@@ -45,9 +45,9 @@ async fn cancellation_releases_an_earlier_owner_while_a_later_owner_is_locked() 
     let worker_stop = stop.clone();
     let worker = tokio::spawn(async move {
         read_owner_phase(&worker_stop, OWNER_READ_LIMIT, async {
-            let _first = worker_first.lock().await;
+            let _first = worker_first.clone().lock_owned().await;
             let _ = entered.send(());
-            let _second = worker_second.lock().await;
+            let _second = worker_second.clone().lock_owned().await;
             Ok(())
         })
         .await
@@ -66,11 +66,11 @@ async fn cancellation_releases_an_earlier_owner_while_a_later_owner_is_locked() 
 
 #[tokio::test]
 async fn owner_timeout_drops_all_borrowed_guards_without_running_the_consumer() {
-    let owner = Mutex::new(());
+    let owner = Arc::new(Mutex::new(()));
     let consumer_called = AtomicBool::new(false);
     let stop = CancellationToken::new();
     let result: Result<(), _> = read_owner_phase(&stop, Duration::from_millis(5), async {
-        let _guard = owner.lock().await;
+        let _guard = owner.clone().lock_owned().await;
         std::future::pending::<()>().await;
         consumer_called.store(true, Ordering::SeqCst);
         Ok(())
@@ -119,7 +119,7 @@ async fn actual_host_retirement_cancels_a_blocked_read_before_acknowledgement() 
             "memory.owner.read",
             move |stop| async move {
                 let result: Result<(), _> = read_owner_phase(&stop, OWNER_READ_LIMIT, async {
-                    let _guard = lock.lock().await;
+                    let _guard = lock.clone().lock_owned().await;
                     let _ = entered.send(());
                     std::future::pending().await
                 })

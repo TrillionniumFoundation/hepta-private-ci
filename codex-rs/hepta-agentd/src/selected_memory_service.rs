@@ -181,8 +181,8 @@ impl SelectedMemoryServiceV1 {
             match request {
                 Invocation::Binding(query, mut response) => {
                     let read = read_owner_phase(&stop, OWNER_READ_LIMIT, async {
-                        let fleet = self.owners.fleet.lock().await;
-                        let current = self.owners.evidence.read().await;
+                        let fleet = self.owners.fleet.clone().lock_owned().await;
+                        let current = self.owners.evidence.clone().read_owned().await;
                         require_current_memory_fleet_v1(&fleet, self.node.as_str())
                             .and_then(|_| (self.owners.clock)())
                             .and_then(|now| {
@@ -258,12 +258,12 @@ impl SelectedMemoryServiceV1 {
             "missing delivery channel",
         ))?;
         let prepare = read_owner_phase(stop, OWNER_READ_LIMIT, async {
-            let fleet = self.owners.fleet.lock().await;
+            let fleet = self.owners.fleet.clone().lock_owned().await;
             let head = require_current_memory_fleet_v1(&fleet, self.node.as_str())?;
-            let ledger = self.owners.ledger.lock().await;
-            let artifacts = self.owners.artifacts.lock().await;
-            let selector = self.owners.selector.read().await;
-            let evidence = self.owners.evidence.read().await;
+            let ledger = self.owners.ledger.clone().lock_owned().await;
+            let artifacts = self.owners.artifacts.clone().lock_owned().await;
+            let selector = self.owners.selector.clone().read_owned().await;
+            let evidence = self.owners.evidence.clone().read_owned().await;
             let withdrawn_audit_roots = (self.owners.audit_withdrawals)()?;
             let (job, payload) = self
                 .owners
@@ -321,16 +321,16 @@ impl SelectedMemoryServiceV1 {
             return Err(SharedMemoryTrainingError::Invalid("memory service retired"));
         }
         let delivered = read_owner_phase(stop, OWNER_READ_LIMIT, async {
-            let fleet = self.owners.fleet.lock().await;
+            let fleet = self.owners.fleet.clone().lock_owned().await;
             if require_current_memory_fleet_v1(&fleet, self.node.as_str())? != fleet_head {
                 return Err(SharedMemoryTrainingError::Invalid(
                     "memory authority changed during execution",
                 ));
             }
-            let ledger = self.owners.ledger.lock().await;
-            let artifacts = self.owners.artifacts.lock().await;
-            let selector = self.owners.selector.read().await;
-            let evidence = self.owners.evidence.read().await;
+            let ledger = self.owners.ledger.clone().lock_owned().await;
+            let artifacts = self.owners.artifacts.clone().lock_owned().await;
+            let selector = self.owners.selector.clone().read_owned().await;
+            let evidence = self.owners.evidence.clone().read_owned().await;
             let withdrawn_audit_roots = (self.owners.audit_withdrawals)()?;
             let output = self
                 .owners

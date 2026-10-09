@@ -75,12 +75,12 @@ impl SelectedMemoryServiceV1 {
         let checked: Result<(), SharedMemoryTrainingError> = async {
             // Identical lock ordering to the actual final-use path. No worker
             // is launched and no response/authority is issued by this check.
-            let fleet = self.owners.fleet.lock().await;
+            let fleet = self.owners.fleet.clone().lock_owned().await;
             require_current_memory_fleet_v1(&fleet, self.node.as_str())?;
-            let ledger = self.owners.ledger.lock().await;
-            let artifacts = self.owners.artifacts.lock().await;
-            let selector = self.owners.selector.read().await;
-            let evidence = self.owners.evidence.read().await;
+            let ledger = self.owners.ledger.clone().lock_owned().await;
+            let artifacts = self.owners.artifacts.clone().lock_owned().await;
+            let selector = self.owners.selector.clone().read_owned().await;
+            let evidence = self.owners.evidence.clone().read_owned().await;
             self.qualification
                 .revalidate_current(
                     &evidence,
