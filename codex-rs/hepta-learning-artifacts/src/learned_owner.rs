@@ -219,7 +219,9 @@ impl DurableLearnedRoleOwnerV1 {
     ) -> Result<StateCommitReceiptV1, DurableLearnedRoleOwnerErrorV1> {
         let expected_snapshot = DurableStateOwnerV1::snapshot_digest(path.as_ref())?;
         if expected_snapshot.is_some() {
-            return Err(DurableLearnedRoleOwnerErrorV1::Binding("initial checkpoint exists"));
+            return Err(DurableLearnedRoleOwnerErrorV1::Binding(
+                "initial checkpoint exists",
+            ));
         }
         let mut candidate = self.clone();
         let receipt = candidate.seed_initial_state(
@@ -243,7 +245,9 @@ impl DurableLearnedRoleOwnerV1 {
         {
             return Err(DurableLearnedRoleOwnerErrorV1::Binding("state receipt"));
         }
-        Ok(self.state.reload_active(&self.definition.cell_id, receipt)?)
+        Ok(self
+            .state
+            .reload_active(&self.definition.cell_id, receipt)?)
     }
 
     pub fn persist(
@@ -295,7 +299,9 @@ impl DurableLearnedRoleOwnerV1 {
                     && receipt.state_schema_digest == owner.definition.state_schema_digest
             })
         {
-            return Err(DurableLearnedRoleOwnerErrorV1::Binding("checkpoint definition"));
+            return Err(DurableLearnedRoleOwnerErrorV1::Binding(
+                "checkpoint definition",
+            ));
         }
         Ok(Self { state, ..owner })
     }
@@ -313,7 +319,9 @@ impl DurableLearnedRoleOwnerV1 {
             || receipt.generation != self.definition.generation
             || receipt.state_schema_digest != self.definition.state_schema_digest
         {
-            return Err(DurableLearnedRoleOwnerErrorV1::Binding("rollback definition"));
+            return Err(DurableLearnedRoleOwnerErrorV1::Binding(
+                "rollback definition",
+            ));
         }
         Ok(self.state.rollback(&self.definition.cell_id, receipt)?)
     }
@@ -472,34 +480,49 @@ mod tests {
         let _ = std::fs::remove_file(&path);
         owner.persist(&path).expect("persist");
         let saved_digest = DurableStateOwnerV1::snapshot_digest(&path)
-            .expect("snapshot").expect("present");
-        let mut fresh_instance = DurableLearnedRoleOwnerV1::new(
-            definition.clone(), id("owner.rep"), key.clone(),
-        ).expect("fresh");
-        assert!(fresh_instance.seed_initial_state_persisted(
-            &path, id("op.rep.reseed"), b"foreign-genesis".to_vec(), None, None,
-        ).is_err());
+            .expect("snapshot")
+            .expect("present");
+        let mut fresh_instance =
+            DurableLearnedRoleOwnerV1::new(definition.clone(), id("owner.rep"), key.clone())
+                .expect("fresh");
+        assert!(
+            fresh_instance
+                .seed_initial_state_persisted(
+                    &path,
+                    id("op.rep.reseed"),
+                    b"foreign-genesis".to_vec(),
+                    None,
+                    None,
+                )
+                .is_err()
+        );
         assert_eq!(
             DurableStateOwnerV1::snapshot_digest(&path).expect("unchanged"),
             Some(saved_digest),
         );
-        let reopened =
-            DurableLearnedRoleOwnerV1::reopen(path.clone(), definition.clone(), id("owner.rep"), key.clone())
-                .expect("reopen");
+        let reopened = DurableLearnedRoleOwnerV1::reopen(
+            path.clone(),
+            definition.clone(),
+            id("owner.rep"),
+            key.clone(),
+        )
+        .expect("reopen");
         assert_eq!(
             reopened.reload(&receipt).expect("reloaded"),
             b"representation-state-v1"
         );
         let mut foreign = definition.clone();
         foreign.cell_id = id("cell.foreign");
-        assert!(DurableLearnedRoleOwnerV1::reopen(
-            &path, foreign, id("owner.rep"), key.clone(),
-        ).is_err());
+        assert!(
+            DurableLearnedRoleOwnerV1::reopen(&path, foreign, id("owner.rep"), key.clone(),)
+                .is_err()
+        );
         let mut next_generation = definition;
         next_generation.generation = Generation::new(2).expect("generation");
-        assert!(DurableLearnedRoleOwnerV1::reopen(
-            &path, next_generation, id("owner.rep"), key,
-        ).is_err());
+        assert!(
+            DurableLearnedRoleOwnerV1::reopen(&path, next_generation, id("owner.rep"), key,)
+                .is_err()
+        );
         let _ = std::fs::remove_file(path);
     }
 }
