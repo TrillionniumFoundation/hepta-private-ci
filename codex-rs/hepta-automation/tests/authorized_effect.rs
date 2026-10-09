@@ -573,7 +573,7 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
                     expected_binding: &expected,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 30,
-                }
+                },
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -582,18 +582,18 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
 
     store
         .execute_authorized_taskflow_effect(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 31,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
+        )
         .await
         .expect("same grant remains usable after local wire mismatch");
     assert_eq!(driver.calls, 1);
@@ -646,18 +646,18 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
 
     let receipt = store
         .execute_authorized_taskflow_effect_async(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: b"effect-payload",
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-async-dispatch",
-                    now_ms: 31,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: b"effect-payload",
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-async-dispatch",
+                now_ms: 31,
+            },
+        )
         .await
         .expect("exact wire payload dispatch");
     assert_eq!(
@@ -693,18 +693,18 @@ async fn async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_ab
 
     let receipt = store
         .execute_authorized_taskflow_effect_async(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: b"effect-payload",
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-async-unknown",
-                    now_ms: 30,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: b"effect-payload",
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-async-unknown",
+                now_ms: 30,
+            },
+        )
         .await
         .expect("unknown provider dispatch is durable");
     assert_eq!(
@@ -763,18 +763,18 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
 
     let receipt = store
         .execute_authorized_taskflow_effect(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 31,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
+        )
         .await
         .expect("correct binding executes");
     assert_eq!(driver.calls, 1);
@@ -802,18 +802,18 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
 
     let first = store
         .execute_authorized_taskflow_effect(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 30,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
+        )
         .await
         .expect("first dispatch");
     assert_eq!(first.observation, Some(TaskFlowStepObservation::Succeeded));
@@ -821,18 +821,18 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
 
     let replay = store
         .execute_authorized_taskflow_effect(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 31,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
+        )
         .await;
     assert!(
         replay.is_err(),
@@ -896,18 +896,18 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
         RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"duplicate");
     let replay = reopened
         .execute_authorized_taskflow_effect(
-                &mut must_not_dispatch,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 31,
-                }
-            )
+            &mut must_not_dispatch,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
+        )
         .await;
     assert!(matches!(
         replay,
@@ -945,18 +945,18 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
 
     let first = store
         .execute_authorized_taskflow_effect(
-                &mut ambiguous,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 30,
-                }
-            )
+            &mut ambiguous,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
+        )
         .await
         .expect("ambiguous dispatch");
     assert_eq!(ambiguous.calls, 1);
@@ -990,18 +990,18 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
         RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"must-not-dispatch");
     let replay = reopened
         .execute_authorized_taskflow_effect(
-                &mut must_not_dispatch,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 31,
-                }
-            )
+            &mut must_not_dispatch,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
+        )
         .await;
     assert!(
         replay.is_err(),
@@ -1052,18 +1052,18 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
     assert!(matches!(
         store
             .execute_authorized_taskflow_effect(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 30,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
+        )
             .await,
         Err(AuthorizedEffectError::Driver(
             AuthorizedEffectDriverError::BeforeProviderContact
@@ -1082,18 +1082,18 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
 
     let replay = store
         .execute_authorized_taskflow_effect(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 31,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
+        )
         .await;
     assert!(
         replay.is_err(),
@@ -1187,18 +1187,18 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
 
     let first = store
         .execute_authorized_taskflow_effect(
-                &mut ambiguous,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &compensation,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "compensation-dispatch",
-                    now_ms: 30,
-                }
-            )
+            &mut ambiguous,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &compensation,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "compensation-dispatch",
+                now_ms: 30,
+            },
+        )
         .await
         .expect("ambiguous compensation dispatch");
     assert_eq!(ambiguous.calls, 1);
