@@ -196,7 +196,9 @@ def _validate_delivered_source_binding(receipt, question, documents):
             raise ValueError("delivered native source bytes/scope drift")
 
 
-def audit_entry(plan, binding, arm, row, family, question=None, *, source_documents=None):
+def audit_entry(
+    plan, binding, arm, row, family, question=None, *, source_documents=None
+):
     """Bind a review item to original bytes; never fill missing prompt material."""
     qid = row["question_id"]
     alias = digest(("hepta.memory-benchmark.blind-review.v1", plan.seal(), arm, qid))
@@ -358,7 +360,9 @@ def review(
                 by_arm[arm][qid],
                 family_by_query[qid],
                 questions.get(qid),
-                source_documents=benchmark.documents if benchmark_path is not None else None,
+                source_documents=benchmark.documents
+                if benchmark_path is not None
+                else None,
             )
             items.append((item, index))
             status = item["status"]

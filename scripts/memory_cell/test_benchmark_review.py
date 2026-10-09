@@ -145,7 +145,11 @@ class BenchmarkReviewTests(unittest.TestCase):
             ]
         }
         _validate_delivered_source_binding(receipt, question, (document,))
-        for field, value in (("id", "scope/other"), ("root", "wrong-root"), ("excerpt", "Wrong")):
+        for field, value in (
+            ("id", "scope/other"),
+            ("root", "wrong-root"),
+            ("excerpt", "Wrong"),
+        ):
             altered = copy.deepcopy(receipt)
             altered["delivered_evidence"][0][field] = value
             with self.assertRaisesRegex(ValueError, "pinned|drift"):
@@ -154,7 +158,9 @@ class BenchmarkReviewTests(unittest.TestCase):
     def test_delivered_native_chunk_rebinds_to_normalized_projection(self):
         question = Question("q", "family", "scope", "Which code?", "2024")
         words = " ".join(f"word-{i}" for i in range(200))
-        document = Document("scope/doc", "native-root", "scope", "session", "2024", words)
+        document = Document(
+            "scope/doc", "native-root", "scope", "session", "2024", words
+        )
         receipt = {
             "delivered_evidence": [
                 {
