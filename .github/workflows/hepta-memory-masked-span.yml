@@ -110,6 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           /tmp/masked-python/bin/python scripts/memory_cell/masked_span_audit.py /tmp/masked-evidence/experiment "$EXPECTED_SOURCE" | tee /tmp/masked-evidence/execution-check.log
+          /tmp/masked-python/bin/python scripts/memory_cell/masked_span_reference.py /tmp/masked-evidence/experiment "$EXPECTED_SOURCE" /tmp/memory-inputs /tmp/masked-inputs | tee /tmp/masked-evidence/publisher-reference-check.log
       - name: Require repository formatting after preserving any completed model result
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
