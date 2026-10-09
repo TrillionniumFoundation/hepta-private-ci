@@ -1,0 +1,88 @@
+name: MemoryCell query-conditioned relevance development
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/relevance*.py'
+      - 'scripts/memory_cell/test_relevance*.py'
+      - '.github/workflows/hepta-memory-relevance-development.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-relevance-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  train-and-compare:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Install pinned model environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/relevance-evidence
+          python3 -m venv /tmp/relevance-python
+          /tmp/relevance-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/relevance-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/relevance-python/bin/pip freeze > /tmp/relevance-evidence/python-lock.txt
+      - name: Run all memory Python regressions
+        run: |
+          set -euo pipefail
+          /tmp/relevance-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/relevance-evidence/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Stage exact public ranking checkpoint and verify immutable native inputs
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          /tmp/relevance-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          from pretrained import file_inventory
+          from native import digest
+          from relevance_ranker import RANKER_ID, RANKER_REVISION, RANKER_TENSOR_SHA256
+          root = Path('/tmp/memory-inputs')
+          if digest(file_inventory(root / 'encoder')) != '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a':
+              raise ValueError('encoder pin mismatch')
+          snapshot_download(RANKER_ID, revision=RANKER_REVISION, local_dir='/tmp/relevance-ranker',
+              allow_patterns=['config.json', 'model.safetensors', 'tokenizer.json', 'tokenizer_config.json', 'special_tokens_map.json', 'vocab.txt'], token=False)
+          inventory = file_inventory(Path('/tmp/relevance-ranker'))
+          if inventory['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
+              raise ValueError('ranker tensor pin mismatch')
+          Path('/tmp/relevance-evidence/ranker-inventory.json').write_text(json.dumps(inventory, indent=2))
+          PY
+      - name: Train on native training families; select then evaluate without network
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/relevance-evidence/resources.txt /tmp/relevance-python/bin/python scripts/memory_cell/relevance_development.py /tmp/memory-inputs /tmp/relevance-ranker /tmp/relevance-evidence/comparison 2>&1 | tee /tmp/relevance-evidence/execution.log
+      - name: Preserve exact tested source and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/relevance-evidence
+          git rev-parse HEAD > /tmp/relevance-evidence/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/relevance-evidence/tested-tree.txt
+          (cd /tmp/relevance-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-relevance-development
+          path: /tmp/relevance-evidence
+          if-no-files-found: error
