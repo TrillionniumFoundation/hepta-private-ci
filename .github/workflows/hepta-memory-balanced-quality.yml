@@ -1,0 +1,164 @@
+name: MemoryCell balanced answers and citation confidence
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/balanced_*.py'
+      - 'scripts/memory_cell/test_balanced_*.py'
+      - 'codex-rs/hepta-intelligence-eval/src/citation_confidence*.rs'
+      - 'codex-rs/hepta-intelligence-eval/src/memory_citation_gate*.rs'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_BALANCED.md'
+      - '.github/workflows/hepta-memory-balanced-quality.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-balanced-quality-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  owner-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Test existing signed citation owner including confidence regressions
+        run: |
+          set -euo pipefail
+          mkdir /tmp/quality-owner
+          just test -p codex-hepta-intelligence-eval --lib 2>&1 | tee /tmp/quality-owner/tests.log
+      - name: Scoped owner lint check
+        run: |
+          set -euo pipefail
+          just fix -p codex-hepta-intelligence-eval --lib > /tmp/quality-owner/clippy.log 2>&1
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-balanced-owner-tests
+          path: /tmp/quality-owner
+          if-no-files-found: warn
+  source-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Repository formatter without modifying a remote branch
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          git diff --binary > /tmp/balanced-format.patch
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-balanced-format-diagnostics
+          path: /tmp/balanced-format.patch
+          if-no-files-found: warn
+  locked-reader:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-external-span-e2e
+          run-id: 37919555733
+          github-token: ${{ github.token }}
+          path: /tmp/environment
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-masked-span-execution
+          run-id: 37926451871
+          github-token: ${{ github.token }}
+          path: /tmp/reference
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-token-task-factorial
+          run-id: 37932675437
+          github-token: ${{ github.token }}
+          path: /tmp/factorial
+      - name: Lock dependencies and test without changing the registered environment
+        run: |
+          set -euo pipefail
+          (cd /tmp/reference && sha256sum -c SHA256SUMS)
+          (cd /tmp/factorial && sha256sum -c SHA256SUMS)
+          test "$(cat /tmp/factorial/tested-commit.txt)" = 71c6329b4bcf7febdfd6d97db1557f605ad1f0e1
+          mkdir /tmp/balanced-evidence
+          python3 -m venv /tmp/balanced-python
+          /tmp/balanced-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/balanced-python/bin/pip install -r /tmp/environment/environment.txt
+          /tmp/balanced-python/bin/pip freeze > /tmp/balanced-evidence/environment.txt
+          diff -u /tmp/environment/environment.txt /tmp/balanced-evidence/environment.txt
+          /tmp/balanced-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/balanced-evidence/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Verify unchanged external annotation bytes
+        run: |
+          set -euo pipefail
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          /tmp/balanced-python/bin/python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          from urllib.request import urlopen
+          from span_supervision import SQUAD_REVISION, MAX_BYTES, load_corpus
+          pins = json.loads(Path('/tmp/environment/external-input-pins.json').read_text())
+          root = Path('/tmp/external'); root.mkdir()
+          for split in ('train', 'dev'):
+              name = f'{split}-v2.0.json'
+              url = f'https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/{SQUAD_REVISION}/dataset/{name}'
+              with urlopen(url, timeout=90) as response:
+                  raw = response.read(MAX_BYTES + 1)
+              if len(raw) > MAX_BYTES or hashlib.sha256(raw).hexdigest() != pins[split]['sha256']:
+                  raise ValueError('annotation identity drift')
+              (root / name).write_bytes(raw)
+              load_corpus(root / name, split)
+          Path('/tmp/balanced-evidence/data-pins.json').write_text(json.dumps(pins, indent=2))
+          PY
+      - name: Execute base, legacy and balanced readers on identical fixed selections
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/balanced-evidence/resources.txt /tmp/balanced-python/bin/python scripts/memory_cell/balanced_reader_trial.py /tmp/memory-inputs /tmp/external /tmp/reference/experiment /tmp/factorial/experiment /tmp/balanced-evidence/experiment 2>&1 | tee /tmp/balanced-evidence/execution.log
+      - name: Preserve exact generating source, requests and all failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/balanced-evidence/source
+          cp scripts/memory_cell/balanced_*.py scripts/memory_cell/test_balanced_*.py /tmp/balanced-evidence/source/
+          git rev-parse HEAD > /tmp/balanced-evidence/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/balanced-evidence/tested-tree.txt
+          (cd /tmp/balanced-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-balanced-reader-evidence
+          path: /tmp/balanced-evidence
+          if-no-files-found: error
