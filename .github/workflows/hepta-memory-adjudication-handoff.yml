@@ -21,8 +21,19 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
+      - name: Install the pinned complete regression environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-adjudication
+          git rev-parse HEAD > /tmp/memory-adjudication/exporter-source.txt
+          python3 -m venv /tmp/adjudication-python
+          /tmp/adjudication-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/adjudication-python/bin/pip install -r scripts/memory_cell/requirements.txt
+          /tmp/adjudication-python/bin/pip freeze > /tmp/memory-adjudication/python-lock.txt
       - name: Test strict native evidence and handoff boundaries
-        run: python3 -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v
+        run: |
+          set -euo pipefail
+          /tmp/adjudication-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/memory-adjudication/regressions.log
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: preserved-native-plan
@@ -41,7 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/memory-adjudication
-          python3 scripts/memory_cell/adjudication_handoff.py \
+          /tmp/adjudication-python/bin/python scripts/memory_cell/adjudication_handoff.py \
             /tmp/preserved-plan/longmemeval.json /tmp/preserved-review/complete /tmp/memory-adjudication/handoff \
             --plan-sha256 9352f25e3510b94a8c8663eb8850471574585b96f5c56812ccdd094178f0fc2d \
             --manifest-sha256 da23ded0e762ce6d130585c22645da8cfbf119696b2b33a284813614d0e4b923 \
@@ -49,6 +60,12 @@ jobs:
             2>&1 | tee /tmp/memory-adjudication/export.log
           cp /tmp/preserved-plan/longmemeval.json /tmp/memory-adjudication/preregistered-plan.json
           cp /tmp/preserved-review/complete/summary.json /tmp/memory-adjudication/original-complete-summary.json
+          git rev-parse HEAD > /tmp/memory-adjudication/exporter-source.txt
+      - name: Retain success or failure evidence hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-adjudication
           git rev-parse HEAD > /tmp/memory-adjudication/exporter-source.txt
           (cd /tmp/memory-adjudication && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
