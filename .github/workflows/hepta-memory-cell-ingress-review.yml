@@ -1,0 +1,90 @@
+name: MemoryCell pinned native ingress review
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/native.py'
+      - 'scripts/memory_cell/sessions.py'
+      - 'scripts/memory_cell/test_sessions.py'
+      - '.github/workflows/hepta-memory-cell-ingress-review.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-cell-ingress-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  pinned-history-census:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Inventory every native history and retain exact failures
+        env:
+          PYTHONPATH: scripts/memory_cell
+          TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ingress-review
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz memory-inputs/longmemeval.json
+          python3 - <<'PY' | tee /tmp/ingress-review/diagnostics.log
+          import collections, hashlib, json, os
+          from pathlib import Path
+          from native import digest, load
+          from sessions import normalize_sessions
+          path = Path('/tmp/memory-inputs/longmemeval.json')
+          expected = 'd6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442'
+          raw = path.read_bytes()
+          if hashlib.sha256(raw).hexdigest() != expected:
+              raise ValueError('immutable native dataset identity changed')
+          data = json.loads(raw)
+          failures, counts = [], collections.Counter()
+          for sample in data:
+              sessions = sample['haystack_sessions']
+              identities = sample['haystack_session_ids']
+              dates = sample['haystack_dates']
+              try:
+                  normalized, issues = normalize_sessions(sessions, identities, dates, conflict_policy='retain-versioned')
+                  counts['admitted_questions'] += 1
+                  counts['admitted_occurrences'] += len(normalized)
+                  counts.update(row['disposition'] for row in issues)
+              except ValueError as error:
+                  bad_turns = []
+                  for si, turns in enumerate(sessions):
+                      if not isinstance(turns, list):
+                          bad_turns.append({'session': si, 'kind': type(turns).__name__})
+                          continue
+                      for ti, turn in enumerate(turns):
+                          if not isinstance(turn, dict):
+                              bad_turns.append({'session': si, 'turn': ti, 'kind': type(turn).__name__})
+                              continue
+                          value = turn.get('content')
+                          if not isinstance(value, str) or not value.strip() or len(value.encode()) > 1000000 or turn.get('role') not in ('user', 'assistant', 'system'):
+                              bad_turns.append({'session': si, 'turn': ti, 'role': turn.get('role'), 'content_type': type(value).__name__, 'empty_string': value == '', 'blank_string': isinstance(value, str) and not value.strip(), 'content_digest': digest(value)})
+                  failure = {'question_id': sample['question_id'], 'error': str(error), 'error_digest': digest(str(error)), 'history_digest': digest((sessions, identities, dates)), 'bad_turns': bad_turns}
+                  failures.append(failure)
+                  print(json.dumps(failure, sort_keys=True))
+          benchmark = load(path, 'longmemeval', expected, allow_unresolved_evidence=True, session_conflicts='retain-versioned', invalid_history='quarantine-question')
+          result = {'schema': 'hepta.native-ingress.diagnostics.v1', 'tested_commit': os.environ['TESTED_COMMIT'], 'dataset_sha256': expected, 'native_questions': len(data), 'census_questions': len(benchmark.questions), 'counts': dict(counts), 'failures': failures, 'native_ingress_failures': benchmark.ingress_failures, 'source_family_count': len(set(benchmark.families.values())), 'production_accepted': False}
+          if len(data) != len(benchmark.questions):
+              raise ValueError('native questions were lost from the census')
+          Path('/tmp/ingress-review/diagnostics.json').write_text(json.dumps(result, indent=2))
+          print(json.dumps({k: v for k, v in result.items() if k not in ('failures', 'native_ingress_failures')}, sort_keys=True))
+          PY
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/ingress-review/tests.log 2>&1
+          cat /tmp/ingress-review/tests.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-native-ingress-diagnostics
+          path: /tmp/ingress-review
+          if-no-files-found: error
