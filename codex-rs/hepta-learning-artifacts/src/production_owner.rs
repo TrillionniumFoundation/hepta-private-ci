@@ -673,7 +673,19 @@ impl StateCheckpointOwnerV1 {
                 .find(|entry| entry.receipt.state_digest == active_head)
                 .map(|entry| entry.receipt.generation)
                 .ok_or(ProductionOwnerError::StateConflict(cell_id.clone()))?;
-            if predecessor_state_digest != active_head || generation < active_generation {
+            // A byte-identical state can be committed in a newer generation.
+            // Never resolve its generation from the first matching digest: an
+            // older signed receipt with the same bytes must not reopen an old
+            // generation after cutover or rollback.
+            let highest_signed_generation = history
+                .iter()
+                .map(|entry| entry.receipt.generation)
+                .max()
+                .ok_or(ProductionOwnerError::StateConflict(cell_id.clone()))?;
+            if predecessor_state_digest != active_head
+                || generation < active_generation
+                || generation < highest_signed_generation
+            {
                 return Err(ProductionOwnerError::StateConflict(cell_id));
             }
         } else if !predecessor_state_digest.is_zero() {
@@ -870,6 +882,14 @@ impl StateCheckpointOwnerV1 {
                 entry.receipt.state_digest == receipt.predecessor_state_digest
                     && entry.receipt.generation <= receipt.generation
             }) {
+                return Err(ProductionOwnerError::InvalidReceipt);
+            }
+            // Generation fencing is monotonic across the entire signed
+            // append-only history, not only across the active rollback head.
+            if history
+                .last()
+                .is_some_and(|entry| entry.receipt.generation > receipt.generation)
+            {
                 return Err(ProductionOwnerError::InvalidReceipt);
             }
             history.push(StateEntryV1 { receipt, bytes });
@@ -1151,6 +1171,42 @@ mod tests {
                 Err(ProductionOwnerError::StateConflict(cell.clone()))
             );
         }
+    }
+
+    #[test]
+    fn byte_identical_state_cannot_downgrade_the_signed_generation() {
+        let key = SigningKey::from_bytes(&[56; 32]);
+        let owner_id = id("state.owner.generation-fence");
+        let cell = id("cell.generation-fence");
+        let schema = Digest32::of_bytes(b"schema");
+        let mut owner = StateCheckpointOwnerV1::new(owner_id.clone(), key.clone())
+            .expect("owner");
+        let gen1 = Generation::new(1).expect("generation");
+        let gen2 = Generation::new(2).expect("generation");
+        let first = owner.commit(
+            id("operation.generation.1"), cell.clone(), gen1, schema,
+            Digest32::ZERO, b"unchanged".to_vec(), None, None,
+        ).expect("first");
+        let second = owner.commit(
+            id("operation.generation.2"), cell.clone(), gen2, schema,
+            first.state_digest, b"unchanged".to_vec(), None, None,
+        ).expect("second");
+        assert_eq!(second.state_digest, first.state_digest);
+        owner.rollback(&cell, &first).expect("rollback to old state");
+        assert_eq!(
+            owner.commit(
+                id("operation.generation.downgrade"), cell.clone(), gen1, schema,
+                first.state_digest, b"changed".to_vec(), None, None,
+            ),
+            Err(ProductionOwnerError::StateConflict(cell.clone()))
+        );
+        owner.commit(
+            id("operation.generation.3"), cell.clone(), gen2, schema,
+            first.state_digest, b"changed".to_vec(), None, None,
+        ).expect("current generation");
+        StateCheckpointOwnerV1::from_snapshot(
+            owner.snapshot(), owner_id, key,
+        ).expect("signed generation monotonicity survives reopen");
     }
 
     #[test]
