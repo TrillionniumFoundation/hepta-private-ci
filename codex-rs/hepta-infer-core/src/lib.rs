@@ -254,5 +254,9 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 }
 
 #[cfg(test)]
+#[path = "scaling_tests.rs"]
+mod scaling_tests;
+
+#[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
