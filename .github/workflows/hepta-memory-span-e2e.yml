@@ -1,0 +1,107 @@
+name: MemoryCell external spans and matched generator
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/span_supervision.py'
+      - 'scripts/memory_cell/test_span_supervision.py'
+      - 'scripts/memory_cell/selector_answer*.py'
+      - 'scripts/memory_cell/test_selector_answer*.py'
+      - 'scripts/memory_cell/selector_end_to_end.py'
+      - '.github/workflows/hepta-memory-span-e2e.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-span-e2e-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  paired-answers:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: ./.github/actions/setup-ci
+      - name: Install the pinned worker environment and repository formatter
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/span-evidence
+          python3 -m venv /tmp/span-python
+          /tmp/span-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/span-python/bin/pip install -r scripts/memory_cell/requirements.txt uv==0.8.22
+          /tmp/span-python/bin/pip freeze > /tmp/span-evidence/environment.txt
+      - name: Check formatting and execute the entire regression suite
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE"
+          PATH="/tmp/span-python/bin:$PATH" just fmt --check --base "$BASE"
+          /tmp/span-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/span-evidence/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Stage independently authored annotations and fixed model tensors
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          /tmp/span-python/bin/python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          from urllib.request import urlopen
+          from huggingface_hub import snapshot_download
+          from span_supervision import SQUAD_REVISION, SQUAD_BLOBS, MAX_BYTES, load_corpus
+          from relevance_ranker import RANKER_ID, RANKER_REVISION, RANKER_TENSOR_SHA256
+          from pretrained import file_inventory
+          root = Path('/tmp/span-inputs'); root.mkdir()
+          pins = {}
+          for split in ('train', 'dev'):
+              name = f'{split}-v2.0.json'
+              url = f'https://raw.githubusercontent.com/rajpurkar/SQuAD-explorer/{SQUAD_REVISION}/dataset/{name}'
+              with urlopen(url, timeout=90) as response:
+                  raw = response.read(MAX_BYTES + 1)
+              if len(raw) > MAX_BYTES or hashlib.sha1(f'blob {len(raw)}\0'.encode() + raw).hexdigest() != SQUAD_BLOBS[split]:
+                  raise ValueError('external annotation pin/bound mismatch')
+              (root / name).write_bytes(raw)
+              corpus = load_corpus(root / name, split)
+              pins[split] = dict(url=url, git_blob=SQUAD_BLOBS[split], sha256=corpus.sha256, native_questions=len(corpus.queries))
+          Path('/tmp/span-evidence/external-input-pins.json').write_text(json.dumps(pins, indent=2))
+          snapshot_download(RANKER_ID, revision=RANKER_REVISION, local_dir='/tmp/span-ranker',
+              allow_patterns=['config.json', 'model.safetensors', 'tokenizer.json', 'tokenizer_config.json', 'special_tokens_map.json', 'vocab.txt'], token=False)
+          if file_inventory(Path('/tmp/span-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
+              raise ValueError('paired encoder pin mismatch')
+          PY
+      - name: Train span-supervised head then generate matched new answers
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/span-evidence/resources.txt /tmp/span-python/bin/python scripts/memory_cell/selector_end_to_end.py /tmp/memory-inputs /tmp/span-ranker /tmp/span-inputs /tmp/span-evidence/experiment 2>&1 | tee /tmp/span-evidence/execution.log
+      - name: Preserve exact source and all successful or failed records
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/span-evidence/source
+          git rev-parse HEAD > /tmp/span-evidence/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/span-evidence/tested-tree.txt
+          cp scripts/memory_cell/span_supervision.py scripts/memory_cell/selector_answer*.py scripts/memory_cell/selector_end_to_end.py scripts/memory_cell/test_span_supervision.py scripts/memory_cell/test_selector_answer*.py /tmp/span-evidence/source/
+          (cd /tmp/span-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-external-span-e2e
+          path: /tmp/span-evidence
+          if-no-files-found: error
