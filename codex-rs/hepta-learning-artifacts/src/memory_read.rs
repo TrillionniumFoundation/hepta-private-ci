@@ -1051,6 +1051,15 @@ mod tests {
                 None,
             )
             .expect("successor");
+        let saved_digest = DurableStateOwnerV1::snapshot_digest(&path)
+            .expect("snapshot").expect("present");
+        assert!(state_owner.seed_initial_state_persisted(
+            &path, id("memory-read.state.reseed"), b"foreign".to_vec(), None, None,
+        ).is_err());
+        assert_eq!(
+            DurableStateOwnerV1::snapshot_digest(&path).expect("unchanged"),
+            Some(saved_digest),
+        );
         let mut reopened = DurableMemoryReadStateOwnerV1::reopen(
             &path, definition.clone(), owner_id.clone(), key.clone(),
         ).expect("reopen");
