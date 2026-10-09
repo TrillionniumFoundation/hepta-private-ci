@@ -268,25 +268,37 @@ mod tests {
 
     #[test]
     fn tampered_closure_fields_fail_digest_revalidation() {
-        let original = compose_cognitive_closure_v1(digest(10), &complete_steps())
-            .expect("closure");
+        let original =
+            compose_cognitive_closure_v1(digest(10), &complete_steps()).expect("closure");
         assert!(original.validate().is_ok());
 
         let mut forged = original.clone();
         forged.final_frontier_digest = digest(99);
-        assert_eq!(forged.validate(), Err(CognitiveClosureErrorV1::DigestMismatch));
+        assert_eq!(
+            forged.validate(),
+            Err(CognitiveClosureErrorV1::DigestMismatch)
+        );
 
         let mut forged = original.clone();
         forged.step_receipt_digests[2] = digest(98);
-        assert_eq!(forged.validate(), Err(CognitiveClosureErrorV1::DigestMismatch));
+        assert_eq!(
+            forged.validate(),
+            Err(CognitiveClosureErrorV1::DigestMismatch)
+        );
 
         let mut forged = original.clone();
         forged.closure_digest = digest(97);
-        assert_eq!(forged.validate(), Err(CognitiveClosureErrorV1::DigestMismatch));
+        assert_eq!(
+            forged.validate(),
+            Err(CognitiveClosureErrorV1::DigestMismatch)
+        );
 
         let mut forged = original;
         forged.generation = Generation::new(4).expect("generation");
-        assert_eq!(forged.validate(), Err(CognitiveClosureErrorV1::DigestMismatch));
+        assert_eq!(
+            forged.validate(),
+            Err(CognitiveClosureErrorV1::DigestMismatch)
+        );
     }
 
     #[test]
