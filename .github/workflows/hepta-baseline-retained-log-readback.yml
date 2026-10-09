@@ -48,7 +48,8 @@ jobs:
           assert job['status'] == 'completed' and job['conclusion'] == 'failure'
           PY
             status=0
-            gh api "repos/$EXPECTED_REPOSITORY/actions/jobs/$job/logs" > "$out/job-$job.log" 2> "$out/job-$job-download.stderr" || status=$?
+            # Preserve raw log bytes in files only; do not render their escapes in a terminal.
+            gh api --allow-escape-sequences "repos/$EXPECTED_REPOSITORY/actions/jobs/$job/logs" > "$out/job-$job.log" 2> "$out/job-$job-download.stderr" || status=$?
             printf '%s\n' "$status" > "$out/job-$job-download.exit"
             if test "$status" != 0 || ! test -s "$out/job-$job.log"; then
               failed=1
