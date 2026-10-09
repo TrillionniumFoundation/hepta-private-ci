@@ -54,7 +54,9 @@ def execute_case(bazel: str, output: Path, config: Path, name: str, digest: str,
     (workspace / "MODULE.bazel").write_text(
         'module(name="zlib_transport_probe")\nfetch_zlib = use_repo_rule("//:defs.bzl", "fetch_zlib")\n'
         f'fetch_zlib(name="pinned_zlib", url={json.dumps(ORIGIN)}, sha256={json.dumps(digest)})\n')
-    (workspace / "BUILD.bazel").write_text('filegroup(name="probe", srcs=["@pinned_zlib//:payload"])\n')
+    (workspace / "BUILD.bazel").write_text(
+        'filegroup(name="probe", srcs=["@pinned_zlib//:payload"])\n'
+    )
     policy = config.read_text()
     # Blocking the original *after* rewrite forces success to use the production
     # alternate. It does not alter the committed policy or bypass TLS/SHA checks.
@@ -75,7 +77,13 @@ def execute_case(bazel: str, output: Path, config: Path, name: str, digest: str,
             receipt = json.loads(receipts[0].read_text())
             libraries = [p for p in (receipts[0].parent / "lib").glob("libz.so*") if p.is_file()]
             outcome["receipt"] = receipt
-            outcome["libraries"] = [{"name": p.name, "sha256": hashlib.sha256(p.read_bytes()).hexdigest()} for p in libraries]
+            outcome["libraries"] = [
+                {
+                    "name": p.name,
+                    "sha256": hashlib.sha256(p.read_bytes()).hexdigest(),
+                }
+                for p in libraries
+            ]
             outcome["passed"] = receipt == {"sha256": SHA256, "url": ORIGIN} and bool(libraries)
         else:
             outcome["passed"] = False
