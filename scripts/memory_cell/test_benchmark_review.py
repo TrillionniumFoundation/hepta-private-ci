@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
-from benchmark_coverage import ARMS, plan_coverage
+from benchmark_coverage import plan_coverage
 from benchmark_review import audit_entry, paired_diagnostics, read_json, review
 from citation_audit import sha
 from native import digest
@@ -23,46 +23,85 @@ class BenchmarkReviewTests(unittest.TestCase):
 
     def write_inputs(self, root):
         plan = root / "plan.json"
-        plan.write_text(json.dumps({"schema": "hepta.memory-benchmark.preregistered.v1",
-                                    "coverage": self.plan.content(),
-                                    "execution_binding": self.binding}))
+        plan.write_text(
+            json.dumps(
+                {
+                    "schema": "hepta.memory-benchmark.preregistered.v1",
+                    "coverage": self.plan.content(),
+                    "execution_binding": self.binding,
+                }
+            )
+        )
         for i, record in enumerate(self.records):
             shard = root / "reports" / str(i)
             shard.mkdir(parents=True)
             (shard / "report.json").write_text(json.dumps(record))
         return plan
 
-    def signed_input(self):
+    def unsigned_input(self):
         row = copy.deepcopy(self.records[0]["results"]["rag"][0])
-        qid, family = next((q, f) for q, f, _, _ in self.plan.cases if q == row["question_id"])
-        query = SimpleNamespace(identity=qid, scope="s", content="Which code?", observed_at="2024")
+        qid, family = next(
+            (q, f) for q, f, _, _ in self.plan.cases if q == row["question_id"]
+        )
+        query = SimpleNamespace(
+            identity=qid, scope="s", content="Which code?", observed_at="2024"
+        )
         row["hypothesis"] = "Blue [E1]."
-        row["receipt"] = {"input_ids_sha256": sha(b"prompt"), "delivered_evidence": [
-            {"id": "s/doc", "root": "native-root", "excerpt": "[E1] Blue", "label": "E1"}]}
-        row["citation_audit"] = capture_native(query, row["hypothesis"], row["receipt"],
-            experiment_digest=digest((self.plan.seal(), self.binding, "rag")), family_digest=digest(family))
+        row["receipt"] = {
+            "input_ids_sha256": sha(b"prompt"),
+            "delivered_evidence": [
+                {
+                    "id": "s/doc",
+                    "root": "native-root",
+                    "excerpt": "[E1] Blue",
+                    "label": "E1",
+                }
+            ],
+        }
+        row["citation_audit"] = capture_native(
+            query,
+            row["hypothesis"],
+            row["receipt"],
+            experiment_digest=digest((self.plan.seal(), self.binding, "rag")),
+            family_digest=digest(family),
+        )
         return row, family
 
     def test_full_census_exports_every_failed_or_unreviewable_attempt(self):
-        self.records[0]["results"]["rag"][0].update(status="failed", hypothesis=None,
-                                                   diagnostic_token_f1=None)
+        self.records[0]["results"]["rag"][0].update(
+            status="failed", hypothesis=None, diagnostic_token_f1=None
+        )
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
             declared = self.write_inputs(root)
-            result = review(declared, root / "reports", root / "out", validator_commit="b" * 40)
+            result = review(
+                declared, root / "reports", root / "out", validator_commit="b" * 40
+            )
             self.assertEqual(result["all_attempts_exported"], 4 * 30)
             self.assertEqual(result["citation_census"]["rag"]["execution_failed"], 1)
             self.assertEqual(result["coverage"]["arms"]["rag"]["failed"], 1)
             self.assertIsNone(result["signed_semantic_citation_precision"])
             self.assertFalse(result["production_accepted"])
-            rows = [json.loads(line) for line in (root / "out/review.jsonl").read_text().splitlines()]
+            rows = [
+                json.loads(line)
+                for line in (root / "out/review.jsonl").read_text().splitlines()
+            ]
             self.assertEqual(len({r["review_id"] for r in rows}), 120)
-            self.assertTrue(all("arm" not in r and "diagnostic_token_f1" not in r for r in rows))
+            self.assertTrue(
+                all("arm" not in r and "diagnostic_token_f1" not in r for r in rows)
+            )
             with self.assertRaises(FileExistsError):
-                review(declared, root / "reports", root / "out", validator_commit="b" * 40)
+                review(
+                    declared, root / "reports", root / "out", validator_commit="b" * 40
+                )
             (root / "reports/0/report.json").unlink()
             with self.assertRaises(ValueError):
-                review(declared, root / "reports", root / "missing", validator_commit="b" * 40)
+                review(
+                    declared,
+                    root / "reports",
+                    root / "missing",
+                    validator_commit="b" * 40,
+                )
             self.assertFalse((root / "missing").exists())
 
     def test_pilot_cannot_be_reviewed_as_complete(self):
@@ -72,10 +111,12 @@ class BenchmarkReviewTests(unittest.TestCase):
             root = Path(name)
             declared = self.write_inputs(root)
             with self.assertRaisesRegex(ValueError, "every native question"):
-                review(declared, root / "reports", root / "out", validator_commit="b" * 40)
+                review(
+                    declared, root / "reports", root / "out", validator_commit="b" * 40
+                )
 
     def test_bound_native_request_is_ready_for_review_not_certified(self):
-        row, family = self.signed_input()
+        row, family = self.unsigned_input()
         item, _ = audit_entry(self.plan, self.binding, "rag", row, family)
         self.assertEqual(item["status"], "awaiting_independent_judgement")
         self.assertIsNone(item["judgement"])
@@ -83,12 +124,14 @@ class BenchmarkReviewTests(unittest.TestCase):
         self.assertIsNone(item["semantic_precision"])
 
     def test_answer_prompt_family_source_and_mapping_drift_reject(self):
-        row, family = self.signed_input()
+        row, family = self.unsigned_input()
         for change in (
             lambda r: r.update(hypothesis="altered"),
             lambda r: r["receipt"].update(input_ids_sha256=sha(b"wrong")),
             lambda r: r["receipt"]["delivered_evidence"][0].update(excerpt="altered"),
-            lambda r: r["citation_audit"]["request"].update(family_digest=sha(b"wrong")),
+            lambda r: r["citation_audit"]["request"].update(
+                family_digest=sha(b"wrong")
+            ),
             lambda r: r["citation_audit"]["source_root_bindings"].clear(),
             lambda r: r["citation_audit"].update(generator_signature="forged"),
         ):
@@ -98,11 +141,13 @@ class BenchmarkReviewTests(unittest.TestCase):
                 audit_entry(self.plan, self.binding, "rag", changed, family)
 
     def test_old_receipt_is_not_retroactively_signed_or_given_new_request(self):
-        row, family = self.signed_input()
+        row, family = self.unsigned_input()
         row["citation_audit"] = {"status": "unavailable"}
         item, _ = audit_entry(self.plan, self.binding, "rag", row, family)
         self.assertEqual(item["status"], "unavailable")
-        self.assertEqual(item["delivered_evidence"], row["receipt"]["delivered_evidence"])
+        self.assertEqual(
+            item["delivered_evidence"], row["receipt"]["delivered_evidence"]
+        )
         self.assertNotIn("request", item)
         self.assertIsNone(item["generator_signature"])
 
@@ -111,7 +156,9 @@ class BenchmarkReviewTests(unittest.TestCase):
             for r in report["results"]["rag_lora"]:
                 r["diagnostic_token_f1"] = None
         stats = paired_diagnostics(self.plan, self.records)
-        comparison = next(c for c in stats["comparisons"] if c["candidate"] == "rag_lora")
+        comparison = next(
+            c for c in stats["comparisons"] if c["candidate"] == "rag_lora"
+        )
         self.assertEqual(comparison["identified_family_mean_difference"], [-0.5, 0.5])
         self.assertEqual(comparison["unmeasured_pairs"], 30)
         self.assertEqual(comparison["family_groups"], 10)
@@ -127,11 +174,11 @@ class BenchmarkReviewTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as name:
             root = Path(name)
             p = root / "input.json"
-            for text in ('{"key": 1, "key": 2}', '{"n": NaN}', ' ' * 50):
+            for text in ('{"key": 1, "key": 2}', '{"n": NaN}', " " * 50):
                 p.write_text(text)
                 with self.assertRaises(ValueError):
                     read_json(p, 40)
-            p.write_text('{}')
+            p.write_text("{}")
             link = root / "alias.json"
             link.symlink_to(p)
             with self.assertRaises(ValueError):

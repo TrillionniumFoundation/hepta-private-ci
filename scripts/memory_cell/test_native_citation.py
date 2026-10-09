@@ -13,16 +13,24 @@ class NativeCitationTests(unittest.TestCase):
     def capture(self, root):
         record = request()
         q = SimpleNamespace(
-            identity=record["query_id"], scope=record["scope"],
-            content=record["question"], observed_at=record["question_time"],
+            identity=record["query_id"],
+            scope=record["scope"],
+            content=record["question"],
+            observed_at=record["question_time"],
         )
         record["sources"][0]["root"] = root
-        receipt = {"input_ids_sha256": record["prompt_digest"],
-                   "delivered_evidence": record["sources"]}
+        receipt = {
+            "input_ids_sha256": record["prompt_digest"],
+            "delivered_evidence": record["sources"],
+        }
         before = copy.deepcopy(receipt)
-        result = capture_native(q, record["answer"], receipt,
-                                experiment_digest=record["experiment_digest"],
-                                family_digest=record["family_digest"])
+        result = capture_native(
+            q,
+            record["answer"],
+            receipt,
+            experiment_digest=record["experiment_digest"],
+            family_digest=record["family_digest"],
+        )
         self.assertEqual(receipt, before)
         return result
 
@@ -30,10 +38,14 @@ class NativeCitationTests(unittest.TestCase):
         queue = self.capture("locomo:conv-48")
         root = native_root_digest("locomo:conv-48")
         self.assertEqual(queue["source_root_profile"], ROOT_PROFILE)
-        self.assertEqual(queue["source_root_bindings"],
-                         [{"native_root": "locomo:conv-48", "root_digest": root}])
+        self.assertEqual(
+            queue["source_root_bindings"],
+            [{"native_root": "locomo:conv-48", "root_digest": root}],
+        )
         self.assertEqual(queue["request"]["sources"][0]["root"], root)
-        self.assertEqual(queue["request_sha256"], sha(request_payload(queue["request"])))
+        self.assertEqual(
+            queue["request_sha256"], sha(request_payload(queue["request"]))
+        )
         self.assertIsNone(queue["judgement"])
         self.assertIsNone(queue["generator_signature"])
         self.assertFalse(queue["production_accepted"])

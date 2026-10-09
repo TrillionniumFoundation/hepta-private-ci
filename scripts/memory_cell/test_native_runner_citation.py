@@ -19,8 +19,13 @@ class AuditableReader(FixtureReader):
         return answer, {
             "input_ids_sha256": digest((query.identity, [d.content for d in evidence])),
             "delivered_evidence": [
-                {"label": f"E{i}", "id": d.identity, "root": d.root,
-                 "excerpt": f"[E{i}] {d.content}", "partial": False}
+                {
+                    "label": f"E{i}",
+                    "id": d.identity,
+                    "root": d.root,
+                    "excerpt": f"[E{i}] {d.content}",
+                    "partial": False,
+                }
                 for i, d in enumerate(evidence, start=1)
             ],
         }
@@ -34,28 +39,52 @@ class EmptyReader(AuditableReader):
 
 class NativeRunnerCitationTests(unittest.TestCase):
     def test_actual_native_root_shapes_produce_reviewable_unsigned_requests(self):
-        with tempfile.TemporaryDirectory() as name, contextlib.redirect_stdout(io.StringIO()):
+        with (
+            tempfile.TemporaryDirectory() as name,
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
             root = Path(name)
             stage(root, "locomo")
-            run(root, root / "out", "locomo", 1, fold=0, folds=5,
-                all_questions=True, backends=(FixtureEncoder(), AuditableReader()))
+            run(
+                root,
+                root / "out",
+                "locomo",
+                1,
+                fold=0,
+                folds=5,
+                all_questions=True,
+                backends=(FixtureEncoder(), AuditableReader()),
+            )
             report = json.loads((root / "out/report.json").read_text())
             for rows in report["results"].values():
                 self.assertEqual(len(rows), 1)
                 queue = rows[0]["citation_audit"]
                 self.assertEqual(queue["source_root_profile"], ROOT_PROFILE)
-                self.assertEqual(queue["schema"], "hepta.memory-citation.native-queue.v1")
+                self.assertEqual(
+                    queue["schema"], "hepta.memory-citation.native-queue.v1"
+                )
                 self.assertIsNone(queue["judgement"])
                 self.assertIsNone(queue["evaluator_signature"])
                 self.assertNotIn("DO_NOT_LEAK_GOLD", json.dumps(queue))
 
     def test_terminal_without_answer_is_failed_in_every_arm(self):
-        with tempfile.TemporaryDirectory() as name, contextlib.redirect_stdout(io.StringIO()):
+        with (
+            tempfile.TemporaryDirectory() as name,
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
             root = Path(name)
             stage(root, "locomo")
             with self.assertRaisesRegex(RuntimeError, "4 model executions failed"):
-                run(root, root / "out", "locomo", 1, fold=0, folds=5,
-                    all_questions=True, backends=(FixtureEncoder(), EmptyReader()))
+                run(
+                    root,
+                    root / "out",
+                    "locomo",
+                    1,
+                    fold=0,
+                    folds=5,
+                    all_questions=True,
+                    backends=(FixtureEncoder(), EmptyReader()),
+                )
             report = json.loads((root / "out/report.json").read_text())
             for rows in report["results"].values():
                 self.assertEqual([r["status"] for r in rows], ["failed"])
