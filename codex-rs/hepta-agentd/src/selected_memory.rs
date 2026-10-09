@@ -163,3 +163,6 @@ impl AgentdSharedReplayHostV1 {
         Ok(value)
     }
 }
+
+#[path = "selected_memory_serving.rs"]
+mod serving;

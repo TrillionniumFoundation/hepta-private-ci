@@ -252,3 +252,9 @@ pub use shared_memory_training::SharedMemoryTrainingError;
 pub use shared_memory_training::SharedMemoryTrainingV1;
 
 pub use shared_memory_training::SelectedMemoryTensorModelV1;
+
+mod memory_serving_process;
+pub use memory_serving_process::MemoryServingProcessConfigV1;
+pub use memory_serving_process::MemoryServingProcessV1;
+pub use memory_serving_process::MemoryServingQueryV1;
+pub use memory_serving_process::MemoryServingResultV1;
