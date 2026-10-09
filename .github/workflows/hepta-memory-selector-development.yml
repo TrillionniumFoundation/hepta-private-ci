@@ -1,0 +1,87 @@
+name: MemoryCell window and small-head selector development
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/selector*.py'
+      - 'scripts/memory_cell/test_selector*.py'
+      - '.github/workflows/hepta-memory-selector-development.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-selector-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  paired-selector:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Install fixed offline-worker environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/selector-evidence
+          python3 -m venv /tmp/selector-python
+          /tmp/selector-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/selector-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
+          /tmp/selector-python/bin/pip freeze > /tmp/selector-evidence/environment.txt
+          /tmp/selector-python/bin/pip download --no-deps ruff==0.15.8 -d /tmp/selector-evidence/formatter
+      - name: Complete regression set
+        run: |
+          set -euo pipefail
+          /tmp/selector-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/selector-evidence/tests.log
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Stage exact reader-independent pair encoder and native data
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          /tmp/selector-python/bin/python - <<'PY'
+          from pathlib import Path
+          from huggingface_hub import snapshot_download
+          from pretrained import file_inventory
+          from native import digest
+          from relevance_ranker import RANKER_ID, RANKER_REVISION, RANKER_TENSOR_SHA256
+          if digest(file_inventory(Path('/tmp/memory-inputs/encoder'))) != '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a':
+              raise ValueError('retrieval encoder drift')
+          snapshot_download(RANKER_ID, revision=RANKER_REVISION, local_dir='/tmp/selector-encoder',
+              allow_patterns=['config.json', 'model.safetensors', 'tokenizer.json', 'tokenizer_config.json', 'special_tokens_map.json', 'vocab.txt'], token=False)
+          if file_inventory(Path('/tmp/selector-encoder'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
+              raise ValueError('pair encoder tensor drift')
+          PY
+      - name: Frozen shared features, independent head training, calibration then evaluation
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/selector-evidence/resources.txt /tmp/selector-python/bin/python scripts/memory_cell/selector_development.py /tmp/memory-inputs /tmp/selector-encoder /tmp/selector-evidence/comparison 2>&1 | tee /tmp/selector-evidence/execution.log
+      - name: Preserve exact source, formatting diagnostics and every failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/selector-evidence/source
+          git rev-parse HEAD > /tmp/selector-evidence/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/selector-evidence/tested-tree.txt
+          cp scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py /tmp/selector-evidence/source/
+          /tmp/selector-python/bin/ruff format --diff scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py > /tmp/selector-evidence/format.patch || true
+          (cd /tmp/selector-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-selector-development
+          path: /tmp/selector-evidence
+          if-no-files-found: error
