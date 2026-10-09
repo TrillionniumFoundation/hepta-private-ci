@@ -783,3 +783,80 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         .is_err()
     );
 }
+
+#[test]
+fn terminal_summary_recovers_missing_delta_without_a_second_turn() {
+    let mut output = output();
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items_view = TurnItemsView::Summary;
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "verified complete answer".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut output, event.clone()).unwrap());
+    assert_eq!(output.output, "verified complete answer");
+    assert_eq!(output.status, NativeRunStatus::Completed);
+    assert!(output.terminal_observed);
+    assert_eq!(output.owner_authority, NativeOwnerAuthority::Unverified);
+    assert!(!output.succeeded());
+    // A duplicate summary must not concatenate the same answer again.
+    let before = output.clone();
+    assert!(observe_for_test(&mut output, event).unwrap());
+    assert_eq!(output, before);
+}
+
+#[test]
+fn terminal_summary_rejects_oversize_and_foreign_transport_before_mutation() {
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "x".repeat(MAX_OUTPUT_BYTES + 1),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    let mut output = output();
+    let before = output.clone();
+    assert!(observe_for_test(&mut output, event.clone()).is_err());
+    assert_eq!(output, before);
+    let foreign = RemoteAppServerObservedEvent::from_test_event(
+        AppServerEvent::ServerNotification(Box::new(event)),
+        8,
+        Some("test-app-server".to_string()),
+        Some("/home/agent".to_string()),
+    );
+    assert!(observe_event(&mut output, &foreign, &binding()).is_err());
+    assert_eq!(output, before);
+}
+
+#[test]
+fn terminal_summary_does_not_duplicate_streamed_content_or_restore_lost_authority() {
+    let mut output = output();
+    output.output = "already streamed".to_string();
+    output.owner_authority = NativeOwnerAuthority::Lost {
+        reason: "revoked".to_string(),
+    };
+    let mut event = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(ref mut notification) = event {
+        notification.turn.items.push(ThreadItem::AgentMessage {
+            id: "message-final".to_string(),
+            text: "last message summary".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut output, event).unwrap());
+    assert_eq!(output.output, "already streamed");
+    assert_eq!(output.status, NativeRunStatus::Completed);
+    assert_eq!(output.boundary_status, NativeBoundaryStatus::Quarantined);
+    assert!(output.terminal_observed);
+    assert!(!output.succeeded());
+}
