@@ -99,6 +99,7 @@ def execution_binding(
         },
         "backend_profile": backend_profile,
         "answer_protocol": "short-answer-with-delivered-E-labels-v1",
+        "empty_turns": "preserve",
     }
 
 
@@ -152,6 +153,7 @@ def run(
         allow_unresolved_evidence=True,
         session_conflicts="retain-versioned",
         invalid_history="quarantine-question",
+        empty_turns="preserve",
     )
     (output / "annotation-issues.json").write_text(
         json.dumps(

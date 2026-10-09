@@ -3,6 +3,7 @@
 Identical content at different dates remains distinct retrieval evidence but one
 source family. Content conflicts reject by default. An explicit version-retention
 profile preserves conflicts without choosing a variant using gold annotations.
+Empty messages can be retained byte-for-byte; they never acquire invented text.
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ OCCURRENCE = "#occ:"
 CHUNK = "#chunk:"
 VERSION = "~version:"
 ConflictPolicy = Literal["reject", "retain-versioned"]
+EmptyTurnPolicy = Literal["reject", "preserve"]
 
 
 def source_id(identity: str) -> str:
@@ -23,10 +25,13 @@ def source_id(identity: str) -> str:
 
 
 def normalize_sessions(
-    sessions, identities, dates, *, conflict_policy: ConflictPolicy = "reject"
+    sessions, identities, dates, *, conflict_policy: ConflictPolicy = "reject",
+    empty_turns: EmptyTurnPolicy = "reject",
 ):
     if conflict_policy not in ("reject", "retain-versioned"):
         raise ValueError("unknown native session conflict policy")
+    if empty_turns not in ("reject", "preserve"):
+        raise ValueError("unknown empty native turn policy")
     if not all(isinstance(value, list) for value in (sessions, identities, dates)):
         raise ValueError("native session arrays must be lists")
     if (
@@ -53,16 +58,27 @@ def normalize_sessions(
                 f"invalid native session identity/date/turns at {position}"
             )
         clean = []
-        for turn in turns:
+        for turn_position, turn in enumerate(turns):
             if (
                 not isinstance(turn, dict)
                 or turn.get("role") not in ("user", "assistant", "system")
                 or not isinstance(turn.get("content"), str)
-                or not turn["content"].strip()
                 or len(turn["content"].encode()) > 1_000_000
+                or (empty_turns == "reject" and not turn["content"].strip())
             ):
                 raise ValueError(
                     f"invalid native history turn at occurrence {position}"
+                )
+            if not turn["content"].strip():
+                issues.append(
+                    {
+                        "identity": identity,
+                        "position": position,
+                        "turn_position": turn_position,
+                        "role": turn["role"],
+                        "content_sha256": hashlib.sha256(turn["content"].encode()).hexdigest(),
+                        "disposition": "empty-native-turn-preserved-without-imputation",
+                    }
                 )
             clean.append((turn["role"], turn["content"]))
         body = hashlib.sha256(

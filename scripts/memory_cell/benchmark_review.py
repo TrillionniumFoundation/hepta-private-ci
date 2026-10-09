@@ -266,6 +266,9 @@ def review(
             allow_unresolved_evidence=True,
             session_conflicts="retain-versioned",
             invalid_history="quarantine-question",
+            # The old generator rejected empty messages. Reproduce that exact
+            # policy rather than silently joining previously quarantined roots.
+            empty_turns=binding.get("empty_turns", "reject"),
         )
         questions = {q.identity: q for q in benchmark.questions}
         if set(questions) != set(family_by_query) or any(

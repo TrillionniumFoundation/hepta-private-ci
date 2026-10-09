@@ -93,9 +93,12 @@ def load(
     allow_unresolved_evidence: bool = False,
     session_conflicts: str = "reject",
     invalid_history: str = "reject",
+    empty_turns: str = "preserve",
 ) -> Benchmark:
     if invalid_history not in ("reject", "quarantine-question"):
         raise ValueError("unknown invalid-history profile")
+    if empty_turns not in ("reject", "preserve"):
+        raise ValueError("unknown empty native turn policy")
     with path.open("rb") as stream:
         payload = stream.read(MAX_BYTES + 1)
     if len(payload) > MAX_BYTES:
@@ -132,7 +135,8 @@ def load(
             )
             try:
                 normalized, duplicates = normalize_sessions(
-                    sessions, ids, dates, conflict_policy=session_conflicts
+                    sessions, ids, dates, conflict_policy=session_conflicts,
+                    empty_turns=empty_turns,
                 )
             except ValueError as error:
                 if invalid_history == "reject":
@@ -165,13 +169,10 @@ def load(
             for turns, sid, date in normalized:
                 sid = text(sid, "session occurrence id", 512)
                 date = text(date, "session date", 256)
-                if not isinstance(turns, list) or not 1 <= len(turns) <= 10_000:
-                    raise ValueError("invalid session turns")
-                clean = []
-                for turn in turns:
-                    if turn["role"] not in ("user", "assistant", "system"):
-                        raise ValueError("unknown history role")
-                    clean.append((turn["role"], text(turn["content"], "turn")))
+                # normalize_sessions already validates types, roles and limits.
+                # Preserve original empty strings and turn order. Never use
+                # str(None), omit a message, or insert a guessed replacement.
+                clean = [(turn["role"], turn["content"]) for turn in turns]
                 native_sid = original_ids.get(sid, source_id(sid))
                 # Repeated/edited copies of one native source are one family.
                 root = "session:" + digest(clean)
