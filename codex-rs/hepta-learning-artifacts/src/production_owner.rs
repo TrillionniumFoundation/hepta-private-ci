@@ -750,6 +750,42 @@ impl StateCheckpointOwnerV1 {
         Ok(entry.bytes.clone())
     }
 
+    /// Restore only the active state for serving. The ordinary `reload`
+    /// method can inspect historical signed bytes for audit/replay, but
+    /// production inference must never load a non-active predecessor or a
+    /// superseded generation simply because its signature is valid.
+    pub fn reload_active(
+        &self,
+        cell_id: &StableId,
+        receipt: &StateCommitReceiptV1,
+    ) -> Result<Vec<u8>, ProductionOwnerError> {
+        if self.tombstones.contains_key(cell_id) {
+            return Err(ProductionOwnerError::StateTombstoned(cell_id.clone()));
+        }
+        let active_digest = self
+            .active_heads
+            .get(cell_id)
+            .copied()
+            .ok_or_else(|| ProductionOwnerError::StateNotFound(cell_id.clone()))?;
+        let maximum_matching_generation = self
+            .entries
+            .get(cell_id)
+            .and_then(|history| {
+                history
+                    .iter()
+                    .filter(|entry| entry.receipt.state_digest == active_digest)
+                    .map(|entry| entry.receipt.generation)
+                    .max()
+            })
+            .ok_or_else(|| ProductionOwnerError::StateNotFound(cell_id.clone()))?;
+        if receipt.state_digest != active_digest
+            || receipt.generation != maximum_matching_generation
+        {
+            return Err(ProductionOwnerError::StateConflict(cell_id.clone()));
+        }
+        self.reload(cell_id, receipt)
+    }
+
     pub fn rollback(
         &mut self,
         cell_id: &StableId,
@@ -1201,6 +1237,41 @@ mod tests {
                 Err(ProductionOwnerError::StateConflict(cell.clone()))
             );
         }
+    }
+
+    #[test]
+    fn serving_reload_requires_current_state_and_current_generation() {
+        let key = SigningKey::from_bytes(&[58; 32]);
+        let cell = id("cell.active-only");
+        let schema = Digest32::of_bytes(b"schema");
+        let gen1 = Generation::new(1).expect("generation");
+        let gen2 = Generation::new(2).expect("generation");
+        let mut owner = StateCheckpointOwnerV1::new(id("state.owner.active-only"), key)
+            .expect("owner");
+        let first = owner.commit(
+            id("operation.active.1"), cell.clone(), gen1, schema,
+            Digest32::ZERO, b"first".to_vec(), None, None,
+        ).expect("first");
+        let second = owner.commit(
+            id("operation.active.2"), cell.clone(), gen1, schema,
+            first.state_digest, b"second".to_vec(), None, None,
+        ).expect("second");
+        assert_eq!(owner.reload_active(&cell, &second).expect("current"), b"second");
+        assert_eq!(
+            owner.reload_active(&cell, &first),
+            Err(ProductionOwnerError::StateConflict(cell.clone()))
+        );
+        owner.rollback(&cell, &first).expect("rollback");
+        assert_eq!(owner.reload_active(&cell, &first).expect("rollback head"), b"first");
+        let third = owner.commit(
+            id("operation.active.3"), cell.clone(), gen2, schema,
+            first.state_digest, b"first".to_vec(), None, None,
+        ).expect("same bytes next generation");
+        assert_eq!(owner.reload_active(&cell, &third).expect("latest gen"), b"first");
+        assert_eq!(
+            owner.reload_active(&cell, &first),
+            Err(ProductionOwnerError::StateConflict(cell))
+        );
     }
 
     #[test]
