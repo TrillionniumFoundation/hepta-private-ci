@@ -30,6 +30,7 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+use crate::cognitive_intelligence_writer::CognitiveCorrectionInput;
 use crate::CognitiveAccess;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
