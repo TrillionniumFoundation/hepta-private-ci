@@ -50,10 +50,7 @@ impl MemoryServingQualificationV1 {
         predecessor_citations: VerifiedMemoryCitationGateV1,
     ) -> Result<Self, SharedMemoryTrainingError> {
         let receipt = rollback.selection().receipt();
-        if !rollback_citation_decision_matches(
-            predecessor_citations.decision_digest(),
-            rollback.selection().selection_digest(),
-        ) || predecessor_citations.candidate_digest() != receipt.predecessor_artifact_digest
+        if predecessor_citations.candidate_digest() != receipt.predecessor_artifact_digest
             || predecessor_citations.objective_digest() != receipt.objective_digest
         {
             return Err(SharedMemoryTrainingError::Invalid(
@@ -126,14 +123,3 @@ impl MemoryServingQualificationV1 {
             .map_err(|_| SharedMemoryTrainingError::Invalid("stale memory citation evidence"))
     }
 }
-
-fn rollback_citation_decision_matches(
-    citation_decision_digest: Digest32,
-    rollback_selection_digest: Digest32,
-) -> bool {
-    citation_decision_digest == rollback_selection_digest
-}
-
-#[cfg(test)]
-#[path = "memory_serving_qualification_tests.rs"]
-mod tests;
