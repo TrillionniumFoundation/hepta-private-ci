@@ -871,7 +871,7 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
                     expected_binding: &crash_expected,
                     command_id: "authorized-effect-dispatch",
                     now_ms: 30,
-                }
+                },
             )
             .await
     })
@@ -1052,18 +1052,18 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
     assert!(matches!(
         store
             .execute_authorized_taskflow_effect(
-            &mut driver,
-            AuthorizedEffectExecution {
-                authority: &authority,
-                intent: &effect,
-                wire_payload: EFFECT_PAYLOAD,
-                fence: &owner,
-                signed_grant: &signed,
-                expected_binding: &expected,
-                command_id: "authorized-effect-dispatch",
-                now_ms: 30,
-            },
-        )
+                &mut driver,
+                AuthorizedEffectExecution {
+                    authority: &authority,
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
+            )
             .await,
         Err(AuthorizedEffectError::Driver(
             AuthorizedEffectDriverError::BeforeProviderContact
@@ -1115,18 +1115,18 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
 
     let receipt = store
         .execute_authorized_taskflow_effect(
-                &mut driver,
-                AuthorizedEffectExecution {
-                    authority: &authority,
-                    intent: &effect,
-                    wire_payload: EFFECT_PAYLOAD,
-                    fence: &owner,
-                    signed_grant: &signed,
-                    expected_binding: &expected,
-                    command_id: "authorized-effect-dispatch",
-                    now_ms: 30,
-                }
-            )
+            &mut driver,
+            AuthorizedEffectExecution {
+                authority: &authority,
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
+        )
         .await
         .expect("dispatch under one final-use revocation fence");
     assert_eq!(driver.calls, 1);
