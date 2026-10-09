@@ -976,7 +976,7 @@ impl AppServerModelDriver {
         // creating a new turn/start, and verify its exact request binding.
         if output.terminal_observed
             && output.status == NativeRunStatus::Completed
-            && output.output.is_empty()
+            && output.output.trim().is_empty()
         {
             match reconcile_missing_terminal_message(
                 &mut client,
@@ -989,8 +989,10 @@ impl AppServerModelDriver {
             {
                 Ok(message) => output.output = message,
                 Err(reason) => {
-                    output.status = NativeRunStatus::Indeterminate;
-                    output.boundary_status = NativeBoundaryStatus::Indeterminate;
+                    // Preserve the authenticated physical terminal observation. Missing
+                    // content denies success; it does not make that observed event
+                    // disappear or violate the durable terminal/status invariant.
+                    output.boundary_status = NativeBoundaryStatus::Quarantined;
                     output.stop_reason = Some(
                         format!("terminal output could not be verified: {reason}")
                             .chars()
@@ -1548,6 +1550,26 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            // App Server may deliver the last assistant message in the verified
+            // terminal summary without any AgentMessageDelta (for example a
+            // provider output_item.done-only stream). Consume only this exact
+            // authenticated turn, after transport/correlation verification.
+            let terminal_message = if receipt.status == AdapterStatus::Succeeded
+                && output.output.trim().is_empty()
+            {
+                let mut message = String::new();
+                for item in &completed.turn.items {
+                    if let ThreadItem::AgentMessage { text, .. } = item {
+                        if text.len() > MAX_OUTPUT_BYTES.saturating_sub(message.len()) {
+                            return Err("terminal summary exceeds output byte budget".to_string());
+                        }
+                        message.push_str(text);
+                    }
+                }
+                Some(message)
+            } else {
+                None
+            };
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;
@@ -1574,6 +1596,9 @@ fn observe_event(
             );
             if let Some(error) = &completed.turn.error {
                 output.stop_reason = Some(error.message.chars().take(1024).collect());
+            }
+            if let Some(message) = terminal_message {
+                output.output = message;
             }
             output.terminal_observed = true;
             downgrade_for_owner_loss(output);
