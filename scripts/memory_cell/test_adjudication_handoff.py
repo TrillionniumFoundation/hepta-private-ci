@@ -104,19 +104,89 @@ class HandoffTests(unittest.TestCase):
         (self.review / "SHA256SUMS").write_text(manifest)
         return sha(manifest.encode())
 
-    def run_export(self, manifest=None, output=None, exporter_commit=None):
+    def run_export(self, manifest=None, output=None, exporter_commit="b" * 40):
         return export(
             self.plan_path,
             self.review,
             output or self.root / "out",
             expected_plan_sha256=self.plan_hash,
             expected_manifest_sha256=manifest or self.seal(),
-            exporter_commit=exporter_commit or self.binding["source_commit"],
+            exporter_commit=exporter_commit,
         )
 
-    def test_historical_execution_source_cannot_be_relabelled_as_current_head(self):
-        with self.assertRaisesRegex(ValueError, "execution source commit"):
-            self.run_export(exporter_commit="b" * 40)
+    def test_source_relation_is_derived_without_claiming_a_new_execution(self):
+        for exporter, classification in (
+            ("a" * 40, "same-source-record-review"),
+            ("b" * 40, "historical-source-record-review"),
+        ):
+            with self.subTest(exporter=exporter):
+                result = self.run_export(
+                    output=self.root / exporter, exporter_commit=exporter
+                )
+                fields = (
+                    "execution_source_commit",
+                    "exporter_commit",
+                    "source_classification",
+                    "new_model_execution",
+                    "current_head_generation_claim",
+                )
+                self.assertEqual(
+                    {key: result[key] for key in fields},
+                    dict(
+                        execution_source_commit="a" * 40,
+                        exporter_commit=exporter,
+                        source_classification=classification,
+                        new_model_execution=False,
+                        current_head_generation_claim=False,
+                    ),
+                )
+
+    def test_new_exporter_preserves_original_citation_and_qa_bytes(self):
+        old_output, new_output = self.root / "old", self.root / "new"
+        old = self.run_export(output=old_output, exporter_commit="a" * 40)
+        new = self.run_export(output=new_output, exporter_commit="b" * 40)
+        self.assertEqual(
+            (
+                old["execution_source_commit"],
+                old["preregistered_plan_sha256"],
+                old["original_review_manifest_sha256"],
+            ),
+            (
+                new["execution_source_commit"],
+                new["preregistered_plan_sha256"],
+                new["original_review_manifest_sha256"],
+            ),
+        )
+        for path in old_output.rglob("*"):
+            if path.is_file() and path.name not in (
+                "handoff.json",
+                "READY.json",
+                "SCOPE.txt",
+            ):
+                self.assertEqual(
+                    path.read_bytes(),
+                    (new_output / path.relative_to(old_output)).read_bytes(),
+                )
+
+    def test_relabelling_generation_rejects_even_if_transport_is_resealed(self):
+        self.binding["source_commit"] = "b" * 40
+        self.plan_path.write_text(json.dumps(self.declared))
+        self.plan_hash = sha(self.plan_path.read_bytes())
+        self.summary["plan_file_sha256"] = self.plan_hash
+        self.summary["execution_source_commit"] = "b" * 40
+        with self.assertRaisesRegex(ValueError, "detached from original attempt"):
+            self.run_export()
+        self.assertFalse((self.root / "out").exists())
+
+    def test_missing_or_malformed_generation_source_is_not_classified(self):
+        for source in (None, "current", "g" * 40, 123):
+            with self.subTest(source=source):
+                self.binding["source_commit"] = source
+                self.plan_path.write_text(json.dumps(self.declared))
+                self.plan_hash = sha(self.plan_path.read_bytes())
+                with self.assertRaisesRegex(ValueError, "exact execution source"):
+                    self.run_export()
+                self.assertFalse((self.root / "out").exists())
 
     def test_complete_transfer_preserves_hypotheses_and_undefined_precision(self):
         result = self.run_export()

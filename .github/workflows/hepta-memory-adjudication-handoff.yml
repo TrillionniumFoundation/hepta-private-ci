@@ -2,9 +2,9 @@ name: MemoryCell complete LongMemEval adjudication handoff
 on:
   pull_request:
     paths:
-      - "scripts/memory_cell/adjudication_handoff.py"
-      - "scripts/memory_cell/test_adjudication_handoff.py"
-      - ".github/workflows/hepta-memory-adjudication-handoff.yml"
+      - 'scripts/memory_cell/adjudication_handoff.py'
+      - 'scripts/memory_cell/test_adjudication_handoff.py'
+      - '.github/workflows/hepta-memory-adjudication-handoff.yml'
 permissions:
   contents: read
   actions: read
@@ -46,7 +46,7 @@ jobs:
           run-id: 37886300748
           github-token: ${{ github.token }}
           path: /tmp/preserved-review
-      - name: Bind all 2000 original attempts without judging or signing them
+      - name: Export pinned historical attempts without new generation or judging
         env:
           EXPORTER_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: |

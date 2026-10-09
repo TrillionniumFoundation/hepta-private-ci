@@ -4,6 +4,8 @@ No models, network, signing keys or semantic judgements are used. The official
 QA files preserve every original hypothesis; the separate citation worklist
 contains only actually delivered excerpts. A zero citation denominator is null,
 not perfect precision. Existing learning.eval owners still verify signed returns.
+Generation and exporter identities remain separate: changing this read-only
+exporter does not require, imply or authenticate another model execution.
 """
 
 import argparse
@@ -81,11 +83,21 @@ def export(
         or len(plan.cases) != plan.native_total
     ):
         raise ValueError("complete native LongMemEval plan required")
-    # A handoff is only valid for the exact source that produced the native
-    # attempts.  In particular, do not let a later exporter HEAD re-label an
-    # older successful run as current-head evidence.
-    if binding.get("source_commit") != exporter_commit:
-        raise ValueError("execution source commit differs from exporter HEAD")
+    # The externally pinned plan owns generation identity. A different exporter
+    # can review those immutable historical attempts without rerunning the model.
+    # Never replace this identity with the exporter or infer a fresh execution.
+    execution_source = (
+        binding.get("source_commit") if isinstance(binding, dict) else None
+    )
+    if not isinstance(execution_source, str) or not re.fullmatch(
+        r"[0-9a-f]{40}", execution_source
+    ):
+        raise ValueError("exact execution source required in pinned plan")
+    source_classification = (
+        "same-source-record-review"
+        if execution_source == exporter_commit
+        else "historical-source-record-review"
+    )
     manifest = read_bytes(review_root / "SHA256SUMS", 4096)
     if sha(manifest) != expected_manifest_sha256:
         raise ValueError("external review manifest pin mismatch")
@@ -229,7 +241,10 @@ def export(
     result = dict(
         schema="hepta.memory-adjudication.handoff.v1",
         exporter_commit=exporter_commit,
-        execution_source_commit=binding["source_commit"],
+        execution_source_commit=execution_source,
+        source_classification=source_classification,
+        new_model_execution=False,
+        current_head_generation_claim=False,
         original_review_manifest_sha256=expected_manifest_sha256,
         preregistered_plan_sha256=plan_hash,
         native_questions=plan.native_total,
@@ -264,6 +279,9 @@ def export(
     )
     (output / "SCOPE.txt").write_text(
         "Unsigned transfer, not a generator attestation, semantic judgement, future observation or production authority.\n"
+        f"Generation source: {execution_source}. Exporter source: {exporter_commit}. Classification: {source_classification}.\n"
+        "This operation reexports existing answers; it does not execute a model or establish current-head generation.\n"
+        "An exporter-source match is identity metadata, not a fresh execution receipt. Historical generation must retain its original source.\n"
         "Use official-qa-inputs only with the official LongMemEval QA evaluator and the original pinned corpus.\n"
         "QA correctness and citation entailment are distinct. Do not expose QA labels or arm comparisons to the blinded citation reviewer.\n"
         "Canonical request bytes must not be altered or retroactively presented as contemporaneously signed generation.\n"
