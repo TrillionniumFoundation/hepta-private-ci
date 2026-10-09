@@ -1,0 +1,133 @@
+name: MemoryCell source-only gate review
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-cell-source-review.yml'
+permissions:
+  contents: read
+jobs:
+  prepare:
+    if: github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: ./.github/actions/setup-ci
+      - name: Apply bounded source patch; leave all workflows unchanged
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-gate-candidate
+          python3 - <<'PY'
+          import base64, hashlib, lzma, re, subprocess
+          from pathlib import Path
+          source = Path('.github/workflows/hepta-memory-cell-gate-prepare.yml').read_text()
+          encoded = re.search(r"encoded = '''(.*?)'''", source, re.S).group(1)
+          patch = lzma.decompress(base64.b64decode(''.join(encoded.split()), validate=True))
+          assert len(patch) == 82444
+          assert hashlib.sha256(patch).hexdigest() == '19a07f6b2fe783c906d03e582b297a7031f9329cd2365ca66daaf6076da3bfb1'
+          Path('/tmp/memory-gate-candidate/original.patch').write_bytes(patch)
+          paths = [line.split('\t')[-1] for line in subprocess.check_output(['git','apply','--numstat','/tmp/memory-gate-candidate/original.patch'],text=True).splitlines()]
+          assert len(paths) == 16 and len(set(paths)) == 16
+          assert all(p.startswith(('codex-rs/hepta-agentd/src/', 'codex-rs/hepta-intelligence-eval/')) or p in ('.github/workflows/hepta-memory-cell-continuation.yml','codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs') for p in paths)
+          subprocess.run(['git','fetch','--no-tags','--depth=1','origin','5d6c1b49a7e776842a2653c260972e2f3df3ad96'],check=True)
+          subprocess.run(['git','diff','--exit-code','5d6c1b49a7e776842a2653c260972e2f3df3ad96','HEAD','--',*paths],check=True)
+          subprocess.run(['git','apply','--check','/tmp/memory-gate-candidate/original.patch'],check=True)
+          subprocess.run(['git','apply','--index','/tmp/memory-gate-candidate/original.patch'],check=True)
+          subprocess.run(['git','restore','--source=HEAD','--staged','--worktree','.github/workflows/'],check=True)
+          Path('/tmp/memory-gate-paths').write_text('\n'.join(p for p in paths if not p.startswith('.github/'))+'\n')
+          PY
+          python3 -m pip install uv==0.8.22
+          just fmt --base 5d6c1b49a7e776842a2653c260972e2f3df3ad96
+          git restore --source=HEAD --staged --worktree .github/workflows/
+          while IFS= read -r path; do git add -- "$path"; done < /tmp/memory-gate-paths
+          if git diff --cached --name-only | grep -q '^.github/'; then echo 'Unexpected workflow mutation'; exit 1; fi
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(memory-cell): enforce complete signed citation census and fleet delivery fence'
+          git show --stat HEAD > /tmp/memory-gate-candidate/stat.txt
+          git diff 5d6c1b49a7e776842a2653c260972e2f3df3ad96 HEAD --binary -- codex-rs > /tmp/memory-gate-candidate/implementation.patch
+          git rev-parse HEAD > /tmp/memory-gate-candidate/sha.txt
+          git archive --format=tar.gz HEAD codex-rs/hepta-agentd/src codex-rs/hepta-intelligence-eval/src codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs > /tmp/memory-gate-candidate/formatted-sources.tar.gz
+          git push origin "HEAD:refs/heads/codex/memory-cell-gate-${GITHUB_RUN_ID}"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-gate-review-candidate
+          path: /tmp/memory-gate-candidate
+          if-no-files-found: error
+  evaluation:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Test exact evaluation and citation census
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/gate-evaluation
+          just test -p codex-hepta-intelligence-eval 2>&1 | tee /tmp/gate-evaluation/tests.log
+      - name: Strict scoped Clippy
+        if: ${{ !cancelled() }}
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo clippy -p codex-hepta-intelligence-eval --lib --tests -- -D warnings 2>&1 | tee /tmp/gate-evaluation/clippy.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-gate-evaluation-tests
+          path: /tmp/gate-evaluation
+  service:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.prepare.outputs.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Actual fleet feed and signed acknowledgement tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/gate-service
+          just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests 2>&1 | tee /tmp/gate-service/fleet.log
+      - name: Native owner regressions; no failures skipped
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-infer-worker-host 2>&1 | tee /tmp/gate-service/worker.log
+      - name: Physical process authority and cancellation mechanics
+        if: ${{ !cancelled() }}
+        run: |
+          set -euo pipefail
+          just test -p codex-hepta-agentd --lib memory_serving_process::tests 2>&1 | tee /tmp/gate-service/process.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-gate-service-tests
+          path: /tmp/gate-service
