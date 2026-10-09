@@ -1,0 +1,135 @@
+name: PoN exact blocking log readback
+on:
+  push:
+    branches: [test/pon-blocking-log-readback-20261009]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Read actual failed baseline and cancelled V8 jobs without rerunning or changing them
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/blocking-readback"
+          mkdir -p "$out"
+          export OUT="$out"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          root = pathlib.Path(os.environ['OUT'])
+          repository = 'TrillionniumFoundation/hepta-private-ci'
+          expected = '650536d4446531c2c0aebff626d7bb5a4b833747'
+          api = 'https://api.github.com/repos/' + repository
+          headers = {'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
+                     'Accept': 'application/vnd.github+json',
+                     'X-GitHub-Api-Version': '2022-11-28'}
+          limit = 32 * 1024 * 1024
+          remaining = 256 * 1024 * 1024
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+                  return None
+
+          opener = urllib.request.build_opener(NoRedirect())
+
+          def bounded(response, bound):
+              data = response.read(bound + 1)
+              if len(data) > bound:
+                  raise ValueError('LOG_BYTES_BOUND')
+              return data
+
+          def request(path, bound, redirects=False):
+              req = urllib.request.Request(api + path, headers=headers)
+              try:
+                  with opener.open(req, timeout=60) as response:
+                      return bounded(response, bound)
+              except urllib.error.HTTPError as error:
+                  if not redirects or error.code not in (301, 302, 303, 307, 308):
+                      raise
+                  location = error.headers['Location']
+                  parsed = urllib.parse.urlparse(location)
+                  host = parsed.hostname or ''
+                  if (parsed.scheme != 'https' or parsed.username is not None or
+                      not (host.endswith('.blob.core.windows.net') or
+                           host.endswith('.actions.githubusercontent.com'))):
+                      raise ValueError('LOG_REDIRECT_ORIGIN') from None
+                  # Never forward the GitHub token to the signed storage URL.
+                  with urllib.request.urlopen(location, timeout=60) as response:
+                      return bounded(response, bound)
+
+          def get(path):
+              return json.loads(request(path, 8 * 1024 * 1024))
+
+          index = {'schema': 'pon-exact-blocking-log-readback-v1',
+                   'expected_head': expected, 'runs': [], 'errors': [],
+                   'original_results_changed': False,
+                   'source_or_ref_writes': False, 'acceptance_granted': False}
+          for run_id in (37942810656, 37942810246):
+              run = get('/actions/runs/' + str(run_id))
+              if run['head_sha'] != expected or run['id'] != run_id:
+                  raise ValueError('RUN_SOURCE_MISMATCH')
+              (root / (str(run_id) + '-run.json')).write_text(json.dumps(run, indent=2) + '\n')
+              jobs = []
+              for page in range(1, 6):
+                  result = get('/actions/runs/' + str(run_id) + '/jobs?filter=latest&per_page=100&page=' + str(page))
+                  jobs.extend(result['jobs'])
+                  if len(jobs) >= result['total_count']:
+                      break
+              else:
+                  raise ValueError('JOB_PAGE_BOUND')
+              (root / (str(run_id) + '-jobs.json')).write_text(json.dumps(jobs, indent=2) + '\n')
+              selected = [job for job in jobs if job['conclusion'] == 'failure' or
+                          (job['conclusion'] == 'cancelled' and
+                           (run_id == 37942810246 or job['name'].lower().startswith('sdk /')))]
+              if len(selected) > 20:
+                  raise ValueError('JOB_COUNT_BOUND')
+              summary = {'run_id': run_id, 'run_attempt': run['run_attempt'],
+                         'head_sha': run['head_sha'], 'status': run['status'],
+                         'conclusion': run['conclusion'], 'selected_jobs': []}
+              for job in selected:
+                  if job['run_id'] != run_id:
+                      raise ValueError('JOB_RUN_MISMATCH')
+                  row = {key: job[key] for key in ('id', 'name', 'status', 'conclusion')}
+                  try:
+                      data = request('/actions/jobs/' + str(job['id']) + '/logs', min(limit, remaining), redirects=True)
+                      if not data:
+                          raise ValueError('EMPTY_JOB_LOG')
+                      remaining -= len(data)
+                      name = str(run_id) + '-' + str(job['id']) + '.log'
+                      (root / name).write_bytes(data)
+                      row.update({'file': name, 'bytes': len(data),
+                                  'sha256': hashlib.sha256(data).hexdigest(), 'complete': True})
+                  except (urllib.error.HTTPError, urllib.error.URLError, ValueError, TimeoutError) as error:
+                      row['download_error'] = {'type': type(error).__name__, 'status': getattr(error, 'code', None)}
+                      index['errors'].append({'run_id': run_id, 'job_id': job['id'], **row['download_error']})
+                  summary['selected_jobs'].append(row)
+              index['runs'].append(summary)
+          (root / 'index.json').write_text(json.dumps(index, indent=2) + '\n')
+          (root / 'SCOPE.txt').write_text('Read-only exact-source diagnostics of historical failed/cancelled runs. No rerun, source mutation, ref update, secret disclosure, ignored test, protection change or acceptance credit. This temporary workflow is not part of the delivery tree.\n')
+          with (root / 'SHA256SUMS').open('w') as output:
+              for path in sorted(root.iterdir()):
+                  if path.name != 'SHA256SUMS' and path.is_file():
+                      output.write(hashlib.sha256(path.read_bytes()).hexdigest() + '  ' + path.name + '\n')
+          if index['errors']:
+              raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: exact-blocking-readback-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/blocking-readback
+          if-no-files-found: error
+          retention-days: 14
