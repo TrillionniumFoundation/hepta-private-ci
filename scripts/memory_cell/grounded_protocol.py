@@ -73,14 +73,23 @@ def quote_options(sources: list[dict]) -> tuple[Quote, ...]:
                 not body
                 or len(body) > MAX_QUOTE_CHARS
                 or MARKER.search(body.encode())
-                or (source.get("partial", False) and position == len(text)
-                    and not body.endswith((".", "!", "?")))
+                or (
+                    source.get("partial", False)
+                    and position == len(text)
+                    and not body.endswith((".", "!", "?"))
+                )
                 or any(ord(c) < 32 for c in body)
             ):
                 continue
             begin = start + left
-            quote = Quote(label, identity, root, len(text[:begin].encode()),
-                          len(text[:begin + len(body)].encode()), body)
+            quote = Quote(
+                label,
+                identity,
+                root,
+                len(text[:begin].encode()),
+                len(text[: begin + len(body)].encode()),
+                body,
+            )
             if quote.render() in rendered:
                 continue
             rendered.add(quote.render())
@@ -94,17 +103,28 @@ def quote_options(sources: list[dict]) -> tuple[Quote, ...]:
 def verify_output(answer: str, options: tuple[Quote, ...]) -> dict:
     """Return a structural measurement. Never issue an entailment judgement."""
     if answer == ABSTAIN:
-        return {"abstained": True, "copy_verified": False,
-                "semantic_precision": None, "relevance_verified": False}
+        return {
+            "abstained": True,
+            "copy_verified": False,
+            "semantic_precision": None,
+            "relevance_verified": False,
+        }
     matching = [q for q in options if q.render() == answer]
     if len(matching) != 1:
         raise ValueError("output is not one complete generated source quotation")
     q = matching[0]
-    return {"abstained": False, "copy_verified": True, "label": q.label,
-            "source_id": q.source_id, "root": q.root,
-            "source_start": q.start, "source_end": q.end,
-            "quote_sha256": sha(q.text.encode()),
-            "semantic_precision": None, "relevance_verified": False}
+    return {
+        "abstained": False,
+        "copy_verified": True,
+        "label": q.label,
+        "source_id": q.source_id,
+        "root": q.root,
+        "source_start": q.start,
+        "source_end": q.end,
+        "quote_sha256": sha(q.text.encode()),
+        "semantic_precision": None,
+        "relevance_verified": False,
+    }
 
 
 class QuoteTrie:
@@ -124,9 +144,15 @@ class QuoteTrie:
         self.excluded = 0
         for text in (ABSTAIN, *(q.render() for q in options)):
             ids = tuple(tokenizer.encode(text, add_special_tokens=False))
-            if (not ids or len(ids) + 1 > MAX_NEW_TOKENS or self.eos in ids
-                or tokenizer.decode(ids, skip_special_tokens=False,
-                                    clean_up_tokenization_spaces=False) != text):
+            if (
+                not ids
+                or len(ids) + 1 > MAX_NEW_TOKENS
+                or self.eos in ids
+                or tokenizer.decode(
+                    ids, skip_special_tokens=False, clean_up_tokenization_spaces=False
+                )
+                != text
+            ):
                 self.excluded += 1
                 continue
             if ids in self.outputs and self.outputs[ids] != text:
@@ -139,9 +165,9 @@ class QuoteTrie:
 
     def allowed(self, batch_id: int, input_ids) -> list[int]:
         ids = tuple(input_ids.tolist())
-        if batch_id != 0 or ids[:len(self.prompt)] != self.prompt:
+        if batch_id != 0 or ids[: len(self.prompt)] != self.prompt:
             raise ValueError("constraint called for a different prompt/batch")
-        suffix = ids[len(self.prompt):]
+        suffix = ids[len(self.prompt) :]
         result = self.next.get(suffix)
         if not result:
             raise ValueError("decoder left the admitted grammar")
@@ -156,12 +182,18 @@ class QuoteTrie:
         return text
 
 
-def completion_ids(tokenizer, prompt: list[int], completion: str,
-                   *, maximum: int) -> tuple[list[int], list[int]]:
+def completion_ids(
+    tokenizer, prompt: list[int], completion: str, *, maximum: int
+) -> tuple[list[int], list[int]]:
     """Mask every prompt token; never truncate an answer or its citation label."""
     target = tokenizer.encode(completion, add_special_tokens=False)
     eos = tokenizer.eos_token_id
-    if (not prompt or not target or type(eos) is not int or eos in target
-        or len(prompt) + len(target) + 1 > maximum):
+    if (
+        not prompt
+        or not target
+        or type(eos) is not int
+        or eos in target
+        or len(prompt) + len(target) + 1 > maximum
+    ):
         raise ValueError("invalid or oversized completion-only example")
     return prompt + target + [eos], [-100] * len(prompt) + target + [eos]

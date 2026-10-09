@@ -18,13 +18,26 @@ use tokio_util::sync::CancellationToken;
 #[tokio::main]
 async fn main() -> Result<()> {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
-    ensure!(args.len() == 3, "usage: observe_memory_owner SOCKET EXPECTED_FENCE.json NEW_OUTPUT.json");
+    ensure!(
+        args.len() == 3,
+        "usage: observe_memory_owner SOCKET EXPECTED_FENCE.json NEW_OUTPUT.json"
+    );
     let expectation = PathBuf::from(&args[1]);
     let output = PathBuf::from(&args[2]);
-    ensure!(expectation.is_absolute() && output.is_absolute(), "absolute paths required");
-    ensure!(!std::fs::symlink_metadata(&expectation)?.file_type().is_symlink(), "symlink fence rejected");
+    ensure!(
+        expectation.is_absolute() && output.is_absolute(),
+        "absolute paths required"
+    );
+    ensure!(
+        !std::fs::symlink_metadata(&expectation)?
+            .file_type()
+            .is_symlink(),
+        "symlink fence rejected"
+    );
     let mut bytes = Vec::new();
-    std::fs::File::open(&expectation)?.take(65_537).read_to_end(&mut bytes)?;
+    std::fs::File::open(&expectation)?
+        .take(65_537)
+        .read_to_end(&mut bytes)?;
     ensure!(bytes.len() <= 65_536, "fence exceeds byte bound");
     let fence: SupervisordControlFence = serde_json::from_slice(&bytes)?;
     let client = SupervisordClient::new(PathBuf::from(&args[0]))?;
@@ -38,7 +51,10 @@ async fn main() -> Result<()> {
     });
     let mut serialized = serde_json::to_vec_pretty(&envelope)?;
     serialized.push(b'\n');
-    ensure!(serialized.len() <= 262_144, "observation output exceeds byte bound");
+    ensure!(
+        serialized.len() <= 262_144,
+        "observation output exceeds byte bound"
+    );
     let mut options = OpenOptions::new();
     options.create_new(true).write(true);
     #[cfg(unix)]

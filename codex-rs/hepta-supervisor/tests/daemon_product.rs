@@ -121,9 +121,19 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
         restarted_health.supervisor_epoch != initial_epoch,
         "supervisord reused its authority epoch after daemon restart"
     );
-    ensure!(restarted_client.observe_current(&original_fence, &stop).await.is_err());
-    let current_fence = restarted_client.snapshot(agent_id.clone()).await?.control_fence;
-    let recovered = restarted_client.observe_current(&current_fence, &stop).await?;
+    ensure!(
+        restarted_client
+            .observe_current(&original_fence, &stop)
+            .await
+            .is_err()
+    );
+    let current_fence = restarted_client
+        .snapshot(agent_id.clone())
+        .await?
+        .control_fence;
+    let recovered = restarted_client
+        .observe_current(&current_fence, &stop)
+        .await?;
     ensure!(recovered.health.supervisor_epoch == restarted_health.supervisor_epoch);
     ensure!(!recovered.production_accepted);
     let roster = restarted_client.roster(16).await?;

@@ -3,7 +3,12 @@
 import unittest
 
 from grounded_protocol import (
-    ABSTAIN, MAX_NEW_TOKENS, QuoteTrie, completion_ids, quote_options, verify_output,
+    ABSTAIN,
+    MAX_NEW_TOKENS,
+    QuoteTrie,
+    completion_ids,
+    quote_options,
+    verify_output,
 )
 
 
@@ -32,7 +37,7 @@ class GroundedProtocolTests(unittest.TestCase):
         options = quote_options(sources)
         for option in options:
             self.assertEqual(
-                sources[0]["excerpt"].encode()[option.start:option.end].decode(),
+                sources[0]["excerpt"].encode()[option.start : option.end].decode(),
                 option.text,
             )
             result = verify_output(option.render(), options)
@@ -47,22 +52,34 @@ class GroundedProtocolTests(unittest.TestCase):
 
     def test_hallucinated_label_paraphrase_and_missing_label_reject(self):
         options = quote_options([source("The code is blue.")])
-        for answer in ('"The code is blue." [E9]', '"The code is red." [E1]',
-                       'The code is blue.', '"The code is blue." [E1] more'):
+        for answer in (
+            '"The code is blue." [E9]',
+            '"The code is red." [E1]',
+            "The code is blue.",
+            '"The code is blue." [E1] more',
+        ):
             with self.subTest(answer=answer), self.assertRaises(ValueError):
                 verify_output(answer, options)
 
     def test_abstention_is_not_perfect_precision_or_source_copy(self):
-        self.assertEqual(verify_output(ABSTAIN, ()), {
-            "abstained": True, "copy_verified": False,
-            "semantic_precision": None, "relevance_verified": False,
-        })
+        self.assertEqual(
+            verify_output(ABSTAIN, ()),
+            {
+                "abstained": True,
+                "copy_verified": False,
+                "semantic_precision": None,
+                "relevance_verified": False,
+            },
+        )
 
     def test_duplicate_id_label_invalid_source_and_excess_bound_reject(self):
-        for values in ([source("a"), source("b")],
-                       [source("a"), source("b", "E2")],
-                       [source("a\0b")], [source("a", "E0")],
-                       [source("a", f"E{i+1}", f"s{i}") for i in range(9)]):
+        for values in (
+            [source("a"), source("b")],
+            [source("a"), source("b", "E2")],
+            [source("a\0b")],
+            [source("a", "E0")],
+            [source("a", f"E{i + 1}", f"s{i}") for i in range(9)],
+        ):
             with self.assertRaises(ValueError):
                 quote_options(values)
 
@@ -81,9 +98,9 @@ class GroundedProtocolTests(unittest.TestCase):
             for token in (*sequence, tok.eos_token_id):
                 self.assertIn(token, trie.allowed(0, Tokens(prefix)))
                 prefix.append(token)
-            self.assertEqual(trie.completed(prefix[len(prompt):]), text)
+            self.assertEqual(trie.completed(prefix[len(prompt) :]), text)
             verify_output(text, options)
-            self.assertLessEqual(len(sequence)+1, MAX_NEW_TOKENS)
+            self.assertLessEqual(len(sequence) + 1, MAX_NEW_TOKENS)
 
     def test_wrong_prompt_or_batch_never_gets_a_permissive_fallback(self):
         trie = QuoteTrie(ByteTokenizer(), [1000], quote_options([source("Blue.")]))
@@ -101,13 +118,13 @@ class GroundedProtocolTests(unittest.TestCase):
         tok = ByteTokenizer()
         prefix = [1000, 1, 2]
         inputs, labels = completion_ids(tok, prefix, '"Blue." [E1]', maximum=100)
-        self.assertEqual(inputs, prefix+list(b'"Blue." [E1]')+[256])
-        self.assertEqual(labels, [-100]*3+inputs[3:])
+        self.assertEqual(inputs, prefix + list(b'"Blue." [E1]') + [256])
+        self.assertEqual(labels, [-100] * 3 + inputs[3:])
         with self.assertRaises(ValueError):
             completion_ids(tok, prefix, '"Blue." [E1]', maximum=10)
 
     def test_long_tokenization_excluded_not_cut_or_rewritten(self):
-        options = quote_options([source("x"*100)])
+        options = quote_options([source("x" * 100)])
         trie = QuoteTrie(ByteTokenizer(), [1000], options)
         self.assertEqual(set(trie.outputs.values()), {ABSTAIN})
         self.assertEqual(trie.excluded, 1)
@@ -116,6 +133,7 @@ class GroundedProtocolTests(unittest.TestCase):
         class BadTokenizer(ByteTokenizer):
             def decode(self, ids, **_):
                 return super().decode(ids).lower()
+
         with self.assertRaises(ValueError):
             QuoteTrie(BadTokenizer(), [1000], ())
 

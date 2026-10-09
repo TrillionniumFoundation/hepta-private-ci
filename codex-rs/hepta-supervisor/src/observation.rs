@@ -49,9 +49,9 @@ impl SupervisordClient {
         expected: &SupervisordControlFence,
         stop: &CancellationToken,
     ) -> Result<SupervisordObservationV1, SupervisorError> {
-        expected.validate().map_err(|_| {
-            SupervisorError::Invalid("invalid observation expectation".to_string())
-        })?;
+        expected
+            .validate()
+            .map_err(|_| SupervisorError::Invalid("invalid observation expectation".to_string()))?;
         let started = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|_| {
             SupervisorError::Invalid("observation clock precedes epoch".to_string())
         })?;
@@ -60,8 +60,12 @@ impl SupervisordClient {
             let health = self.health().await?;
             let agent = self.snapshot(expected.agent_id.clone()).await?;
             let selection = self.release_selection(expected.agent_id.clone()).await?;
-            let production = self.production_mutation_status(expected.agent_id.clone()).await?;
-            let production_after = self.production_mutation_status(expected.agent_id.clone()).await?;
+            let production = self
+                .production_mutation_status(expected.agent_id.clone())
+                .await?;
+            let production_after = self
+                .production_mutation_status(expected.agent_id.clone())
+                .await?;
             let selection_after = self.release_selection(expected.agent_id.clone()).await?;
             let agent_after = self.snapshot(expected.agent_id.clone()).await?;
             let health_after = self.health().await?;
@@ -83,7 +87,9 @@ impl SupervisordClient {
                 SupervisorError::Invalid("observation clock precedes epoch".to_string())
             })?;
             if ended < started {
-                return Err(SupervisorError::Invalid("observation clock regressed".to_string()));
+                return Err(SupervisorError::Invalid(
+                    "observation clock regressed".to_string(),
+                ));
             }
             Ok(SupervisordObservationV1 {
                 schema: "hepta.supervisord.read-observation.v1",

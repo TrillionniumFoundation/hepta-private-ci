@@ -52,18 +52,30 @@ fn status() -> SupervisordAgentStatus {
         release_change_pending: false,
         control_fence: fence,
         matrix: SupervisordMatrixStatus {
-            configured: false, active: false, healthy: false, degraded: false,
-            process_id: None, attached_agent_generation: None, binding_revision: None,
-            restart_attempt: 0, last_error: None,
+            configured: false,
+            active: false,
+            healthy: false,
+            degraded: false,
+            process_id: None,
+            attached_agent_generation: None,
+            binding_revision: None,
+            restart_attempt: 0,
+            last_error: None,
         },
     }
 }
 
-async fn peer(mut listener: UnixListener, initial: SupervisordAgentStatus,
-              last: SupervisordAgentStatus) -> Vec<SupervisordMethod> {
+async fn peer(
+    mut listener: UnixListener,
+    initial: SupervisordAgentStatus,
+    last: SupervisordAgentStatus,
+) -> Vec<SupervisordMethod> {
     let health = SupervisordHealth {
-        ready: true, supervisor_epoch: initial.control_fence.supervisor_epoch.clone(),
-        process_id: 1234, registered_agents: 1, observed_faults: 0,
+        ready: true,
+        supervisor_epoch: initial.control_fence.supervisor_epoch.clone(),
+        process_id: 1234,
+        registered_agents: 1,
+        observed_faults: 0,
     };
     let payloads = [
         SupervisordPayload::Health(health.clone()),
@@ -88,7 +100,8 @@ async fn peer(mut listener: UnixListener, initial: SupervisordAgentStatus,
             schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
             payload,
-        }).unwrap();
+        })
+        .unwrap();
         bytes.push(b'\n');
         reader.get_mut().write_all(&bytes).await.unwrap();
     }
@@ -103,21 +116,39 @@ async fn bracket_uses_only_existing_read_rpcs_and_is_never_atomic_acceptance() {
     let initial = status();
     let task = tokio::spawn(peer(listener, initial.clone(), initial.clone()));
     let client = SupervisordClient::new(socket).unwrap();
-    let result = client.observe_current(&initial.control_fence, &CancellationToken::new()).await.unwrap();
+    let result = client
+        .observe_current(&initial.control_fence, &CancellationToken::new())
+        .await
+        .unwrap();
     assert_eq!(result.agent, initial.clone());
-    assert!(!result.atomic_snapshot && !result.independently_attested && !result.production_accepted);
+    assert!(
+        !result.atomic_snapshot && !result.independently_attested && !result.production_accepted
+    );
     assert!(result.ended_unix_micros >= result.started_unix_micros);
     let agent_id = initial.agent_id;
-    assert_eq!(task.await.unwrap(), vec![
-        SupervisordMethod::Health,
-        SupervisordMethod::Snapshot { agent_id: agent_id.clone() },
-        SupervisordMethod::ReleaseSelection { agent_id: agent_id.clone() },
-        SupervisordMethod::ProductionMutationStatus { agent_id: agent_id.clone() },
-        SupervisordMethod::ProductionMutationStatus { agent_id: agent_id.clone() },
-        SupervisordMethod::ReleaseSelection { agent_id: agent_id.clone() },
-        SupervisordMethod::Snapshot { agent_id },
-        SupervisordMethod::Health,
-    ]);
+    assert_eq!(
+        task.await.unwrap(),
+        vec![
+            SupervisordMethod::Health,
+            SupervisordMethod::Snapshot {
+                agent_id: agent_id.clone()
+            },
+            SupervisordMethod::ReleaseSelection {
+                agent_id: agent_id.clone()
+            },
+            SupervisordMethod::ProductionMutationStatus {
+                agent_id: agent_id.clone()
+            },
+            SupervisordMethod::ProductionMutationStatus {
+                agent_id: agent_id.clone()
+            },
+            SupervisordMethod::ReleaseSelection {
+                agent_id: agent_id.clone()
+            },
+            SupervisordMethod::Snapshot { agent_id },
+            SupervisordMethod::Health,
+        ]
+    );
 }
 
 #[tokio::test]
@@ -131,7 +162,12 @@ async fn concurrent_generation_change_is_not_a_complete_observation() {
     changed.control_fence.lifecycle_generation += 1;
     let task = tokio::spawn(peer(listener, initial.clone(), changed));
     let client = SupervisordClient::new(socket).unwrap();
-    assert!(client.observe_current(&initial.control_fence, &CancellationToken::new()).await.is_err());
+    assert!(
+        client
+            .observe_current(&initial.control_fence, &CancellationToken::new())
+            .await
+            .is_err()
+    );
     assert_eq!(task.await.unwrap().len(), 8);
 }
 
@@ -145,7 +181,12 @@ async fn restarted_owner_cannot_reuse_a_previous_expectation() {
     expected.supervisor_epoch = SupervisorEpoch::new();
     let task = tokio::spawn(peer(listener, current.clone(), current));
     let client = SupervisordClient::new(socket).unwrap();
-    assert!(client.observe_current(&expected, &CancellationToken::new()).await.is_err());
+    assert!(
+        client
+            .observe_current(&expected, &CancellationToken::new())
+            .await
+            .is_err()
+    );
     assert_eq!(task.await.unwrap().len(), 8);
 }
 
@@ -155,7 +196,10 @@ async fn pre_cancelled_observer_does_not_connect_or_mutate() {
     let client = SupervisordClient::new(temp.path().join("absent.sock")).unwrap();
     let stop = CancellationToken::new();
     stop.cancel();
-    let result = client.observe_current(&status().control_fence, &stop).await.unwrap_err();
+    let result = client
+        .observe_current(&status().control_fence, &stop)
+        .await
+        .unwrap_err();
     assert!(result.to_string().contains("observation cancelled"));
 }
 
@@ -175,9 +219,17 @@ async fn blocked_read_cancels_without_detaching_an_owner_effect() {
         drop(stream);
     });
     let client = SupervisordClient::new(socket).unwrap();
-    let cancel = async { entered.notified().await; stop.cancel(); };
+    let cancel = async {
+        entered.notified().await;
+        stop.cancel();
+    };
     let expected = status().control_fence;
     let (result, ()) = tokio::join!(client.observe_current(&expected, &stop), cancel);
-    assert!(result.unwrap_err().to_string().contains("observation cancelled"));
+    assert!(
+        result
+            .unwrap_err()
+            .to_string()
+            .contains("observation cancelled")
+    );
     task.await.unwrap();
 }

@@ -30,6 +30,7 @@ jobs:
           just test -p codex-hepta-supervisor --test daemon_product 2>&1 | tee /tmp/memory-owner-observation/actual-daemon.log
           cd codex-rs
           cargo check -p codex-hepta-supervisor --example observe_memory_owner 2>&1 | tee /tmp/memory-owner-observation/client-check.log
+          cargo clippy -p codex-hepta-supervisor --lib --example observe_memory_owner --test daemon_product -- -D warnings 2>&1 | tee /tmp/memory-owner-observation/clippy.log
       - name: Preserve source identity and limits
         if: always()
         run: |
