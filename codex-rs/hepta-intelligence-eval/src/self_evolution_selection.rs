@@ -90,6 +90,8 @@ pub struct PreparedSelfEvolutionSelectionV1 {
     generator: VerifiedLearningEvidenceV1,
     evaluator: VerifiedLearningEvidenceV1,
     observer: VerifiedLearningEvidenceV1,
+    snapshot_ids: Vec<StableId>,
+    timing: LongitudinalTimeEvidenceV1,
 }
 
 impl PreparedSelfEvolutionSelectionV1 {
@@ -110,9 +112,22 @@ pub struct VerifiedSelfEvolutionSelectionV1 {
     selection_digest: Digest32,
     admitted_at: u64,
     evaluation_actors: [VerifiedLearningEvidenceV1; 3],
+    pub(crate) snapshot_ids: Vec<StableId>,
+    pub(crate) timing: LongitudinalTimeEvidenceV1,
 }
 
 impl VerifiedSelfEvolutionSelectionV1 {
+    pub(crate) fn check_observer(
+        &self,
+        observer: &VerifiedLearningEvidenceV1,
+        verifier: &LearningEvidenceVerifierV1,
+        now: u64,
+    ) -> Result<(), SelfEvolutionSelectionError> {
+        self.revalidate_current(verifier, now)?;
+        verify_verified_role_separation(&self.selector, observer, now)?;
+        Ok(())
+    }
+
     /// Cached selection cannot outlive its evidence or a host trust rotation.
     /// This grants no model effect: consumers still need their final-use token.
     pub fn revalidate_current(
@@ -120,8 +135,7 @@ impl VerifiedSelfEvolutionSelectionV1 {
         verifier: &LearningEvidenceVerifierV1,
         now: u64,
     ) -> Result<(), SelfEvolutionSelectionError> {
-        if verifier.trust_digest() != self.receipt.evaluation_trust_digest
-            || now < self.admitted_at
+        if verifier.trust_digest() != self.receipt.evaluation_trust_digest || now < self.admitted_at
         {
             return Err(SelfEvolutionSelectionError::BindingMismatch);
         }
@@ -315,6 +329,8 @@ pub fn prepare_self_evolution_selection_v1(
         generator,
         evaluator,
         observer,
+        snapshot_ids: evaluation_bundle.snapshot_ids,
+        timing: longitudinal_time.clone(),
     })
 }
 
@@ -385,6 +401,8 @@ pub fn admit_self_evolution_selection_v1(
         selection_digest: Digest32::of_bytes(&digest_bytes),
         admitted_at: now,
         evaluation_actors: [prepared.generator, prepared.evaluator, prepared.observer],
+        snapshot_ids: prepared.snapshot_ids,
+        timing: prepared.timing,
     })
 }
 
