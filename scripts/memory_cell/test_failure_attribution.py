@@ -76,6 +76,7 @@ class FailureAttributionTests(unittest.TestCase):
         self.assertEqual(result["denominators"]["planned"], 8)
         self.assertEqual(result["denominators"]["failed"], 1)
         self.assertEqual(result["denominators"]["unanswerable"], 2)
+        self.assertEqual(result["denominators"]["empty_evidence"], 1)
         by_arm = {r["arm"]: r for r in result["records"]}
         self.assertEqual(by_arm["ranking"]["failure_stages"], ["ranking"])
         self.assertEqual(by_arm["generation"]["failure_stages"], ["generation"])

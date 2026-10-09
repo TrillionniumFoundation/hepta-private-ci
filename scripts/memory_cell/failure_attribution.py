@@ -9,7 +9,7 @@ unknown (``semantic_citation_precision`` is always ``None``).
 from __future__ import annotations
 
 import argparse
-from datetime import datetime
+from datetime import UTC, datetime
 import json
 import math
 from pathlib import Path
@@ -149,7 +149,10 @@ def _parse_time(value: Any) -> float | None:
     except ValueError:
         pass
     try:
-        return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=UTC)
+        return parsed.timestamp()
     except ValueError:
         return None
 
@@ -293,8 +296,13 @@ def attribute(
             denominators["unanswerable"] += 1
         else:
             denominators["unknown_answerability"] += 1
+        receipt_value = raw.get("receipt")
         receipt = _receipt(raw)
-        if not receipt.get("delivered_evidence"):
+        if (
+            isinstance(receipt_value, Mapping)
+            and "delivered_evidence" in receipt
+            and not receipt["delivered_evidence"]
+        ):
             denominators["empty_evidence"] += 1
         for stage in stages:
             if stage in counts:
