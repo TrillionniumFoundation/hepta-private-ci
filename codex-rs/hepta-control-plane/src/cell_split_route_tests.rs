@@ -389,6 +389,8 @@ fn cutover_fences_parent_and_emits_child_dispatch_receipt() {
         .activate_children(Generation::new(1).unwrap(), successor, child_routes.clone())
         .unwrap();
     assert_eq!(controller.phase(), CellSplitRoutePhaseV1::ChildrenActive);
+    assert_eq!(controller.cns_latency_observations().observations, 1);
+    assert_eq!(controller.cns_latency_observations().failures, 0);
     let fence = controller.route_fence_receipt().cloned().unwrap();
     assert_eq!(fence.parent_route_digest, cns_route_digest_v1(&old_route));
     assert_eq!(

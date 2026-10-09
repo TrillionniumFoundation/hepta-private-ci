@@ -1214,6 +1214,11 @@ mod tests {
         load.verify(&key.verifying_key()).expect("load verify");
         load.verify_production(&key.verifying_key())
             .expect("production load verify");
+        let metrics = owner.latency_observations();
+        assert_eq!(metrics.cas.observations, 2);
+        assert_eq!(metrics.cas.failures, 0);
+        assert_eq!(metrics.signature.observations, 3);
+        assert_eq!(metrics.signature.failures, 0);
         std::fs::remove_dir_all(root_path).expect("cleanup");
     }
 
