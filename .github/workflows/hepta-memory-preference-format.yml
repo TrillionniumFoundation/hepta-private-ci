@@ -23,6 +23,7 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
+          python3 -m pip install uv==0.8.22
           python3 - <<'PY'
           import ast, json
           from pathlib import Path
