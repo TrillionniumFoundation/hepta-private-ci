@@ -29,7 +29,6 @@ use codex_hepta_types::CellStepReceiptV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use crate::is_generic_learned_role;
 use crate::ArtifactCasOwnerV1;
 use crate::ArtifactRegistry;
 use crate::ArtifactWriteReceiptV1;
@@ -40,6 +39,7 @@ use crate::StateTombstoneReceiptV1;
 use crate::TypedRoleArtifactReceiptV1;
 use crate::TypedRoleArtifactV1;
 use crate::TypedRoleOwnerErrorV1;
+use crate::is_generic_learned_role;
 
 pub const PRODUCTION_ROLE_QUALIFICATION_OWNER_SCHEMA_V1: &str =
     "hepta.learning-artifacts.production-role-qualification-owner.v1";
