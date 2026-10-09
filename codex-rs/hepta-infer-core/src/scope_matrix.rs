@@ -41,6 +41,14 @@ pub struct ScopeMatrixSampleV1 {
     pub journal_fsync_latency: LatencyDistributionV1,
     pub witness_fsync_latency: LatencyDistributionV1,
     pub queue_age_latency: LatencyDistributionV1,
+    pub cas_latency: Option<LatencyDistributionV1>,
+    pub signature_latency: Option<LatencyDistributionV1>,
+    pub cns_latency: Option<LatencyDistributionV1>,
+    pub lock_wait_latency: Option<LatencyDistributionV1>,
+    pub cpu_time_micros: u64,
+    pub gpu_time_micros: Option<u64>,
+    pub npu_time_micros: Option<u64>,
+    pub write_amplification_ppm: u64,
     pub bytes_written: u64,
     pub journal_bytes: u64,
     pub communication_bytes: u64,
@@ -77,6 +85,15 @@ impl ScopeMatrixSampleV1 {
             return Err(ScopeMatrixErrorV1::InvalidSample);
         }
         if self.evidence_class == ScopeMatrixEvidenceClassV1::TargetHost {
+            if self.cpu_time_micros == 0
+                || self.write_amplification_ppm == 0
+                || !self.cas_latency.is_some_and(LatencyDistributionV1::valid)
+                || !self.signature_latency.is_some_and(LatencyDistributionV1::valid)
+                || !self.cns_latency.is_some_and(LatencyDistributionV1::valid)
+                || !self.lock_wait_latency.is_some_and(LatencyDistributionV1::valid)
+            {
+                return Err(ScopeMatrixErrorV1::InvalidSample);
+            }
             match (self.target_host_digest, self.independent_observer_digest) {
                 (Some(host), Some(observer))
                     if !host.is_zero() && !observer.is_zero() && host != observer => {}
