@@ -11,6 +11,7 @@ const MAX_FEATURES: usize = 4_096;
 const MAX_PENDING: usize = 16_384;
 const MAX_BATCH_COUNT: usize = 128;
 const MAX_BATCH_BYTES: usize = 4 * 1024 * 1024;
+const MAX_QUEUED_BYTES: usize = 256 * 1024 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct BatchLaneKeyV1 {
@@ -111,6 +112,7 @@ impl BatchRequestV1 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct BatchPolicyV1 {
     pub max_pending: usize,
+    pub max_queued_feature_bytes: usize,
     pub max_batch_count: usize,
     pub max_batch_bytes: usize,
     pub max_queue_delay_ms: u64,
@@ -120,6 +122,8 @@ impl BatchPolicyV1 {
     pub fn validate(self) -> Result<(), BatchError> {
         if self.max_pending == 0
             || self.max_pending > MAX_PENDING
+            || self.max_queued_feature_bytes == 0
+            || self.max_queued_feature_bytes > MAX_QUEUED_BYTES
             || self.max_batch_count == 0
             || self.max_batch_count > MAX_BATCH_COUNT
             || self.max_batch_bytes == 0
@@ -203,10 +207,14 @@ impl BoundedBatchSchedulerV1 {
         if self.pending.len() >= self.policy.max_pending {
             return Err(BatchError::CapacityExceeded);
         }
-        self.queued_bytes = self
+        let next_bytes = self
             .queued_bytes
             .checked_add(request.features.byte_len())
             .ok_or(BatchError::CapacityExceeded)?;
+        if next_bytes > self.policy.max_queued_feature_bytes {
+            return Err(BatchError::CapacityExceeded);
+        }
+        self.queued_bytes = next_bytes;
         self.pending.insert(request.operation_id.clone(), digest);
         self.lanes.entry(request.lane).or_default().push_back(request);
         Ok(true)
