@@ -1,0 +1,218 @@
+name: Hepta native PoN pair
+on:
+  pull_request:
+    paths:
+      - codex-rs/**
+      - scripts/**
+      - justfile
+      - AGENTS.md
+      - .github/workflows/hepta-pon-native-pair.yml
+permissions:
+  contents: read
+concurrency:
+  group: hepta-pon-pair-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  pair:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        lane: [source-head, base-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: hepta
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+      CHAIN_SOURCE_SHA: 6bfa1c4581b25f6c38e6724bc12a5f3c2be46eae
+      CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '6bfa1c4581b25f6c38e6724bc12a5f3c2be46eae' || '51d0e6ec56ec00a954120faf57eae117367789a8' }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          path: hepta
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.HEPTA_PON_CHAIN_SOURCE }}
+          path: chain
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare native prerequisites and verify both exact source tuples
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pon-pair"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git -C ../chain rev-parse HEAD)" = "$HEPTA_PON_CHAIN_SOURCE"
+          if test "$HEPTA_CI_LANE" = source-head; then
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+            test "$HEPTA_PON_CHAIN_SOURCE" = "$CHAIN_SOURCE_SHA"
+          else
+            test "$HEPTA_CI_LANE" = base-merge
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+            test "$(git -C ../chain show -s --format=%P HEAD)" = "$CHAIN_BASE_SHA $CHAIN_SOURCE_SHA"
+            test "$(git -C ../chain rev-parse HEAD^{tree})" = "$(git -C ../chain merge-tree --write-tree "$CHAIN_BASE_SHA" "$CHAIN_SOURCE_SHA")"
+          fi
+          (cd ../chain && bash scripts/project-preflight.sh --audit)
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-pair/hepta-identity.txt"
+          git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-pair/chain-identity.txt"
+          printf 'lane=%s\nhepta_source=%s\nhepta_base=%s\nhepta_tested=%s\nchain_source=%s\nchain_base=%s\nchain_tested=%s\n' \
+            "$HEPTA_CI_LANE" "$SOURCE_SHA" "$BASE_SHA" "$TESTED_SHA" \
+            "$CHAIN_SOURCE_SHA" "$CHAIN_BASE_SHA" "$HEPTA_PON_CHAIN_SOURCE" \
+            > "$RUNNER_TEMP/pon-pair/tuple.txt"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve existing verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}/hepta
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Prepare existing pinned model conformance environment
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/pon-model-env"
+          "$RUNNER_TEMP/pon-model-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r ../chain/formal/pon-nakamoto-v1/requirements.txt
+      - name: Require actual signed generation-sequence regressions
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-sequence.json" --minimum-tests 7 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-context.json" --minimum-tests 8 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence_context.py -v
+      - name: Require complete bounded native input and original pipe controls
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 15 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
+      - name: Require complete CI observer and recent-window regressions
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ci-execution.json" --minimum-tests 35 -- python3 ../chain/scripts/ci/test_ci_execution.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recent-window.json" --minimum-tests 13 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::error_boundary_tests -- --nocapture --test-threads=1
+      - name: Require exact account branch-byte and complete lifting regressions
+        run: |
+          set -euo pipefail
+          for selector in native_branch_single_buffer_matches_original_wire native_branch_single_buffer_preserves_every_lift_depth; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "account_archive_prototype::native_primitive_tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require complete authenticated snapshot retention and rollback controls
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-snapshots.json" --minimum-tests 16 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated_tests:: -- --show-output --test-threads=1
+      - name: Require complete native SQL reuse and conditional query-bound controls
+        env:
+          TRNM_RETAINED_DELTA_COST_PATH: ${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests 28 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-query-bound.json" --minimum-tests 14 -- python3 ../chain/formal/pon-nakamoto-v1/test_work_query_bound.py -v
+      - name: Require every cached-owner integrity and cold-reopen selector
+        run: |
+          set -euo pipefail
+          for selector in cached_block_reads_do_not_hide_genesis_damage_or_rollback cached_parent_reads_observe_changed_work_then_exact_restore cached_commitment_reads_preserve_limits_missing_and_rollback cached_genesis_snapshot_is_reread_and_survives_cold_reopen; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "store::native_authenticated::cached_owner_read_tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Execute the native growth readback regression module
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-readback.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib growth_reservation_io::tests -- --nocapture
+      - name: Require paired native pressure and complete state convergence
+        env:
+          RUSTUP_TOOLCHAIN: "1.95.0"
+        run: |
+          set -euo pipefail
+          cd ../chain
+          python3 scripts/ci/test_run_from_zero_native.py 2>&1 | tee "$RUNNER_TEMP/pon-pair/from-zero-reader.log"
+          python3 scripts/ci/run_from_zero_native.py --out "$RUNNER_TEMP/pon-pair/chain-from-zero-native"
+      - name: Require paired actual CPU depletion and public recovery
+        env:
+          TRNM_PUBLIC_V3_DEPLETION_DIR: ${{ runner.temp }}/pon-pair/chain-depletion
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-depletion.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test public_v3_request_accounting actual_depletion::actual_replay_depletion_public_recovery_and_same_epoch_reopen -- --exact --show-output --test-threads=1
+      - name: Require honest progress during depleted-domain public false traffic
+        env:
+          TRNM_CI_RECEIPT_DIR: ${{ runner.temp }}/pon-pair
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-overlap.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test public_v3_request_accounting actual_depletion::depleted_domain_serves_honest_block_during_rotating_public_false_work -- --exact --show-output --test-threads=1
+      - name: Require paired native retained state and recovery
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recovery.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test continuity_authenticated --test authenticated_storage_cli -- --nocapture --test-threads=1
+      - name: Build the actual pinned native Chain executable
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-build.json" -- cargo +1.95.0 build --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node
+          binary="$(realpath ../chain/trillionnium/target/release/trnm-pon-node)"
+          digest="$(sha256sum "$binary" | cut -d' ' -f1)"
+          echo "HEPTA_PON_CHAIN_BINARY=$binary" >> "$GITHUB_ENV"
+          echo "HEPTA_PON_CHAIN_SHA256=$digest" >> "$GITHUB_ENV"
+          printf '%s\n' "$digest" > "$RUNNER_TEMP/pon-pair/chain-binary.sha256"
+      - name: Prefetch locked Hepta dependencies before offline test execution
+        timeout-minutes: 12
+        env:
+          CARGO_NET_RETRY: "5"
+          CARGO_HTTP_TIMEOUT: "60"
+        run: |
+          # Use the same working directory, pinned toolchain and Cargo config as just test.
+          # This prepares dependencies only. No native test failure is retried.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- bash -c 'cd codex-rs && exec cargo fetch --locked'
+      - name: Compile complete Agentd and run subprocess and observation regressions
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_)' --no-capture
+      - name: Require every concrete pipe failure selector to execute nonempty
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -uo pipefail
+          failed=0
+          for selector in \
+            sealed_adapter_success_observes_full_payload_and_eof \
+            sealed_adapter_blocked_stdin_and_descendant_obey_deadline \
+            sealed_adapter_output_limits_nonzero_and_partial_are_unknown \
+            sealed_adapter_dispatch_retains_preentry_versus_unknown \
+            sealed_adapter_child_environment_is_closed \
+            sealed_exchange_strips_real_preload_before_execution; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E "test($selector)" --no-capture || failed=1
+          done
+          exit "$failed"
+      - name: Execute the actual Chain pair including the explicitly ignored selector
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_sealed_submit_reconcile_confirm_reorg)' --run-ignored only --no-capture
+      - name: Preserve exact tested source and scope
+        if: always()
+        run: |
+          set -uo pipefail
+          mkdir -p "$RUNNER_TEMP/pon-pair"
+          printf 'Exact paired local native %s observation only. No TaskFlow model installation, future efficacy, independent operators, WAN, physical power loss or production acceptance. Running/missing/failed receipts grant no credit.\n' "$HEPTA_CI_LANE" > "$RUNNER_TEMP/pon-pair/SCOPE.txt"
+          failed=0
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA" || failed=1
+          test "$(git -C ../chain rev-parse HEAD)" = "$HEPTA_PON_CHAIN_SOURCE" || failed=1
+          git diff --exit-code || failed=1
+          git diff --cached --exit-code || failed=1
+          git -C ../chain diff --exit-code || failed=1
+          git -C ../chain diff --cached --exit-code || failed=1
+          test -z "$(git status --porcelain --untracked-files=normal)" || failed=1
+          test -z "$(git -C ../chain status --porcelain --untracked-files=normal)" || failed=1
+          exit "$failed"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-pon-pair-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pon-pair/
+          if-no-files-found: error
+          retention-days: 14
