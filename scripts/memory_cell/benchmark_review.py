@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import re
 
 from benchmark_coverage import ARMS, aggregate, decode_plan
 from citation_audit import request_payload, sha
@@ -133,7 +134,69 @@ def paired_diagnostics(plan, reports):
     }
 
 
-def audit_entry(plan, binding, arm, row, family, question=None):
+def _validate_delivered_source_binding(receipt, question, documents):
+    """Bind native receipt excerpts to the pinned source projection.
+
+    A citation queue is intentionally unsigned and is rebuilt from the model
+    receipt. Checking that queue against the receipt alone therefore cannot
+    detect a fabricated source ID/root/excerpt pair. Native generation uses
+    deterministic ``#chunk:<word offset>`` projections, so reproduce those
+    bytes here when the pinned benchmark is available. This remains a
+    structural source check; semantic entailment is still the independent
+    reviewer's job.
+    """
+    if not isinstance(receipt, dict) or not isinstance(
+        receipt.get("delivered_evidence"), list
+    ):
+        raise ValueError("missing delivered native evidence")
+    by_identity = {document.identity: document for document in documents}
+    if len(by_identity) != len(documents):
+        raise ValueError("duplicate pinned native document")
+    chunk_pattern = re.compile(r"^(?P<base>.+)#chunk:(?P<start>[0-9]+)$")
+    for source in receipt["delivered_evidence"]:
+        if not isinstance(source, dict):
+            raise ValueError("invalid delivered native source")
+        try:
+            identity, root, excerpt = (
+                source["id"],
+                source["root"],
+                source["excerpt"],
+            )
+        except (KeyError, TypeError) as error:
+            raise ValueError("incomplete delivered native source") from error
+        match = chunk_pattern.fullmatch(identity) if isinstance(identity, str) else None
+        if match:
+            base = match.group("base")
+            start = int(match.group("start"))
+            if start % 160:
+                raise ValueError("noncanonical native chunk offset")
+            document = by_identity.get(base)
+            if document is None:
+                raise ValueError("delivered native chunk is not pinned")
+            words = document.content.split()
+            expected = " ".join(words[start : start + 192])
+            if not expected:
+                raise ValueError("empty delivered native chunk")
+        else:
+            document = by_identity.get(identity)
+            if document is None:
+                raise ValueError("delivered native source is not pinned")
+            expected = document.content
+        if (
+            document.scope != question.scope
+            or root != document.root
+            or not isinstance(excerpt, str)
+            or not excerpt.strip()
+            or "\0" in excerpt
+            # Reader receipts can be token-prefix truncated. Whitespace
+            # canonicalization matches the native chunk projection while
+            # still rejecting a different source passage.
+            or not " ".join(expected.split()).startswith(" ".join(excerpt.split()))
+        ):
+            raise ValueError("delivered native source bytes/scope drift")
+
+
+def audit_entry(plan, binding, arm, row, family, question=None, *, source_documents=None):
     """Bind a review item to original bytes; never fill missing prompt material."""
     qid = row["question_id"]
     alias = digest(("hepta.memory-benchmark.blind-review.v1", plan.seal(), arm, qid))
@@ -196,6 +259,8 @@ def audit_entry(plan, binding, arm, row, family, question=None):
         or request["prompt_digest"] != receipt.get("input_ids_sha256")
     ):
         raise ValueError("citation request detached from original result")
+    if source_documents is not None:
+        _validate_delivered_source_binding(receipt, question, source_documents)
     if queue.get("schema") == "hepta.memory-citation.native-queue.v1":
         from native import Question
 
@@ -293,6 +358,7 @@ def review(
                 by_arm[arm][qid],
                 family_by_query[qid],
                 questions.get(qid),
+                source_documents=benchmark.documents if benchmark_path is not None else None,
             )
             items.append((item, index))
             status = item["status"]
