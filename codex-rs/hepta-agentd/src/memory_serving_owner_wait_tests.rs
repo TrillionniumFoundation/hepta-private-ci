@@ -24,7 +24,12 @@ async fn already_cancelled_read_does_not_poll_even_a_ready_owner() {
         Ok(())
     })
     .await;
-    assert!(matches!(result, Err(SharedMemoryTrainingError::Invalid("memory owner read cancelled"))));
+    assert!(matches!(
+        result,
+        Err(SharedMemoryTrainingError::Invalid(
+            "memory owner read cancelled"
+        ))
+    ));
     assert!(!polled.load(Ordering::SeqCst));
 }
 
@@ -51,7 +56,9 @@ async fn cancellation_releases_an_earlier_owner_while_a_later_owner_is_locked() 
     assert!(first.try_lock().is_err());
     stop.cancel();
     let result = timeout(Duration::from_secs(1), worker)
-        .await.expect("bounded cancellation").expect("read task joined");
+        .await
+        .expect("bounded cancellation")
+        .expect("read task joined");
     assert!(result.is_err());
     assert!(first.try_lock().is_ok());
     drop(second_guard);
@@ -67,8 +74,14 @@ async fn owner_timeout_drops_all_borrowed_guards_without_running_the_consumer() 
         std::future::pending::<()>().await;
         consumer_called.store(true, Ordering::SeqCst);
         Ok(())
-    }).await;
-    assert!(matches!(result, Err(SharedMemoryTrainingError::Invalid("memory owner read timed out"))));
+    })
+    .await;
+    assert!(matches!(
+        result,
+        Err(SharedMemoryTrainingError::Invalid(
+            "memory owner read timed out"
+        ))
+    ));
     assert!(owner.try_lock().is_ok());
     assert!(!consumer_called.load(Ordering::SeqCst));
 }
@@ -78,18 +91,22 @@ async fn owner_denial_is_preserved_and_cannot_become_an_empty_fresh_view() {
     let stop = CancellationToken::new();
     let result: Result<(), _> = read_owner_phase(&stop, OWNER_READ_LIMIT, async {
         Err(SharedMemoryTrainingError::Invalid("source withdrawn"))
-    }).await;
-    assert!(matches!(result, Err(SharedMemoryTrainingError::Invalid("source withdrawn"))));
+    })
+    .await;
+    assert!(matches!(
+        result,
+        Err(SharedMemoryTrainingError::Invalid("source withdrawn"))
+    ));
     let value = read_owner_phase(&stop, OWNER_READ_LIMIT, async { Ok(vec![3, 5, 8]) })
-        .await.expect("actual owner result");
+        .await
+        .expect("actual owner result");
     assert_eq!(value, vec![3, 5, 8]);
 }
 
 #[tokio::test]
 async fn actual_host_retirement_cancels_a_blocked_read_before_acknowledgement() {
     let shutdown = CancellationToken::new();
-    let mut tasks = RuntimeTasks::new(shutdown.clone(), Duration::from_secs(1))
-        .expect("task host");
+    let mut tasks = RuntimeTasks::new(shutdown.clone(), Duration::from_secs(1)).expect("task host");
     let lock = Arc::new(Mutex::new(()));
     let retirement_lock = Arc::clone(&lock);
     let retired = Arc::new(AtomicBool::new(false));
@@ -97,29 +114,41 @@ async fn actual_host_retirement_cancels_a_blocked_read_before_acknowledgement() 
     let quarantined = Arc::new(AtomicBool::new(false));
     let quarantined_callback = Arc::clone(&quarantined);
     let (entered, observed) = oneshot::channel();
-    tasks.spawn_optional_service(
-        "memory.owner.read",
-        move |stop| async move {
-            let result: Result<(), _> = read_owner_phase(&stop, OWNER_READ_LIMIT, async {
-                let _guard = lock.lock().await;
-                let _ = entered.send(());
-                std::future::pending().await
-            }).await;
-            if stop.is_cancelled() {
+    tasks
+        .spawn_optional_service(
+            "memory.owner.read",
+            move |stop| async move {
+                let result: Result<(), _> = read_owner_phase(&stop, OWNER_READ_LIMIT, async {
+                    let _guard = lock.lock().await;
+                    let _ = entered.send(());
+                    std::future::pending().await
+                })
+                .await;
+                if stop.is_cancelled() {
+                    Ok(())
+                } else {
+                    result.map_err(|error| AgentdError::Protocol(error.to_string()))
+                }
+            },
+            move || {
+                quarantined_callback.store(true, Ordering::SeqCst);
                 Ok(())
-            } else {
-                result.map_err(|error| AgentdError::Protocol(error.to_string()))
-            }
-        },
-        move || { quarantined_callback.store(true, Ordering::SeqCst); Ok(()) },
-        move || {
-            assert!(retirement_lock.try_lock().is_ok(), "owner guard must be dropped before retirement acknowledgement");
-            retired_callback.store(true, Ordering::SeqCst);
-            Ok(())
-        },
-    ).expect("admitted read-only service");
+            },
+            move || {
+                assert!(
+                    retirement_lock.try_lock().is_ok(),
+                    "owner guard must be dropped before retirement acknowledgement"
+                );
+                retired_callback.store(true, Ordering::SeqCst);
+                Ok(())
+            },
+        )
+        .expect("admitted read-only service");
     observed.await.expect("read in flight");
-    tasks.retire_optional("memory.owner.read").await.expect("read is not an unknown effect");
+    tasks
+        .retire_optional("memory.owner.read")
+        .await
+        .expect("read is not an unknown effect");
     assert!(retired.load(Ordering::SeqCst));
     assert!(!quarantined.load(Ordering::SeqCst));
     assert!(!shutdown.is_cancelled());
