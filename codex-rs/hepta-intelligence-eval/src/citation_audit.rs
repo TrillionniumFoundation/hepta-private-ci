@@ -266,15 +266,17 @@ pub fn validate_citation_judgement_v1(
     let mut counts = CitationAuditCountsV1::default();
     for claim in &judgement.claims {
         let (start, end) = (claim.start as usize, claim.end as usize);
-        if !(cursor <= start && start < end && end <= request.answer.len())
-            || !request.answer.is_char_boundary(start)
-            || !request.answer.is_char_boundary(end)
-            || !request.answer[cursor..start]
+        if !(cursor <= start
+            && start < end
+            && end <= request.answer.len()
+            && request.answer.is_char_boundary(start)
+            && request.answer.is_char_boundary(end)
+            && request.answer[cursor..start]
                 .trim_matches([' ', '\t', '\r', '\n'])
                 .is_empty()
-            || request.answer[start..end]
+            && !request.answer[start..end]
                 .trim_matches([' ', '\t', '\r', '\n'])
-                .is_empty()
+                .is_empty())
         {
             return Err(CitationAuditError::Invalid("claim span coverage"));
         }
