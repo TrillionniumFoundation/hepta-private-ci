@@ -25,6 +25,14 @@ fn sample(scopes: usize) -> ScopeMatrixSampleV1 {
         journal_fsync_latency: distribution,
         witness_fsync_latency: distribution,
         queue_age_latency: distribution,
+        cas_latency: None,
+        signature_latency: None,
+        cns_latency: None,
+        lock_wait_latency: None,
+        cpu_time_micros: 0,
+        gpu_time_micros: None,
+        npu_time_micros: None,
+        write_amplification_ppm: 0,
         bytes_written: 500,
         journal_bytes: 300,
         communication_bytes: 100,
@@ -61,6 +69,12 @@ fn cannot_mint_target_host_evidence_from_a_fixture() {
     observation.independent_observer_digest = Some(d("host"));
     assert_eq!(observation.validate(), Err(ScopeMatrixErrorV1::MissingHostEvidence));
     observation.independent_observer_digest = Some(d("independent-observer"));
+    observation.cpu_time_micros = 100;
+    observation.write_amplification_ppm = 1_100_000;
+    observation.cas_latency = Some(observation.model_latency);
+    observation.signature_latency = Some(observation.model_latency);
+    observation.cns_latency = Some(observation.model_latency);
+    observation.lock_wait_latency = Some(observation.model_latency);
     assert!(observation.validate().is_ok());
 }
 
