@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - .bazelrc
+      - .bazelversion
       - .bazel_downloader_config
       - scripts/hepta_bazel_download_probe.py
       - .github/workflows/hepta-bazel-download.yml
@@ -43,8 +44,13 @@ jobs:
           repository-cache: false
       - name: Run real cold-cache download, extraction and bad-checksum rejection
         env:
-          USE_BAZEL_VERSION: 9.0.0
-        run: python3 scripts/hepta_bazel_download_probe.py --out "$RUNNER_TEMP/zlib-probe"
+          USE_BAZEL_VERSION: 9.3.0
+        run: |
+          set -euo pipefail
+          test "$(cat .bazelversion)" = "$USE_BAZEL_VERSION"
+          bazel --version | tee "$RUNNER_TEMP/pinned-bazel-version.txt"
+          grep -Fx "bazel $USE_BAZEL_VERSION" "$RUNNER_TEMP/pinned-bazel-version.txt"
+          python3 scripts/hepta_bazel_download_probe.py --out "$RUNNER_TEMP/zlib-probe"
       - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: 0.11.3
@@ -73,6 +79,7 @@ jobs:
         with:
           name: zlib-probe-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}
           path: |
+            ${{ runner.temp }}/pinned-bazel-version.txt
             ${{ runner.temp }}/zlib-probe/report.json
             ${{ runner.temp }}/zlib-probe/source.txt
             ${{ runner.temp }}/zlib-probe/format-inputs.sha256
