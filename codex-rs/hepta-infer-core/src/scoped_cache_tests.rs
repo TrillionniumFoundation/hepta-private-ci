@@ -40,7 +40,8 @@ fn all_cache_domains_are_read_only_and_fence_bound() {
             Err(CacheErrorV1::AlreadyPresent)
         );
         assert_eq!(cache.rotate(old), Ok(false));
-        assert_eq!(cache.rotate(lane(3, 7, "fence:changed")), Err(CacheErrorV1::StaleLane));
+        assert_eq!(cache.rotate(lane(3, 7, "fence:changed")), Ok(true));
+        assert_eq!(cache.rotate(old), Err(CacheErrorV1::StaleLane));
         assert_eq!(cache.rotate(lane(2, 8, "fence:new")), Err(CacheErrorV1::StaleLane));
         let next = lane(3, 8, "fence:new");
         assert_eq!(cache.rotate(next), Ok(true));
