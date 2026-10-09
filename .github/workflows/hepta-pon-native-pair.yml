@@ -34,9 +34,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: d148a4158884fe3955ce99034e050b467eb349c7
+      CHAIN_SOURCE_SHA: c664737f8b135f4a9b8aa9adcbd9c5738ca70238
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'd148a4158884fe3955ce99034e050b467eb349c7' || 'e6b0982cc05980efb8477573412bbe1c85dfdbd8' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'c664737f8b135f4a9b8aa9adcbd9c5738ca70238' || 'e2df6781718213b6e09a3562879e79b4cfbda0f9' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -112,6 +112,13 @@ jobs:
       - name: Require complete authenticated snapshot retention and rollback controls
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-snapshots.json" --minimum-tests 16 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated_tests:: -- --show-output --test-threads=1
+      - name: Require complete native SQL reuse and conditional query-bound controls
+        env:
+          TRNM_RETAINED_DELTA_COST_PATH: ${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests 24 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-query-bound.json" --minimum-tests 14 -- python3 ../chain/formal/pon-nakamoto-v1/test_work_query_bound.py -v
       - name: Execute the native growth readback regression module
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-readback.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib growth_reservation_io::tests -- --nocapture
