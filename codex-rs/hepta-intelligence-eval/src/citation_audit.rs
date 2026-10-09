@@ -10,6 +10,7 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_independent_roles_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -108,14 +109,40 @@ impl From<SignedEvidenceError> for CitationAuditError {
 
 /// Only authenticated generator/evaluator separation produces this receipt.
 /// It is an input to existing independent acceptance, not acceptance itself.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct VerifiedCitationAuditV1 {
     counts: CitationAuditCountsV1,
     request_digest: Digest32,
     judgement_digest: Digest32,
     trust_digest: Digest32,
+    pub(crate) experiment_digest: Digest32,
+    pub(crate) family_digest: Digest32,
+    pub(crate) query_id: String,
+    pub(crate) scope: String,
+    pub(crate) source_roots: BTreeSet<Digest32>,
+    pub(crate) generator: VerifiedLearningEvidenceV1,
+    pub(crate) evaluator: VerifiedLearningEvidenceV1,
+    admitted_at: u64,
 }
 impl VerifiedCitationAuditV1 {
+    /// Retained audit evidence cannot outlive source withdrawal, signer expiry,
+    /// trust rotation, or the host time used at admission.
+    pub fn revalidate_current(
+        &self,
+        verifier: &LearningEvidenceVerifierV1,
+        revoked_roots: &BTreeSet<Digest32>,
+        now: u64,
+    ) -> Result<(), CitationAuditError> {
+        if verifier.trust_digest() != self.trust_digest
+            || now < self.admitted_at
+            || !self.source_roots.is_disjoint(revoked_roots)
+        {
+            return Err(CitationAuditError::Invalid("stale citation audit"));
+        }
+        verify_signed_independent_roles_v1(&self.generator, &self.evaluator, now)?;
+        Ok(())
+    }
+
     pub fn counts(&self) -> CitationAuditCountsV1 {
         self.counts
     }
@@ -362,6 +389,18 @@ pub fn verify_signed_citation_audit_v1(
         request_digest: generated.payload_digest(),
         judgement_digest: evaluated.payload_digest(),
         trust_digest: verifier.trust_digest(),
+        experiment_digest: request.experiment_digest,
+        family_digest: request.family_digest,
+        query_id: request.query_id.clone(),
+        scope: request.scope.clone(),
+        source_roots: request
+            .sources
+            .iter()
+            .map(|source| source.source_root)
+            .collect(),
+        generator: generated,
+        evaluator: evaluated,
+        admitted_at: now,
     })
 }
 

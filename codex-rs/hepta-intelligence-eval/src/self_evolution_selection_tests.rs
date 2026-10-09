@@ -193,6 +193,18 @@ fn selector_and_rollback_are_opaque_independent_admissions() {
         generator,
         evaluator,
         observer,
+        snapshot_ids: Vec::new(),
+        timing: LongitudinalTimeEvidenceV1 {
+            frozen_unix_micros: 10,
+            windows: Vec::new(),
+            observer: signed(
+                &verifier,
+                &keys[2],
+                "observer",
+                LearningEvidenceRoleV1::Observer,
+                b"fixture timing",
+            ),
+        },
     };
     let selector_payload =
         selection_signing_payload_v1(prepared.receipt()).expect("selection payload");
