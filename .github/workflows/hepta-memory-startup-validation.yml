@@ -42,6 +42,13 @@ jobs:
           cd codex-rs
           just test -p codex-hepta-agentd --lib memory_serving_process::tests 2>&1 | tee /tmp/memory-startup-validation/process.log
           just test -p codex-hepta-agentd --lib shared_memory_training::selected::service::fleet::tests 2>&1 | tee /tmp/memory-startup-validation/fleet.log
+      - name: Run the entire affected Agentd unit suite without weakening filters
+        if: always() && !cancelled()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-startup-validation
+          cd codex-rs
+          just test -p codex-hepta-agentd --lib 2>&1 | tee /tmp/memory-startup-validation/all-agentd-unit-tests.log
       - name: Retain exact source and test evidence, never a production signature
         if: always()
         run: |
