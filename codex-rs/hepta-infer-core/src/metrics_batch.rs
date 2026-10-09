@@ -233,7 +233,7 @@ fn replay(file: &mut File) -> Result<(u64, Digest32, u64), MetricsErrorV1> {
         if count == 0
             || count > MAX_BATCH_SAMPLES
             || body_len != count * ENTRY_BYTES
-            || header[18..50] != *previous.as_array()
+            || &header[18..50] != previous.as_array()
             || actual_seq != sequence.checked_add(1).ok_or(MetricsErrorV1::CorruptFrame)?
             || length - offset < (HEADER_BYTES + body_len + CHECKSUM_BYTES) as u64
         {
@@ -251,7 +251,7 @@ fn replay(file: &mut File) -> Result<(u64, Digest32, u64), MetricsErrorV1> {
             return Err(MetricsErrorV1::CorruptFrame);
         }
         for item in body.chunks_exact(ENTRY_BYTES) {
-            if item[..32] == [0; 32] || !(1..=12).contains(&item[32]) {
+            if item[..32].iter().all(|byte| *byte == 0) || !(1..=12).contains(&item[32]) {
                 return Err(MetricsErrorV1::CorruptFrame);
             }
         }
