@@ -30,7 +30,6 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
-use crate::cognitive_intelligence_writer::CognitiveCorrectionInput;
 use crate::CognitiveAccess;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
@@ -51,6 +50,7 @@ use crate::MemoryRevisionDraft;
 use crate::QueuedReceipt;
 use crate::SourceDraft;
 use crate::StableMemoryId;
+use crate::cognitive_intelligence_writer::CognitiveCorrectionInput;
 use crate::local_lease_outbox::InheritedQueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
 #[cfg(test)]
