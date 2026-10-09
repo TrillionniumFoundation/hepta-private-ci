@@ -38,10 +38,7 @@ const RUN_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 
 const TASK_SHUTDOWN_GRACE: Duration = Duration::from_secs(3);
 
-pub async fn run(
-    config: AgentdConfig,
-    arg0_paths: Arg0DispatchPaths,
-) -> Result<(), AgentdError> {
+pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
     run_composed(config, arg0_paths, /*memory_bootstrap*/ None).await
 }
 

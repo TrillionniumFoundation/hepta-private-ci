@@ -21,9 +21,9 @@ impl SelectedMemoryServiceV1 {
         active: &ActiveRuntimeModuleV1,
         implementation: &RuntimeModuleAbiV1,
     ) -> Result<(), AgentdError> {
-        implementation
-            .validate()
-            .map_err(|error| AgentdError::Protocol(format!("invalid memory startup ABI: {error}")))?;
+        implementation.validate().map_err(|error| {
+            AgentdError::Protocol(format!("invalid memory startup ABI: {error}"))
+        })?;
         let compiled = ActiveRuntimeModuleV1 {
             module_id: implementation.module_id.clone(),
             generation: implementation.generation,

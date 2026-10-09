@@ -135,7 +135,10 @@ def load(
             )
             try:
                 normalized, duplicates = normalize_sessions(
-                    sessions, ids, dates, conflict_policy=session_conflicts,
+                    sessions,
+                    ids,
+                    dates,
+                    conflict_policy=session_conflicts,
                     empty_turns=empty_turns,
                 )
             except ValueError as error:

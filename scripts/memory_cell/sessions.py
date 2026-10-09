@@ -25,7 +25,11 @@ def source_id(identity: str) -> str:
 
 
 def normalize_sessions(
-    sessions, identities, dates, *, conflict_policy: ConflictPolicy = "reject",
+    sessions,
+    identities,
+    dates,
+    *,
+    conflict_policy: ConflictPolicy = "reject",
     empty_turns: EmptyTurnPolicy = "reject",
 ):
     if conflict_policy not in ("reject", "retain-versioned"):
@@ -76,7 +80,9 @@ def normalize_sessions(
                         "position": position,
                         "turn_position": turn_position,
                         "role": turn["role"],
-                        "content_sha256": hashlib.sha256(turn["content"].encode()).hexdigest(),
+                        "content_sha256": hashlib.sha256(
+                            turn["content"].encode()
+                        ).hexdigest(),
                         "disposition": "empty-native-turn-preserved-without-imputation",
                     }
                 )

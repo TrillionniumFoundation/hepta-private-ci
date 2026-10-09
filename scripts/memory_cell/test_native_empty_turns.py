@@ -1,4 +1,5 @@
 """Published empty strings are observations, not malformed or missing values."""
+
 import copy
 import hashlib
 import json
@@ -13,14 +14,21 @@ from sessions import normalize_sessions
 class NativeEmptyTurnTests(unittest.TestCase):
     def sample(self):
         return dict(
-            question_id="q", question_type="multi-session", question="Where?",
-            question_date="2026/01/02", answer="GOLD_SENTINEL",
-            answer_session_ids=["s"], haystack_session_ids=["s"],
-            haystack_dates=["2026/01/01"], haystack_sessions=[[
-                {"role": "user", "content": ""},
-                {"role": "assistant", "content": "Actual response"},
-                {"role": "user", "content": " \n\t"},
-            ]],
+            question_id="q",
+            question_type="multi-session",
+            question="Where?",
+            question_date="2026/01/02",
+            answer="GOLD_SENTINEL",
+            answer_session_ids=["s"],
+            haystack_session_ids=["s"],
+            haystack_dates=["2026/01/01"],
+            haystack_sessions=[
+                [
+                    {"role": "user", "content": ""},
+                    {"role": "assistant", "content": "Actual response"},
+                    {"role": "user", "content": " \n\t"},
+                ]
+            ],
         )
 
     def read(self, sample, **kwargs):
@@ -28,7 +36,9 @@ class NativeEmptyTurnTests(unittest.TestCase):
             path = Path(root) / "native.json"
             raw = json.dumps([sample]).encode()
             path.write_bytes(raw)
-            result = load(path, "longmemeval", hashlib.sha256(raw).hexdigest(), **kwargs)
+            result = load(
+                path, "longmemeval", hashlib.sha256(raw).hexdigest(), **kwargs
+            )
             self.assertEqual(path.read_bytes(), raw)
             return result
 
@@ -38,10 +48,21 @@ class NativeEmptyTurnTests(unittest.TestCase):
         result = self.read(sample)
         self.assertEqual(sample, original)
         self.assertEqual(result.ingress_failures, {})
-        self.assertEqual(result.documents[0].content, "user: \nassistant: Actual response\nuser:  \n\t")
-        self.assertEqual(result.documents[0].root, "session:" + digest([
-            ("user", ""), ("assistant", "Actual response"), ("user", " \n\t"),
-        ]))
+        self.assertEqual(
+            result.documents[0].content,
+            "user: \nassistant: Actual response\nuser:  \n\t",
+        )
+        self.assertEqual(
+            result.documents[0].root,
+            "session:"
+            + digest(
+                [
+                    ("user", ""),
+                    ("assistant", "Actual response"),
+                    ("user", " \n\t"),
+                ]
+            ),
+        )
         self.assertEqual([x["turn_position"] for x in result.ingress_issues], [0, 2])
         self.assertNotIn("GOLD_SENTINEL", str(result.documents))
         self.assertEqual(result.targets["longmemeval:q"].unresolved_evidence, ())
@@ -50,11 +71,25 @@ class NativeEmptyTurnTests(unittest.TestCase):
         sample = self.sample()
         with self.assertRaises(ValueError):
             self.read(sample, empty_turns="reject")
-        legacy = self.read(sample, empty_turns="reject", invalid_history="quarantine-question", allow_unresolved_evidence=True)
+        legacy = self.read(
+            sample,
+            empty_turns="reject",
+            invalid_history="quarantine-question",
+            allow_unresolved_evidence=True,
+        )
         self.assertEqual(len(legacy.questions), 1)
         self.assertEqual(legacy.documents, ())
         self.assertEqual(set(legacy.ingress_failures), {"longmemeval:q"})
-        self.assertEqual(legacy.ingress_failures["longmemeval:q"]["history_digest"], digest((sample["haystack_sessions"], sample["haystack_session_ids"], sample["haystack_dates"])))
+        self.assertEqual(
+            legacy.ingress_failures["longmemeval:q"]["history_digest"],
+            digest(
+                (
+                    sample["haystack_sessions"],
+                    sample["haystack_session_ids"],
+                    sample["haystack_dates"],
+                )
+            ),
+        )
 
     def test_null_wrong_types_and_missing_content_remain_invalid(self):
         for value in (None, [], {}, 0, False):
@@ -86,8 +121,16 @@ class NativeEmptyTurnTests(unittest.TestCase):
     def test_empty_turn_changes_identity_and_cannot_merge_with_missing_turn(self):
         turns = self.sample()["haystack_sessions"][0]
         with self.assertRaises(ValueError):
-            normalize_sessions([turns, turns[1:]], ["s", "s"], ["day", "day"], empty_turns="preserve")
-        rows, _ = normalize_sessions([turns, turns[1:]], ["s", "s"], ["day", "day"], empty_turns="preserve", conflict_policy="retain-versioned")
+            normalize_sessions(
+                [turns, turns[1:]], ["s", "s"], ["day", "day"], empty_turns="preserve"
+            )
+        rows, _ = normalize_sessions(
+            [turns, turns[1:]],
+            ["s", "s"],
+            ["day", "day"],
+            empty_turns="preserve",
+            conflict_policy="retain-versioned",
+        )
         self.assertEqual(len(rows), 2)
         self.assertNotEqual(rows[0][1], rows[1][1])
 
