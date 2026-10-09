@@ -1,10 +1,12 @@
 # MemoryCell continuation: candidate consumption and complete native evidence
 
-This extension is based on PR #1452 head
-`1d1f8da95a1459b1e5193f9cc7c9b6e49b57dc57`, whose integration baseline remains
-main `78fdb0cf8537e3a84fc6e0a849707559c80881e8`. It preserves the existing
-source-admitted owner implementations. It does not create a Memory OS, install
-selected production weights, replace signed learning.eval ingress, or waive gates.
+This extension is maintained on PR #1452 and retains its original
+integration baseline main `78fdb0cf8537e3a84fc6e0a849707559c80881e8`.
+Never use a previously documented head SHA as proof of current validation:
+each CI receipt must bind the exact PR source SHA, tested tree, model, inputs,
+and evaluator. The implementation preserves existing source-admitted owner
+boundaries; it does not install production weights, authorize a cutover,
+replace signed learning.eval ingress, or waive qualification gates.
 
 ## Native data and evaluation identity
 
@@ -107,7 +109,8 @@ Use the repository's pinned model-worker environment and standard Rust tooling:
 python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v
 just test -p codex-hepta-bellman-operator -p codex-hepta-infer-worker-host
 just test -p codex-hepta-agentd --test terminal_cell_owner
-just fmt --base 1d1f8da95a1459b1e5193f9cc7c9b6e49b57dc57
+git fetch origin main
+just fmt --base "$(git merge-base HEAD origin/main)"
 ```
 
 The existing continuation workflow runs the two native benchmark pilots independently,
@@ -135,24 +138,42 @@ Choose sufficient resources for actual complete native inference. A timeout or
 unavailable model is a failed/missing shard, never permission to shorten the test.
 Reusing test sets for development does not create a fresh final holdout.
 
-## Validation and non-claims for this local patch
+## Validation and mandatory production gates
 
-Local verification: 35 Python tests passed with PyTorch 2.10.0 CPU; runner tests use
-explicitly labeled injected fixture backends and are not pretrained-model scores.
-Existing, independently hash-verified CI tensors were replayed without updates:
-16 LoRA archives passed finite/layout inspection, and 32 exported native Q24
-vectors reproduced with maximum error zero. Archived tensor layout inspection is
-not an independent proof of compatibility with a newly loaded base model.
+The authoritative implementation is the exact current PR branch and its
+per-commit checks. Historical local patch counts, earlier green runners,
+previously reloaded parameter archives and fixture tests are not fresh-head
+validation. Every code change must rerun the affected Rust owner tests,
+original-format Python adapter tests, formatting, CI, and complete benchmark
+collection. A planned benchmark with failed or missing shards remains failed.
 
-The full pinned transformers/PEFT models, Laya, Rust owner crates, repository
-formatters/lints, complete native benchmarks, or new remote CI were NOT rerun by
-this local verification. Its patches have not been pushed or merged. Prior remote
-model runs cannot certify the modified source.
+The separately signed HNMF policy under `docs/hnmf/HNMF.json` and
+`docs/hnmf/TECHNICAL.md` requires no fewer than three independently
+identified snapshots, two **observed future calendar** windows, effective
+sample size >= 200, 95% confidence, candidate lower bound exceeding
+independently tuned baseline upper bound, at most 2% old-task regression,
+citation precision >= 99%, no unresolved high-risk contradictions,
+no deletion resurrection, and independently governed rollback acceptance.
 
-Existing `longitudinal_time` and signed evaluation/holdout owners remain the source
-of truth for three independently admitted snapshots, two actual future calendar
-windows, sample independence and frozen-evaluator requirements. Cross-fit folds,
-repeated CI, synthetic clocks, a shared source repeated by many Agents, or a
-complete-question collector cannot satisfy those gates. Citation precision,
-production distributed consistency, selective unlearning and independent acceptance
-remain explicit missing evidence, not self-labelled success.
+Longitudinal evidence must arrive from a trusted independent observer *after*
+the frozen plan, and the signed evaluation still needs an independent
+acceptance decision. Synthetic clocks, repeated CI, held-out folds, signed
+fixture keys, similar sessions copied into multiple Agents, one-host crash
+injection, and lossless byte replay are **not** those independent observations.
+
+Selected tensor readers and the signature verifier are not a deployed,
+authenticated production LoRA-serving consumer. Real service cutover needs
+the existing production effect owners and final-use fences, failure recovery
+across hosts, and owner-governed rollback. A missing terminal assistant
+message cannot silently qualify an execution, even if the app-server sent
+a terminal completion event.
+
+Citation entailment requires complete, independently signed adjudication
+against *actually delivered* source excerpts. Source-reference presence,
+diagnostic token F1, reviewer signatures alone, and unsigned self-reported
+precision do not prove the >=99% gate.
+
+Do not merge, activate, or claim superiority while any gate has missing,
+unverifiable, or failed evidence. Keep immutable failure artifacts and
+machine-readable non-qualification rather than presenting partial execution
+as successful production rollout.

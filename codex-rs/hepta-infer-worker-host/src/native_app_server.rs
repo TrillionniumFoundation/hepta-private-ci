@@ -1458,15 +1458,13 @@ async fn reconcile_missing_terminal_message(
 ) -> std::result::Result<String, String> {
     let observed = timeout(
         RPC_TIMEOUT,
-        client.request_typed_observed_response::<ThreadReadResponse>(
-            ClientRequest::ThreadRead {
-                request_id: RequestId::Integer(60),
-                params: ThreadReadParams {
-                    thread_id: output.thread_id.clone(),
-                    include_turns: true,
-                },
+        client.request_typed_observed_response::<ThreadReadResponse>(ClientRequest::ThreadRead {
+            request_id: RequestId::Integer(60),
+            params: ThreadReadParams {
+                thread_id: output.thread_id.clone(),
+                include_turns: true,
             },
-        ),
+        }),
     )
     .await
     .map_err(|_| "thread/read timed out".to_string())?
