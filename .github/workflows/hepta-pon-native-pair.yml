@@ -123,10 +123,23 @@ jobs:
           echo "HEPTA_PON_CHAIN_BINARY=$binary" >> "$GITHUB_ENV"
           echo "HEPTA_PON_CHAIN_SHA256=$digest" >> "$GITHUB_ENV"
           printf '%s\n' "$digest" > "$RUNNER_TEMP/pon-pair/chain-binary.sha256"
+      - name: Prefetch locked Hepta dependencies before offline test execution
+        timeout-minutes: 12
+        env:
+          CARGO_NET_RETRY: "5"
+          CARGO_HTTP_TIMEOUT: "60"
+        run: |
+          # Use the same working directory, pinned toolchain and Cargo config as just test.
+          # This prepares dependencies only. No native test failure is retried.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- bash -c 'cd codex-rs && exec cargo fetch --locked'
       - name: Compile complete Agentd and run subprocess and observation regressions
+        env:
+          CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_)' --no-capture
       - name: Require every concrete pipe failure selector to execute nonempty
+        env:
+          CARGO_NET_OFFLINE: "true"
         run: |
           set -uo pipefail
           failed=0
@@ -141,6 +154,8 @@ jobs:
           done
           exit "$failed"
       - name: Execute the actual Chain pair including the explicitly ignored selector
+        env:
+          CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_sealed_submit_reconcile_confirm_reorg)' --run-ignored only --no-capture
       - name: Preserve exact tested source and scope
