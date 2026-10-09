@@ -19,9 +19,7 @@ pub(super) fn passes_99_at_95(good: usize, total: usize) -> bool {
     let mut term = total as f64 * log_good;
     let mut sum = term;
     for failures in 1..=(total - good) {
-        term += ((total - failures + 1) as f64).ln() - (failures as f64).ln()
-            + log_bad
-            - log_good;
+        term += ((total - failures + 1) as f64).ln() - (failures as f64).ln() + log_bad - log_good;
         let larger = sum.max(term);
         sum = larger + ((sum - larger).exp() + (term - larger).exp()).ln();
     }

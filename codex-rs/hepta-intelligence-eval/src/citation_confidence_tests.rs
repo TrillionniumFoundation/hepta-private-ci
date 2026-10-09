@@ -19,7 +19,9 @@ fn point_precision_is_not_a_lower_confidence_bound() {
 fn reject_vacuous_inconsistent_and_unbounded_samples() {
     assert!(!passes_99_at_95(/*good*/ 0, /*total*/ 0));
     assert!(!passes_99_at_95(/*good*/ 101, /*total*/ 100));
-    assert!(!passes_99_at_95(/*good*/ 20_001, /*total*/ 20_001));
+    assert!(!passes_99_at_95(
+        /*good*/ 20_001, /*total*/ 20_001
+    ));
     assert!(!passes_99_at_95(/*good*/ 0, /*total*/ 360));
 }
 

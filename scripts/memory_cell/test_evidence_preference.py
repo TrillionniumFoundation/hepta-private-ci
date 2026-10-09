@@ -27,12 +27,23 @@ class Example:
 
 def fixture():
     q = Question("q", "family", "scope", "Where?", "2026")
-    source = dict(root="root", scope="scope", label="E1", excerpt="Kyoto",
-                  source_start=0, source_end=5)
+    source = dict(
+        root="root",
+        scope="scope",
+        label="E1",
+        excerpt="Kyoto",
+        source_start=0,
+        source_end=5,
+    )
     positive = Example(q, q.family, "root", (source,), "Kyoto [E1]", "annotation")
     null = replace(positive, question=replace(q, identity="null"), completion=ABSTAIN)
-    cut = TrainingCut(frozenset({"q", "null"}), frozenset({"family"}),
-                      frozenset({"root"}), frozenset(), "test-admission")
+    cut = TrainingCut(
+        frozenset({"q", "null"}),
+        frozenset({"family"}),
+        frozenset({"root"}),
+        frozenset(),
+        "test-admission",
+    )
     return (positive, null), cut
 
 
@@ -59,7 +70,9 @@ class Model(torch.nn.Module):
             self.enabled = True
 
     def forward(self, input_ids, labels, **_):
-        self.seen.append((input_ids.tolist(), labels.tolist(), self.enabled, torch.is_grad_enabled()))
+        self.seen.append(
+            (input_ids.tolist(), labels.tolist(), self.enabled, torch.is_grad_enabled())
+        )
         support = 1.0 if input_ids[0, 1] == 2 else -1.0
         sign = -1.0 if labels[labels != -100][0] == ord("I") else 1.0
         score = self.weight[0] + support * self.weight[1]
@@ -69,18 +82,26 @@ class Model(torch.nn.Module):
 
 
 def reader():
-    return types.SimpleNamespace(model=Model(), tokenizer=Tokenizer(),
-        scope="development", roots={"prior"}, quarantined=False,
-        base_digest="base", trainable_parameters=2)
+    return types.SimpleNamespace(
+        model=Model(),
+        tokenizer=Tokenizer(),
+        scope="development",
+        roots={"prior"},
+        quarantined=False,
+        base_digest="base",
+        trainable_parameters=2,
+    )
 
 
 def train(r, rows, cut, **kwargs):
     modules = {
-        "peft": types.SimpleNamespace(get_peft_model_state_dict=lambda m:
-                                      {"weight": m.weight.detach().clone()}),
+        "peft": types.SimpleNamespace(
+            get_peft_model_state_dict=lambda m: {"weight": m.weight.detach().clone()}
+        ),
         "pretrained": types.SimpleNamespace(frozen_digest=lambda _: "base"),
-        "task_answer_learning": types.SimpleNamespace(prompt_ids=lambda t, q, s, **_:
-            [1, 2 if s and q.identity == "q" else 3]),
+        "task_answer_learning": types.SimpleNamespace(
+            prompt_ids=lambda t, q, s, **_: [1, 2 if s and q.identity == "q" else 3]
+        ),
     }
     with patch.dict("sys.modules", modules):
         return fit_preference(r, rows, cut, revoked=set(), **kwargs)
@@ -115,20 +136,28 @@ class EvidencePreferenceTests(unittest.TestCase):
         self.assertEqual(receipt["reference_forwards"], 4)
         self.assertEqual(receipt["actor_forwards"], 15)
         self.assertEqual(len(r.model.seen), 19)
-        self.assertEqual(receipt["tokens"], sum(len(x[0]) for x, _, _, _ in r.model.seen))
+        self.assertEqual(
+            receipt["tokens"], sum(len(x[0]) for x, _, _, _ in r.model.seen)
+        )
         self.assertEqual(r.roots, {"root", "prior"})
         for _, labels, enabled, grad in r.model.seen:
             self.assertEqual(labels[0][:2], [-100, -100])
             self.assertEqual(labels[0][-1], 256)
             self.assertEqual(enabled, grad)
         self.assertGreater(receipt["adapter_delta_squared_norm"], 0)
-        self.assertTrue(all(x["question_id"] == x["empty_question_id"]
-                            for x in receipt["paired_steps"]))
+        self.assertTrue(
+            all(
+                x["question_id"] == x["empty_question_id"]
+                for x in receipt["paired_steps"]
+            )
+        )
 
     def test_invalid_cut_and_budget_reject_before_reference_forward(self):
         rows, cut = fixture()
-        for bad in (replace(cut, forbidden_roots=frozenset({"prior"})),
-                    replace(cut, question_ids=frozenset())):
+        for bad in (
+            replace(cut, forbidden_roots=frozenset({"prior"})),
+            replace(cut, question_ids=frozenset()),
+        ):
             r = reader()
             with self.assertRaises(ValueError):
                 train(r, rows, bad, updates=1)

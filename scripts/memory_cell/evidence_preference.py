@@ -52,7 +52,12 @@ def preference_loss(losses, reference):
 
 
 def fit_preference(
-    reader, examples, cut, *, revoked, updates=MAX_UPDATES,
+    reader,
+    examples,
+    cut,
+    *,
+    revoked,
+    updates=MAX_UPDATES,
     token_ceiling=TOKEN_CEILING,
 ):
     from grounded_protocol import completion_ids
@@ -83,11 +88,15 @@ def fit_preference(
             null,
         )
         for ex in variants:
-            prompt = prompt_ids(reader.tokenizer, ex.question, ex.sources, revoked=revoked)
+            prompt = prompt_ids(
+                reader.tokenizer, ex.question, ex.sources, revoked=revoked
+            )
             target = reader.tokenizer.encode(ex.completion, add_special_tokens=False)
             if len(target) + 1 > GENERATION["max_new_tokens"]:
                 raise ValueError("preference completion exceeds generation ceiling")
-            ids, labels = completion_ids(reader.tokenizer, prompt, ex.completion, maximum=1120)
+            ids, labels = completion_ids(
+                reader.tokenizer, prompt, ex.completion, maximum=1120
+            )
             batch.append((ex, ids, labels, digest((ids, labels))))
         schedule.append(tuple(batch))
     # Determine the COMPLETE executable prefix before any model forward/update.
@@ -119,8 +128,10 @@ def fit_preference(
         _, ids, labels, _ = item
         x = torch.tensor([ids], dtype=torch.long)
         result = reader.model(
-            input_ids=x, attention_mask=torch.ones_like(x),
-            labels=torch.tensor([labels], dtype=torch.long), use_cache=False,
+            input_ids=x,
+            attention_mask=torch.ones_like(x),
+            labels=torch.tensor([labels], dtype=torch.long),
+            use_cache=False,
         ).loss
         if result.ndim != 0 or not torch.isfinite(result):
             raise ValueError("nonfinite preference forward")
@@ -151,16 +162,22 @@ def fit_preference(
             actor_tokens += sum(len(i[1]) for i in batch)
             supervised += sum(v != -100 for _, _, ys, _ in batch for v in ys)
             reader.roots.update(i[0].root for i in batch)
-            records.append(dict(
-                question_id=batch[0][0].question.identity,
-                empty_question_id=batch[2][0].question.identity,
-                unanswerable_question_id=batch[4][0].question.identity,
-                losses=losses.detach().tolist(), reference=reference.tolist(),
-                objective=float(objective.detach()), input_tokens=cost,
-                input_bindings=[i[3] for i in batch],
-            ))
-        delta = sum(float((v - before[k]).square().sum())
-                    for k, v in get_peft_model_state_dict(reader.model).items())
+            records.append(
+                dict(
+                    question_id=batch[0][0].question.identity,
+                    empty_question_id=batch[2][0].question.identity,
+                    unanswerable_question_id=batch[4][0].question.identity,
+                    losses=losses.detach().tolist(),
+                    reference=reference.tolist(),
+                    objective=float(objective.detach()),
+                    input_tokens=cost,
+                    input_bindings=[i[3] for i in batch],
+                )
+            )
+        delta = sum(
+            float((v - before[k]).square().sum())
+            for k, v in get_peft_model_state_dict(reader.model).items()
+        )
         if not math.isfinite(delta) or delta <= 0:
             raise ValueError("preference training made no finite update")
         if frozen_digest(reader.model) != reader.base_digest:
@@ -168,22 +185,39 @@ def fit_preference(
         if actor_tokens + reference_tokens != planned_tokens:
             raise ValueError("incomplete or unaccounted preference work")
         return dict(
-            objective=PROFILE, steps=len(records), maximum_steps=updates,
-            tokens=actor_tokens + reference_tokens, actor_tokens=actor_tokens,
-            reference_tokens=reference_tokens, reference_forwards=len(reference_cache),
-            actor_forwards=5 * len(records), supervised_tokens=supervised,
-            token_ceiling=token_ceiling, sft_weights=SFT_WEIGHTS, beta=BETA,
-            preference_weight=PREFERENCE_WEIGHT, context_weight=CONTEXT_WEIGHT,
-            context_margin=CONTEXT_MARGIN, paired_steps=records,
+            objective=PROFILE,
+            steps=len(records),
+            maximum_steps=updates,
+            tokens=actor_tokens + reference_tokens,
+            actor_tokens=actor_tokens,
+            reference_tokens=reference_tokens,
+            reference_forwards=len(reference_cache),
+            actor_forwards=5 * len(records),
+            supervised_tokens=supervised,
+            token_ceiling=token_ceiling,
+            sft_weights=SFT_WEIGHTS,
+            beta=BETA,
+            preference_weight=PREFERENCE_WEIGHT,
+            context_weight=CONTEXT_WEIGHT,
+            context_margin=CONTEXT_MARGIN,
+            paired_steps=records,
             adapter_delta_squared_norm=delta,
             trainable_parameters=reader.trainable_parameters,
-            roots=sorted(reader.roots), admission_digest=cut.admission_digest,
-            training_digest=digest([
-                [(ex.question.identity, ex.annotation_digest, ids, ys)
-                 for ex, ids, ys, _ in batch] for batch, _, _ in executable
-            ]),
-            train_seconds=time.perf_counter() - started, base_unchanged=True,
-            evaluation_targets_used=False, production_accepted=False,
+            roots=sorted(reader.roots),
+            admission_digest=cut.admission_digest,
+            training_digest=digest(
+                [
+                    [
+                        (ex.question.identity, ex.annotation_digest, ids, ys)
+                        for ex, ids, ys, _ in batch
+                    ]
+                    for batch, _, _ in executable
+                ]
+            ),
+            train_seconds=time.perf_counter() - started,
+            base_unchanged=True,
+            evaluation_targets_used=False,
+            production_accepted=False,
         )
     except Exception:
         reader.quarantined, reader.scope = True, None

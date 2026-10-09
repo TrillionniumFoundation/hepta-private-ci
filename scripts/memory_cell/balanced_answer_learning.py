@@ -98,8 +98,9 @@ def paired_loss(answer_loss, refusal_loss):
     )
 
 
-def fit_balanced(reader, examples, cut, *, revoked, updates=MAX_UPDATES,
-                 token_ceiling=TOKEN_CEILING):
+def fit_balanced(
+    reader, examples, cut, *, revoked, updates=MAX_UPDATES, token_ceiling=TOKEN_CEILING
+):
     from peft import get_peft_model_state_dict
     from grounded_protocol import completion_ids
     from pretrained import frozen_digest
@@ -122,13 +123,15 @@ def fit_balanced(reader, examples, cut, *, revoked, updates=MAX_UPDATES,
         prepared = []
         # Fourth completion contrasts answer vs refusal for IDENTICAL support.
         for ex in (support, null, empty, replace(support, completion=ABSTAIN)):
-            prompt = prompt_ids(reader.tokenizer, ex.question, ex.sources,
-                                revoked=revoked)
+            prompt = prompt_ids(
+                reader.tokenizer, ex.question, ex.sources, revoked=revoked
+            )
             target = reader.tokenizer.encode(ex.completion, add_special_tokens=False)
             if len(target) + 1 > GENERATION["max_new_tokens"]:
                 raise ValueError("balanced completion budget")
-            ids, labels = completion_ids(reader.tokenizer, prompt, ex.completion,
-                                         maximum=1120)
+            ids, labels = completion_ids(
+                reader.tokenizer, prompt, ex.completion, maximum=1120
+            )
             prepared.append((ex, ids, labels))
         schedule.append(prepared)
     # Admit the full fixed schedule before any optimizer state or gradient exists.
@@ -141,8 +144,12 @@ def fit_balanced(reader, examples, cut, *, revoked, updates=MAX_UPDATES,
     def loss_for(prepared):
         _, ids, labels = prepared
         x = torch.tensor([ids], dtype=torch.long)
-        value = reader.model(input_ids=x, attention_mask=torch.ones_like(x),
-                             labels=torch.tensor([labels]), use_cache=False).loss
+        value = reader.model(
+            input_ids=x,
+            attention_mask=torch.ones_like(x),
+            labels=torch.tensor([labels]),
+            use_cache=False,
+        ).loss
         if not torch.isfinite(value):
             raise ValueError("nonfinite counterfactual loss")
         return value
@@ -169,32 +176,55 @@ def fit_balanced(reader, examples, cut, *, revoked, updates=MAX_UPDATES,
             tokens += cost
             supervised += sum(v != -100 for _, _, labels in batch for v in labels)
             reader.roots.update(ex.root for ex, _, _ in batch)
-            records.append(dict(support=batch[0][0].question.identity,
-                                unanswerable=batch[1][0].question.identity,
-                                empty=batch[2][0].question.identity,
-                                objective=scalar, input_tokens=cost,
-                                support_nll=float(support_loss.detach()),
-                                support_refusal_nll=float(refusal_loss.detach())))
-        delta = sum(float((v - before[k]).square().sum()) for k, v in
-                    get_peft_model_state_dict(reader.model).items())
+            records.append(
+                dict(
+                    support=batch[0][0].question.identity,
+                    unanswerable=batch[1][0].question.identity,
+                    empty=batch[2][0].question.identity,
+                    objective=scalar,
+                    input_tokens=cost,
+                    support_nll=float(support_loss.detach()),
+                    support_refusal_nll=float(refusal_loss.detach()),
+                )
+            )
+        delta = sum(
+            float((v - before[k]).square().sum())
+            for k, v in get_peft_model_state_dict(reader.model).items()
+        )
         if not records or not math.isfinite(delta) or delta <= 0:
             raise ValueError("balanced training made no finite update")
         if frozen_digest(reader.model) != reader.base_digest:
             raise ValueError("balanced training modified frozen base")
-        return dict(objective=PROFILE, steps=len(records), maximum_steps=updates,
-                    tokens=tokens, supervised_tokens=supervised,
-                    token_ceiling=token_ceiling, macro_weights=WEIGHTS,
-                    contrast_weight=CONTRAST_WEIGHT, margin=MARGIN,
-                    forward_passes=4 * len(records), paired_steps=records,
-                    adapter_delta_squared_norm=delta,
-                    trainable_parameters=reader.trainable_parameters,
-                    roots=sorted(reader.roots), admission_digest=cut.admission_digest,
-                    training_digest=digest([[(ex.question.identity,
-                        ex.annotation_digest, ids, labels) for ex, ids, labels in batch]
-                        for batch in schedule]),
-                    train_seconds=time.perf_counter() - started,
-                    base_unchanged=True, evaluation_targets_used=False,
-                    production_accepted=False)
+        return dict(
+            objective=PROFILE,
+            steps=len(records),
+            maximum_steps=updates,
+            tokens=tokens,
+            supervised_tokens=supervised,
+            token_ceiling=token_ceiling,
+            macro_weights=WEIGHTS,
+            contrast_weight=CONTRAST_WEIGHT,
+            margin=MARGIN,
+            forward_passes=4 * len(records),
+            paired_steps=records,
+            adapter_delta_squared_norm=delta,
+            trainable_parameters=reader.trainable_parameters,
+            roots=sorted(reader.roots),
+            admission_digest=cut.admission_digest,
+            training_digest=digest(
+                [
+                    [
+                        (ex.question.identity, ex.annotation_digest, ids, labels)
+                        for ex, ids, labels in batch
+                    ]
+                    for batch in schedule
+                ]
+            ),
+            train_seconds=time.perf_counter() - started,
+            base_unchanged=True,
+            evaluation_targets_used=False,
+            production_accepted=False,
+        )
     except Exception:
         reader.quarantined, reader.scope = True, None
         raise

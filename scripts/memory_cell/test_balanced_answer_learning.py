@@ -8,8 +8,13 @@ from unittest.mock import patch
 import torch
 import torch._dynamo  # Load optimizer registrations before dependency substitution.
 
-from balanced_answer_learning import (ABSTAIN, admitted_groups, update_examples,
-                                     paired_loss, fit_balanced)
+from balanced_answer_learning import (
+    ABSTAIN,
+    admitted_groups,
+    update_examples,
+    paired_loss,
+    fit_balanced,
+)
 from native import Question
 from selector_head import TrainingCut
 
@@ -26,13 +31,24 @@ class Example:
 
 def fixture():
     q = Question("q", "family", "scope", "Where?", "2026")
-    source = dict(root="root", scope="scope", label="E1", excerpt="Kyoto",
-                  source_start=0, source_end=5)
+    source = dict(
+        root="root",
+        scope="scope",
+        label="E1",
+        excerpt="Kyoto",
+        source_start=0,
+        source_end=5,
+    )
     positive = Example(q, q.family, "root", (source,), "Kyoto [E1]", "annotation")
     null = replace(positive, question=replace(q, identity="null"), completion=ABSTAIN)
     empty = replace(positive, sources=(), completion=ABSTAIN)
-    cut = TrainingCut(frozenset({"q", "null"}), frozenset({"family"}),
-                      frozenset({"root"}), frozenset(), "fixture-admission")
+    cut = TrainingCut(
+        frozenset({"q", "null"}),
+        frozenset({"family"}),
+        frozenset({"root"}),
+        frozenset(),
+        "fixture-admission",
+    )
     return (positive, null, empty), cut
 
 
@@ -60,20 +76,28 @@ class Model(torch.nn.Module):
 
 def train(reader, rows, cut, **kwargs):
     stubs = {
-        "peft": types.SimpleNamespace(get_peft_model_state_dict=lambda m:
-            {"weight": m.weight.detach().clone()}),
+        "peft": types.SimpleNamespace(
+            get_peft_model_state_dict=lambda m: {"weight": m.weight.detach().clone()}
+        ),
         "pretrained": types.SimpleNamespace(frozen_digest=lambda _: "frozen"),
-        "task_answer_learning": types.SimpleNamespace(prompt_ids=lambda t, q, s,
-            **_: [1, 2 if s and q.identity == "q" else 3]),
+        "task_answer_learning": types.SimpleNamespace(
+            prompt_ids=lambda t, q, s, **_: [1, 2 if s and q.identity == "q" else 3]
+        ),
     }
     with patch.dict("sys.modules", stubs):
         return fit_balanced(reader, rows, cut, revoked=set(), **kwargs)
 
 
 def reader():
-    return types.SimpleNamespace(model=Model(), tokenizer=Tokenizer(),
-        scope="development", roots={"prior-root"}, quarantined=False,
-        base_digest="frozen", trainable_parameters=1)
+    return types.SimpleNamespace(
+        model=Model(),
+        tokenizer=Tokenizer(),
+        scope="development",
+        roots={"prior-root"},
+        quarantined=False,
+        base_digest="frozen",
+        trainable_parameters=1,
+    )
 
 
 class BalancedAnswerTests(unittest.TestCase):
@@ -91,8 +115,11 @@ class BalancedAnswerTests(unittest.TestCase):
 
     def test_duplicate_rows_and_invented_support_cannot_change_sampling_weight(self):
         rows, cut = fixture()
-        for bad in (rows + rows[:1], (replace(rows[0], completion="Tokyo [E1]"), *rows[1:]),
-                    (replace(rows[0], family="different"), *rows[1:])):
+        for bad in (
+            rows + rows[:1],
+            (replace(rows[0], completion="Tokyo [E1]"), *rows[1:]),
+            (replace(rows[0], family="different"), *rows[1:]),
+        ):
             with self.assertRaises(ValueError):
                 admitted_groups(bad, cut, revoked=set())
         with self.assertRaises(ValueError):
@@ -137,7 +164,9 @@ class BalancedAnswerTests(unittest.TestCase):
         self.assertEqual(model.model.seen, [])
         self.assertEqual(float(model.model.weight.detach()), 0)
 
-    def test_failing_forward_quarantines_candidate_without_exporting_partial_result(self):
+    def test_failing_forward_quarantines_candidate_without_exporting_partial_result(
+        self,
+    ):
         rows, cut = fixture()
         model = reader()
         with patch.object(model.model, "forward", side_effect=ValueError("failed")):

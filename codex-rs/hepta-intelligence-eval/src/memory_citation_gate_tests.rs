@@ -404,7 +404,9 @@ fn signed_perfect_but_small_census_is_not_99_percent_confidence() {
     let f = Fixture::new(Data::SmallPerfect);
     assert!(matches!(
         f.check(),
-        Err(CitationAuditError::Invalid("insufficient family-level citation confidence"))
+        Err(CitationAuditError::Invalid(
+            "insufficient family-level citation confidence"
+        ))
     ));
 }
 
@@ -415,6 +417,8 @@ fn signed_micro_precision_above_99_percent_can_still_fail_confidence() {
     let f = Fixture::new(Data::LowPrecision);
     assert!(matches!(
         f.check(),
-        Err(CitationAuditError::Invalid("insufficient family-level citation confidence"))
+        Err(CitationAuditError::Invalid(
+            "insufficient family-level citation confidence"
+        ))
     ));
 }
