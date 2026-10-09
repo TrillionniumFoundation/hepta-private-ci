@@ -1,0 +1,76 @@
+name: MemoryCell exact selector source candidate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-selector-source-review.yml'
+      - '.github/memory-selector-completion.patch'
+permissions:
+  contents: read
+jobs:
+  deterministic-candidate:
+    if: github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Prepare exact locally tested completion on a separate review branch
+        env:
+          BASE: d6f79f5b7ed1c846a94a32f22e2df6a62e6aac23
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$BASE"
+          python3 -m venv /tmp/source-format
+          /tmp/source-format/bin/pip install ruff==0.15.8
+          /tmp/source-format/bin/ruff format scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py scripts/memory_cell/relevance*.py scripts/memory_cell/test_relevance*.py
+          git apply --check .github/memory-selector-completion.patch
+          git apply .github/memory-selector-completion.patch
+          /tmp/source-format/bin/ruff format scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py scripts/memory_cell/relevance*.py scripts/memory_cell/test_relevance*.py
+          mkdir /tmp/selector-candidate
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          expected = {
+            'scripts/memory_cell/selector_development.py': 'df6512eca90f72f75a31d31b232d395879ee1029958803377d993715431cadb7',
+            'scripts/memory_cell/selector_encoder.py': '046eb1c7157897d8153608bff482ccd9800567052337bb1a6304fee107439587',
+            'scripts/memory_cell/selector_evaluation.py': '0ff9a25a44c1176b82ee5152bf1d4e605c150b79f73909517df381248d31d207',
+            'scripts/memory_cell/selector_head.py': '57febf7f52d6f13bb7249962146b103bb808a1c02906c7d5a76b1d41d3f91aad',
+            'scripts/memory_cell/selector_windows.py': 'fb6db66444bc504838b126447ed4fde5a7b695a4760044ecd111831a9652aa32',
+            'scripts/memory_cell/test_selector_contrasts.py': '690a3787de6d629d4c06b99059b430351337790e98aae0c5ef547dbbc6d160a9',
+            'scripts/memory_cell/test_selector_head.py': '7ef1542e639b3f717c3146373356c0184af5b9c0c996aabfa6bfc1767d27e761',
+            'scripts/memory_cell/test_selector_windows.py': '87feae2bb704a9e4d6ab9f50da77953e93098546fd8938e0c72d646e63337efd',
+            'scripts/memory_cell/relevance_development.py': 'b75134d297be06513e85f28396e2e2d0727c9f1954431b149513b7f9fb443a67',
+            'scripts/memory_cell/relevance_protocol.py': '01c1d5996996faaf72289b85b37928dcd45b20bf81590e8d496735e0ad32cf79',
+            'scripts/memory_cell/relevance_ranker.py': 'd12c316fceec5b09a387659ebadec1d6292bd44c20ff278006f880c631c87671',
+            'scripts/memory_cell/test_relevance_protocol.py': 'dd22b2854c13be64bacf3ba795fb996025adb2880973835c2ea4c335678fdaab'
+          }
+          for name, hashed in expected.items():
+              assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == hashed, name
+              compile(Path(name).read_text(), name, 'exec')
+          Path('/tmp/selector-candidate/expected-files.json').write_text(json.dumps(expected, indent=2))
+          PY
+          # Required repository entry, not a private formatter substitute.
+          just fmt --base "$BASE"
+          git diff --check
+          git add scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py scripts/memory_cell/relevance*.py scripts/memory_cell/test_relevance*.py
+          git diff --cached --binary > /tmp/selector-candidate/candidate.patch
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'fix(memory-cell): preserve candidate coverage, bind reviewed window labels and separate paired effects'
+          git push origin "HEAD:refs/heads/codex/memory-selector-candidate-${GITHUB_RUN_ID}"
+          git rev-parse HEAD > /tmp/selector-candidate/candidate-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/selector-candidate/candidate-tree.txt
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-selector-source-candidate
+          path: /tmp/selector-candidate
+          if-no-files-found: warn

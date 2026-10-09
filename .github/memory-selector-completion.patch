@@ -1,0 +1,437 @@
+--- a/scripts/memory_cell/selector_development.py
++++ b/scripts/memory_cell/selector_development.py
+@@ -27,6 +27,7 @@
+     diagnose,
+     summarize,
+     train_rows,
++    factorial_contrasts,
+ )
+ from selector_head import EvidenceHead, TrainingCut
+ from selector_windows import WindowBudget, candidate_windows
+@@ -365,6 +366,7 @@
+         result = dict(
+             plan=plan,
+             metrics=metrics,
++            contrasts=factorial_contrasts(attempts),
+             training=training,
+             annotations=annotation_notes,
+             head_digest=head_digest,
+--- a/scripts/memory_cell/selector_evaluation.py
++++ b/scripts/memory_cell/selector_evaluation.py
+@@ -4,6 +4,7 @@
+ answers measure literal coverage only AFTER predictions; they are never features.
+ """
+ 
++from dataclasses import dataclass
+ import math
+ import re
+ 
+@@ -22,6 +23,36 @@
+ OFFSETS = (-8.0, -4.0, -2.0, 0.0, 2.0, 4.0, 8.0)
+ 
+ 
++@dataclass(frozen=True)
++class ReviewedWindows:
++    """Already-admitted training-window labels, not a self-issued attestation."""
++
++    pool_digest: str
++    admission_digest: str
++    positives: tuple[str, ...]
++    negatives: tuple[tuple[str, str], ...]
++    unanswerable: bool
++
++    def validate(self, pool, cut):
++        ids = {w.identity() for w in pool.windows}
++        positive, negative = set(self.positives), dict(self.negatives)
++        if (
++            self.pool_digest != pool.seal()
++            or self.admission_digest != cut.admission_digest
++            or type(self.unanswerable) is not bool
++            or len(positive) != len(self.positives)
++            or len(negative) != len(self.negatives)
++            or positive & set(negative)
++            or positive | set(negative) != ids
++            or any(kind not in HARD_KINDS for kind in negative.values())
++            or self.unanswerable != (not positive)
++        ):
++            raise ValueError("reviewed training-window census/admission mismatch")
++        return tuple(
++            i for i, w in enumerate(pool.windows) if w.identity() in positive
++        ), negative
++
++
+ def support_indices(pool, target):
+     supported = {source_id(s) for s in target.evidence}
+     return tuple(
+@@ -29,7 +60,16 @@
+     )
+ 
+ 
+-def train_rows(queries, targets, pools, features, cut, *, reviewed_negatives=None):
++def train_rows(
++    queries,
++    targets,
++    pools,
++    features,
++    cut,
++    *,
++    reviewed_negatives=None,
++    reviewed_windows=None,
++):
+     """Only predeclared training annotations can enter this function.
+ 
+     Native source support is weak window supervision. Missing support is NOT turned
+@@ -44,20 +84,24 @@
+         f, pool = features[q.identity], pools[q.identity]
+         if f.family not in cut.families or f.pool_digest != pool.seal():
+             raise ValueError("family or candidate feature mismatch")
+-        t = targets[q.identity]
+-        pos = support_indices(pool, t)
+-        if t.unresolved_evidence or (not t.unanswerable and not pos):
+-            skipped.append(
+-                dict(
+-                    question_id=q.identity,
+-                    reason="unresolved_or_missing_positive_not_abstention",
++        explicit = (reviewed_windows or {}).get(q.identity)
++        if explicit is not None:
++            pos, negative = explicit.validate(pool, cut)
++        else:
++            t = targets[q.identity]
++            pos = support_indices(pool, t)
++            if t.unresolved_evidence or (not t.unanswerable and not pos):
++                skipped.append(
++                    dict(
++                        question_id=q.identity,
++                        reason="unresolved_or_missing_positive_not_abstention",
++                    )
+                 )
+-            )
+-            continue
+-        if t.unanswerable:
+-            pos = ()
++                continue
++            if t.unanswerable:
++                pos = ()
++            negative = (reviewed_negatives or {}).get(q.identity, {})
+         by_id = {w.identity(): i for i, w in enumerate(pool.windows)}
+-        negative = (reviewed_negatives or {}).get(q.identity, {})
+         for identity, kind in negative.items():
+             if (
+                 identity not in by_id
+@@ -193,3 +237,66 @@
+         omitted_score_cases=len(rows) - len(f1s),
+         census_digest=digest(rows),
+     )
++
++
++def factorial_contrasts(rows):
++    """Paired differences, not comparisons of unrelated denominators/pools."""
++    contrasts = (
++        ("coverage", "prefix_frozen_top1", "windows_frozen_top1"),
++        ("abstention", "windows_frozen_top1", "windows_frozen_null"),
++        ("learning", "windows_frozen_null", "windows_trained_null"),
++    )
++    result = {}
++    for phase in sorted({r["phase"] for r in rows}):
++        for name, base, candidate in contrasts:
++            pair = {}
++            for arm in (base, candidate):
++                group = [r for r in rows if r["phase"] == phase and r["arm"] == arm]
++                pair[arm] = {r["question_id"]: r for r in group}
++                if len(pair[arm]) != len(group):
++                    raise ValueError("duplicated contrast observation")
++            if set(pair[base]) != set(pair[candidate]) or not pair[base]:
++                raise ValueError("unpaired contrast census")
++            families, matched = {}, 0
++            for qid, a in pair[base].items():
++                b = pair[candidate][qid]
++                if a["family"] != b["family"]:
++                    raise ValueError("contrast family drift")
++                if name != "coverage" and a["status"] == b["status"] == "succeeded":
++                    if any(
++                        a[k] != b[k]
++                        for k in (
++                            "pool_digest",
++                            "scored_features_digest",
++                            "candidate_ids",
++                        )
++                    ):
++                        raise ValueError(
++                            "head/abstention comparison changed candidate inputs"
++                        )
++                av, bv = a.get("source_choice_correct"), b.get("source_choice_correct")
++                if av is not None and bv is not None:
++                    families.setdefault(a["family"], []).append(bv - av)
++                    matched += 1
++            means = {k: sum(v) / len(v) for k, v in families.items()}
++            n = len(means)
++            delta = sum(means.values()) / n if n else None
++            radius = math.sqrt(2 * math.log(2 * 3 / 0.05) / n) if n else 2
++            result[f"{phase}/{name}"] = dict(
++                base=base,
++                candidate=candidate,
++                planned_pairs=len(pair[base]),
++                annotated_pairs=matched,
++                family_deltas=means,
++                family_mean_delta=delta,
++                simultaneous_95_interval=[
++                    max(-1, delta - radius),
++                    min(1, delta + radius),
++                ]
++                if n
++                else None,
++                interval_scope="three contrasts within this dataset; supplied families assumed independent",
++                same_candidates_required=name != "coverage",
++                production_accepted=False,
++            )
++    return result
+--- a/scripts/memory_cell/selector_head.py
++++ b/scripts/memory_cell/selector_head.py
+@@ -144,6 +144,7 @@
+     ):
+         if (
+             not 1 <= len(rows) <= 256
++            or type(steps) is not int
+             or not 1 <= steps <= 1024
+             or not cut.admission_digest
+         ):
+@@ -203,6 +204,8 @@
+                 float((v - before[k]).square().sum())
+                 for k, v in self.state_dict().items()
+             )
++            if not math.isfinite(delta) or delta <= 0:
++                raise ValueError("training made no finite parameter update")
+             self.training_receipt = dict(
+                 objective="family-balanced-marginal-source-support-plus-null-v1",
+                 admission_digest=cut.admission_digest,
+--- a/scripts/memory_cell/selector_windows.py
++++ b/scripts/memory_cell/selector_windows.py
+@@ -79,10 +79,15 @@
+         if len({w.identity() for w in self.windows}) != len(self.windows):
+             raise ValueError("duplicate window identity")
+         by_id = {s["id"]: s for s in self.inspected}
++        if len(by_id) != len(self.inspected):
++            raise ValueError("duplicate inspected source")
+         for w in self.windows:
+             s = by_id[w.source_id]
+             if (
+-                (w.root, w.scope, w.observed_at, w.inspected_sha256)
++                type(w.start) is not int
++                or type(w.end) is not int
++                or not 0 <= w.start < w.end <= len(s["excerpt"].encode())
++                or (w.root, w.scope, w.observed_at, w.inspected_sha256)
+                 != (s["root"], s["scope"], s["observed_at"], s["inspected_sha256"])
+                 or s["excerpt"].encode()[w.start : w.end].decode() != w.text
+                 or digest(s["excerpt"]) != w.inspected_sha256
+@@ -110,7 +115,7 @@
+ 
+ def _prefix(text: str, byte_limit: int):
+     # At most byte_limit codepoints are encoded, not an unbounded source suffix.
+-    # Up to three boundary bytes can be inspected without entering the projection.
++    # At most one additional codepoint is inspected at the byte boundary.
+     offered = bytearray()
+     for c in text:
+         encoded = c.encode("utf-8", "strict")
+@@ -180,8 +185,8 @@
+     ):
+         raise ValueError("bounded query required")
+     terms = set(re.findall(r"\w+", query.content.lower()))
+-    inspected, ranked, used = [], [], 0
+-    for doc in documents:
++    inspected, ranked, mandatory, used = [], [], [], 0
++    for number, doc in enumerate(documents):
+         if (
+             not isinstance(doc.content, str)
+             or not doc.identity
+@@ -189,7 +194,8 @@
+             or "#chunk:" in doc.identity
+         ):
+             raise ValueError("original non-normalized Document required")
+-        allowance = min(budget.per_source_bytes, budget.scan_bytes - used)
++        remaining = budget.scan_bytes - used
++        allowance = min(budget.per_source_bytes, remaining // (len(documents) - number))
+         if allowance <= 0:
+             break
+         if profile == "prefix":
+@@ -211,7 +217,7 @@
+         spans = list(_spans(prefix, budget))
+         if profile == "prefix":
+             spans = spans[:1]
+-        for start, end, body in spans:
++        for span_number, (start, end, body) in enumerate(spans):
+             w = Window(
+                 doc.identity,
+                 doc.root,
+@@ -227,8 +233,13 @@
+             # This is not semantic relevance and never uses answer annotations.
+             overlap = len(terms.intersection(tokens)) / math.sqrt(max(1, len(tokens)))
+             ranked.append((overlap, w))
++            if span_number == 0:
++                mandatory.append(w)
+     ranked.sort(key=lambda item: (-item[0], item[1].source_id, item[1].start))
+-    seen, windows = set(), []
++    # Preserve each retrieved source's first admissible window before expansion.
++    # Otherwise long early documents could hide every later source under the cap.
++    windows = mandatory[: budget.candidates]
++    seen = {w.identity() for w in windows}
+     for _, w in ranked:
+         if w.identity() not in seen and len(windows) < budget.candidates:
+             windows.append(w)
+--- /dev/null
++++ b/scripts/memory_cell/test_selector_contrasts.py
+@@ -0,0 +1,56 @@
++"""Contrast correctness cannot be rescued by changing the evaluated inputs."""
++
++from copy import deepcopy
++import unittest
++
++from selector_evaluation import factorial_contrasts
++
++
++class ContrastTests(unittest.TestCase):
++    def setUp(self):
++        arms = (
++            "prefix_frozen_top1",
++            "windows_frozen_top1",
++            "windows_frozen_null",
++            "windows_trained_null",
++        )
++        self.rows = [
++            dict(
++                phase="test",
++                arm=arm,
++                question_id=f"q{i}",
++                family=f"f{i}",
++                status="succeeded",
++                pool_digest="prefix" if arm.startswith("prefix") else "expanded",
++                scored_features_digest="features",
++                candidate_ids=["candidate"],
++                source_choice_correct=int(arm == "windows_trained_null"),
++            )
++            for i in range(3)
++            for arm in arms
++        ]
++
++    def test_paired_parameter_effect_separate_from_window_effect(self):
++        results = factorial_contrasts(self.rows)
++        self.assertEqual(results["test/coverage"]["family_mean_delta"], 0)
++        self.assertEqual(results["test/learning"]["family_mean_delta"], 1)
++        self.assertEqual(results["test/learning"]["planned_pairs"], 3)
++        self.assertLess(results["test/learning"]["simultaneous_95_interval"][0], 0)
++        self.assertFalse(results["test/learning"]["production_accepted"])
++
++    def test_missing_duplicate_or_changed_pool_cannot_look_like_a_gain(self):
++        for change in (
++            lambda r: r.pop(),
++            lambda r: r.append(r[-1]),
++            lambda r: r[-1].update(pool_digest="other"),
++            lambda r: r[-1].update(scored_features_digest="other"),
++            lambda r: r[-1].update(family="other"),
++        ):
++            rows = deepcopy(self.rows)
++            change(rows)
++            with self.assertRaises(ValueError):
++                factorial_contrasts(rows)
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- a/scripts/memory_cell/test_selector_head.py
++++ b/scripts/memory_cell/test_selector_head.py
+@@ -7,7 +7,7 @@
+ import torch
+ 
+ from native import Document, Question, Target, digest
+-from selector_evaluation import HARD_KINDS, calibration, train_rows
++from selector_evaluation import HARD_KINDS, ReviewedWindows, calibration, train_rows
+ from selector_head import EvidenceHead, Features, Supervision, TrainingCut
+ from selector_windows import candidate_windows
+ 
+@@ -256,6 +256,49 @@
+         )
+         self.assertEqual(unanswerable[0].positive_indices, ())
+ 
++    def test_full_reviewed_window_labels_can_override_weak_document_support(self):
++        class NoNativeTargets(dict):
++            def __getitem__(self, key):
++                raise AssertionError(
++                    "independent window labels must not read native targets"
++                )
++
++        ids = tuple(w.identity() for w in self.pool.windows)
++        chosen = next(
++            w.identity() for w in self.pool.windows if w.source_id == "relation"
++        )
++        labels = ReviewedWindows(
++            self.pool.seal(),
++            "cut",
++            (chosen,),
++            tuple((i, "same_entity_different_relation") for i in ids if i != chosen),
++            False,
++        )
++        rows, _ = train_rows(
++            [self.q],
++            NoNativeTargets(),
++            {"train": self.pool},
++            {"train": self.features},
++            self.cut,
++            reviewed_windows={"train": labels},
++        )
++        self.assertEqual(rows[0].positive_indices, (ids.index(chosen),))
++        for bad in (
++            replace(labels, pool_digest="changed"),
++            replace(labels, admission_digest="other"),
++            replace(labels, negatives=labels.negatives[:-1]),
++            replace(labels, unanswerable=True),
++        ):
++            with self.assertRaises(ValueError):
++                train_rows(
++                    [self.q],
++                    NoNativeTargets(),
++                    {"train": self.pool},
++                    {"train": self.features},
++                    self.cut,
++                    reviewed_windows={"train": bad},
++                )
++
+     def test_test_annotations_are_never_read_for_training_or_calibration(self):
+         class Forbidden(dict):
+             def __getitem__(self, key):
+--- a/scripts/memory_cell/test_selector_windows.py
++++ b/scripts/memory_cell/test_selector_windows.py
+@@ -79,6 +79,14 @@
+         with self.assertRaises(ValueError):
+             result.revalidate(self.q, set())
+ 
++    def test_negative_original_offsets_cannot_be_smuggled_as_valid_slice(self):
++        result = candidate_windows((self.doc,), self.q, revoked=set())
++        forged = replace(
++            result.windows[0], start=-len(result.inspected[0]["excerpt"].encode())
++        )
++        with self.assertRaises(ValueError):
++            replace(result, windows=(forged,)).revalidate(self.q, set())
++
+     def test_empty_pool_is_valid_but_not_evidence(self):
+         result = candidate_windows((), self.q, revoked=set())
+         self.assertEqual((result.windows, result.scanned_bytes), ((), 0))
+@@ -90,6 +98,20 @@
+             candidate_windows(
+                 (self.doc,), self.q, revoked=set(), budget=WindowBudget(candidates=True)
+             )
++
++    def test_expansion_preserves_all_retrieved_source_prefixes(self):
++        docs = tuple(
++            replace(self.doc, identity=str(i), content="Mara Kyoto " * 2000)
++            for i in range(8)
++        )
++        prefix = candidate_windows(docs, self.q, revoked=set(), profile="prefix")
++        full = candidate_windows(docs, self.q, revoked=set())
++        key = lambda w: (w.source_id, w.start, w.end, w.text)
++        self.assertTrue(
++            {key(w) for w in prefix.windows}.issubset({key(w) for w in full.windows})
++        )
++        self.assertEqual(len(full.inspected), 8)
++        self.assertLessEqual(full.scanned_bytes, full.budget.scan_bytes)
+ 
+     def test_annotation_values_cannot_change_candidates(self):
+         before = candidate_windows((self.doc,), self.q, revoked=set())
