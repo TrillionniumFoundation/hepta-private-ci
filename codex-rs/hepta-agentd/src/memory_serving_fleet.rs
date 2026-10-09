@@ -4,6 +4,9 @@ use codex_hepta_fleet::FleetRevocationCoordinator;
 
 use crate::SharedMemoryTrainingError;
 
+#[path = "memory_serving_startup.rs"]
+mod startup;
+
 /// A request stays within one acknowledged authority head. A newer head forces
 /// a new request/grant even when the update did not mention this model.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
