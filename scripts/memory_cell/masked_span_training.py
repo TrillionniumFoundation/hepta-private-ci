@@ -38,7 +38,7 @@ def masked_rows(queries, corpus, pools, features, cut):
             or feature.family != query.family
             or feature.pool_digest != pool.seal()
             or feature.candidate_ids != tuple(w.identity() for w in pool.windows)
-            or feature.roots != frozenset(w.root for w in pool.windows)
+            or feature.roots != frozenset(s["root"] for s in pool.inspected)
         ):
             raise ValueError("external source, annotation or feature binding")
         positive = target.indices(query, pool)
@@ -57,7 +57,9 @@ def masked_rows(queries, corpus, pools, features, cut):
             negative_scope="only the externally annotated unanswerable paragraph",
         )
         if positive or negative:
-            rows.append(SpanLabels(feature, positive, negative, target.annotation_digest))
+            rows.append(
+                SpanLabels(feature, positive, negative, target.annotation_digest)
+            )
             note["status"] = "external_tri_state_window_supervision"
         else:
             note["status"] = (
@@ -98,11 +100,12 @@ class EvidenceOnlySpanHead(EvidenceHead):
             raise ValueError("bounded admitted available training required")
         groups, seen = {}, set()
         for row in rows:
+            if not isinstance(row, SpanLabels):
+                raise ValueError("explicit tri-state span labels required")
             feature = row.features
             feature.validate(self.dimension)
             if (
-                not isinstance(row, SpanLabels)
-                or not row.annotation_digest
+                not row.annotation_digest
                 or feature.encoder_identity != self.encoder_identity
                 or feature.question_id in seen
                 or feature.question_id not in cut.question_ids

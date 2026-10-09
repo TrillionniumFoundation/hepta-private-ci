@@ -40,6 +40,7 @@ jobs:
           /tmp/masked-python/bin/pip install -r /tmp/previous-span/environment.txt
           /tmp/masked-python/bin/pip freeze > /tmp/masked-evidence/environment.txt
           diff -u /tmp/previous-span/environment.txt /tmp/masked-evidence/environment.txt
+          /tmp/masked-python/bin/python --version > /tmp/masked-evidence/python-version.txt
           cp /tmp/previous-span/external-input-pins.json /tmp/masked-evidence/previous-input-pins.json
       - name: Entire regression suite without pretrained model substitutes in the execution step
         run: |
@@ -103,6 +104,12 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/masked-evidence/resources.txt /tmp/masked-python/bin/python scripts/memory_cell/selector_end_to_end.py /tmp/memory-inputs /tmp/masked-ranker /tmp/masked-inputs /tmp/masked-evidence/experiment --training-profile external-span-masked-evidence-only-v1 2>&1 | tee /tmp/masked-evidence/execution.log
+      - name: Recompute the complete answer census and actual evidence delivery
+        env:
+          EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          /tmp/masked-python/bin/python scripts/memory_cell/masked_span_audit.py /tmp/masked-evidence/experiment "$EXPECTED_SOURCE" | tee /tmp/masked-evidence/execution-check.log
       - name: Require repository formatting after preserving any completed model result
         env:
           BASE: ${{ github.event.pull_request.base.sha }}

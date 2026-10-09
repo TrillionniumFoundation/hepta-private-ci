@@ -1,0 +1,68 @@
+name: MemoryCell masked source formatting candidate
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-masked-format.yml'
+permissions:
+  contents: read
+jobs:
+  formatting-only:
+    if: github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Format only the explicit Python change set and preserve executable ASTs
+        run: |
+          set -euo pipefail
+          mkdir /tmp/masked-source-format
+          python3 -m venv /tmp/format-python
+          /tmp/format-python/bin/pip install uv==0.8.22
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          files = [
+              'masked_span_training.py', 'masked_span_audit.py',
+              'test_masked_span_training.py', 'test_masked_span_audit.py',
+              'selector_end_to_end.py',
+          ]
+          sources = {'scripts/memory_cell/' + f: ast.dump(ast.parse(Path('scripts/memory_cell', f).read_text())) for f in files}
+          Path('/tmp/masked-source-format/asts.json').write_text(json.dumps(sources))
+          PY
+          PATH="/tmp/format-python/bin:$PATH" uv run --frozen --project scripts ruff format scripts/memory_cell/masked_span*.py scripts/memory_cell/test_masked_span*.py scripts/memory_cell/selector_end_to_end.py
+          PATH="/tmp/format-python/bin:$PATH" just fmt --base "$(git rev-parse HEAD)"
+          python3 - <<'PY'
+          import ast, hashlib, json, subprocess
+          from pathlib import Path
+          sources = json.loads(Path('/tmp/masked-source-format/asts.json').read_text())
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          assert set(changed).issubset(sources), changed
+          for name, original in sources.items():
+              assert ast.dump(ast.parse(Path(name).read_text())) == original, name
+          hashes = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in sources}
+          Path('/tmp/masked-source-format/formatted-files.json').write_text(json.dumps(hashes, indent=2))
+          PY
+          git diff --check
+          git diff > /tmp/masked-source-format/format.patch
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add scripts/memory_cell/masked_span*.py scripts/memory_cell/test_masked_span*.py scripts/memory_cell/selector_end_to_end.py
+          if ! git diff --cached --quiet; then
+            git commit -m 'style(memory-cell): normalize masked-span sources with unchanged executable ASTs'
+            git push origin "HEAD:refs/heads/codex/memory-masked-format-${GITHUB_RUN_ID}"
+          fi
+          git rev-parse HEAD > /tmp/masked-source-format/candidate-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/masked-source-format/candidate-tree.txt
+          cat /tmp/masked-source-format/candidate-commit.txt /tmp/masked-source-format/candidate-tree.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-masked-format-candidate
+          path: /tmp/masked-source-format
+          if-no-files-found: error
