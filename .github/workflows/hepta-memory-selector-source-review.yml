@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 2
+          fetch-depth: 3
           persist-credentials: true
       - uses: ./.github/actions/setup-ci
       - name: Prepare exact locally tested completion on a separate review branch
@@ -26,13 +26,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$BASE"
+          test "$(git rev-parse HEAD^)" = b87ff639b0082315bfd1647de2448fb97798248a
           python3 -m venv /tmp/source-format
-          /tmp/source-format/bin/pip install ruff==0.15.8
-          /tmp/source-format/bin/ruff format scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py scripts/memory_cell/relevance*.py scripts/memory_cell/test_relevance*.py
+          /tmp/source-format/bin/pip install ruff==0.15.8 uv==0.8.22
+          export PATH="/tmp/source-format/bin:$PATH"
+          ruff format scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py scripts/memory_cell/relevance*.py scripts/memory_cell/test_relevance*.py
           git apply --check .github/memory-selector-completion.patch
           git apply .github/memory-selector-completion.patch
-          /tmp/source-format/bin/ruff format scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py scripts/memory_cell/relevance*.py scripts/memory_cell/test_relevance*.py
+          ruff format scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py scripts/memory_cell/relevance*.py scripts/memory_cell/test_relevance*.py
           mkdir /tmp/selector-candidate
           python3 - <<'PY'
           import hashlib, json
@@ -56,8 +57,13 @@ jobs:
               compile(Path(name).read_text(), name, 'exec')
           Path('/tmp/selector-candidate/expected-files.json').write_text(json.dumps(expected, indent=2))
           PY
-          # Required repository entry, not a private formatter substitute.
           just fmt --base "$BASE"
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          for name, hashed in json.loads(Path('/tmp/selector-candidate/expected-files.json').read_text()).items():
+              assert hashlib.sha256(Path(name).read_bytes()).hexdigest() == hashed, name
+          PY
           git diff --check
           git add scripts/memory_cell/selector*.py scripts/memory_cell/test_selector*.py scripts/memory_cell/relevance*.py scripts/memory_cell/test_relevance*.py
           git diff --cached --binary > /tmp/selector-candidate/candidate.patch
