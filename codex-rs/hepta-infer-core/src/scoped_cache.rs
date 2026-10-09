@@ -1,7 +1,7 @@
 //! Read-only, authority-free generation/fence-scoped cache. The caller must
 //! authenticate every lane rotation with its registry/authority owner.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 use codex_hepta_types::StableId;
@@ -9,6 +9,7 @@ use codex_hepta_types::StableId;
 use crate::bounded_batch::BatchLaneKeyV1;
 
 const MAX_CACHE_ITEMS: usize = 4_096;
+const MAX_RETIRED_LANES: usize = 1_024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CacheDomainV1 {
@@ -33,6 +34,7 @@ pub struct GenerationScopedCacheV1<T> {
     active: BatchLaneKeyV1,
     maximum_items: usize,
     entries: BTreeMap<StableId, Arc<T>>,
+    retired_lanes: BTreeSet<BatchLaneKeyV1>,
 }
 
 impl<T> GenerationScopedCacheV1<T> {
@@ -50,6 +52,7 @@ impl<T> GenerationScopedCacheV1<T> {
             active: lane,
             maximum_items,
             entries: BTreeMap::new(),
+            retired_lanes: BTreeSet::new(),
         })
     }
 
@@ -62,7 +65,9 @@ impl<T> GenerationScopedCacheV1<T> {
     }
 
     /// A changed fence or revocation frontier invalidates ALL old snapshots.
-    /// Rotations with a regressing generation or authority epoch are rejected.
+    /// Rotations with a regressing generation, epoch or previously retired lane
+    /// are rejected. A fence-only rotation is allowed but a return to its old
+    /// fence is not; registry trust must be verified by the caller.
     /// An authenticated registry owner must supply the new lane.
     pub fn rotate(&mut self, lane: BatchLaneKeyV1) -> Result<bool, CacheErrorV1> {
         lane.validate().map_err(|_| CacheErrorV1::InvalidLane)?;
@@ -71,11 +76,14 @@ impl<T> GenerationScopedCacheV1<T> {
         }
         if lane.generation < self.active.generation
             || lane.authority_epoch < self.active.authority_epoch
-            || (lane.generation == self.active.generation
-                && lane.authority_epoch == self.active.authority_epoch)
+            || self.retired_lanes.contains(&lane)
         {
             return Err(CacheErrorV1::StaleLane);
         }
+        if self.retired_lanes.len() >= MAX_RETIRED_LANES {
+            return Err(CacheErrorV1::CapacityExceeded);
+        }
+        self.retired_lanes.insert(self.active);
         self.entries.clear();
         self.active = lane;
         Ok(true)
