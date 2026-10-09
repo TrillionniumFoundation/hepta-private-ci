@@ -5,8 +5,10 @@
 //! retains the complete role/evaluator receipts in the durable replay stream
 //! while target-host signatures and production admission remain external.
 
-use codex_hepta_cell_roles::{RoleIndependentEvaluatorReceiptV1, RoleQualificationReceiptV1};
-use codex_hepta_types::{AuthorityPosture, Digest32};
+use codex_hepta_cell_roles::RoleIndependentEvaluatorReceiptV1;
+use codex_hepta_cell_roles::RoleQualificationReceiptV1;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
 
 pub const CELL_ROLE_QUALIFICATION_REPLAY_SCHEMA_V1: &str =
     "hepta.cell-role.qualification-replay.v1";
@@ -117,10 +119,11 @@ fn _digest_is_nonzero(value: Digest32) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_cell_roles::{
-        RoleIndependentEvaluatorDispositionV1, RoleQualificationEvidenceOriginV1,
-    };
-    use codex_hepta_types::{CellRoleV1, Generation, StableId};
+    use codex_hepta_cell_roles::RoleIndependentEvaluatorDispositionV1;
+    use codex_hepta_cell_roles::RoleQualificationEvidenceOriginV1;
+    use codex_hepta_types::CellRoleV1;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::StableId;
 
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("stable id")
