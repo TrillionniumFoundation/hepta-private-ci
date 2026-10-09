@@ -31,6 +31,11 @@ use crate::RuntimeTasks;
 mod fleet;
 use fleet::require_current_memory_fleet_v1;
 
+#[path = "memory_serving_owner_wait.rs"]
+mod owner_wait;
+use owner_wait::OWNER_READ_LIMIT;
+use owner_wait::read_owner_phase;
+
 /// Host-owned wiring. Never populate these from request JSON or model output.
 /// Epoch/trust updates must replace the verifier in the SAME shared handle;
 /// retaining an old copy is not a trust-refresh protocol. Clock is the existing
@@ -174,33 +179,39 @@ impl SelectedMemoryServiceV1 {
                 },
             };
             match request {
-                Invocation::Binding(query, response) => {
-                    let fleet = self.owners.fleet.lock().await;
-                    let current = self.owners.evidence.read().await;
-                    let result = require_current_memory_fleet_v1(&fleet, self.node.as_str())
-                        .and_then(|_| (self.owners.clock)())
-                        .and_then(|now| {
-                            self.qualification
-                                .revalidate_current(
-                                    &current,
-                                    &(self.owners.audit_withdrawals)()?,
-                                    now,
+                Invocation::Binding(query, mut response) => {
+                    let read = read_owner_phase(&stop, OWNER_READ_LIMIT, async {
+                        let fleet = self.owners.fleet.lock().await;
+                        let current = self.owners.evidence.read().await;
+                        require_current_memory_fleet_v1(&fleet, self.node.as_str())
+                            .and_then(|_| (self.owners.clock)())
+                            .and_then(|now| {
+                                self.qualification
+                                    .revalidate_current(
+                                        &current,
+                                        &(self.owners.audit_withdrawals)()?,
+                                        now,
+                                    )
+                                    .map_err(|_| {
+                                        SharedMemoryTrainingError::Invalid("stale qualification")
+                                    })
+                            })
+                            .and_then(|_| {
+                                self.owners.replay.selected_memory_serving_binding_v1(
+                                    &self.model,
+                                    &self.qualification,
+                                    &query,
+                                    &self.process,
+                                    &self.node,
                                 )
-                                .map_err(|_| {
-                                    SharedMemoryTrainingError::Invalid("stale qualification")
-                                })
-                        })
-                        .and_then(|_| {
-                            self.owners.replay.selected_memory_serving_binding_v1(
-                                &self.model,
-                                &self.qualification,
-                                &query,
-                                &self.process,
-                                &self.node,
-                            )
-                        })
-                        .map_err(|error| error.to_string());
-                    let _ = response.send(result);
+                            })
+                    });
+                    let result = tokio::select! {
+                        biased;
+                        _ = response.closed() => Err(SharedMemoryTrainingError::Invalid("memory caller closed")),
+                        result = read => result,
+                    };
+                    let _ = response.send(result.map_err(|error| error.to_string()));
                 }
                 Invocation::Execute(query, token, response) => {
                     if response.is_closed() {
@@ -243,7 +254,10 @@ impl SelectedMemoryServiceV1 {
     ) -> Result<(), SharedMemoryTrainingError> {
         // Stable order: fleet, ledger, artifacts, selector, evidence. All
         // guards drop before CPU work, and are reacquired before delivery.
-        let (fleet_head, job, payload) = {
+        let sender = response.as_mut().ok_or(SharedMemoryTrainingError::Invalid(
+            "missing delivery channel",
+        ))?;
+        let prepare = read_owner_phase(stop, OWNER_READ_LIMIT, async {
             let fleet = self.owners.fleet.lock().await;
             let head = require_current_memory_fleet_v1(&fleet, self.node.as_str())?;
             let ledger = self.owners.ledger.lock().await;
@@ -268,7 +282,19 @@ impl SelectedMemoryServiceV1 {
                     || (self.owners.clock)(),
                 )
                 .await?;
-            (head, job, payload)
+            Ok((head, job, payload))
+        });
+        let prepared = tokio::select! {
+            biased;
+            _ = sender.closed() => Err(SharedMemoryTrainingError::Invalid("memory caller closed")),
+            result = prepare => result,
+        };
+        let (fleet_head, job, payload) = match prepared {
+            Ok(value) => value,
+            Err(error) => {
+                self.model.unavailable = true;
+                return Err(error);
+            }
         };
         let process = self.process.clone();
         let cancel = stop.child_token();
@@ -294,47 +320,54 @@ impl SelectedMemoryServiceV1 {
         if stop.is_cancelled() || sender.is_closed() {
             return Err(SharedMemoryTrainingError::Invalid("memory service retired"));
         }
-        let fleet = self.owners.fleet.lock().await;
-        if require_current_memory_fleet_v1(&fleet, self.node.as_str())? != fleet_head {
-            return Err(SharedMemoryTrainingError::Invalid(
-                "memory authority changed during execution",
-            ));
-        }
-        let ledger = self.owners.ledger.lock().await;
-        let artifacts = self.owners.artifacts.lock().await;
-        let selector = self.owners.selector.read().await;
-        let evidence = self.owners.evidence.read().await;
-        let withdrawn_audit_roots = (self.owners.audit_withdrawals)()?;
-        let output = self
-            .owners
-            .replay
-            .finish_selected_memory_execution_v1(
-                &mut self.model,
-                &self.qualification,
-                output,
-                &ledger,
-                &artifacts,
-                &selector,
-                &evidence,
-                &withdrawn_audit_roots,
-                || (self.owners.clock)(),
-            )
-            .await?;
-        if stop.is_cancelled() {
+        let delivered = read_owner_phase(stop, OWNER_READ_LIMIT, async {
+            let fleet = self.owners.fleet.lock().await;
+            if require_current_memory_fleet_v1(&fleet, self.node.as_str())? != fleet_head {
+                return Err(SharedMemoryTrainingError::Invalid(
+                    "memory authority changed during execution",
+                ));
+            }
+            let ledger = self.owners.ledger.lock().await;
+            let artifacts = self.owners.artifacts.lock().await;
+            let selector = self.owners.selector.read().await;
+            let evidence = self.owners.evidence.read().await;
+            let withdrawn_audit_roots = (self.owners.audit_withdrawals)()?;
+            let output = self
+                .owners
+                .replay
+                .finish_selected_memory_execution_v1(
+                    &mut self.model,
+                    &self.qualification,
+                    output,
+                    &ledger,
+                    &artifacts,
+                    &selector,
+                    &evidence,
+                    &withdrawn_audit_roots,
+                    || (self.owners.clock)(),
+                )
+                .await?;
+            if stop.is_cancelled() {
+                self.model.unavailable = true;
+                return Err(SharedMemoryTrainingError::Invalid(
+                    "memory service retired before delivery",
+                ));
+            }
+            // Synchronous send is inside the owner critical section: no fleet,
+            // artifact or trust mutation can interleave between check and delivery.
+            response
+                .take()
+                .ok_or(SharedMemoryTrainingError::Invalid(
+                    "missing delivery channel",
+                ))?
+                .send(Ok(output))
+                .map_err(|_| SharedMemoryTrainingError::Invalid("delivery receiver closed"))?;
+            Ok(())
+        })
+        .await;
+        if delivered.is_err() {
             self.model.unavailable = true;
-            return Err(SharedMemoryTrainingError::Invalid(
-                "memory service retired before delivery",
-            ));
         }
-        // Synchronous send is inside the owner critical section: no fleet,
-        // artifact or trust mutation can interleave between check and delivery.
-        response
-            .take()
-            .ok_or(SharedMemoryTrainingError::Invalid(
-                "missing delivery channel",
-            ))?
-            .send(Ok(output))
-            .map_err(|_| SharedMemoryTrainingError::Invalid("delivery receiver closed"))?;
-        Ok(())
+        delivered
     }
 }
