@@ -1,4 +1,5 @@
 """Test transfer integrity, not model quality or independent acceptance."""
+
 import copy
 import json
 import tempfile
@@ -20,11 +21,24 @@ class HandoffTests(unittest.TestCase):
         self.root = Path(self.tmp.name)
         self.review = self.root / "review"
         self.review.mkdir()
-        self.plan = CoveragePlan("longmemeval", sha(b"fixture corpus"), 2, 1, 1, None,
-            (("longmemeval:q1", "family", 0, 0), ("longmemeval:q2_abs", "family", 0, 0)))
+        self.plan = CoveragePlan(
+            "longmemeval",
+            sha(b"fixture corpus"),
+            2,
+            1,
+            1,
+            None,
+            (
+                ("longmemeval:q1", "family", 0, 0),
+                ("longmemeval:q2_abs", "family", 0, 0),
+            ),
+        )
         self.binding = dict(source_commit="a" * 40)
-        self.declared = dict(schema="hepta.memory-benchmark.preregistered.v1",
-            coverage=self.plan.content(), execution_binding=self.binding)
+        self.declared = dict(
+            schema="hepta.memory-benchmark.preregistered.v1",
+            coverage=self.plan.content(),
+            execution_binding=self.binding,
+        )
         self.plan_path = self.root / "plan.json"
         self.plan_path.write_text(json.dumps(self.declared))
         self.plan_hash = sha(self.plan_path.read_bytes())
@@ -33,34 +47,72 @@ class HandoffTests(unittest.TestCase):
             query = Question(qid, family, qid, "Which color?", "2024-01-01")
             for arm in ARMS:
                 answer = "蓝色 [E1]." if arm == "no_memory" else "蓝色."
-                receipt = dict(input_ids_sha256=sha(b"fixture prompt"), delivered_evidence=[])
-                queue = capture_native(query, answer, receipt,
+                receipt = dict(
+                    input_ids_sha256=sha(b"fixture prompt"), delivered_evidence=[]
+                )
+                queue = capture_native(
+                    query,
+                    answer,
+                    receipt,
                     experiment_digest=digest((self.plan.seal(), self.binding, arm)),
-                    family_digest=digest(family))
-                item, index = audit_entry(self.plan, self.binding, arm,
-                    dict(question_id=qid, status="succeeded", hypothesis=answer,
-                         citation_audit=queue, receipt=receipt), family, query)
+                    family_digest=digest(family),
+                )
+                item, index = audit_entry(
+                    self.plan,
+                    self.binding,
+                    arm,
+                    dict(
+                        question_id=qid,
+                        status="succeeded",
+                        hypothesis=answer,
+                        citation_audit=queue,
+                        receipt=receipt,
+                    ),
+                    family,
+                    query,
+                )
                 self.work.append(item)
                 self.index.append(index)
-        self.summary = dict(schema="hepta.memory-benchmark.review-result.v1",
-            plan_file_sha256=self.plan_hash, execution_source_commit="a" * 40,
-            all_attempts_exported=8, coverage=dict(execution_binding=self.binding,
-                coverage_digest=self.plan.seal(), complete=True, all_native_questions_covered=True,
-                native_cases=2, arms={a: dict(planned=2, succeeded=2, failed=0) for a in ARMS}))
+        self.summary = dict(
+            schema="hepta.memory-benchmark.review-result.v1",
+            plan_file_sha256=self.plan_hash,
+            execution_source_commit="a" * 40,
+            all_attempts_exported=8,
+            coverage=dict(
+                execution_binding=self.binding,
+                coverage_digest=self.plan.seal(),
+                complete=True,
+                all_native_questions_covered=True,
+                native_cases=2,
+                arms={a: dict(planned=2, succeeded=2, failed=0) for a in ARMS},
+            ),
+        )
 
     def seal(self):
         (self.review / "summary.json").write_text(json.dumps(self.summary))
-        for name, rows in (("review.jsonl", self.work), ("review-index.jsonl", self.index)):
-            (self.review / name).write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
-        manifest = "".join(sha((self.review / name).read_bytes()) + "  " + name + "\n"
-            for name in ("review-index.jsonl", "review.jsonl", "summary.json"))
+        for name, rows in (
+            ("review.jsonl", self.work),
+            ("review-index.jsonl", self.index),
+        ):
+            (self.review / name).write_text(
+                "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows)
+            )
+        manifest = "".join(
+            sha((self.review / name).read_bytes()) + "  " + name + "\n"
+            for name in ("review-index.jsonl", "review.jsonl", "summary.json")
+        )
         (self.review / "SHA256SUMS").write_text(manifest)
         return sha(manifest.encode())
 
     def run_export(self, manifest=None, output=None):
-        return export(self.plan_path, self.review, output or self.root / "out",
-            expected_plan_sha256=self.plan_hash, expected_manifest_sha256=manifest or self.seal(),
-            exporter_commit="b" * 40)
+        return export(
+            self.plan_path,
+            self.review,
+            output or self.root / "out",
+            expected_plan_sha256=self.plan_hash,
+            expected_manifest_sha256=manifest or self.seal(),
+            exporter_commit="b" * 40,
+        )
 
     def test_complete_transfer_preserves_hypotheses_and_undefined_precision(self):
         result = self.run_export()
@@ -70,16 +122,29 @@ class HandoffTests(unittest.TestCase):
         for arm in ARMS:
             stats = result["citation_structure"][arm]
             self.assertIsNone(stats["semantic_precision"])
-            self.assertEqual(stats["structural_precision_ceiling_ppm"], 0 if arm == "no_memory" else None)
-            rows = lines((self.root / "out/official-qa-inputs" / (arm + ".jsonl")).read_bytes())
+            self.assertEqual(
+                stats["structural_precision_ceiling_ppm"],
+                0 if arm == "no_memory" else None,
+            )
+            rows = lines(
+                (self.root / "out/official-qa-inputs" / (arm + ".jsonl")).read_bytes()
+            )
             self.assertEqual([r["question_id"] for r in rows], ["q1", "q2_abs"])
-            self.assertEqual([r["hypothesis"] for r in rows],
-                [r["answer"] for r, i in zip(self.work, self.index) if i["arm"] == arm])
+            self.assertEqual(
+                [r["hypothesis"] for r in rows],
+                [r["answer"] for r, i in zip(self.work, self.index) if i["arm"] == arm],
+            )
         for item in self.work:
-            self.assertEqual((self.root / "out/requests" / (item["review_id"] + ".bin")).read_bytes(),
-                request_payload(item["request"]))
-        self.assertEqual((self.root / "out/citation-review.jsonl").read_bytes(),
-                         (self.review / "review.jsonl").read_bytes())
+            self.assertEqual(
+                (
+                    self.root / "out/requests" / (item["review_id"] + ".bin")
+                ).read_bytes(),
+                request_payload(item["request"]),
+            )
+        self.assertEqual(
+            (self.root / "out/citation-review.jsonl").read_bytes(),
+            (self.review / "review.jsonl").read_bytes(),
+        )
         ready = json.loads((self.root / "out/READY.json").read_text())
         for name, hashed in ready["files"].items():
             self.assertEqual(sha((self.root / "out" / name).read_bytes()), hashed)
@@ -87,11 +152,17 @@ class HandoffTests(unittest.TestCase):
             self.run_export()
 
     def test_semantic_binding_drift_rejects_even_after_resealing_transport(self):
-        for field, value in (("answer", "substituted"), ("question", "wrong"),
-                             ("question_time", "2028"), ("original_prompt_sha256", sha(b"wrong")),
-                             ("generator_signature", "invented"), ("evaluator_signature", "invented"),
-                             ("semantic_precision", 1), ("production_accepted", True),
-                             ("status", "execution_failed")):
+        for field, value in (
+            ("answer", "substituted"),
+            ("question", "wrong"),
+            ("question_time", "2028"),
+            ("original_prompt_sha256", sha(b"wrong")),
+            ("generator_signature", "invented"),
+            ("evaluator_signature", "invented"),
+            ("semantic_precision", 1),
+            ("production_accepted", True),
+            ("status", "execution_failed"),
+        ):
             with self.subTest(field=field):
                 old = copy.deepcopy(self.work[0])
                 self.work[0][field] = value
@@ -101,15 +172,24 @@ class HandoffTests(unittest.TestCase):
                 self.work[0] = old
 
     def test_missing_duplicate_and_wrong_family_are_not_a_smaller_census(self):
-        original_work, original_index = copy.deepcopy(self.work), copy.deepcopy(self.index)
-        for change in (lambda: self.work.pop(), lambda: self.work.append(self.work[0]),
-                       lambda: self.index[0].update(family="renamed"),
-                       lambda: self.index[0].update(question_id="longmemeval:invented"),
-                       lambda: self.index.__setitem__(0, self.index[1])):
+        original_work, original_index = (
+            copy.deepcopy(self.work),
+            copy.deepcopy(self.index),
+        )
+        for change in (
+            lambda: self.work.pop(),
+            lambda: self.work.append(self.work[0]),
+            lambda: self.index[0].update(family="renamed"),
+            lambda: self.index[0].update(question_id="longmemeval:invented"),
+            lambda: self.index.__setitem__(0, self.index[1]),
+        ):
             change()
             with self.assertRaises(ValueError):
                 self.run_export()
-            self.work, self.index = copy.deepcopy(original_work), copy.deepcopy(original_index)
+            self.work, self.index = (
+                copy.deepcopy(original_work),
+                copy.deepcopy(original_index),
+            )
 
     def test_no_missing_failure_or_false_integer_success_count(self):
         for field, value in (("failed", 1), ("succeeded", 1), ("failed", False)):
@@ -132,12 +212,14 @@ class HandoffTests(unittest.TestCase):
             self.run_export()
 
     def test_changed_delivered_source_is_not_posthoc_evidence(self):
-        self.work[0]["delivered_evidence"] = [dict(id="invented", root="native", label="E1", excerpt="blue")]
+        self.work[0]["delivered_evidence"] = [
+            dict(id="invented", root="native", label="E1", excerpt="blue")
+        ]
         with self.assertRaises(ValueError):
             self.run_export()
 
     def test_duplicate_json_nonfinite_and_symlink_rejected(self):
-        for raw in (b'{"a":1,"a":2}\n', b'{"a":NaN}\n', b'null\n'):
+        for raw in (b'{"a":1,"a":2}\n', b'{"a":NaN}\n', b"null\n"):
             with self.assertRaises(ValueError):
                 lines(raw)
         manifest = self.seal()
