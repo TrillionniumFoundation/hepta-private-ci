@@ -218,6 +218,9 @@ impl DurableLearnedRoleOwnerV1 {
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<StateCommitReceiptV1, DurableLearnedRoleOwnerErrorV1> {
         let expected_snapshot = DurableStateOwnerV1::snapshot_digest(path.as_ref())?;
+        if expected_snapshot.is_some() {
+            return Err(DurableLearnedRoleOwnerErrorV1::Binding("initial checkpoint exists"));
+        }
         let mut candidate = self.clone();
         let receipt = candidate.seed_initial_state(
             operation_id,
@@ -240,7 +243,7 @@ impl DurableLearnedRoleOwnerV1 {
         {
             return Err(DurableLearnedRoleOwnerErrorV1::Binding("state receipt"));
         }
-        Ok(self.state.reload(&self.definition.cell_id, receipt)?)
+        Ok(self.state.reload_active(&self.definition.cell_id, receipt)?)
     }
 
     pub fn persist(
