@@ -1,0 +1,58 @@
+name: MemoryCell isolated preference formatter
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-preference-format.yml'
+permissions:
+  contents: read
+jobs:
+  format-candidate:
+    if: github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Prepare a separate formatter-only candidate, never main or the PR ref
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          names = ['balanced_answer_learning.py', 'balanced_reader_trial.py',
+                   'test_balanced_answer_learning.py', 'test_balanced_reader_trial.py',
+                   'evidence_preference.py', 'test_evidence_preference.py',
+                   'test_evidence_preference_trial.py']
+          before = {str(Path('scripts/memory_cell', n)): ast.dump(ast.parse(Path('scripts/memory_cell', n).read_text())) for n in names}
+          Path('/tmp/preference-ast.json').write_text(json.dumps(before))
+          PY
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/preference-ast.json').read_text())
+          allowed = set(before) | {'codex-rs/hepta-intelligence-eval/src/' + n for n in (
+              'citation_confidence.rs', 'citation_confidence_tests.rs',
+              'memory_citation_gate.rs', 'memory_citation_gate_tests.rs')}
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          if set(changed) - allowed:
+              raise ValueError('formatter changed an out-of-scope path')
+          for name, tree in before.items():
+              if ast.dump(ast.parse(Path(name).read_text())) != tree:
+                  raise ValueError('formatter changed Python executable AST')
+          subprocess.run(['git', 'add', '--', *changed], check=True) if changed else None
+          PY
+          git rm .github/workflows/hepta-memory-preference-format.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): normalize inspected preference sources and remove temporary formatter'
+          git push origin "HEAD:refs/heads/codex/memory-preference-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
