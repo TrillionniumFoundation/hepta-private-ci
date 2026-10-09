@@ -20,7 +20,7 @@ from index import PersistentIndex, RetrievalPolicy, tune_policy
 from native import Document, digest, load
 from benchmark_coverage import plan_coverage, partition as coverage_partition
 from lesions import evaluate_lesions
-from citation_audit import capture
+from native_citation import capture_native as capture
 from sessions import source_id
 
 
@@ -74,6 +74,7 @@ def execution_binding(
         "benchmark_coverage.py",
         "tensor_contract.py",
         "citation_audit.py",
+        "native_citation.py",
     )
     return {
         "source_commit": os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", "unrecorded"),
@@ -425,6 +426,8 @@ def run(
     def answer_for(name, query, context, **details):
         try:
             answer, receipt = reader.answer(query, context, revoked=set())
+            if not isinstance(answer, str) or not answer.strip():
+                raise ValueError("reader completed without generated answer text")
             row = {
                 "question_id": query.identity,
                 "status": "succeeded",
