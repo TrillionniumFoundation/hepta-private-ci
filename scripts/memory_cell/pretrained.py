@@ -55,6 +55,29 @@ def frozen_digest(model) -> str:
     return h.hexdigest()
 
 
+def _canonical_saved_adapter_config(model, *, inference_mode: bool) -> dict:
+    """Return the exact PEFT config emitted by ``save_pretrained``.
+
+    PEFT adds an ``auto_mapping`` object while saving adapters whose config has
+    no ``task_type``.  That metadata is deterministic (it comes from the
+    wrapped base model class), but it is not present in ``LoraConfig.to_dict``
+    at construction time.  Include only that known save-time field so the
+    reader's byte/config pin remains strict for every other key.
+    """
+    adapter = model.peft_config["default"]
+    config = adapter.to_dict()
+    if config.get("task_type") is None:
+        base_model_class = model._get_base_model_class(
+            is_prompt_tuning=adapter.is_prompt_learning
+        )
+        config["auto_mapping"] = {
+            "base_model_class": base_model_class.__name__,
+            "parent_library": base_model_class.__module__,
+        }
+    config["inference_mode"] = inference_mode
+    return canonical_config(config)
+
+
 class Encoder:
     def __init__(self, directory: Path):
         self.identity = digest(file_inventory(directory))
@@ -131,8 +154,8 @@ class LoRAReader:
             p.numel() for p in self.model.parameters() if p.requires_grad
         )
         self.base_digest = frozen_digest(self.model)
-        self.adapter_config = canonical_config(
-            self.model.peft_config["default"].to_dict()
+        self.adapter_config = _canonical_saved_adapter_config(
+            self.model, inference_mode=False
         )
         self.quarantined = False
         self.scope: str | None = None
@@ -340,8 +363,8 @@ class LoRAReader:
         # Save-time inference_mode is allowed to differ from training mode; the
         # consumer expects inference, never creates trainable selected weights.
         config = strict_json(config_bytes)
-        expected = {**self.adapter_config, "inference_mode": True}
-        if canonical_config(config) != canonical_config(expected):
+        expected = _canonical_saved_adapter_config(self.model, inference_mode=True)
+        if canonical_config(config) != expected:
             raise ValueError("saved PEFT configuration differs from pinned reader")
         manifest = {
             "schema": "hepta.memory-lora-candidate.v2",
@@ -385,7 +408,9 @@ class LoRAReader:
             base_identity=self.identity,
             scope=scope,
             expected_layout=tensor_layout(self.initial),
-            expected_config={**self.adapter_config, "inference_mode": True},
+            expected_config=_canonical_saved_adapter_config(
+                self.model, inference_mode=True
+            ),
             allowed_roots=allowed_roots,
             revoked_roots=revoked,
         )
