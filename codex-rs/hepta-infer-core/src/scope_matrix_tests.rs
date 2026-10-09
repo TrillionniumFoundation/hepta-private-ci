@@ -73,3 +73,38 @@ fn rejects_invalid_quantiles_and_unaccounted_requests() {
     observation.indeterminate_requests = 1;
     assert_eq!(observation.validate(), Err(ScopeMatrixErrorV1::InvalidSample));
 }
+
+struct UnverifiedHost;
+
+impl ScopeMatrixTargetV1 for UnverifiedHost {
+    type Error = ();
+
+    fn run_scope_count(&mut self, count: usize) -> Result<ScopeMatrixSampleV1, Self::Error> {
+        let mut s = sample(count);
+        s.evidence_class = ScopeMatrixEvidenceClassV1::TargetHost;
+        s.target_host_digest = Some(d("host"));
+        s.independent_observer_digest = Some(d("observer"));
+        Ok(s)
+    }
+}
+
+#[test]
+fn self_asserted_host_digests_are_not_host_qualification() {
+    assert!(matches!(
+        run_scope_matrix_v1(&mut UnverifiedHost),
+        Err(ScopeMatrixRunErrorV1::Contract(
+            ScopeMatrixErrorV1::MissingHostEvidence
+        ))
+    ));
+}
+
+#[test]
+fn untrusted_overflowed_counts_cannot_panic_or_pass() {
+    let mut observation = sample(64);
+    observation.terminal_requests = u64::MAX;
+    observation.indeterminate_requests = 5;
+    assert_eq!(
+        observation.validate(),
+        Err(ScopeMatrixErrorV1::InvalidSample)
+    );
+}
