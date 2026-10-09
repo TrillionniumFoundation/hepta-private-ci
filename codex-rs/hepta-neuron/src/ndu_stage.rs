@@ -4,8 +4,7 @@
 //! Product callers must independently verify the NDU owner's signed read
 //! receipt before supplying its digest. This module cannot grant authority.
 
-use codex_hepta_ndu::NduSnapshotRefV1;
-use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
+use codex_hepta_types::{AuthorityPosture, Digest32, Generation, NduSnapshotRefV1, StableId};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NeuronStageBindingErrorV1 {

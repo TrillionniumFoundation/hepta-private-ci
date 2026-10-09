@@ -15,7 +15,6 @@ workspace = true
 
 [dependencies]
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
-codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }

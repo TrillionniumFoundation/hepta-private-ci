@@ -243,7 +243,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
-        snapshot: &codex_hepta_ndu::NduSnapshotRefV1,
+        snapshot: &codex_hepta_types::NduSnapshotRefV1,
         admitted_read_receipt_digest: Digest32,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let tick_digest = input.semantic_digest()?;
