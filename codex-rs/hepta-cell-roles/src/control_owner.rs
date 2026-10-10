@@ -1164,6 +1164,10 @@ impl<'a> ControlCursor<'a> {
     }
 }
 
+#[path = "control_owner_wal.rs"]
+mod wal;
+pub use wal::IncrementalControlRoleWalV2;
+
 #[cfg(test)]
 mod tests {
     use super::*;
