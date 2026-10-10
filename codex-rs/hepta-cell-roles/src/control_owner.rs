@@ -806,12 +806,24 @@ fn persist_durable_control(
         .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     drop(file);
     fs::rename(&temp, path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
-    let parent = path.parent()
-        .filter(|parent| !parent.as_os_str().is_empty())
-        .unwrap_or_else(|| Path::new("."));
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+    #[cfg(unix)]
+    {
+        let parent = path.parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+    }
+    #[cfg(not(unix))]
+    {
+        // std has no portable parent-directory fsync on Windows. Flush the
+        // replaced file, and leave power-loss qualification to the actual
+        // platform-specific host rather than inventing a durability witness.
+        File::open(path)
+            .and_then(|file| file.sync_all())
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+    }
     Ok(())
 }
 
