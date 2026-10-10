@@ -1422,8 +1422,16 @@ where
     if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
         match executor.retire(split) {
             Ok(retirement_digest) => {
-                journal.retire(split)?;
-                let _ = retirement_digest;
+                // The actual owner receipt must be bound to the retired event;
+                // a planned tombstone alone does not prove route withdrawal.
+                // Missing evidence is an uncertain effect requiring owner
+                // reconciliation, never an implicit retry or rollback.
+                if retirement_digest.is_zero() {
+                    return Err(CellSplitAutomationErrorV1::Binding(
+                        "missing retirement execution receipt",
+                    ));
+                }
+                journal.retire_with_execution_receipt(split, retirement_digest)?;
                 owner.commit(&journal)?;
             }
             Err(error) => {
@@ -1651,6 +1659,7 @@ mod tests {
         evaluate_disposition: CellSplitEvaluationDispositionV1,
         canary_failures: u64,
         retired: bool,
+        retirement_digest: Digest32,
     }
 
     impl Default for Executor {
@@ -1659,6 +1668,7 @@ mod tests {
                 evaluate_disposition: CellSplitEvaluationDispositionV1::InsufficientEvidence,
                 canary_failures: 0,
                 retired: false,
+                retirement_digest: digest(34),
             }
         }
     }
@@ -1692,7 +1702,7 @@ mod tests {
 
         fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
             self.retired = true;
-            Ok(digest(34))
+            Ok(self.retirement_digest)
         }
     }
 
@@ -1881,10 +1891,76 @@ mod tests {
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
         assert_eq!(journal.events.len(), 5);
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retired);
+        assert_ne!(
+            journal.events.last().expect("retirement event").evidence_digest,
+            split.retirement.tombstone_digest,
+        );
 
         let replayed = run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut executor)
             .expect("terminal replay");
         assert_eq!(replayed.state, CellSplitLifecycleStateV1::Retired);
+    }
+
+    #[test]
+    fn retirement_execution_receipt_changes_durable_head_and_missing_receipt_fails_closed() {
+        let split = split();
+        let proposal = proposal(&split);
+        let mut first = CellSplitInMemoryJournalOwnerV1::default();
+        let mut first_executor = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            retirement_digest: digest(220),
+            ..Executor::default()
+        };
+        let outcome = run_cell_split_automation_v1(
+            &split,
+            &proposal,
+            &mut first,
+            &mut first_executor,
+        )
+        .expect("first retirement");
+        assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
+        let first_head = outcome.journal_head_digest;
+
+        let mut second = CellSplitInMemoryJournalOwnerV1::default();
+        let mut second_executor = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            retirement_digest: digest(221),
+            ..Executor::default()
+        };
+        let other = run_cell_split_automation_v1(
+            &split,
+            &proposal,
+            &mut second,
+            &mut second_executor,
+        )
+        .expect("second retirement");
+        assert_ne!(first_head, other.journal_head_digest);
+
+        let mut missing = CellSplitInMemoryJournalOwnerV1::default();
+        let mut missing_executor = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            retirement_digest: Digest32::ZERO,
+            ..Executor::default()
+        };
+        assert_eq!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut missing,
+                &mut missing_executor,
+            ),
+            Err(CellSplitAutomationErrorV1::Binding(
+                "missing retirement execution receipt",
+            )),
+        );
+        assert!(missing_executor.retired);
+        let state = missing
+            .load(&split.split_id)
+            .expect("load")
+            .expect("retained state");
+        assert_eq!(state.current_state, CellSplitLifecycleStateV1::Retained);
+        assert_eq!(state.events.len(), 4);
+        assert_ne!(state.head_digest, first_head);
     }
 
     #[test]
