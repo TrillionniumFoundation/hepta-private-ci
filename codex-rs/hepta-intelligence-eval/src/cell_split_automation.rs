@@ -1437,8 +1437,13 @@ where
                 ));
             }
             Err(error) => {
-                journal.rollback(split, error_digest("retire", &error))?;
-                owner.commit(&journal)?;
+                // The retirement provider may have committed before returning
+                // an error. An error string is not a rollback receipt: do not
+                // promote the lifecycle to RolledBack or retry the effect.
+                // The durable Retained frontier requires owner reconciliation.
+                return Err(CellSplitAutomationErrorV1::Executor(format!(
+                    "retirement outcome requires reconciliation: {error}"
+                )));
             }
         }
     }
@@ -1899,6 +1904,44 @@ mod tests {
         ));
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
+    }
+
+    #[test]
+    fn retirement_failure_cannot_mint_a_rollback_receipt() {
+        struct FailedRetirement;
+        impl CellSplitAutomationExecutorV1 for FailedRetirement {
+            type Error = &'static str;
+
+            fn evaluate(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                Ok(crate::cell_split_evaluation::test_receipt_for_lifecycle(
+                    split,
+                    CellSplitEvaluationDispositionV1::EligibleForCanary,
+                ))
+            }
+
+            fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                Executor::default().canary(split)
+            }
+
+            fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                Err("provider outcome unknown")
+            }
+        }
+
+        let split = split();
+        let receipt = proposal(&split);
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        assert!(matches!(
+            run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut FailedRetirement),
+            Err(CellSplitAutomationErrorV1::Executor(message))
+                if message.contains("provider outcome unknown")
+        ));
+        let journal = owner.load(&split.split_id).expect("load").expect("journal");
+        assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
+        assert_eq!(journal.events.len(), 4);
     }
 
     #[test]
