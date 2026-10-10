@@ -18,6 +18,7 @@ use super::Error;
 use super::ModelDriver;
 use super::ModelManifest;
 use super::NeuronFeatureBatchDriver;
+use super::NeuronFeatureBatchItemObservationV2;
 use super::NeuronFeatureDriver;
 use super::NeuronFeatureRequest;
 use super::WorkerRequest;
@@ -207,7 +208,7 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
         &mut self,
         handle: &DriverModelHandle,
         requests: &[NeuronFeatureRequest],
-    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
+    ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
         self.verify_loaded(handle)?;
         self.batch_calls = self.batch_calls.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
         let started = Instant::now();
@@ -216,7 +217,10 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
         // deterministic scalar head kernels and is NOT a GPU GEMM benchmark.
         for request in requests {
             let (drive, prediction) = self.compute(request)?;
-            observed.push(DriverNeuronFeatureObservation {
+            observed.push(NeuronFeatureBatchItemObservationV2 {
+                request_id: request.authorization.request_id.clone(),
+                payload_digest: request.authorization.payload_digest.clone(),
+                feature: DriverNeuronFeatureObservation {
                 terminal_observed: true,
                 succeeded: true,
                 encoder_digest: request.encoder_digest.clone(),
@@ -227,12 +231,13 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
                 transient_allocation_bytes: transient_bytes(request)?,
                 queue_age_micros: 0,
                 latency_micros: 0,
+                },
             });
         }
         let batch_micros = u64::try_from(started.elapsed().as_micros())
             .map_err(|_| Error::ArithmeticOverflow)?;
         for item in &mut observed {
-            item.latency_micros = batch_micros;
+            item.feature.latency_micros = batch_micros;
         }
         Ok(observed)
     }
