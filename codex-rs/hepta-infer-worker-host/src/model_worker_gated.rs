@@ -28,6 +28,8 @@ const Q24: i64 = 1 << 24;
 const Q24_BOUND: i64 = 8 * Q24;
 const MAX_DIM: usize = 512;
 const MAX_HEAD_PARAMETERS: usize = 262_144;
+const MAX_REGISTERED_HEADS: usize = 4_096;
+const MAX_TENSOR_BYTES: usize = 512 * 1024 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct GatedHeadCandidateV2 {
@@ -59,6 +61,7 @@ pub struct GatedHeadCpuDriverV2 {
     selected_manifest: ModelManifest,
     heads: BTreeMap<String, GatedHeadArtifactV2>,
     loaded: bool,
+    sealed: bool,
     tensor_bytes: usize,
     batch_calls: usize,
 }
@@ -70,6 +73,7 @@ impl GatedHeadCpuDriverV2 {
             selected_manifest,
             heads: BTreeMap::new(),
             loaded: false,
+            sealed: false,
             tensor_bytes: 0,
             batch_calls: 0,
         })
@@ -78,8 +82,11 @@ impl GatedHeadCpuDriverV2 {
     /// Register only before the manifest is loaded into the worker. A new
     /// candidate creates a new digest rather than mutating selected weights.
     pub fn register_head(&mut self, candidate: GatedHeadCandidateV2) -> Result<String, Error> {
-        if self.loaded {
+        if self.sealed {
             return Err(Error::ActiveRequests);
+        }
+        if self.heads.len() >= MAX_REGISTERED_HEADS {
+            return Err(Error::ModelCapacity);
         }
         validate_candidate(&candidate)?;
         let parameter_count = parameter_count(&candidate)?;
@@ -88,6 +95,9 @@ impl GatedHeadCpuDriverV2 {
             .ok_or(Error::ArithmeticOverflow)?;
         let next_bytes = self.tensor_bytes.checked_add(bytes)
             .ok_or(Error::ArithmeticOverflow)?;
+        if next_bytes > MAX_TENSOR_BYTES {
+            return Err(Error::ModelCapacity);
+        }
         let head_digest = candidate_digest(&candidate);
         if self.heads.contains_key(&head_digest) {
             return Err(Error::ModelAlreadyLoaded);
@@ -106,6 +116,26 @@ impl GatedHeadCpuDriverV2 {
 
     pub fn parameter_bytes(&self) -> usize {
         self.tensor_bytes
+    }
+
+    /// Calculate an exact bundle identity from the admitted immutable tensors,
+    /// without trusting a manifest-supplied, unverified string.
+    pub fn catalog_digest_for(
+        candidates: &[GatedHeadCandidateV2],
+    ) -> Result<String, Error> {
+        if candidates.is_empty() || candidates.len() > MAX_REGISTERED_HEADS {
+            return Err(Error::ModelCapacity);
+        }
+        let mut digests = Vec::with_capacity(candidates.len());
+        for candidate in candidates {
+            validate_candidate(candidate)?;
+            digests.push(candidate_digest(candidate));
+        }
+        digests.sort();
+        if digests.windows(2).any(|pair| pair[0] == pair[1]) {
+            return Err(Error::ModelAlreadyLoaded);
+        }
+        Ok(catalog_digest_sorted(&digests))
     }
 
     pub fn batch_calls(&self) -> usize {
@@ -151,9 +181,17 @@ impl GatedHeadCpuDriverV2 {
 
 impl ModelDriver for GatedHeadCpuDriverV2 {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
-        if *manifest != self.selected_manifest || self.loaded || self.heads.is_empty() {
+        let selected_catalog = catalog_digest_sorted(
+            &self.heads.keys().cloned().collect::<Vec<_>>(),
+        );
+        if *manifest != self.selected_manifest
+            || self.loaded
+            || self.heads.is_empty()
+            || selected_catalog != manifest.weights_digest
+        {
             return Err(Error::ModelMismatch);
         }
+        self.sealed = true;
         self.loaded = true;
         Ok(DriverModelHandle {
             opaque_id: format!("gated.cpu:{}", manifest.model_id),
@@ -296,6 +334,15 @@ fn parameter_count(candidate: &GatedHeadCandidateV2) -> Result<usize, Error> {
     candidate.input_width.checked_add(dense)
         .and_then(|n| n.checked_add(candidate.output_width * 2))
         .ok_or(Error::ArithmeticOverflow)
+}
+
+fn catalog_digest_sorted(digests: &[String]) -> String {
+    let mut bytes = b"hepta.infer.gated-cpu-catalog.v2".to_vec();
+    bytes.extend_from_slice(&(digests.len() as u64).to_be_bytes());
+    for digest in digests {
+        bytes.extend_from_slice(digest.as_bytes());
+    }
+    Digest32::of_bytes(&bytes).to_string()
 }
 
 fn candidate_digest(candidate: &GatedHeadCandidateV2) -> String {
