@@ -1,0 +1,159 @@
+name: MemoryCell observed events and matched reader
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/event*.py"
+      - "scripts/memory_cell/test_event*.py"
+      - ".github/workflows/hepta-memory-event-organization.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-event-organization-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  format:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Required repository formatting and exact diagnostics
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/event-format
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          set +e
+          just fmt --check --base "$BASE" > /tmp/event-format/check.log 2>&1
+          code=$?
+          set -e
+          cat /tmp/event-format/check.log
+          if [ "$code" -ne 0 ]; then
+            just fmt --base "$BASE"
+            git diff -- scripts/memory_cell/event*.py scripts/memory_cell/test_event*.py .github/workflows/hepta-memory-event-organization.yml > /tmp/event-format/format.diff
+            cp scripts/memory_cell/event*.py scripts/memory_cell/test_event*.py /tmp/event-format/
+          fi
+          git rev-parse HEAD > /tmp/event-format/source-head.txt
+          exit "$code"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-event-format
+          path: /tmp/event-format
+          if-no-files-found: error
+  inputs:
+    needs: format
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      plan_sha: ${{ steps.freeze.outputs.plan_sha }}
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      OMP_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/reference-inputs
+      - name: Locked full regressions, separate from actual model execution
+        run: |
+          set -euo pipefail
+          mkdir /tmp/event-inputs
+          python3 -m venv /tmp/event-python
+          /tmp/event-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/event-python/bin/pip install -r /tmp/reference-inputs/environment.txt
+          /tmp/event-python/bin/pip freeze > /tmp/event-inputs/environment.txt
+          diff -u /tmp/reference-inputs/environment.txt /tmp/event-inputs/environment.txt
+          /tmp/event-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/event-inputs/tests.log
+      - name: Execute controlled processes and build the persistent common index
+        id: freeze
+        run: |
+          set -euo pipefail
+          /tmp/event-python/bin/python scripts/memory_cell/event_memory_trial.py encoder /tmp/event-encoder
+          /tmp/event-python/bin/python scripts/memory_cell/event_experience.py collect /tmp/event-inputs/observations
+          /tmp/event-python/bin/python scripts/memory_cell/event_memory_trial.py plan /tmp/event-inputs/observations /tmp/event-encoder /tmp/event-inputs/plan --input-sha "$(sha256sum /tmp/event-inputs/observations/collection.json | cut -d ' ' -f1)" --model-sha "$(sha256sum /tmp/event-encoder/inventory.json | cut -d ' ' -f1)"
+          echo "plan_sha=$(sha256sum /tmp/event-inputs/plan/plan.json | cut -d ' ' -f1)" >> "$GITHUB_OUTPUT"
+          cp /tmp/event-encoder/inventory.json /tmp/event-encoder/publisher.json /tmp/event-inputs/
+      - name: Retain sources, inputs and failures without uploading model weights
+        if: always()
+        run: |
+          mkdir -p /tmp/event-inputs/source
+          cp scripts/memory_cell/event*.py scripts/memory_cell/test_event*.py /tmp/event-inputs/source/
+          git rev-parse HEAD > /tmp/event-inputs/tested-commit.txt
+          (cd /tmp/event-inputs && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-event-inputs
+          path: /tmp/event-inputs
+          if-no-files-found: error
+  reader:
+    needs: inputs
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: [smol-1.7b, qwen-3b]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      PLAN_SHA: ${{ needs.inputs.outputs.plan_sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-event-inputs
+          path: /tmp/event-inputs
+      - name: Restore exactly the common environment and stage the pinned reader
+        run: |
+          set -euo pipefail
+          mkdir /tmp/event-result
+          python3 -m venv /tmp/event-python
+          /tmp/event-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/event-python/bin/pip install -r /tmp/event-inputs/environment.txt
+          /tmp/event-python/bin/pip freeze > /tmp/event-result/environment.txt
+          diff -u /tmp/event-inputs/environment.txt /tmp/event-result/environment.txt
+          /tmp/event-python/bin/python scripts/memory_cell/reader_reference.py stage '${{ matrix.tier }}' /tmp/event-model
+          cp /tmp/event-model/inventory.json /tmp/event-model/publisher.json /tmp/event-model/stage.json /tmp/event-result/
+      - name: Frozen actual answers in six matched evidence conditions, then score
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/event-result/resources.txt /tmp/event-python/bin/python scripts/memory_cell/event_memory_trial.py run /tmp/event-inputs/plan /tmp/event-inputs/observations /tmp/event-model /tmp/event-result/run --input-sha "$PLAN_SHA" --model-sha "$(sha256sum /tmp/event-model/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/event-result/run.log
+      - name: Preserve exact generation source and all output, including failures
+        if: always()
+        run: |
+          mkdir -p /tmp/event-result/source
+          cp scripts/memory_cell/event*.py scripts/memory_cell/bundle_reader.py scripts/memory_cell/reader_reference.py /tmp/event-result/source/
+          git rev-parse HEAD > /tmp/event-result/tested-commit.txt
+          (cd /tmp/event-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-event-reader-${{ matrix.tier }}
+          path: /tmp/event-result
+          if-no-files-found: error

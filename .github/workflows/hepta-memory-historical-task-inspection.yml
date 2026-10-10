@@ -1,0 +1,93 @@
+name: MemoryCell preserved frozen answer inspection
+on:
+  push:
+    branches:
+      - 'codex/memory-cell-evidence-20261008'
+    paths:
+      - '.github/workflows/hepta-memory-historical-task-inspection.yml'
+      - 'scripts/memory_cell/lifecycle_accounting.py'
+      - 'scripts/memory_cell/frozen_policy_receipt.py'
+      - 'scripts/memory_cell/test_lifecycle_accounting.py'
+      - 'scripts/memory_cell/test_frozen_policy_receipt.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-preserved-task-inspection-1452
+  cancel-in-progress: false
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GENERATING_SOURCE: 421feaad3c42549d7aa6a191f4fc1c7db2298ae6
+      ARCHIVE_SHA: 9b7c16f368fcaca4a907356eee7e4af1cb613e142e437ad07e892bcccbebbd10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Retrieve the fixed original artifact and terminal run status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/historical-inspection
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38066590605 > /tmp/historical-inspection/run.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11675959863 > /tmp/historical-inspection/artifact.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11675959863/zip > /tmp/historical-inspection/original.zip
+          python3 - <<'PY'
+          import hashlib, json, os, zipfile
+          from pathlib import Path
+          root = Path('/tmp/historical-inspection')
+          run = json.loads((root / 'run.json').read_bytes())
+          metadata = json.loads((root / 'artifact.json').read_bytes())
+          assert run['id'] == 38066590605 and run['head_sha'] == os.environ['GENERATING_SOURCE']
+          assert run['status'] == 'completed' and run['conclusion'] == 'success'
+          assert metadata['id'] == 11675959863 and metadata['workflow_run']['id'] == run['id']
+          assert metadata['workflow_run']['head_sha'] == os.environ['GENERATING_SOURCE']
+          assert metadata['digest'] == 'sha256:' + os.environ['ARCHIVE_SHA'] and not metadata['expired']
+          raw = (root / 'original.zip').read_bytes()
+          assert len(raw) <= 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == os.environ['ARCHIVE_SHA']
+          with zipfile.ZipFile(root / 'original.zip') as archive:
+              assert archive.namelist().count('environment.txt') == 1
+              assert archive.getinfo('environment.txt').file_size <= 65536
+              (root / 'environment.txt').write_bytes(archive.read('environment.txt'))
+          PY
+          python3 -m venv /tmp/inspection-python
+          /tmp/inspection-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/inspection-python/bin/pip install -r /tmp/historical-inspection/environment.txt
+          /tmp/inspection-python/bin/pip freeze > /tmp/historical-inspection/actual-environment.txt
+          diff -u /tmp/historical-inspection/environment.txt /tmp/historical-inspection/actual-environment.txt
+      - name: Validate current source with the complete regression suite and format gate
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          /tmp/inspection-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/historical-inspection/tests.log
+          export PATH="/tmp/inspection-python/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/historical-inspection/format.log
+      - name: Recompute original tasks and costs without any new model calls
+        run: |
+          set -euo pipefail
+          /tmp/inspection-python/bin/python scripts/memory_cell/frozen_policy_receipt.py /tmp/historical-inspection/original.zip /tmp/historical-inspection/receipt.json --archive-sha "$ARCHIVE_SHA" --generating-source "$GENERATING_SOURCE" 2>&1 | tee /tmp/historical-inspection/inspection.log
+      - name: Retain exact inspection source and all failure records
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/historical-inspection/source
+          cp scripts/memory_cell/lifecycle_accounting.py scripts/memory_cell/frozen_policy_receipt.py scripts/memory_cell/test_lifecycle_accounting.py scripts/memory_cell/test_frozen_policy_receipt.py /tmp/historical-inspection/source/
+          git rev-parse HEAD > /tmp/historical-inspection/auditor-commit.txt
+          printf '%s\n' "$GENERATING_SOURCE" > /tmp/historical-inspection/generating-source.txt
+          (cd /tmp/historical-inspection && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-preserved-frozen-answer-inspection
+          path: /tmp/historical-inspection
+          if-no-files-found: error

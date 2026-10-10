@@ -1,0 +1,120 @@
+name: MemoryCell exact reader reference receipt
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reader_reference_receipt.py"
+      - "scripts/memory_cell/test_reader_reference_receipt.py"
+      - ".github/workflows/hepta-memory-reader-reference-receipt.yml"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  receipt:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Pin completed source and immutable artifact metadata before download
+        run: |
+          set -euo pipefail
+          mkdir /tmp/reader-receipt
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38046364381 > /tmp/reader-receipt/generating-run.json
+          gh api 'repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38046364381/artifacts?per_page=100' > /tmp/reader-receipt/artifact-metadata.json
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+          root = Path('/tmp/reader-receipt')
+          run = json.loads((root / 'generating-run.json').read_text())
+          assert run['head_sha'] == '1879c0c52748e29739a12e4d4217a17dd7ac24c6'
+          assert run['run_attempt'] == 1
+          if run['status'] != 'completed' or run['conclusion'] != 'success':
+              raise SystemExit('Pinned model run is not completed successfully; no receipt is issued')
+          data = json.loads((root / 'artifact-metadata.json').read_text())
+          assert data['total_count'] <= 100
+          specs = {'inputs': {'id': 11666570882, 'sha': '88b9be8d5be4c9935d60e05105df61130ea4e7caeaa961b313f6f25f656a3170'}}
+          for short, name in [('smol', 'memory-reader-reference-smol-1.7b'), ('qwen', 'memory-reader-reference-qwen-3b')]:
+              found = [a for a in data['artifacts'] if a['name'] == name]
+              assert len(found) == 1
+              a = found[0]
+              assert not a['expired'] and 0 < a['size_in_bytes'] <= 64 * 1024 * 1024
+              assert a['workflow_run']['head_sha'] == run['head_sha']
+              assert re.fullmatch(r'sha256:[0-9a-f]{64}', a['digest'])
+              specs[short] = {'id': a['id'], 'sha': a['digest'][7:]}
+          (root / 'external-pins.json').write_text(json.dumps(specs, indent=2) + '\n')
+          with (root / 'downloads.tsv').open('w') as out:
+              for name, spec in specs.items():
+                  assert type(spec['id']) is int and spec['id'] > 0
+                  out.write(f"{name}\t{spec['id']}\t{spec['sha']}\n")
+          PY
+          while IFS=$'\t' read -r name id sha; do
+            gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$id/zip" > "/tmp/reader-receipt/$name.zip"
+          done < /tmp/reader-receipt/downloads.tsv
+          python3 - <<'PY'
+          import hashlib, json, zipfile
+          from pathlib import Path
+          root = Path('/tmp/reader-receipt')
+          pins = json.loads((root / 'external-pins.json').read_text())
+          for name, spec in pins.items():
+              raw = (root / (name + '.zip')).read_bytes()
+              assert len(raw) <= 64 * 1024 * 1024
+              assert hashlib.sha256(raw).hexdigest() == spec['sha']
+          with zipfile.ZipFile(root / 'smol.zip') as z:
+              env = z.read('environment.txt')
+              assert len(env) < 64 * 1024
+              (root / 'environment.txt').write_bytes(env)
+          PY
+      - name: Complete regression suite in the recorded environment, without a model
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/receipt-python
+          /tmp/receipt-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/receipt-python/bin/pip install -r /tmp/reader-receipt/environment.txt
+          /tmp/receipt-python/bin/pip freeze > /tmp/reader-receipt/current-environment.txt
+          diff -u /tmp/reader-receipt/environment.txt /tmp/reader-receipt/current-environment.txt
+          /tmp/receipt-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/reader-receipt/tests.log
+      - name: Replay all original answers, source spans, queues and diagnostics
+        run: |
+          set -euo pipefail
+          mapfile -t pins < <(python3 -c 'import json; p=json.load(open("/tmp/reader-receipt/external-pins.json")); print("\n".join(p[n]["sha"] for n in ("inputs","smol","qwen")))')
+          /tmp/receipt-python/bin/python scripts/memory_cell/reader_reference_receipt.py /tmp/reader-receipt/inputs.zip /tmp/reader-receipt/smol.zip /tmp/reader-receipt/qwen.zip /tmp/reader-receipt/report.json --inputs-sha "${pins[0]}" --smol-sha "${pins[1]}" --qwen-sha "${pins[2]}" 2>&1 | tee /tmp/reader-receipt/replay.log
+      - name: Required formatting and exact repair diagnostics
+        if: always()
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-receipt
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          set +e
+          just fmt --check --base "$BASE" > /tmp/reader-receipt/format.log 2>&1
+          code=$?
+          set -e
+          cat /tmp/reader-receipt/format.log
+          if [ "$code" -ne 0 ]; then
+            just fmt --base "$BASE"
+            git diff -- scripts/memory_cell/reader_reference_receipt.py scripts/memory_cell/test_reader_reference_receipt.py .github/workflows/hepta-memory-reader-reference-receipt.yml | tee /tmp/reader-receipt/format.diff
+          fi
+          exit "$code"
+      - name: Retain receipt source and failures without new generation claims
+        if: always()
+        run: |
+          mkdir -p /tmp/reader-receipt/source
+          git show HEAD:scripts/memory_cell/reader_reference_receipt.py > /tmp/reader-receipt/source/reader_reference_receipt.py
+          git show HEAD:scripts/memory_cell/test_reader_reference_receipt.py > /tmp/reader-receipt/source/test_reader_reference_receipt.py
+          git rev-parse HEAD > /tmp/reader-receipt/verification-source.txt
+          (cd /tmp/reader-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-reader-reference-receipt
+          path: /tmp/reader-receipt
+          if-no-files-found: error

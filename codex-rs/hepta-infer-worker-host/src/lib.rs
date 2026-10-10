@@ -267,3 +267,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+mod memory_cell_driver;
+pub use memory_cell_driver::MemoryCellBindingV1;
+pub use memory_cell_driver::MemoryCellDriver;

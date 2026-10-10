@@ -1,0 +1,214 @@
+name: MemoryCell complete frozen task and cost receipt
+on:
+  push:
+    branches:
+      - 'codex/memory-cell-evidence-20261008'
+    paths:
+      - 'scripts/memory_cell/lifecycle_accounting.py'
+      - 'scripts/memory_cell/test_lifecycle_accounting.py'
+      - 'scripts/memory_cell/frozen_policy_receipt.py'
+      - 'scripts/memory_cell/test_frozen_policy_receipt.py'
+      - '.github/workflows/hepta-memory-cost-receipt.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-fixed-cost-execution-1452
+  cancel-in-progress: false
+env:
+  SOURCE: 0f2856b6a7eded7c913a8ef448521126844bf839
+  PYTHONPATH: scripts/memory_cell
+jobs:
+  exact-source-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    outputs:
+      artifact_id: ${{ steps.evidence.outputs.artifact-id }}
+      artifact_digest: ${{ steps.evidence.outputs.artifact-digest }}
+    env:
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      HEPTA_MEMORY_TESTED_COMMIT: 0f2856b6a7eded7c913a8ef448521126844bf839
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Stage the pinned original environment and record cancelled predecessor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/frozen-evidence
+          git rev-parse HEAD > /tmp/frozen-evidence/validation-source.txt
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38067150556 > /tmp/frozen-evidence/cancelled-predecessor.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/input.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          raw = Path('/tmp/input.zip').read_bytes()
+          assert len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/input.zip') as z:
+              assert z.namelist().count('environment.txt') == 1
+              assert z.getinfo('environment.txt').file_size <= 65536
+              Path('/tmp/environment.txt').write_bytes(z.read('environment.txt'))
+          PY
+          python3 -m venv /tmp/cost-python
+          /tmp/cost-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/cost-python/bin/pip install -r /tmp/environment.txt
+          /tmp/cost-python/bin/pip freeze > /tmp/frozen-evidence/environment.txt
+          diff -u /tmp/environment.txt /tmp/frozen-evidence/environment.txt
+          /tmp/cost-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from reader_reference_receipt import archive
+          previous = json.loads(Path('/tmp/frozen-evidence/cancelled-predecessor.json').read_text())
+          assert previous['id'] == 38067150556 and previous['head_sha'] == '0f2856b6a7eded7c913a8ef448521126844bf839'
+          root = Path('/tmp/frozen-input')
+          root.mkdir()
+          for name, raw in archive(Path('/tmp/input.zip'), '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b').items():
+              path = root / name
+              path.parent.mkdir(parents=True, exist_ok=True)
+              path.write_bytes(raw)
+          PY
+      - name: Validate the current wrapper and receipt source before any model call
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || '78fdb0cf8537e3a84fc6e0a849707559c80881e8' }}
+        run: |
+          set -euo pipefail
+          /tmp/cost-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/frozen-evidence/tests.log
+          python3 -m venv /tmp/cost-format
+          /tmp/cost-format/bin/pip install uv==0.8.22
+          export PATH="/tmp/cost-format/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/frozen-evidence/format.log
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 0f2856b6a7eded7c913a8ef448521126844bf839
+          persist-credentials: false
+      - name: Stage the unchanged reader and freeze source-only learned policy
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          /tmp/cost-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/frozen-model
+          cp /tmp/frozen-model/stage.json /tmp/frozen-model/inventory.json /tmp/frozen-model/publisher.json /tmp/frozen-evidence/
+          /tmp/cost-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from event_experience import SEED
+          from native import digest
+          Path('/tmp/frozen-evidence/scopes.json').write_text(json.dumps(['controlled_' + digest((SEED, i))[:8] for i in range(8)]))
+          Path('/tmp/frozen-evidence/current-empty.json').write_text('[]\n')
+          PY
+          READER=$(/tmp/cost-python/bin/python -c "import json; print(json.load(open('/tmp/frozen-model/inventory.json'))['inventory_digest'])")
+          /usr/bin/time -v -o /tmp/frozen-evidence/train-resource.txt /tmp/cost-python/bin/python scripts/memory_cell/experience_policy.py /tmp/frozen-input/observations/sources.json /tmp/frozen-evidence/scopes.json /tmp/frozen-evidence/policy.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --scopes-sha "$(sha256sum /tmp/frozen-evidence/scopes.json | cut -d ' ' -f1)" --reader-identity "$READER"
+          /tmp/cost-python/bin/python scripts/memory_cell/frozen_policy_trial.py freeze /tmp/frozen-input/observations/sources.json /tmp/frozen-evidence/policy.json /tmp/frozen-evidence/sessions --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --policy-sha "$(sha256sum /tmp/frozen-evidence/policy.json | cut -d ' ' -f1)" --commit "$SOURCE"
+      - name: Execute the same 32 actual reader calls and fixed procedure verifier
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/frozen-evidence/read-resource.txt /tmp/cost-python/bin/python scripts/memory_cell/frozen_policy_trial.py run /tmp/frozen-input/plan /tmp/frozen-input/observations /tmp/frozen-model /tmp/frozen-evidence/sessions /tmp/frozen-evidence/experiment --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --stage-sha "$(sha256sum /tmp/frozen-model/stage.json | cut -d ' ' -f1)" --catalog-sha "$(sha256sum /tmp/frozen-evidence/sessions/CATALOG.json | cut -d ' ' -f1)" --withdrawals /tmp/frozen-evidence/current-empty.json --withdrawal-sha "$(sha256sum /tmp/frozen-evidence/current-empty.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/frozen-evidence/reader.log
+      - name: Restore the recorded source views and recheck current ancestor withdrawal
+        run: |
+          set -euo pipefail
+          /tmp/cost-python/bin/python - <<'PY'
+          import json, shutil, time
+          from pathlib import Path
+          begin = time.perf_counter()
+          shutil.copytree('/tmp/frozen-evidence/sessions', '/tmp/frozen-restored')
+          record = {'backup_restore_seconds': time.perf_counter()-begin,
+                    'copied_bytes': sum(p.stat().st_size for p in Path('/tmp/frozen-restored').rglob('*') if p.is_file()),
+                    'production_recovery': False}
+          Path('/tmp/frozen-evidence/restore.json').write_text(json.dumps(record))
+          policy = json.loads(Path('/tmp/frozen-evidence/policy.json').read_text())
+          Path('/tmp/frozen-evidence/current-withdrawn.json').write_text(json.dumps([sorted(policy['roots'])[0]]))
+          PY
+          CATALOG=$(sha256sum /tmp/frozen-evidence/sessions/CATALOG.json | cut -d ' ' -f1)
+          RECEIPT=$(sha256sum /tmp/frozen-evidence/experiment/REPLAY.json | cut -d ' ' -f1)
+          for phase in empty withdrawn; do
+            /tmp/cost-python/bin/python scripts/memory_cell/frozen_policy_trial.py replay /tmp/frozen-restored /tmp/frozen-evidence/experiment/REPLAY.json "/tmp/frozen-evidence/replay-$phase.json" --catalog-sha "$CATALOG" --receipt-sha "$RECEIPT" --withdrawals "/tmp/frozen-evidence/current-$phase.json" --withdrawal-sha "$(sha256sum "/tmp/frozen-evidence/current-$phase.json" | cut -d ' ' -f1)"
+          done
+      - name: Preserve actual generation source independently of wrapper source
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frozen-evidence/source /tmp/frozen-evidence/original-inputs
+          cp scripts/memory_cell/frozen_memory_session.py scripts/memory_cell/policy_ancestry.py scripts/memory_cell/frozen_policy_trial.py scripts/memory_cell/frozen_policy_audit.py scripts/memory_cell/experience_policy.py scripts/memory_cell/event_reader_view.py scripts/memory_cell/event_probe.py /tmp/frozen-evidence/source/
+          cp -r /tmp/frozen-input/plan /tmp/frozen-input/observations /tmp/frozen-evidence/original-inputs/ || true
+          git rev-parse HEAD > /tmp/frozen-evidence/tested-commit.txt
+          (cd /tmp/frozen-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        id: evidence
+        if: always()
+        with:
+          name: memory-fixed-source-lifecycle
+          path: /tmp/frozen-evidence
+          if-no-files-found: error
+  verify:
+    needs: exact-source-model
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Download only the artifact produced by the successful fixed-source job
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT: ${{ needs.exact-source-model.outputs.artifact_id }}
+          ARCHIVE_SHA: ${{ needs.exact-source-model.outputs.artifact_digest }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/cost-evidence
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$ARTIFACT" > /tmp/cost-evidence/artifact.json
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$ARTIFACT/zip" > /tmp/cost-evidence/original-model-evidence.zip
+          python3 - <<'PY'
+          import hashlib, json, os, re, zipfile
+          from pathlib import Path
+          root = Path('/tmp/cost-evidence')
+          metadata = json.loads((root / 'artifact.json').read_text())
+          expected = os.environ['ARCHIVE_SHA']
+          assert re.fullmatch('[0-9a-f]{64}', expected)
+          assert metadata['id'] == int(os.environ['ARTIFACT'])
+          assert metadata['workflow_run']['id'] == int(os.environ['GITHUB_RUN_ID'])
+          assert metadata['name'] == 'memory-fixed-source-lifecycle' and not metadata['expired']
+          assert metadata['digest'] == 'sha256:' + expected
+          raw = (root / 'original-model-evidence.zip').read_bytes()
+          assert len(raw) <= 64 * 1024 * 1024 and hashlib.sha256(raw).hexdigest() == expected
+          with zipfile.ZipFile(root / 'original-model-evidence.zip') as z:
+              assert z.namelist().count('environment.txt') == 1
+              assert z.getinfo('environment.txt').file_size <= 65536
+              (root / 'environment.txt').write_bytes(z.read('environment.txt'))
+          Path(os.environ['GITHUB_ENV']).open('a').write('COST_ARCHIVE_SHA=' + expected + '\n')
+          PY
+          python3 -m venv /tmp/cost-python
+          /tmp/cost-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/cost-python/bin/pip install -r /tmp/cost-evidence/environment.txt
+          /tmp/cost-python/bin/pip freeze > /tmp/cost-evidence/verification-environment.txt
+          diff -u /tmp/cost-evidence/environment.txt /tmp/cost-evidence/verification-environment.txt
+      - name: Recompute task gains, complete costs and restored current withdrawals
+        run: |
+          set -euo pipefail
+          /tmp/cost-python/bin/python scripts/memory_cell/frozen_policy_receipt.py /tmp/cost-evidence/original-model-evidence.zip /tmp/cost-evidence/receipt.json --archive-sha "$COST_ARCHIVE_SHA" --generating-source "$SOURCE" 2>&1 | tee /tmp/cost-evidence/replay.log
+      - name: Retain verifier source and all failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cost-evidence/source
+          cp scripts/memory_cell/lifecycle_accounting.py scripts/memory_cell/frozen_policy_receipt.py scripts/memory_cell/test_lifecycle_accounting.py scripts/memory_cell/test_frozen_policy_receipt.py /tmp/cost-evidence/source/
+          git rev-parse HEAD > /tmp/cost-evidence/auditor-commit.txt
+          (cd /tmp/cost-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-frozen-task-cost-receipt
+          path: /tmp/cost-evidence
+          if-no-files-found: error

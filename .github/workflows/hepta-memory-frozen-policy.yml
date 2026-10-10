@@ -1,0 +1,171 @@
+name: MemoryCell frozen policy lifetime and actual tasks
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/frozen_memory_session.py'
+      - 'scripts/memory_cell/policy_ancestry.py'
+      - 'scripts/memory_cell/frozen_policy*.py'
+      - 'scripts/memory_cell/test_policy_ancestry.py'
+      - 'scripts/memory_cell/test_frozen_policy*.py'
+      - '.github/workflows/hepta-memory-frozen-policy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-frozen-policy-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Keep the repository formatting gate
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || '78fdb0cf8537e3a84fc6e0a849707559c80881e8' }}
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/frozen-format
+          /tmp/frozen-format/bin/pip install uv==0.8.22
+          export PATH="/tmp/frozen-format/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE"
+  experiment:
+    needs: format
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Stage the unchanged original event corpus and hybrid plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/frozen-evidence
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/frozen-input.zip
+          python3 - <<'PY'
+          import hashlib, stat, zipfile
+          from pathlib import Path, PurePosixPath
+          raw = Path('/tmp/frozen-input.zip').read_bytes()
+          assert len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          root = Path('/tmp/frozen-input')
+          root.mkdir()
+          with zipfile.ZipFile('/tmp/frozen-input.zip') as z:
+              assert len(z.infolist()) <= 512
+              assert sum(i.file_size for i in z.infolist()) <= 64 * 1024 * 1024
+              seen = set()
+              for item in z.infolist():
+                  p = PurePosixPath(item.filename)
+                  assert not p.is_absolute() and '..' not in p.parts and '\\' not in item.filename
+                  assert not stat.S_ISLNK(item.external_attr >> 16)
+                  if item.is_dir():
+                      continue
+                  assert str(p) not in seen
+                  seen.add(str(p))
+                  target = root / p
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(item))
+          PY
+      - name: Execute all regressions in the exact recorded environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/frozen-python
+          /tmp/frozen-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/frozen-python/bin/pip install -r /tmp/frozen-input/environment.txt
+          /tmp/frozen-python/bin/pip freeze > /tmp/frozen-evidence/environment.txt
+          diff -u /tmp/frozen-input/environment.txt /tmp/frozen-evidence/environment.txt
+          /tmp/frozen-python/bin/python - <<'PY'
+          from pathlib import Path
+          from reader_reference_receipt import archive
+          archive(Path('/tmp/frozen-input.zip'), '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b')
+          PY
+          /tmp/frozen-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/frozen-evidence/tests.log
+      - name: Stage the same frozen research reader
+        run: |
+          set -euo pipefail
+          /tmp/frozen-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/frozen-model
+          cp /tmp/frozen-model/stage.json /tmp/frozen-model/inventory.json /tmp/frozen-model/publisher.json /tmp/frozen-evidence/
+      - name: Train the existing policy then freeze all source sessions without task inputs
+        run: |
+          set -euo pipefail
+          /tmp/frozen-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from event_experience import SEED
+          from native import digest
+          Path('/tmp/frozen-evidence/scopes.json').write_text(json.dumps(['controlled_' + digest((SEED, i))[:8] for i in range(8)]))
+          Path('/tmp/frozen-evidence/current-empty.json').write_text('[]\n')
+          PY
+          READER=$(/tmp/frozen-python/bin/python -c "import json; print(json.load(open('/tmp/frozen-model/inventory.json'))['inventory_digest'])")
+          /usr/bin/time -v -o /tmp/frozen-evidence/train-resource.txt /tmp/frozen-python/bin/python scripts/memory_cell/experience_policy.py /tmp/frozen-input/observations/sources.json /tmp/frozen-evidence/scopes.json /tmp/frozen-evidence/policy.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --scopes-sha "$(sha256sum /tmp/frozen-evidence/scopes.json | cut -d ' ' -f1)" --reader-identity "$READER"
+          /tmp/frozen-python/bin/python scripts/memory_cell/frozen_policy_trial.py freeze /tmp/frozen-input/observations/sources.json /tmp/frozen-evidence/policy.json /tmp/frozen-evidence/sessions --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --policy-sha "$(sha256sum /tmp/frozen-evidence/policy.json | cut -d ' ' -f1)" --commit "$HEPTA_MEMORY_TESTED_COMMIT"
+      - name: New process produces all 32 actual answers and shared procedure outcomes
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/frozen-evidence/read-resource.txt /tmp/frozen-python/bin/python scripts/memory_cell/frozen_policy_trial.py run /tmp/frozen-input/plan /tmp/frozen-input/observations /tmp/frozen-model /tmp/frozen-evidence/sessions /tmp/frozen-evidence/experiment --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --stage-sha "$(sha256sum /tmp/frozen-model/stage.json | cut -d ' ' -f1)" --catalog-sha "$(sha256sum /tmp/frozen-evidence/sessions/CATALOG.json | cut -d ' ' -f1)" --withdrawals /tmp/frozen-evidence/current-empty.json --withdrawal-sha "$(sha256sum /tmp/frozen-evidence/current-empty.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/frozen-evidence/reader.log
+      - name: Restore the old on-disk copy, then apply a current ancestor withdrawal
+        run: |
+          set -euo pipefail
+          /tmp/frozen-python/bin/python - <<'PY'
+          import json, shutil, time
+          from pathlib import Path
+          begin = time.perf_counter()
+          shutil.copytree('/tmp/frozen-evidence/sessions', '/tmp/frozen-restored')
+          record = {'backup_restore_seconds': time.perf_counter()-begin,
+                    'copied_bytes': sum(p.stat().st_size for p in Path('/tmp/frozen-restored').rglob('*') if p.is_file()),
+                    'production_recovery': False}
+          Path('/tmp/frozen-evidence/restore.json').write_text(json.dumps(record))
+          policy = json.loads(Path('/tmp/frozen-evidence/policy.json').read_text())
+          Path('/tmp/frozen-evidence/current-withdrawn.json').write_text(json.dumps([sorted(policy['roots'])[0]]))
+          PY
+          CATALOG=$(sha256sum /tmp/frozen-evidence/sessions/CATALOG.json | cut -d ' ' -f1)
+          RECEIPT=$(sha256sum /tmp/frozen-evidence/experiment/REPLAY.json | cut -d ' ' -f1)
+          for phase in empty withdrawn; do
+            /tmp/frozen-python/bin/python scripts/memory_cell/frozen_policy_trial.py replay /tmp/frozen-restored /tmp/frozen-evidence/experiment/REPLAY.json "/tmp/frozen-evidence/replay-$phase.json" --catalog-sha "$CATALOG" --receipt-sha "$RECEIPT" --withdrawals "/tmp/frozen-evidence/current-$phase.json" --withdrawal-sha "$(sha256sum "/tmp/frozen-evidence/current-$phase.json" | cut -d ' ' -f1)"
+          done
+          /tmp/frozen-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/frozen-evidence')
+          for phase, expected in [('empty', 'replayed'), ('withdrawn', 'withdrawn')]:
+              r = json.loads((root / f'replay-{phase}.json').read_text())
+              assert r['model_calls'] == 0 and len(r['results']) == 32
+              assert all(x['status'] == expected for x in r['results'])
+          report = json.loads((root / 'experiment/report.json').read_text())
+          assert report['all_attempts'] == 32 and report['production_accepted'] is False
+          print(json.dumps(report, indent=2))
+          PY
+      - name: Retain original sources, actual outputs, frozen state and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frozen-evidence/source /tmp/frozen-evidence/original-inputs
+          cp scripts/memory_cell/frozen_memory_session.py scripts/memory_cell/policy_ancestry.py scripts/memory_cell/frozen_policy_trial.py scripts/memory_cell/frozen_policy_audit.py scripts/memory_cell/experience_policy.py scripts/memory_cell/event_reader_view.py scripts/memory_cell/event_probe.py /tmp/frozen-evidence/source/
+          cp -r /tmp/frozen-input/plan /tmp/frozen-input/observations /tmp/frozen-evidence/original-inputs/ || true
+          git rev-parse HEAD > /tmp/frozen-evidence/tested-commit.txt
+          (cd /tmp/frozen-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-frozen-policy-lifecycle
+          path: /tmp/frozen-evidence
+          if-no-files-found: error

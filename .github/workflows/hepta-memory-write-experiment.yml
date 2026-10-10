@@ -1,0 +1,167 @@
+name: MemoryCell source-only write and fresh task reads
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/experience_*.py"
+      - "scripts/memory_cell/test_experience_*.py"
+      - ".github/workflows/hepta-memory-write-experiment.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-source-write-1452
+  cancel-in-progress: false
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Required repository formatting
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/source-write-format
+          /tmp/source-write-format/bin/pip install uv==0.8.22
+          export PATH="/tmp/source-write-format/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          set +e
+          just fmt --check --base "$BASE" > /tmp/source-write-format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/source-write-format.log
+          if [ "$status" -ne 0 ]; then
+            just fmt --base "$BASE"
+            git diff -- scripts/memory_cell/experience_policy.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/test_experience_policy.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py > /tmp/source-write-format.diff
+          fi
+          exit "$status"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-write-format
+          path: /tmp/source-write-format.*
+          if-no-files-found: error
+  write-and-read:
+    needs: format
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+      PLAN_SHA: 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download the immutable controlled source corpus
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/experience-result
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/experience-input.zip
+          python3 - <<'PY'
+          import hashlib, stat, zipfile
+          from pathlib import Path, PurePosixPath
+          data = Path('/tmp/experience-input.zip').read_bytes()
+          assert len(data) < 64 * 1024 * 1024
+          assert hashlib.sha256(data).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          root = Path('/tmp/experience-input')
+          root.mkdir()
+          with zipfile.ZipFile('/tmp/experience-input.zip') as z:
+              assert len(z.infolist()) <= 512
+              assert sum(i.file_size for i in z.infolist()) <= 64 * 1024 * 1024
+              seen = set()
+              for item in z.infolist():
+                  p = PurePosixPath(item.filename)
+                  assert not p.is_absolute() and '..' not in p.parts
+                  assert '\\' not in item.filename and not stat.S_ISLNK(item.external_attr >> 16)
+                  if item.is_dir():
+                      continue
+                  assert str(p) not in seen
+                  seen.add(str(p))
+                  out = root / p
+                  out.parent.mkdir(parents=True, exist_ok=True)
+                  out.write_bytes(z.read(item))
+          PY
+      - name: Lock dependencies, verify source inventory and run all regressions
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/experience-python
+          /tmp/experience-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/experience-python/bin/pip install -r /tmp/experience-input/environment.txt
+          /tmp/experience-python/bin/pip freeze > /tmp/experience-result/environment.txt
+          diff -u /tmp/experience-input/environment.txt /tmp/experience-result/environment.txt
+          /tmp/experience-python/bin/python - <<'PY'
+          from pathlib import Path
+          from reader_reference_receipt import archive
+          archive(Path('/tmp/experience-input.zip'), '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b')
+          PY
+          /tmp/experience-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/experience-result/tests.log
+      - name: Stage the existing research reader without changing its identity
+        run: |
+          set -euo pipefail
+          /tmp/experience-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/experience-model
+          cp /tmp/experience-model/stage.json /tmp/experience-model/inventory.json /tmp/experience-model/publisher.json /tmp/experience-result/
+      - name: Write observed source facts with no test-plan argument
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log
+          sha256sum /tmp/experience-result/snapshot/READY.json > /tmp/experience-result/snapshot-pin.txt
+      - name: Train a small read policy only from the declared calibration sources
+        run: |
+          set -euo pipefail
+          /tmp/experience-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from event_experience import SEED
+          from native import digest
+          Path('/tmp/experience-result/policy-scopes.json').write_text(json.dumps([
+              'controlled_' + digest((SEED, i))[:8] for i in range(8)
+          ]))
+          PY
+          BASE_ID=$(/tmp/experience-python/bin/python -c "import json; print(json.load(open('/tmp/experience-result/snapshot/READY.json'))['base_identity'])")
+          /tmp/experience-python/bin/python scripts/memory_cell/experience_policy.py /tmp/experience-input/observations/sources.json /tmp/experience-result/policy-scopes.json /tmp/experience-result/read-policy.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --scopes-sha "$(sha256sum /tmp/experience-result/policy-scopes.json | cut -d ' ' -f1)" --reader-identity "$BASE_ID"
+      - name: New process reloads both committed modules before task exposure
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/experience-result/read-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py read /tmp/experience-input/plan /tmp/experience-input/observations /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/tasks --plan-sha "$PLAN_SHA" --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --policy /tmp/experience-result/read-policy.json --policy-sha "$(sha256sum /tmp/experience-result/read-policy.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/read.log
+      - name: Recompute seven-arm knowledge and policy effects from original answers
+        run: |
+          set -euo pipefail
+          /tmp/experience-python/bin/python scripts/memory_cell/source_write_effects.py /tmp/experience-input/plan /tmp/experience-input/observations /tmp/experience-result --plan-sha "$PLAN_SHA" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee /tmp/experience-result/effects.log
+      - name: Preserve original responses, exact source, costs and failed runs
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/experience-result/source
+          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py /tmp/experience-result/source/
+          git rev-parse HEAD > /tmp/experience-result/tested-commit.txt
+          # Base and research-derived model weights are not redistributed.
+          find /tmp/experience-result -name '*.safetensors' -delete
+          (cd /tmp/experience-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-only-write
+          path: /tmp/experience-result
+          if-no-files-found: error
