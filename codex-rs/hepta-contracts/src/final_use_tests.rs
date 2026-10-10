@@ -99,7 +99,12 @@ fn second_batch_grant(original: &SignedFinalUseGrant, nonce: u8) -> SignedFinalU
     signed.grant.nonce = [nonce; 32];
     signed.grant.binding.request_sha256 = [nonce; 32];
     signed.signature = issuer
-        .sign(&signed.grant.signing_bytes().expect("valid batch fixture grant"))
+        .sign(
+            &signed
+                .grant
+                .signing_bytes()
+                .expect("valid batch fixture grant"),
+        )
         .to_bytes()
         .to_vec();
     signed
