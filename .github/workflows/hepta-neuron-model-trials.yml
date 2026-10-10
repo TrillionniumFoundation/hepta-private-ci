@@ -6,6 +6,13 @@ on:
       - 'scripts/hepta_neuron_model_trials.py'
       - 'scripts/hepta_neuron_trial_evidence_gate.py'
       - 'scripts/hepta_neuron_artifact_preflight.py'
+      - '.github/scripts/test_hepta_neuron_model_trials.py'
+      - '.github/scripts/test_hepta_neuron_trial_evidence_gate.py'
+      - '.github/workflows/hepta-neuron-model-trials.yml'
+      - 'qualification/neuron-model-trials/**'
+  workflow_dispatch:
+
+permissions:
   contents: read
 
 jobs:
@@ -23,3 +30,8 @@ jobs:
       - name: Strict offline protocol checks (no weights, no production model claims)
         run: |
           /tmp/hepta-neuron-trial-venv/bin/python -m py_compile scripts/hepta_neuron_model_trials.py scripts/hepta_neuron_trial_evidence_gate.py scripts/hepta_neuron_artifact_preflight.py
+          /tmp/hepta-neuron-trial-venv/bin/python -m unittest discover -s .github/scripts -p 'test_hepta_neuron*.py' -v
+          /tmp/hepta-neuron-trial-venv/bin/python scripts/hepta_neuron_artifact_preflight.py catalog \
+            --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+            --output "$RUNNER_TEMP/hepta-neuron-upstream-metadata.json"
+          git diff --check
