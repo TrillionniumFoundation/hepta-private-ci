@@ -370,7 +370,13 @@ fn signed_batch_rejects_authorization_quota_and_reservation_mutations() {
     // Failed comparisons cannot claim the signed one-shot nonce or poison
     // the original exact request. It is still admitted and executes once.
     worker
-        .enqueue(100, "model".into(), original, key, original_grant())
+        .enqueue(
+            100,
+            "model".into(),
+            original.clone(),
+            key.clone(),
+            original_grant(),
+        )
         .unwrap();
     let poll = worker.poll_and_execute(101).unwrap();
     assert_eq!(poll.outcomes.len(), 1);
