@@ -29,6 +29,7 @@ jobs:
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
+          python3 -m compileall -q qualification/stem-cell-v1
           python3 -m unittest discover -v -s qualification/stem-cell-v1 -p 'test_*.py'
           python3 -m json.tool qualification/stem-cell-v1/protocol.json > /dev/null
       - name: Check tested source remains unmodified
