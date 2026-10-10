@@ -3,8 +3,8 @@ on:
   pull_request:
     paths:
       - 'scripts/memory_cell/composition_*.py'
-      - 'scripts/memory_cell/test_composition_evidence.py'
-      - 'scripts/memory_cell/test_composition_policy.py'
+      - 'scripts/memory_cell/test_composition_*.py'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_COMPOSITION.md'
       - '.github/workflows/hepta-memory-composition-evidence.yml'
 permissions:
   contents: read
@@ -16,7 +16,7 @@ jobs:
   publisher-data:
     if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       PYTHONPATH: scripts/memory_cell
     steps:
@@ -24,31 +24,35 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
-      - name: Validate data boundaries and acquire exact publisher archive
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-external-span-e2e
+          run-id: 37919555733
+          github-token: ${{ github.token }}
+          path: /tmp/environment
+      - name: Execute all regressions in the pinned reference environment
         run: |
           set -euo pipefail
           mkdir -p /tmp/composition-validation
-          python3 -m unittest discover -s scripts/memory_cell -p test_composition_evidence.py -v 2>&1 | tee /tmp/composition-validation/tests.log
-          python3 scripts/memory_cell/composition_evidence.py /tmp/composition-data --source-commit "$(git rev-parse HEAD)"
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-          root = Path('/tmp/composition-data')
-          plan = json.loads((root / 'plan.json').read_text())
-          print(json.dumps({'source': plan['source_commit'], 'counts': plan['frozen_counts'], 'cases': len(plan['cases'])}))
-          for case in plan['cases']:
-              if case['phase'] == 'capability':
-                  print(json.dumps({'question': case['question'], 'evidence': case['conditions']['publisher_pair']['delivered_evidence']}, ensure_ascii=False))
-          PY
+          python3 -m venv /tmp/composition-python
+          /tmp/composition-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/composition-python/bin/pip install -r /tmp/environment/environment.txt
+          /tmp/composition-python/bin/pip freeze > /tmp/composition-validation/environment.txt
+          diff -u /tmp/environment/environment.txt /tmp/composition-validation/environment.txt
+          /tmp/composition-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/composition-validation/tests.log
+      - name: Acquire and verify every row of the exact original publisher archive
+        run: |
+          set -euo pipefail
+          /tmp/composition-python/bin/python scripts/memory_cell/composition_evidence.py /tmp/composition-data --source-commit "$(git rev-parse HEAD)"
+          cp /tmp/composition-validation/environment.txt /tmp/composition-data/
+          (cd /tmp/composition-data && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - name: Retain failures and exact source
         if: always()
         run: |
           mkdir -p /tmp/composition-validation/source
           cp scripts/memory_cell/composition_*.py /tmp/composition-validation/source/
           git rev-parse HEAD > /tmp/composition-validation/tested-commit.txt
-          if test -d /tmp/composition-data; then
-            (cd /tmp/composition-data && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
-          fi
+          git diff --stat > /tmp/composition-validation/worktree-diff.txt
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -59,3 +63,102 @@ jobs:
           name: memory-composition-publisher-data
           path: /tmp/composition-data
           if-no-files-found: error
+  reader:
+    needs: publisher-data
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: ['135M', '360M', '1.7B']
+    env:
+      PYTHONPATH: scripts/memory_cell
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-composition-publisher-data
+          path: /tmp/composition-data
+      - name: Verify shared data and stage exact model and package versions
+        run: |
+          set -euo pipefail
+          (cd /tmp/composition-data && sha256sum -c SHA256SUMS)
+          mkdir /tmp/composition-result
+          python3 -m venv /tmp/composition-python
+          /tmp/composition-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/composition-python/bin/pip install -r /tmp/composition-data/environment.txt
+          /tmp/composition-python/bin/pip freeze > /tmp/composition-result/environment.txt
+          diff -u /tmp/composition-data/environment.txt /tmp/composition-result/environment.txt
+          /tmp/composition-python/bin/python scripts/memory_cell/bundle_assets.py stage '${{ matrix.tier }}' /tmp/composition-model
+          cp /tmp/composition-model/inventory.json /tmp/composition-result/
+      - name: Actual frozen reader diagnosis and only conditionally policy training and transfer
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/composition-result/resources.txt /tmp/composition-python/bin/python scripts/memory_cell/composition_trial.py /tmp/composition-data /tmp/composition-model /tmp/composition-result/execution 2>&1 | tee /tmp/composition-result/run.log
+      - name: Keep original outputs even when experiments fail
+        if: always()
+        run: |
+          mkdir -p /tmp/composition-result/source
+          cp scripts/memory_cell/composition_*.py scripts/memory_cell/bundle_reader.py scripts/memory_cell/frozen_memory_session.py /tmp/composition-result/source/
+          git rev-parse HEAD > /tmp/composition-result/tested-commit.txt
+          (cd /tmp/composition-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-composition-reader-${{ matrix.tier }}
+          path: /tmp/composition-result
+          if-no-files-found: error
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Repository formatting remains required, independently of experiments
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE"
+  census:
+    needs: reader
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-composition-reader-*
+          path: /tmp/composition-readers
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-composition-publisher-data
+          path: /tmp/composition-data
+      - name: Verify complete records and keep model capacity distinct from memory effects
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          for directory in /tmp/composition-readers/*; do (cd "$directory" && sha256sum -c SHA256SUMS); done
+          python3 scripts/memory_cell/composition_receipt.py /tmp/composition-readers /tmp/composition-data /tmp/composition-matrix.json
+          cat /tmp/composition-matrix.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-composition-reader-matrix
+          path: /tmp/composition-matrix.json
