@@ -314,11 +314,14 @@ impl DurableControlRoleOwnerV1 {
         reject_durable_path(&path)?;
         let _writer_lock = lock_durable_control_writer(&path)?;
         if !path.exists() {
-            let mut file = fs::OpenOptions::new()
-                .write(true)
-                .create_new(true)
-                .open(&path)
-                .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+            let mut options = fs::OpenOptions::new();
+            options.write(true).create_new(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(0o600);
+            }
+            let mut file = options.open(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             let mut initial = Vec::new();
             initial.extend_from_slice(DURABLE_CONTROL_MAGIC_V1);
             initial.extend_from_slice(&0_u32.to_be_bytes());
@@ -332,6 +335,11 @@ impl DurableControlRoleOwnerV1 {
                 .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             file.sync_all()
                 .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+            // A synced file without its directory entry is not a durable
+            // genesis. Never acknowledge an owner opened from an unlinked
+            // or uncommitted first snapshot after abrupt power loss.
+            #[cfg(unix)]
+            sync_control_directory(&path)?;
         }
         let bytes = fs::read(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         let inner = decode_durable_control(&bytes)?;
@@ -796,9 +804,14 @@ fn persist_durable_control(
     reject_durable_path(path)?;
     let temp = path.with_extension("control.snapshot.tmp");
     reject_durable_path(&temp)?;
-    let mut file = fs::OpenOptions::new()
-        .create_new(true)
-        .write(true)
+    let mut options = fs::OpenOptions::new();
+    options.create_new(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options
         .open(&temp)
         .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     file.write_all(&bytes)
@@ -807,14 +820,7 @@ fn persist_durable_control(
     drop(file);
     fs::rename(&temp, path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     #[cfg(unix)]
-    {
-        let parent = path.parent()
-            .filter(|parent| !parent.as_os_str().is_empty())
-            .unwrap_or_else(|| Path::new("."));
-        File::open(parent)
-            .and_then(|directory| directory.sync_all())
-            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
-    }
+    sync_control_directory(path)?;
     #[cfg(not(unix))]
     {
         // std has no portable parent-directory fsync on Windows. Flush the
@@ -825,6 +831,17 @@ fn persist_durable_control(
             .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     }
     Ok(())
+}
+
+#[cfg(unix)]
+fn sync_control_directory(path: &Path) -> Result<(), ControlOwnerErrorV1> {
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    File::open(parent)
+        .and_then(|directory| directory.sync_all())
+        .map_err(|_| ControlOwnerErrorV1::DurableIo)
 }
 
 fn decode_durable_control(bytes: &[u8]) -> Result<InMemoryControlRoleOwnerV1, ControlOwnerErrorV1> {
@@ -1423,6 +1440,44 @@ mod tests {
             .prepare(intent(ControlOperationKindV1::Planner))
             .expect("repeat");
         assert_eq!(std::fs::read(&path).expect("read"), before);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn durable_control_initial_and_replaced_snapshots_are_owner_private() {
+        use std::os::unix::fs::PermissionsExt;
+        let directory = std::env::temp_dir().join(format!(
+            "hepta-control-private-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("clock")
+                .as_nanos()
+        ));
+        std::fs::create_dir(&directory).expect("private test directory");
+        let path = directory.join("state.bin");
+        {
+            let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open genesis");
+            assert_eq!(
+                std::fs::metadata(&path).expect("genesis metadata").permissions().mode() & 0o777,
+                0o600
+            );
+            owner
+                .activate_generation(
+                    StableId::new("cell.control").expect("id"),
+                    Generation::new(3).expect("generation"),
+                    digest("fence"),
+                )
+                .expect("durable replacement");
+            assert_eq!(
+                std::fs::metadata(&path).expect("replacement metadata").permissions().mode() & 0o777,
+                0o600
+            );
+        }
+        let reopened = DurableControlRoleOwnerV1::open(&path).expect("reopen");
+        assert!(reopened.inner().active_generations.contains_key(&StableId::new("cell.control").expect("id")));
+        drop(reopened);
+        std::fs::remove_dir_all(directory).expect("cleanup");
     }
 
     #[test]
