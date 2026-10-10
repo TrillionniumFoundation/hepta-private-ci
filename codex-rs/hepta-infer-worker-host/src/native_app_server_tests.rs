@@ -462,9 +462,13 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
+    // The focused native CI lane supplies a real Codex binary. Bazel's
+    // unit-test harness has no CLI artifact; this no-tool-turn fixture may
+    // use its own executable only as an inert exec-server path at startup.
+    // Any actual helper re-exec must be covered by a real CLI integration test.
     let codex_executable = std::env::var_os("HEPTA_TEST_CODEX_EXECUTABLE")
         .map(PathBuf::from)
-        .ok_or("real Codex binary required for Agentd worker E2E")?;
+        .map_or_else(std::env::current_exe, Ok)?;
     let host = CognitiveTestHost::start(
         root,
         agent_id,
