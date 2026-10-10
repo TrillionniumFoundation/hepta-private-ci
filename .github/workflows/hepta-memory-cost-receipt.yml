@@ -1,6 +1,8 @@
 name: MemoryCell complete frozen task and cost receipt
 on:
-  pull_request:
+  push:
+    branches:
+      - 'codex/memory-cell-evidence-20261008'
     paths:
       - 'scripts/memory_cell/lifecycle_accounting.py'
       - 'scripts/memory_cell/test_lifecycle_accounting.py'
@@ -12,7 +14,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-fixed-cost-execution-${{ github.event.pull_request.number || github.ref }}
+  group: memory-fixed-cost-execution-1452
   cancel-in-progress: false
 env:
   SOURCE: 0f2856b6a7eded7c913a8ef448521126844bf839
