@@ -162,7 +162,9 @@ impl CellSplitUnixPortV1 {
             .get(intent.step.index())
             .ok_or(CellSplitUnixPortErrorV1::Invalid("unknown split step"))?;
         if endpoint.owner_id != intent.owner_id || intent.plan_digest != self.plan_digest {
-            return Err(CellSplitUnixPortErrorV1::Invalid("effect owner or plan mismatch"));
+            return Err(CellSplitUnixPortErrorV1::Invalid(
+                "effect owner or plan mismatch",
+            ));
         }
         let before = Self::check_socket(&self.root, &endpoint.socket_path)?;
         let mut stream = UnixStream::connect(&endpoint.socket_path)?;
@@ -182,11 +184,15 @@ impl CellSplitUnixPortV1 {
         };
         let payload = canonical_json(&request)?;
         if payload.is_empty() || payload.len() > RPC_LIMIT {
-            return Err(CellSplitUnixPortErrorV1::Invalid("request exceeds RPC bound"));
+            return Err(CellSplitUnixPortErrorV1::Invalid(
+                "request exceeds RPC bound",
+            ));
         }
-        stream.write_all(&u32::try_from(payload.len()).map_err(|_| {
-            CellSplitUnixPortErrorV1::Invalid("invalid RPC request length")
-        })?.to_be_bytes())?;
+        stream.write_all(
+            &u32::try_from(payload.len())
+                .map_err(|_| CellSplitUnixPortErrorV1::Invalid("invalid RPC request length"))?
+                .to_be_bytes(),
+        )?;
         stream.write_all(&payload)?;
         stream.flush()?;
 
@@ -195,7 +201,9 @@ impl CellSplitUnixPortV1 {
         let len = usize::try_from(u32::from_be_bytes(header))
             .map_err(|_| CellSplitUnixPortErrorV1::Invalid("invalid response length"))?;
         if len == 0 || len > RPC_LIMIT {
-            return Err(CellSplitUnixPortErrorV1::Invalid("response exceeds RPC bound"));
+            return Err(CellSplitUnixPortErrorV1::Invalid(
+                "response exceeds RPC bound",
+            ));
         }
         let mut response_bytes = vec![0; len];
         stream.read_exact(&mut response_bytes)?;
@@ -216,7 +224,9 @@ impl CellSplitUnixPortV1 {
             }
             (None, receipt) if operation == RpcOperationV1::ReadCommitted => Ok(receipt),
             (None, Some(receipt)) if operation == RpcOperationV1::Execute => Ok(Some(receipt)),
-            _ => Err(CellSplitUnixPortErrorV1::Invalid("inconsistent effect-owner reply")),
+            _ => Err(CellSplitUnixPortErrorV1::Invalid(
+                "inconsistent effect-owner reply",
+            )),
         }
     }
 }
@@ -229,7 +239,9 @@ impl CellSplitExecutionPortV1 for CellSplitUnixPortV1 {
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<CellSplitExecutionReceiptV1, Self::Error> {
         self.rpc(intent, RpcOperationV1::Execute)?
-            .ok_or(CellSplitUnixPortErrorV1::Invalid("execute omitted committed receipt"))
+            .ok_or(CellSplitUnixPortErrorV1::Invalid(
+                "execute omitted committed receipt",
+            ))
     }
 
     fn reconcile(
