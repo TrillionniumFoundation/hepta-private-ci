@@ -193,7 +193,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
         let poll = self.scheduler.poll(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
-        for id in &poll.expired {
+        for id in &poll.expired_request_ids {
             self.pending.remove(id);
             self.retired.insert(id.clone());
         }
