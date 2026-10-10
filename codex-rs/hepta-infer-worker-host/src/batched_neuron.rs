@@ -30,7 +30,7 @@ use crate::model_worker::InferenceWorker;
 use crate::model_worker::ModelDriver;
 use crate::model_worker::NeuronFeatureDriver;
 use crate::model_worker::NeuronFeatureRequest;
-use crate::model_worker::canonical_neuron_feature_payload_digest;
+use crate::model_worker::canonical_neuron_feature_payload_digest_with_features;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 
@@ -95,7 +95,21 @@ pub fn neuron_batch_final_use_binding_v1(
     key: &MicrobatchKeyV1,
     request: &NeuronFeatureRequest,
 ) -> Result<FinalUseBinding, BatchWorkerErrorV1> {
-    let payload_hex = canonical_neuron_feature_payload_digest(request);
+    neuron_batch_final_use_binding_with_features_v1(
+        worker_id,
+        key,
+        request,
+        &request.feature_vector_q24,
+    )
+}
+
+fn neuron_batch_final_use_binding_with_features_v1(
+    worker_id: &str,
+    key: &MicrobatchKeyV1,
+    request: &NeuronFeatureRequest,
+    features: &[i64],
+) -> Result<FinalUseBinding, BatchWorkerErrorV1> {
+    let payload_hex = canonical_neuron_feature_payload_digest_with_features(request, features);
     if request.authorization.payload_digest != payload_hex
         || request.authorization.lease_payload_digest != payload_hex
         || Digest32::from_str(&request.authorization.model_digest).ok() != Some(key.model_digest)
@@ -382,7 +396,6 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
         let executed = (|| -> Result<Vec<NeuronFeatureReceiptV1>, BatchWorkerErrorV1> {
             let mut model_id: Option<&str> = None;
-            let mut requests = Vec::with_capacity(items.len());
             for (intent, pending) in &items {
                 let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
                 if pending.feature.digest() != intent.feature_digest
@@ -399,17 +412,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 } else {
                     model_id = Some(&pending.model_id);
                 }
-                let mut request = pending.request.clone();
-                request.feature_vector_q24 = pending.feature.as_slice().to_vec();
-                if neuron_batch_final_use_binding_v1(
+                if neuron_batch_final_use_binding_with_features_v1(
                     self.worker.worker_id(),
                     &intent.key,
-                    &request,
+                    &pending.request,
+                    pending.feature.as_slice(),
                 )? != pending.binding
                 {
                     return Err(BatchWorkerErrorV1::InvalidBinding);
                 }
-                requests.push(request);
             }
             let model_id = model_id.ok_or(BatchWorkerErrorV1::NoAdmission)?.to_owned();
             // Prevalidate all members before one durable nonce-group claim.
@@ -431,6 +442,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 .map(|(token, (_, pending))| {
                     let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
                     Ok((token, pending.binding.clone()))
+                })
+                .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
+            // Preflight is complete. Transfer owned requests only once rather
+            // than cloning every authorization and feature vector for final-use.
+            // One Vec materialization remains at the legacy driver API edge.
+            let requests = items
+                .iter_mut()
+                .map(|(_, pending)| {
+                    let pending = pending.take().ok_or(BatchWorkerErrorV1::NoAdmission)?;
+                    let mut request = pending.request;
+                    request.feature_vector_q24 = pending.feature.as_slice().to_vec();
+                    Ok(request)
                 })
                 .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
             FinalUseAuthority::with_verified_effect_batch(&self.authority, claimed, || {
