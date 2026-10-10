@@ -408,7 +408,6 @@ fn native_batch_boundary_calls_driver_once_and_binds_distinct_cell_heads() {
     assert_eq!(result.batch_digest, expected);
     assert_eq!(result.backend_elapsed_micros, 120);
     assert_eq!(result.receipts.len(), 2);
-    assert_eq!(result.receipts[0].request_digest, result.receipts[0].request_digest);
     assert_ne!(result.receipts[0].receipt_digest, result.receipts[1].receipt_digest);
     assert_eq!(result.receipts[0].head_digest.to_string(), "b".repeat(64));
     assert_eq!(result.receipts[1].head_digest.to_string(), "d".repeat(64));
