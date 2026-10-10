@@ -169,7 +169,7 @@ class BatchTests(unittest.TestCase):
 
 @unittest.skipUnless(importlib.util.find_spec("torch") is not None, "torch optional")
 class RealTorchBatchPathTests(unittest.TestCase):
-    def make_backend(self):
+    def make_backend(self, *, left_padding=False):
         import torch
 
         class SyntheticTokenizer:
@@ -177,9 +177,15 @@ class RealTorchBatchPathTests(unittest.TestCase):
                 assert return_tensors == "pt" and padding and not truncation
                 rows = [[int(v) for v in text.split()] for text in texts]
                 width = max(len(row) for row in rows)
+                if left_padding:
+                    ids = [[0] * (width - len(row)) + row for row in rows]
+                    masks = [[0] * (width - len(row)) + [1] * len(row) for row in rows]
+                else:
+                    ids = [row + [0] * (width - len(row)) for row in rows]
+                    masks = [[1] * len(row) + [0] * (width - len(row)) for row in rows]
                 return {
-                    "input_ids": torch.tensor([row + [0] * (width - len(row)) for row in rows]),
-                    "attention_mask": torch.tensor([[1] * len(row) + [0] * (width - len(row)) for row in rows]),
+                    "input_ids": torch.tensor(ids),
+                    "attention_mask": torch.tensor(masks),
                 }
 
         class SyntheticModel(torch.nn.Module):
@@ -217,6 +223,20 @@ class RealTorchBatchPathTests(unittest.TestCase):
         self.assertTrue(result.simulated)
         self.assertEqual(result.receipts[0].feature_digest, result.receipts[2].feature_digest)
         self.assertNotEqual(result.receipts[0].feature_digest, result.receipts[1].feature_digest)
+
+    def test_left_padded_batch_matches_unpadded_solo(self):
+        model = self.make_backend(left_padding=True)
+        batched = SharedStemEngine(model).run([
+            req(1, "1 2"), req(2, "3 4 5"),
+        ])
+        single = SharedStemEngine(model, max_cache_bytes=0).run([
+            req(3, "1 2"),
+        ])
+        self.assertEqual(
+            batched.receipts[0].feature_digest,
+            single.receipts[0].feature_digest,
+        )
+        self.assertEqual(model.invocations, 2)
 
     def test_torch_landmarks_and_frozen_token_cap(self):
         model = self.make_backend()
