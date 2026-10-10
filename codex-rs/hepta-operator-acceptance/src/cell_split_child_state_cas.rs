@@ -220,12 +220,11 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
     }
 
     /// Reconstruct every typed receipt from the frozen Neuron projection.
-    /// With check_files enabled, actual child bytes must be re-read byte for
-    /// byte before their common witness is treated as a committed fact.
+    /// Actual child bytes MUST always be re-read before the batch witness
+    /// becomes a committed fact; there is no digest-only bypass.
     fn expected_manifest(
         &self,
         intent: &CellSplitExecutionIntentV1,
-        check_files: bool,
     ) -> Result<ChildStateBatchCommitV1, CellSplitChildStateCasErrorV1> {
         let mut entries = Vec::with_capacity(self.migration.children().len());
         let mut receipts = Vec::with_capacity(self.migration.children().len());
@@ -235,10 +234,9 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
                 return Err(CellSplitChildStateCasErrorV1::Invalid);
             }
             let payload_digest = Digest32::of_bytes(&payload);
-            if check_files
-                && secure_read(
-                    &self.child_path(index, intent, payload_digest), MAX_CHILD_BYTES,
-                )? != payload
+            if secure_read(
+                &self.child_path(index, intent, payload_digest), MAX_CHILD_BYTES,
+            )? != payload
             {
                 return Err(CellSplitChildStateCasErrorV1::Invalid);
             }
@@ -309,7 +307,7 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
         &self, intent: &CellSplitExecutionIntentV1, bytes: &[u8],
     ) -> Result<bool, CellSplitChildStateCasErrorV1> {
         let recorded: ChildStateBatchCommitV1 = serde_json::from_slice(bytes)?;
-        let expected = self.expected_manifest(intent, true)?;
+        let expected = self.expected_manifest(intent)?;
         Ok(recorded == expected && canonical_json(&recorded)? == bytes)
     }
 }
@@ -366,7 +364,7 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         // All files are fsync'd by Neuron. Directory sync must occur before
         // any commit marker is visible to CNS or Supervisor.
         fs::File::open(&self.root)?.sync_all()?;
-        let manifest = self.expected_manifest(intent, true)?;
+        let manifest = self.expected_manifest(intent)?;
         self.verify_live(intent)?;
         self.authority.verify_final_use(&self.plan, intent)
             .map_err(|e| CellSplitChildStateCasErrorV1::Denied(e.to_string()))?;
