@@ -1,0 +1,115 @@
+name: MemoryCell complete frozen task and cost receipt
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/lifecycle_accounting.py'
+      - 'scripts/memory_cell/test_lifecycle_accounting.py'
+      - 'scripts/memory_cell/frozen_policy_receipt.py'
+      - 'scripts/memory_cell/test_frozen_policy_receipt.py'
+      - '.github/workflows/hepta-memory-cost-receipt.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-cost-receipt-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      SOURCE: 0f2856b6a7eded7c913a8ef448521126844bf839
+      SOURCE_RUN: '38067150556'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Stage the independently pinned original environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/cost-evidence
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/input.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          raw = Path('/tmp/input.zip').read_bytes()
+          assert len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/input.zip') as z:
+              assert z.namelist().count('environment.txt') == 1
+              assert z.getinfo('environment.txt').file_size <= 65536
+              Path('/tmp/environment.txt').write_bytes(z.read('environment.txt'))
+          PY
+          python3 -m venv /tmp/cost-python
+          /tmp/cost-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/cost-python/bin/pip install -r /tmp/environment.txt
+          /tmp/cost-python/bin/pip freeze > /tmp/cost-evidence/environment.txt
+          diff -u /tmp/environment.txt /tmp/cost-evidence/environment.txt
+      - name: Full regression suite, separate from evidence replay
+        run: |
+          set -euo pipefail
+          /tmp/cost-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/cost-evidence/tests.log
+      - name: Require the chosen source run to finish successfully; never pick a winner
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/runs/$SOURCE_RUN" > /tmp/cost-evidence/source-run.json
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/runs/$SOURCE_RUN/artifacts?per_page=100" > /tmp/cost-evidence/artifacts.json
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          root = Path('/tmp/cost-evidence')
+          run = json.loads((root / 'source-run.json').read_text())
+          assert run['id'] == int(os.environ['SOURCE_RUN'])
+          assert run['head_sha'] == os.environ['SOURCE']
+          assert run['status'] == 'completed' and run['conclusion'] == 'success', 'Pinned model run is unfinished/failed; no complete receipt can be issued'
+          entries = json.loads((root / 'artifacts.json').read_text())
+          assert entries['total_count'] <= 100
+          match = [a for a in entries['artifacts'] if a['name'] == 'memory-frozen-policy-lifecycle']
+          assert len(match) == 1 and not match[0]['expired']
+          item = match[0]
+          assert item['workflow_run']['head_sha'] == os.environ['SOURCE']
+          assert item['workflow_run']['id'] == int(os.environ['SOURCE_RUN'])
+          assert type(item['id']) is int and item['size_in_bytes'] <= 64 * 1024 * 1024
+          assert re.fullmatch('sha256:[0-9a-f]{64}', item['digest'])
+          (root / 'selected-artifact.json').write_text(json.dumps(item, indent=2))
+          with Path(os.environ['GITHUB_ENV']).open('a') as out:
+              out.write('COST_ARTIFACT_ID=' + str(item['id']) + '\n')
+              out.write('COST_ARCHIVE_SHA=' + item['digest'][7:] + '\n')
+          PY
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$COST_ARTIFACT_ID/zip" > /tmp/cost-evidence/original-model-evidence.zip
+      - name: Verify exact tasks, sources, procedural outcomes and restored withdrawals
+        run: |
+          set -euo pipefail
+          /tmp/cost-python/bin/python scripts/memory_cell/frozen_policy_receipt.py /tmp/cost-evidence/original-model-evidence.zip /tmp/cost-evidence/receipt.json --archive-sha "$COST_ARCHIVE_SHA" --generating-source "$SOURCE" 2>&1 | tee /tmp/cost-evidence/replay.log
+      - name: Keep required repository formatting
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || '78fdb0cf8537e3a84fc6e0a849707559c80881e8' }}
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/cost-format
+          /tmp/cost-format/bin/pip install uv==0.8.22
+          export PATH="/tmp/cost-format/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/cost-evidence/format.log
+      - name: Retain source, failure logs and exact provenance
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cost-evidence/source
+          cp scripts/memory_cell/lifecycle_accounting.py scripts/memory_cell/frozen_policy_receipt.py scripts/memory_cell/test_lifecycle_accounting.py scripts/memory_cell/test_frozen_policy_receipt.py /tmp/cost-evidence/source/
+          git rev-parse HEAD > /tmp/cost-evidence/auditor-commit.txt
+          (cd /tmp/cost-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-frozen-task-cost-receipt
+          path: /tmp/cost-evidence
+          if-no-files-found: error

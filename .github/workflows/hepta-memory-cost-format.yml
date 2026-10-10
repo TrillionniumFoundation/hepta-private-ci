@@ -1,0 +1,54 @@
+name: MemoryCell isolated cost source formatting
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-cost-format.yml'
+permissions:
+  contents: read
+jobs:
+  candidate:
+    if: github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Prepare an AST-equivalent candidate on a separate branch only
+        env:
+          BASE: 0f2856b6a7eded7c913a8ef448521126844bf839
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/cost-format
+          /tmp/cost-format/bin/pip install uv==0.8.22
+          export PATH="/tmp/cost-format/bin:$PATH"
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          names = ['lifecycle_accounting.py', 'test_lifecycle_accounting.py', 'frozen_policy_receipt.py', 'test_frozen_policy_receipt.py']
+          before = {str(Path('scripts/memory_cell') / n): ast.dump(ast.parse((Path('scripts/memory_cell') / n).read_text())) for n in names}
+          Path('/tmp/cost-ast.json').write_text(json.dumps(before))
+          PY
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/cost-ast.json').read_text())
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          assert not set(changed) - set(before), 'Unexpected formatting scope'
+          for name, old in before.items():
+              assert ast.dump(ast.parse(Path(name).read_text())) == old, 'Executable AST changed'
+          if changed:
+              subprocess.run(['git', 'add', '--', *changed], check=True)
+          PY
+          git rm .github/workflows/hepta-memory-cost-format.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format inspected lifecycle sources and remove temporary writer'
+          git push origin "HEAD:refs/heads/codex/memory-cost-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
