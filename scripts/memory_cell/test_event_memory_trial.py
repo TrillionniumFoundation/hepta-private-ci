@@ -110,7 +110,7 @@ class EventExperimentTests(unittest.TestCase):
             changed = deepcopy(rows)
             changed[0][key] = value
             with self.assertRaises(ValueError):
-                summarize(changes, ["q"])
+                summarize(changed, ["q"])
         rows[0]["status"] = "failed"
         self.assertEqual(summarize(rows, ["q"])["arms"]["empty"]["failed"], 1)
 
