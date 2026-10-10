@@ -1,0 +1,140 @@
+name: MemoryCell preserved frozen answer inspection
+on:
+  push:
+    branches:
+      - 'codex/memory-cell-evidence-20261008'
+    paths:
+      - '.github/workflows/hepta-memory-historical-task-inspection.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 421feaad3c42549d7aa6a191f4fc1c7db2298ae6
+          persist-credentials: false
+      - name: Retrieve the fixed original artifact and run status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/historical-inspection
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38066590605 > /tmp/historical-inspection/run.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11675959863 > /tmp/historical-inspection/artifact.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11675959863/zip > /tmp/historical-inspection/original.zip
+      - name: Inspect exact original records with no model or rewritten answers
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' | tee /tmp/historical-inspection/inspection.log
+          import hashlib, json, math, re, stat, zipfile
+          from pathlib import Path, PurePosixPath
+          from event_experience import call_worker
+          from event_memory_trial import strict_identifier
+          from frozen_policy_audit import ARMS, summarize
+          root = Path('/tmp/historical-inspection')
+          def pairs(items):
+              result = {}
+              for key, value in items:
+                  if key in result:
+                      raise ValueError('duplicate JSON field')
+                  result[key] = value
+              return result
+          def reject(value):
+              raise ValueError('nonfinite JSON value: ' + value)
+          def decode(raw):
+              return json.loads(raw, object_pairs_hook=pairs, parse_constant=reject)
+          run = decode((root / 'run.json').read_bytes())
+          metadata = decode((root / 'artifact.json').read_bytes())
+          expected_source = '421feaad3c42549d7aa6a191f4fc1c7db2298ae6'
+          expected_zip = '9b7c16f368fcaca4a907356eee7e4af1cb613e142e437ad07e892bcccbebbd10'
+          assert run['id'] == 38066590605 and run['head_sha'] == expected_source and run['status'] == 'completed'
+          assert metadata['id'] == 11675959863 and metadata['workflow_run']['id'] == run['id']
+          assert metadata['workflow_run']['head_sha'] == expected_source and metadata['digest'] == 'sha256:' + expected_zip
+          raw_zip = (root / 'original.zip').read_bytes()
+          assert len(raw_zip) <= 64 * 1024 * 1024 and hashlib.sha256(raw_zip).hexdigest() == expected_zip
+          with zipfile.ZipFile(root / 'original.zip') as archive:
+              entries = archive.infolist()
+              assert len(entries) <= 512 and sum(e.file_size for e in entries) <= 64 * 1024 * 1024
+              names = [e.filename for e in entries]
+              assert len(set(names)) == len(names)
+              for entry in entries:
+                  path = PurePosixPath(entry.filename)
+                  assert not path.is_absolute() and '..' not in path.parts
+                  assert not stat.S_ISLNK(entry.external_attr >> 16)
+              files = {entry.filename: archive.read(entry) for entry in entries if not entry.is_dir()}
+          listed = {}
+          for line in files['SHA256SUMS'].decode().splitlines():
+              hashed, name = line.split('  ', 1)
+              if name.startswith('./'):
+                  name = name[2:]
+              assert re.fullmatch('[0-9a-f]{64}', hashed) and name not in listed
+              listed[name] = hashed
+          assert set(listed) == set(files) - {'SHA256SUMS'}
+          assert all(hashlib.sha256(files[name]).hexdigest() == value for name, value in listed.items())
+          assert files['tested-commit.txt'].decode().strip() == expected_source
+          plan_bytes = files['original-inputs/plan/plan.json']
+          assert hashlib.sha256(plan_bytes).hexdigest() == '9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897'
+          plan = decode(plan_bytes)
+          assert hashlib.sha256(files['original-inputs/observations/labels.json']).hexdigest() == plan['labels_sha']
+          cases = {case['query']['identity']: case for case in plan['cases']}
+          assert len(cases) == len(plan['cases']) == 8
+          originals = [decode(line) for line in files['experiment/raw-answers.jsonl'].decode().splitlines()]
+          scored = decode(files['experiment/scored-answers.json'])
+          assert len(originals) == len(scored) == 32
+          assert {(row['question_id'], row['arm']) for row in originals} == {(qid, arm) for qid in cases for arm in ARMS}
+          labels = {row['id']: row for row in decode(files['original-inputs/observations/labels.json'])}
+          procedures = 0
+          for original, row in zip(originals, scored, strict=True):
+              assert all(row.get(key) == value for key, value in original.items())
+              assert 'strict_task_success' not in original and 'procedure_verification' not in original
+              case = cases[row['question_id']]
+              assert row['query'] == case['query'] and row['candidate_digest'] == case['candidate_digest']
+              assert row['kind'] == case['kind'] and row['status'] in ('succeeded', 'failed')
+              if row['status'] != 'succeeded':
+                  assert row.get('strict_task_success') is None
+                  continue
+              assert row['session_record']['answer'] == row['answer']
+              assert row['session_record']['receipt'] == row['receipt']
+              assert row['session_record']['query_train_tokens'] == 0
+              target = labels[row['question_id']]
+              answer = strict_identifier(row['answer'])
+              correct = answer == target['expected']
+              if row['kind'] == 'procedure':
+                  actual = call_worker(dict(operation='execute', recipe=target['procedure'], supplied=answer or 'invalid_response'))
+                  saved = row['procedure_verification']
+                  assert all(actual[key] == saved[key] for key in ('request', 'stdout', 'stderr', 'exit_code'))
+                  correct = actual['exit_code'] == 0
+                  procedures += 1
+              assert type(row['strict_task_success']) is bool and row['strict_task_success'] == correct
+          result = dict(schema='hepta.preserved-frozen-answers.inspection.v1', generating_source=expected_source,
+                        original_run=run['id'], original_run_conclusion=run['conclusion'],
+                        verified_inner_files=len(listed), original_attempts=len(originals),
+                        task_summary=summarize(scored, list(cases)), procedural_rechecks=procedures,
+                        original_complete_report_present='experiment/report.json' in files,
+                        original_replay_receipt_present='experiment/REPLAY.json' in files,
+                        original_restore_present='restore.json' in files,
+                        new_model_calls=0, complete_lifecycle_verified=False,
+                        semantic_citation_precision=None, independent_acceptance=False, production_accepted=False)
+          (root / 'inspection.json').write_text(json.dumps(result, indent=2, allow_nan=False) + '\n')
+          print(json.dumps(result, indent=2, allow_nan=False))
+          PY
+      - name: Retain exact inspection source and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/historical-inspection/generating-source.txt
+          printf '%s\n' "$GITHUB_SHA" > /tmp/historical-inspection/inspection-workflow-source.txt
+          (cd /tmp/historical-inspection && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-preserved-frozen-answer-inspection
+          path: /tmp/historical-inspection
+          if-no-files-found: error
