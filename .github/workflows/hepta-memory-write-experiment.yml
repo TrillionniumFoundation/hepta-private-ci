@@ -5,6 +5,7 @@ on:
       - 'scripts/memory_cell/experience_*.py'
       - 'scripts/memory_cell/test_experience_*.py'
       - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_SOURCE_WRITE.md'
+      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_READ_POLICY.md'
       - '.github/workflows/hepta-memory-write-experiment.yml'
   workflow_dispatch:
 permissions:
@@ -32,7 +33,22 @@ jobs:
           /tmp/source-write-format/bin/pip install uv==0.8.22
           export PATH="/tmp/source-write-format/bin:$PATH"
           git fetch --no-tags --depth=1 origin "$BASE"
-          just fmt --check --base "$BASE"
+          set +e
+          just fmt --check --base "$BASE" > /tmp/source-write-format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/source-write-format.log
+          if [ "$status" -ne 0 ]; then
+            just fmt --base "$BASE"
+            git diff -- scripts/memory_cell/experience_policy.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/test_experience_policy.py > /tmp/source-write-format.diff
+          fi
+          exit "$status"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-write-format
+          path: /tmp/source-write-format.*
+          if-no-files-found: error
   write-and-read:
     needs: format
     runs-on: ubuntu-latest
@@ -108,13 +124,29 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log
           sha256sum /tmp/experience-result/snapshot/READY.json > /tmp/experience-result/snapshot-pin.txt
-      - name: New process reloads the committed module before task exposure
+      - name: Train a small read policy only from the declared calibration sources
+        run: |
+          set -euo pipefail
+          /tmp/experience-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from event_experience import SEED
+          from native import digest
+          # The existing, preregistered generator used i=0..7 for calibration.
+          # No question, label or task-plan file is opened here.
+          Path('/tmp/experience-result/policy-scopes.json').write_text(json.dumps([
+              'controlled_' + digest((SEED, i))[:8] for i in range(8)
+          ]))
+          PY
+          BASE_ID=$(/tmp/experience-python/bin/python -c "import json; print(json.load(open('/tmp/experience-result/snapshot/READY.json'))['base_identity'])")
+          /tmp/experience-python/bin/python scripts/memory_cell/experience_policy.py /tmp/experience-input/observations/sources.json /tmp/experience-result/policy-scopes.json /tmp/experience-result/read-policy.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --scopes-sha "$(sha256sum /tmp/experience-result/policy-scopes.json | cut -d ' ' -f1)" --reader-identity "$BASE_ID"
+      - name: New process reloads both committed modules before task exposure
         env:
           HF_HUB_OFFLINE: '1'
           TRANSFORMERS_OFFLINE: '1'
         run: |
           set -euo pipefail
-          /usr/bin/time -v -o /tmp/experience-result/read-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py read /tmp/experience-input/plan /tmp/experience-input/observations /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/tasks --plan-sha "$PLAN_SHA" --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" 2>&1 | tee /tmp/experience-result/read.log
+          /usr/bin/time -v -o /tmp/experience-result/read-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py read /tmp/experience-input/plan /tmp/experience-input/observations /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/tasks --plan-sha "$PLAN_SHA" --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --policy /tmp/experience-result/read-policy.json --policy-sha "$(sha256sum /tmp/experience-result/read-policy.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/read.log
       - name: Preserve original responses, exact source, costs and failed runs
         if: always()
         run: |
