@@ -104,12 +104,27 @@ def trial(args):
         raise ValueError("prequential trial is text-only; Omni requires a separate qualified trainer")
     if not 1 <= args.max_cells <= 4096 or args.pretrain_steps < 0 or args.update_steps < 0:
         raise ValueError("training parameters outside finite bounded profile")
-    if args.learning_rate <= 0 or args.max_grad_norm <= 0:
+    if not all(math.isfinite(v) and v > 0
+               for v in (args.learning_rate, args.max_grad_norm)):
         raise ValueError("learning rates/gradient limits must be positive")
+    if not 0 <= args.max_retention_brier_regression <= 1:
+        raise ValueError("invalid retention regression tolerance")
+    if not all(type(v) is int and v > 0 for v in
+               (args.max_total_head_parameters, args.max_dataset_cases,
+                args.max_future_events, args.threads)):
+        raise ValueError("event/parameter/thread bounds must be positive")
     rows = read_jsonl(args.dataset)
+    if len(rows) > args.max_dataset_cases:
+        raise ValueError("dataset exceeds precommitted bounded event envelope")
     task_rows, future, keys, classes, audit = prepare_chronology(rows, args.task_id)
+    if len(future) > args.max_future_events:
+        raise ValueError("future replay exceeds bounded event envelope")
     if len(keys) > args.max_cells:
         raise ValueError("dataset would instantiate more than approved Cell limit")
+    _, dry_run_parameters = make_head(torch, nn, args.head, args.dimension,
+                                      classes, args.budget)
+    if dry_run_parameters * len(keys) > args.max_total_head_parameters:
+        raise ValueError("total Cell Head weight/optimizer budget exceeded")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     manifest = Path(str(args.output) + ".manifest.json")
     if args.output.exists() or manifest.exists():
@@ -169,6 +184,20 @@ def trial(args):
     for key, head in cell_heads.items():
         control_heads[key] = copy.deepcopy(head).eval()
         head.eval()
+
+    held_out_rows = [row for row in task_rows if row["split"] == "test"]
+    def retention_by_cell():
+        measures = defaultdict(list)
+        for old in held_out_rows:
+            cell_key = (old["scope_id"], old["cell_id"])
+            with torch.inference_mode():
+                p = torch.softmax(cell_heads[cell_key](feature(old)),
+                                  dim=-1).cpu().tolist()
+            measures[str(cell_key)].append(score_prediction(p, old["label"]))
+        return {key: accuracy_brier(observations)
+                for key, observations in sorted(measures.items())}
+
+    retention_before = retention_by_cell()
     initial_digests = {
         str(key): effective_weights_digest(cell_heads[key]) for key in keys}
 
@@ -229,6 +258,15 @@ def trial(args):
     # update weights, and controls remain at their post-pretrain parameters.
     final_digests = {
         str(key): effective_weights_digest(cell_heads[key]) for key in keys}
+    retention_after = retention_by_cell()
+    retention_regressions = {
+        key: retention_after[key]["multiclass_brier"]
+             - retention_before[key]["multiclass_brier"]
+        for key in retention_before
+        if retention_after[key]["multiclass_brier"]
+           - retention_before[key]["multiclass_brier"]
+           > args.max_retention_brier_regression
+    }
     result = {
         "schema": "hepta.jina-v5-cell-prequential-shadow.v1",
         "status": "offline_test_then_learn_descriptive_not_production_evidence",
@@ -245,12 +283,20 @@ def trial(args):
         "seed": args.seed, "feature_dimension": args.dimension,
         "pretrain_steps_per_historical_event": args.pretrain_steps,
         "update_steps_per_future_event": args.update_steps,
+        "max_dataset_cases": args.max_dataset_cases,
+        "max_future_events": args.max_future_events,
+        "max_total_head_parameters": args.max_total_head_parameters,
+        "precommitted_max_per_cell_retention_brier_regression": args.max_retention_brier_regression,
         "future_event_count": len(future),
         "pretrain_wall_ms": train_ms, "future_update_wall_ms": update_ms,
         "initial_head_digests": initial_digests,
         "final_head_digests": final_digests,
         "frozen_future_metrics": accuracy_brier(frozen_outcomes),
         "learned_future_metrics": accuracy_brier(outcomes),
+        "held_out_test_retention_before": retention_before,
+        "held_out_test_retention_after": retention_after,
+        "per_cell_retention_regressions": retention_regressions,
+        "no_retention_regression_above_precommitted_tolerance": not bool(retention_regressions),
         "observed_future_brier_gain_vs_frozen": (
             accuracy_brier(frozen_outcomes)["multiclass_brier"]
             - accuracy_brier(outcomes)["multiclass_brier"]
@@ -298,6 +344,10 @@ def main():
     p.add_argument("--learning-rate", type=float, default=.0005)
     p.add_argument("--max-grad-norm", type=float, default=1.)
     p.add_argument("--max-cells", type=int, default=4096)
+    p.add_argument("--max-total-head-parameters", type=int, default=100000000)
+    p.add_argument("--max-dataset-cases", type=int, default=100000)
+    p.add_argument("--max-future-events", type=int, default=50000)
+    p.add_argument("--max-retention-brier-regression", type=float, default=.01)
     p.add_argument("--max-tokens", type=int, default=512)
     p.add_argument("--cache-entries", type=int, default=256)
     p.add_argument("--device", default="cpu")
