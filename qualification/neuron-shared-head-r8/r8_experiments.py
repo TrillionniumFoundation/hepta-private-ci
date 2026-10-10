@@ -241,6 +241,26 @@ def ece(proba: np.ndarray, labels: np.ndarray, bins: int=10) -> float:
     return float(result)
 
 
+def auroc(id_scores: np.ndarray, ood_scores: np.ndarray) -> float:
+    """Tie-aware OOD AUROC; larger scores mean more likely out-of-distribution."""
+    if not len(id_scores) or not len(ood_scores):
+        raise ValueError("OOD AUROC requires both ID and OOD samples")
+    scores=np.concatenate((np.asarray(id_scores,dtype=np.float64),np.asarray(ood_scores,dtype=np.float64)))
+    if not np.isfinite(scores).all():
+        raise ValueError("non-finite OOD score")
+    indices=np.argsort(scores,kind="mergesort")
+    ranks=np.empty(len(scores),dtype=np.float64)
+    begin=0
+    while begin<len(scores):
+        end=begin+1
+        while end<len(scores) and scores[indices[end]]==scores[indices[begin]]:
+            end+=1
+        ranks[indices[begin:end]]=(begin+1+end)/2
+        begin=end
+    n0=len(id_scores);n1=len(ood_scores)
+    return float((ranks[n0:].sum()-n1*(n1+1)/2)/(n0*n1))
+
+
 def write_json(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True,exist_ok=True)
     path.write_text(json.dumps(value,sort_keys=True,indent=2,allow_nan=False)+"\n",encoding="utf-8")
@@ -348,9 +368,38 @@ def cmd_evaluate(args):
             raise ValueError("prediction/outcome identity mismatch")
     a=_score(cr,labels)
     b=_score(br,labels)
+    ood={"candidate":"NOT_MEASURED","no_change":"NOT_MEASURED"}
+    candidate_ood=getattr(args,"candidate_ood",None)
+    baseline_ood=getattr(args,"baseline_ood",None)
+    ood_outcomes=getattr(args,"ood_outcomes",None)
+    if len([value for value in (candidate_ood,baseline_ood,ood_outcomes) if value]) not in (0,3):
+        raise ValueError("candidate, no-change and independently observed OOD all required")
+    if candidate_ood:
+        ood_claim=json.loads(Path(ood_outcomes).read_text(encoding="utf-8"))
+        if ood_claim.get("schema")!=SCHEMA or ood_claim.get("source")!="independent_observation" or ood_claim.get("window")!="ood":
+            raise ValueError("OOD class requires an independent observation source")
+        co,c_rows=_load_predictions(Path(candidate_ood))
+        bo,b_rows=_load_predictions(Path(baseline_ood))
+        claimed={str(item["id"]):item for item in ood_claim.get("rows",[])}
+        if len(claimed)!=len(ood_claim.get("rows",[])) or set(c_rows)!=set(claimed):
+            raise ValueError("OOD independent observation and predicted rows mismatch")
+        if set(c_rows)!=set(b_rows):
+            raise ValueError("OOD candidate and no-change event identities differ")
+        if set(c_rows)&set(cr):
+            raise ValueError("OOD/ID decision ids overlap")
+        for k in c_rows:
+            if c_rows[k][0]["group"]!=claimed[k]["group"] or int(c_rows[k][0]["time"])!=int(claimed[k]["time"]):
+                raise ValueError("OOD independent observation identity drift")
+            if c_rows[k][0]["group"]!=b_rows[k][0]["group"] or int(c_rows[k][0]["time"])!=int(b_rows[k][0]["time"]):
+                raise ValueError("paired OOD group or time drift")
+        for observed in (co,bo):
+            if set(map(str,observed.get("train_groups",[]))) & {str(row[0]["group"]) for row in c_rows.values()}:
+                raise ValueError("OOD leaked from training groups")
+        ood={"candidate":auroc(np.array([v[1].max() for v in cr.values()])*-1,np.array([v[1].max() for v in c_rows.values()])*-1),
+             "no_change":auroc(np.array([v[1].max() for v in br.values()])*-1,np.array([v[1].max() for v in b_rows.values()])*-1)}
     # NDU requires separately measured outcomes/counterfactual support and formal
     # existing evaluator/selector. Classification accuracy is not NDU.
-    write_json(Path(args.output),{"schema":SCHEMA,"experiment":"future_window_independent_evaluator","candidate":a,"no_change":b,"delta_brier":a["brier"]-b["brier"],"delta_accuracy":a["accuracy"]-b["accuracy"],"future_outcomes_sha256":sha(Path(args.outcomes)),"candidate_predictions_sha256":sha(Path(args.candidate)),"baseline_predictions_sha256":sha(Path(args.baseline)),"ndu_gain":"NOT_MEASURED","ood_auroc":"NOT_MEASURED","negative_transfer":"NOT_MEASURED","promotion":"BLOCKED","evidence_authenticated":False,"synthetic_outcome":bool(rows.get("SYNTHETIC",False)),"production_admitted":False})
+    write_json(Path(args.output),{"schema":SCHEMA,"experiment":"future_window_independent_evaluator","candidate":a,"no_change":b,"delta_brier":a["brier"]-b["brier"],"delta_accuracy":a["accuracy"]-b["accuracy"],"future_outcomes_sha256":sha(Path(args.outcomes)),"candidate_predictions_sha256":sha(Path(args.candidate)),"baseline_predictions_sha256":sha(Path(args.baseline)),"ndu_gain":"NOT_MEASURED","ood_auroc":ood,"negative_transfer":"NOT_MEASURED","promotion":"BLOCKED","evidence_authenticated":False,"synthetic_outcome":bool(rows.get("SYNTHETIC",False)),"production_admitted":False})
 
 
 def cmd_compare_representations(args):
@@ -503,6 +552,7 @@ def main():
     e=subs.add_parser("evaluate")
     for flag in ("candidate","baseline","outcomes","output"):
         e.add_argument("--"+flag,required=True)
+    e.add_argument("--candidate-ood"); e.add_argument("--baseline-ood"); e.add_argument("--ood-outcomes")
     e.set_defaults(action=cmd_evaluate)
     c=subs.add_parser("compare-representations")
     c.add_argument("--arm",action="append",required=True,help="name=prediction.json; four arms required")
