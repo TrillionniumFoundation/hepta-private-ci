@@ -319,6 +319,20 @@ true throughput, accuracy, a target-host independent attestation, an evaluator
 qualification, or a production Cell run. Baseline and any later variant runs
 must be identified by their own exact commit/runner and observation window.
 
+### Three-variant physical check (one synthetic question, not model selection)
+
+GitHub Actions [run 38095795540](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38095795540)
+completed successfully on one Ubuntu CPU Runner for the original, Typed
+Decisions and Multilingual models, with the fixed upstream revision and full
+local weight hashes. The six original JSON receipts and the archive-level
+SHA-256 manifest are preserved in
+`physical-smoke-receipts/run-38095795540/`. Exact parameter counts are
+421293827 / 421293827 / 321908995, respectively. One 39/39/38-token
+synthetic question took 244.415929 / 250.623740 / 80.782443 ms, respectively.
+These single-run timings cannot establish p50/p95/p99, production hardware
+throughput, a causal speed advantage, calibrated probabilities or real task
+accuracy. No real Hepta data, NDU utility gain or effect authority was used.
+
 ## Nonnegotiable promotion boundaries
 
 A report always writes `production_evidence_verified=false`,

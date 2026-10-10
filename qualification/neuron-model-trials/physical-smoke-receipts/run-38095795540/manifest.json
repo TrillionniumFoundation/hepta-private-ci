@@ -1,0 +1,76 @@
+{
+  "actual_hepta_data_used": false,
+  "artifact_id": 11685069382,
+  "artifact_sha256": "6c13eb95809ee9cc2300b849ead9401212e7a9f3f60c284263e8f6db014eb6f9",
+  "files": {
+    "hepta-laya-materialization.json": {
+      "bytes": 1097,
+      "sha256": "579c7482656fa5c4dd52482477122330292805bf42c4822c665cf9a9f15cd0d0"
+    },
+    "hepta-laya-physical-smoke.json": {
+      "bytes": 1407,
+      "sha256": "eff03d4f7081518f5374d5cf9d1f80526b570e4cdfe9ace8d133eccd7692105f"
+    },
+    "hepta-multilingual-materialization.json": {
+      "bytes": 1118,
+      "sha256": "43aeddac4368aa69d8775e22c85d18608f302677376d0c0ef1a2df6ba7d99ae4"
+    },
+    "hepta-multilingual-physical-smoke.json": {
+      "bytes": 1438,
+      "sha256": "d47a61bf7b2a72067059c5a482418de3da0722589232ffc7e0b07c154ad96b78"
+    },
+    "hepta-typed-materialization.json": {
+      "bytes": 1114,
+      "sha256": "adf7b2585a06228f1cf1a41d0859f29dfe6830a1d0a6cf0c400c97da9346cf9b"
+    },
+    "hepta-typed-physical-smoke.json": {
+      "bytes": 1425,
+      "sha256": "edda4de80958bc4f5bfdacbe1f8a37da87a4242c076935e3021feac88fea7610"
+    }
+  },
+  "limitations": [
+    "one synthetic question only",
+    "one CPU forward per variant",
+    "same job but sequential and not controlled for warmup",
+    "no real task labels",
+    "no calibration/OOD/future windows",
+    "no NDU causal utility or production owner authority"
+  ],
+  "ndu_selection_authorized": false,
+  "observations": {
+    "laya": {
+      "artifact_tree_sha256": "87a09ceb26ec1e7c3224724b229bf0592d37a3d9290c086ca97a247976fc1654",
+      "device": "cpu",
+      "input_tokens": 39,
+      "latency_ms_single_sample": 244.415929,
+      "model_forward_executed": true,
+      "num_parameters": 421293827,
+      "weights_sha256": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c"
+    },
+    "multilingual": {
+      "artifact_tree_sha256": "9c24ae81fc471babbc96171207f8fbc3c88f27aa68b52784ce7bf7febfca0a10",
+      "device": "cpu",
+      "input_tokens": 38,
+      "latency_ms_single_sample": 80.782443,
+      "model_forward_executed": true,
+      "num_parameters": 321908995,
+      "weights_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204"
+    },
+    "typed": {
+      "artifact_tree_sha256": "b234787b586a64f0794167973510cbe01e64ab236fb99cd1402d1bab9a30f22d",
+      "device": "cpu",
+      "input_tokens": 39,
+      "latency_ms_single_sample": 250.62374,
+      "model_forward_executed": true,
+      "num_parameters": 421293827,
+      "weights_sha256": "4fa56de72383a9d3efa9cfa78955733c81b9fc8067a587ca4beb82c78107a24e"
+    }
+  },
+  "production_evidence_verified": false,
+  "promotion_authorized": false,
+  "run_id": 38095795540,
+  "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38095795540",
+  "schema": "hepta.neuron.physical-smoke-three-arm-diagnostic.v1",
+  "source": "untrusted GitHub Actions metadata; no independently signed host evidence",
+  "source_commit": "5b542e100368f2e1aefeba6de7a156e19af27282"
+}
