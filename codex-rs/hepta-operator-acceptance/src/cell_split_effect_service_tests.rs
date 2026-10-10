@@ -72,7 +72,7 @@ impl CellSplitDurableEffectBackendV1 for DiskEffect {
             Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
             Err(error) => return Err(error),
         };
-        let original: CellSplitExecutionIntentV1 = serde_json::from_slice(&bytes)?;
+        let original: CellSplitExecutionIntentV1 = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
         if original != *intent {
             return Err(io::Error::new(io::ErrorKind::InvalidData, "idempotency collision"));
         }
