@@ -191,10 +191,15 @@ def trial(args):
            for part in ("train", "calibration", "test", "future", "ood")):
         raise ValueError("selected task must cover all five splits")
     train = [r for r in dataset if r["split"] == "train"]
-    if args.shots > len(train):
-        raise ValueError("requested shots exceed task training examples")
+    groups = {}
+    for row in train:
+        groups.setdefault((row["scope_id"], row["group_id"]), []).append(row)
+    if args.shots > len(groups):
+        raise ValueError("shots exceed independent task source groups")
     rng = random.Random(args.seed)
-    selected = rng.sample(sorted(train, key=lambda r: r["case_id"]), args.shots)
+    chosen_groups = rng.sample(sorted(groups), args.shots)
+    selected = [rng.choice(sorted(groups[key], key=lambda r: r["case_id"]))
+                for key in chosen_groups]
     stem = FrozenStem(args.model, args.revision, args.device, args.max_tokens,
                       args.allow_pinned_remote_code, args.cache_entries)
     features = {}
