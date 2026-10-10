@@ -1,7 +1,7 @@
 """Chronological continual-learning proof obligations; offline pure-Python only."""
 import unittest
 
-from prequential_trial import prepare_chronology, score_prediction
+from prequential_trial import prepare_chronology, prediction_precommit, score_prediction
 
 
 def rows_fixture():
@@ -23,6 +23,30 @@ def rows_fixture():
 
 
 class PrequentialTests(unittest.TestCase):
+    def test_precommit_is_label_free_and_deterministic(self):
+        row = rows_fixture()[0]
+        record = prediction_precommit(row, [.3, .7], "a" * 64, 0)
+        self.assertFalse(record["outcome_included"])
+        self.assertNotIn("label", record)
+        self.assertNotIn("answer", record)
+        self.assertEqual(record["event_order"], 0)
+        altered_label = dict(row)
+        altered_label["label"] = 1 - row["label"]
+        self.assertEqual(
+            prediction_precommit(row, [.3, .7], "a" * 64, 0),
+            prediction_precommit(altered_label, [.3, .7], "a" * 64, 0),
+        )
+        changed_input = dict(row)
+        changed_input["state"] = "Different state"
+        self.assertNotEqual(
+            prediction_precommit(row, [.3, .7], "a" * 64, 0)["input_digest"],
+            prediction_precommit(changed_input, [.3, .7], "a" * 64, 0)["input_digest"],
+        )
+        with self.assertRaisesRegex(ValueError, "normalization"):
+            prediction_precommit(row, [.1, .1], "a" * 64, 0)
+        with self.assertRaisesRegex(ValueError, "Head"):
+            prediction_precommit(row, [.3, .7], "unbound", 0)
+
     def test_future_events_are_sorted_and_isolated(self):
         rows = rows_fixture()
         rows = list(reversed(rows))
