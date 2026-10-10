@@ -286,7 +286,7 @@ impl CellSplitExecutionPortV1 for CellSplitUnixEffectPortV1 {
     }
 }
 
-fn send_frame<T: Serialize>(
+pub(crate) fn send_frame<T: Serialize>(
     stream: &mut UnixStream,
     value: &T,
 ) -> Result<(), CellSplitEffectRpcErrorV1> {
@@ -302,7 +302,7 @@ fn send_frame<T: Serialize>(
     Ok(())
 }
 
-fn receive_frame<T: DeserializeOwned>(
+pub(crate) fn receive_frame<T: DeserializeOwned>(
     stream: &mut UnixStream,
 ) -> Result<T, CellSplitEffectRpcErrorV1> {
     let mut length = [0u8; 4];
