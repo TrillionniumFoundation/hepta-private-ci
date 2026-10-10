@@ -235,6 +235,10 @@ class OfflineHeadExecutionTests(unittest.TestCase):
             with patch.dict(sys.modules, {"transformers": hf}), patch.object(sys, "argv", args):
                 model_runner.main()
             predictions = list(load_jsonl(output_path))
+            manifest = json.loads(Path(str(output_path) + ".run.json").read_text())
+            self.assertEqual(manifest["predictions_sha256"], hashlib.sha256(output_path.read_bytes()).hexdigest())
+            self.assertFalse(manifest["production_authorized"])
+            self.assertEqual(manifest["head_parameters"], 66)
             self.assertEqual(len(predictions), 10)
             self.assertTrue(all("external_ndu_utility" not in r for r in predictions))
             self.assertTrue(all(r["head_parameters"] <= 2048 for r in predictions))
