@@ -16,6 +16,10 @@ use std::fs::OpenOptions;
 use std::fs::TryLockError;
 use std::io::Write;
 use std::path::{Path, PathBuf};
+#[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+#[cfg(unix)]
+use std::os::unix::fs::OpenOptionsExt;
 
 use codex_hepta_types::CellCachePolicyV1;
 use codex_hepta_types::CellInFlightPolicyV1;
@@ -530,13 +534,19 @@ impl DurableCellStateCasDirectoryOwnerV1 {
                 "CAS root is not a directory",
             ));
         }
+        #[cfg(unix)]
+        if fs::metadata(&root).map_err(cas_io)?.mode() & 0o077 != 0 {
+            return Err(CellStateMigrationErrorV1::CasCorruption(
+                "CAS root must be private",
+            ));
+        }
         let lock_path = root.join(".hepta-cell-state-cas-owner.lock");
-        let writer_lock = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .open(lock_path)
-            .map_err(cas_io)?;
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true);
+        #[cfg(unix)]
+        options.mode(0o600);
+        let writer_lock = options.open(&lock_path).map_err(cas_io)?;
+        validate_private_cas_file(&lock_path)?;
         match writer_lock.try_lock() {
             Ok(()) => (),
             Err(TryLockError::WouldBlock) => {
@@ -574,11 +584,11 @@ impl DurableCellStateCasDirectoryOwnerV1 {
             let bytes = encode_child_state(child);
             let digest = Digest32::of_bytes(&bytes);
             let path = self.root.join(format!("object-{digest}.q24"));
-            let new_file = OpenOptions::new()
-                .read(true)
-                .write(true)
-                .create_new(true)
-                .open(&path);
+            let mut options = OpenOptions::new();
+            options.read(true).write(true).create_new(true);
+            #[cfg(unix)]
+            options.mode(0o600);
+            let new_file = options.open(&path);
             let receipt = match new_file {
                 Ok(file) => {
                     // This performs a real write and file.sync_all.
@@ -587,12 +597,7 @@ impl DurableCellStateCasDirectoryOwnerV1 {
                 Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
                     // An earlier crashed writer may have committed the same CAS
                     // object, but only independently checked bytes count.
-                    let metadata = fs::symlink_metadata(&path).map_err(cas_io)?;
-                    if !metadata.file_type().is_file() {
-                        return Err(CellStateMigrationErrorV1::CasCorruption(
-                            "CAS object is not a regular file",
-                        ));
-                    }
+                    validate_private_cas_file(&path)?;
                     let file = OpenOptions::new().read(true).open(&path).map_err(cas_io)?;
                     file.sync_all().map_err(cas_io)?;
                     let mut receipt = CellStateCasReceiptV1 {
@@ -609,6 +614,7 @@ impl DurableCellStateCasDirectoryOwnerV1 {
                 }
                 Err(error) => return Err(cas_io(error)),
             };
+            validate_private_cas_file(&path)?;
             if fs::read(&path).map_err(cas_io)? != bytes
                 || receipt.payload_digest != digest
                 || receipt.encoded_size_bytes != bytes.len() as u64
@@ -641,23 +647,17 @@ impl DurableCellStateCasDirectoryOwnerV1 {
         let commit_path = self
             .root
             .join(format!("commit-{}.ack", migration.fence_digest));
-        match OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create_new(true)
-            .open(&commit_path)
-        {
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create_new(true);
+        #[cfg(unix)]
+        options.mode(0o600);
+        match options.open(&commit_path) {
             Ok(mut file) => {
                 file.write_all(&marker_bytes).map_err(cas_io)?;
                 file.sync_all().map_err(cas_io)?;
             }
             Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
-                let metadata = fs::symlink_metadata(&commit_path).map_err(cas_io)?;
-                if !metadata.file_type().is_file() {
-                    return Err(CellStateMigrationErrorV1::CasCorruption(
-                        "batch marker is not a regular file",
-                    ));
-                }
+                validate_private_cas_file(&commit_path)?;
                 let file = OpenOptions::new()
                     .read(true)
                     .open(&commit_path)
@@ -666,6 +666,7 @@ impl DurableCellStateCasDirectoryOwnerV1 {
             }
             Err(error) => return Err(cas_io(error)),
         };
+        validate_private_cas_file(&commit_path)?;
         let observed_marker = fs::read(&commit_path).map_err(cas_io)?;
         if observed_marker != marker_bytes {
             return Err(CellStateMigrationErrorV1::CasCorruption(
@@ -698,6 +699,22 @@ impl Drop for DurableCellStateCasDirectoryOwnerV1 {
     fn drop(&mut self) {
         let _ = self.writer_lock.unlock();
     }
+}
+
+fn validate_private_cas_file(path: &Path) -> Result<(), CellStateMigrationErrorV1> {
+    let metadata = fs::symlink_metadata(path).map_err(cas_io)?;
+    if !metadata.file_type().is_file() {
+        return Err(CellStateMigrationErrorV1::CasCorruption(
+            "CAS file is not a regular file",
+        ));
+    }
+    #[cfg(unix)]
+    if metadata.mode() & 0o077 != 0 || metadata.nlink() != 1 {
+        return Err(CellStateMigrationErrorV1::CasCorruption(
+            "CAS file permissions or link count are unsafe",
+        ));
+    }
+    Ok(())
 }
 
 fn cas_io(error: std::io::Error) -> CellStateMigrationErrorV1 {
@@ -835,6 +852,12 @@ mod durable_cas_tests {
             let root = std::env::temp_dir()
                 .join(format!("hepta-child-state-cas-{}-{id}", std::process::id()));
             fs::create_dir(&root).expect("create private fixture root");
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(&root, fs::Permissions::from_mode(0o700))
+                    .expect("private fixture root");
+            }
             Self(root)
         }
     }
