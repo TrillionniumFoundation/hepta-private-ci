@@ -712,6 +712,10 @@ fn validate_neuron_feature_output(
     Ok(())
 }
 
+#[path = "model_worker_batch.rs"]
+mod batch;
+pub use batch::NeuronFeatureBatchDriver;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
