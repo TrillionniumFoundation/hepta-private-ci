@@ -60,7 +60,9 @@ impl CellSplitExecutionPortV1 for FixturePort {
         let receipt = Self::receipt(intent);
         let mut state = self.observed.borrow_mut();
         state.executions += 1;
-        state.commits.insert(intent.idempotency_key.clone(), receipt.clone());
+        state
+            .commits
+            .insert(intent.idempotency_key.clone(), receipt.clone());
         if self.drop_ack {
             return Err("ack lost after durable effect");
         }
@@ -120,14 +122,12 @@ fn advances_only_in_exact_dependency_order_and_recovers_verified_chain() {
     let state = Rc::new(RefCell::new(Observed::default()));
     {
         let port = FixturePort::new(state.clone());
-        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), port)
-            .expect("initial open");
-        assert!(CellSplitExecutionOwnerV1::open(
-            root.path(),
-            plan(),
-            FixturePort::new(state.clone())
-        )
-        .is_err());
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), port).expect("initial open");
+        assert!(
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state.clone()))
+                .is_err()
+        );
         let mut observed_steps = Vec::new();
         for _ in 0..4 {
             let receipt = owner.advance().expect("external effect").expect("step");
@@ -165,7 +165,13 @@ fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
         CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state.clone()))
             .expect("reopen");
     assert_eq!(
-        owner.advance().expect("read after ack loss").expect("commit").intent.step.index(),
+        owner
+            .advance()
+            .expect("read after ack loss")
+            .expect("commit")
+            .intent
+            .step
+            .index(),
         0
     );
     assert_eq!(state.borrow().executions, 1);
@@ -194,12 +200,9 @@ fn unknown_effect_must_fail_closed_and_frozen_plan_cannot_drift() {
     drop(owner);
     let mut changed = plan();
     changed.child_artifact_digest = "aa".repeat(32);
-    assert!(CellSplitExecutionOwnerV1::open(
-        root.path(),
-        changed,
-        FixturePort::new(state)
-    )
-    .is_err());
+    assert!(
+        CellSplitExecutionOwnerV1::open(root.path(), changed, FixturePort::new(state)).is_err()
+    );
 }
 
 #[test]
@@ -220,10 +223,5 @@ fn tamper_and_invalid_signature_prevent_committed_replay() {
         serde_json::from_slice(&fs::read(&path).expect("read")).expect("decode");
     receipt.output_digest = "ff".repeat(32);
     fs::write(&path, canonical_json(&receipt).expect("encode")).expect("tamper");
-    assert!(CellSplitExecutionOwnerV1::open(
-        root.path(),
-        plan(),
-        FixturePort::new(state)
-    )
-    .is_err());
+    assert!(CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state)).is_err());
 }
