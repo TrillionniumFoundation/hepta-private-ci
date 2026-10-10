@@ -91,7 +91,9 @@ def verify_files(root, entries):
             raise ValueError("model differs from pinned publisher bytes")
     index = root / "model.safetensors.index.json"
     if index.exists():
-            if index.stat().st_size > 1024 * 1024:
+        from tensor_contract import strict_json
+
+        if index.stat().st_size > 1024 * 1024:
             raise ValueError("tensor index too large")
         names = set(strict_json(index.read_text())["weight_map"].values())
         if (
