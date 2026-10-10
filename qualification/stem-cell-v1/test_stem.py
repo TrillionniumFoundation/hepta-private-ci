@@ -115,6 +115,34 @@ class StemStudyTests(unittest.TestCase):
         self.assertEqual(len(paired), 4)  # OOD is not reward evidence
         self.assertTrue(all(abs(v - 0.2) < 1e-8 for v in paired))
 
+    def test_cli_produces_digest_bound_non_authorizing_report(self):
+        from unittest.mock import patch
+        import sys
+        from study import main as study_main
+
+        with tempfile.TemporaryDirectory() as root:
+            dataset_path = Path(root, "dataset.jsonl")
+            prediction_path = Path(root, "prediction.jsonl")
+            outcome_path = Path(root, "outcome.jsonl")
+            report_path = Path(root, "report.json")
+            dataset_path.write_text("".join(json.dumps(row) + "\n" for row in self.dataset))
+            digest = hashlib.sha256(dataset_path.read_bytes()).hexdigest()
+            predictions = model_outputs(self.dataset)
+            for row in predictions:
+                row["dataset_digest"] = digest
+            prediction_path.write_text("".join(json.dumps(row) + "\n" for row in predictions))
+            outcome_path.write_text("".join(json.dumps(row) + "\n" for row in owner_outcomes(self.dataset)))
+            args = ["study.py", "--dataset", str(dataset_path), "--predictions", str(prediction_path),
+                    "--outcomes", str(outcome_path), "--output", str(report_path)]
+            with patch.object(sys, "argv", args):
+                study_main()
+            report = json.loads(report_path.read_text())
+            self.assertEqual(report["dataset_sha256"], digest)
+            self.assertEqual(report["model_metrics"]["no_change"]["overall"]["count"], 5)
+            self.assertFalse(report["admission_diagnostic"]["mmbert_small"]["shadow_eligible"])
+            self.assertFalse(report["production_authorized"])
+            self.assertEqual(len(report["protocol_sha256"]), 64)
+
     def test_admission_requires_support_and_native(self):
         cfg = {"frozen_admission": {"no_change_arm": "no_change", "confidence_level": 0.95,
                "bootstrap_replicates": 50, "independent_episode_groups_minimum": 400,
