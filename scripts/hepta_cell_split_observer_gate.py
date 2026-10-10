@@ -32,6 +32,53 @@ SIGNED_SCHEMA = "hepta.cell-split.signed-independent-observer.v1"
 SIGNING_DOMAIN = b"hepta.cell-split.independent-observer.v1\0"
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}\Z")
 MAX_INPUT_BYTES = 4 * 1024 * 1024
+MAX_RAW_EVIDENCE_FILES = 256
+MAX_RAW_FILE_BYTES = 16 * 1024 * 1024
+MAX_RAW_ROOT_BYTES = 256 * 1024 * 1024
+
+
+def raw_evidence_root_digest(root: Path) -> str:
+    """Digest independently retained *bytes*, not the producer's path claim.
+
+    The raw evidence tree must be frozen separately from the signed observer
+    envelope to avoid signing a file that would itself appear in the tree.
+    """
+    if root.is_symlink() or not root.is_dir():
+        raise InvalidEvidence("raw evidence root must be a real directory")
+    manifest = []
+    total_bytes = 0
+    for path in sorted(root.rglob("*")):
+        if path.is_symlink() or (not path.is_file() and not path.is_dir()):
+            raise InvalidEvidence("raw evidence contains a link or unsupported file")
+        if path.is_dir():
+            continue
+        if len(manifest) >= MAX_RAW_EVIDENCE_FILES:
+            raise InvalidEvidence("raw evidence file count exceeds bound")
+        before = path.stat()
+        if before.st_size > MAX_RAW_FILE_BYTES:
+            raise InvalidEvidence("raw evidence file exceeds bound")
+        total_bytes += before.st_size
+        if total_bytes > MAX_RAW_ROOT_BYTES:
+            raise InvalidEvidence("raw evidence total size exceeds bound")
+        hasher = hashlib.sha256()
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(128 * 1024), b""):
+                hasher.update(chunk)
+        after = path.stat()
+        if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) != (
+            after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns
+        ):
+            raise InvalidEvidence("raw evidence changed during verification")
+        manifest.append(
+            {
+                "path": path.relative_to(root).as_posix(),
+                "size_bytes": before.st_size,
+                "sha256": hasher.hexdigest(),
+            }
+        )
+    if not manifest:
+        raise InvalidEvidence("raw evidence root is empty")
+    return digest(manifest)
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -109,6 +156,7 @@ def verify_observer_packet(
     signed: dict[str, Any],
     public_key: Path,
     pinned_key_sha256: str,
+    raw_evidence_root: Path | None = None,
 ) -> dict[str, Any]:
     # Recompute from the raw matrix. A signed 'pass' boolean is not a
     # measurement, and a manually altered diagnostic cannot override this.
@@ -170,6 +218,9 @@ def verify_observer_packet(
         public_key,
         pinned_key_sha256,
     )
+    retained = raw_evidence_root is not None
+    if retained and raw_evidence_root_digest(raw_evidence_root) != claim["raw_evidence_root_sha256"]:
+        raise InvalidEvidence("signed raw evidence root differs from independently retained bytes")
     return {
         "schema": "hepta.cell-split.observer-verification.v1",
         "source_sha": matrix["source_sha"],
@@ -178,6 +229,7 @@ def verify_observer_packet(
         "observer_id": observer,
         "observer_signature_verified": True,
         "exact_matrix_binding_verified": True,
+        "raw_evidence_retention_verified": retained,
         "comparative_gate_passed": computed["comparative_gate_passed"],
         "host_attestation_verified": False,
         "future_windows_verified": False,
@@ -192,6 +244,7 @@ def main() -> int:
     parser.add_argument("--signed-observer", required=True, type=Path)
     parser.add_argument("--observer-public-key", required=True, type=Path)
     parser.add_argument("--pinned-observer-key-sha256", required=True)
+    parser.add_argument("--raw-evidence-root", type=Path)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     try:
@@ -201,6 +254,7 @@ def main() -> int:
             read_json(args.signed_observer),
             args.observer_public_key,
             args.pinned_observer_key_sha256,
+            args.raw_evidence_root,
         )
     except (OSError, TypeError, KeyError, ValueError, InvalidEvidence) as error:
         parser.error(str(error))
