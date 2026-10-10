@@ -55,6 +55,8 @@ pub use cell_split_execution_owner::CellSplitExecutionPlanV1;
 pub use cell_split_execution_owner::CellSplitExecutionPortV1;
 pub use cell_split_execution_owner::CellSplitExecutionReceiptV1;
 pub use cell_split_execution_owner::CellSplitExecutionStepV1;
+pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
+pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
 pub use cell_split_target_host::CellSplitQualificationOriginV1;
 pub use cell_split_target_host::CellSplitQualificationStateV1;
 pub use cell_split_target_host::CellSplitTargetHostErrorV1;

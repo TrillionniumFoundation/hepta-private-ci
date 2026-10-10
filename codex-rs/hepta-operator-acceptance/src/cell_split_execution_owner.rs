@@ -6,11 +6,14 @@
 //! and re-query the same owner after an ambiguous crash or lost acknowledgement.
 //! No route, generation, selector or production authority is minted here.
 
+use std::collections::BTreeSet;
 use std::fs;
 use std::io::ErrorKind;
 use std::path::Path;
 use std::path::PathBuf;
 
+use ed25519_dalek::Signature;
+use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
 use thiserror::Error;
@@ -77,6 +80,7 @@ pub struct CellSplitExecutionPlanV1 {
 
 impl CellSplitExecutionPlanV1 {
     fn validate(&self) -> Result<(), CellSplitExecutionErrorV1> {
+        let mut distinct_owners = BTreeSet::new();
         if self.split_id.is_empty()
             || self.split_id.len() > 256
             || self.parent_generation == 0
@@ -84,7 +88,7 @@ impl CellSplitExecutionPlanV1 {
             || self
                 .owner_ids
                 .iter()
-                .any(|id| id.is_empty() || id.len() > 256)
+                .any(|id| id.is_empty() || id.len() > 256 || !distinct_owners.insert(id))
         {
             return Err(CellSplitExecutionErrorV1::Invalid(
                 "identity or generations",
@@ -140,6 +144,62 @@ pub struct CellSplitExecutionReceiptV1 {
     pub owner_receipt_bytes: Vec<u8>,
     pub owner_signature_bytes: Vec<u8>,
     pub receipt_digest: String,
+}
+
+/// Domain-separated signature payload shared with real external effect owners.
+/// It binds the step, exact idempotency key, owner result and observed sequence.
+/// A signature is not enough: read-after-write owner verification stays required.
+pub fn cell_split_execution_signing_payload_v1(
+    receipt: &CellSplitExecutionReceiptV1,
+) -> Result<Vec<u8>, CellSplitExecutionErrorV1> {
+    let mut unsigned = receipt.clone();
+    unsigned.owner_signature_bytes.clear();
+    unsigned.receipt_digest.clear();
+    let mut payload = b"hepta.learning.cell-split.committed-effect.v1\0".to_vec();
+    payload.extend_from_slice(&canonical_json(&unsigned)?);
+    Ok(payload)
+}
+
+/// Pinned distinct signer keys, bound to a single immutable split and the
+/// four fixed owner identities. Never accept the coordinator's own key as a
+/// substitute for a real CAS/CNS/Supervisor operation receipt.
+#[derive(Clone)]
+pub struct CellSplitOwnerTrustV1 {
+    plan_digest: String,
+    owner_keys: [VerifyingKey; STEP_COUNT],
+}
+
+impl CellSplitOwnerTrustV1 {
+    pub fn new(
+        plan: &CellSplitExecutionPlanV1,
+        keys: [VerifyingKey; STEP_COUNT],
+    ) -> Result<Self, CellSplitExecutionErrorV1> {
+        plan.validate()?;
+        let mut seen = BTreeSet::new();
+        if keys.iter().any(|key| !seen.insert(key.to_bytes())) {
+            return Err(CellSplitExecutionErrorV1::Invalid("effect owners share a signing key"));
+        }
+        Ok(Self {
+            plan_digest: plan.digest()?,
+            owner_keys: keys,
+        })
+    }
+
+    fn verify(
+        &self,
+        intent: &CellSplitExecutionIntentV1,
+        receipt: &CellSplitExecutionReceiptV1,
+    ) -> Result<(), CellSplitExecutionErrorV1> {
+        if self.plan_digest != intent.plan_digest {
+            return Err(CellSplitExecutionErrorV1::Invalid("effect trust plan drift"));
+        }
+        let signature = Signature::from_slice(&receipt.owner_signature_bytes)
+            .map_err(|_| CellSplitExecutionErrorV1::Invalid("invalid owner signature"))?;
+        self.owner_keys[intent.step.index()]
+            .verify_strict(&cell_split_execution_signing_payload_v1(receipt)?, &signature)
+            .map_err(|_| CellSplitExecutionErrorV1::Invalid("untrusted effect owner"))?;
+        Ok(())
+    }
 }
 
 fn receipt_digest(
@@ -200,6 +260,7 @@ pub struct CellSplitExecutionOwnerV1<P: CellSplitExecutionPortV1> {
     plan: CellSplitExecutionPlanV1,
     plan_digest: String,
     port: P,
+    trust: CellSplitOwnerTrustV1,
     cursor: usize,
     pending: bool,
     previous_receipt_digest: String,
@@ -210,12 +271,16 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     pub fn open(
         root: &Path,
         plan: CellSplitExecutionPlanV1,
+        trust: CellSplitOwnerTrustV1,
         mut port: P,
     ) -> Result<Self, CellSplitExecutionErrorV1> {
         plan.validate()?;
         let root = secure_root(root, "cell split owner root")?;
         let lock = lock_sidecar(&root)?;
         let plan_digest = plan.digest()?;
+        if trust.plan_digest != plan_digest {
+            return Err(CellSplitExecutionErrorV1::Invalid("trusted plan mismatch"));
+        }
         let path = root.join("cell-split-frozen-plan.json");
         let bytes = canonical_json(&plan)?;
         match read_frame(&path)? {
@@ -258,6 +323,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                     if let Some(bytes) = outcome {
                         let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
                         validate_receipt(&intent, &receipt)?;
+                        trust.verify(&intent, &receipt)?;
                         port.verify_committed(&intent, &receipt).map_err(|error| {
                             CellSplitExecutionErrorV1::External(error.to_string())
                         })?;
@@ -283,6 +349,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             plan,
             plan_digest,
             port,
+            trust,
             cursor,
             pending,
             previous_receipt_digest,
@@ -333,6 +400,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
         };
         validate_receipt(&intent, &receipt)?;
+        self.trust.verify(&intent, &receipt)?;
         self.port
             .verify_committed(&intent, &receipt)
             .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
@@ -374,7 +442,8 @@ fn validate_receipt(
         || !valid_digest(&receipt.output_digest)
         || !valid_digest(&receipt.receipt_digest)
         || receipt.owner_receipt_bytes.is_empty()
-        || receipt.owner_signature_bytes.is_empty()
+        || receipt.owner_signature_bytes.len() != 64
+        || receipt.output_digest != sha256(&receipt.owner_receipt_bytes)
         || receipt.owner_receipt_bytes.len() > MAX_RECORD_BYTES / 2
         || receipt.owner_signature_bytes.len() > 4096
         || receipt.receipt_digest != receipt_digest(receipt)?

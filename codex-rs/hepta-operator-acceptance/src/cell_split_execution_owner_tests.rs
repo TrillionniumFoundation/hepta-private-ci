@@ -1,4 +1,6 @@
 use std::cell::RefCell;
+use ed25519_dalek::Signer as _;
+use ed25519_dalek::SigningKey;
 use std::collections::BTreeMap;
 use std::fs;
 use std::rc::Rc;
@@ -7,6 +9,8 @@ use super::CellSplitExecutionErrorV1;
 use super::CellSplitExecutionIntentV1;
 use super::CellSplitExecutionOwnerV1;
 use super::CellSplitExecutionPlanV1;
+use super::CellSplitOwnerTrustV1;
+use super::cell_split_execution_signing_payload_v1;
 use super::CellSplitExecutionPortV1;
 use super::CellSplitExecutionReceiptV1;
 use super::receipt_digest;
@@ -37,14 +41,19 @@ impl FixturePort {
     }
 
     fn receipt(intent: &CellSplitExecutionIntentV1) -> CellSplitExecutionReceiptV1 {
+        let receipt_bytes = canonical_json(intent).expect("fixture receipt bytes");
         let mut receipt = CellSplitExecutionReceiptV1 {
             intent: intent.clone(),
             owner_sequence: intent.step.index() as u64 + 1,
-            output_digest: sha256(intent.idempotency_key.as_bytes()),
-            owner_receipt_bytes: canonical_json(intent).expect("fixture receipt bytes"),
-            owner_signature_bytes: vec![42],
+            output_digest: sha256(&receipt_bytes),
+            owner_receipt_bytes: receipt_bytes,
+            owner_signature_bytes: Vec::new(),
             receipt_digest: String::new(),
         };
+        receipt.owner_signature_bytes = signing_key(intent.step.index())
+            .sign(&cell_split_execution_signing_payload_v1(&receipt).expect("payload"))
+            .to_bytes()
+            .to_vec();
         receipt.receipt_digest = receipt_digest(&receipt).expect("fixture receipt digest");
         receipt
     }
@@ -87,7 +96,7 @@ impl CellSplitExecutionPortV1 for FixturePort {
         receipt: &CellSplitExecutionReceiptV1,
     ) -> Result<(), Self::Error> {
         self.observed.borrow_mut().verifications += 1;
-        if self.reject_signature || receipt.owner_signature_bytes != [42] {
+        if self.reject_signature || receipt.owner_signature_bytes.len() != 64 {
             return Err("signature rejected");
         }
         if self.observed.borrow().commits.get(&intent.idempotency_key) != Some(receipt) {
@@ -95,6 +104,22 @@ impl CellSplitExecutionPortV1 for FixturePort {
         }
         Ok(())
     }
+}
+
+fn signing_key(index: usize) -> SigningKey {
+    SigningKey::from_bytes(&[u8::try_from(index).expect("bounded index") + 1; 32])
+}
+
+fn trust_for(plan: &CellSplitExecutionPlanV1) -> CellSplitOwnerTrustV1 {
+    CellSplitOwnerTrustV1::new(
+        plan,
+        [0, 1, 2, 3].map(|index| signing_key(index).verifying_key()),
+    )
+    .expect("trusted independent fixture owners")
+}
+
+fn trust() -> CellSplitOwnerTrustV1 {
+    trust_for(&plan())
 }
 
 fn plan() -> CellSplitExecutionPlanV1 {
@@ -123,9 +148,9 @@ fn advances_only_in_exact_dependency_order_and_recovers_verified_chain() {
     {
         let port = FixturePort::new(state.clone());
         let mut owner =
-            CellSplitExecutionOwnerV1::open(root.path(), plan(), port).expect("initial open");
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("initial open");
         assert!(
-            CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state.clone()))
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state.clone()))
                 .is_err()
         );
         let mut observed_steps = Vec::new();
@@ -138,7 +163,7 @@ fn advances_only_in_exact_dependency_order_and_recovers_verified_chain() {
         assert!(owner.advance().expect("done").is_none());
     }
     let mut reopened =
-        CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state.clone()))
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state.clone()))
             .expect("reopen and authenticate four external receipts");
     assert_eq!(reopened.completed_steps(), 4);
     assert!(reopened.advance().expect("no re-execution").is_none());
@@ -153,7 +178,7 @@ fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
     {
         let mut port = FixturePort::new(state.clone());
         port.drop_ack = true;
-        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), port).expect("open");
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
         assert!(matches!(
             owner.advance(),
             Err(CellSplitExecutionErrorV1::External(_))
@@ -162,7 +187,7 @@ fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
         assert_eq!(state.borrow().executions, 1);
     }
     let mut owner =
-        CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state.clone()))
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state.clone()))
             .expect("reopen");
     assert_eq!(
         owner
@@ -185,12 +210,12 @@ fn unknown_effect_must_fail_closed_and_frozen_plan_cannot_drift() {
     {
         let mut port = FixturePort::new(state.clone());
         port.drop_ack = true;
-        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), port).expect("open");
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
         assert!(owner.advance().is_err());
     }
     state.borrow_mut().commits.clear();
     let mut owner =
-        CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state.clone()))
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state.clone()))
             .expect("reopen");
     assert!(matches!(
         owner.advance(),
@@ -201,7 +226,7 @@ fn unknown_effect_must_fail_closed_and_frozen_plan_cannot_drift() {
     let mut changed = plan();
     changed.child_artifact_digest = "aa".repeat(32);
     assert!(
-        CellSplitExecutionOwnerV1::open(root.path(), changed, FixturePort::new(state)).is_err()
+        CellSplitExecutionOwnerV1::open(root.path(), changed.clone(), trust_for(&changed), FixturePort::new(state)).is_err()
     );
 }
 
@@ -211,17 +236,17 @@ fn tamper_and_invalid_signature_prevent_committed_replay() {
     let state = Rc::new(RefCell::new(Observed::default()));
     {
         let mut owner =
-            CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state.clone()))
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state.clone()))
                 .expect("open");
         owner.advance().expect("first commit");
     }
     let mut denied = FixturePort::new(state.clone());
     denied.reject_signature = true;
-    assert!(CellSplitExecutionOwnerV1::open(root.path(), plan(), denied).is_err());
+    assert!(CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), denied).is_err());
     let path = root.path().join("cell-split-00-committed.json");
     let mut receipt: CellSplitExecutionReceiptV1 =
         serde_json::from_slice(&fs::read(&path).expect("read")).expect("decode");
     receipt.output_digest = "ff".repeat(32);
     fs::write(&path, canonical_json(&receipt).expect("encode")).expect("tamper");
-    assert!(CellSplitExecutionOwnerV1::open(root.path(), plan(), FixturePort::new(state)).is_err());
+    assert!(CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state)).is_err());
 }
