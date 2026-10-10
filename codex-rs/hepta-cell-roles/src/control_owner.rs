@@ -1306,6 +1306,69 @@ mod tests {
     }
 
     #[test]
+    fn durable_control_stale_open_owner_cannot_overwrite_newer_state() {
+        let root = tempfile::tempdir().expect("tempdir");
+        let path = root.path().join("control");
+        let mut first = DurableControlRoleOwnerV1::open(&path).expect("first");
+        let mut second = DurableControlRoleOwnerV1::open(&path).expect("second");
+        first
+            .activate_generation(
+                StableId::new("cell.control").expect("id"),
+                Generation::new(3).expect("generation"),
+                digest("fence"),
+            )
+            .expect("committed generation");
+        assert_eq!(
+            second.prepare(intent(ControlOperationKindV1::Router)),
+            Err(ControlOwnerErrorV1::StaleWriter)
+        );
+        let mut reopened = DurableControlRoleOwnerV1::open(&path).expect("reopen");
+        let prepared = reopened
+            .prepare(intent(ControlOperationKindV1::Router))
+            .expect("new writer");
+        assert_eq!(prepared.status, ControlDispatchStatusV1::Prepared);
+        assert_eq!(
+            first.forward(&prepared.dispatch_id),
+            Err(ControlOwnerErrorV1::StaleWriter)
+        );
+    }
+
+    #[test]
+    fn durable_control_rejects_os_writer_lock_contention() {
+        let root = tempfile::tempdir().expect("tempdir");
+        let path = root.path().join("control");
+        let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open");
+        let guard = lock_durable_control_writer(&path).expect("hold lock");
+        assert_eq!(
+            owner.prepare(intent(ControlOperationKindV1::ActionProposal)),
+            Err(ControlOwnerErrorV1::WriterUnavailable)
+        );
+        drop(guard);
+        owner
+            .activate_generation(
+                StableId::new("cell.control").expect("id"),
+                Generation::new(3).expect("generation"),
+                digest("fence"),
+            )
+            .expect("writer after release");
+    }
+
+    #[test]
+    fn idempotent_durable_control_retry_does_not_rewrite_snapshot() {
+        let root = tempfile::tempdir().expect("tempdir");
+        let path = root.path().join("control");
+        let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open");
+        owner
+            .prepare(intent(ControlOperationKindV1::Planner))
+            .expect("first");
+        let before = std::fs::read(&path).expect("read");
+        owner
+            .prepare(intent(ControlOperationKindV1::Planner))
+            .expect("repeat");
+        assert_eq!(std::fs::read(&path).expect("read"), before);
+    }
+
+    #[test]
     fn durable_control_owner_reopens_terminal_chain_and_rejects_tamper() {
         let path = std::env::temp_dir().join(format!(
             "hepta-control-owner-{}-{}.bin",
