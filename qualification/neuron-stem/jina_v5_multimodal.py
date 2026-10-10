@@ -14,7 +14,7 @@ import math
 from pathlib import Path
 import time
 
-from jina_v5 import FrozenJinaV5, MODELS, sha256_record, validate_identity
+from jina_v5 import FrozenJinaV5, MODELS, research_environment, sha256_record, validate_identity
 from qualified_eval import read_jsonl, write_json
 
 EXTENSIONS = {
@@ -206,6 +206,8 @@ def run(args):
         "modality_loading": args.modality, "task_adapter": "retrieval",
         "embedding_dimensions": args.dimension,
         "data": audit, "results": results, "by_modality": by_modality,
+        "environment": research_environment(),
+        "observed_total_physical_ram_bytes": psutil.virtual_memory().total,
         "model_load_ms": {"text": text_stem.load_ms, "omni": omni_stem.load_ms},
         "limitations": [
             "Only independently provided media/text pairs, not relation reasoning",
