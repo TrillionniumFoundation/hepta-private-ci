@@ -270,23 +270,40 @@ impl Store {
         self.replace_claims(state.head.authority_epoch, &state.used_nonces)
     }
 
-    /// Durably burn one nonce. The fixed frame makes claim persistence O(1)
-    /// in the number of prior claims.
+    /// Append one homogeneous nonce group with one fsync. Each record
+    /// retains the V1 fixed-width replay format; no migration is necessary.
+    /// Partial or torn writes remain fail-closed on reopen.
+    pub(super) fn append_claims(
+        &self,
+        authority_epoch: u64,
+        nonces: &[[u8; 32]],
+    ) -> Result<(), FinalUseError> {
+        if authority_epoch == 0
+            || nonces.is_empty()
+            || nonces.len() > 256
+            || nonces.iter().any(|nonce| *nonce == [0; 32])
+        {
+            return Err(FinalUseError::InvalidTrust);
+        }
+        let mut bytes = Vec::with_capacity(nonces.len() * CLAIM_FRAME_BYTES);
+        for nonce in nonces {
+            bytes.extend_from_slice(&authority_epoch.to_be_bytes());
+            bytes.extend_from_slice(nonce);
+        }
+        let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
+        file.seek(SeekFrom::End(0))
+            .and_then(|_| file.write_all(&bytes))
+            .and_then(|_| file.sync_all())
+            .map_err(|_| FinalUseError::Unavailable)
+    }
+
+    #[cfg(test)]
     pub(super) fn append_claim(
         &self,
         authority_epoch: u64,
         nonce: [u8; 32],
     ) -> Result<(), FinalUseError> {
-        if authority_epoch == 0 || nonce == [0; 32] {
-            return Err(FinalUseError::InvalidTrust);
-        }
-        let mut file = open_private(&self.root, "authority.claims", Access::Write)?;
-        file.seek(SeekFrom::End(0))
-            .map_err(|_| FinalUseError::Unavailable)?;
-        file.write_all(&authority_epoch.to_be_bytes())
-            .and_then(|()| file.write_all(&nonce))
-            .and_then(|()| file.sync_all())
-            .map_err(|_| FinalUseError::Unavailable)
+        self.append_claims(authority_epoch, &[nonce])
     }
 
     fn persist_snapshot(&self, head: &FinalUseRevocations) -> Result<(), FinalUseError> {
