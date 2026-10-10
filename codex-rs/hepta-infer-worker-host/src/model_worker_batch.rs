@@ -106,7 +106,7 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
         for request in &requests {
             validate_request(now_ms, &request.authorization)?;
             validate_neuron_feature_request(request)?;
-            if !seen.insert(request.authorization.request_id.as_str())
+            if !seen.insert(request.authorization.request_id.clone())
                 || self.active_requests.contains_key(&request.authorization.request_id)
                 || request.authorization.cancelled
                 || &request.encoder_digest != encoder
