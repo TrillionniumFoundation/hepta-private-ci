@@ -2,7 +2,7 @@ use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
 use codex_hepta_types::{Digest32, Generation, StableId};
 
@@ -327,4 +327,51 @@ fn schema_rollback_and_writer_identity_are_frozen_for_retirement() {
             Err(CellSplitFinalizationErrorV1::InvalidBinding)
         ));
     }
+}
+
+
+#[test]
+fn lost_ack_after_real_journal_fsync_recovers_without_second_retirement() {
+    struct RevokeAfterWrite(Arc<AtomicUsize>);
+    impl CellSplitFinalizationAuthorityV1 for RevokeAfterWrite {
+        type Error = &'static str;
+        fn verify_current_route(
+            &mut self,
+            _binding: &CellSplitFinalizationBindingV1,
+            _checkpoint: &WriterHandoffCheckpointV1,
+        ) -> Result<(), Self::Error> {
+            Ok(())
+        }
+        fn verify_current_final_use(
+            &mut self,
+            _binding: &CellSplitFinalizationBindingV1,
+            _checkpoint: &WriterHandoffCheckpointV1,
+        ) -> Result<(), Self::Error> {
+            if self.0.fetch_add(1, Ordering::SeqCst) == 0 {
+                Ok(())
+            } else {
+                Err("final-use revoked immediately after the journal commit")
+            }
+        }
+    }
+    let root = tempfile::tempdir().expect("dir");
+    let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
+    {
+        let mut finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+            file(&root), &minimum, binding(),
+            RevokeAfterWrite(Arc::new(AtomicUsize::new(0))),
+        ).expect("journal");
+        assert!(matches!(
+            finalizer.finalize_once(),
+            Err(CellSplitFinalizationErrorV1::Revoked(_))
+        ));
+        assert_eq!(finalizer.checkpoint().phase, WriterHandoffPhaseV1::Retired);
+        assert_eq!(finalizer.checkpoint().revision, minimum.revision + 1);
+    }
+    let mut owner = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root), &minimum, binding(), LiveAuthority::allowed(),
+    ).expect("reconcile original journal after ack loss");
+    let original = owner.read_retired().expect("retained original").expect("retired");
+    assert_eq!(original.revision, minimum.revision + 1);
+    assert_eq!(owner.finalize_once().expect("never append twice"), original);
 }
