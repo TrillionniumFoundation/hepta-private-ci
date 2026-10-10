@@ -53,6 +53,25 @@ jobs:
                      for arm in ("head_arms","resource_arms","multimodal_arms")
                      for a in plan[arm])
           PY
+          python3 - <<'PY'
+          import json
+          with open("stem-review-input.json", "w", encoding="utf-8") as f:
+              json.dump({"schema":"hepta.neuron-stem-review-input.v1",
+                         "candidates":[]}, f, sort_keys=True)
+          PY
+          python3 qualification/neuron-stem/review_report.py \
+            --models qualification/neuron-stem/models.json \
+            --manifest stem-review-input.json --out stem-review.json
+          python3 - <<'PY'
+          import json
+          report=json.load(open("stem-review.json", encoding="utf-8"))
+          assert report["rows"][0]["model_id"]=="no-change"
+          assert report["no_change_retained"] is True
+          assert report["production_promotion_permitted"] is False
+          assert all(row["production_promotion_permitted"] is False
+                     for row in report["rows"])
+          assert all(row["decision"]=="未判定" for row in report["rows"][1:])
+          PY
       - name: Retain immutable qualification matrix
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -61,6 +80,9 @@ jobs:
           path: |
             stem-matrix.json
             jina-v5-shadow-matrix.json
+            stem-review-input.json
+            stem-review.json
+            stem-review.md
           if-no-files-found: ignore
           retention-days: 14
 
