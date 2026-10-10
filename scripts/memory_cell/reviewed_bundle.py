@@ -59,8 +59,14 @@ def conditions(case, review, *, revoked):
     if len(originals) != len(case["originals"]):
         raise ValueError("duplicate original source")
     required = {
-        "query_digest", "source_frontier", "reviewer_id", "reviewed_at",
-        "review_basis", "claim", "requirements", "spans",
+        "query_digest",
+        "source_frontier",
+        "reviewer_id",
+        "reviewed_at",
+        "review_basis",
+        "claim",
+        "requirements",
+        "spans",
     }
     if not isinstance(review, dict) or set(review) != required:
         raise ValueError("unknown minimal-evidence review")
@@ -78,8 +84,10 @@ def conditions(case, review, *, revoked):
     if (
         not isinstance(requirements, list)
         or not 1 <= len(requirements) <= 8
-        or any(not isinstance(r, str) or not re.fullmatch(r"[a-zA-Z0-9_.-]{1,64}", r)
-               for r in requirements)
+        or any(
+            not isinstance(r, str) or not re.fullmatch(r"[a-zA-Z0-9_.-]{1,64}", r)
+            for r in requirements
+        )
         or len(set(requirements)) != len(requirements)
         or not isinstance(review["spans"], list)
         or not 1 <= len(review["spans"]) <= 8
@@ -87,9 +95,18 @@ def conditions(case, review, *, revoked):
         raise ValueError("bounded named requirements/spans required")
     spans, groups = [], []
     for item in review["spans"]:
-        if not isinstance(item, dict) or set(item) != {
-            "source_id", "source_digest", "start", "end", "requirement",
-        } or item["requirement"] not in requirements:
+        if (
+            not isinstance(item, dict)
+            or set(item)
+            != {
+                "source_id",
+                "source_digest",
+                "start",
+                "end",
+                "requirement",
+            }
+            or item["requirement"] not in requirements
+        ):
             raise ValueError("unknown requirement or span fields")
         source = originals[item["source_id"]]
         a, b = item["start"], item["end"]
@@ -97,14 +114,22 @@ def conditions(case, review, *, revoked):
         if type(a) is not int or type(b) is not int or not 0 <= a < b <= len(raw):
             raise ValueError("invalid byte offsets")
         span = EvidenceSpan(
-            source.identity, source.root, source.scope, source.session,
-            source.observed_at, a, b, raw[a:b].decode("utf-8", "strict"),
+            source.identity,
+            source.root,
+            source.scope,
+            source.session,
+            source.observed_at,
+            a,
+            b,
+            raw[a:b].decode("utf-8", "strict"),
             item["source_digest"],
         )
         span.validate(source, q, revoked)
         # Overlap can make leave-one-out leak a removed prerequisite.
-        if any(s.source_id == span.source_id and max(s.start, a) < min(s.end, b)
-               for s in spans):
+        if any(
+            s.source_id == span.source_id and max(s.start, a) < min(s.end, b)
+            for s in spans
+        ):
             raise ValueError("overlapping reviewed fragments")
         spans.append(span)
         groups.append(item["requirement"])
@@ -113,16 +138,24 @@ def conditions(case, review, *, revoked):
     result = {}
     for omitted in (None, *requirements):
         selected = tuple(s for s, group in zip(spans, groups) if group != omitted)
-        bundle = EvidenceBundle(digest(asdict(q)), case["frontier"], selected,
-                                "reviewed_minimal" if omitted is None else "reviewed_omission")
+        bundle = EvidenceBundle(
+            digest(asdict(q)),
+            case["frontier"],
+            selected,
+            "reviewed_minimal" if omitted is None else "reviewed_omission",
+        )
         bundle.validate(q, originals, frontier=case["frontier"], revoked=revoked)
         name = "reviewed_minimal" if omitted is None else "reviewed_without_" + omitted
         result[name] = dict(
-            bundle=asdict(bundle), bundle_digest=bundle.seal(),
-            delivered_evidence=bundle.delivered(), token_limit=4096,
-            review_digest=digest(review), omitted_requirement=omitted,
+            bundle=asdict(bundle),
+            bundle_digest=bundle.seal(),
+            delivered_evidence=bundle.delivered(),
+            token_limit=4096,
+            review_digest=digest(review),
+            omitted_requirement=omitted,
             oracle_kind="external_claim_not_authenticated_here",
-            independent_review=False, sufficient_context_certified=False,
+            independent_review=False,
+            sufficient_context_certified=False,
             world_answerability_unchanged=True,
         )
     return result
@@ -144,16 +177,24 @@ def augment(plan, package, *, revoked):
         raise ValueError("duplicate plan case or surplus review")
     result = copy.deepcopy(plan)
     result["review_projection"] = dict(
-        review_package_digest=digest(package), base_plan_digest=digest(plan),
-        externally_authenticated=False, production_accepted=False,
+        review_package_digest=digest(package),
+        base_plan_digest=digest(plan),
+        externally_authenticated=False,
+        production_accepted=False,
     )
     for case in result["cases"]:
         if any(k.startswith("reviewed_") for k in case["conditions"]):
             raise ValueError("cannot overwrite a previous review projection")
         review = package["reviews"].get(case["question"]["identity"])
-        additions = conditions(case, review, revoked=revoked) if review is not None else {
-            "reviewed_minimal": dict(status="unavailable", reason="missing_external_review")
-        }
+        additions = (
+            conditions(case, review, revoked=revoked)
+            if review is not None
+            else {
+                "reviewed_minimal": dict(
+                    status="unavailable", reason="missing_external_review"
+                )
+            }
+        )
         case["conditions"].update(additions)
     return result
 
@@ -168,7 +209,9 @@ if __name__ == "__main__":
     plan = strict_read(args.plan, args.plan_sha, 64 * 1024 * 1024)
     reviews = strict_read(args.reviews, args.reviews_sha, MAX_REVIEW_BYTES)
     withdrawal = strict_read(args.withdrawals, args.withdrawals_sha, MAX_REVIEW_BYTES)
-    if not isinstance(withdrawal, list) or any(not isinstance(x, str) for x in withdrawal):
+    if not isinstance(withdrawal, list) or any(
+        not isinstance(x, str) for x in withdrawal
+    ):
         raise ValueError("explicit current withdrawal list required")
     projected = augment(plan, reviews, revoked=set(withdrawal))
     # Existing run_reader consumes this plan; actual token overflow remains unavailable.

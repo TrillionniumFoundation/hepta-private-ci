@@ -12,11 +12,16 @@ class FrozenProbeTests(unittest.TestCase):
     def test_probe_uses_model_for_all_conditions_and_replay_never_regenerates(self):
         reader = Reader()
         with tempfile.TemporaryDirectory() as root:
-            result = probe(reader, Path(root) / "output", source_commit="a"*40)
+            result = probe(reader, Path(root) / "output", source_commit="a" * 40)
         self.assertEqual(reader.calls, 4)
         self.assertEqual(result["model_calls"], 4)
-        self.assertEqual([len(r["result"]["record"]["receipt"]["delivered_evidence"])
-                          for r in result["results"]], [1, 2, 1, 2])
+        self.assertEqual(
+            [
+                len(r["result"]["record"]["receipt"]["delivered_evidence"])
+                for r in result["results"]
+            ],
+            [1, 2, 1, 2],
+        )
         self.assertTrue(all(r["withheld_replay_rejected"] for r in result["results"]))
         self.assertFalse(result["production_accepted"])
         self.assertEqual(result["prospective_windows"], 0)
