@@ -94,7 +94,21 @@
     "parameters_must_fit_budget": true,
     "equal_examples_epochs_and_optimizer_steps": true,
     "calibration_in_domain_coverage": 0.8,
-    "frozen_encoder_cache_max_bytes": 134217728
+    "frozen_encoder_cache_max_bytes": 134217728,
+    "native_cpu_bridge": {
+      "kind": "calibration_only_unsigned_q24_affine_export_v1",
+      "head_kinds": [
+        "linear",
+        "film",
+        "rank8",
+        "rank16"
+      ],
+      "native_input_max_width": 512,
+      "q24_signed_bound": 8,
+      "max_calibration_abs_logit_error": 0.02,
+      "no_future_time_tuning": true,
+      "unverified_export_never_promotes": true
+    }
   },
   "experiment_3": {
     "logical_cells": [
@@ -107,10 +121,10 @@
       0.01,
       0.1,
       0.5,
-      1.0
+      1
     ],
     "input_repeat_fractions": [
-      0.0,
+      0,
       0.5,
       0.9
     ],
@@ -141,8 +155,8 @@
     "bootstrap_replicates": 2000,
     "max_old_task_degradation": 0.02,
     "max_ood_false_acceptance": 0.005,
-    "minimum_ndu_gain_lcb": 0.0,
-    "maximum_cost_ratio": 1.0,
+    "minimum_ndu_gain_lcb": 0,
+    "maximum_cost_ratio": 1,
     "multiple_comparison": "bonferroni",
     "no_change_arm": "no_change",
     "future_window_minimum_groups": 50,
