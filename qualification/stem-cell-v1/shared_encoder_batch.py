@@ -199,15 +199,18 @@ class SharedStemEngine:
         scoped = {(r.scope_digest, r.generation, r.revocation_frontier_digest, r.representation) for r in requests}
         if len(scoped) != 1:
             raise ValueError("mixed scope/generation/revocation/representation batch")
-        batch_key = [
-            ":".join((r.request_id, r.input_digest, r.cell_id, r.scope_digest,
-                      str(r.generation), r.revocation_frontier_digest,
-                      r.encoder_digest, r.preprocessor_digest, r.runtime_digest, r.representation))
-            for r in requests
-        ]
-        ident = hashlib.sha256(
-            ("hepta.stem.batch.shadow.v1\n" + "\n".join(batch_key)).encode()
-        ).hexdigest()
+        batch_bytes = bytearray(b"hepta.stem.batch.shadow.v1")
+        for r in requests:
+            for field in (
+                r.request_id, r.input_digest, r.cell_id, r.scope_digest,
+                str(r.generation), r.revocation_frontier_digest,
+                r.encoder_digest, r.preprocessor_digest, r.runtime_digest,
+                r.representation,
+            ):
+                encoded = field.encode("utf-8")
+                batch_bytes.extend(len(encoded).to_bytes(8, "big"))
+                batch_bytes.extend(encoded)
+        ident = hashlib.sha256(batch_bytes).hexdigest()
         missing = OrderedDict()
         hits = 0
         for r in requests:
