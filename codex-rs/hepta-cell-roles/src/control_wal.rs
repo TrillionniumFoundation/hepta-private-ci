@@ -66,9 +66,7 @@ impl ControlWalEventV1 {
             Self::Terminal(id, digest) => Ok(ControlWalOutputV1::Receipt(
                 owner.record_terminal(id, *digest)?,
             )),
-            Self::Reconcile(id) => {
-                Ok(ControlWalOutputV1::Receipt(owner.reconcile_restart(id)?))
-            }
+            Self::Reconcile(id) => Ok(ControlWalOutputV1::Receipt(owner.reconcile_restart(id)?)),
             Self::Activate(cell, generation, fence) => {
                 if cell != expected_cell {
                     return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
@@ -149,10 +147,7 @@ impl ControlWalEventV1 {
     }
 }
 
-fn wal_header(
-    cell: &StableId,
-    scope: Digest32,
-) -> Result<Vec<u8>, ControlOwnerErrorV1> {
+fn wal_header(cell: &StableId, scope: Digest32) -> Result<Vec<u8>, ControlOwnerErrorV1> {
     let mut bytes = WAL_MAGIC.to_vec();
     put_id(&mut bytes, cell)?;
     put_digest(&mut bytes, scope);
@@ -219,18 +214,10 @@ fn replay_wal(
         let event_length = length - FRAME_FIXED_BYTES;
         let event_bytes = frame.take(event_length)?;
         let recorded_digest = frame.digest()?;
-        if seen_sequence != sequence + 1
-            || seen_predecessor != predecessor
-            || !frame.is_empty()
-        {
+        if seen_sequence != sequence + 1 || seen_predecessor != predecessor || !frame.is_empty() {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
         }
-        let (_, computed) = wal_frame(
-            seen_sequence,
-            predecessor,
-            expected_output,
-            event_bytes,
-        )?;
+        let (_, computed) = wal_frame(seen_sequence, predecessor, expected_output, event_bytes)?;
         if computed != recorded_digest {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
         }
@@ -289,8 +276,8 @@ impl ScopedControlWalOwnerV1 {
                 })
                 .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             use std::os::unix::fs::MetadataExt;
-            let metadata = fs::symlink_metadata(directory)
-                .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+            let metadata =
+                fs::symlink_metadata(directory).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             if !metadata.is_dir() || metadata.mode() & 0o077 != 0 {
                 return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
             }
@@ -320,19 +307,30 @@ impl ScopedControlWalOwnerV1 {
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
-        let mut writer = options.open(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
-        writer.try_lock().map_err(|_| ControlOwnerErrorV1::WriterUnavailable)?;
+        let mut writer = options
+            .open(&path)
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+        writer
+            .try_lock()
+            .map_err(|_| ControlOwnerErrorV1::WriterUnavailable)?;
         #[cfg(unix)]
         {
             use std::os::unix::fs::MetadataExt;
-            let metadata = writer.metadata().map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+            let metadata = writer
+                .metadata()
+                .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             if !metadata.is_file() || metadata.mode() & 0o077 != 0 || metadata.nlink() != 1 {
                 return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
             }
         }
         if new_file {
             let header = wal_header(&cell_id, scope_digest)?;
-            if writer.metadata().map_err(|_| ControlOwnerErrorV1::DurableIo)?.len() != 0 {
+            if writer
+                .metadata()
+                .map_err(|_| ControlOwnerErrorV1::DurableIo)?
+                .len()
+                != 0
+            {
                 return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
             }
             writer
@@ -372,20 +370,23 @@ impl ScopedControlWalOwnerV1 {
             return Ok(output);
         }
         let next_sequence = self.sequence + 1;
-        let (frame, head) = wal_frame(
-            next_sequence,
-            self.head,
-            output.digest()?,
-            &event.encode()?,
-        )?;
-        let len = self.bytes.checked_add(frame.len())
+        let (frame, head) =
+            wal_frame(next_sequence, self.head, output.digest()?, &event.encode()?)?;
+        let len = self
+            .bytes
+            .checked_add(frame.len())
             .ok_or(ControlOwnerErrorV1::InvalidDurableSnapshot)?;
         if len > MAX_WAL_BYTES {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
         }
         // Failure after any partial append poisons this writer. It must be
         // reopened/reconciled; no automatic retry can reissue a downstream effect.
-        if self.writer.write_all(&frame).and_then(|()| self.writer.sync_all()).is_err() {
+        if self
+            .writer
+            .write_all(&frame)
+            .and_then(|()| self.writer.sync_all())
+            .is_err()
+        {
             self.poisoned = true;
             return Err(ControlOwnerErrorV1::DurableIo);
         }
@@ -454,10 +455,7 @@ impl ControlRoleOwnerV1 for ScopedControlWalOwnerV1 {
         }
     }
 
-    fn forward(
-        &mut self,
-        id: &StableId,
-    ) -> Result<ControlDispatchReceiptV1, ControlOwnerErrorV1> {
+    fn forward(&mut self, id: &StableId) -> Result<ControlDispatchReceiptV1, ControlOwnerErrorV1> {
         match self.apply_event(ControlWalEventV1::Forward(id.clone()))? {
             ControlWalOutputV1::Receipt(receipt) => Ok(receipt),
             _ => Err(ControlOwnerErrorV1::InvalidDurableSnapshot),
@@ -536,8 +534,8 @@ mod tests {
         let receipt;
         let path;
         {
-            let mut owner = ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope)
-                .expect("open");
+            let mut owner =
+                ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope).expect("open");
             path = owner.path().to_path_buf();
             assert!(matches!(
                 ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope),
@@ -554,8 +552,8 @@ mod tests {
                 .unwrap();
             assert_eq!(owner.committed_events(), 5);
         }
-        let mut restored = ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope)
-            .expect("reopen");
+        let mut restored =
+            ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope).expect("reopen");
         assert_eq!(
             restored.dispatch_receipt(&receipt.dispatch_id),
             Some(&receipt)
@@ -568,7 +566,10 @@ mod tests {
         );
         assert_eq!(restored.committed_events(), 5);
         assert_eq!(
-            restored.reconcile_restart(&receipt.dispatch_id).unwrap().status,
+            restored
+                .reconcile_restart(&receipt.dispatch_id)
+                .unwrap()
+                .status,
             ControlDispatchStatusV1::Reconciled
         );
         drop(restored);
