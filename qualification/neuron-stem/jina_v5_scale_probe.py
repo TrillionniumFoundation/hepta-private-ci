@@ -15,7 +15,7 @@ import sqlite3
 import time
 
 from hf_trial import make_head
-from jina_v5 import FrozenJinaV5, sha256_record
+from jina_v5 import FrozenJinaV5, research_environment, sha256_record
 from jina_v5_trial import render_case
 from qualified_eval import SCALES, audit_dataset, read_jsonl, scale_summary, write_json
 from q24_bridge import Q24, quantize_q24
@@ -182,6 +182,8 @@ def run(args):
         "model_load_ms": stem.load_ms,
         "process_wall_seconds": total_wall,
         "process_cpu_seconds": process_cpu,
+        "environment": research_environment(),
+        "observed_total_physical_ram_bytes": psutil.virtual_memory().total,
         "aggregate_throughput_rps": args.requests / total_wall,
         "max_observed_rss_bytes": max(v["rss_bytes"] for v in observations),
         "sqlite_clean_reopen_ok": True,
