@@ -18,6 +18,7 @@ from hf_trial import make_head
 from jina_v5 import FrozenJinaV5, sha256_record
 from jina_v5_trial import render_case
 from qualified_eval import SCALES, audit_dataset, read_jsonl, scale_summary, write_json
+from q24_bridge import Q24, quantize_q24
 
 
 def run(args):
@@ -107,8 +108,9 @@ def run(args):
             checkpoint_events = []
             for (cid, row), vector in zip(prepared, features):
                 with torch.inference_mode():
-                    _ = heads[cid](torch.tensor(vector, dtype=torch.float32,
-                                                device=args.device))
+                    _ = heads[cid](torch.tensor(
+                        [v / Q24 for v in quantize_q24(vector)],
+                        dtype=torch.float32, device=args.device))
                 tick = ticks.get(cid, 0) + 1
                 ticks[cid] = tick
                 checkpoint_events.append((cid, tick, row["case_id"]))
@@ -167,6 +169,8 @@ def run(args):
         "feature_manifest_digest": stem.manifest_digest,
         "dataset": audit, "seed": args.seed,
         "heads_initialized_not_learned": True,
+        "q24_feature_input_enforced": True,
+        "production_signed_q24_receipt_verified": False,
         "total_logical_cells": args.cells,
         "actual_active_heads": active_count,
         "distinct_ticked_cells": len(visited),
