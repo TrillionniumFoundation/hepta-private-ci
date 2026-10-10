@@ -246,12 +246,18 @@ fn scope_index_tracks_cutover_expiry_and_full_drain_without_stale_keys() {
         .unwrap();
     q.enqueue(1, intent("current", "target-scope", 2, 2, 100))
         .unwrap();
-    assert_eq!(q.scope_lanes.get(&id("target-scope")).map(BTreeSet::len), Some(2));
+    assert_eq!(
+        q.scope_lanes.get(&id("target-scope")).map(BTreeSet::len),
+        Some(2)
+    );
     assert_eq!(
         q.retain_scope_binding(&id("target-scope"), Generation::new(2).unwrap(), 2, 1),
         vec![id("old")]
     );
-    assert_eq!(q.scope_lanes.get(&id("target-scope")).map(BTreeSet::len), Some(1));
+    assert_eq!(
+        q.scope_lanes.get(&id("target-scope")).map(BTreeSet::len),
+        Some(1)
+    );
     assert_eq!(q.pending(), 129);
     let mut observed = BTreeSet::new();
     while q.pending() > 0 {
@@ -275,7 +281,10 @@ fn scope_index_removes_expired_lane_and_does_not_reuse_fenced_generation() {
     assert_eq!(q.poll(10).unwrap().expired_request_ids, vec![id("expired")]);
     assert!(q.scope_lanes.is_empty());
     assert!(q.physical_lanes.is_empty());
-    assert!(q.retain_scope_binding(&id("expired-scope"), Generation::new(2).unwrap(), 2, 2).is_empty());
+    assert!(
+        q.retain_scope_binding(&id("expired-scope"), Generation::new(2).unwrap(), 2, 2)
+            .is_empty()
+    );
 }
 
 // Opt-in source benchmark: not hardware acceptance, report raw durations.
