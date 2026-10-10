@@ -36,7 +36,9 @@
         "open_state_dir_with_issuer_keys": "final_use_open_state",
         "with_verified_effect": "final_use_guarded_effect",
         "with_verified_use_async": "final_use_async_dispatch_fence",
-        "enter_verified_use": "final_use_delivery_raw"
+        "enter_verified_use": "final_use_delivery_raw",
+        "claim_batch": "final_use_claim_batch_raw",
+        "with_verified_effect_batch": "final_use_guarded_batch_effect"
       },
       "nonPrivilegedMethods": [
         "issuer_key_ids",
@@ -184,12 +186,12 @@
         "FinalUseAuthority\\s*::\\s*claim\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-agentd/src/neuron_runtime.rs",
         "codex-rs/hepta-automation/src/authorized_effect.rs",
         "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
         "codex-rs/hepta-memory/src/production_writer.rs",
         "codex-rs/hepta-ndu/src/owner.rs",
+        "codex-rs/hepta-neuron/src/runtime.rs",
         "codex-rs/hepta-operations/src/durable_store.rs",
         "codex-rs/hepta-prompt-registry/src/admission.rs",
         "codex-rs/hepta-prompt-registry/src/durable.rs",
@@ -505,9 +507,9 @@
         "FinalUseAuthority\\s*::\\s*with_verified_effect\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-agentd/src/neuron_runtime.rs",
         "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
+        "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs",
+        "codex-rs/hepta-neuron/src/runtime.rs"
       ]
     },
     {
@@ -520,6 +522,30 @@
       ],
       "allowedCallers": [
         "codex-rs/hepta-automation/src/authorized_effect.rs"
+      ]
+    },
+    {
+      "id": "final_use_claim_batch_raw",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*claim_batch\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*claim_batch\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
+      ]
+    },
+    {
+      "id": "final_use_guarded_batch_effect",
+      "typeMarker": "FinalUseAuthority",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\.\\s*with_verified_effect_batch\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*with_verified_effect_batch\\s*\\("
+      ],
+      "allowedCallers": [
+        "codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"
       ]
     }
   ]
