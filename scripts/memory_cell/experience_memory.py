@@ -168,8 +168,8 @@ class ExperienceReader(ReferenceReader):
     def fit_sources(self, documents, *, revision, allowed_roots, revoked):
         import torch
         from peft import get_peft_model_state_dict
-        from grounded_protocol import completion_ids
         from pretrained import frozen_digest
+        from source_write_schedule import prepare
 
         examples, dispositions = source_examples(
             documents,
@@ -180,33 +180,20 @@ class ExperienceReader(ReferenceReader):
         if self.quarantined or self.roots:
             raise ValueError("writer must start with a fresh adapter")
         self.scopes = {d.scope for d in documents}
-        prepared, groups = [], {}
-        for ex in examples:
-            q = Question(**ex["query"])
-            prompt = render(self.tokenizer, q, [], [])
-            ids, labels = completion_ids(
-                self.tokenizer,
-                prompt,
-                ex["target"],
-                maximum=2112,
-            )
-            prepared.append((ids, labels))
-            groups.setdefault(q.scope, []).append(len(prepared) - 1)
+        prepared, plan = prepare(
+            self.tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING
+        )
         params = [p for p in self.model.parameters() if p.requires_grad]
         before = {
             k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()
         }
         optimizer = torch.optim.AdamW(params, lr=0.0002)
         started, tokens, supervised, losses = time.perf_counter(), 0, 0, []
-        scopes = sorted(groups)
         self.model.train()
         try:
-            for step in range(STEPS):
-                group = groups[scopes[step % len(scopes)]]
-                index = group[(step // len(scopes)) % len(group)]
+            print(json.dumps(dict(event="source-write-plan", plan=plan)), flush=True)
+            for index in plan["entries"]:
                 ids, labels = prepared[index]
-                if tokens + len(ids) > TOKEN_CEILING:
-                    break
                 x = torch.tensor([ids], dtype=torch.long)
                 optimizer.zero_grad(set_to_none=True)
                 loss = self.model(
@@ -225,6 +212,23 @@ class ExperienceReader(ReferenceReader):
                 tokens += len(ids)
                 supervised += sum(i != -100 for i in labels)
                 losses.append(float(loss.detach()))
+                if len(losses) % 8 == 0 or len(losses) == plan["planned_steps"]:
+                    print(
+                        json.dumps(
+                            dict(
+                                event="source-write-progress",
+                                schedule_sha256=digest(plan),
+                                completed_steps=len(losses),
+                                input_tokens=tokens,
+                                supervised_tokens=supervised,
+                                seconds=time.perf_counter() - started,
+                            ),
+                            allow_nan=False,
+                        ),
+                        flush=True,
+                    )
+            if tokens != plan["planned_input_tokens"] or supervised != plan["planned_supervised_tokens"]:
+                raise ValueError("actual source-write exposure differs from plan")
             delta = sum(
                 float((v - before[k]).square().sum())
                 for k, v in get_peft_model_state_dict(self.model).items()
@@ -244,8 +248,10 @@ class ExperienceReader(ReferenceReader):
                 source_supervision=examples,
                 dispositions=dispositions,
                 training_digest=digest((examples, prepared)),
+                write_schedule=plan,
+                schedule_sha256=digest(plan),
                 roots=sorted(self.roots),
-                scopes=scopes,
+                scopes=plan["scopes"],
                 steps=len(losses),
                 maximum_steps=STEPS,
                 input_tokens=tokens,
