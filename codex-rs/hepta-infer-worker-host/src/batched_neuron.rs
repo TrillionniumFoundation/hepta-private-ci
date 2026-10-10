@@ -397,14 +397,27 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 requests.push(request);
             }
             let model_id = model_id.ok_or(BatchWorkerErrorV1::NoAdmission)?.to_owned();
-            let mut claimed = Vec::with_capacity(items.len());
-            for (_, pending) in &items {
-                let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
-                let token =
-                    FinalUseAuthority::claim(&self.authority, &pending.signed, &pending.binding)
-                        .map_err(|_| BatchWorkerErrorV1::Authority)?;
-                claimed.push((token, pending.binding.clone()));
-            }
+            // Prevalidate all members before one durable nonce-group claim.
+            // A denied member never causes a partially dispatched model batch.
+            let entries = items
+                .iter()
+                .map(|(_, pending)| {
+                    let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
+                    Ok((&pending.signed, &pending.binding))
+                })
+                .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
+            let tokens = self
+                .authority
+                .claim_batch(&entries)
+                .map_err(|_| BatchWorkerErrorV1::Authority)?;
+            let claimed = tokens
+                .into_iter()
+                .zip(items.iter())
+                .map(|(token, (_, pending))| {
+                    let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
+                    Ok((token, pending.binding.clone()))
+                })
+                .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
             FinalUseAuthority::with_verified_effect_batch(&self.authority, claimed, || {
                 self.worker
                     .run_neuron_features_batch_receipts(now_ms, &model_id, requests)
