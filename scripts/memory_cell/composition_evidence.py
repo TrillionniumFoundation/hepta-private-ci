@@ -69,8 +69,13 @@ def fact_root(text):
 def validate_row(row):
     if not isinstance(row, dict) or not isinstance(row.get("question"), dict):
         raise ValueError("QASC row shape")
-    fields = (row.get("id"), row["question"].get("stem"), row.get("fact1"),
-              row.get("fact2"), row.get("combinedfact"))
+    fields = (
+        row.get("id"),
+        row["question"].get("stem"),
+        row.get("fact1"),
+        row.get("fact2"),
+        row.get("combinedfact"),
+    )
     for value in fields:
         if not isinstance(value, str) or not value.strip() or "\0" in value:
             raise ValueError("missing original question/fact")
@@ -79,9 +84,14 @@ def validate_row(row):
     choices = row["question"].get("choices")
     if not isinstance(choices, list) or len(choices) != 8:
         raise ValueError("eight original answer options required")
-    if any(not isinstance(c, dict) or not isinstance(c.get("text"), str)
-           or not c["text"].strip() or len(c["text"].encode()) > 1024
-           or c.get("label") not in set("ABCDEFGH") for c in choices):
+    if any(
+        not isinstance(c, dict)
+        or not isinstance(c.get("text"), str)
+        or not c["text"].strip()
+        or len(c["text"].encode()) > 1024
+        or c.get("label") not in set("ABCDEFGH")
+        for c in choices
+    ):
         raise ValueError("invalid answer option")
     if {c["label"] for c in choices} != set("ABCDEFGH"):
         raise ValueError("duplicate/missing answer label")
@@ -116,22 +126,38 @@ def split_rows(rows):
     """Freeze membership before generation; exclusions are not missing model results."""
     selected = {phase: [] for phase in LIMITS}
     used_ids, used_roots, used_questions, exclusions = set(), set(), set(), []
-    for phase, original_split in (("capability", "dev"), ("transfer", "dev"),
-                                  ("retention", "dev"), ("train", "train")):
+    for phase, original_split in (
+        ("capability", "dev"),
+        ("transfer", "dev"),
+        ("retention", "dev"),
+        ("train", "train"),
+    ):
         for row in sorted(rows[original_split], key=lambda r: digest(r["id"])):
             if row["id"] in used_ids:
                 continue
             try:
                 validate_row(row)
             except (ValueError, KeyError, TypeError) as error:
-                exclusions.append(dict(phase=phase, id=row.get("id"),
-                                       reason=str(error), before_model_execution=True))
+                exclusions.append(
+                    dict(
+                        phase=phase,
+                        id=row.get("id"),
+                        reason=str(error),
+                        before_model_execution=True,
+                    )
+                )
                 continue
             roots = {fact_root(row[k]) for k in ("fact1", "fact2")}
             question_key = fact_root(row["question"]["stem"])
             if roots & used_roots or question_key in used_questions:
-                exclusions.append(dict(phase=phase, id=row["id"],
-                    reason="shared_fact_or_question", before_model_execution=True))
+                exclusions.append(
+                    dict(
+                        phase=phase,
+                        id=row["id"],
+                        reason="shared_fact_or_question",
+                        before_model_execution=True,
+                    )
+                )
                 continue
             selected[phase].append(row)
             used_ids.add(row["id"])
@@ -152,12 +178,33 @@ def make_case(row, noise, acquired_at, phase):
         raise ValueError("bounded distinct evidence candidates required")
     scope = "qasc:" + row["id"]
     query = Question(scope, scope, scope, row["question"]["stem"], acquired_at)
-    documents = tuple(Document("qasc-sentence:" + sha(t.encode()), fact_root(t),
-        scope, "publisher-sentence", acquired_at, t) for t in texts)
+    documents = tuple(
+        Document(
+            "qasc-sentence:" + sha(t.encode()),
+            fact_root(t),
+            scope,
+            "publisher-sentence",
+            acquired_at,
+            t,
+        )
+        for t in texts
+    )
     original = {d.identity: d for d in documents}
     frontier = digest([asdict(d) for d in documents])
-    spans = tuple(EvidenceSpan(d.identity, d.root, d.scope, d.session, d.observed_at,
-        0, len(d.content.encode()), d.content, digest(d.content)) for d in documents)
+    spans = tuple(
+        EvidenceSpan(
+            d.identity,
+            d.root,
+            d.scope,
+            d.session,
+            d.observed_at,
+            0,
+            len(d.content.encode()),
+            d.content,
+            digest(d.content),
+        )
+        for d in documents
+    )
     conditions = {}
     selections = {
         "publisher_pair": spans[:2],
@@ -171,21 +218,36 @@ def make_case(row, noise, acquired_at, phase):
     for name, chosen in selections.items():
         bundle = EvidenceBundle(digest(asdict(query)), frontier, chosen, name)
         bundle.validate(query, original, frontier=frontier, revoked=set())
-        conditions[name] = dict(bundle=asdict(bundle), bundle_digest=bundle.seal(),
-            delivered_evidence=bundle.delivered(), token_limit=2048,
+        conditions[name] = dict(
+            bundle=asdict(bundle),
+            bundle_digest=bundle.seal(),
+            delivered_evidence=bundle.delivered(),
+            token_limit=2048,
             oracle_kind="publisher_composition_candidate_not_minimality_certificate",
-            independent_review=False, sufficient_context_certified=False,
-            world_answerability_unchanged=True)
+            independent_review=False,
+            sufficient_context_certified=False,
+            world_answerability_unchanged=True,
+        )
     options = {c["label"]: c["text"] for c in row["question"]["choices"]}
-    target = dict(answer=options[row["answerKey"]], unanswerable=False,
+    target = dict(
+        answer=options[row["answerKey"]],
+        unanswerable=False,
         support_roots=[fact_root(row["fact1"]), fact_root(row["fact2"])],
-        original_annotation_digest=digest(row), combinedfact=row["combinedfact"],
-        choices=row["question"]["choices"], original_answer_key=row["answerKey"])
-    case = dict(question=asdict(query), phase=phase, family=scope,
-        originals=[asdict(d) for d in documents], frontier=frontier,
+        original_annotation_digest=digest(row),
+        combinedfact=row["combinedfact"],
+        choices=row["question"]["choices"],
+        original_answer_key=row["answerKey"],
+    )
+    case = dict(
+        question=asdict(query),
+        phase=phase,
+        family=scope,
+        originals=[asdict(d) for d in documents],
+        frontier=frontier,
         conditions=conditions,
         source_time_kind="actual_download_observation_not_fact_valid_time",
-        sampling_unit_independence_certified=False)
+        sampling_unit_independence_certified=False,
+    )
     return case, target
 
 
@@ -201,8 +263,13 @@ def prepare(root, *, source_commit):
             rows, files = unpack(raw)
             break
         except Exception as failure:
-            errors.append(dict(url=url, error_type=type(failure).__name__,
-                               error=str(failure)[:1024]))
+            errors.append(
+                dict(
+                    url=url,
+                    error_type=type(failure).__name__,
+                    error=str(failure)[:1024],
+                )
+            )
     else:
         write(root / "download-failures.json", errors)
         raise ValueError("no location returned the exact pre-pinned QASC archive")
@@ -213,29 +280,56 @@ def prepare(root, *, source_commit):
         (root / (split + ".jsonl")).write_bytes(data)
     cases, labels = [], {}
     for phase, members in selected.items():
-        universe = sorted({r[k] for r in members for k in ("fact1", "fact2")}, key=digest)
+        universe = sorted(
+            {r[k] for r in members for k in ("fact1", "fact2")}, key=digest
+        )
         for row in members:
             positive = {fact_root(row[k]) for k in ("fact1", "fact2")}
             noise = [s for s in universe if fact_root(s) not in positive][:6]
             case, target = make_case(row, noise, acquired, phase)
             cases.append(case)
             labels[case["question"]["identity"]] = target
-    plan = dict(schema="hepta.bundle-diagnostic.plan.v1", source_commit=source_commit,
-        cases=cases, dataset_sha256=ARCHIVE_SHA, acquisition_time=acquired,
-        profile="qasc-publisher-sentence-composition-v1", free_answer_not_official_mcq=True,
-        publisher_split_counts=EXPECTED_ROWS, frozen_counts=LIMITS,
-        reader_training=False, prospective_windows=0, production_accepted=False)
+    plan = dict(
+        schema="hepta.bundle-diagnostic.plan.v1",
+        source_commit=source_commit,
+        cases=cases,
+        dataset_sha256=ARCHIVE_SHA,
+        acquisition_time=acquired,
+        profile="qasc-publisher-sentence-composition-v1",
+        free_answer_not_official_mcq=True,
+        publisher_split_counts=EXPECTED_ROWS,
+        frozen_counts=LIMITS,
+        reader_training=False,
+        prospective_windows=0,
+        production_accepted=False,
+    )
     write(root / "plan.json", plan)
     write(root / "labels.json", labels)
     write(root / "exclusions.json", exclusions)
-    write(root / "provenance.json", dict(url=url, bytes=len(raw), sha256=ARCHIVE_SHA,
-        checksum_source=PIN_SOURCE, acquired_at=acquired, license="CC-BY-4.0",
-        attribution="QASC: Khot, Clark, Guerquin, Jansen and Sabharwal, AAAI 2020",
-        independent_semantic_review=False, minimality_certified=False,
-        earlier_download_failures=errors,
-        annotation_strings_are_not_observations_of_new_events=True))
-    write(root / "READY.json", dict(plan_sha256=sha((root / "plan.json").read_bytes()),
-        labels_sha256=sha((root / "labels.json").read_bytes()), production_accepted=False))
+    write(
+        root / "provenance.json",
+        dict(
+            url=url,
+            bytes=len(raw),
+            sha256=ARCHIVE_SHA,
+            checksum_source=PIN_SOURCE,
+            acquired_at=acquired,
+            license="CC-BY-4.0",
+            attribution="QASC: Khot, Clark, Guerquin, Jansen and Sabharwal, AAAI 2020",
+            independent_semantic_review=False,
+            minimality_certified=False,
+            earlier_download_failures=errors,
+            annotation_strings_are_not_observations_of_new_events=True,
+        ),
+    )
+    write(
+        root / "READY.json",
+        dict(
+            plan_sha256=sha((root / "plan.json").read_bytes()),
+            labels_sha256=sha((root / "labels.json").read_bytes()),
+            production_accepted=False,
+        ),
+    )
 
 
 if __name__ == "__main__":

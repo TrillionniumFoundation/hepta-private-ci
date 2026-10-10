@@ -32,15 +32,24 @@ def collect(root, data, output):
         sources.add(source)
         base = directory / "execution"
         generated_plan = parse_json((base / "capability-plan.json").read_text())
-        if generated_plan != expected_plan or digest(inv["inventory"]) != inv["inventory_digest"]:
+        if (
+            generated_plan != expected_plan
+            or digest(inv["inventory"]) != inv["inventory_digest"]
+        ):
             raise ValueError("different candidate evidence or model files")
         execution = parse_json((base / "capability/execution.json").read_text())
-        if (execution["tested_commit"] != source
+        if (
+            execution["tested_commit"] != source
             or execution["reader_identity"] != inv["inventory_digest"]
-            or execution["plan_sha256"] != sha((base / "capability-plan.json").read_bytes())
-            or execution["labels_sha256"] != ready["labels_sha256"]):
+            or execution["plan_sha256"]
+            != sha((base / "capability-plan.json").read_bytes())
+            or execution["labels_sha256"] != ready["labels_sha256"]
+        ):
             raise ValueError("wrong model/data/source execution receipt")
-        raw = [parse_json(line) for line in (base / "capability/raw-answers.jsonl").read_text().splitlines()]
+        raw = [
+            parse_json(line)
+            for line in (base / "capability/raw-answers.jsonl").read_text().splitlines()
+        ]
         scored = parse_json((base / "capability/scored-answers.json").read_text())
         if len(raw) != len(scored):
             raise ValueError("raw/scored census differs")
@@ -58,14 +67,27 @@ def collect(root, data, output):
                 raise ValueError("rejected reader still trained or exposed final tasks")
         else:
             artifact = parse_json((base / "learned-policy.json").read_text())
-            if (artifact != result["training"] or artifact["parameters"] != 8
+            if (
+                artifact != result["training"]
+                or artifact["parameters"] != 8
                 or not artifact["parameter_delta_squared_norm"] > 0
-                or not 1 <= artifact["updates"] <= 256):
+                or not 1 <= artifact["updates"] <= 256
+            ):
                 raise ValueError("missing actual learned policy")
-            transfer = [parse_json(line) for line in (base / "transfer-raw.jsonl").read_text().splitlines()]
-            wanted = {(c["question"]["identity"], arm) for c in plan["cases"]
-                      if c["phase"] in ("transfer", "retention") for arm in ("fixed", "learned")}
-            if len(transfer) != len(wanted) or {(r["question_id"], r["arm"]) for r in transfer} != wanted:
+            transfer = [
+                parse_json(line)
+                for line in (base / "transfer-raw.jsonl").read_text().splitlines()
+            ]
+            wanted = {
+                (c["question"]["identity"], arm)
+                for c in plan["cases"]
+                if c["phase"] in ("transfer", "retention")
+                for arm in ("fixed", "learned")
+            }
+            if (
+                len(transfer) != len(wanted)
+                or {(r["question_id"], r["arm"]) for r in transfer} != wanted
+            ):
                 raise ValueError("missing frozen transfer task")
             if any(r.get("query_train_tokens", 0) != 0 for r in transfer):
                 raise ValueError("query-time adaptation")
@@ -74,16 +96,29 @@ def collect(root, data, output):
             raise ValueError("summary differs from original scored census")
         if summary["raw_census"] != 72 or result["production_accepted"] is not False:
             raise ValueError("incomplete or improperly qualified diagnostic")
-        results[tier] = dict(model=inv["repository"], revision=inv["revision"],
-            capability=summary["summaries"], readiness=gate,
-            optimizer_executed=result["optimizer_executed"], transfer=result.get("transfer"),
-            actual_training=result.get("training"))
+        results[tier] = dict(
+            model=inv["repository"],
+            revision=inv["revision"],
+            capability=summary["summaries"],
+            readiness=gate,
+            optimizer_executed=result["optimizer_executed"],
+            transfer=result.get("transfer"),
+            actual_training=result.get("training"),
+        )
     if set(results) != {"135M", "360M", "1.7B"} or len(sources) != 1:
         raise ValueError("incomplete or mixed-source reader matrix")
-    output_value = dict(source_commit=sources.pop(), plan_digest=digest(plan),
-        data_sha256=ARCHIVE_SHA, readers=results, reader_size_is_not_memory_gain=True,
-        minimal_sufficiency_certified=False, independent_review=False,
-        semantic_citation_precision=None, production_accepted=False, superiority_claim=False)
+    output_value = dict(
+        source_commit=sources.pop(),
+        plan_digest=digest(plan),
+        data_sha256=ARCHIVE_SHA,
+        readers=results,
+        reader_size_is_not_memory_gain=True,
+        minimal_sufficiency_certified=False,
+        independent_review=False,
+        semantic_citation_precision=None,
+        production_accepted=False,
+        superiority_claim=False,
+    )
     write(output, output_value)
     return output_value
 
