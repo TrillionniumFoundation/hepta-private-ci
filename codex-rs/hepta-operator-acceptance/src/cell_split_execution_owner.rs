@@ -177,7 +177,9 @@ impl CellSplitOwnerTrustV1 {
         plan.validate()?;
         let mut seen = BTreeSet::new();
         if keys.iter().any(|key| !seen.insert(key.to_bytes())) {
-            return Err(CellSplitExecutionErrorV1::Invalid("effect owners share a signing key"));
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "effect owners share a signing key",
+            ));
         }
         Ok(Self {
             plan_digest: plan.digest()?,
@@ -191,12 +193,17 @@ impl CellSplitOwnerTrustV1 {
         receipt: &CellSplitExecutionReceiptV1,
     ) -> Result<(), CellSplitExecutionErrorV1> {
         if self.plan_digest != intent.plan_digest {
-            return Err(CellSplitExecutionErrorV1::Invalid("effect trust plan drift"));
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "effect trust plan drift",
+            ));
         }
         let signature = Signature::from_slice(&receipt.owner_signature_bytes)
             .map_err(|_| CellSplitExecutionErrorV1::Invalid("invalid owner signature"))?;
         self.owner_keys[intent.step.index()]
-            .verify_strict(&cell_split_execution_signing_payload_v1(receipt)?, &signature)
+            .verify_strict(
+                &cell_split_execution_signing_payload_v1(receipt)?,
+                &signature,
+            )
             .map_err(|_| CellSplitExecutionErrorV1::Invalid("untrusted effect owner"))?;
         Ok(())
     }
