@@ -877,12 +877,15 @@ mod durable_cas_tests {
         let checkpoint = sparse_tick(&config, &tick, None).unwrap().0;
         let plan = CellStateSplitPlanV1::new(
             id("cell.parent"),
-            vec![id("cell.child")],
-            vec![Digest32::of_bytes(b"child-scope")],
+            vec![id("cell.child.a"), id("cell.child.b")],
+            vec![
+                Digest32::of_bytes(b"child-scope-a"),
+                Digest32::of_bytes(b"child-scope-b"),
+            ],
             Generation::new(1).unwrap(),
             Generation::new(2).unwrap(),
-            vec![vec![0, 1]],
-            vec![vec![0, 1]],
+            vec![vec![0], vec![1]],
+            vec![vec![0], vec![1]],
         )
         .unwrap();
         let children = checkpoint.split_state_v1(&plan).unwrap();
