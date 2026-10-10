@@ -49,6 +49,7 @@ use trust::TrustAnchor;
 use trust::TrustInputs;
 
 pub use cell_split_execution_owner::CellSplitExecutionErrorV1;
+pub use cell_split_execution_owner::CellSplitLiveCompletionV1;
 pub use cell_split_execution_owner::CellSplitExecutionIntentV1;
 pub use cell_split_execution_owner::CellSplitExecutionOwnerV1;
 pub use cell_split_execution_owner::CellSplitExecutionPlanV1;
