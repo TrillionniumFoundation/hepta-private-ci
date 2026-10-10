@@ -901,3 +901,7 @@ mod tests;
 #[cfg(test)]
 #[path = "durable_history_tests.rs"]
 mod history_tests;
+
+#[cfg(test)]
+#[path = "durable_scaling_tests.rs"]
+mod scaling_tests;
