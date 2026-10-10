@@ -29,7 +29,8 @@ jobs:
           test "$(git hash-object codex-rs/hepta-fleet/src/release.rs)" = abb574c90087882ec634830ac318273e5f56245c
           cp codex-rs/hepta-fleet/src/release.rs "$out/original-release.rs"
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - name: Install the existing exact compiler with its required formatter
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: nextest@0.9.103
@@ -38,6 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           cargo +1.96.0 fmt --manifest-path codex-rs/Cargo.toml -- --config imports_granularity=Item 2>&1 | tee "$OUT/format-apply.log"
+          git diff --name-only | tee "$OUT/changed-files.txt"
           test "$(git diff --name-only)" = codex-rs/hepta-fleet/src/release.rs
           python3 - <<'PY'
           import os, re
