@@ -84,6 +84,11 @@ jobs:
               out.write('COST_ARTIFACT_ID=' + str(item['id']) + '\n')
               out.write('COST_ARCHIVE_SHA=' + item['digest'][7:] + '\n')
           PY
+      - name: Download only the already validated immutable artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
           gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$COST_ARTIFACT_ID/zip" > /tmp/cost-evidence/original-model-evidence.zip
       - name: Verify exact tasks, sources, procedural outcomes and restored withdrawals
         run: |
