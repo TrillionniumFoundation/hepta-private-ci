@@ -440,3 +440,57 @@ fn forged_commit_after_lost_ack_never_permits_reexecution() {
     ));
     assert_eq!(observed.borrow().executions, 1);
 }
+
+
+#[test]
+fn oversized_encoded_receipt_is_denied_before_an_unreadable_commit_is_written() {
+    let request = make_intent(
+        &plan(),
+        &plan().digest().expect("plan digest"),
+        CellSplitExecutionStepV1::ArtifactCas,
+        &plan().digest().expect("plan digest"),
+    );
+    let mut proof = FixturePort::receipt(&request);
+    // 20 KiB of raw bytes serializes as >64 KiB of JSON integer tokens.
+    // The old raw-byte bound accepted it but replay could never read it.
+    proof.owner_receipt_bytes = vec![255; 20 * 1024];
+    proof.output_digest = sha256(&proof.owner_receipt_bytes);
+    proof.owner_signature_bytes = signing_key(0)
+        .sign(&cell_split_execution_signing_payload_v1(&proof).expect("payload"))
+        .to_bytes()
+        .to_vec();
+    proof.receipt_digest = receipt_digest(&proof).expect("digest");
+    assert!(matches!(
+        super::validate_receipt(&request, &proof),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+}
+
+#[test]
+fn noncanonical_but_semantically_equal_committed_frame_cannot_be_replayed() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("open");
+        owner.advance().expect("durably committed");
+    }
+    let path = root.path().join("cell-split-00-committed.json");
+    let mut bytes = fs::read(&path).expect("read");
+    bytes.push(b'\n');
+    fs::write(&path, bytes).expect("change JSON framing only");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+}
