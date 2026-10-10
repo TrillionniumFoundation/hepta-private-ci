@@ -118,7 +118,9 @@ fn batch_claim_durably_commits_all_nonces_before_one_effect() {
     assert_eq!(tokens.len(), 2);
     assert_eq!(authority.capacity().unwrap().used_nonces, 2);
     assert_eq!(
-        std::fs::read(dir.path().join("authority.claims")).unwrap().len(),
+        std::fs::read(dir.path().join("authority.claims"))
+            .unwrap()
+            .len(),
         80
     );
     let claims = tokens
@@ -126,10 +128,7 @@ fn batch_claim_durably_commits_all_nonces_before_one_effect() {
         .zip(entries.iter())
         .map(|(token, (_, binding))| (token, (**binding).clone()))
         .collect();
-    assert_eq!(
-        authority.with_verified_effect_batch(claims, || 7),
-        Ok(7)
-    );
+    assert_eq!(authority.with_verified_effect_batch(claims, || 7), Ok(7));
     assert_eq!(
         authority.claim_batch(&entries).unwrap_err(),
         FinalUseError::AlreadyClaimed
@@ -153,15 +152,19 @@ fn invalid_or_duplicate_batch_member_never_burns_valid_nonce() {
     let mut invalid = second_batch_grant(&original, 73);
     invalid.signature[0] ^= 0x80;
     assert_eq!(
-        authority.claim_batch(&[
-            (&first, &first.grant.binding),
-            (&invalid, &invalid.grant.binding),
-        ]).unwrap_err(),
+        authority
+            .claim_batch(&[
+                (&first, &first.grant.binding),
+                (&invalid, &invalid.grant.binding),
+            ])
+            .unwrap_err(),
         FinalUseError::InvalidSignature
     );
     assert_eq!(authority.capacity().unwrap().used_nonces, 0);
     assert_eq!(
-        std::fs::read(dir.path().join("authority.claims")).unwrap().len(),
+        std::fs::read(dir.path().join("authority.claims"))
+            .unwrap()
+            .len(),
         0
     );
 
@@ -172,10 +175,12 @@ fn invalid_or_duplicate_batch_member_never_burns_valid_nonce() {
         .to_bytes()
         .to_vec();
     assert_eq!(
-        authority.claim_batch(&[
-            (&first, &first.grant.binding),
-            (&duplicate, &duplicate.grant.binding),
-        ]).unwrap_err(),
+        authority
+            .claim_batch(&[
+                (&first, &first.grant.binding),
+                (&duplicate, &duplicate.grant.binding),
+            ])
+            .unwrap_err(),
         FinalUseError::AlreadyClaimed
     );
     assert_eq!(authority.capacity().unwrap().used_nonces, 0);

@@ -176,7 +176,10 @@ impl BoundedMicrobatchSchedulerV1 {
     // Rebuild infrequently and outside any global control lock rather than
     // scanning all scopes for every physical model batch.
     fn compact_round_robin_if_needed(&mut self) {
-        let limit = self.lanes.len().saturating_mul(2)
+        let limit = self
+            .lanes
+            .len()
+            .saturating_mul(2)
             .saturating_add(self.limits.max_batch_size);
         if self.round_robin.len() > limit {
             self.round_robin.retain(|key| self.lanes.contains_key(key));
@@ -368,7 +371,9 @@ impl BoundedMicrobatchSchedulerV1 {
             };
             lane.retain(|queued| {
                 if queued.intent.deadline_ms <= now_ms {
-                    observed.expired_request_ids.push(queued.intent.request_id.clone());
+                    observed
+                        .expired_request_ids
+                        .push(queued.intent.request_id.clone());
                     self.queued_ids.remove(&queued.intent.request_id);
                     false
                 } else {
@@ -386,9 +391,8 @@ impl BoundedMicrobatchSchedulerV1 {
                     }
                 }
                 if let Some(oldest) = oldest {
-                    batch.oldest_queue_age_ms = batch
-                        .oldest_queue_age_ms
-                        .max(now_ms.saturating_sub(oldest));
+                    batch.oldest_queue_age_ms =
+                        batch.oldest_queue_age_ms.max(now_ms.saturating_sub(oldest));
                 }
             }
             if lane.is_empty() {

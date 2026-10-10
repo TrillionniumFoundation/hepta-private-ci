@@ -216,7 +216,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         if key.generation.get() != self.worker.worker_generation()
             || key.authority_epoch != self.worker.authority_epoch()
             || signed.grant.authority_epoch != key.authority_epoch
-            || !self.worker.model_matches_digest(&model_id, key.model_digest)
+            || !self
+                .worker
+                .model_matches_digest(&model_id, key.model_digest)
             || request.authorization.cancelled
         {
             return Err(BatchWorkerErrorV1::InvalidBinding);
@@ -399,8 +401,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 }
                 let mut request = pending.request.clone();
                 request.feature_vector_q24 = pending.feature.as_slice().to_vec();
-                if neuron_batch_final_use_binding_v1(self.worker.worker_id(), &intent.key, &request)?
-                    != pending.binding
+                if neuron_batch_final_use_binding_v1(
+                    self.worker.worker_id(),
+                    &intent.key,
+                    &request,
+                )? != pending.binding
                 {
                     return Err(BatchWorkerErrorV1::InvalidBinding);
                 }

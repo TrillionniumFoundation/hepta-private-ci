@@ -402,7 +402,9 @@ impl DurableControlRoleOwnerV1 {
         generation: Generation,
         route_fence_digest: Digest32,
     ) -> Result<Digest32, ControlOwnerErrorV1> {
-        self.apply_mutation(|owner| owner.activate_generation(cell_id, generation, route_fence_digest))
+        self.apply_mutation(|owner| {
+            owner.activate_generation(cell_id, generation, route_fence_digest)
+        })
     }
 }
 
@@ -737,16 +739,21 @@ fn lock_durable_control_writer(path: &Path) -> Result<File, ControlOwnerErrorV1>
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600);
     }
-    let lock = options.open(&lock_path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+    let lock = options
+        .open(&lock_path)
+        .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
-        let meta = lock.metadata().map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+        let meta = lock
+            .metadata()
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         if !meta.is_file() || meta.nlink() != 1 || meta.mode() & 0o077 != 0 {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
         }
     }
-    lock.try_lock().map_err(|_| ControlOwnerErrorV1::WriterUnavailable)?;
+    lock.try_lock()
+        .map_err(|_| ControlOwnerErrorV1::WriterUnavailable)?;
     Ok(lock)
 }
 
@@ -789,10 +796,7 @@ fn encode_durable_control(
     Ok(bytes)
 }
 
-fn persist_durable_control(
-    path: &Path,
-    bytes: &[u8],
-) -> Result<(), ControlOwnerErrorV1> {
+fn persist_durable_control(path: &Path, bytes: &[u8]) -> Result<(), ControlOwnerErrorV1> {
     reject_durable_path(path)?;
     let temp = path.with_extension("control.snapshot.tmp");
     reject_durable_path(&temp)?;
@@ -808,7 +812,8 @@ fn persist_durable_control(
     fs::rename(&temp, path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     #[cfg(unix)]
     {
-        let parent = path.parent()
+        let parent = path
+            .parent()
             .filter(|parent| !parent.as_os_str().is_empty())
             .unwrap_or_else(|| Path::new("."));
         File::open(parent)

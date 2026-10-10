@@ -134,7 +134,8 @@ fn compatible_scope_lanes_coalesce_without_erasing_original_authority() {
 fn coalescing_cannot_mix_backend_generation_or_epoch() {
     let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
     q.enqueue(1, intent("a", "scopeA", 1, 1, 100)).unwrap();
-    q.enqueue(1, intent("generation", "scopeB", 2, 1, 100)).unwrap();
+    q.enqueue(1, intent("generation", "scopeB", 2, 1, 100))
+        .unwrap();
     let mut changed_epoch = intent("epoch", "scopeC", 1, 1, 100);
     changed_epoch.key.authority_epoch = 2;
     q.enqueue(1, changed_epoch).unwrap();
@@ -185,8 +186,7 @@ fn affinity_index_fills_batch_without_scanning_unrelated_scopes() {
     config.max_lanes_per_poll = 2;
     config.max_batch_size = 2;
     let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
-    q.enqueue(1, intent("first", "a-first", 1, 1, 100))
-        .unwrap();
+    q.enqueue(1, intent("first", "a-first", 1, 1, 100)).unwrap();
     let mut unrelated = intent("other", "b-unrelated", 1, 1, 100);
     unrelated.key.model_digest = digest("different-model");
     q.enqueue(1, unrelated).unwrap();
@@ -211,12 +211,10 @@ fn affinity_index_fills_batch_without_scanning_unrelated_scopes() {
 #[test]
 fn physical_affinity_index_cleans_up_after_expiry_and_cutover() {
     let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
-    q.enqueue(1, intent("expired", "scope-a", 1, 1, 5))
-        .unwrap();
+    q.enqueue(1, intent("expired", "scope-a", 1, 1, 5)).unwrap();
     q.enqueue(1, intent("fenced", "scope-b", 1, 1, 100))
         .unwrap();
-    q.enqueue(1, intent("live", "scope-c", 1, 1, 100))
-        .unwrap();
+    q.enqueue(1, intent("live", "scope-c", 1, 1, 100)).unwrap();
     assert_eq!(
         q.retain_scope_binding(&id("scope-b"), Generation::new(2).unwrap(), 1, 1),
         vec![id("fenced")]
