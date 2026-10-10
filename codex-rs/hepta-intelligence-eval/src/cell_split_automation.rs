@@ -540,34 +540,15 @@ fn lifecycle_record_id(
 }
 
 fn ledger_lifecycle_state_tag(state: CellSplitLifecycleStateV1) -> u8 {
-    match state {
-        CellSplitLifecycleStateV1::Proposed => 0,
-        CellSplitLifecycleStateV1::EvaluationPending => 1,
-        CellSplitLifecycleStateV1::EvaluationAccepted => 2,
-        CellSplitLifecycleStateV1::CanaryRunning => 3,
-        CellSplitLifecycleStateV1::Retained => 4,
-        CellSplitLifecycleStateV1::Quarantined => 5,
-        CellSplitLifecycleStateV1::Retired => 6,
-        CellSplitLifecycleStateV1::RolledBack => 7,
-    }
+    state.tag()
 }
 
 fn ledger_lifecycle_state_from_tag(
     tag: u8,
 ) -> Result<CellSplitLifecycleStateV1, CellSplitAutomationErrorV1> {
-    match tag {
-        0 => Ok(CellSplitLifecycleStateV1::Proposed),
-        1 => Ok(CellSplitLifecycleStateV1::EvaluationPending),
-        2 => Ok(CellSplitLifecycleStateV1::EvaluationAccepted),
-        3 => Ok(CellSplitLifecycleStateV1::CanaryRunning),
-        4 => Ok(CellSplitLifecycleStateV1::Retained),
-        5 => Ok(CellSplitLifecycleStateV1::Quarantined),
-        6 => Ok(CellSplitLifecycleStateV1::Retired),
-        7 => Ok(CellSplitLifecycleStateV1::RolledBack),
-        _ => Err(CellSplitAutomationErrorV1::Store(
-            "learning-ledger lifecycle state tag".to_string(),
-        )),
-    }
+    CellSplitLifecycleStateV1::from_tag(tag).ok_or_else(|| {
+        CellSplitAutomationErrorV1::Store("learning-ledger lifecycle state tag".to_string())
+    })
 }
 
 fn owner_event_digest(split_id: &StableId, event: &CellSplitLifecycleEventV1) -> Digest32 {
@@ -1058,30 +1039,11 @@ fn lifecycle_node(state: CellSplitLifecycleStateV1) -> &'static str {
 }
 
 fn lifecycle_state_tag(state: CellSplitLifecycleStateV1) -> u8 {
-    match state {
-        CellSplitLifecycleStateV1::Proposed => 0,
-        CellSplitLifecycleStateV1::EvaluationPending => 1,
-        CellSplitLifecycleStateV1::EvaluationAccepted => 2,
-        CellSplitLifecycleStateV1::CanaryRunning => 3,
-        CellSplitLifecycleStateV1::Retained => 4,
-        CellSplitLifecycleStateV1::Quarantined => 5,
-        CellSplitLifecycleStateV1::Retired => 6,
-        CellSplitLifecycleStateV1::RolledBack => 7,
-    }
+    state.tag()
 }
 
 fn lifecycle_state_from_tag(tag: u8) -> Option<CellSplitLifecycleStateV1> {
-    Some(match tag {
-        0 => CellSplitLifecycleStateV1::Proposed,
-        1 => CellSplitLifecycleStateV1::EvaluationPending,
-        2 => CellSplitLifecycleStateV1::EvaluationAccepted,
-        3 => CellSplitLifecycleStateV1::CanaryRunning,
-        4 => CellSplitLifecycleStateV1::Retained,
-        5 => CellSplitLifecycleStateV1::Quarantined,
-        6 => CellSplitLifecycleStateV1::Retired,
-        7 => CellSplitLifecycleStateV1::RolledBack,
-        _ => return None,
-    })
+    CellSplitLifecycleStateV1::from_tag(tag)
 }
 
 fn encode_lifecycle_event(event: &CellSplitLifecycleEventV1, payload: Option<&[u8]>) -> String {
