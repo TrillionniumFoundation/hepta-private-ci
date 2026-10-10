@@ -69,6 +69,7 @@ def run(args):
                    "row_hash TEXT NOT NULL)")
         db.commit()
         process = psutil.Process()
+        process_cpu_start = time.process_time_ns()
         observations = []
         next_tick = {}
         unique_inputs = set()
@@ -141,10 +142,13 @@ def run(args):
                 tick = next_tick.get(cell_id, 0) + 1
                 next_tick[cell_id] = tick
                 row_hash = digest([args.cells, cell_id, tick, row["case_id"], stage])
+                wal_start = time.perf_counter_ns()
                 with db:
                     db.execute("INSERT INTO checkpoints(cell, tick, row_hash) VALUES(?, ?, ?) "
                                "ON CONFLICT(cell) DO UPDATE SET tick=excluded.tick, "
                                "row_hash=excluded.row_hash", (cell_id, tick, row_hash))
+                wal_ms = (time.perf_counter_ns() - wal_start) / 1e6
+                elapsed += wal_ms
                 observations.append({
                     "measurement_origin": "real_backend",
                     "logical_cells": args.cells,
@@ -154,6 +158,7 @@ def run(args):
                     "case_id": row["case_id"], "scope_id": row["scope_id"],
                     "cell_id": cell_id, "execution_path": stage,
                     "latency_ms": elapsed, "head_ms": head_ms,
+                    "wal_commit_ms": wal_ms,
                     "encoder_batch_wall_ms": batch_elapsed if was_new else 0,
                     "backend_batch_size": len(pending) if was_new else 0,
                     "rss_bytes": process.memory_info().rss,
@@ -166,6 +171,7 @@ def run(args):
         checkpoint_rows = restarted.execute("SELECT cell, tick, row_hash FROM checkpoints").fetchall()
         restarted.close()
         recovery_ms = (time.perf_counter_ns() - begin) / 1e6
+        observed_process_cpu_ms = (time.process_time_ns() - process_cpu_start) / 1e6
         if quick_check != "ok" or len(checkpoint_rows) != len(next_tick):
             raise RuntimeError("WAL restart read-back invariant failed")
         args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -182,6 +188,7 @@ def run(args):
             "observed_encoder_batch_calls": total_forward_batches,
             "observed_encoder_contexts": total_encoder_examples,
             "model_load_ms": stem.load_ms,
+            "observed_process_cpu_ms": observed_process_cpu_ms,
             "checkpoint_rows_after_clean_restart": len(checkpoint_rows),
             "clean_reopen_ms": recovery_ms,
             "clean_reopen_integrity": quick_check,
