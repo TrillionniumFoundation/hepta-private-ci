@@ -9,6 +9,7 @@ from jina_v5 import FrozenJinaV5, MODELS, validate_identity, verify_vector_matri
 from jina_v5_multimodal import audit_multimodal, paired_ranking, safe_media
 from jina_v5_trial import choose_train_rows, render_case
 from statistical_gate import qualify
+from q24_bridge import Q24, quantize_q24, shadow_feature_digest
 
 
 REV = "a" * 40
@@ -33,6 +34,18 @@ class FakeModel:
 
     def encode_query(self, values, **options):
         return self._encode("query", values, **options)
+
+
+class Q24Tests(unittest.TestCase):
+    def test_ties_to_even_and_dimension_reject(self):
+        self.assertEqual(quantize_q24([0.5 / Q24, 1.5 / Q24, 2.5 / Q24]),
+                         [0, 2, 2])
+        self.assertEqual(quantize_q24([-0.5 / Q24, -1.5 / Q24]), [0, -2])
+        with self.assertRaises(ValueError):
+            quantize_q24([0.0] * 513)
+        with self.assertRaises(ValueError):
+            quantize_q24([9.0])
+        self.assertFalse(shadow_feature_digest([.5])["production_receipt_verified"])
 
 
 class StemTests(unittest.TestCase):
