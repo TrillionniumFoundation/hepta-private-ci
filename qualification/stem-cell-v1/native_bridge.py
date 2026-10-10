@@ -146,3 +146,9 @@ def write_candidate(path, artifact):
     with Path(path).open("x", encoding="utf-8") as handle:
         handle.write(content)
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+# Stable research names for the optional model-runner hook.
+build_q24_head_candidate = build_candidate
+write_q24_head_candidate = write_candidate
+_native_logits = native_logits
+_round_q48 = round_q48
