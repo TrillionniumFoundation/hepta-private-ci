@@ -109,7 +109,8 @@ def build_head(torch, input_dim, classes, kind, budget):
 
 
 class FrozenEncoder:
-    def __init__(self, folder, device, max_length, allow_custom_code=False):
+    def __init__(self, folder, device, max_length, allow_custom_code=False,
+                 max_cache_bytes=128 * 1024 * 1024):
         import torch
         from transformers import AutoModel, AutoTokenizer
 
@@ -124,7 +125,7 @@ class FrozenEncoder:
             param.requires_grad_(False)
         self.cache = OrderedDict()
         self.cache_bytes = 0
-        self.cache_limit_bytes = 128 * 1024 * 1024  # bounded by design
+        self.cache_limit_bytes = max_cache_bytes
         self.cache_evictions = 0
         self.cache_hits = 0
         self.encoder_invocations = 0
@@ -273,7 +274,8 @@ def main():
         raise ValueError("zero-shot untrained Head cannot produce a trained-Cell claim; use no-change baseline")
     encoder = FrozenEncoder(args.snapshot, args.device,
                             protocol["model_candidates"][args.model_key]["max_tokens"],
-                            allow_custom_code=args.allow_audited_custom_code)
+                            allow_custom_code=args.allow_audited_custom_code,
+                            max_cache_bytes=protocol["experiment_2"]["frozen_encoder_cache_max_bytes"])
     sample_features = {}
     sample_meta = {}
     for row in selected + cals + evaluated:
@@ -296,7 +298,7 @@ def main():
         cal_labels = torch.tensor([r["label"] for r in cals])
         temperature = temperature_from_calibration(torch, cal_logits, cal_labels)
         cal_conf = torch.softmax(cal_logits / temperature, -1).max(-1).values.tolist()
-        threshold = quantile(cal_conf, 0.2)  # preregistered 80% calibration coverage
+        threshold = quantile(cal_conf, 1 - protocol["experiment_2"]["calibration_in_domain_coverage"])
     arm = f"{args.model_key}:{args.representation}:{args.head}:{args.budget}:{args.shots_per_class}"
     run_digest = hashlib.sha256(json.dumps({"arm": arm, "dataset_digest": dataset_digest,
              "model_digest": verified, "train_steps": args.train_steps, "seed": args.seed,
