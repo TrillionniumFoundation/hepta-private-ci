@@ -370,3 +370,7 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
         })
     }
 }
+
+#[cfg(test)]
+#[path = "model_worker_cpu_head_tests.rs"]
+mod tests;
