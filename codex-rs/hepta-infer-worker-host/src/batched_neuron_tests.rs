@@ -107,11 +107,13 @@ fn fixture_request() -> (ModelManifest, NeuronFeatureRequest, MicrobatchKeyV1) {
     (model, request, key)
 }
 
-fn runner(
+fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
     signing_key: &SigningKey,
     directory: &std::path::Path,
     model: ModelManifest,
-) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    driver: D,
+    max_batch_size: usize,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
     // FinalUseAuthority requires a private owner-controlled state directory.
     // Temp directory permissions vary with the runner and its inherited umask;
     // normalize the fixture rather than weakening the production owner gate.
@@ -144,19 +146,27 @@ fn runner(
         maximum_memory_bytes: 4096,
         semantic_digest: digest(b"resource-grant").to_string(),
     };
-    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver).unwrap();
+    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, driver).unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
         authority,
         MicrobatchLimitsV1 {
             max_pending: 10,
-            max_batch_size: 1,
+            max_batch_size,
             max_lanes_per_poll: 4,
             max_wait_ms: 5,
         },
     )
     .unwrap()
+}
+
+fn runner(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    runner_with_driver(signing_key, directory, model, Driver, 1)
 }
 
 fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseGrant {
@@ -390,4 +400,170 @@ fn signed_batch_rejects_authorization_quota_and_reservation_mutations() {
         poll.outcomes[0].result.as_ref().unwrap().status,
         NeuronFeatureTerminalStatusV1::Succeeded
     );
+}
+
+
+#[derive(Clone)]
+struct NativeTestDriver {
+    invocations: Arc<std::sync::atomic::AtomicUsize>,
+    truncate_outputs: bool,
+}
+
+impl ModelDriver for NativeTestDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        Driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        Driver.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        Driver.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for NativeTestDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        Driver.run_neuron_features(handle, request)
+    }
+
+    fn run_neuron_features_batch(
+        &mut self,
+        _handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
+        self.invocations.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        let mut observed: Vec<_> = requests
+            .iter()
+            .map(|request| DriverNeuronFeatureObservation {
+                terminal_observed: true,
+                succeeded: true,
+                encoder_digest: request.encoder_digest.clone(),
+                head_digest: request.head_digest.clone(),
+                drive_q24: vec![1 << 24; request.expected_output_width],
+                prediction_q24: vec![0; request.expected_output_width],
+                observed_memory_bytes: 1024,
+                transient_allocation_bytes: 2048,
+                queue_age_micros: 8,
+                latency_micros: 13,
+            })
+            .collect();
+        if self.truncate_outputs {
+            observed.pop();
+        }
+        Ok(observed)
+    }
+}
+
+fn signed_member(
+    signer: &SigningKey,
+    binding: FinalUseBinding,
+    grant_id: &str,
+    nonce: u8,
+) -> SignedFinalUseGrant {
+    let mut signed = signed(signer, binding);
+    signed.grant.grant_id = grant_id.to_owned();
+    signed.grant.nonce = [nonce; 32];
+    signed.signature = signer.sign(&signed.grant.signing_bytes().unwrap()).to_bytes().to_vec();
+    signed
+}
+
+fn second_request(first: &NeuronFeatureRequest) -> NeuronFeatureRequest {
+    let mut next = first.clone();
+    next.authorization.request_id = "req-two".into();
+    next.authorization.reservation_id = "reservation-two".into();
+    next
+}
+
+#[test]
+fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_metrics() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[35; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let metrics = Arc::new(CapturedMetrics::default());
+    let driver = NativeTestDriver { invocations: calls.clone(), truncate_outputs: false };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, driver, 2)
+        .with_metric_sink(metrics.clone());
+    let one = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let two = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    worker.enqueue(100, "model".into(), first, key.clone(), signed_member(&signer, one, "grant-1", 41)).unwrap();
+    worker.enqueue(100, "model".into(), second, key, signed_member(&signer, two, "grant-2", 42)).unwrap();
+    let observed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(observed.outcomes.len(), 2);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(worker.pending(), 0);
+    assert!(observed.outcomes.iter().all(|item| matches!(&item.result, Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded)));
+    let events = metrics.0.lock().unwrap();
+    assert_eq!(events.len(), 6);
+    for phase in [PhaseMetricKindV1::Admission, PhaseMetricKindV1::Microbatch, PhaseMetricKindV1::NeuronFeature] {
+        assert_eq!(events.iter().filter(|sample| sample.phase == phase).count(), 2);
+    }
+}
+
+#[test]
+fn native_batch_denies_all_effects_when_one_signature_is_invalid() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[37; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver { invocations: calls.clone(), truncate_outputs: false };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, driver, 2);
+    let one = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let two = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    let mut malicious = signed_member(&signer, two, "grant-2", 44);
+    malicious.signature[0] ^= 0x80;
+    worker.enqueue(100, "model".into(), first, key.clone(), signed_member(&signer, one, "grant-1", 43)).unwrap();
+    worker.enqueue(100, "model".into(), second, key, malicious).unwrap();
+    let observed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(observed.outcomes.len(), 2);
+    assert!(observed.outcomes.iter().all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Authority))));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert_eq!(worker.pending(), 0);
+}
+
+#[test]
+fn native_batch_backend_absence_fails_closed_instead_of_sequential_fallback() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[39; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let mut worker = runner_with_driver(&signer, dir.path(), model, Driver, 2);
+    let one = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let two = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    worker.enqueue(100, "model".into(), first, key.clone(), signed_member(&signer, one, "grant-1", 45)).unwrap();
+    worker.enqueue(100, "model".into(), second, key, signed_member(&signer, two, "grant-2", 46)).unwrap();
+    let observed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(observed.outcomes.len(), 2);
+    assert!(observed.outcomes.iter().all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker))));
+}
+
+#[test]
+fn native_batch_malformed_result_count_cannot_be_partially_committed() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[40; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver { invocations: calls.clone(), truncate_outputs: true };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, driver, 2);
+    let one = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let two = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    worker.enqueue(100, "model".into(), first, key.clone(), signed_member(&signer, one, "grant-1", 47)).unwrap();
+    worker.enqueue(100, "model".into(), second, key, signed_member(&signer, two, "grant-2", 48)).unwrap();
+    let observed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(observed.outcomes.len(), 2);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert!(observed.outcomes.iter().all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker))));
 }
