@@ -21,7 +21,11 @@ struct DiskEffect {
 
 impl DiskEffect {
     fn new(root: PathBuf, owner_id: &str) -> Self {
-        Self { root, commits: 0, owner_id: owner_id.to_owned() }
+        Self {
+            root,
+            commits: 0,
+            owner_id: owner_id.to_owned(),
+        }
     }
 
     fn commit_path(&self) -> PathBuf {
@@ -36,27 +40,33 @@ impl DiskEffect {
 impl CellSplitDurableEffectBackendV1 for DiskEffect {
     type Error = io::Error;
 
-    fn authorize_execute(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<(), Self::Error>
-    {
+    fn authorize_execute(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
         if intent.owner_id != self.owner_id {
-            return Err(io::Error::new(io::ErrorKind::PermissionDenied, "untrusted owner"));
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "untrusted owner",
+            ));
         }
         Ok(())
     }
 
-    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<(), Self::Error>
-    {
+    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
         let bytes = canonical_json(intent).map_err(io::Error::other)?;
         // Source fixture only: production backends operate their own durable
         // CAS/state/route/fence. Two files model independently re-read state.
-        let mut file = fs::OpenOptions::new().write(true).create_new(true)
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
             .open(self.commit_path())?;
         use std::io::Write as _;
         file.write_all(&bytes)?;
         file.sync_all()?;
-        let mut live = fs::OpenOptions::new().write(true).create_new(true)
+        let mut live = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
             .open(self.live_path())?;
         live.write_all(&bytes)?;
         live.sync_all()?;
@@ -65,19 +75,27 @@ impl CellSplitDurableEffectBackendV1 for DiskEffect {
         Ok(())
     }
 
-    fn read_committed(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<Option<CellSplitOwnedEffectV1>, Self::Error>
-    {
+    fn read_committed(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<Option<CellSplitOwnedEffectV1>, Self::Error> {
         let bytes = match fs::read(self.commit_path()) {
             Ok(value) => value,
             Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(None),
             Err(error) => return Err(error),
         };
-        let original: CellSplitExecutionIntentV1 = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+        let original: CellSplitExecutionIntentV1 =
+            serde_json::from_slice(&bytes).map_err(io::Error::other)?;
         if original != *intent {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "idempotency collision"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "idempotency collision",
+            ));
         }
-        Ok(Some(CellSplitOwnedEffectV1 { owner_sequence: 7, owner_receipt_bytes: bytes }))
+        Ok(Some(CellSplitOwnedEffectV1 {
+            owner_sequence: 7,
+            owner_receipt_bytes: bytes,
+        }))
     }
 
     fn verify_current(
@@ -85,8 +103,10 @@ impl CellSplitDurableEffectBackendV1 for DiskEffect {
         _intent: &CellSplitExecutionIntentV1,
         effect: &CellSplitOwnedEffectV1,
     ) -> Result<bool, Self::Error> {
-        Ok(fs::read(self.live_path()).ok() == Some(effect.owner_receipt_bytes.clone())
-            && fs::read(self.commit_path()).ok() == Some(effect.owner_receipt_bytes.clone()))
+        Ok(
+            fs::read(self.live_path()).ok() == Some(effect.owner_receipt_bytes.clone())
+                && fs::read(self.commit_path()).ok() == Some(effect.owner_receipt_bytes.clone()),
+        )
     }
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
@@ -101,7 +121,8 @@ fn intent() -> CellSplitExecutionIntentV1 {
         format!(
             "hepta.learning.cell-split.execution-owner.v1\0{plan_digest}\0{}\0{predecessor}",
             CellSplitExecutionStepV1::ArtifactCas.index()
-        ).as_bytes(),
+        )
+        .as_bytes(),
     );
     CellSplitExecutionIntentV1 {
         schema: "hepta.learning.cell-split.execution-owner.v1".into(),
@@ -127,7 +148,8 @@ fn client(root: &std::path::Path) -> CellSplitUnixEffectPortV1 {
         ],
         keys(),
         Duration::from_secs(2),
-    ).expect("trusted endpoints")
+    )
+    .expect("trusted endpoints")
 }
 
 #[test]
@@ -143,7 +165,8 @@ fn disk_backed_owner_signs_only_current_state_and_detects_external_revocation() 
             intent().plan_digest,
             key,
             DiskEffect::new(owner_root, "cas-owner"),
-        ).expect("service");
+        )
+        .expect("service");
         // Negative signed lookup, execution, positive verification, recovery,
         // and verification after the actual live state has disappeared.
         for _ in 0..5 {
@@ -154,11 +177,21 @@ fn disk_backed_owner_signs_only_current_state_and_detects_external_revocation() 
     });
     let mut client = client(root.path());
     let operation = intent();
-    assert!(client.reconcile(&operation).expect("negative signed readback").is_none());
+    assert!(
+        client
+            .reconcile(&operation)
+            .expect("negative signed readback")
+            .is_none()
+    );
     let receipt = client.execute(&operation).expect("disk-backed commit");
     assert_eq!(receipt.owner_sequence, 7);
-    client.verify_committed(&operation, &receipt).expect("fresh state readback");
-    assert_eq!(client.reconcile(&operation).expect("idempotent recovery"), Some(receipt.clone()));
+    client
+        .verify_committed(&operation, &receipt)
+        .expect("fresh state readback");
+    assert_eq!(
+        client.reconcile(&operation).expect("idempotent recovery"),
+        Some(receipt.clone())
+    );
     fs::remove_file(root.path().join("live-owner-state")).expect("external revocation");
     assert!(client.verify_committed(&operation, &receipt).is_err());
     assert_eq!(server.join().expect("server completion"), 1);
@@ -173,21 +206,25 @@ fn invalid_idempotency_key_is_rejected_before_backend_mutation() {
         intent().plan_digest,
         SigningKey::from_bytes(&[1; 32]),
         DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
-    ).expect("service");
+    )
+    .expect("service");
     let (mut client_stream, mut service_stream) = UnixStream::pair().expect("pair");
     let mut forged = intent();
     forged.idempotency_key = "aa".repeat(32);
-    send_frame(&mut client_stream, &CellSplitEffectRpcRequestV1 {
-        schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
-        action: CellSplitEffectRpcActionV1::Execute,
-        intent: forged,
-        challenge_nonce: None,
-    }).expect("request");
+    send_frame(
+        &mut client_stream,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: forged,
+            challenge_nonce: None,
+        },
+    )
+    .expect("request");
     assert!(service.serve_connection(&mut service_stream).is_err());
     assert_eq!(service.backend().commits, 0);
     assert!(!root.path().join("committed").exists());
 }
-
 
 /// Exercise the real coordinator, RPC transport, independent signer keys and
 /// disk-backed effect backends in their required four-step order. The fixture
@@ -231,9 +268,14 @@ fn four_independent_socket_owners_recover_exact_committed_prefix_and_fence_revoc
     let signer_keys = [1_u8, 2, 3, 4].map(|n| SigningKey::from_bytes(&[n; 32]));
     let trust = CellSplitOwnerTrustV1::new(
         &plan,
-        signer_keys.iter().map(|key| key.verifying_key()).collect::<Vec<_>>()
-            .try_into().expect("four owner keys"),
-    ).expect("distinct trusted owners");
+        signer_keys
+            .iter()
+            .map(|key| key.verifying_key())
+            .collect::<Vec<_>>()
+            .try_into()
+            .expect("four owner keys"),
+    )
+    .expect("distinct trusted owners");
     let running = Arc::new(AtomicBool::new(true));
     let mut threads = Vec::new();
     let mut endpoints = Vec::new();
@@ -242,7 +284,9 @@ fn four_independent_socket_owners_recover_exact_committed_prefix_and_fence_revoc
         fs::create_dir(&owner_root).expect("private owner root");
         let socket = root.path().join(format!("effect-{index}.sock"));
         let listener = UnixListener::bind(&socket).expect("owner socket");
-        listener.set_nonblocking(true).expect("nonblocking listener");
+        listener
+            .set_nonblocking(true)
+            .expect("nonblocking listener");
         endpoints.push(socket);
         let active = running.clone();
         let frozen_digest = plan_digest.clone();
@@ -257,9 +301,9 @@ fn four_independent_socket_owners_recover_exact_committed_prefix_and_fence_revoc
                 _ => unreachable!(),
             };
             let backend = DiskEffect::new(owner_root, &owner_identity);
-            let mut server = CellSplitEffectServiceV1::new(
-                step, owner_identity, frozen_digest, key, backend,
-            ).expect("owner server");
+            let mut server =
+                CellSplitEffectServiceV1::new(step, owner_identity, frozen_digest, key, backend)
+                    .expect("owner server");
             while active.load(Ordering::Acquire) {
                 match listener.accept() {
                     Ok((mut stream, _)) => {
@@ -275,13 +319,11 @@ fn four_independent_socket_owners_recover_exact_committed_prefix_and_fence_revoc
         }));
     }
     let endpoints: [PathBuf; 4] = endpoints.try_into().expect("four endpoints");
-    let port = CellSplitUnixEffectPortV1::new(
-        endpoints.clone(), keys(), Duration::from_secs(3),
-    ).expect("trusted four-owner transport");
+    let port = CellSplitUnixEffectPortV1::new(endpoints.clone(), keys(), Duration::from_secs(3))
+        .expect("trusted four-owner transport");
     {
-        let mut owner = CellSplitExecutionOwnerV1::open(
-            &ledger, plan.clone(), trust.clone(), port,
-        ).expect("open frozen coordinator");
+        let mut owner = CellSplitExecutionOwnerV1::open(&ledger, plan.clone(), trust.clone(), port)
+            .expect("open frozen coordinator");
         for index in 0..4 {
             let receipt = owner.advance().expect("durable effect").expect("step");
             assert_eq!(receipt.intent.step.index(), index);
@@ -290,20 +332,19 @@ fn four_independent_socket_owners_recover_exact_committed_prefix_and_fence_revoc
         assert!(owner.is_complete());
     }
     {
-        let transport = CellSplitUnixEffectPortV1::new(
-            endpoints.clone(), keys(), Duration::from_secs(3),
-        ).expect("reopened transport");
-        let mut recovered = CellSplitExecutionOwnerV1::open(
-            &ledger, plan.clone(), trust.clone(), transport,
-        ).expect("read every signed owner on restart");
+        let transport =
+            CellSplitUnixEffectPortV1::new(endpoints.clone(), keys(), Duration::from_secs(3))
+                .expect("reopened transport");
+        let mut recovered =
+            CellSplitExecutionOwnerV1::open(&ledger, plan.clone(), trust.clone(), transport)
+                .expect("read every signed owner on restart");
         assert!(recovered.is_complete());
         assert!(recovered.advance().expect("already complete").is_none());
     }
     fs::remove_file(root.path().join("owner-2/live-owner-state"))
         .expect("independent CNS owner drift");
-    let transport = CellSplitUnixEffectPortV1::new(
-        endpoints, keys(), Duration::from_secs(3),
-    ).expect("transport");
+    let transport = CellSplitUnixEffectPortV1::new(endpoints, keys(), Duration::from_secs(3))
+        .expect("transport");
     assert!(CellSplitExecutionOwnerV1::open(&ledger, plan, trust, transport).is_err());
     running.store(false, Ordering::Release);
     for handle in threads {
