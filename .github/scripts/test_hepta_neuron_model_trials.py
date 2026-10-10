@@ -31,7 +31,7 @@ def fixture(root, family="decisions"):
                 "source_sha": "a" * 40, "dataset_sha256": sha_file(dataset),
                 "host_profile_digest": "1" * 64,
                 "parameter_cap": 262656 if family == "heads" else 425000000,
-                "max_len": 512, "head": {"input_dimension": 512, "state_width": 256}}
+                "max_len": 512, "head": {"input_dimension": 512, "state_width": 256, "encoder_digest": "d" * 64}}
     if family != "heads":
         manifest["models"] = {a: {"model_id": {
             "laya": "convaiinnovations/laya",
@@ -63,6 +63,9 @@ def packet(manifest, rows, arm, damaged=False):
               "host_profile_digest": manifest["host_profile_digest"], "device": "cpu",
               "parameters": (parameter_budget(512, 256)[0][arm] if family == "heads" else 420000000),
               "observations": records}
+    if family == "heads":
+        result["runtime"] = {"head_profile_sha256": hashlib.sha256(
+            json.dumps(manifest["head"], sort_keys=True).encode()).hexdigest()}
     if family != "heads":
         model = manifest["models"][arm]
         result.update({"model_id": model["model_id"], "model_revision": model["revision"],
