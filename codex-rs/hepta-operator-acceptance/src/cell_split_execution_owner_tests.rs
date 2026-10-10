@@ -122,6 +122,20 @@ fn trust() -> CellSplitOwnerTrustV1 {
     trust_for(&plan())
 }
 
+// The production durable owner deliberately rejects group/other-readable roots.
+// TempDir defaults are platform/runner-dependent, so fixtures must explicitly
+// construct the same private directory that the production owner requires.
+fn private_tempdir() -> tempfile::TempDir {
+    let root = tempfile::tempdir().expect("root");
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt as _;
+        fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
+            .expect("private fixture directory");
+    }
+    root
+}
+
 fn plan() -> CellSplitExecutionPlanV1 {
     CellSplitExecutionPlanV1 {
         split_id: "split-42".into(),
@@ -143,7 +157,7 @@ fn plan() -> CellSplitExecutionPlanV1 {
 
 #[test]
 fn advances_only_in_exact_dependency_order_and_recovers_verified_chain() {
-    let root = tempfile::tempdir().expect("root");
+    let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
     {
         let port = FixturePort::new(state.clone());
@@ -182,7 +196,7 @@ fn advances_only_in_exact_dependency_order_and_recovers_verified_chain() {
 
 #[test]
 fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
-    let root = tempfile::tempdir().expect("root");
+    let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
     {
         let mut port = FixturePort::new(state.clone());
@@ -219,7 +233,7 @@ fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
 
 #[test]
 fn unknown_effect_must_fail_closed_and_frozen_plan_cannot_drift() {
-    let root = tempfile::tempdir().expect("root");
+    let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
     {
         let mut port = FixturePort::new(state.clone());
@@ -257,7 +271,7 @@ fn unknown_effect_must_fail_closed_and_frozen_plan_cannot_drift() {
 
 #[test]
 fn tamper_and_invalid_signature_prevent_committed_replay() {
-    let root = tempfile::tempdir().expect("root");
+    let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
     {
         let mut owner = CellSplitExecutionOwnerV1::open(
