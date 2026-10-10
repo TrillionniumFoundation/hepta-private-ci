@@ -19,6 +19,7 @@ from hepta_cell_split_observer_gate import (
     SIGNING_DOMAIN,
     canonical_bytes,
     digest,
+    raw_evidence_root_digest,
     verify_observer_packet,
 )
 from hepta_cell_split_perf_gate import MODES, SCOPES, InvalidEvidence, analyze
@@ -120,6 +121,7 @@ class IndependentObserverTests(unittest.TestCase):
         result = self.verify()
         self.assertTrue(result["observer_signature_verified"])
         self.assertTrue(result["exact_matrix_binding_verified"])
+        self.assertFalse(result["raw_evidence_retention_verified"])
         self.assertTrue(result["comparative_gate_passed"])
         self.assertFalse(result["host_attestation_verified"])
         self.assertFalse(result["future_windows_verified"])
@@ -156,6 +158,24 @@ class IndependentObserverTests(unittest.TestCase):
         self.matrix["runs"].pop()
         with self.assertRaisesRegex(InvalidEvidence, "exactly"):
             self.verify()
+
+    def test_raw_evidence_root_requires_retained_bytes_and_rejects_mutation(self):
+        raw = Path(self.directory.name) / "raw-measurements"
+        raw.mkdir()
+        receipt = raw / "64-no_split.json"
+        receipt.write_bytes(b"real-observer-owned-raw-record")
+        self.claim["raw_evidence_root_sha256"] = raw_evidence_root_digest(raw)
+        self.signed = self.sign(self.claim)
+        result = verify_observer_packet(
+            self.matrix, self.comparison, self.signed, self.public, self.pin, raw
+        )
+        self.assertTrue(result["raw_evidence_retention_verified"])
+        self.assertFalse(result["production_activation_authorized"])
+        receipt.write_bytes(b"modified-underlying-record")
+        with self.assertRaisesRegex(InvalidEvidence, "retained bytes"):
+            verify_observer_packet(
+                self.matrix, self.comparison, self.signed, self.public, self.pin, raw
+            )
 
     def test_cryptographically_verified_failure_stays_failure(self):
         self.matrix["runs"][-1]["elapsed_seconds"] = 1000
