@@ -1,4 +1,5 @@
 """Diagnostic only: simulated model observations never count as physical evidence."""
+
 import json
 import sys
 import tempfile
@@ -23,11 +24,16 @@ class PhysicalSmokePreflightTests(unittest.TestCase):
             with self.assertRaisesRegex(InvalidTrial, "explicit device"):
                 smoke.run_smoke(catalog, "laya", root / "missing", "a" * 64, "cuda")
             with self.assertRaisesRegex(InvalidTrial, "unknown locked model variant"):
-                with patch.object(smoke, "verify_catalog", side_effect=lambda c: {"variants": {}}):
+                with patch.object(
+                    smoke, "verify_catalog", side_effect=lambda c: {"variants": {}}
+                ):
                     smoke.run_smoke(catalog, "laya", root / "missing", "a" * 64, "cpu")
             with self.assertRaisesRegex(InvalidTrial, "absolute directory"):
-                with patch.object(smoke, "verify_catalog", side_effect=lambda c: {
-                    "variants": {"laya": {"model_id": "test"}}}):
+                with patch.object(
+                    smoke,
+                    "verify_catalog",
+                    side_effect=lambda c: {"variants": {"laya": {"model_id": "test"}}},
+                ):
                     smoke.run_smoke(catalog, "laya", Path("relative"), "a" * 64, "cpu")
 
     def test_mock_success_is_explicitly_diagnostic_never_production(self):
@@ -35,23 +41,60 @@ class PhysicalSmokePreflightTests(unittest.TestCase):
             root = Path(temp)
             catalog_path = root / "catalog.json"
             catalog_path.write_text("{}")
-            catalog = {"repository": "test-repo", "revision": "a" * 40,
-                       "variants": {"laya": {"model_id": "convaiinnovations/laya",
-                                              "weights_sha256": "b" * 64}}}
+            catalog = {
+                "repository": "test-repo",
+                "revision": "a" * 40,
+                "variants": {
+                    "laya": {
+                        "model_id": "convaiinnovations/laya",
+                        "weights_sha256": "b" * 64,
+                    }
+                },
+            }
             fake_package_dir = root / "laya"
             fake_package_dir.mkdir()
             (fake_package_dir / "__init__.py").write_text("# dummy")
             # No torch/model objects are imported or executed in this fixture.
             from types import SimpleNamespace
-            with patch.object(smoke, "verify_catalog", return_value=catalog), \
-                 patch.object(smoke, "inspect_local", return_value={
-                     "local_weight_bytes_verified": True,
-                     "artifact_tree_sha256": "c" * 64}), \
-                 patch.object(smoke, "sha_tree", return_value="d" * 64), \
-                 patch.object(smoke, "run_laya", return_value=(421000000, "b" * 64,
-                     [{"id": "synthetic-no-label-control-1", "probabilities": [.7, .3]}], {})), \
-                 patch.dict(sys.modules, {"laya": SimpleNamespace(__file__=str(fake_package_dir / "__init__.py"))}):
-                report = smoke.run_smoke(catalog_path, "laya", root / "model", "d" * 64, "cpu")
+
+            with (
+                patch.object(smoke, "verify_catalog", return_value=catalog),
+                patch.object(
+                    smoke,
+                    "inspect_local",
+                    return_value={
+                        "local_weight_bytes_verified": True,
+                        "artifact_tree_sha256": "c" * 64,
+                    },
+                ),
+                patch.object(smoke, "sha_tree", return_value="d" * 64),
+                patch.object(
+                    smoke,
+                    "run_laya",
+                    return_value=(
+                        421000000,
+                        "b" * 64,
+                        [
+                            {
+                                "id": "synthetic-no-label-control-1",
+                                "probabilities": [0.7, 0.3],
+                            }
+                        ],
+                        {},
+                    ),
+                ),
+                patch.dict(
+                    sys.modules,
+                    {
+                        "laya": SimpleNamespace(
+                            __file__=str(fake_package_dir / "__init__.py")
+                        )
+                    },
+                ),
+            ):
+                report = smoke.run_smoke(
+                    catalog_path, "laya", root / "model", "d" * 64, "cpu"
+                )
             self.assertFalse(report["actual_hepta_data_used"])
             self.assertFalse(report["target_host_independently_attested"])
             self.assertFalse(report["ndu_selection_authorized"])

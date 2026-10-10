@@ -277,10 +277,10 @@ and attest effects, seals, recovery and NDU utility before operator review.
 ### Optional public-weight physical smoke (still NO Hepta evidence)
 
 A separate manual/label-triggered GitHub Actions workflow
-`.github/workflows/hepta-neuron-physical-smoke.yml` attempts the **root Laya
-baseline only**, with the exact SDK Git SHA, CPU-only dependencies, explicit
-Hugging Face downloads from the pinned revision, full safetensors digest and
-one no-label synthetic inference. It uploads ONLY non-sensitive JSON diagnostics,
+`.github/workflows/hepta-neuron-physical-smoke.yml` tests the **three locked Laya variants in order on the same GitHub CPU runner**,
+using one exact SDK Git SHA, CPU-only dependencies, explicit Hugging Face
+downloads from the pinned revision, complete safetensors digests, and the same
+no-label synthetic question for each variant. It uploads ONLY non-sensitive JSON diagnostics,
 never weights, prompts or private data. It has zero authority to promote a Cell.
 
 For a draft PR, an authorized repository maintainer may add the label
@@ -303,6 +303,21 @@ python scripts/hepta_neuron_physical_smoke.py \
 
 The default trial protocol CI continues to use only synthetic tests, not HF
 network calls, and never implies that a real weight forward succeeded.
+
+## Retained baseline physical diagnostic (source observation only)
+
+GitHub Actions [run 38095294436](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38095294436)
+completed successfully for the original Laya checkpoint under experimental
+commit `bfbe962f41db74ef55edb5d883d7bc156ab7c2e9`. The retained original
+materialization and forward JSON (with SHA-256 digests) are copied without
+alteration into `physical-smoke-receipts/`; the `README.json` binds their
+source artifact. Full weight SHA-256 was
+`891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c`,
+actual parameter count was 421293827 and one 39-token CPU synthetic forward
+took 340.916554 ms. These are SINGLE-RUN diagnostic observations, not p99,
+true throughput, accuracy, a target-host independent attestation, an evaluator
+qualification, or a production Cell run. Baseline and any later variant runs
+must be identified by their own exact commit/runner and observation window.
 
 ## Nonnegotiable promotion boundaries
 

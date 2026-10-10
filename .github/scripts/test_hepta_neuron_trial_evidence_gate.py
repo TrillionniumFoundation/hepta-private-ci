@@ -1,4 +1,5 @@
 """Synthetic owner signatures only; do not mistake key fixtures for independence."""
+
 import json
 import sys
 import tempfile
@@ -11,7 +12,12 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 from hepta_neuron_model_trials import ARMS, compare, sha_file, write_new
-from hepta_neuron_trial_evidence_gate import (EVIDENCE_SCHEMA, ROLES, _canonical, verify_report)
+from hepta_neuron_trial_evidence_gate import (
+    EVIDENCE_SCHEMA,
+    ROLES,
+    _canonical,
+    verify_report,
+)
 from test_hepta_neuron_model_trials import fixture, packet
 
 
@@ -31,43 +37,82 @@ def evidence_files(root):
     paths = {}
     for role in ROLES:
         private = Ed25519PrivateKey.generate()
-        public = private.public_key().public_bytes(
-            encoding=serialization.Encoding.Raw, format=serialization.PublicFormat.Raw).hex()
-        key = {"principal": f"synthetic-{role}-fixture", "key_id": f"fixture-{role}",
-               "public_key_ed25519_hex": public}
+        public = (
+            private.public_key()
+            .public_bytes(
+                encoding=serialization.Encoding.Raw,
+                format=serialization.PublicFormat.Raw,
+            )
+            .hex()
+        )
+        key = {
+            "principal": f"synthetic-{role}-fixture",
+            "key_id": f"fixture-{role}",
+            "public_key_ed25519_hex": public,
+        }
         trust["roles"][role] = key
-        body = {"manifest_sha256": sha_file(manifest_path),
-                "comparison_sha256": sha_file(comparison),
-                "baseline_sha256": baseline, "source_sha": manifest["source_sha"],
-                "sealed_dataset_sha256": manifest["dataset_sha256"],
-                "host_profile_digest": manifest["host_profile_digest"],
-                "family": manifest["family"], "signed_at_ms": 2000,
-                "principal": key["principal"]}
+        body = {
+            "manifest_sha256": sha_file(manifest_path),
+            "comparison_sha256": sha_file(comparison),
+            "baseline_sha256": baseline,
+            "source_sha": manifest["source_sha"],
+            "sealed_dataset_sha256": manifest["dataset_sha256"],
+            "host_profile_digest": manifest["host_profile_digest"],
+            "family": manifest["family"],
+            "signed_at_ms": 2000,
+            "principal": key["principal"],
+        }
         if role == "shadow":
-            body.update({"run_receipt_sha256": compare_report["receipt_sha256"],
-                         "shadow_only": True, "effect_count": 0,
-                         "shadow_execution_log_sha256": "1" * 64})
+            body.update(
+                {
+                    "run_receipt_sha256": compare_report["receipt_sha256"],
+                    "shadow_only": True,
+                    "effect_count": 0,
+                    "shadow_execution_log_sha256": "1" * 64,
+                }
+            )
         elif role == "evaluator":
-            body.update({"holdout_sealed": True,
-                         "windows_independently_scored": ["holdout", "future_1", "future_2"],
-                         "independent_scoring_code_sha256": "2" * 64,
-                         "sealed_metrics_sha256": "3" * 64})
+            body.update(
+                {
+                    "holdout_sealed": True,
+                    "windows_independently_scored": ["holdout", "future_1", "future_2"],
+                    "independent_scoring_code_sha256": "2" * 64,
+                    "sealed_metrics_sha256": "3" * 64,
+                }
+            )
         elif role == "recovery":
-            body.update({"physical_replay_log_sha256": "4" * 64,
-                         "journal_cas_recovered": True, "generation_fence_passed": True,
-                         "old_route_rejected": True, "rollback_passed": True,
-                         "tombstone_no_resurrection_passed": True})
+            body.update(
+                {
+                    "physical_replay_log_sha256": "4" * 64,
+                    "journal_cas_recovered": True,
+                    "generation_fence_passed": True,
+                    "old_route_rejected": True,
+                    "rollback_passed": True,
+                    "tombstone_no_resurrection_passed": True,
+                }
+            )
         else:
-            body.update({"baseline_receipt_sha256": baseline,
-                         "selected_no_change_as_baseline": True,
-                         "resources_measured": True,
-                         "retention_measured": True,
-                         "negative_transfer_measured": True,
-                         "underlying_ndu_receipt_sha256": "5" * 64,
-                         "net_gain_q24_by_window": {"typed": {"future_1": 8, "future_2": 7}}})
-        unsigned = {"schema": EVIDENCE_SCHEMA, "role": role,
-                    "key_id": key["key_id"], "body": body}
-        signed = {**unsigned, "signature_ed25519_hex": private.sign(_canonical(unsigned)).hex()}
+            body.update(
+                {
+                    "baseline_receipt_sha256": baseline,
+                    "selected_no_change_as_baseline": True,
+                    "resources_measured": True,
+                    "retention_measured": True,
+                    "negative_transfer_measured": True,
+                    "underlying_ndu_receipt_sha256": "5" * 64,
+                    "net_gain_q24_by_window": {"typed": {"future_1": 8, "future_2": 7}},
+                }
+            )
+        unsigned = {
+            "schema": EVIDENCE_SCHEMA,
+            "role": role,
+            "key_id": key["key_id"],
+            "body": body,
+        }
+        signed = {
+            **unsigned,
+            "signature_ed25519_hex": private.sign(_canonical(unsigned)).hex(),
+        }
         dest = root / f"attestation-{role}.json"
         write_new(dest, signed)
         paths[role] = dest
@@ -86,7 +131,9 @@ class IndependentGateTests(unittest.TestCase):
             self.assertFalse(result["production_evidence_verified"])
             self.assertFalse(result["ndu_selection_authorized"])
             self.assertFalse(result["promotion_authorized"])
-            self.assertFalse(result["physical_truth_independently_observed_by_this_script"])
+            self.assertFalse(
+                result["physical_truth_independently_observed_by_this_script"]
+            )
 
     def test_signature_replay_tampering_and_wrong_trust_fail_closed(self):
         with tempfile.TemporaryDirectory() as path:
@@ -103,8 +150,13 @@ class IndependentGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as path:
             mp, cp, tp, evidence = evidence_files(Path(path))
             with self.assertRaisesRegex(ValueError, "incomplete"):
-                verify_report(mp, cp, sha_file(tp), tp,
-                              {r: p for r, p in evidence.items() if r != "evaluator"})
+                verify_report(
+                    mp,
+                    cp,
+                    sha_file(tp),
+                    tp,
+                    {r: p for r, p in evidence.items() if r != "evaluator"},
+                )
             t = json.loads(tp.read_text())
             t["roles"]["evaluator"]["principal"] = t["roles"]["shadow"]["principal"]
             tp.write_text(json.dumps(t))

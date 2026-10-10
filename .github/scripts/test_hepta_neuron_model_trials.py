@@ -1,4 +1,5 @@
 """Synthetic, diagnostic-only tests: no model invocation or deployment evidence."""
+
 import hashlib
 import json
 import sys
@@ -8,45 +9,85 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-from hepta_neuron_model_trials import (ARMS, InvalidTrial, blind_rows, canonical_jsonl,
-                                      compare, load_inputs, metrics, parameter_budget,
-                                      run_head, sha_file, write_new,
-                                      fit_temperature_calibration, temperature_probabilities,
-                                      TEMPERATURE_GRID_V1)
+from hepta_neuron_model_trials import (
+    ARMS,
+    InvalidTrial,
+    blind_rows,
+    canonical_jsonl,
+    compare,
+    load_inputs,
+    metrics,
+    parameter_budget,
+    run_head,
+    sha_file,
+    write_new,
+    fit_temperature_calibration,
+    temperature_probabilities,
+    TEMPERATURE_GRID_V1,
+)
 
 
 def fixture(root, family="decisions"):
     rows = []
-    for idx, split in enumerate(("train", "calibration", "holdout", "future_1", "future_2")):
-        for language in (("en", "zh", "cross") if family == "multilingual" else ("en",)):
-            row = {"id": f"{split}-{language}", "split": split,
-                   "source_group": f"{split}-{language}", "observed_at_ms": (idx + 1) * 1000,
-                   "language": language, "domain": "test", "is_ood": idx >= 2,
-                   "state": "fixture-only", "option_order": ["yes", "no"], "question": {
-                       "type": "choice", "instructions": "Which?", "criteria": {"yes": "Yes", "no": "No"}},
-                   "gold": "yes"}
+    for idx, split in enumerate(
+        ("train", "calibration", "holdout", "future_1", "future_2")
+    ):
+        for language in ("en", "zh", "cross") if family == "multilingual" else ("en",):
+            row = {
+                "id": f"{split}-{language}",
+                "split": split,
+                "source_group": f"{split}-{language}",
+                "observed_at_ms": (idx + 1) * 1000,
+                "language": language,
+                "domain": "test",
+                "is_ood": idx >= 2,
+                "state": "fixture-only",
+                "option_order": ["yes", "no"],
+                "question": {
+                    "type": "choice",
+                    "instructions": "Which?",
+                    "criteria": {"yes": "Yes", "no": "No"},
+                },
+                "gold": "yes",
+            }
             if family == "heads":
                 row.update({"features_q24": [0] * 512, "target_q24": [0] * 512})
             rows.append(row)
     dataset = root / "dataset.jsonl"
     dataset.write_text("".join(json.dumps(x) + "\n" for x in rows), encoding="utf-8")
-    manifest = {"schema": "hepta.neuron.model-trial.v1", "family": family,
-                "source_sha": "a" * 40, "dataset_sha256": sha_file(dataset),
-                "blind_dataset_sha256": hashlib.sha256(canonical_jsonl(blind_rows(rows, family))).hexdigest(),
-                "host_profile_digest": "1" * 64,
-                "parameter_cap": 262656 if family == "heads" else 425000000,
-                "max_len": 512, "sdk_tree_sha256": "f" * 64,
-                "upstream_lock_sha256": "a" * 64,
-                "head": {"input_dimension": 512, "state_width": 256, "encoder_digest": "d" * 64}}
+    manifest = {
+        "schema": "hepta.neuron.model-trial.v1",
+        "family": family,
+        "source_sha": "a" * 40,
+        "dataset_sha256": sha_file(dataset),
+        "blind_dataset_sha256": hashlib.sha256(
+            canonical_jsonl(blind_rows(rows, family))
+        ).hexdigest(),
+        "host_profile_digest": "1" * 64,
+        "parameter_cap": 262656 if family == "heads" else 425000000,
+        "max_len": 512,
+        "sdk_tree_sha256": "f" * 64,
+        "upstream_lock_sha256": "a" * 64,
+        "head": {
+            "input_dimension": 512,
+            "state_width": 256,
+            "encoder_digest": "d" * 64,
+        },
+    }
     if family != "heads":
-        manifest["models"] = {a: {"model_id": {
-            "laya": "convaiinnovations/laya",
-            "typed": "convaiinnovations/laya-typed-decisions",
-            "multilingual": "convaiinnovations/laya-multilingual"}[a],
-            "revision": ("b" if a == "laya" else "c") * 40,
-            "weights_sha256": ("2" if a == "laya" else "3") * 64,
-            "artifact_tree_sha256": ("4" if a == "laya" else "5") * 64}
-            for a in ARMS[family]}
+        manifest["models"] = {
+            a: {
+                "model_id": {
+                    "laya": "convaiinnovations/laya",
+                    "typed": "convaiinnovations/laya-typed-decisions",
+                    "multilingual": "convaiinnovations/laya-multilingual",
+                }[a],
+                "revision": ("b" if a == "laya" else "c") * 40,
+                "weights_sha256": ("2" if a == "laya" else "3") * 64,
+                "artifact_tree_sha256": ("4" if a == "laya" else "5") * 64,
+            }
+            for a in ARMS[family]
+        }
     mpath = root / "manifest.json"
     mpath.write_text(json.dumps(manifest), encoding="utf-8")
     return manifest, rows, dataset, mpath
@@ -56,40 +97,66 @@ def packet(manifest, rows, arm, damaged=False):
     family = manifest["family"]
     records = []
     for row in rows:
-        if row["split"] not in (("holdout", "future_1", "future_2") if family == "heads"
-                                else ("calibration", "holdout", "future_1", "future_2")):
+        if row["split"] not in (
+            ("holdout", "future_1", "future_2")
+            if family == "heads"
+            else ("calibration", "holdout", "future_1", "future_2")
+        ):
             continue
         r = {"id": row["id"], "split": row["split"], "latency_ms": 2.0}
         if family == "heads":
             r["drive_q24"] = [1 if damaged and row["split"] == "future_2" else 0] * 256
-            r["prediction_q24"] = [1 if damaged and row["split"] == "future_2" else 0] * 256
+            r["prediction_q24"] = [
+                1 if damaged and row["split"] == "future_2" else 0
+            ] * 256
         else:
-            r["probabilities"] = ([.2, .8] if damaged and row["split"] == "future_2" else [.9, .1])
+            r["probabilities"] = (
+                [0.2, 0.8] if damaged and row["split"] == "future_2" else [0.9, 0.1]
+            )
         records.append(r)
-    result = {"schema": manifest["schema"], "family": family, "arm": arm,
-              "source_sha": manifest["source_sha"], "dataset_sha256": manifest["dataset_sha256"],
-              "blind_dataset_sha256": manifest["blind_dataset_sha256"],
-              "host_profile_digest": manifest["host_profile_digest"], "device": "cpu",
-              "parameters": (parameter_budget(512, 256)[0][arm] if family == "heads"
-                             else 322000000 if arm == "multilingual" else 421000000),
-              "observations": records}
+    result = {
+        "schema": manifest["schema"],
+        "family": family,
+        "arm": arm,
+        "source_sha": manifest["source_sha"],
+        "dataset_sha256": manifest["dataset_sha256"],
+        "blind_dataset_sha256": manifest["blind_dataset_sha256"],
+        "host_profile_digest": manifest["host_profile_digest"],
+        "device": "cpu",
+        "parameters": (
+            parameter_budget(512, 256)[0][arm]
+            if family == "heads"
+            else 322000000
+            if arm == "multilingual"
+            else 421000000
+        ),
+        "observations": records,
+    }
     if family == "heads":
         result["weights_sha256"] = "6" * 64
         result["runtime"] = {
             "head_profile_sha256": hashlib.sha256(
-                json.dumps(manifest["head"], sort_keys=True).encode()).hexdigest(),
+                json.dumps(manifest["head"], sort_keys=True).encode()
+            ).hexdigest(),
             "checkpoint_reload_verified": True,
             "forward_executed_from_reloaded_checkpoint": True,
             "reloaded_checkpoint_sha256": result["weights_sha256"],
         }
     if family != "heads":
         model = manifest["models"][arm]
-        result.update({"model_id": model["model_id"], "model_revision": model["revision"],
-                       "weights_sha256": model["weights_sha256"],
-                       "runtime": {"upstream_lock_sha256": manifest["upstream_lock_sha256"],
-                                   "artifact_tree_sha256": model["artifact_tree_sha256"],
-                                   "sdk_tree_sha256": manifest["sdk_tree_sha256"],
-                                   "torch": "synthetic-constant"}})
+        result.update(
+            {
+                "model_id": model["model_id"],
+                "model_revision": model["revision"],
+                "weights_sha256": model["weights_sha256"],
+                "runtime": {
+                    "upstream_lock_sha256": manifest["upstream_lock_sha256"],
+                    "artifact_tree_sha256": model["artifact_tree_sha256"],
+                    "sdk_tree_sha256": manifest["sdk_tree_sha256"],
+                    "torch": "synthetic-constant",
+                },
+            }
+        )
     return result
 
 
@@ -132,7 +199,7 @@ class TrialTests(unittest.TestCase):
             # Make the typed calibration underconfident on the true label.
             for obs in typed["observations"]:
                 if obs["split"] == "calibration":
-                    obs["probabilities"] = [.55, .45]
+                    obs["probabilities"] = [0.55, 0.45]
             baseline_path, typed_path = root / "laya.json", root / "typed.json"
             write_new(baseline_path, baseline)
             write_new(typed_path, typed)
@@ -142,30 +209,44 @@ class TrialTests(unittest.TestCase):
             self.assertIn(fit["temperature"], TEMPERATURE_GRID_V1)
             self.assertEqual(fit["fitted_from"], "calibration_only")
             self.assertFalse(fit["holdout_or_future_labels_used_for_fit"])
-            self.assertLessEqual(fit["fitted_calibration_nll"], fit["raw_calibration_nll"] + 1e-12)
+            self.assertLessEqual(
+                fit["fitted_calibration_nll"], fit["raw_calibration_nll"] + 1e-12
+            )
             self.assertIn("ece10", report["calibrated_results"]["typed"]["future_1"])
             # Changing ONLY held-out labels changes reported metrics, not fitted T.
-            altered = [{**r, "gold": "no"} if r["split"] in ("holdout", "future_1", "future_2")
-                       else r for r in rows]
+            altered = [
+                {**r, "gold": "no"}
+                if r["split"] in ("holdout", "future_1", "future_2")
+                else r
+                for r in rows
+            ]
             rerun = compare(manifest, altered, packets, sha_file(baseline_path))
             self.assertEqual(rerun["calibration"]["typed"], fit)
-            self.assertNotEqual(rerun["results"]["typed"]["holdout"]["accuracy"],
-                                report["results"]["typed"]["holdout"]["accuracy"])
+            self.assertNotEqual(
+                rerun["results"]["typed"]["holdout"]["accuracy"],
+                report["results"]["typed"]["holdout"]["accuracy"],
+            )
 
     def test_missing_calibration_predictions_or_labels_fail_closed(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             manifest, rows, _, _ = fixture(root, "decisions")
             packets = {a: packet(manifest, rows, a) for a in ARMS["decisions"]}
-            packets["typed"]["observations"] = [v for v in packets["typed"]["observations"]
-                                                   if v["split"] != "calibration"]
+            packets["typed"]["observations"] = [
+                v
+                for v in packets["typed"]["observations"]
+                if v["split"] != "calibration"
+            ]
             b, t = root / "baseline.json", root / "typed.json"
             write_new(b, packets["laya"])
             write_new(t, packets["typed"])
             with self.assertRaisesRegex(InvalidTrial, "attempted cases"):
                 compare(manifest, rows, {"laya": b, "typed": t}, sha_file(b))
             both = packet(manifest, rows, "typed")["observations"]
-            no_id = [{**r, "is_ood": True} if r["split"] == "calibration" else r for r in rows]
+            no_id = [
+                {**r, "is_ood": True} if r["split"] == "calibration" else r
+                for r in rows
+            ]
             with self.assertRaisesRegex(InvalidTrial, "no in-domain calibration"):
                 fit_temperature_calibration(no_id, both)
             both[0]["probabilities"][0] = float("nan")
@@ -217,7 +298,12 @@ class TrialTests(unittest.TestCase):
                 files[arm] = out
             result = compare(manifest, rows, files, sha_file(files["laya"]))
             self.assertEqual(result["results"]["laya"]["holdout"]["accuracy"], 1)
-            self.assertEqual(result["negative_transfer"]["typed"]["future_2"]["negative_transfer_proxy_rate"], 1)
+            self.assertEqual(
+                result["negative_transfer"]["typed"]["future_2"][
+                    "negative_transfer_proxy_rate"
+                ],
+                1,
+            )
             self.assertFalse(result["promotion_authorized"])
             self.assertFalse(result["ndu_selection_authorized"])
             with self.assertRaisesRegex(InvalidTrial, "baseline receipt changed"):
@@ -226,8 +312,12 @@ class TrialTests(unittest.TestCase):
             bad["model_revision"] = "f" * 40
             write_new(root / "tampered.json", bad)
             with self.assertRaisesRegex(InvalidTrial, "identity, bytes or revision"):
-                compare(manifest, rows, {"laya": files["laya"], "typed": root / "tampered.json"},
-                        sha_file(files["laya"]))
+                compare(
+                    manifest,
+                    rows,
+                    {"laya": files["laya"], "typed": root / "tampered.json"},
+                    sha_file(files["laya"]),
+                )
 
     def test_multilingual_windows_and_head_packet(self):
         with tempfile.TemporaryDirectory() as path:
@@ -237,9 +327,13 @@ class TrialTests(unittest.TestCase):
                 files = {}
                 for arm in ARMS[family]:
                     out = root / f"{family}-{arm}.json"
-                    write_new(out, packet(manifest, rows, arm, damaged=arm != ARMS[family][0]))
+                    write_new(
+                        out, packet(manifest, rows, arm, damaged=arm != ARMS[family][0])
+                    )
                     files[arm] = out
-                result = compare(manifest, rows, files, sha_file(files[ARMS[family][0]]))
+                result = compare(
+                    manifest, rows, files, sha_file(files[ARMS[family][0]])
+                )
                 self.assertIn("future_2", result["results"][ARMS[family][-1]])
                 self.assertFalse(result["production_evidence_verified"])
 
@@ -262,9 +356,19 @@ class TrialTests(unittest.TestCase):
             with self.assertRaisesRegex(InvalidTrial, "OOD cases"):
                 load_inputs(mpath, dataset)
             p = packet(manifest, rows, "laya")
-            next(x for x in p["observations"] if x["split"] == "holdout")["probabilities"][0] = float("nan")
+            next(x for x in p["observations"] if x["split"] == "holdout")[
+                "probabilities"
+            ][0] = float("nan")
             with self.assertRaisesRegex(InvalidTrial, "invalid probabilities"):
-                metrics(rows, [x for x in p["observations"] if x["split"] in ("holdout", "future_1", "future_2")], "decisions")
+                metrics(
+                    rows,
+                    [
+                        x
+                        for x in p["observations"]
+                        if x["split"] in ("holdout", "future_1", "future_2")
+                    ],
+                    "decisions",
+                )
 
     def test_order_survives_canonical_blinding_and_malformed_order_fails_closed(self):
         with tempfile.TemporaryDirectory() as path:
@@ -275,7 +379,8 @@ class TrialTests(unittest.TestCase):
             data.write_text("".join(json.dumps(row) + "\n" for row in rows))
             manifest["dataset_sha256"] = sha_file(data)
             manifest["blind_dataset_sha256"] = hashlib.sha256(
-                canonical_jsonl(blind_rows(rows, "decisions"))).hexdigest()
+                canonical_jsonl(blind_rows(rows, "decisions"))
+            ).hexdigest()
             mpath.write_text(json.dumps(manifest))
             # Canonical JSON serialization alphabetizes object keys, but
             # explicit option_order has the same meaning for both principals.
@@ -315,7 +420,9 @@ class TrialTests(unittest.TestCase):
                 changed = dict(manifest)
                 changed["blind_dataset_sha256"] = "e" * 64
                 mpath.write_text(json.dumps(changed))
-                with self.assertRaisesRegex(InvalidTrial, "blinded dataset is not derived"):
+                with self.assertRaisesRegex(
+                    InvalidTrial, "blinded dataset is not derived"
+                ):
                     load_inputs(mpath, dataset, role="evaluator")
 
     def test_actual_torch_head_execution_on_synthetic_data_only(self):
@@ -327,36 +434,48 @@ class TrialTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
             manifest, rows, _, mpath = fixture(root, "heads")
-            manifest["head"].update({"seed": 17, "epochs": 1, "batch_size": 2,
-                                     "learning_rate": .0003})
+            manifest["head"].update(
+                {"seed": 17, "epochs": 1, "batch_size": 2, "learning_rate": 0.0003}
+            )
             mpath.write_text(json.dumps(manifest))
             run_rows = blind_rows(rows, "heads")
             for arm in ARMS["heads"]:
                 artifact = root / f"{arm}.safetensors"
                 count, digest, observations, runtime = run_head(
-                    manifest, run_rows, arm, "cpu", artifact)
+                    manifest, run_rows, arm, "cpu", artifact
+                )
                 self.assertTrue(artifact.exists())
                 self.assertEqual(count, parameter_budget(512, 256)[0][arm])
                 self.assertEqual(digest, sha_file(artifact))
                 self.assertEqual(len(observations), 3)
-                self.assertTrue(all(len(x["drive_q24"]) == len(x["prediction_q24"]) == 256
-                                    for x in observations))
+                self.assertTrue(
+                    all(
+                        len(x["drive_q24"]) == len(x["prediction_q24"]) == 256
+                        for x in observations
+                    )
+                )
                 self.assertEqual(runtime["optimizer"], "AdamW")
                 self.assertTrue(runtime["checkpoint_reload_verified"])
                 self.assertTrue(runtime["forward_executed_from_reloaded_checkpoint"])
                 self.assertEqual(runtime["reloaded_checkpoint_sha256"], digest)
-                with self.assertRaisesRegex(InvalidTrial, "new absolute safetensors path"):
+                with self.assertRaisesRegex(
+                    InvalidTrial, "new absolute safetensors path"
+                ):
                     run_head(manifest, run_rows, arm, "cpu", artifact)
 
     def test_exponential_overflow_in_json_is_rejected_before_model_use(self):
         from hepta_neuron_model_trials import strict_json_loads
+
         with self.assertRaisesRegex(InvalidTrial, "nonfinite JSON number"):
             strict_json_loads('{"nested":{"metric":1e999}}')
-        self.assertEqual(strict_json_loads('{"nested":{"metric":1e-5}}'),
-                         {"nested": {"metric": 1e-5}})
+        self.assertEqual(
+            strict_json_loads('{"nested":{"metric":1e-5}}'),
+            {"nested": {"metric": 1e-5}},
+        )
 
     def test_duplicate_json_keys_and_nonfinite_manifest_are_rejected(self):
         from hepta_neuron_model_trials import read_json, strict_json_loads
+
         with tempfile.TemporaryDirectory() as path:
             root = Path(path)
             duplicate = root / "duplicate.json"
@@ -369,7 +488,9 @@ class TrialTests(unittest.TestCase):
                 strict_json_loads('{"decision":{"order":1,"order":2}}')
             manifest, rows, dataset, mpath = fixture(root)
             original = dataset.read_text()
-            dataset.write_text(original.replace('"split":', '"split":"train","split":', 1))
+            dataset.write_text(
+                original.replace('"split":', '"split":"train","split":', 1)
+            )
             manifest["dataset_sha256"] = sha_file(dataset)
             mpath.write_text(json.dumps(manifest))
             with self.assertRaisesRegex(InvalidTrial, "duplicate JSON key"):

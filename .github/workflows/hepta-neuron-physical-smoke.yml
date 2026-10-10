@@ -52,18 +52,20 @@ jobs:
             'numpy==1.26.4' 'setuptools==80.9.0'
           "$RUNNER_TEMP/hepta-laya-venv/bin/python" -m pip install --no-input --disable-pip-version-check \
             --no-deps --no-build-isolation -e upstream/laya
-      - name: Materialize pinned public Laya baseline with explicit network opt-in
+      - name: Materialize all three pinned public Laya variants with explicit network opt-in
         shell: bash
         env:
           HF_HUB_DISABLE_TELEMETRY: '1'
           HF_HOME: ${{ runner.temp }}/hepta-hf-readonly-cache
         run: |
           set -euo pipefail
-          "$RUNNER_TEMP/hepta-laya-venv/bin/python" scripts/hepta_neuron_materialize_weights.py \
-            --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
-            --arm laya --destination "$RUNNER_TEMP/hepta-laya-pinned" \
-            --output "$RUNNER_TEMP/laya-physical-materialization.json" --allow-network
-      - name: Execute one synthetic, no-label CPU forward against pinned bytes
+          for arm in laya typed multilingual; do
+            "$RUNNER_TEMP/hepta-laya-venv/bin/python" scripts/hepta_neuron_materialize_weights.py \
+              --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+              --arm "$arm" --destination "$RUNNER_TEMP/hepta-${arm}-pinned" \
+              --output "$RUNNER_TEMP/hepta-${arm}-materialization.json" --allow-network
+          done
+      - name: Execute identical synthetic no-label CPU forward on each pinned variant
         shell: bash
         env:
           HF_HUB_OFFLINE: '1'
@@ -71,24 +73,26 @@ jobs:
           USE_TF: '0'
         run: |
           set -euo pipefail
-          SDK_SHA=$(PYTHONPATH=scripts "$RUNNER_TEMP/hepta-laya-venv/bin/python" - <<'PY'
+          SDK_SHA=$(PYTHONPATH=scripts "$RUNNER_TEMP/hepta-laya-venv/bin/python" - <<'PYSDK'
           from pathlib import Path
           from hepta_neuron_model_trials import sha_tree
           print(sha_tree(Path('upstream/laya/laya'), only_python=True))
-          PY
+          PYSDK
           )
-          "$RUNNER_TEMP/hepta-laya-venv/bin/python" scripts/hepta_neuron_physical_smoke.py \
-            --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
-            --arm laya --artifact-dir "$RUNNER_TEMP/hepta-laya-pinned" \
-            --sdk-python-sha256 "$SDK_SHA" --device cpu \
-            --output "$RUNNER_TEMP/laya-physical-smoke.json"
+          for arm in laya typed multilingual; do
+            "$RUNNER_TEMP/hepta-laya-venv/bin/python" scripts/hepta_neuron_physical_smoke.py \
+              --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+              --arm "$arm" --artifact-dir "$RUNNER_TEMP/hepta-${arm}-pinned" \
+              --sdk-python-sha256 "$SDK_SHA" --device cpu \
+              --output "$RUNNER_TEMP/hepta-${arm}-physical-smoke.json"
+          done
       - name: Retain metadata only; never upload model weights, cache or user data
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-neuron-laya-public-weight-diagnostic
+          name: hepta-neuron-all-three-public-weight-diagnostic
           path: |
-            ${{ runner.temp }}/laya-physical-materialization.json
-            ${{ runner.temp }}/laya-physical-smoke.json
+            ${{ runner.temp }}/hepta-*-materialization.json
+            ${{ runner.temp }}/hepta-*-physical-smoke.json
           if-no-files-found: warn
           retention-days: 7

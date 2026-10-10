@@ -6,6 +6,7 @@ certifies independent data origin, actual future elapsed time, or NDU utility.
 The sealed source file stays solely with the evaluator; only the blinded export
 may be forwarded to an inference runner.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -17,8 +18,17 @@ from collections import Counter
 from pathlib import Path
 
 from hepta_neuron_model_trials import (
-    ARMS, InvalidTrial, blind_rows, canonical_jsonl, is_sha, load_inputs,
-    read_json, require, sha_file, strict_json_loads, write_new,
+    ARMS,
+    InvalidTrial,
+    blind_rows,
+    canonical_jsonl,
+    is_sha,
+    load_inputs,
+    read_json,
+    require,
+    sha_file,
+    strict_json_loads,
+    write_new,
 )
 
 SCHEMA = "hepta.neuron.dataset-freeze.v1"
@@ -44,17 +54,31 @@ def freeze_dataset(template_path: Path, sealed_path: Path, output_dir: Path):
     """Preflight both roles before publishing a blind dataset + frozen manifest."""
     sealed_path = Path(sealed_path)
     output_dir = Path(output_dir)
-    require(sealed_path.is_absolute() and sealed_path.is_file() and not sealed_path.is_symlink(),
-            "sealed source must be an existing physical absolute file")
-    require(output_dir.is_absolute() and not output_dir.exists() and not output_dir.is_symlink(),
-            "output must be a new absolute directory")
-    require(output_dir.parent.is_dir() and not output_dir.parent.is_symlink(),
-            "unsafe output directory parent")
-    require(not sealed_path.resolve().is_relative_to(output_dir),
-            "sealed data cannot be inside blinded export directory")
+    require(
+        sealed_path.is_absolute()
+        and sealed_path.is_file()
+        and not sealed_path.is_symlink(),
+        "sealed source must be an existing physical absolute file",
+    )
+    require(
+        output_dir.is_absolute()
+        and not output_dir.exists()
+        and not output_dir.is_symlink(),
+        "output must be a new absolute directory",
+    )
+    require(
+        output_dir.parent.is_dir() and not output_dir.parent.is_symlink(),
+        "unsafe output directory parent",
+    )
+    require(
+        not sealed_path.resolve().is_relative_to(output_dir),
+        "sealed data cannot be inside blinded export directory",
+    )
     manifest = read_json(template_path)
-    require(isinstance(manifest, dict) and manifest.get("family") in ARMS,
-            "unknown experiment family")
+    require(
+        isinstance(manifest, dict) and manifest.get("family") in ARMS,
+        "unknown experiment family",
+    )
     rows = []
     with open(sealed_path, encoding="utf-8") as source:
         for line in source:
@@ -66,18 +90,23 @@ def freeze_dataset(template_path: Path, sealed_path: Path, output_dir: Path):
     blinded = canonical_jsonl(blind_rows(rows, manifest["family"]))
     sealed_sha = sha_file(sealed_path)
     blinded_sha = hashlib.sha256(blinded).hexdigest()
-    for field, value in (("dataset_sha256", sealed_sha),
-                         ("blind_dataset_sha256", blinded_sha)):
+    for field, value in (
+        ("dataset_sha256", sealed_sha),
+        ("blind_dataset_sha256", blinded_sha),
+    ):
         prior = manifest.get(field)
-        require(prior is None or not is_sha(prior) or prior == value,
-                f"source manifest {field} conflicts with actual bytes")
+        require(
+            prior is None or not is_sha(prior) or prior == value,
+            f"source manifest {field} conflicts with actual bytes",
+        )
         manifest[field] = value
 
     # Evidence of chronological windows must be checked by the evaluator, not
     # trusted from a caller's split labels. load_inputs enforces all five splits,
     # source-group disjointness, token budget and model/Head dimensions.
-    staging = Path(tempfile.mkdtemp(prefix=f".{output_dir.name}.staging-",
-                                         dir=output_dir.parent))
+    staging = Path(
+        tempfile.mkdtemp(prefix=f".{output_dir.name}.staging-", dir=output_dir.parent)
+    )
     try:
         os.chmod(staging, 0o700)
         frozen_path = staging / "manifest.json"
@@ -86,14 +115,19 @@ def freeze_dataset(template_path: Path, sealed_path: Path, output_dir: Path):
         _write_bytes(blinded_path, blinded)
         _, sealed_rows = load_inputs(frozen_path, sealed_path, role="evaluator")
         _, blind_rows_checked = load_inputs(frozen_path, blinded_path, role="runner")
-        require(len(sealed_rows) == len(blind_rows_checked), "not all cases survived blinding")
+        require(
+            len(sealed_rows) == len(blind_rows_checked),
+            "not all cases survived blinding",
+        )
         outcome = {
             "schema": SCHEMA,
             "family": manifest["family"],
             "sealed_dataset_sha256": sealed_sha,
             "blinded_dataset_sha256": blinded_sha,
             "manifest_sha256": sha_file(frozen_path),
-            "observed_window_counts": dict(sorted(Counter(r["split"] for r in sealed_rows).items())),
+            "observed_window_counts": dict(
+                sorted(Counter(r["split"] for r in sealed_rows).items())
+            ),
             "labels_exported_to_runner": False,
             "sealed_labels_independently_attested": False,
             "future_windows_independently_elapsed": False,

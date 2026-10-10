@@ -1,4 +1,5 @@
 """All fixtures are synthetic; tests do not prove physical Laya execution."""
+
 import hashlib
 import json
 import sys
@@ -28,9 +29,17 @@ class MaterializationTests(unittest.TestCase):
             file.write_bytes(b"synthetic-test-" + rel.encode())
             content[rel] = file
         weight = hashlib.sha256(content["model.safetensors"].read_bytes()).hexdigest()
-        cat = {"repository": "local-fixture", "revision": "a" * 40,
-               "variants": {"typed": {"subfolder": "typed-decisions",
-                                      "model_id": "fixture-typed", "weights_sha256": weight}}}
+        cat = {
+            "repository": "local-fixture",
+            "revision": "a" * 40,
+            "variants": {
+                "typed": {
+                    "subfolder": "typed-decisions",
+                    "model_id": "fixture-typed",
+                    "weights_sha256": weight,
+                }
+            },
+        }
         return cat, content
 
     def test_copy_is_explicit_offline_and_create_only(self):
@@ -47,32 +56,48 @@ class MaterializationTests(unittest.TestCase):
                 self.assertEqual(arm, "typed")
                 for rel in material.REQUIRED:
                     self.assertTrue((dest / rel).is_file())
-                return {"weights_sha256": cat["variants"][arm]["weights_sha256"],
-                        "artifact_tree_sha256": "f" * 64}
+                return {
+                    "weights_sha256": cat["variants"][arm]["weights_sha256"],
+                    "artifact_tree_sha256": "f" * 64,
+                }
 
-            with patch.object(material, "verify_catalog", side_effect=lambda c: c), \
-                 patch.object(material, "inspect_local", side_effect=inspect):
-                packet = material.materialize(catalog, "typed", root / "model", fetcher=fetch)
+            with (
+                patch.object(material, "verify_catalog", side_effect=lambda c: c),
+                patch.object(material, "inspect_local", side_effect=inspect),
+            ):
+                packet = material.materialize(
+                    catalog, "typed", root / "model", fetcher=fetch
+                )
                 self.assertTrue(packet["local_weight_bytes_verified"])
                 self.assertFalse(packet["promotion_authorized"])
                 self.assertFalse(packet["network_permission_used"])
                 self.assertEqual(len(requests), len(material.REQUIRED))
-                self.assertTrue(all(x[3] is False and x[2] == "a" * 40 for x in requests))
-                self.assertEqual((root / "model/model.safetensors").read_bytes(),
-                                 files["model.safetensors"].read_bytes())
+                self.assertTrue(
+                    all(x[3] is False and x[2] == "a" * 40 for x in requests)
+                )
+                self.assertEqual(
+                    (root / "model/model.safetensors").read_bytes(),
+                    files["model.safetensors"].read_bytes(),
+                )
                 with self.assertRaisesRegex(InvalidTrial, "new absolute directory"):
-                    material.materialize(catalog, "typed", root / "model", fetcher=fetch)
+                    material.materialize(
+                        catalog, "typed", root / "model", fetcher=fetch
+                    )
 
     def test_corrupt_bytes_cannot_finish_acquisition(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             catalog, files = self._catalog_and_cache(root)
             files["model.safetensors"].write_bytes(b"tampered")
+
             def fetch(repo, rel, rev, allow_net, cache):
                 return files[rel.removeprefix("typed-decisions/")]
+
             with patch.object(material, "verify_catalog", side_effect=lambda c: c):
                 with self.assertRaisesRegex(InvalidTrial, "digest mismatch"):
-                    material.materialize(catalog, "typed", root / "model", fetcher=fetch)
+                    material.materialize(
+                        catalog, "typed", root / "model", fetcher=fetch
+                    )
             self.assertTrue((root / "model").is_dir())
             self.assertFalse((root / "model/rl_agent_config.json").exists())
 
@@ -80,12 +105,17 @@ class MaterializationTests(unittest.TestCase):
         with patch.dict(sys.modules, {"huggingface_hub": MagicMock()}):
             module = sys.modules["huggingface_hub"]
             module.hf_hub_download.return_value = "/tmp/nonexistent/cache-file"
-            result = material._hf_fetch("org/repo", "typed-decisions/model.safetensors",
-                                        "b" * 40, False, None)
+            result = material._hf_fetch(
+                "org/repo", "typed-decisions/model.safetensors", "b" * 40, False, None
+            )
             self.assertIsInstance(result, Path)
             module.hf_hub_download.assert_called_once_with(
-                repo_id="org/repo", filename="typed-decisions/model.safetensors",
-                revision="b" * 40, local_files_only=True, cache_dir=None)
+                repo_id="org/repo",
+                filename="typed-decisions/model.safetensors",
+                revision="b" * 40,
+                local_files_only=True,
+                cache_dir=None,
+            )
 
 
 class DatasetFreezeTests(unittest.TestCase):
@@ -98,11 +128,20 @@ class DatasetFreezeTests(unittest.TestCase):
             self.assertFalse(payload["promotion_authorized"])
             self.assertEqual(payload["observed_window_counts"]["future_2"], 1)
             self.assertEqual((folder / "manifest.json").exists(), True)
-            result = [json.loads(x) for x in (folder / "blinded.jsonl").read_text().splitlines()]
+            result = [
+                json.loads(x)
+                for x in (folder / "blinded.jsonl").read_text().splitlines()
+            ]
             self.assertEqual(len(rows), len(result))
-            self.assertTrue(all("target_q24" not in x for x in result if x["split"] != "train"))
-            self.assertTrue(all("target_q24" in x for x in result if x["split"] == "train"))
-            self.assertTrue("target_q24" in json.loads(source.read_text().splitlines()[-1]))
+            self.assertTrue(
+                all("target_q24" not in x for x in result if x["split"] != "train")
+            )
+            self.assertTrue(
+                all("target_q24" in x for x in result if x["split"] == "train")
+            )
+            self.assertTrue(
+                "target_q24" in json.loads(source.read_text().splitlines()[-1])
+            )
             self.assertNotIn("gold", (folder / "freeze-diagnostic.json").read_text())
             with self.assertRaisesRegex(InvalidTrial, "new absolute directory"):
                 freeze_dataset(template, source, folder)
