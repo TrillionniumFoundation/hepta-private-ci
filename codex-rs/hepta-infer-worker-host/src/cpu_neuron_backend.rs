@@ -187,8 +187,11 @@ impl CpuNeuronFeatureDriverV1 {
         let started = Instant::now();
         let count = requests.len();
         let width = self.weights.output_width;
-        let mut drive = vec![vec![0_i128; width]; count];
-        let mut prediction = vec![vec![0_i128; width]; count];
+        // Output-major contiguous accumulators make each inner batch lane
+        // adjacent in memory and avoid two heap allocations per request.
+        let accumulator_elements = count.checked_mul(width).ok_or(Error::ArithmeticOverflow)?;
+        let mut drive = vec![0_i128; accumulator_elements];
+        let mut prediction = vec![0_i128; accumulator_elements];
         // The weights are the outer loop and are reused across the batch.
         // This is a single native CPU matrix pass, not a loop over model calls.
         for out in 0..width {
@@ -198,8 +201,9 @@ impl CpuNeuronFeatureDriverV1 {
                 let prediction_weight = i128::from(self.weights.prediction_weights[index]);
                 for (position, request) in requests.iter().enumerate() {
                     let value = i128::from(request.feature_vector_q24[input]);
-                    drive[position][out] += drive_weight * value;
-                    prediction[position][out] += prediction_weight * value;
+                    let slot = out * count + position;
+                    drive[slot] += drive_weight * value;
+                    prediction[slot] += prediction_weight * value;
                 }
             }
         }
@@ -207,21 +211,18 @@ impl CpuNeuronFeatureDriverV1 {
         // outputs are an error, never silently clamped to fit a signed receipt.
         let mut computed = Vec::with_capacity(count);
         for (position, request) in requests.iter().enumerate() {
-            let drives = drive[position]
-                .iter()
-                .map(|&value| round_q48_to_q24(value))
+            let drives = (0..width)
+                .map(|out| round_q48_to_q24(drive[out * count + position]))
                 .collect::<Result<Vec<_>, _>>()?;
-            let predictions = prediction[position]
-                .iter()
-                .map(|&value| round_q48_to_q24(value))
+            let predictions = (0..width)
+                .map(|out| round_q48_to_q24(prediction[out * count + position]))
                 .collect::<Result<Vec<_>, _>>()?;
             computed.push((request, drives, predictions));
         }
         let latency_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         let resident_bytes = self.weights.resident_bytes()?;
-        let temporary_elements = count
-            .checked_mul(width)
-            .and_then(|n| n.checked_mul(2))
+        let temporary_elements = accumulator_elements
+            .checked_mul(2)
             .ok_or(Error::ArithmeticOverflow)?;
         // This counts the explicit accumulator buffers. It is an engineering
         // lower bound, NOT independently attested peak RSS or GPU memory.
