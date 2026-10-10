@@ -151,9 +151,33 @@ class MultimodalTests(unittest.TestCase):
         self.assertEqual([x["recall_at_1"] for x in out], [1, 1])
         row = {"case_id": "a", "group_id": "g1", "scope_id": "s", "split": "test",
                "modality": "image", "path": "a.png", "paired_text": "same",
-               "media_sha256": "a" * 64}
+               "media_sha256": "a" * 64, "event_time": "2026-01-01T00:00:00Z"}
         with self.assertRaises(ValueError):
             audit_multimodal([row, {**row, "case_id": "b", "group_id": "g2"}])
+
+
+    def test_media_temporal_order_and_content_leakage(self):
+        base = {"scope_id": "s", "modality": "image", "path": "a.png"}
+        cases = [
+            {**base, "case_id": "a", "group_id": "a", "split": "test",
+             "paired_text": "A", "media_sha256": "a" * 64,
+             "event_time": "2026-01-01T00:00:00Z"},
+            {**base, "case_id": "b", "group_id": "b", "split": "test",
+             "paired_text": "B", "media_sha256": "b" * 64,
+             "event_time": "2026-01-01T00:00:01Z"},
+            {**base, "case_id": "c", "group_id": "c", "split": "future",
+             "paired_text": "C", "media_sha256": "c" * 64,
+             "event_time": "2026-01-02T00:00:00Z"},
+            {**base, "case_id": "d", "group_id": "d", "split": "future",
+             "paired_text": "D", "media_sha256": "d" * 64,
+             "event_time": "2026-01-02T00:00:01Z"},
+        ]
+        self.assertTrue(audit_multimodal(cases)["future_temporal_order_checked"])
+        with self.assertRaises(ValueError):
+            audit_multimodal([*cases[:2], {**cases[2],
+                                          "event_time": "2025-12-31T23:00:00Z"}, cases[3]])
+        with self.assertRaises(ValueError):
+            audit_multimodal([*cases[:2], {**cases[2], "media_sha256": "a" * 64}, cases[3]])
 
 
 class GateTests(unittest.TestCase):
