@@ -214,7 +214,8 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
         }
         let expected_size =
             Self::verify_hash(&self.child_source, &self.plan.child_artifact_digest)?;
-        let mut source = OpenOptions::new().read(true);
+        let mut source = OpenOptions::new();
+        source.read(true);
         let mut target = OpenOptions::new();
         target.write(true).create_new(true);
         #[cfg(unix)]
