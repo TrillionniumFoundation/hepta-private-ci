@@ -178,7 +178,7 @@ fn actually_appends_retired_checkpoint_and_reopens_identical_receipt() {
         let journal_file = fs::read(root.path().join("writer-handoff.log")).expect("disk");
         let raw_last = journal_file.split(|byte| *byte == b'\n')
             .rev().find(|record| !record.is_empty()).expect("last durable record");
-        assert_eq!(original_bytes, raw_last);
+        assert_eq!(original_bytes.as_slice(), raw_last);
         assert_eq!(owner.finalize_once().expect("one original commit"), original);
     }
     let mut recovered = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
