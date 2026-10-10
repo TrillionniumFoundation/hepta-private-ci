@@ -92,8 +92,10 @@ def project(plan, labels, chains, questions, *, revoked):
         if not isinstance(record, dict):
             raise ValueError("missing original publication vote row")
         pinned = by_hash.get(record.get("raw_sha256"))
-        if pinned != record or decision(pinned, originals) != (
-            "eligible_published_unanimous_claim"
+        if (
+            pinned != {k: v for k, v in record.items() if k != "family"}
+            or record.get("family") != case["family"]
+            or decision(pinned, originals) != "eligible_published_unanimous_claim"
         ):
             raise ValueError("published vote row is not valid or selected")
         qid = pinned["row"]["QID"]
