@@ -115,6 +115,31 @@ pub fn stem_feature_vector_digest_v1(values: &[i64]) -> Result<Digest32, StemFea
     Ok(Digest32::of_bytes(&bytes))
 }
 
+/// Immutable identity for the complete frozen Stem feature pipeline.
+///
+/// The encoder digest must bind the tokenizer, preprocessing, model weights,
+/// Matryoshka/quantization projection, feature dimension and generation.
+/// Using *only* the model weights digest would permit incompatible features
+/// to masquerade as the same encoder across different Cell Heads.
+#[must_use]
+pub fn stem_encoder_pipeline_digest_v1(source: &StemFeatureRefV1) -> Digest32 {
+    let mut bytes = b"hepta.inference.stem-encoder-pipeline.v1".to_vec();
+    let model_id = source.stem_model_id.to_string();
+    bytes.extend_from_slice(&(model_id.len() as u32).to_be_bytes());
+    bytes.extend_from_slice(model_id.as_bytes());
+    bytes.extend_from_slice(&source.stem_generation.get().to_be_bytes());
+    bytes.extend_from_slice(&(source.feature_width as u32).to_be_bytes());
+    for digest in [
+        source.stem_weights_digest,
+        source.tokenizer_digest,
+        source.preprocessor_digest,
+        source.projection_digest,
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    Digest32::of_bytes(&bytes)
+}
+
 /// Pure, fail-closed assembly of an existing NeuronFeatureRequestV1.
 /// An owner MUST perform real final-use admission and subsequently dispatch
 /// the returned request, verify its terminal result and CAS the checkpoint.
@@ -170,9 +195,10 @@ pub fn bind_stem_feature_request_v1(
     if selected_head.expected_output_width == 0 || selected_head.expected_output_width > 512 {
         return Err(StemFeatureBindingError::InvalidHead);
     }
+    let pipeline_digest = stem_encoder_pipeline_digest_v1(source);
     if selected_head.required_stem_model_id != source.stem_model_id
         || selected_head.required_stem_generation != source.stem_generation
-        || selected_head.required_encoder_digest != source.stem_weights_digest
+        || selected_head.required_encoder_digest != pipeline_digest
         || selected_head.required_tokenizer_digest != source.tokenizer_digest
         || selected_head.required_preprocessor_digest != source.preprocessor_digest
         || selected_head.required_projection_digest != source.projection_digest
@@ -184,7 +210,7 @@ pub fn bind_stem_feature_request_v1(
         request_id: selected_head.request_id,
         generation: source.stem_generation,
         model_id: selected_head.head_model_id,
-        encoder_digest: source.stem_weights_digest,
+        encoder_digest: pipeline_digest,
         head_digest: selected_head.head_digest,
         weights_digest: selected_head.head_weights_digest,
         input_digest: source.input_digest,
@@ -278,7 +304,7 @@ mod tests {
             head_weights_digest: digest(b"head-weights"),
             required_stem_model_id: id("jina-v5-text-nano"),
             required_stem_generation: generation(7),
-            required_encoder_digest: digest(b"stem"),
+            required_encoder_digest: stem_encoder_pipeline_digest_v1(&source),
             required_tokenizer_digest: digest(b"tokenizer"),
             required_preprocessor_digest: digest(b"preprocessor"),
             required_projection_digest: digest(b"matryoshka256-q24"),
@@ -301,6 +327,10 @@ mod tests {
             "148ae0b91ab97729f72d745e989ac7b03614438cc6030edb2f79748049c70b59"
         );
         assert_eq!(result.request.generation, generation(7));
+        assert_eq!(
+            result.request.encoder_digest.to_string(),
+            "67d4c68e2092bcde7fdccca0386fb39442deac2a0ecb8ff8d98a5510067f5504"
+        );
         assert!(!result.feature_ref_digest.is_zero());
         assert!(!result.authority.grants_any());
     }
@@ -354,6 +384,12 @@ mod tests {
             Err(StemFeatureBindingError::IncompatibleHead)
         );
         selected.required_stem_model_id = id("jina-v5-text-nano");
+        selected.required_encoder_digest = digest(b"raw-stem-weights-only");
+        assert_eq!(
+            bind_stem_feature_request_v1(&source, &access, selected.clone(), &values),
+            Err(StemFeatureBindingError::IncompatibleHead)
+        );
+        selected.required_encoder_digest = stem_encoder_pipeline_digest_v1(&source);
         selected.required_projection_digest = digest(b"other-projection");
         assert_eq!(
             bind_stem_feature_request_v1(&source, &access, selected.clone(), &values),
