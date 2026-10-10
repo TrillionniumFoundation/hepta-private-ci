@@ -8,6 +8,8 @@
 #![forbid(unsafe_code)]
 
 pub mod batched_neuron;
+/// Opt-in, pinned-weight CPU Q24 kernel with actual multi-request matrix execution.
+pub mod cpu_neuron_backend;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
