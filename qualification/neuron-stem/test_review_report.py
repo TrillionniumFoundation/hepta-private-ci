@@ -89,6 +89,8 @@ class ReviewTests(unittest.TestCase):
         self.assertEqual(row["future_ndu_gain"], "待独立因果证据")
         self.assertEqual(row["research_4096_throughput_rps"], 125.)
         self.assertEqual(row["decision"], "Shadow研究通过；NDU与生产待证")
+        self.assertEqual(row["resource_active_heads"], 256)
+        self.assertIn("活跃256", markdown_report(result))
         self.assertFalse(row["production_promotion_permitted"])
         self.assertFalse(result["evaluator_signatures_verified"])
 
@@ -126,6 +128,18 @@ class ReviewTests(unittest.TestCase):
         r["scale"]["distinct_ticked_cells"] = 128
         with self.assertRaisesRegex(ValueError, "complete active-set"):
             make_resource_summary(MODEL, REVISION, r)
+
+    def test_manifest_receipt_cannot_escape_approved_evidence_root(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            manifest = {
+                "schema": "hepta.neuron-stem-review-input.v1",
+                "candidates": [{
+                    "model_id": MODEL, "quality_receipt": "../unapproved.json",
+                }],
+            }
+            with self.assertRaisesRegex(ValueError, "escapes"):
+                review_report(registry(), manifest, root)
 
     def test_manifests_cannot_inject_unknown_models_or_duplicate_inputs(self):
         with self.assertRaisesRegex(ValueError, "unknown candidate"):
