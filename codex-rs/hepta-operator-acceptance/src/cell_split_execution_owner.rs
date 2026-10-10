@@ -379,6 +379,48 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// rollback, stale route or post-open sidecar tamper must fence execution,
     /// even when the coordinator previously opened successfully.
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
+        // The in-memory plan and cursor are not authority over sidecar files.
+        // A post-open edit to the frozen plan or a pending/future frame must
+        // fence all external effects before the next RPC is dispatched.
+        let plan_path = self.root.join("cell-split-frozen-plan.json");
+        if read_frame(&plan_path)?.as_deref() != Some(canonical_json(&self.plan)?.as_slice()) {
+            return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
+        }
+        if self.cursor < STEP_COUNT {
+            let current_prepared = frame_path(&self.root, self.cursor, "prepared");
+            let current_committed = frame_path(&self.root, self.cursor, "committed");
+            if read_frame(&current_committed)?.is_some() {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "unreconciled committed frame",
+                ));
+            }
+            let expected = if self.pending {
+                let step = CellSplitExecutionStepV1::at(self.cursor)
+                    .ok_or(CellSplitExecutionErrorV1::Invalid("step index"))?;
+                Some(canonical_json(&make_intent(
+                    &self.plan,
+                    &self.plan_digest,
+                    step,
+                    &self.previous_receipt_digest,
+                ))?)
+            } else {
+                None
+            };
+            if read_frame(&current_prepared)? != expected {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "pending intent changed after open",
+                ));
+            }
+            for index in self.cursor + 1..STEP_COUNT {
+                if read_frame(&frame_path(&self.root, index, "prepared"))?.is_some()
+                    || read_frame(&frame_path(&self.root, index, "committed"))?.is_some()
+                {
+                    return Err(CellSplitExecutionErrorV1::Invalid(
+                        "uncommitted successor frame",
+                    ));
+                }
+            }
+        }
         let mut predecessor = self.plan_digest.clone();
         for index in 0..self.cursor {
             let step = CellSplitExecutionStepV1::at(index)
@@ -429,6 +471,16 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 &canonical_json(&intent)?,
             )?;
             self.pending = true;
+        }
+        // Re-read the actual prepared frame before crossing the owner
+        // boundary. A forged "committed" sidecar never authorizes a retry.
+        if read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
+            != Some(canonical_json(&intent)?)
+            || read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "effect intent changed before dispatch",
+            ));
         }
         let receipt = if pending {
             self.port
