@@ -446,6 +446,61 @@ mod tests {
         fs::remove_file(path.with_extension("control.writer.lock")).expect("remove lock");
     }
     #[test]
+    fn wal_rejects_legacy_snapshot_without_rewriting_its_bytes() {
+        let path = path();
+        let mut legacy = DurableControlRoleOwnerV1::open(&path).expect("legacy owner");
+        legacy.set_now_ms(20).expect("legacy clock");
+        let before = fs::read(&path).expect("v1 snapshot");
+        drop(legacy);
+        assert!(matches!(
+            IncrementalControlRoleWalV2::open(&path),
+            Err(ControlOwnerErrorV1::InvalidDurableSnapshot)
+        ));
+        assert_eq!(fs::read(&path).expect("unchanged v1"), before);
+        assert_eq!(
+            DurableControlRoleOwnerV1::open(&path)
+                .expect("v1 remains readable")
+                .inner()
+                .now_ms,
+            20
+        );
+        fs::remove_file(&path).expect("remove old snapshot");
+        fs::remove_file(path.with_extension("control.writer.lock")).expect("remove lock");
+    }
+
+    #[test]
+    fn wal_exit_child_fixture() {
+        let Some(path) = std::env::var_os("HEPTA_CONTROL_WAL_EXIT_PATH") else {
+            return;
+        };
+        let mut owner = IncrementalControlRoleWalV2::open(PathBuf::from(path))
+            .expect("isolated child owner");
+        owner.set_now_ms(20).expect("committed clock");
+        // process::exit skips Drop; it is a process-crash fixture, NOT a
+        // physical power-loss or an independent durability attestation.
+        std::process::exit(92);
+    }
+
+    #[test]
+    fn wal_restarts_in_clean_process_after_committed_event() {
+        let path = path();
+        let status = std::process::Command::new(std::env::current_exe().expect("test binary"))
+            .arg("--exact")
+            .arg("control_owner::wal::tests::wal_exit_child_fixture")
+            .env("HEPTA_CONTROL_WAL_EXIT_PATH", &path)
+            .status()
+            .expect("child process");
+        assert_eq!(status.code(), Some(92));
+        let mut reopened = IncrementalControlRoleWalV2::open(&path).expect("reopen");
+        assert_eq!(reopened.committed_operations(), 1);
+        reopened.set_now_ms(21).expect("post-restart monotonic clock");
+        assert_eq!(reopened.committed_operations(), 2);
+        drop(reopened);
+        fs::remove_file(&path).expect("remove log");
+        fs::remove_file(path.with_extension("control.writer.lock")).expect("remove lock");
+    }
+
+    #[test]
     fn log_frames_are_bounded_and_corruption_refuses_reopen() {
         let path = path();
         let mut writer = IncrementalControlRoleWalV2::open(&path).expect("writer");
