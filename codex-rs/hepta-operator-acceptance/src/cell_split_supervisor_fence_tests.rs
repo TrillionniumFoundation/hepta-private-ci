@@ -366,3 +366,21 @@ fn signed_supervisor_rpc_reopens_original_terminal_checkpoint() {
     assert_eq!(client.reconcile(&intent()).expect("reopened"), Some(committed));
     server.join().expect("real socket owner");
 }
+
+
+#[test]
+fn corrupted_terminal_handoff_signature_never_grants_finalization() {
+    let root = root();
+    let mut owner = owner(root.path(), Arc::new(AtomicBool::new(true)));
+    let request = intent();
+    owner.commit_once(&request).expect("real terminal checkpoint");
+    let original = owner.read_committed(&request).unwrap().expect("original");
+    let path = root.path().join(format!("handoff-{}.json", request.idempotency_key));
+    let mut tampered: CellSplitSupervisorCommitV1 =
+        serde_json::from_slice(&fs::read(&path).expect("checkpoint")).expect("receipt");
+    tampered.original_checkpoint_signature_bytes[0] ^= 0x80;
+    fs::write(&path, canonical_json(&tampered).expect("modified terminal"))
+        .expect("external tamper");
+    assert!(owner.verify_current(&request, &original).is_err());
+    assert!(owner.read_committed(&request).is_err());
+}
