@@ -200,7 +200,15 @@ fn compact_constant_gate_and_zero_prediction_do_not_triple_head_storage() {
     compact.prediction_weights_q24.clear();
     compact.gate_weights_q24.clear();
     let full = sample_head(false);
-    assert!(compact.digest().is_ok());
+    assert_eq!(
+        compact.digest().expect("canonical Q24 head digest"),
+        "3b7962a1f859f4e3a2594c37a3d3b99e6c6c6813102947f9ab3e68aa0cb22e82"
+    );
+    assert_eq!(
+        cpu_gated_bundle_weights_digest(&"a".repeat(64), &[compact.clone()])
+            .expect("cross-language bundle digest"),
+        "277d9ebc5a6066bcf29e846081cd771578b05e570fd3dbad8785cc3ce05162df"
+    );
     assert_ne!(compact.digest().expect("digest"), full.digest().expect("digest"));
     assert!(compact.tracked_parameter_bytes().expect("bytes")
         < full.tracked_parameter_bytes().expect("bytes"));
