@@ -179,6 +179,55 @@ fn compatible_coalescing_respects_global_scan_and_batch_limits() {
     assert_eq!(second.pending, 0);
 }
 
+#[test]
+fn affinity_index_fills_batch_without_scanning_unrelated_scopes() {
+    let mut config = limits();
+    config.max_lanes_per_poll = 2;
+    config.max_batch_size = 2;
+    let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
+    q.enqueue(1, intent("first", "a-first", 1, 1, 100))
+        .unwrap();
+    let mut unrelated = intent("other", "b-unrelated", 1, 1, 100);
+    unrelated.key.model_digest = digest("different-model");
+    q.enqueue(1, unrelated).unwrap();
+    q.enqueue(1, intent("compatible", "z-compatible", 1, 99, 100))
+        .unwrap();
+
+    let result = q.poll_physically_compatible(11).unwrap();
+    assert_eq!(result.scanned_lanes, 2);
+    assert_eq!(result.pending, 1);
+    let batch = result.batch.unwrap();
+    assert_eq!(batch.requests.len(), 2);
+    assert_eq!(batch.requests[0].request_id, id("first"));
+    assert_eq!(batch.requests[1].request_id, id("compatible"));
+    assert_eq!(batch.requests[1].key.route_fence, 99);
+    let other = q.poll_physically_compatible(11).unwrap().batch.unwrap();
+    assert_eq!(other.requests[0].request_id, id("other"));
+    assert_eq!(q.pending(), 0);
+    assert_eq!(q.active_lanes(), 0);
+    assert!(q.physical_lanes.is_empty());
+}
+
+#[test]
+fn physical_affinity_index_cleans_up_after_expiry_and_cutover() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(1, intent("expired", "scope-a", 1, 1, 5))
+        .unwrap();
+    q.enqueue(1, intent("fenced", "scope-b", 1, 1, 100))
+        .unwrap();
+    q.enqueue(1, intent("live", "scope-c", 1, 1, 100))
+        .unwrap();
+    assert_eq!(
+        q.retain_scope_binding(&id("scope-b"), Generation::new(2).unwrap(), 1, 1),
+        vec![id("fenced")]
+    );
+    let result = q.poll_physically_compatible(11).unwrap();
+    assert_eq!(result.expired_request_ids, vec![id("expired")]);
+    assert_eq!(result.batch.unwrap().requests[0].request_id, id("live"));
+    assert_eq!(q.pending(), 0);
+    assert!(q.physical_lanes.is_empty());
+}
+
 // Opt-in source benchmark: not hardware acceptance, report raw durations.
 #[test]
 #[ignore = "run with --ignored --nocapture on deployment hardware"]
