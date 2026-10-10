@@ -33,11 +33,16 @@ struct DiskSupervisor {
     root: PathBuf,
     signer: SigningKey,
     authorized: Arc<AtomicBool>,
+    replay_old_readback: bool,
 }
 
 impl DiskSupervisor {
     fn new(root: PathBuf, authorized: Arc<AtomicBool>) -> Self {
-        Self { root, signer: SigningKey::from_bytes(&[13; 32]), authorized }
+        Self { root, signer: SigningKey::from_bytes(&[13; 32]), authorized, replay_old_readback: false }
+    }
+    fn with_stale_readback(mut self) -> Self {
+        self.replay_old_readback = true;
+        self
     }
     fn state_path(&self) -> PathBuf {
         self.root.join("actual-writer-handoff.json")
@@ -83,8 +88,13 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
         challenge_nonce: &str,
     ) -> Result<CellSplitSupervisorLiveFenceV1, Self::Error> {
         let state = self.snapshot();
+        let actual_nonce = if self.replay_old_readback {
+            "00".repeat(32)
+        } else {
+            challenge_nonce.to_owned()
+        };
         let signature = self.signer.sign(
-            &canonical_json(&(&state, challenge_nonce)).map_err(|e| e.to_string())?
+            &canonical_json(&(&state, &actual_nonce)).map_err(|e| e.to_string())?
         );
         Ok(CellSplitSupervisorLiveFenceV1 {
             supervisor_id: state.supervisor_id,
@@ -100,7 +110,7 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
             new_writer_admission_open: state.new_admission_open,
             unknown_effect_count: state.unknown_effects,
             current_revision: state.revision,
-            challenge_nonce: challenge_nonce.to_owned(),
+            challenge_nonce: actual_nonce,
             signed_live_checkpoint_bytes: signature.to_bytes().to_vec(),
         })
     }
@@ -385,4 +395,20 @@ fn corrupted_terminal_handoff_signature_never_grants_finalization() {
         .expect("external tamper");
     assert!(owner.verify_current(&request, &original).is_err());
     assert!(owner.read_committed(&request).is_err());
+}
+
+
+#[test]
+fn replayed_supervisor_checkpoint_is_not_a_fresh_readback() {
+    let root = root();
+    let port = DiskSupervisor::new(
+        root.path().to_path_buf(), Arc::new(AtomicBool::new(true)),
+    ).with_stale_readback();
+    let mut owner = CellSplitSupervisorFenceOwnerV1::open(
+        root.path(), plan(), binding(), port,
+    ).expect("frozen Supervisor");
+    assert!(matches!(
+        owner.read_committed(&intent()),
+        Err(CellSplitSupervisorFenceErrorV1::Invalid)
+    ));
 }
