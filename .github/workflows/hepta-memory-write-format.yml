@@ -1,0 +1,51 @@
+name: MemoryCell temporary source-write formatter
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-write-format.yml'
+permissions:
+  contents: read
+jobs:
+  candidate:
+    if: github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: ./.github/actions/setup-ci
+      - name: Create only a separate, AST-equivalent formatter candidate
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/write-format-python
+          /tmp/write-format-python/bin/pip install uv==0.8.22
+          export PATH="/tmp/write-format-python/bin:$PATH"
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          names = ['experience_memory.py', 'experience_write_trial.py', 'test_experience_memory.py', 'test_experience_write_trial.py']
+          paths = [Path('scripts/memory_cell') / n for n in names]
+          Path('/tmp/write-ast.json').write_text(json.dumps({str(p): ast.dump(ast.parse(p.read_text())) for p in paths}))
+          PY
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/write-ast.json').read_text())
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          assert set(changed).issubset(before)
+          assert all(ast.dump(ast.parse(Path(p).read_text())) == tree for p, tree in before.items())
+          subprocess.run(['git', 'add', '--', *changed], check=True) if changed else None
+          PY
+          git rm .github/workflows/hepta-memory-write-format.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format source-only writing and remove temporary formatter'
+          git push origin "HEAD:refs/heads/codex/source-write-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
