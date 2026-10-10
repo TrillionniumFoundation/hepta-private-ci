@@ -1,0 +1,96 @@
+name: MemoryCell completion projection conformance
+on:
+  push:
+    branches:
+      - "codex/memory-cell-completion-20261011"
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_completion*.py"
+      - "scripts/memory_cell/test_source_completion*.py"
+      - "scripts/memory_cell/check_source_completion*.py"
+      - "scripts/memory_cell/experience_memory.py"
+      - "scripts/memory_cell/experience_write_trial.py"
+      - ".github/workflows/hepta-memory-completion-projection.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pinned-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Stage the exact original Python environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/completion-contracts
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/completion-input.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          raw = Path('/tmp/completion-input.zip').read_bytes()
+          assert len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/completion-input.zip') as archive:
+              env = archive.read('environment.txt')
+              assert len(env) < 64 * 1024
+              Path('/tmp/completion-contracts/expected-environment.txt').write_bytes(env)
+          PY
+          python3 -m venv /tmp/completion-python
+          /tmp/completion-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/completion-python/bin/pip install -r /tmp/completion-contracts/expected-environment.txt
+          /tmp/completion-python/bin/pip freeze > /tmp/completion-contracts/environment.txt
+          diff -u /tmp/completion-contracts/expected-environment.txt /tmp/completion-contracts/environment.txt
+      - name: Actual pinned Qwen2 and PEFT in a fresh process
+        run: |
+          set -euo pipefail
+          /tmp/completion-python/bin/python scripts/memory_cell/check_source_completion_qwen.py /tmp/completion-contracts/qwen 2>&1 | tee /tmp/completion-contracts/qwen.log
+      - name: Complete existing regression suite in a separate process
+        run: |
+          set -euo pipefail
+          /tmp/completion-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/completion-contracts/tests.log
+      - name: Required repository format check
+        if: always()
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/completion-contracts
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          set +e
+          just fmt --check --base "$BASE" > /tmp/completion-contracts/format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/completion-contracts/format.log
+          if [ "$status" -ne 0 ]; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_completion*.py scripts/memory_cell/test_source_completion*.py scripts/memory_cell/check_source_completion*.py > /tmp/completion-contracts/format.diff || true
+          fi
+          exit "$status"
+      - name: Preserve exact tested source and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/completion-contracts/source
+          cp scripts/memory_cell/source_completion*.py scripts/memory_cell/test_source_completion*.py scripts/memory_cell/check_source_completion*.py /tmp/completion-contracts/source/
+          git rev-parse HEAD > /tmp/completion-contracts/tested-commit.txt
+          (cd /tmp/completion-contracts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-completion-projection-contracts
+          path: /tmp/completion-contracts
+          if-no-files-found: error
