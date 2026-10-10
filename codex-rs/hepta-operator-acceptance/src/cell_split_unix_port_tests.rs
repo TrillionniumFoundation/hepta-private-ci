@@ -28,10 +28,29 @@ fn bound_sockets(
     (endpoints, listeners)
 }
 
+fn plan() -> CellSplitExecutionPlanV1 {
+    CellSplitExecutionPlanV1 {
+        split_id: "split-42".into(),
+        scope_digest: "11".repeat(32),
+        parent_generation: 3,
+        child_generation: 4,
+        parent_artifact_digest: "22".repeat(32),
+        child_artifact_digest: "33".repeat(32),
+        ndu_snapshot_digest: "44".repeat(32),
+        route_fence_digest: "55".repeat(32),
+        owner_ids: [
+            "external-owner-0".into(),
+            "external-owner-1".into(),
+            "external-owner-2".into(),
+            "external-owner-3".into(),
+        ],
+    }
+}
+
 fn intent() -> CellSplitExecutionIntentV1 {
     CellSplitExecutionIntentV1 {
         schema: "hepta.learning.cell-split.execution-owner.v1".into(),
-        plan_digest: "11".repeat(32),
+        plan_digest: sha256(&canonical_json(&plan()).expect("frozen plan")),
         step: CellSplitExecutionStepV1::ArtifactCas,
         owner_id: "external-owner-0".into(),
         idempotency_key: "22".repeat(32),
@@ -65,6 +84,8 @@ fn exchange(
     stream.read_exact(&mut body).expect("read request");
     let request: RpcRequestV1 = serde_json::from_slice(&body).expect("decode request");
     assert_eq!(request.schema, RPC_SCHEMA);
+    assert_eq!(sha256(&canonical_json(&request.plan).expect("plan")), request.intent.plan_digest);
+    assert_eq!(request.plan.owner_ids[request.intent.step.index()], request.intent.owner_id);
     assert_eq!(request.operation, expected);
     assert_eq!(body, canonical_json(&request).expect("canonical"));
     let response = RpcResponseV1 {
@@ -86,7 +107,7 @@ fn exchange(
 fn unix_port_executes_once_then_verifies_with_fresh_read_only_rpc() {
     let root = private_root();
     let (endpoints, mut listeners) = bound_sockets(root.path());
-    let mut port = CellSplitUnixPortV1::new(root.path(), endpoints).expect("admitted sockets");
+    let mut port = CellSplitUnixPortV1::new(root.path(), plan(), endpoints).expect("admitted sockets");
     let listener = listeners.remove(0);
     let request = intent();
     let proof = receipt(&request);
@@ -122,7 +143,7 @@ fn unix_port_executes_once_then_verifies_with_fresh_read_only_rpc() {
 fn unix_port_rejects_owner_substitution_and_missing_committed_effect() {
     let root = private_root();
     let (endpoints, mut listeners) = bound_sockets(root.path());
-    let mut port = CellSplitUnixPortV1::new(root.path(), endpoints).expect("admitted sockets");
+    let mut port = CellSplitUnixPortV1::new(root.path(), plan(), endpoints).expect("admitted sockets");
     let listener = listeners.remove(0);
     let request = intent();
     let proof = receipt(&request);
@@ -153,18 +174,18 @@ fn unix_port_fails_closed_for_socket_alias_or_wrong_intent_owner() {
     let mut wrong_owner = intent();
     wrong_owner.owner_id = "external-owner-3".into();
     let mut port =
-        CellSplitUnixPortV1::new(root.path(), endpoints.clone()).expect("admitted sockets");
+        CellSplitUnixPortV1::new(root.path(), plan(), endpoints.clone()).expect("admitted sockets");
     assert!(matches!(
         port.reconcile(&wrong_owner),
         Err(CellSplitUnixPortErrorV1::Invalid(_))
     ));
 
     endpoints[1].socket_path = endpoints[0].socket_path.clone();
-    assert!(CellSplitUnixPortV1::new(root.path(), endpoints.clone()).is_err());
+    assert!(CellSplitUnixPortV1::new(root.path(), plan(), endpoints.clone()).is_err());
     endpoints[1].socket_path = root.path().join("effect-1.sock");
     let alias = root.path().join("alias.sock");
     std::os::unix::fs::symlink(&endpoints[0].socket_path, &alias).expect("create alias");
     endpoints[1].socket_path = alias;
-    assert!(CellSplitUnixPortV1::new(root.path(), endpoints).is_err());
+    assert!(CellSplitUnixPortV1::new(root.path(), plan(), endpoints).is_err());
     drop(listeners);
 }
