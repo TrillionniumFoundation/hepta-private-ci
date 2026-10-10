@@ -10,9 +10,11 @@ of long-term efficacy.
 import argparse
 from collections import defaultdict
 import copy
+import hashlib
 from datetime import datetime, timezone
 import json
 import math
+import os
 from pathlib import Path
 import time
 
@@ -95,6 +97,30 @@ def score_prediction(probs, truth):
     }
 
 
+def prediction_precommit(row, probabilities, head_digest, event_order):
+    """Deterministic label-free prediction journal record, before learning."""
+    if type(event_order) is not int or event_order < 0:
+        raise ValueError("invalid logical event order")
+    if not isinstance(head_digest, str) or len(head_digest) != 64:
+        raise ValueError("missing trained Head identity")
+    if not isinstance(probabilities, list) or len(probabilities) < 2:
+        raise ValueError("invalid pre-label probabilities")
+    if any(type(p) not in (int, float) or not math.isfinite(p) or p < 0 or p > 1
+           for p in probabilities) or abs(sum(probabilities) - 1.0) > 1e-5:
+        raise ValueError("pre-label probability normalization invalid")
+    return {
+        "schema": "hepta.jina-v5-prequential-prediction-precommit.v1",
+        "case_id": row["case_id"], "cell_id": row["cell_id"],
+        "scope_id": row["scope_id"], "event_time": row["event_time"],
+        "event_order": event_order,
+        "input_digest": sha256_record([row["state"], row["question"], row["options"]]),
+        "head_digest": head_digest,
+        "probabilities": probabilities,
+        "outcome_included": False,
+        "production_promotion_permitted": False,
+    }
+
+
 def trial(args):
     import psutil
     import torch
@@ -127,7 +153,8 @@ def trial(args):
         raise ValueError("total Cell Head weight/optimizer budget exceeded")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     manifest = Path(str(args.output) + ".manifest.json")
-    if args.output.exists() or manifest.exists():
+    prediction_journal_path = Path(str(args.output) + ".prediction-journal.jsonl")
+    if any(p.exists() for p in (args.output, manifest, prediction_journal_path)):
         raise ValueError("refusing to overwrite frozen evidence")
     torch.manual_seed(args.seed)
     torch.set_num_threads(args.threads)
@@ -204,6 +231,10 @@ def trial(args):
     outcomes, frozen_outcomes, records = [], [], []
     update_ms = 0.
     process = psutil.Process()
+    journal_hash = hashlib.sha256()
+    # Exclusive create: a restart must never quietly append to an old
+    # incomplete run or claim that two generations are the same journal.
+    prediction_journal_path.open("x", encoding="utf-8").close()
     for index, row in enumerate(future):
         key = (row["scope_id"], row["cell_id"])
         head, frozen, optimizer = cell_heads[key], control_heads[key], optimizers[key]
@@ -214,11 +245,18 @@ def trial(args):
         # Prediction evidence is calculated BEFORE any access to this event's
         # label is used for an update. The label is only read below this fence.
         before_digest = effective_weights_digest(head)
-        sealed = sha256_record({
-            "case_id": row["case_id"], "cell_id": row["cell_id"],
-            "scope_id": row["scope_id"], "prediction": learned_prob,
-            "head_digest": before_digest, "logical_order": index,
-        })
+        precommit = prediction_precommit(row, learned_prob, before_digest, index)
+        precommit["record_digest"] = sha256_record(precommit)
+        line = (json.dumps(precommit, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")) + "\\n").encode("utf-8")
+        # Durable write-ahead boundary before revealing a training label.
+        # The journal is advisory/unsigned; fsync does not authenticate input.
+        with prediction_journal_path.open("ab") as journal:
+            journal.write(line)
+            journal.flush()
+            os.fsync(journal.fileno())
+        journal_hash.update(line)
+        sealed = precommit["record_digest"]
         # Offline replay owns outcome labels; a real stream must obtain an
         # authenticated outcome from a separate result/evaluation owner.
         truth = row["label"]
@@ -288,6 +326,10 @@ def trial(args):
         "max_total_head_parameters": args.max_total_head_parameters,
         "precommitted_max_per_cell_retention_brier_regression": args.max_retention_brier_regression,
         "future_event_count": len(future),
+        "pre_label_prediction_journal": str(prediction_journal_path),
+        "pre_label_prediction_journal_sha256": journal_hash.hexdigest(),
+        "pre_label_prediction_journal_event_count": len(records),
+        "pre_label_predictions_fsynced": True,
         "pretrain_wall_ms": train_ms, "future_update_wall_ms": update_ms,
         "initial_head_digests": initial_digests,
         "final_head_digests": final_digests,
@@ -322,6 +364,7 @@ def trial(args):
         "source_model_revision": args.revision,
         "dataset_digest": audit["dataset_digest"],
         "signed_evaluator_receipt": False,
+        "prediction_journal_sha256": journal_hash.hexdigest(),
     })
 
 
