@@ -227,7 +227,10 @@ class ExperienceReader(ReferenceReader):
                         ),
                         flush=True,
                     )
-            if tokens != plan["planned_input_tokens"] or supervised != plan["planned_supervised_tokens"]:
+            if (
+                tokens != plan["planned_input_tokens"]
+                or supervised != plan["planned_supervised_tokens"]
+            ):
                 raise ValueError("actual source-write exposure differs from plan")
             delta = sum(
                 float((v - before[k]).square().sum())
