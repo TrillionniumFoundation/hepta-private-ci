@@ -472,6 +472,44 @@ mod tests {
         }
     }
     #[test]
+    fn local_preview_is_independent_of_unrelated_dispatch_history() {
+        let mut owner = InMemoryControlRoleOwnerV1::default();
+        owner.set_now_ms(20);
+        owner
+            .activate_generation(
+                StableId::new("cell.control").expect("cell"),
+                Generation::new(3).expect("generation"),
+                digest("fence"),
+            )
+            .expect("binding");
+        for n in 0..4096 {
+            owner
+                .prepare(request(&format!("historical-{n}")))
+                .expect("historical admission");
+        }
+        let next = Event::Prepare(request("next"));
+        let preview = next.local_preview(&owner);
+        assert_eq!(owner.records.len(), 4096);
+        assert!(preview.records.is_empty());
+        assert!(preview.idempotency_index.is_empty());
+        assert_eq!(preview.active_generations.len(), 1);
+        assert_eq!(preview.next_sequence, owner.next_sequence);
+        let mut shadow = preview;
+        let expected = next.apply(&mut shadow).expect("preview receipt");
+        let actual = next.apply(&mut owner).expect("full oracle receipt");
+        assert_eq!(expected, actual);
+        assert_eq!(owner.records.len(), 4097);
+        let retry = Event::Prepare(request("historical-1"));
+        let retry_preview = retry.local_preview(&owner);
+        assert_eq!(retry_preview.records.len(), 1);
+        assert_eq!(retry_preview.idempotency_index.len(), 1);
+        assert_eq!(
+            retry.apply(&mut retry_preview.clone()).expect("preview retry"),
+            retry.apply(&mut owner).expect("full retry")
+        );
+    }
+
+    #[test]
     fn append_reopen_terminal_reconcile_and_stale_writer_are_fenced() {
         let path = path();
         let mut writer = IncrementalControlRoleWalV2::open(&path).expect("writer");
