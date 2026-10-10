@@ -543,6 +543,69 @@ mod tests {
         fs::remove_file(path.with_extension("control.writer.lock")).expect("remove lock");
     }
     #[test]
+    fn invalid_route_fence_and_conflicting_key_do_not_append_events() {
+        let path = path();
+        let mut owner = IncrementalControlRoleWalV2::open(&path).expect("owner");
+        owner.set_now_ms(20).expect("clock");
+        owner
+            .activate_generation(
+                StableId::new("cell.control").expect("cell"),
+                Generation::new(3).expect("generation"),
+                digest("fence"),
+            )
+            .expect("binding");
+        let saved = fs::read(&path).expect("before rejection");
+        let mut wrong = request("invalid");
+        wrong.route_fence_digest = digest("stale-fence");
+        assert_eq!(
+            owner.prepare(wrong),
+            Err(ControlOwnerErrorV1::RouteFenceMismatch)
+        );
+        assert_eq!(fs::read(&path).expect("unchanged after rejection"), saved);
+        assert_eq!(owner.committed_operations(), 2);
+
+        owner.prepare(request("valid")).expect("valid");
+        let saved = fs::read(&path).expect("before key conflict");
+        let mut duplicate_key = request("different-dispatch");
+        duplicate_key.idempotency_key_digest = digest("valid");
+        assert_eq!(
+            owner.prepare(duplicate_key),
+            Err(ControlOwnerErrorV1::IdempotencyKeyConflict)
+        );
+        assert_eq!(fs::read(&path).expect("unchanged after conflict"), saved);
+        assert_eq!(owner.committed_operations(), 3);
+        drop(owner);
+        fs::remove_file(&path).expect("remove WAL");
+        fs::remove_file(path.with_extension("control.writer.lock")).expect("remove lock");
+    }
+
+    #[test]
+    fn partial_wal_frame_is_not_a_recoverable_commit() {
+        let path = path();
+        let mut owner = IncrementalControlRoleWalV2::open(&path).expect("owner");
+        owner.set_now_ms(20).expect("commit");
+        drop(owner);
+        let previous = fs::read(&path).expect("committed bytes");
+        let mut corrupt = fs::OpenOptions::new()
+            .append(true)
+            .open(&path)
+            .expect("raw crash fixture");
+        corrupt.write_all(&[0, 0, 0, 100, 42]).expect("partial frame");
+        corrupt.sync_all().expect("persist torn tail");
+        drop(corrupt);
+        assert!(matches!(
+            IncrementalControlRoleWalV2::open(&path),
+            Err(ControlOwnerErrorV1::InvalidDurableSnapshot)
+        ));
+        assert_eq!(
+            fs::read(&path).expect("rejected tail").len(),
+            previous.len() + 5
+        );
+        fs::remove_file(&path).expect("remove");
+        fs::remove_file(path.with_extension("control.writer.lock")).expect("remove lock");
+    }
+
+    #[test]
     fn wal_rejects_legacy_snapshot_without_rewriting_its_bytes() {
         let path = path();
         let mut legacy = DurableControlRoleOwnerV1::open(&path).expect("legacy owner");
