@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: e100b8d2160e38acace6659f61d4ba682a166321
+      CHAIN_SOURCE_SHA: 228b156dc14ea938300b9503092e1ddd55014e4a
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'e100b8d2160e38acace6659f61d4ba682a166321' || '62df671636aa000f8a36d1e41197d2fab08f4ba7' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '228b156dc14ea938300b9503092e1ddd55014e4a' || '51a9c62296431961838dba5caad29c03a89271f8' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -197,6 +197,16 @@ jobs:
           CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(pon_)' --no-capture
+      - name: Require every changed SQLite and Matrix owner regression
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/automation-migration-owners.json" --minimum-tests 7 -- just test --locked -p codex-hepta-automation --lib -E 'test(migration_convergence_tests)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/memory-schema-owner.json" --minimum-tests 1 -- just test --locked -p codex-hepta-memory --lib -E 'test(compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected)' --no-capture
+          for selector in offline_terminal_recovery_replays_existing_final_once_and_ignores_late_delta persisted_terminal_identity_or_incomplete_items_cannot_complete_dispatch bounded_history_cursor_survives_restart_and_reaches_turn_older_than_1600; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-matrixd --lib -E "test($selector)" --no-capture
+          done
       - name: Require every concrete pipe failure selector to execute nonempty
         env:
           CARGO_NET_OFFLINE: "true"
