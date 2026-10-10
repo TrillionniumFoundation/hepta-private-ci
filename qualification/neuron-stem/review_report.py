@@ -28,6 +28,19 @@ def load_json(path):
     return result
 
 
+def resolve_manifest_receipt(base_path, value):
+    if not isinstance(value, str) or not value:
+        raise ValueError("receipt path must be a nonempty relative JSON path")
+    relative = Path(value)
+    if relative.is_absolute() or ".." in relative.parts or relative.suffix != ".json":
+        raise ValueError("receipt path escapes frozen review input scope")
+    approved_root = Path(base_path).resolve(strict=True)
+    exact = (approved_root / relative).resolve(strict=True)
+    if not exact.is_relative_to(approved_root) or not exact.is_file():
+        raise ValueError("receipt path escapes approved review input scope")
+    return load_json(exact)
+
+
 def positive_number(v):
     return type(v) in (int, float) and math.isfinite(v) and v > 0
 
@@ -162,14 +175,14 @@ def review_report(registry, manifest, base_path):
         item = provided.get(model_id, {})
         quality, resource = None, None
         if item.get("quality_receipt"):
-            path = base_path / item["quality_receipt"]
-            quality = make_quality_summary(model_id, load_json(path))
+            quality = make_quality_summary(
+                model_id, resolve_manifest_receipt(base_path, item["quality_receipt"]))
         if item.get("resource_receipt"):
             if quality is None:
                 raise ValueError("resource receipt cannot be matched without model quality revision")
-            path = base_path / item["resource_receipt"]
-            resource = make_resource_summary(model_id, quality["model_revision"],
-                                             load_json(path))
+            resource = make_resource_summary(
+                model_id, quality["model_revision"],
+                resolve_manifest_receipt(base_path, item["resource_receipt"]))
         if quality is None:
             decision = "未判定"
         elif not quality["offline_quality_gate_passed"] or not quality["cell_learning_gate_passed"]:
@@ -199,6 +212,8 @@ def review_report(registry, manifest, base_path):
                 resource["measured_research_throughput_rps"]
                 if resource and resource["logical_cells"] == 4096 else None),
             "resource_scale": (resource["logical_cells"] if resource else None),
+            "resource_active_heads": (
+                resource["distinct_ticked_cells"] if resource else None),
             "cell_learning_gate_passed": (
                 quality["cell_learning_gate_passed"] if quality else False),
             "research_resource_gate_passed": (
@@ -241,7 +256,7 @@ def markdown_report(report):
         "",
         "> 本表中的研究版资源吞吐不是生产 Worker 吞吐；未来分类准确率收益不是独立 NDU 因果效用。",
         "",
-        "| 候选 | 未来NDU效用 | 未来准确率变化 | 负迁移项 | 峰值RSS (MiB) | 研究p99 (ms) | 4096 Cell研究吞吐 (req/s) | 结论 |",
+        "| 候选 | 未来NDU效用 | 未来准确率变化 | 负迁移项 | 峰值RSS (MiB) | 研究p99 (ms) | 4096逻辑Cell研究吞吐（req/s及活跃数） | 结论 |",
         "|---|---|---:|---:|---:|---:|---:|---|",
     ]
     for row in report["rows"]:
@@ -251,7 +266,9 @@ def markdown_report(report):
             fmt(row["future_offline_accuracy_gain"]), fmt(row["negative_transfer"]),
             fmt(rss / (1024 * 1024) if rss is not None else None),
             fmt(row["research_p99_ms"]),
-            fmt(row["research_4096_throughput_rps"]),
+            (fmt(row["research_4096_throughput_rps"])
+             + f"（活跃{row['resource_active_heads']}）"
+             if row["research_4096_throughput_rps"] is not None else "待测"),
             fmt(row["decision"]),
         ]) + " |")
     body.extend([
