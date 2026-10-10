@@ -146,6 +146,17 @@ pub struct CellSplitExecutionReceiptV1 {
     pub receipt_digest: String,
 }
 
+/// Read-only evidence export after four current independent owner readbacks.
+/// The coordinator cannot sign, promote or deploy this bundle: a separate
+/// Observer must authenticate the original owners and target-host evidence.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitExecutionTranscriptV1 {
+    pub plan: CellSplitExecutionPlanV1,
+    pub receipts: Vec<CellSplitExecutionReceiptV1>,
+    pub transcript_digest: String,
+}
+
 /// Domain-separated signature payload shared with real external effect owners.
 /// It binds the step, exact idempotency key, owner result and observed sequence.
 /// A signature is not enough: read-after-write owner verification stays required.
@@ -372,6 +383,49 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     #[must_use]
     pub fn is_complete(&self) -> bool {
         self.cursor == STEP_COUNT
+    }
+
+    /// Export a four-effect proof only while every original commit is still
+    /// live, independently signed and bound to the same frozen plan. A local
+    /// digest chain alone never substitutes for fresh owner readback.
+    pub fn verified_transcript(
+        &mut self,
+    ) -> Result<Option<CellSplitExecutionTranscriptV1>, CellSplitExecutionErrorV1> {
+        self.verify_committed_prefix()?;
+        if !self.is_complete() {
+            return Ok(None);
+        }
+        let mut predecessor = self.plan_digest.clone();
+        let mut receipts = Vec::with_capacity(STEP_COUNT);
+        for index in 0..STEP_COUNT {
+            let step = CellSplitExecutionStepV1::at(index)
+                .ok_or(CellSplitExecutionErrorV1::Invalid("transcript step"))?;
+            let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
+            let prepared = read_frame(&frame_path(&self.root, index, "prepared"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("transcript missing intent"),
+            )?;
+            if prepared != canonical_json(&intent)? {
+                return Err(CellSplitExecutionErrorV1::Invalid("transcript intent drift"));
+            }
+            let stored = read_frame(&frame_path(&self.root, index, "committed"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("transcript missing commit"),
+            )?;
+            let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&stored)?;
+            validate_receipt(&intent, &receipt)?;
+            self.trust.verify(&intent, &receipt)?;
+            self.port.verify_committed(&intent, &receipt)
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            predecessor = receipt.receipt_digest.clone();
+            receipts.push(receipt);
+        }
+        let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
+        payload.extend_from_slice(&canonical_json(&self.plan)?);
+        payload.extend_from_slice(&canonical_json(&receipts)?);
+        Ok(Some(CellSplitExecutionTranscriptV1 {
+            plan: self.plan.clone(),
+            receipts,
+            transcript_digest: sha256(&payload),
+        }))
     }
 
     /// Read each committed predecessor back from the durable ledger and from
