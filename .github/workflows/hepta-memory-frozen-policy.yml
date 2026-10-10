@@ -2,12 +2,12 @@ name: MemoryCell frozen policy lifetime and actual tasks
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/frozen_memory_session.py'
-      - 'scripts/memory_cell/policy_ancestry.py'
-      - 'scripts/memory_cell/frozen_policy*.py'
-      - 'scripts/memory_cell/test_policy_ancestry.py'
-      - 'scripts/memory_cell/test_frozen_policy*.py'
-      - '.github/workflows/hepta-memory-frozen-policy.yml'
+      - "scripts/memory_cell/frozen_memory_session.py"
+      - "scripts/memory_cell/policy_ancestry.py"
+      - "scripts/memory_cell/frozen_policy*.py"
+      - "scripts/memory_cell/test_policy_ancestry.py"
+      - "scripts/memory_cell/test_frozen_policy*.py"
+      - ".github/workflows/hepta-memory-frozen-policy.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -41,10 +41,10 @@ jobs:
     timeout-minutes: 60
     env:
       PYTHONPATH: scripts/memory_cell
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-      TOKENIZERS_PARALLELISM: 'false'
-      OMP_NUM_THREADS: '2'
-      MKL_NUM_THREADS: '2'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
       HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -117,8 +117,8 @@ jobs:
           /tmp/frozen-python/bin/python scripts/memory_cell/frozen_policy_trial.py freeze /tmp/frozen-input/observations/sources.json /tmp/frozen-evidence/policy.json /tmp/frozen-evidence/sessions --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --policy-sha "$(sha256sum /tmp/frozen-evidence/policy.json | cut -d ' ' -f1)" --commit "$HEPTA_MEMORY_TESTED_COMMIT"
       - name: New process produces all 32 actual answers and shared procedure outcomes
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/frozen-evidence/read-resource.txt /tmp/frozen-python/bin/python scripts/memory_cell/frozen_policy_trial.py run /tmp/frozen-input/plan /tmp/frozen-input/observations /tmp/frozen-model /tmp/frozen-evidence/sessions /tmp/frozen-evidence/experiment --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --stage-sha "$(sha256sum /tmp/frozen-model/stage.json | cut -d ' ' -f1)" --catalog-sha "$(sha256sum /tmp/frozen-evidence/sessions/CATALOG.json | cut -d ' ' -f1)" --withdrawals /tmp/frozen-evidence/current-empty.json --withdrawal-sha "$(sha256sum /tmp/frozen-evidence/current-empty.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/frozen-evidence/reader.log

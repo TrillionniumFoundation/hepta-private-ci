@@ -2,13 +2,13 @@ name: MemoryCell preserved frozen answer inspection
 on:
   push:
     branches:
-      - 'codex/memory-cell-evidence-20261008'
+      - "codex/memory-cell-evidence-20261008"
     paths:
-      - '.github/workflows/hepta-memory-historical-task-inspection.yml'
-      - 'scripts/memory_cell/lifecycle_accounting.py'
-      - 'scripts/memory_cell/frozen_policy_receipt.py'
-      - 'scripts/memory_cell/test_lifecycle_accounting.py'
-      - 'scripts/memory_cell/test_frozen_policy_receipt.py'
+      - ".github/workflows/hepta-memory-historical-task-inspection.yml"
+      - "scripts/memory_cell/lifecycle_accounting.py"
+      - "scripts/memory_cell/frozen_policy_receipt.py"
+      - "scripts/memory_cell/test_lifecycle_accounting.py"
+      - "scripts/memory_cell/test_frozen_policy_receipt.py"
   workflow_dispatch:
 permissions:
   contents: read

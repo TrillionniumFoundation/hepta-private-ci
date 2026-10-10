@@ -2,13 +2,13 @@ name: MemoryCell complete frozen task and cost receipt
 on:
   push:
     branches:
-      - 'codex/memory-cell-evidence-20261008'
+      - "codex/memory-cell-evidence-20261008"
     paths:
-      - 'scripts/memory_cell/lifecycle_accounting.py'
-      - 'scripts/memory_cell/test_lifecycle_accounting.py'
-      - 'scripts/memory_cell/frozen_policy_receipt.py'
-      - 'scripts/memory_cell/test_frozen_policy_receipt.py'
-      - '.github/workflows/hepta-memory-cost-receipt.yml'
+      - "scripts/memory_cell/lifecycle_accounting.py"
+      - "scripts/memory_cell/test_lifecycle_accounting.py"
+      - "scripts/memory_cell/frozen_policy_receipt.py"
+      - "scripts/memory_cell/test_frozen_policy_receipt.py"
+      - ".github/workflows/hepta-memory-cost-receipt.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -27,10 +27,10 @@ jobs:
       artifact_id: ${{ steps.evidence.outputs.artifact-id }}
       artifact_digest: ${{ steps.evidence.outputs.artifact-digest }}
     env:
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-      TOKENIZERS_PARALLELISM: 'false'
-      OMP_NUM_THREADS: '2'
-      MKL_NUM_THREADS: '2'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
       HEPTA_MEMORY_TESTED_COMMIT: 0f2856b6a7eded7c913a8ef448521126844bf839
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -110,8 +110,8 @@ jobs:
           /tmp/cost-python/bin/python scripts/memory_cell/frozen_policy_trial.py freeze /tmp/frozen-input/observations/sources.json /tmp/frozen-evidence/policy.json /tmp/frozen-evidence/sessions --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --policy-sha "$(sha256sum /tmp/frozen-evidence/policy.json | cut -d ' ' -f1)" --commit "$SOURCE"
       - name: Execute the same 32 actual reader calls and fixed procedure verifier
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/frozen-evidence/read-resource.txt /tmp/cost-python/bin/python scripts/memory_cell/frozen_policy_trial.py run /tmp/frozen-input/plan /tmp/frozen-input/observations /tmp/frozen-model /tmp/frozen-evidence/sessions /tmp/frozen-evidence/experiment --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --stage-sha "$(sha256sum /tmp/frozen-model/stage.json | cut -d ' ' -f1)" --catalog-sha "$(sha256sum /tmp/frozen-evidence/sessions/CATALOG.json | cut -d ' ' -f1)" --withdrawals /tmp/frozen-evidence/current-empty.json --withdrawal-sha "$(sha256sum /tmp/frozen-evidence/current-empty.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/frozen-evidence/reader.log
