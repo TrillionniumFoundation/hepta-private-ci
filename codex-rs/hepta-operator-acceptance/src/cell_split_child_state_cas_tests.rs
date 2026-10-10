@@ -375,6 +375,9 @@ fn independent_cas_or_parent_anchor_revocation_fences_existing_batch() {
     auth.cas_good.store(false, Ordering::Release);
     assert!(batch.verify_current(&intent, &receipt).is_err());
     auth.cas_good.store(true, Ordering::Release);
+    auth.final_use_good.store(false, Ordering::Release);
+    assert!(batch.verify_current(&intent, &receipt).is_err());
+    auth.final_use_good.store(true, Ordering::Release);
     *auth.live.lock().expect("anchor") = JournalAnchor {
         sequence: anchor.sequence + 1,
         checkpoint_digest: digest("different parent checkpoint"),
