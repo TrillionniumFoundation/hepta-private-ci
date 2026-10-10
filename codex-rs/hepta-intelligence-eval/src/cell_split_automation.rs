@@ -1440,64 +1440,63 @@ where
     // EvaluationPending can be retried because evaluation is an immutable,
     // independently authenticated observation. EvaluationAccepted is already
     // durable: replay must not re-evaluate or rewrite its signed decision.
-    let accepted_receipt_digest = if journal.current_state
-        == CellSplitLifecycleStateV1::EvaluationAccepted
-    {
-        journal
-            .events
-            .last()
-            .map(|event| event.evidence_digest)
-            .ok_or(CellSplitAutomationErrorV1::Binding("accepted evaluation"))?
-    } else if journal.current_state == CellSplitLifecycleStateV1::CanaryRunning {
-        // A prepared canary may already have changed CNS routing. Reconcile
-        // by read-only query to the original real owner; never rerun canary.
-        let evaluation_receipt_digest = journal
-            .events
-            .last()
-            .map(|event| event.evidence_digest)
-            .ok_or(CellSplitAutomationErrorV1::Binding("pending canary"))?;
-        let observed = executor
-            .observe_canary(split, evaluation_receipt_digest)
-            .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?
-            .ok_or(CellSplitAutomationErrorV1::Binding(
-                "pending canary requires owner reconciliation",
-            ))?;
-        if observed.candidate_generation != split.successor_generation {
-            return Err(CellSplitAutomationErrorV1::Binding("canary generation"));
-        }
-        journal.finish_canary(&observed)?;
-        owner.commit(&journal)?;
-        if journal.current_state != CellSplitLifecycleStateV1::Retained {
-            return Ok(outcome(&journal, proposal));
-        }
-        return finish_retirement(split, proposal, owner, executor, &mut journal);
-    } else {
-        let evaluation = match executor.evaluate(split) {
-            Ok(receipt) => receipt,
-            Err(error) => {
-                journal.quarantine(error_digest("evaluation", &error))?;
-                owner.commit(&journal)?;
+    let accepted_receipt_digest =
+        if journal.current_state == CellSplitLifecycleStateV1::EvaluationAccepted {
+            journal
+                .events
+                .last()
+                .map(|event| event.evidence_digest)
+                .ok_or(CellSplitAutomationErrorV1::Binding("accepted evaluation"))?
+        } else if journal.current_state == CellSplitLifecycleStateV1::CanaryRunning {
+            // A prepared canary may already have changed CNS routing. Reconcile
+            // by read-only query to the original real owner; never rerun canary.
+            let evaluation_receipt_digest = journal
+                .events
+                .last()
+                .map(|event| event.evidence_digest)
+                .ok_or(CellSplitAutomationErrorV1::Binding("pending canary"))?;
+            let observed = executor
+                .observe_canary(split, evaluation_receipt_digest)
+                .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?
+                .ok_or(CellSplitAutomationErrorV1::Binding(
+                    "pending canary requires owner reconciliation",
+                ))?;
+            if observed.candidate_generation != split.successor_generation {
+                return Err(CellSplitAutomationErrorV1::Binding("canary generation"));
+            }
+            journal.finish_canary(&observed)?;
+            owner.commit(&journal)?;
+            if journal.current_state != CellSplitLifecycleStateV1::Retained {
                 return Ok(outcome(&journal, proposal));
             }
+            return finish_retirement(split, proposal, owner, executor, &mut journal);
+        } else {
+            let evaluation = match executor.evaluate(split) {
+                Ok(receipt) => receipt,
+                Err(error) => {
+                    journal.quarantine(error_digest("evaluation", &error))?;
+                    owner.commit(&journal)?;
+                    return Ok(outcome(&journal, proposal));
+                }
+            };
+            journal.apply_evaluation(split, &evaluation)?;
+            owner.commit(&journal)?;
+            if !crate::cell_split_evaluation::disposition_allows_canary(&evaluation) {
+                return Ok(outcome(&journal, proposal));
+            }
+            evaluation.binding().evaluation_receipt_digest
         };
-        journal.apply_evaluation(split, &evaluation)?;
-        owner.commit(&journal)?;
-        if !crate::cell_split_evaluation::disposition_allows_canary(&evaluation) {
-            return Ok(outcome(&journal, proposal));
-        }
-        evaluation.binding().evaluation_receipt_digest
-    };
 
     journal.begin_canary(accepted_receipt_digest)?;
     owner.commit(&journal)?;
     // Error/timeout may mean that a real owner committed but its ACK was lost.
     // Persisted CanaryRunning is the only safe frontier until observe_canary
     // verifies the original outcome. Do not claim automatic quarantine.
-    let canary = executor
-        .canary(split)
-        .map_err(|error| CellSplitAutomationErrorV1::Executor(format!(
+    let canary = executor.canary(split).map_err(|error| {
+        CellSplitAutomationErrorV1::Executor(format!(
             "canary outcome requires reconciliation: {error}"
-        )))?;
+        ))
+    })?;
     if canary.candidate_generation != split.successor_generation {
         return Err(CellSplitAutomationErrorV1::Binding("canary generation"));
     }
@@ -1981,10 +1980,20 @@ mod tests {
         struct WrongRetirement;
         impl CellSplitAutomationExecutorV1 for WrongRetirement {
             type Error = &'static str;
-            fn evaluate(&mut self, split: &CellSplitV1) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
-                Executor { evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary, ..Executor::default() }.evaluate(split)
+            fn evaluate(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                Executor {
+                    evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+                    ..Executor::default()
+                }
+                .evaluate(split)
             }
-            fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 Executor::default().canary(split)
             }
             fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
@@ -1993,7 +2002,9 @@ mod tests {
         }
         assert!(matches!(
             run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut WrongRetirement),
-            Err(CellSplitAutomationErrorV1::Binding("retirement tombstone receipt"))
+            Err(CellSplitAutomationErrorV1::Binding(
+                "retirement tombstone receipt"
+            ))
         ));
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
@@ -2015,7 +2026,10 @@ mod tests {
                 ))
             }
 
-            fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 Executor::default().canary(split)
             }
 
@@ -2052,7 +2066,10 @@ mod tests {
                 panic!("reopened retirement must not reevaluate")
             }
 
-            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 panic!("reopened retirement must not rerun canary")
             }
 
@@ -2079,8 +2096,12 @@ mod tests {
         journal.record_proposal(proposal.proposal_digest).unwrap();
         let evaluation = failed.evaluate(&split).unwrap();
         journal.apply_evaluation(&split, &evaluation).unwrap();
-        journal.begin_canary(evaluation.binding().evaluation_receipt_digest).unwrap();
-        journal.finish_canary(&failed.canary(&split).unwrap()).unwrap();
+        journal
+            .begin_canary(evaluation.binding().evaluation_receipt_digest)
+            .unwrap();
+        journal
+            .finish_canary(&failed.canary(&split).unwrap())
+            .unwrap();
         owner.commit(&journal).unwrap();
 
         let unchanged = run_cell_split_automation_v1(
@@ -2097,7 +2118,9 @@ mod tests {
                 &split,
                 &proposal,
                 &mut owner,
-                &mut ReconcileOnly { observed: Some(digest(34)) },
+                &mut ReconcileOnly {
+                    observed: Some(digest(34))
+                },
             ),
             Err(CellSplitAutomationErrorV1::Binding(
                 "reopened retirement tombstone receipt"
@@ -2113,7 +2136,10 @@ mod tests {
         )
         .unwrap();
         assert_eq!(recovered.state, CellSplitLifecycleStateV1::Retired);
-        assert_eq!(owner.load(&split.split_id).unwrap().unwrap().events.len(), 5);
+        assert_eq!(
+            owner.load(&split.split_id).unwrap().unwrap().events.len(),
+            5
+        );
     }
 
     #[test]
@@ -2286,7 +2312,10 @@ mod tests {
             ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
                 panic!("reopened canary must not reevaluate")
             }
-            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 panic!("reopened canary must not redispatch")
             }
             fn observe_canary(
@@ -2336,7 +2365,9 @@ mod tests {
                 &split,
                 &proposal,
                 &mut owner,
-                &mut ReadOnlyCanary { observed: Some(canary) },
+                &mut ReadOnlyCanary {
+                    observed: Some(canary)
+                },
             )
             .unwrap()
             .state,
@@ -2355,7 +2386,10 @@ mod tests {
             ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
                 panic!("accepted evaluation is durable")
             }
-            fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 Executor::default().canary(split)
             }
             fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error> {
@@ -2375,7 +2409,8 @@ mod tests {
         owner.commit(&journal).unwrap();
         assert_eq!(
             run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut AcceptedOnly)
-                .unwrap().state,
+                .unwrap()
+                .state,
             CellSplitLifecycleStateV1::Retired
         );
     }
@@ -2394,7 +2429,10 @@ mod tests {
                     CellSplitEvaluationDispositionV1::EligibleForCanary,
                 ))
             }
-            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 Err("ACK lost")
             }
             fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
