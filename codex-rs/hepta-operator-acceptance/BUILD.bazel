@@ -8,6 +8,8 @@ rust_library(
     edition = "2024",
     visibility = ["//visibility:private"],
     deps = [
+        "//codex-rs/hepta-neuron:hepta-neuron",
+        "//codex-rs/hepta-types:hepta-types",
         "@crates//:base64",
         "@crates//:ed25519-dalek",
         "@crates//:libc",
