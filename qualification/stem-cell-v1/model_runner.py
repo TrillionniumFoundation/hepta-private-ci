@@ -50,14 +50,16 @@ def snapshot_digest(folder):
 def select_shots(rows, per_class, seed):
     classes = sorted({r["label"] for r in rows})
     picked = []
+    globally_used_groups = set()
     for label in classes:
         pool = [r for r in rows if r["label"] == label]
         pool.sort(key=lambda r: hashlib.sha256(f"{seed}:{r['source_group']}:{r['sample_id']}".encode()).hexdigest())
         groups = set()
         for row in pool:
-            if row["source_group"] in groups:
+            if row["source_group"] in globally_used_groups:
                 continue
             groups.add(row["source_group"])
+            globally_used_groups.add(row["source_group"])
             picked.append(row)
             if len(groups) >= per_class:
                 break
@@ -274,6 +276,7 @@ def main():
     selected = select_shots(trains, args.shots_per_class, args.seed) if args.shots_per_class else []
     if not selected:
         raise ValueError("zero-shot untrained Head cannot produce a trained-Cell claim; use no-change baseline")
+    cpu_start = time.process_time()
     encoder = FrozenEncoder(args.snapshot, args.device,
                             protocol["model_candidates"][args.model_key]["max_tokens"],
                             allow_custom_code=args.allow_audited_custom_code,
@@ -343,6 +346,16 @@ def main():
         rss_after = psutil.Process().memory_info().rss
     except ImportError:
         rss_after = None
+    try:
+        import resource
+        # POSIX ru_maxrss is a process-lifetime high water mark: KiB on
+        # Linux, bytes on macOS; it is NOT a per-arm incremental peak.
+        ru_maxrss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        process_lifetime_peak_rss_bytes = (ru_maxrss * 1024 if sys.platform.startswith("linux")
+                                           else ru_maxrss if sys.platform == "darwin" else None)
+    except ImportError:
+        process_lifetime_peak_rss_bytes = None
+    process_cpu_seconds = time.process_time() - cpu_start
     result_manifest = {"schema": "hepta.stem-cell-hf-run-manifest.v1",
                        "shadow_only": True, "production_authorized": False,
                        **runtime_identity, "run_digest": run_digest,
@@ -358,6 +371,9 @@ def main():
                        "cache_bytes_limit": encoder.cache_limit_bytes,
                        "truncations": encoder.truncations,
                        "process_rss_after_bytes": rss_after,
+                       "process_lifetime_peak_rss_bytes": process_lifetime_peak_rss_bytes,
+                       "cpu_process_seconds": process_cpu_seconds,
+                       "cpu_measurement_scope": "whole_process_since_first_encoder_load_not_hardware_total",
                        "cuda_peak_allocated_bytes": (torch.cuda.max_memory_allocated() if args.device.startswith("cuda") else None),
                        "measurement_warning": "HF standalone no native Hepta batch or independent NDU outcome receipt"}
     Path(args.output + ".run.json").write_text(json.dumps(result_manifest, sort_keys=True,
