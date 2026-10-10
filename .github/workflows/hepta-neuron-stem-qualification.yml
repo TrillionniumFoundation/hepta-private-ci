@@ -31,7 +31,8 @@ jobs:
           python3 - stem-matrix.json <<'PY'
           import json,sys
           plan=json.load(open(sys.argv[1], encoding="utf-8"))
-          assert len(plan["arms"]) == 4*4*6*4
+          assert len(plan["arms"]) == 4*4*6*4*3
+          assert len(plan["scale_arms"]) == 4*4*3*3*3
           assert plan["production_promotion_permitted"] is False
           assert all(arm["activation"]=="shadow" for arm in plan["arms"])
           PY
