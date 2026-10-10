@@ -9,8 +9,11 @@ use std::fmt;
 use std::sync::Arc;
 
 use codex_hepta_contracts::AuthorityClock;
-use codex_hepta_types::{Digest32, NduSnapshotRefV1, StableId};
-use ed25519_dalek::{Signature, VerifyingKey};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::NduSnapshotRefV1;
+use codex_hepta_types::StableId;
+use ed25519_dalek::Signature;
+use ed25519_dalek::VerifyingKey;
 
 const MAX_READ_VALIDITY_MS: u64 = 30_000;
 
@@ -51,7 +54,9 @@ pub struct SignedNduSnapshotReadV1 {
 
 impl SignedNduSnapshotReadV1 {
     pub fn signing_bytes(&self) -> Result<Vec<u8>, NduReadVerificationErrorV1> {
-        let snapshot = self.snapshot.semantic_digest()
+        let snapshot = self
+            .snapshot
+            .semantic_digest()
             .map_err(|_| NduReadVerificationErrorV1::InvalidReceipt)?;
         if self.read_receipt_digest.is_zero()
             || self.issued_at_unix_ms == 0
@@ -99,7 +104,9 @@ impl NduReadVerifierV1 {
         if key.is_weak() {
             return Err(NduReadVerificationErrorV1::InvalidKey);
         }
-        clock.now_unix_ms().map_err(|_| NduReadVerificationErrorV1::ClockUnavailable)?;
+        clock
+            .now_unix_ms()
+            .map_err(|_| NduReadVerificationErrorV1::ClockUnavailable)?;
         Ok(Self {
             trusted_owner_id: owner,
             trusted_key: key,
@@ -117,16 +124,17 @@ impl NduReadVerifierV1 {
         if signed.snapshot.owner_id != self.trusted_owner_id {
             return Err(NduReadVerificationErrorV1::UntrustedOwner);
         }
-        let now = self.clock.now_unix_ms()
+        let now = self
+            .clock
+            .now_unix_ms()
             .map_err(|_| NduReadVerificationErrorV1::ClockUnavailable)?;
         if now < signed.issued_at_unix_ms || now >= signed.expires_at_unix_ms {
             return Err(NduReadVerificationErrorV1::Expired);
         }
         let signed_bytes = signed.signing_bytes()?;
-        self.trusted_key.verify_strict(
-            &signed_bytes,
-            &Signature::from_bytes(&signed.signature),
-        ).map_err(|_| NduReadVerificationErrorV1::Signature)?;
+        self.trusted_key
+            .verify_strict(&signed_bytes, &Signature::from_bytes(&signed.signature))
+            .map_err(|_| NduReadVerificationErrorV1::Signature)?;
         let current = self.frontier.latest(&signed.snapshot.scope_id)?;
         if current != signed.snapshot {
             return Err(NduReadVerificationErrorV1::StaleFrontier);
