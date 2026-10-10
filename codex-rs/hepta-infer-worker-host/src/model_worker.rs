@@ -247,13 +247,21 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::ModelAlreadyLoaded);
         }
         let model_limit = self.grant.maximum_models.min(MAX_MODELS);
-        if self.models.len() >= model_limit {
+        if self.model_digest_index.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
+        // Reserve before the external call. A lost ACK from driver.load may
+        // mean that a real model handle exists. Such an indeterminate digest
+        // must remain reserved until an independently fenced worker rollover.
+        self.model_digest_index
+            .insert(model_digest, manifest.model_id.clone());
         let handle = self.driver.load(&manifest)?;
         validate_identity(&handle.opaque_id, "model handle")?;
         if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            // A confirmed unload permits reuse; a failed unload leaves the
+            // reservation in place and stops physical aliasing after restart.
             self.driver.unload(handle)?;
+            self.model_digest_index.remove(&model_digest);
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
@@ -263,8 +271,6 @@ impl<D: ModelDriver> InferenceWorker<D> {
             observed_memory_bytes: handle.observed_memory_bytes,
             terminal_observed: true,
         };
-        self.model_digest_index
-            .insert(model_digest, manifest.model_id.clone());
         self.models.insert(
             manifest.model_id.clone(),
             LoadedModel {
