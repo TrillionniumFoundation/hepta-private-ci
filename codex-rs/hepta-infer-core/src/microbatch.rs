@@ -27,6 +27,18 @@ pub struct MicrobatchKeyV1 {
     pub authority_epoch: u64,
 }
 
+impl MicrobatchKeyV1 {
+    /// Physical batch compatibility is weaker than authorization identity.
+    /// Full scope/fence binding stays with each intent and is verified again
+    /// by the final-use owner; only the model, worker generation and epoch
+    /// may be shared by the native backend.
+    pub fn physical_compatible_with(&self, other: &Self) -> bool {
+        self.model_digest == other.model_digest
+            && self.generation == other.generation
+            && self.authority_epoch == other.authority_epoch
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InferenceIntentV1 {
     pub request_id: StableId,
@@ -77,6 +89,8 @@ pub enum SchedulerErrorV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MicrobatchPlanV1 {
+    /// Representative lane key. A physical batch may contain different
+    /// scope IDs and route fences: check requests[i].key at final use.
     pub key: MicrobatchKeyV1,
     pub requests: Vec<InferenceIntentV1>,
     pub oldest_queue_age_ms: u64,
@@ -244,6 +258,70 @@ impl BoundedMicrobatchSchedulerV1 {
             scanned_lanes: scanned,
             pending: self.pending(),
         })
+    }
+
+    /// Drain a ready batch and coalesce compatible work from other scope lanes
+    /// without changing any per-request authorization/fence key. The scan is
+    /// bounded by max_lanes_per_poll, and the native batch by max_batch_size.
+    /// The worker must separately verify each original scope binding.
+    pub fn poll_physically_compatible(
+        &mut self,
+        now_ms: u64,
+    ) -> Result<MicrobatchPollV1, SchedulerErrorV1> {
+        let mut observed = self.poll(now_ms)?;
+        let Some(batch) = observed.batch.as_mut() else {
+            return Ok(observed);
+        };
+        if batch.requests.len() >= self.limits.max_batch_size {
+            return Ok(observed);
+        }
+        let remaining_scans = self
+            .limits
+            .max_lanes_per_poll
+            .saturating_sub(observed.scanned_lanes);
+        let scans = self.round_robin.len().min(remaining_scans);
+        for _ in 0..scans {
+            let Some(key) = self.round_robin.pop_front() else {
+                break;
+            };
+            observed.scanned_lanes += 1;
+            let Some(mut lane) = self.lanes.remove(&key) else {
+                continue;
+            };
+            lane.retain(|queued| {
+                if queued.intent.deadline_ms <= now_ms {
+                    observed.expired_request_ids.push(queued.intent.request_id.clone());
+                    self.queued_ids.remove(&queued.intent.request_id);
+                    false
+                } else {
+                    true
+                }
+            });
+            if key.physical_compatible_with(&batch.key) {
+                let oldest = lane.front().map(|entry| entry.enqueued_at_ms);
+                let slots = self.limits.max_batch_size - batch.requests.len();
+                for _ in 0..slots.min(lane.len()) {
+                    if let Some(entry) = lane.pop_front() {
+                        self.queued_ids.remove(&entry.intent.request_id);
+                        batch.requests.push(entry.intent);
+                    }
+                }
+                if let Some(oldest) = oldest {
+                    batch.oldest_queue_age_ms = batch
+                        .oldest_queue_age_ms
+                        .max(now_ms.saturating_sub(oldest));
+                }
+            }
+            if !lane.is_empty() {
+                self.round_robin.push_back(key.clone());
+                self.lanes.insert(key, lane);
+            }
+            if batch.requests.len() >= self.limits.max_batch_size {
+                break;
+            }
+        }
+        observed.pending = self.pending();
+        Ok(observed)
     }
 
     /// Explicit fence cutover: drop queued work for a scope whose binding no
