@@ -1,11 +1,5 @@
 name: MemoryCell pretrained completion projection probe
 on:
-  push:
-    branches:
-      - "codex/memory-cell-completion-20261011"
-    paths:
-      - "scripts/memory_cell/source_completion_probe.py"
-      - ".github/workflows/hepta-memory-completion-pretrained.yml"
   workflow_dispatch:
 permissions:
   contents: read

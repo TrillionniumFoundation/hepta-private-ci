@@ -1,0 +1,55 @@
+name: MemoryCell isolated completion formatting
+on:
+  push:
+    branches:
+      - "codex/memory-cell-completion-20261011"
+    paths:
+      - ".github/workflows/hepta-memory-completion-format.yml"
+permissions:
+  contents: read
+jobs:
+  formatting-candidate:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/memory-cell-completion-20261011'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Prepare an AST-equivalent separate branch and remove this writer
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          paths = [*Path('scripts/memory_cell').glob('source_completion*.py'), *Path('scripts/memory_cell').glob('check_source_completion*.py'), *Path('scripts/memory_cell').glob('test_source_completion*.py'), Path('scripts/memory_cell/experience_memory.py'), Path('scripts/memory_cell/experience_write_trial.py')]
+          Path('/tmp/completion-ast.json').write_text(json.dumps({str(p): ast.dump(ast.parse(p.read_text())) for p in paths}))
+          PY
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/completion-ast.json').read_text())
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          if not set(changed) <= set(before):
+              raise ValueError('unexpected formatter changes outside reviewed Python sources')
+          for name, previous in before.items():
+              if ast.dump(ast.parse(Path(name).read_text())) != previous:
+                  raise ValueError('formatter changed executable AST')
+          if changed:
+              subprocess.run(['git', 'add', '--', *changed], check=True)
+          PY
+          git rm .github/workflows/hepta-memory-completion-format.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format completion optimization and remove temporary writer'
+          git push origin "HEAD:refs/heads/codex/memory-completion-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
