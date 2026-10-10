@@ -89,6 +89,11 @@ python3 qualification/neuron-stem/jina_v5_trial.py \
 
 The trial trains **only the Cell Head**: shared trainable projection count = 0
 because native Jina Matryoshka truncation provides 256/512-dimensional features.
+The inputs are also checked and roundtripped through bounded, nearest-even
+signed Q24 before training and evaluation. A companion
+`candidate.jsonl.frozen-head.jsonl` (where candidate is the chosen output
+filename) records the **same-initialization frozen Head** ablation; it is not
+the actual no-change production baseline.
 This avoids hiding an independently learned per-Cell projection's cost. A
 separate frozen-Head/no-change prediction file MUST be provided before quality
 claims; a new Head trained on test/future labels is invalid. Task labels are
@@ -117,7 +122,9 @@ precommitted tolerance. Even a passing offline quality gate is advisory only:
 
 Provide a separately held-out JSONL, with unique `case_id`, `scope_id`,
 `group_id`, `split` (test/future/ood), `modality` (image/audio/video),
-relative `path`, `media_sha256`, and `paired_text`. All media is local,
+relative `path`, `media_sha256`, `paired_text`, and timezone-aware ISO-8601
+`event_time`. The future window must strictly follow test and identical
+media digests cannot leak across windows. All media is local,
 contained within `--media-root`, has a frozen digest, and is not copied to the
 report. At least two unique positive texts must exist in each retrieval cohort.
 
@@ -151,6 +158,9 @@ The scale probe records measured research-encoder batch calls, active Head
 count, actual tick coverage, group-committed SQLite WAL costs, full-batch
 latency, process CPU/RSS, and a clean-reopen invariant. Heads here are
 **random initialized**; this is a resource probe, not a learning test.
+The resource probe includes strict Q24 feature conversion, and a separate
+research-only Q24 feature digest must never be mistaken for a signed Rust
+`NeuronFeatureReceiptV1`.
 Neither the probe nor its output is a Rust production worker receipt,
 authenticated NDU result or unclean-crash recovery qualification. The 4096
 Cell case is valid only with explicit actual coverage reporting.
