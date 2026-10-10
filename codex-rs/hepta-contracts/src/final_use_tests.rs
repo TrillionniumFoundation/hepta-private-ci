@@ -92,6 +92,96 @@ fn fixture()
     ))
 }
 
+fn second_batch_grant(original: &SignedFinalUseGrant, nonce: u8) -> SignedFinalUseGrant {
+    let issuer = SigningKey::from_bytes(&[47; 32]);
+    let mut signed = original.clone();
+    signed.grant.grant_id = format!("batch-{nonce}");
+    signed.grant.nonce = [nonce; 32];
+    signed.grant.binding.request_sha256 = [nonce; 32];
+    signed.signature = issuer
+        .sign(&signed.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    signed
+}
+
+#[test]
+fn batch_claim_durably_commits_all_nonces_before_one_effect() {
+    let (authority, original, dir) = fixture().unwrap();
+    let first = second_batch_grant(&original, 70);
+    let second = second_batch_grant(&original, 71);
+    let entries = [
+        (&first, &first.grant.binding),
+        (&second, &second.grant.binding),
+    ];
+    let tokens = authority.claim_batch(&entries).unwrap();
+    assert_eq!(tokens.len(), 2);
+    assert_eq!(authority.capacity().unwrap().used_nonces, 2);
+    assert_eq!(
+        std::fs::read(dir.path().join("authority.claims")).unwrap().len(),
+        80
+    );
+    let claims = tokens
+        .into_iter()
+        .zip(entries.iter())
+        .map(|(token, (_, binding))| (token, (*binding).clone()))
+        .collect();
+    assert_eq!(
+        authority.with_verified_effect_batch(claims, || 7),
+        Ok(7)
+    );
+    assert_eq!(
+        authority.claim_batch(&entries).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    drop(authority);
+    let reopened = reopen(dir.path()).unwrap();
+    assert_eq!(
+        reopened.claim(&first, &first.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    assert_eq!(
+        reopened.claim(&second, &second.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+}
+
+#[test]
+fn invalid_or_duplicate_batch_member_never_burns_valid_nonce() {
+    let (authority, original, dir) = fixture().unwrap();
+    let first = second_batch_grant(&original, 72);
+    let mut invalid = second_batch_grant(&original, 73);
+    invalid.signature[0] ^= 0x80;
+    assert_eq!(
+        authority.claim_batch(&[
+            (&first, &first.grant.binding),
+            (&invalid, &invalid.grant.binding),
+        ]).unwrap_err(),
+        FinalUseError::InvalidSignature
+    );
+    assert_eq!(authority.capacity().unwrap().used_nonces, 0);
+    assert_eq!(
+        std::fs::read(dir.path().join("authority.claims")).unwrap().len(),
+        0
+    );
+
+    let mut duplicate = second_batch_grant(&original, 72);
+    duplicate.grant.grant_id = "different-id-same-nonce".into();
+    duplicate.signature = SigningKey::from_bytes(&[47; 32])
+        .sign(&duplicate.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    assert_eq!(
+        authority.claim_batch(&[
+            (&first, &first.grant.binding),
+            (&duplicate, &duplicate.grant.binding),
+        ]).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    assert_eq!(authority.capacity().unwrap().used_nonces, 0);
+    assert!(authority.claim(&first, &first.grant.binding).is_ok());
+}
+
 #[test]
 fn signed_claim_is_single_use_and_delivers_under_same_owner() {
     let (authority, signed, _directory) = fixture().unwrap();
