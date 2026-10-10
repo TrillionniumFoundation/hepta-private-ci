@@ -1912,7 +1912,7 @@ mod tests {
         assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
         assert!(executor.retired);
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
-        assert_eq!(journal.events.len(), 5);
+        assert_eq!(journal.events.len(), 6);
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retired);
         assert_ne!(
             journal.events.last().expect("retirement event").evidence_digest,
@@ -1982,8 +1982,45 @@ mod tests {
             .expect("load")
             .expect("retained state");
         assert_eq!(state.current_state, CellSplitLifecycleStateV1::Retained);
-        assert_eq!(state.events.len(), 4);
+        assert!(state.retirement_pending());
+        assert_eq!(state.events.len(), 5);
         assert_ne!(state.head_digest, first_head);
+
+        // Reopening a recorded intent must never call the physical retirement
+        // effect again. An independently checked receipt can reconcile it.
+        missing_executor.retired = false;
+        assert_eq!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut missing,
+                &mut missing_executor,
+            ),
+            Err(CellSplitAutomationErrorV1::Binding(
+                "retirement pending independent reconciliation",
+            )),
+        );
+        assert!(!missing_executor.retired);
+        let mut reconciled = missing
+            .load(&split.split_id)
+            .expect("reload")
+            .expect("pending journal");
+        reconciled
+            .retire_with_execution_receipt(&split, digest(220))
+            .expect("independent retirement receipt");
+        missing.commit(&reconciled).expect("reconciled commit");
+        assert_eq!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut missing,
+                &mut missing_executor,
+            )
+            .expect("terminal replay")
+            .state,
+            CellSplitLifecycleStateV1::Retired,
+        );
+        assert!(!missing_executor.retired);
     }
 
     #[test]
@@ -2025,7 +2062,7 @@ mod tests {
             .expect("durable automation");
         assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
         let committed = owner.load(&split.split_id).expect("load").expect("journal");
-        assert_eq!(committed.events.len(), 5);
+        assert_eq!(committed.events.len(), 6);
         drop(owner);
 
         let reopened = CellSplitLearningLedgerJournalOwnerV1::recover(
