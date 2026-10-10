@@ -131,6 +131,13 @@ def paired_resource_gate(reference, candidate, budget):
         "reference_revision": reference["revision"],
         "candidate_model": candidate["model"],
         "candidate_revision": candidate["revision"],
+        "scale": {
+            "logical_cells": candidate["total_logical_cells"],
+            "active_heads": candidate["actual_active_heads"],
+            "distinct_ticked_cells": candidate["distinct_ticked_cells"],
+            "actual_requests": candidate["total_requests"],
+            "measured_active_cell_coverage": candidate["full_active_cell_coverage"],
+        },
         "metrics": {
             "reference_max_stage_p99_ms": reference_p99,
             "candidate_max_stage_p99_ms": candidate_p99,
