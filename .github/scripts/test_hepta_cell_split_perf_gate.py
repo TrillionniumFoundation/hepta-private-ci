@@ -24,6 +24,7 @@ def synthetic_matrix():
             runs.append({
                 "mode": mode,
                 "scopes": scopes,
+                "attempted_request_trace_sha256": "b" * 64,
                 "attempted": work,
                 "completed": work,
                 "failed_requests": 0,
@@ -58,6 +59,21 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         self.assertEqual(len(result["comparisons"]), 4)
         self.assertFalse(result["production_evidence_verified"])
         self.assertFalse(result["production_activation_authorized"])
+
+    def test_reject_changed_trace_despite_identical_request_counts(self):
+        packet = synthetic_matrix()
+        packet["runs"][7]["attempted_request_trace_sha256"] = "c" * 64
+        with self.assertRaisesRegex(InvalidEvidence, "frozen request trace"):
+            analyze(packet)
+        packet = synthetic_matrix()
+        packet["runs"][0].pop("attempted_request_trace_sha256")
+        with self.assertRaisesRegex(InvalidEvidence, "attempted request trace"):
+            analyze(packet)
+        packet = synthetic_matrix()
+        packet["runs"][7]["attempted"] = 999
+        packet["runs"][7]["completed"] = 999
+        with self.assertRaisesRegex(InvalidEvidence, "frozen workload size"):
+            analyze(packet)
 
     def test_physical_split_must_not_regress_against_no_change(self):
         packet = synthetic_matrix()
