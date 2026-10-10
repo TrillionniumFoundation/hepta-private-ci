@@ -23,6 +23,15 @@ use super::validate_neuron_feature_output;
 use super::validate_neuron_feature_request;
 use super::validate_request;
 
+/// Each batch row binds the exact request ID AND payload identity; without
+/// these fields two same-head/same-width requests could be silently swapped.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuronFeatureBatchItemObservationV2 {
+    pub request_id: String,
+    pub payload_digest: String,
+    pub feature: DriverNeuronFeatureObservation,
+}
+
 /// A physical backend implements one batch forward over compatible requests.
 /// Do not implement this trait by looping over `run_neuron_features`.
 pub trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
@@ -30,7 +39,7 @@ pub trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
         &mut self,
         handle: &DriverModelHandle,
         requests: &[NeuronFeatureRequest],
-    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error>;
+    ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error>;
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceWorker<D> {
@@ -115,7 +124,13 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             return Err(Error::FeatureOutputMismatch);
         }
         let mut result = Vec::with_capacity(requests.len());
-        for (request, observed) in requests.iter().zip(observations) {
+        for (request, batch_item) in requests.iter().zip(observations) {
+            if batch_item.request_id != request.authorization.request_id
+                || batch_item.payload_digest != request.authorization.payload_digest
+            {
+                return Err(Error::PayloadMismatch);
+            }
+            let observed = batch_item.feature;
             if observed.observed_memory_bytes > self.grant.maximum_memory_bytes
                 || observed.encoder_digest != request.encoder_digest
                 || observed.head_digest != request.head_digest
@@ -170,6 +185,7 @@ mod tests {
         truncated: bool,
         corrupt_head: bool,
         indeterminate_with_output: bool,
+        swap_items: bool,
     }
 
     impl ModelDriver for BatchMock {
@@ -204,11 +220,14 @@ mod tests {
             &mut self,
             _: &DriverModelHandle,
             requests: &[NeuronFeatureRequest],
-        ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
+        ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
             self.batches += 1;
             let mut outputs: Vec<_> = requests
                 .iter()
-                .map(|req| DriverNeuronFeatureObservation {
+                .map(|req| NeuronFeatureBatchItemObservationV2 {
+                    request_id: req.authorization.request_id.clone(),
+                    payload_digest: req.authorization.payload_digest.clone(),
+                    feature: DriverNeuronFeatureObservation {
                     terminal_observed: !self.indeterminate_with_output,
                     succeeded: true,
                     encoder_digest: req.encoder_digest.clone(),
@@ -223,10 +242,14 @@ mod tests {
                     transient_allocation_bytes: 128,
                     queue_age_micros: 3,
                     latency_micros: 10,
+                    },
                 })
                 .collect();
             if self.truncated {
                 outputs.pop();
+            }
+            if self.swap_items {
+                outputs.reverse();
             }
             Ok(outputs)
         }
@@ -347,6 +370,20 @@ mod tests {
             Err(Error::FeatureContract)
         );
         assert_eq!(worker.driver.batches, 0);
+    }
+
+    #[test]
+    fn reordered_identical_head_outputs_are_rejected_as_payload_mismatch() {
+        let mut worker = worker(BatchMock { swap_items: true, ..BatchMock::default() });
+        let err = worker.run_neuron_features_batch(
+            100, "model.v2", vec![
+                feature("request.1", 'b'),
+                feature("request.2", 'b'),
+            ],
+        );
+        assert_eq!(err, Err(Error::PayloadMismatch));
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.v2"].active_requests, 0);
     }
 
     #[test]
