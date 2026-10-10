@@ -382,7 +382,6 @@ fn post_open_pending_intent_tampering_cannot_reconcile_or_dispatch() {
     assert_eq!(state.borrow().executions, 1);
 }
 
-
 #[test]
 fn full_transcript_uses_only_four_current_owner_receipts() {
     let root = private_tempdir();
@@ -390,8 +389,12 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
     let expected_digest;
     {
         let mut owner = CellSplitExecutionOwnerV1::open(
-            root.path(), plan(), trust(), FixturePort::new(state.clone())
-        ).expect("owner");
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("owner");
         assert!(owner.verified_transcript().expect("incomplete").is_none());
         for index in 0..4 {
             owner.advance().expect("original effect").expect("receipt");
@@ -399,12 +402,16 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
                 assert!(owner.verified_transcript().expect("partial").is_none());
             }
         }
-        let proof = owner.verified_transcript().expect("four owner reads")
+        let proof = owner
+            .verified_transcript()
+            .expect("four owner reads")
             .expect("complete transcript");
         assert_eq!(proof.receipts.len(), 4);
         assert_eq!(proof.plan, plan());
-        assert_eq!(proof.receipts[0].intent.previous_receipt_digest,
-            proof.receipts[0].intent.plan_digest);
+        assert_eq!(
+            proof.receipts[0].intent.previous_receipt_digest,
+            proof.receipts[0].intent.plan_digest
+        );
         for index in 1..4 {
             assert_eq!(
                 proof.receipts[index].intent.previous_receipt_digest,
@@ -414,15 +421,24 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
         expected_digest = proof.transcript_digest;
     }
     let mut recovered = CellSplitExecutionOwnerV1::open(
-        root.path(), plan(), trust(), FixturePort::new(state.clone()),
-    ).expect("recovered");
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("recovered");
     assert_eq!(
-        recovered.verified_transcript().expect("fresh owner rechecks")
-            .expect("four original effects").transcript_digest,
+        recovered
+            .verified_transcript()
+            .expect("fresh owner rechecks")
+            .expect("four original effects")
+            .transcript_digest,
         expected_digest,
     );
-    let last = recovered.verified_transcript().unwrap().unwrap()
-        .receipts[3].intent.idempotency_key.clone();
+    let last = recovered.verified_transcript().unwrap().unwrap().receipts[3]
+        .intent
+        .idempotency_key
+        .clone();
     assert!(state.borrow_mut().commits.remove(&last).is_some());
     assert!(matches!(
         recovered.verified_transcript(),
