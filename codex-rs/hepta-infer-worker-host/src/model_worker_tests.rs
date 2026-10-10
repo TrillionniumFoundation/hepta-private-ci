@@ -277,9 +277,10 @@ fn oversized_load_with_failed_unload_never_frees_unknown_physical_handle() {
     let mut cleaned =
         InferenceWorker::new(100, "worker.5".to_string(), 3, grant(), driver).expect("worker");
     assert_eq!(cleaned.load_model(100, manifest()), Err(Error::ModelCapacity));
+    cleaned.driver.load_memory_bytes = Some(1_024);
     let mut alias = manifest();
     alias.model_id = "reloaded".to_owned();
-    assert_eq!(cleaned.load_model(100, alias), Err(Error::ModelCapacity));
+    cleaned.load_model(100, alias).expect("confirmed cleanup permits retry");
 }
 
 #[test]
