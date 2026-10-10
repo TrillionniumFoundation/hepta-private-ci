@@ -808,3 +808,172 @@ fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
     bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
     bytes.extend_from_slice(raw);
 }
+
+#[cfg(test)]
+mod durable_cas_tests {
+    use super::*;
+    use crate::SparseConfig;
+    use crate::SparseTick;
+    use crate::sparse_tick;
+    use codex_hepta_types::Generation;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static SERIAL: AtomicU64 = AtomicU64::new(0);
+    const Q: i64 = 1 << 24;
+
+    struct TempRoot(PathBuf);
+
+    impl TempRoot {
+        fn new() -> Self {
+            let id = SERIAL.fetch_add(1, Ordering::Relaxed);
+            let root = std::env::temp_dir().join(format!(
+                "hepta-child-state-cas-{}-{id}",
+                std::process::id()
+            ));
+            fs::create_dir(&root).expect("create private fixture root");
+            Self(root)
+        }
+    }
+
+    impl Drop for TempRoot {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
+    fn id(name: &str) -> StableId {
+        StableId::new(name).expect("valid identity")
+    }
+
+    fn migration() -> CellStateMigrationV1 {
+        let model = Digest32::of_bytes(b"model");
+        let config = SparseConfig {
+            model_digest: model,
+            normalization_digest: Digest32::of_bytes(b"normalization"),
+            generation: Generation::new(1).unwrap(),
+            width: 2,
+            top_k: 1,
+            temporal_decay_q24: Q / 2,
+            inhibition_gain_q24: Q,
+            inhibition: Vec::new(),
+            activity_decay_q24: Q / 2,
+            target_activity_q24: Q / 4,
+            threshold_rate_q24: Q / 8,
+            threshold_min_q24: -Q,
+            threshold_max_q24: Q,
+            eligibility_decay_q24: Q / 2,
+        };
+        let tick = SparseTick {
+            scope_digest: Digest32::of_bytes(b"parent-scope"),
+            objective_digest: Digest32::of_bytes(b"objective"),
+            ndu_digest: Digest32::of_bytes(b"ndu"),
+            body_digest: Digest32::of_bytes(b"body"),
+            input_digest: Digest32::of_bytes(b"input"),
+            sequence: 1,
+            monotonic_micros: 10,
+            drive_q24: vec![Q, Q / 2],
+            prediction_q24: vec![0, 0],
+        };
+        let checkpoint = sparse_tick(&config, &tick, None).unwrap().0;
+        let plan = CellStateSplitPlanV1::new(
+            id("cell.parent"),
+            vec![id("cell.child")],
+            vec![Digest32::of_bytes(b"child-scope")],
+            Generation::new(1).unwrap(),
+            Generation::new(2).unwrap(),
+            vec![vec![0, 1]],
+            vec![vec![0, 1]],
+        )
+        .unwrap();
+        let children = checkpoint.split_state_v1(&plan).unwrap();
+        assert!(children.iter().all(CellStateSplitChildV1::verify_digest));
+        let parent_anchor = JournalAnchor {
+            sequence: checkpoint.sequence(),
+            checkpoint_digest: checkpoint.digest(),
+        };
+        let operation_id = id("migration.operation");
+        let split_digest = Digest32::of_bytes(b"frozen-split");
+        CellStateMigrationV1 {
+            fence_digest: digest_fence(&operation_id, split_digest, parent_anchor),
+            operation_id,
+            split_digest,
+            parent_anchor,
+            parent_cell_id: id("cell.parent"),
+            optimizer_policy: CellStateTransformKindV1::Reset,
+            cache_policy: CellCachePolicyV1::Revalidate,
+            in_flight_policy: CellInFlightPolicyV1::Drain,
+            children,
+            payload_receipts: BTreeMap::new(),
+            batch_receipt: None,
+            phase: CellStateMigrationPhaseV1::Prepared,
+        }
+    }
+
+    #[test]
+    fn actual_child_cas_and_batch_marker_survive_owner_reopen() {
+        let root = TempRoot::new();
+        let mut first = migration();
+        let receipt = {
+            let mut owner = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+            let observed = owner.persist_commit_and_acknowledge(&mut first).unwrap();
+            assert!(first.parent_retirement_is_fenced());
+            assert_eq!(observed.phase, CellStateMigrationPhaseV1::Acknowledged);
+            observed
+        };
+        let mut replay = migration();
+        let mut reopened = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+        assert_eq!(
+            reopened.persist_commit_and_acknowledge(&mut replay).unwrap(),
+            receipt
+        );
+        assert_eq!(replay.phase(), CellStateMigrationPhaseV1::Acknowledged);
+    }
+
+    #[test]
+    fn concurrent_writer_and_changed_cas_payload_are_rejected() {
+        let root = TempRoot::new();
+        let mut first = migration();
+        let owner = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+        assert!(matches!(
+            DurableCellStateCasDirectoryOwnerV1::open(&root.0),
+            Err(CellStateMigrationErrorV1::CasWriterBusy)
+        ));
+        let mut owner = owner;
+        owner.persist_commit_and_acknowledge(&mut first).unwrap();
+        drop(owner);
+        let child = &first.children[0];
+        let object = root
+            .0
+            .join(format!(
+                "object-{}.q24",
+                CellStateMigrationV1::child_payload_digest(child)
+            ));
+        fs::write(object, b"forged payload after commit").unwrap();
+        let mut next = migration();
+        let mut reopened = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+        assert!(matches!(
+            reopened.persist_commit_and_acknowledge(&mut next),
+            Err(CellStateMigrationErrorV1::CasCorruption(_))
+        ));
+        assert_eq!(next.phase(), CellStateMigrationPhaseV1::Prepared);
+    }
+
+    #[test]
+    fn torn_batch_marker_is_not_repaired_or_acknowledged() {
+        let root = TempRoot::new();
+        let mut first = migration();
+        {
+            let mut owner = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+            owner.persist_commit_and_acknowledge(&mut first).unwrap();
+        }
+        let marker = root.0.join(format!("commit-{}.ack", first.fence_digest()));
+        fs::write(marker, b"torn batch").unwrap();
+        let mut replay = migration();
+        let mut owner = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+        assert!(matches!(
+            owner.persist_commit_and_acknowledge(&mut replay),
+            Err(CellStateMigrationErrorV1::CasCorruption(_))
+        ));
+        assert_eq!(replay.phase(), CellStateMigrationPhaseV1::Prepared);
+    }
+}
