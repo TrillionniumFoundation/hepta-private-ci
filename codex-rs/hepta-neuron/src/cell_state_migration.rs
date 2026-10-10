@@ -10,8 +10,12 @@
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt;
+use std::fs;
 use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::TryLockError;
 use std::io::Write;
+use std::path::{Path, PathBuf};
 
 use codex_hepta_types::CellCachePolicyV1;
 use codex_hepta_types::CellInFlightPolicyV1;
@@ -143,6 +147,8 @@ pub enum CellStateMigrationErrorV1 {
     BatchCommitMismatch,
     UnsupportedPolicy(&'static str),
     Io(std::io::ErrorKind),
+    CasWriterBusy,
+    CasCorruption(&'static str),
 }
 
 impl fmt::Display for CellStateMigrationErrorV1 {
@@ -497,6 +503,193 @@ impl CellStateMigrationV1 {
                 | CellStateMigrationPhaseV1::RolledBack
         )
     }
+}
+
+/// Exclusive local-disk owner for the actual child state CAS and batch commit.
+///
+/// The caller opens a trusted, existing private directory. Each child is
+/// written with create_new, file sync and parent-directory sync. Content hashes
+/// are verified on every retry, and a second independent writer cannot hold
+/// the same OS file lock. The commit marker is persisted after all child
+/// objects and is checked byte-for-byte on restart before acknowledgement.
+///
+/// This owner proves only local filesystem operations. It does not publish CNS
+/// routes, advance a Supervisor generation, sign independent host evidence,
+/// or certify a power-loss test.
+#[derive(Debug)]
+pub struct DurableCellStateCasDirectoryOwnerV1 {
+    root: PathBuf,
+    writer_lock: File,
+}
+
+impl DurableCellStateCasDirectoryOwnerV1 {
+    pub fn open(root: impl AsRef<Path>) -> Result<Self, CellStateMigrationErrorV1> {
+        let root = root.as_ref().canonicalize().map_err(cas_io)?;
+        if !root.is_dir() {
+            return Err(CellStateMigrationErrorV1::CasCorruption("CAS root is not a directory"));
+        }
+        let lock_path = root.join(".hepta-cell-state-cas-owner.lock");
+        let writer_lock = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .open(lock_path)
+            .map_err(cas_io)?;
+        match writer_lock.try_lock() {
+            Ok(()) => (),
+            Err(TryLockError::WouldBlock) => {
+                return Err(CellStateMigrationErrorV1::CasWriterBusy);
+            }
+            Err(TryLockError::Error(error)) => return Err(cas_io(error)),
+        }
+        // Persist any newly created lock entry before accepting operations.
+        File::open(&root).and_then(|directory| directory.sync_all()).map_err(cas_io)?;
+        Ok(Self { root, writer_lock })
+    }
+
+    /// Publish only after each exact child payload and the batch marker has
+    /// been read, checked, synced, and parent-directory synced. A failed or
+    /// torn existing object is never overwritten, repaired or acknowledged.
+    /// A restarted caller reconstructs its migration from the original,
+    /// authenticated parent checkpoint and then safely calls this again.
+    pub fn persist_commit_and_acknowledge(
+        &mut self,
+        migration: &mut CellStateMigrationV1,
+    ) -> Result<CellStateMigrationReceiptV1, CellStateMigrationErrorV1> {
+        if migration.phase != CellStateMigrationPhaseV1::Prepared {
+            return Err(CellStateMigrationErrorV1::InvalidState);
+        }
+        let mut receipts = Vec::with_capacity(migration.children.len());
+        for child in &migration.children {
+            let bytes = encode_child_state(child);
+            let digest = Digest32::of_bytes(&bytes);
+            let path = self.root.join(format!("object-{digest}.q24"));
+            let new_file = OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create_new(true)
+                .open(&path);
+            let receipt = match new_file {
+                Ok(file) => {
+                    // This performs a real write and file.sync_all.
+                    migration.persist_child_state(&child.child_cell_id, file)?
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                    // An earlier crashed writer may have committed the same CAS
+                    // object, but only independently checked bytes count.
+                    let metadata = fs::symlink_metadata(&path).map_err(cas_io)?;
+                    if !metadata.file_type().is_file() {
+                        return Err(CellStateMigrationErrorV1::CasCorruption(
+                            "CAS object is not a regular file",
+                        ));
+                    }
+                    let file = OpenOptions::new().read(true).open(&path).map_err(cas_io)?;
+                    file.sync_all().map_err(cas_io)?;
+                    let mut receipt = CellStateCasReceiptV1 {
+                        operation_id: migration.operation_id.clone(),
+                        child_cell_id: child.child_cell_id.clone(),
+                        parent_anchor: migration.parent_anchor,
+                        payload_digest: digest,
+                        encoded_size_bytes: bytes.len() as u64,
+                        fence_digest: migration.fence_digest,
+                        receipt_digest: Digest32::ZERO,
+                    };
+                    receipt.receipt_digest = receipt.content_digest();
+                    receipt
+                }
+                Err(error) => return Err(cas_io(error)),
+            };
+            if fs::read(&path).map_err(cas_io)? != bytes
+                || receipt.payload_digest != digest
+                || receipt.encoded_size_bytes != bytes.len() as u64
+                || receipt.receipt_digest != receipt.content_digest()
+            {
+                return Err(CellStateMigrationErrorV1::CasCorruption(
+                    "CAS object bytes or operation receipt do not match",
+                ));
+            }
+            self.sync_directory()?;
+            receipts.push(receipt);
+        }
+
+        let mut sorted = receipts
+            .iter()
+            .map(|receipt| receipt.receipt_digest)
+            .collect::<Vec<_>>();
+        sorted.sort_unstable();
+        let mut marker_bytes = b"hepta.neuron.cell-state-cas-durable-batch.v1\0".to_vec();
+        push_id(&mut marker_bytes, &migration.operation_id);
+        marker_bytes.extend_from_slice(migration.split_digest.as_array());
+        marker_bytes.extend_from_slice(&migration.parent_anchor.sequence.to_be_bytes());
+        marker_bytes.extend_from_slice(migration.parent_anchor.checkpoint_digest.as_array());
+        marker_bytes.extend_from_slice(migration.fence_digest.as_array());
+        marker_bytes.extend_from_slice(&(sorted.len() as u64).to_be_bytes());
+        for digest in &sorted {
+            marker_bytes.extend_from_slice(digest.as_array());
+        }
+
+        let commit_path = self.root.join(format!("commit-{}.ack", migration.fence_digest));
+        match OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create_new(true)
+            .open(&commit_path)
+        {
+            Ok(mut file) => {
+                file.write_all(&marker_bytes).map_err(cas_io)?;
+                file.sync_all().map_err(cas_io)?;
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                let metadata = fs::symlink_metadata(&commit_path).map_err(cas_io)?;
+                if !metadata.file_type().is_file() {
+                    return Err(CellStateMigrationErrorV1::CasCorruption(
+                        "batch marker is not a regular file",
+                    ));
+                }
+                let file = OpenOptions::new()
+                    .read(true)
+                    .open(&commit_path)
+                    .map_err(cas_io)?;
+                file.sync_all().map_err(cas_io)?;
+            }
+            Err(error) => return Err(cas_io(error)),
+        };
+        let observed_marker = fs::read(&commit_path).map_err(cas_io)?;
+        if observed_marker != marker_bytes {
+            return Err(CellStateMigrationErrorV1::CasCorruption(
+                "batch commit marker does not match source migration",
+            ));
+        }
+        self.sync_directory()?;
+        // The witness digest now names the on-disk, directory-synced batch
+        // marker, not an asserted or caller-provided hash.
+        let witness = Digest32::of_bytes(&observed_marker);
+        migration.record_payloads_durable(receipts)?;
+        migration.commit_children(CellStateBatchReceiptV1::new(
+            migration.operation_id.clone(),
+            migration.parent_anchor,
+            migration.fence_digest,
+            sorted,
+            witness,
+        ))?;
+        migration.acknowledge()
+    }
+
+    fn sync_directory(&self) -> Result<(), CellStateMigrationErrorV1> {
+        File::open(&self.root)
+            .and_then(|directory| directory.sync_all())
+            .map_err(cas_io)
+    }
+}
+
+impl Drop for DurableCellStateCasDirectoryOwnerV1 {
+    fn drop(&mut self) {
+        let _ = self.writer_lock.unlock();
+    }
+}
+
+fn cas_io(error: std::io::Error) -> CellStateMigrationErrorV1 {
+    CellStateMigrationErrorV1::Io(error.kind())
 }
 
 #[must_use]
