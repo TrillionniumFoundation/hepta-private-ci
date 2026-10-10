@@ -1833,7 +1833,6 @@ mod tests {
             ))
         }
 
-
         fn evaluate(
             &mut self,
             split: &CellSplitV1,
@@ -2085,7 +2084,10 @@ mod tests {
                 Some(StableId::new("test-executor").expect("executor"))
             }
             // The default observe_selector_admission is intentionally None.
-            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 panic!("unselected Cell Split must never dispatch a canary")
             }
             fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
@@ -2095,15 +2097,19 @@ mod tests {
         let split = split();
         let proposal = proposal(&split);
         let mut owner = CellSplitInMemoryJournalOwnerV1::default();
-        let result = run_cell_split_automation_v1(
-            &split, &proposal, &mut owner, &mut NoSelector,
-        ).expect("evaluation only");
+        let result = run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut NoSelector)
+            .expect("evaluation only");
         assert_eq!(result.state, CellSplitLifecycleStateV1::EvaluationAccepted);
-        assert_eq!(owner.load(&split.split_id).unwrap().unwrap().events.len(), 2);
+        assert_eq!(
+            owner.load(&split.split_id).unwrap().unwrap().events.len(),
+            2
+        );
         // A restarted accepted evaluation must be observed, not re-executed.
         assert!(matches!(
             run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut NoSelector),
-            Err(CellSplitAutomationErrorV1::Binding("accepted evaluation requires readback"))
+            Err(CellSplitAutomationErrorV1::Binding(
+                "accepted evaluation requires readback"
+            ))
         ));
     }
 
@@ -2115,27 +2121,37 @@ mod tests {
         struct WrongRetirement;
         impl CellSplitAutomationExecutorV1 for WrongRetirement {
             type Error = &'static str;
-        fn execution_owner_id(&self) -> Option<StableId> {
-            Some(StableId::new("test-executor").expect("executor id"))
-        }
-
-        fn observe_selector_admission(
-            &mut self,
-            split: &CellSplitV1,
-            evaluation: &CellSplitLongHorizonEvaluationReceiptV1,
-        ) -> Result<Option<crate::CellSplitSelectorAdmissionV1>, Self::Error> {
-            let executor_id = self.execution_owner_id().expect("test executor");
-            Ok(Some(
-                crate::cell_split_selector_gate::test_selection_admission_for_lifecycle_v1(
-                    split, evaluation, &executor_id,
-                ),
-            ))
-        }
-
-            fn evaluate(&mut self, split: &CellSplitV1) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
-                Executor { evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary, ..Executor::default() }.evaluate(split)
+            fn execution_owner_id(&self) -> Option<StableId> {
+                Some(StableId::new("test-executor").expect("executor id"))
             }
-            fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+
+            fn observe_selector_admission(
+                &mut self,
+                split: &CellSplitV1,
+                evaluation: &CellSplitLongHorizonEvaluationReceiptV1,
+            ) -> Result<Option<crate::CellSplitSelectorAdmissionV1>, Self::Error> {
+                let executor_id = self.execution_owner_id().expect("test executor");
+                Ok(Some(
+                    crate::cell_split_selector_gate::test_selection_admission_for_lifecycle_v1(
+                        split, evaluation, &executor_id,
+                    ),
+                ))
+            }
+
+            fn evaluate(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                Executor {
+                    evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+                    ..Executor::default()
+                }
+                .evaluate(split)
+            }
+            fn canary(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 Executor::default().canary(split)
             }
             fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
@@ -2144,7 +2160,9 @@ mod tests {
         }
         assert!(matches!(
             run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut WrongRetirement),
-            Err(CellSplitAutomationErrorV1::Binding("retirement tombstone receipt"))
+            Err(CellSplitAutomationErrorV1::Binding(
+                "retirement tombstone receipt"
+            ))
         ));
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
@@ -2157,23 +2175,22 @@ mod tests {
         }
         impl CellSplitAutomationExecutorV1 for UnobservedRetirement {
             type Error = &'static str;
-        fn execution_owner_id(&self) -> Option<StableId> {
-            Some(StableId::new("test-executor").expect("executor id"))
-        }
+            fn execution_owner_id(&self) -> Option<StableId> {
+                Some(StableId::new("test-executor").expect("executor id"))
+            }
 
-        fn observe_selector_admission(
-            &mut self,
-            split: &CellSplitV1,
-            evaluation: &CellSplitLongHorizonEvaluationReceiptV1,
-        ) -> Result<Option<crate::CellSplitSelectorAdmissionV1>, Self::Error> {
-            let executor_id = self.execution_owner_id().expect("test executor");
-            Ok(Some(
-                crate::cell_split_selector_gate::test_selection_admission_for_lifecycle_v1(
-                    split, evaluation, &executor_id,
-                ),
-            ))
-        }
-
+            fn observe_selector_admission(
+                &mut self,
+                split: &CellSplitV1,
+                evaluation: &CellSplitLongHorizonEvaluationReceiptV1,
+            ) -> Result<Option<crate::CellSplitSelectorAdmissionV1>, Self::Error> {
+                let executor_id = self.execution_owner_id().expect("test executor");
+                Ok(Some(
+                    crate::cell_split_selector_gate::test_selection_admission_for_lifecycle_v1(
+                        split, evaluation, &executor_id,
+                    ),
+                ))
+            }
 
             fn evaluate(
                 &mut self,
@@ -2205,7 +2222,9 @@ mod tests {
         let mut executor = UnobservedRetirement { retire_calls: 0 };
         assert!(matches!(
             run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor),
-            Err(CellSplitAutomationErrorV1::Binding("retirement readback missing"))
+            Err(CellSplitAutomationErrorV1::Binding(
+                "retirement readback missing"
+            ))
         ));
         assert_eq!(executor.retire_calls, 1);
         assert_eq!(
@@ -2213,12 +2232,8 @@ mod tests {
             CellSplitLifecycleStateV1::Retained
         );
         // Read-only recovery cannot silently issue a second tombstone effect.
-        let retried = run_cell_split_automation_v1(
-            &split,
-            &proposal,
-            &mut owner,
-            &mut executor,
-        ).expect("read-only uncertain result");
+        let retried = run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor)
+            .expect("read-only uncertain result");
         assert_eq!(retried.state, CellSplitLifecycleStateV1::Retained);
         assert_eq!(executor.retire_calls, 1);
     }
@@ -2228,23 +2243,22 @@ mod tests {
         struct FailedRetirement;
         impl CellSplitAutomationExecutorV1 for FailedRetirement {
             type Error = &'static str;
-        fn execution_owner_id(&self) -> Option<StableId> {
-            Some(StableId::new("test-executor").expect("executor id"))
-        }
+            fn execution_owner_id(&self) -> Option<StableId> {
+                Some(StableId::new("test-executor").expect("executor id"))
+            }
 
-        fn observe_selector_admission(
-            &mut self,
-            split: &CellSplitV1,
-            evaluation: &CellSplitLongHorizonEvaluationReceiptV1,
-        ) -> Result<Option<crate::CellSplitSelectorAdmissionV1>, Self::Error> {
-            let executor_id = self.execution_owner_id().expect("test executor");
-            Ok(Some(
-                crate::cell_split_selector_gate::test_selection_admission_for_lifecycle_v1(
-                    split, evaluation, &executor_id,
-                ),
-            ))
-        }
-
+            fn observe_selector_admission(
+                &mut self,
+                split: &CellSplitV1,
+                evaluation: &CellSplitLongHorizonEvaluationReceiptV1,
+            ) -> Result<Option<crate::CellSplitSelectorAdmissionV1>, Self::Error> {
+                let executor_id = self.execution_owner_id().expect("test executor");
+                Ok(Some(
+                    crate::cell_split_selector_gate::test_selection_admission_for_lifecycle_v1(
+                        split, evaluation, &executor_id,
+                    ),
+                ))
+            }
 
             fn evaluate(
                 &mut self,
@@ -2256,7 +2270,10 @@ mod tests {
                 ))
             }
 
-            fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 Executor::default().canary(split)
             }
 
@@ -2293,7 +2310,10 @@ mod tests {
                 panic!("reopened retirement must not reevaluate")
             }
 
-            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 panic!("reopened retirement must not rerun canary")
             }
 
@@ -2320,8 +2340,12 @@ mod tests {
         journal.record_proposal(proposal.proposal_digest).unwrap();
         let evaluation = failed.evaluate(&split).unwrap();
         journal.apply_evaluation(&split, &evaluation).unwrap();
-        journal.begin_canary(evaluation.binding().evaluation_receipt_digest).unwrap();
-        journal.finish_canary(&failed.canary(&split).unwrap()).unwrap();
+        journal
+            .begin_canary(evaluation.binding().evaluation_receipt_digest)
+            .unwrap();
+        journal
+            .finish_canary(&failed.canary(&split).unwrap())
+            .unwrap();
         owner.commit(&journal).unwrap();
 
         let unchanged = run_cell_split_automation_v1(
@@ -2354,7 +2378,10 @@ mod tests {
         )
         .unwrap();
         assert_eq!(recovered.state, CellSplitLifecycleStateV1::Retired);
-        assert_eq!(owner.load(&split.split_id).unwrap().unwrap().events.len(), 5);
+        assert_eq!(
+            owner.load(&split.split_id).unwrap().unwrap().events.len(),
+            5
+        );
     }
 
     #[test]
