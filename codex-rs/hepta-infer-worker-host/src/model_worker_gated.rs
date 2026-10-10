@@ -19,6 +19,8 @@ use super::ModelDriver;
 use super::ModelManifest;
 use super::NeuronFeatureBatchDriver;
 use super::NeuronFeatureBatchItemObservationV2;
+use super::NeuronSharedFeatureBatchDriverV2;
+use super::SharedNeuronFeatureRequestV2;
 use super::NeuronFeatureDriver;
 use super::NeuronFeatureRequest;
 use super::WorkerRequest;
@@ -150,17 +152,34 @@ impl GatedHeadCpuDriverV2 {
     }
 
     fn compute(&self, request: &NeuronFeatureRequest) -> Result<(Vec<i64>, Vec<i64>), Error> {
-        let head = self.heads.get(&request.head_digest).ok_or(Error::ModelNotLoaded)?;
+        self.compute_parts(
+            &request.head_digest,
+            &request.encoder_digest,
+            &request.feature_vector_q24,
+            request.expected_output_width,
+            None,
+        )
+    }
+
+    fn compute_parts(
+        &self,
+        head_digest: &str,
+        encoder_digest: &str,
+        features_q24: &[i64],
+        output_width: usize,
+        cell_id: Option<&str>,
+    ) -> Result<(Vec<i64>, Vec<i64>), Error> {
+        let head = self.heads.get(head_digest).ok_or(Error::ModelNotLoaded)?;
         let candidate = &head.candidate;
-        if head.head_digest != request.head_digest
-            || candidate.encoder_digest != request.encoder_digest
-            || request.expected_output_width != candidate.output_width
-            || request.feature_vector_q24.len() != candidate.input_width
+        if head.head_digest != head_digest
+            || candidate.encoder_digest != encoder_digest
+            || output_width != candidate.output_width
+            || features_q24.len() != candidate.input_width
+            || cell_id.is_some_and(|id| id != candidate.cell_identity.as_str())
         {
             return Err(Error::FeatureOutputMismatch);
         }
-        let gated: Vec<i64> = request
-            .feature_vector_q24
+        let gated: Vec<i64> = features_q24
             .iter()
             .zip(&candidate.gate_q24)
             .map(|(feature, gate)| q24_round_checked(i128::from(*feature) * i128::from(*gate)))
@@ -177,6 +196,7 @@ impl GatedHeadCpuDriverV2 {
         )?;
         Ok((drive, prediction))
     }
+
 }
 
 impl ModelDriver for GatedHeadCpuDriverV2 {
@@ -281,10 +301,68 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
     }
 }
 
+impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
+    fn run_shared_neuron_features_batch_v2(
+        &mut self,
+        handle: &DriverModelHandle,
+        requests: &[SharedNeuronFeatureRequestV2],
+    ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
+        self.verify_loaded(handle)?;
+        self.batch_calls = self
+            .batch_calls
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
+        let started = Instant::now();
+        let mut observations = Vec::with_capacity(requests.len());
+        // No feature Vec is created here; each Cell borrows the shared Arc's
+        // immutable Q24 slice. This is scalar CPU math, NOT fused GPU GEMM.
+        for request in requests {
+            let (drive, prediction) = self.compute_parts(
+                &request.head_digest,
+                &request.snapshot.identity.encoder_digest.to_string(),
+                &request.snapshot.features_q24,
+                request.expected_output_width,
+                Some(request.cell_id.as_str()),
+            )?;
+            observations.push(NeuronFeatureBatchItemObservationV2 {
+                request_id: request.authorization.request_id.clone(),
+                payload_digest: request.authorization.payload_digest.clone(),
+                feature: DriverNeuronFeatureObservation {
+                    terminal_observed: true,
+                    succeeded: true,
+                    encoder_digest: request.snapshot.identity.encoder_digest.to_string(),
+                    head_digest: request.head_digest.clone(),
+                    drive_q24: drive,
+                    prediction_q24: prediction,
+                    observed_memory_bytes: handle.observed_memory_bytes,
+                    transient_allocation_bytes: transient_dimensions_bytes(
+                        request.snapshot.features_q24.len(),
+                        request.expected_output_width,
+                    )?,
+                    queue_age_micros: 0,
+                    latency_micros: 0,
+                },
+            });
+        }
+        let elapsed = u64::try_from(started.elapsed().as_micros())
+            .map_err(|_| Error::ArithmeticOverflow)?;
+        for item in &mut observations {
+            item.feature.latency_micros = elapsed;
+        }
+        Ok(observations)
+    }
+}
+
 fn transient_bytes(request: &NeuronFeatureRequest) -> Result<u64, Error> {
-    let count = request.feature_vector_q24.len()
-        .checked_add(request.expected_output_width.checked_mul(2)
-            .ok_or(Error::ArithmeticOverflow)?)
+    transient_dimensions_bytes(
+        request.feature_vector_q24.len(),
+        request.expected_output_width,
+    )
+}
+
+fn transient_dimensions_bytes(input_width: usize, output_width: usize) -> Result<u64, Error> {
+    let count = input_width
+        .checked_add(output_width.checked_mul(2).ok_or(Error::ArithmeticOverflow)?)
         .ok_or(Error::ArithmeticOverflow)?;
     let bytes = count.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
     u64::try_from(bytes).map_err(|_| Error::ArithmeticOverflow)
@@ -531,6 +609,124 @@ mod tests {
         let mut driver = GatedHeadCpuDriverV2::new(wrong.clone()).expect("driver");
         driver.register_head(head("cell.a")).expect("register");
         assert_eq!(driver.load(&wrong), Err(Error::ModelMismatch));
+    }
+
+    #[test]
+    fn shared_feature_arc_executes_two_distinct_cells_without_vec_materialization() {
+        use codex_hepta_infer_core::shared_feature_v2::{
+            SharedFeatureCacheV2, SharedFeatureIdentityV2,
+        };
+        use codex_hepta_types::{Generation, StableId};
+
+        let id = |value: &str| StableId::new(value.to_string()).expect("stable id");
+        let mut first = head("cell.a");
+        let encoder = Digest32::of_bytes(b"encoder");
+        first.encoder_digest = encoder.to_string();
+        let mut second = head("cell.b");
+        second.encoder_digest = encoder.to_string();
+        second.gate_q24[0] = 2 * Q24;
+        let mut selected = manifest_for(&[first.clone(), second.clone()]);
+        selected.tokenizer_digest = Digest32::of_bytes(b"tokenizer").to_string();
+        selected.preprocessor_digest = Digest32::of_bytes(b"normalizer").to_string();
+        selected.quantization_digest = Digest32::of_bytes(b"quantization").to_string();
+
+        let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
+        let h_first = driver.register_head(first).expect("head a");
+        let h_second = driver.register_head(second).expect("head b");
+        let mut cache = SharedFeatureCacheV2::new(2, 512).expect("cache");
+        let identity = SharedFeatureIdentityV2 {
+            principal_id: id("principal.a"),
+            purpose_id: id("purpose.prediction"),
+            generation: Generation::new(3).expect("generation"),
+            authority_epoch: 2,
+            encoder_digest: encoder,
+            tokenizer_digest: Digest32::of_bytes(b"tokenizer"),
+            normalizer_digest: Digest32::of_bytes(b"normalizer"),
+            quantization_digest: Digest32::of_bytes(b"quantization"),
+            input_digest: Digest32::of_bytes(b"complete question and choices"),
+        };
+        let snapshot = cache
+            .insert(1, identity, 1000, std::sync::Arc::from([Q24 / 2, -Q24 / 4]))
+            .expect("snapshot");
+
+        let mk = |cell: &str, token: &str, head_digest: String| {
+            let mut request = SharedNeuronFeatureRequestV2 {
+                authorization: WorkerRequest {
+                    request_id: token.to_string(),
+                    reservation_id: format!("reservation.{token}"),
+                    model_digest: selected.model_digest.clone(),
+                    payload_digest: "1".repeat(64),
+                    maximum_tokens: 32,
+                    deadline_ms: 900,
+                    lease_payload_digest: "1".repeat(64),
+                    reservation_model_digest: selected.model_digest.clone(),
+                    reservation_maximum_tokens: 32,
+                    cancelled: false,
+                },
+                principal_id: id("principal.a"),
+                purpose_id: id("purpose.prediction"),
+                cell_id: id(cell),
+                snapshot: std::sync::Arc::clone(&snapshot),
+                head_digest,
+                weights_digest: selected.weights_digest.clone(),
+                expected_output_width: 1,
+            };
+            let digest = super::super::canonical_shared_neuron_payload_digest_v2(&request)
+                .expect("payload");
+            request.authorization.payload_digest = digest.clone();
+            request.authorization.lease_payload_digest = digest;
+            request
+        };
+        let a = mk("cell.a", "request.a", h_first.clone());
+        let b = mk("cell.b", "request.b", h_second.clone());
+        assert!(std::sync::Arc::ptr_eq(&a.snapshot, &b.snapshot));
+        let grant = ResourceGrant {
+            grant_id: "grant.ref".into(),
+            authority_epoch: 2,
+            generation: 3,
+            expires_at_ms: 2000,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 4,
+            maximum_memory_bytes: 4096,
+            semantic_digest: "1".repeat(64),
+        };
+        let mut worker =
+            InferenceWorker::new(1, "worker.reference".into(), 3, grant, driver)
+                .expect("worker");
+        worker.load_model(1, selected).expect("load");
+        let results = worker
+            .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
+            .expect("batched references");
+        assert_eq!(results.len(), 2);
+        assert_eq!(results[0].drive_q24, vec![Q24 / 2]);
+        assert_eq!(results[1].drive_q24, vec![Q24]);
+        assert_eq!(results[0].prediction_q24, vec![-Q24 / 4]);
+        assert_eq!(results[1].prediction_q24, vec![-Q24 / 4]);
+        assert_ne!(results[0].observation_digest, results[1].observation_digest);
+        assert!(!results[0].authority.grants_any());
+        assert_eq!(worker.driver.batch_calls(), 1);
+        assert_eq!(cache.resident_bytes(), 16);
+    }
+
+    #[test]
+    fn wrong_cell_head_pair_never_falls_through_to_another_cells_tensor() {
+        let a = head("cell.a");
+        let b = head("cell.b");
+        let selected = manifest_for(&[a.clone(), b.clone()]);
+        let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
+        let ha = driver.register_head(a).expect("a");
+        driver.register_head(b).expect("b");
+        let handle = driver.load(&selected).expect("load");
+        let mismatch = driver.compute_parts(
+            &ha,
+            "a".repeat(64).as_str(),
+            &[Q24 / 2, Q24 / 4],
+            1,
+            Some("cell.b"),
+        );
+        assert_eq!(mismatch, Err(Error::FeatureOutputMismatch));
+        assert!(driver.verify_loaded(&handle).is_ok());
     }
 
     #[test]

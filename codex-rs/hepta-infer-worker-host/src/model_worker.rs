@@ -217,7 +217,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
         }
         let handle = self.driver.load(&manifest)?;
         validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // Account for all resident model handles, not merely the new model.
+        let total_after_load = self.models.values()
+            .try_fold(0_u64, |total, loaded| {
+                total.checked_add(loaded.handle.observed_memory_bytes)
+            })
+            .and_then(|total| total.checked_add(handle.observed_memory_bytes));
+        if !matches!(total_after_load, Some(total) if total <= self.grant.maximum_memory_bytes) {
             self.driver.unload(handle)?;
             return Err(Error::ModelCapacity);
         }
@@ -522,6 +528,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
@@ -572,6 +584,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         } else {
             ExecutionStatus::Failed
         };
+        if status != ExecutionStatus::Succeeded
+            && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
+        {
+            return Err(Error::FeatureOutputMismatch);
+        }
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,
@@ -729,6 +746,13 @@ pub use batch::{NeuronFeatureBatchDriver, NeuronFeatureBatchItemObservationV2};
 #[path = "model_worker_gated.rs"]
 mod gated_cpu;
 pub use gated_cpu::{GatedHeadCandidateV2, GatedHeadCpuDriverV2};
+
+#[path = "model_worker_shared_v2.rs"]
+mod shared_v2;
+pub use shared_v2::{
+    NeuronSharedFeatureBatchDriverV2, SharedNeuronFeatureRequestV2,
+    SharedNeuronFeatureResultV2, canonical_shared_neuron_payload_digest_v2,
+};
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]

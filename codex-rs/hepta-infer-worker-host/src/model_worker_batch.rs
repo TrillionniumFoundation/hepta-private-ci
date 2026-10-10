@@ -81,6 +81,12 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             {
                 return Err(Error::ModelMismatch);
             }
+            if item.authorization.maximum_tokens > selected.manifest.maximum_tokens
+                || item.authorization.maximum_tokens
+                    > item.authorization.reservation_maximum_tokens
+            {
+                return Err(Error::TokenLimit);
+            }
             if item.encoder_digest != *batch_encoder
                 || item.feature_vector_q24.len() != input_width
                 || item.expected_output_width != output_width
@@ -383,6 +389,25 @@ mod tests {
         assert_eq!(
             worker.run_neuron_features_batch(100, "model.v2", vec![changed]),
             Err(Error::PayloadMismatch)
+        );
+        assert_eq!(worker.driver.batches, 0);
+    }
+
+    #[test]
+    fn rejects_token_budget_above_loaded_model_and_reservation() {
+        let mut worker = worker(BatchMock::default());
+        let mut oversized = feature("request.over", 'b');
+        oversized.authorization.maximum_tokens = 129;
+        oversized.authorization.reservation_maximum_tokens = 129;
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", vec![oversized]),
+            Err(Error::TokenLimit)
+        );
+        let mut oversubscribed = feature("request.over", 'b');
+        oversubscribed.authorization.maximum_tokens = 65;
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", vec![oversubscribed]),
+            Err(Error::TokenLimit)
         );
         assert_eq!(worker.driver.batches, 0);
     }
