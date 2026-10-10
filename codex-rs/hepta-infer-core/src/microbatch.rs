@@ -133,9 +133,11 @@ struct QueuedIntent {
 pub struct BoundedMicrobatchSchedulerV1 {
     limits: MicrobatchLimitsV1,
     lanes: BTreeMap<MicrobatchKeyV1, VecDeque<QueuedIntent>>,
-    round_robin: VecDeque<MicrobatchKeyV1>,
-    /// Includes lazy tombstones after a physically coalesced lane is drained.
-    round_robin_seen: BTreeSet<MicrobatchKeyV1>,
+    /// Monotonic insertion tickets implement fair round-robin without linear
+    /// deletion or leftover tombstones when a physical batch drains a lane.
+    round_robin: BTreeMap<u128, MicrobatchKeyV1>,
+    lane_tickets: BTreeMap<MicrobatchKeyV1, u128>,
+    next_ticket: u128,
     /// Group only genuinely compatible physical batches, without scanning
     /// unrelated scope lanes on every poll.
     physical_lanes: BTreeMap<PhysicalBatchKeyV1, BTreeSet<MicrobatchKeyV1>>,
@@ -148,8 +150,9 @@ impl BoundedMicrobatchSchedulerV1 {
         Ok(Self {
             limits: limits.validate()?,
             lanes: BTreeMap::new(),
-            round_robin: VecDeque::new(),
-            round_robin_seen: BTreeSet::new(),
+            round_robin: BTreeMap::new(),
+            lane_tickets: BTreeMap::new(),
+            next_ticket: 0,
             physical_lanes: BTreeMap::new(),
             queued_ids: BTreeSet::new(),
             last_now_ms: None,
@@ -177,12 +180,33 @@ impl BoundedMicrobatchSchedulerV1 {
         }
     }
 
-    fn compact_round_robin_if_needed(&mut self) {
-        // Completed coalesced lanes leave lazy round-robin tombstones. Rebuild
-        // infrequently, with a hard upper bound independent of worker lifetime.
-        if self.round_robin.len() > self.limits.max_pending.saturating_mul(2) {
-            self.round_robin.retain(|key| self.lanes.contains_key(key));
-            self.round_robin_seen = self.round_robin.iter().cloned().collect();
+    fn schedule_lane(&mut self, key: MicrobatchKeyV1) {
+        if self.lane_tickets.contains_key(&key) {
+            return;
+        }
+        if self.next_ticket == u128::MAX {
+            // Extremely rare counter rollover: retain FIFO order, without
+            // reintroducing a hot-path O(n) removal on physical coalescing.
+            let mut reordered = BTreeMap::new();
+            let mut indexes = BTreeMap::new();
+            for (order, (_, existing)) in self.round_robin.iter().enumerate() {
+                let ticket = order as u128;
+                reordered.insert(ticket, existing.clone());
+                indexes.insert(existing.clone(), ticket);
+            }
+            self.next_ticket = reordered.len() as u128;
+            self.round_robin = reordered;
+            self.lane_tickets = indexes;
+        }
+        let ticket = self.next_ticket;
+        self.next_ticket += 1;
+        self.lane_tickets.insert(key.clone(), ticket);
+        self.round_robin.insert(ticket, key);
+    }
+
+    fn deschedule_lane(&mut self, key: &MicrobatchKeyV1) {
+        if let Some(ticket) = self.lane_tickets.remove(key) {
+            self.round_robin.remove(&ticket);
         }
     }
 
@@ -236,16 +260,13 @@ impl BoundedMicrobatchSchedulerV1 {
                 .entry(key.physical_key())
                 .or_default()
                 .insert(key.clone());
-            if self.round_robin_seen.insert(key.clone()) {
-                self.round_robin.push_back(key.clone());
-            }
+            self.schedule_lane(key.clone());
         }
         self.lanes.entry(key).or_default().push_back(QueuedIntent {
             intent,
             enqueued_at_ms: now_ms,
         });
         self.queued_ids.insert(id);
-        self.compact_round_robin_if_needed();
         Ok(())
     }
 
@@ -259,10 +280,10 @@ impl BoundedMicrobatchSchedulerV1 {
         let scans = self.round_robin.len().min(self.limits.max_lanes_per_poll);
         let mut scanned = 0;
         for _ in 0..scans {
-            let Some(key) = self.round_robin.pop_front() else {
+            let Some((_, key)) = self.round_robin.pop_first() else {
                 break;
             };
-            self.round_robin_seen.remove(&key);
+            self.lane_tickets.remove(&key);
             scanned += 1;
             let Some(mut lane) = self.lanes.remove(&key) else {
                 continue;
@@ -304,8 +325,7 @@ impl BoundedMicrobatchSchedulerV1 {
                 });
                 break;
             }
-            self.round_robin_seen.insert(key.clone());
-            self.round_robin.push_back(key.clone());
+            self.schedule_lane(key.clone());
             self.lanes.insert(key, lane);
         }
         Ok(MicrobatchPollV1 {
@@ -373,6 +393,7 @@ impl BoundedMicrobatchSchedulerV1 {
             }
             if lane.is_empty() {
                 self.remove_physical_lane(&key);
+                self.deschedule_lane(&key);
             } else {
                 self.lanes.insert(key, lane);
             }
@@ -414,9 +435,8 @@ impl BoundedMicrobatchSchedulerV1 {
         });
         for key in &removed_keys {
             self.remove_physical_lane(key);
+            self.deschedule_lane(key);
         }
-        self.round_robin.retain(|key| self.lanes.contains_key(key));
-        self.round_robin_seen = self.round_robin.iter().cloned().collect();
         dropped
     }
 }
