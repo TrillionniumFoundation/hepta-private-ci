@@ -1,4 +1,6 @@
 mod cell_split_execution_owner;
+#[cfg(unix)]
+mod cell_split_unix_port;
 mod cell_split_target_host;
 mod cell_split_target_host_evidence;
 mod cell_split_target_host_runtime;
@@ -57,6 +59,12 @@ pub use cell_split_execution_owner::CellSplitExecutionReceiptV1;
 pub use cell_split_execution_owner::CellSplitExecutionStepV1;
 pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
 pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_unix_port::CellSplitUnixEndpointV1;
+#[cfg(unix)]
+pub use cell_split_unix_port::CellSplitUnixPortErrorV1;
+#[cfg(unix)]
+pub use cell_split_unix_port::CellSplitUnixPortV1;
 pub use cell_split_target_host::CellSplitQualificationOriginV1;
 pub use cell_split_target_host::CellSplitQualificationStateV1;
 pub use cell_split_target_host::CellSplitTargetHostErrorV1;
