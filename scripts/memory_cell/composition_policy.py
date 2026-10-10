@@ -112,10 +112,15 @@ def readiness(rows, expected, reader_identity, plan_digest):
         subset = [r for r in rows if r["arm"] == arm]
         values = [r.get("f1") for r in subset]
         if any(
+            r["status"] not in ("succeeded", "failed", "unavailable")
+            or (r["status"] == "succeeded" and r.get("f1") is None)
+            or (r["status"] != "succeeded" and r.get("f1") is not None)
+            for r in subset
+        ) or any(
             v is not None and (type(v) not in (float, int) or not 0 <= v <= 1)
             for v in values
         ):
-            raise ValueError("invalid readiness score")
+            raise ValueError("missing or invalid capability score/status")
         if any(
             r["status"] == "succeeded"
             and r["receipt"]["reader_identity"] != reader_identity
