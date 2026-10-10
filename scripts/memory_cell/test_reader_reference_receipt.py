@@ -14,16 +14,29 @@ from reader_reference_receipt import align_records, archive, matched_view
 def row(q="q", arm="empty", status="succeeded"):
     result = dict(question_id=q, arm=arm, status=status)
     if status == "succeeded":
-        result.update(answer="blue", receipt=dict(
-            reader_identity="model", reader_profile="profile",
-            input_tokens=10, generated_tokens=2, seconds=0.1))
+        result.update(
+            answer="blue",
+            receipt=dict(
+                reader_identity="model",
+                reader_profile="profile",
+                input_tokens=10,
+                generated_tokens=2,
+                seconds=0.1,
+            ),
+        )
     return result
 
 
 def scored(raw):
-    return [r | dict(f1=0.5 if r["status"] == "succeeded" else None,
-        exact_match=False if r["status"] == "succeeded" else None,
-        target_unanswerable=False) for r in raw]
+    return [
+        r
+        | dict(
+            f1=0.5 if r["status"] == "succeeded" else None,
+            exact_match=False if r["status"] == "succeeded" else None,
+            target_unanswerable=False,
+        )
+        for r in raw
+    ]
 
 
 class ReceiptTests(unittest.TestCase):
@@ -43,8 +56,12 @@ class ReceiptTests(unittest.TestCase):
     def test_posthoc_answer_metadata_or_record_order_reject(self):
         raw = [row(), row(q="other")]
         expected = [(r["question_id"], r["arm"]) for r in raw]
-        for field, value in (("answer", "changed"), ("arm", "changed"),
-                             ("status", "failed"), ("receipt", {})):
+        for field, value in (
+            ("answer", "changed"),
+            ("arm", "changed"),
+            ("status", "failed"),
+            ("receipt", {}),
+        ):
             changed = scored(deepcopy(raw))
             changed[0][field] = value
             with self.assertRaises(ValueError):
@@ -89,13 +106,22 @@ class ReceiptTests(unittest.TestCase):
                     archive(path, hashlib.sha256(path.read_bytes()).hexdigest())
 
     def test_matched_subset_is_chosen_without_scores(self):
-        plan = dict(cases=[
-            dict(question=dict(identity="kept"), conditions=dict(reviewed_minimal={})),
-            dict(question=dict(identity="unknown"), conditions=dict(
-                reviewed_minimal=dict(status="unavailable"))),
-        ])
-        raw = [row(q=q, arm=a) for q in ("kept", "unknown") for a in
-               ("reviewed_minimal", "reviewed_reversed", "retrieved2", "empty")]
+        plan = dict(
+            cases=[
+                dict(
+                    question=dict(identity="kept"), conditions=dict(reviewed_minimal={})
+                ),
+                dict(
+                    question=dict(identity="unknown"),
+                    conditions=dict(reviewed_minimal=dict(status="unavailable")),
+                ),
+            ]
+        )
+        raw = [
+            row(q=q, arm=a)
+            for q in ("kept", "unknown")
+            for a in ("reviewed_minimal", "reviewed_reversed", "retrieved2", "empty")
+        ]
         records = {(r["question_id"], r["arm"]): r for r in scored(raw)}
         value = matched_view(plan, {"model": records})
         self.assertEqual(value["auxiliary_case_ids"], ["kept"])
@@ -104,8 +130,11 @@ class ReceiptTests(unittest.TestCase):
         for record in records.values():
             record["f1"] = 0
         self.assertEqual(
-            matched_view(plan, {"model": records})["auxiliary_case_ids"], ["kept"])
-        self.assertIsNone(value["per_reader"]["model"]["empty"]["semantic_citation_precision"])
+            matched_view(plan, {"model": records})["auxiliary_case_ids"], ["kept"]
+        )
+        self.assertIsNone(
+            value["per_reader"]["model"]["empty"]["semantic_citation_precision"]
+        )
 
 
 if __name__ == "__main__":
