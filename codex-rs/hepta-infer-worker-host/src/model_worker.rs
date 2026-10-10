@@ -174,6 +174,9 @@ pub struct InferenceWorker<D: ModelDriver> {
     grant: ResourceGrant,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
+    // Validated digest -> exact handle identity. O(log n) admission lookup;
+    // no digest alias may reference another model handle.
+    model_digests: BTreeMap<Digest32, String>,
     active_requests: BTreeMap<String, String>,
 }
 
@@ -196,6 +199,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             grant,
             driver,
             models: BTreeMap::new(),
+            model_digests: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
     }
@@ -214,9 +218,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     /// Admit only the currently loaded, exact model identity for this digest.
     pub(crate) fn model_matches_digest(&self, model_id: &str, digest: Digest32) -> bool {
-        self.models.get(model_id).is_some_and(|model| {
-            Digest32::from_str(&model.manifest.model_digest).ok() == Some(digest)
-        })
+        self.model_digests
+            .get(&digest)
+            .is_some_and(|loaded_id| loaded_id == model_id)
+            && self.models.contains_key(model_id)
     }
 
     pub fn load_model(
@@ -226,14 +231,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
+        let digest = Digest32::from_str(&manifest.model_digest)
+            .map_err(|_| Error::InvalidManifest)?;
         // One model digest maps to exactly one live handle per worker.
         // Physical batching relies on this invariant and cannot safely
         // coalesce distinct model handles merely because digests match.
         if self.models.contains_key(&manifest.model_id)
-            || self
-                .models
-                .values()
-                .any(|loaded| loaded.manifest.model_digest == manifest.model_digest)
+            || self.model_digests.contains_key(&digest)
         {
             return Err(Error::ModelAlreadyLoaded);
         }
@@ -254,6 +258,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
             observed_memory_bytes: handle.observed_memory_bytes,
             terminal_observed: true,
         };
+        self.model_digests
+            .insert(digest, manifest.model_id.clone());
         self.models.insert(
             manifest.model_id.clone(),
             LoadedModel {
@@ -370,8 +376,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        // The driver may fail (or report an ambiguous external outcome).
+        // Keep the old handle and secondary index reserved until unload is
+        // confirmed; otherwise an alias could load while the old handle lives.
+        let handle = loaded.handle.clone();
+        let digest = Digest32::from_str(&loaded.manifest.model_digest)
+            .map_err(|_| Error::InvalidManifest)?;
+        self.driver.unload(handle)?;
+        self.models.remove(model_id);
+        self.model_digests.remove(&digest);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
