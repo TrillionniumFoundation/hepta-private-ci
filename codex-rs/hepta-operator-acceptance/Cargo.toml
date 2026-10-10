@@ -25,6 +25,8 @@ workspace = true
 
 [dependencies]
 base64 = { workspace = true }
+codex-hepta-neuron = { path = "../hepta-neuron" }
+codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true }
 libc = { workspace = true }
 rand = { workspace = true }
