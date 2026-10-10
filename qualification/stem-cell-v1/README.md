@@ -137,7 +137,7 @@ at the upstream owner, native timestamps, signed provenance, WAL fsync and crash
 recovery remain separately required for L3 and cannot be inferred from this
 trait or its unit tests.
 
-The dedicated CI lane runs Rust formatting/compile/test and Python L1 tests.
+The dedicated CI lane runs Rust formatting and compilation, targeted native Worker/Head and final-use-ordering tests, plus Python L1 tests. Full App Server end-to-end tests are independent, non-waived production blockers.
 None of these tests load mmBERT weights or issue production selection authority.
 
 ## Q24 CPU Head vertical slice (native arithmetic, not Encoder execution)
@@ -194,3 +194,56 @@ authenticated exported tensor CAS load, live microbatch scheduling,
 independent resource measurements, a registered quantized projection for
 wide embeddings, target-hardware throughput/RSS, crash-recovery/WAL cuts,
 independent NDU future-window outcomes, and operator promotion authorization.
+
+## Shared Encoder feature fabric: real offline batch path, not production authority
+
+`shared_encoder_batch.py` adds a frozen, local Hugging Face Encoder executor
+that computes an actual **single batched forward** on distinct approved inputs,
+plus deterministic mean or eight segment-landmark feature extraction. The
+`FrozenLocalHfBackend` requires a SHA-256-verified local snapshot, uses
+`local_files_only=True` and `trust_remote_code=False`, and refuses silent
+truncation or network downloads. Encoders requiring custom model code (including
+some Jina snapshots) cannot use this generic loader without a separately audited
+backend implementation. `transformers` and `torch` are optional runtime
+dependencies, not CI downloads.
+
+`SharedStemEngine` rejects a mixed Scope, Generation, revocation frontier,
+representation or pinned model/preprocessor/runtime profile **before any
+model call**. It computes each distinct input once per bounded batch of
+1–32 requests; same-scope Cells can reuse immutable, float32-digest-bound
+features. The bounded in-memory LRU is keyed by
+`(scope, generation, revocation, encoder, preprocessor, runtime, input, representation)`
+and never retains raw text. It supports explicit scope and generation
+invalidation; the upstream real owner must still deliver revocation events.
+No cached embedding, model digest or caller-provided scope hash is a signed
+authority witness. Cross-scope sharing is deliberately disabled.
+
+Wider-than-512 output is reported *as wide*, not silently truncated or
+automatically admitted to `NeuronFeatureRequestV1`. An independently trained,
+pinned, qualified projection remains a blocker for ModernBERT 768D and
+multi-vector token-landmark paths. The `feature_digest` binds canonical
+float32 values and representation; no persistent feature artifacts or
+production-ready Rust bridge are created by this module.
+
+`test_shared_encoder_batch.py` includes 4096 **logical** Cell
+reuse assertions under a clearly marked synthetic backend and, if Torch
+is installed, a real small synthetic Torch tensor forward. These are
+L1 behavior checks, not 4096 concurrent requests, trained mmBERT inference,
+target-device throughput, safe cross-principal sharing, or NDU learning uplift.
+
+No-change remains frozen, and this implementation is **shadow_only_not_authorized**.
+In particular, the current research Scope digest is not authenticated by
+`AuthBus`, cache revocation is not yet connected to owner events, cross-process
+feature buffers are not immutable CAS artifacts, and there is no claim that
+Python inference is on the production Codex/Hepta execution spine.
+
+### Native and full App Server CI distinction
+
+L1 targeted Rust validation selects `test(model_worker::)` and the
+final-use ordering guard; it does **not** skip or waive App Server end-to-end
+integration tests for production. A separate historical App Server test
+requires a configured Codex executable and can still fail full-suite CI.
+The static final-use order regression now checks the entered-use helper used
+by the current code, rather than searching for the removed direct
+`request_typed::<TurnStartResponse>` call. A green L1 job alone remains
+insufficient for L3 or production promotion.
