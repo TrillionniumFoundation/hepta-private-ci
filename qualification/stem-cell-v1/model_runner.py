@@ -9,7 +9,9 @@ import hashlib
 import json
 import math
 import os
+import platform
 import random
+import sys
 import time
 from pathlib import Path
 from collections import OrderedDict
@@ -278,6 +280,7 @@ def main():
                             max_cache_bytes=protocol["experiment_2"]["frozen_encoder_cache_max_bytes"])
     sample_features = {}
     sample_meta = {}
+    feature_start = time.perf_counter()
     for row in selected + cals + evaluated:
         before = time.perf_counter_ns()
         vec, cached = features_for_row(encoder, row, args.representation,
@@ -286,6 +289,7 @@ def main():
         sample_features[row["sample_id"]] = vec
         sample_meta[row["sample_id"]] = {"latency_ms": duration_ms,
                                           "latency_path": "cache_hit_head" if cached else "cold_encoder"}
+    feature_seconds = time.perf_counter() - feature_start
     first = selected[0]["sample_id"]
     head, count = build_head(torch, sample_features[first].numel(), len(classes), args.head, args.budget)
     x = torch.stack([sample_features[r["sample_id"]] for r in selected])
@@ -300,9 +304,17 @@ def main():
         cal_conf = torch.softmax(cal_logits / temperature, -1).max(-1).values.tolist()
         threshold = quantile(cal_conf, 1 - protocol["experiment_2"]["calibration_in_domain_coverage"])
     arm = f"{args.model_key}:{args.representation}:{args.head}:{args.budget}:{args.shots_per_class}"
-    run_digest = hashlib.sha256(json.dumps({"arm": arm, "dataset_digest": dataset_digest,
-             "model_digest": verified, "train_steps": args.train_steps, "seed": args.seed,
-             "device": args.device}, sort_keys=True).encode()).hexdigest()
+    import transformers
+    source_digest = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    protocol_digest = hashlib.sha256(Path(__file__).with_name("protocol.json").read_bytes()).hexdigest()
+    runtime_identity = {"arm": arm, "dataset_digest": dataset_digest,
+                        "model_digest": verified, "train_steps": args.train_steps,
+                        "seed": args.seed, "device": args.device,
+                        "model_runner_source_sha256": source_digest,
+                        "protocol_sha256": protocol_digest,
+                        "python": platform.python_version(), "torch": torch.__version__,
+                        "transformers": getattr(transformers, "__version__", "unreported")}
+    run_digest = hashlib.sha256(json.dumps(runtime_identity, sort_keys=True).encode()).hexdigest()
     emitted = []
     with torch.inference_mode():
         for row in evaluated:
@@ -325,6 +337,31 @@ def main():
     with Path(args.output).open("w", encoding="utf-8") as handle:
         for row in emitted:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
+    prediction_digest = hashlib.sha256(Path(args.output).read_bytes()).hexdigest()
+    try:
+        import psutil
+        rss_after = psutil.Process().memory_info().rss
+    except ImportError:
+        rss_after = None
+    result_manifest = {"schema": "hepta.stem-cell-hf-run-manifest.v1",
+                       "shadow_only": True, "production_authorized": False,
+                       **runtime_identity, "run_digest": run_digest,
+                       "predictions_sha256": prediction_digest, "training_examples": len(selected),
+                       "calibration_examples": len(cals), "evaluation_examples": len(evaluated),
+                       "head_parameters": count,
+                       "encoder_parameters": sum(p.numel() for p in encoder.model.parameters()),
+                       "feature_seconds": feature_seconds, "training_seconds": training_seconds,
+                       "encoder_forward_calls": encoder.encoder_invocations,
+                       "cache_hits": encoder.cache_hits,
+                       "cache_evictions": encoder.cache_evictions,
+                       "cache_bytes_after": encoder.cache_bytes,
+                       "cache_bytes_limit": encoder.cache_limit_bytes,
+                       "truncations": encoder.truncations,
+                       "process_rss_after_bytes": rss_after,
+                       "cuda_peak_allocated_bytes": (torch.cuda.max_memory_allocated() if args.device.startswith("cuda") else None),
+                       "measurement_warning": "HF standalone no native Hepta batch or independent NDU outcome receipt"}
+    Path(args.output + ".run.json").write_text(json.dumps(result_manifest, sort_keys=True,
+                                                        indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"arm": arm, "rows": len(emitted), "head_parameters": count,
                       "encoder_forward_calls": encoder.encoder_invocations,
                       "cache_hits": encoder.cache_hits, "cache_evictions": encoder.cache_evictions,
