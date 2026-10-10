@@ -116,7 +116,8 @@ def load_inputs(manifest_file, dataset_file):
             if manifest["family"] == "heads":
                 h = manifest.get("head", {})
                 d, w = h.get("input_dimension"), h.get("state_width")
-                require(type(d) is int and 1 <= d <= 512 and type(w) is int and 5 <= w <= 256,
+                require(type(d) is int and 1 <= d <= 512 and type(w) is int and 5 <= w <= 256 and
+                        is_sha(h.get("encoder_digest")),
                         "invalid head dimensions")
                 for field, size in (("features_q24", d), ("target_q24", 2 * w)):
                     values = row.get(field)
@@ -320,7 +321,9 @@ def run_head(manifest, rows, arm, device, artifact_out):
                                  "prediction_q24": pred, "latency_ms": elapsed})
     return nparams, weight_sha, observations, {"torch": torch.__version__,
                                                 "training_seconds": training_seconds,
-                                                "optimizer": "AdamW", "weight_decay": .01}
+                                                "optimizer": "AdamW", "weight_decay": .01,
+                                                "head_profile_sha256": hashlib.sha256(
+                                                    json.dumps(h, sort_keys=True).encode()).hexdigest()}
 
 
 def percentile(values, fraction):
@@ -418,6 +421,10 @@ def compare(manifest, rows, packets, baseline_sha):
                     receipt.get("weights_sha256") == model.get("weights_sha256") and
                     receipt.get("runtime", {}).get("artifact_tree_sha256") == model.get("artifact_tree_sha256"),
                     "model identity, bytes or revision drift")
+        if family == "heads":
+            expected_profile = hashlib.sha256(json.dumps(manifest["head"], sort_keys=True).encode()).hexdigest()
+            require(receipt.get("runtime", {}).get("head_profile_sha256") == expected_profile,
+                    "head encoder/training profile drift")
         require(type(receipt.get("parameters")) is int and 0 < receipt["parameters"] <= manifest["parameter_cap"],
                 "model violates parameter cap")
         seen = receipt.get("observations")
