@@ -74,12 +74,19 @@ jobs:
             --model "$RUNNER_TEMP/r8-results/film.npz" \
             --input "$RUNNER_TEMP/r8-results/future_unlabelled.npz" \
             --output "$RUNNER_TEMP/r8-results/candidate.json"
+          "$py" "$script" predict \
+            --model "$RUNNER_TEMP/r8-results/film.npz" \
+            --input "$RUNNER_TEMP/r8-results/ood_unlabelled.npz" \
+            --output "$RUNNER_TEMP/r8-results/candidate-ood.json"
           "$py" "$script" evaluate \
             --candidate "$RUNNER_TEMP/r8-results/candidate.json" \
             --baseline "$RUNNER_TEMP/r8-results/no_change.json" \
             --outcomes "$RUNNER_TEMP/r8-results/future_outcomes.json" \
+            --candidate-ood "$RUNNER_TEMP/r8-results/candidate-ood.json" \
+            --baseline-ood "$RUNNER_TEMP/r8-results/no_change_ood.json" \
+            --ood-outcomes "$RUNNER_TEMP/r8-results/ood_outcomes.json" \
             --output "$RUNNER_TEMP/r8-results/evaluator.json"
-          "$py" -c 'import json,os; p=json.load(open(os.environ["RUNNER_TEMP"]+"/r8-results/evaluator.json")); assert p["promotion"]=="BLOCKED" and p["synthetic_outcome"]'
+          "$py" -c 'import json,os; p=json.load(open(os.environ["RUNNER_TEMP"]+"/r8-results/evaluator.json")); assert p["promotion"]=="BLOCKED" and p["synthetic_outcome"] and 0 <= p["ood_auroc"]["candidate"] <= 1'
 
       - name: Run four synthetic scale points
         shell: bash
