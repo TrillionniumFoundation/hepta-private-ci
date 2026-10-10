@@ -142,7 +142,8 @@ class ResourceTests(unittest.TestCase):
 
     def test_matrix_explicit_shadow_only(self):
         result = matrix([{"id": "test"}])
-        self.assertEqual(len(result["arms"]), 4 * 6 * 4)
+        self.assertEqual(len(result["arms"]), 4 * 6 * 4 * 3)
+        self.assertEqual(len(result["scale_arms"]), 4 * 3 * 3 * 3)
         self.assertFalse(result["production_promotion_permitted"])
 
     def test_revision_pin_precedes_weight_import(self):
