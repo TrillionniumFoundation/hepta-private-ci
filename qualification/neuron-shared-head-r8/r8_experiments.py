@@ -185,6 +185,8 @@ def train_head(head: Head, train: dict, valid: dict, *, steps: int, seed: int, a
     if steps < 1 or steps > 100_000 or not 0 <= alpha <= 1:
         raise ValueError("invalid training budget")
     check_train_valid(train, valid)
+    if len(set(map(str,train["cell"])))!=1 or set(map(str,train["cell"]))!=set(map(str,valid["cell"])):
+        raise ValueError("single-Cell Head trainer cannot pool data across cells")
     classes = head.classes
     if np.any(train["y"] < 0) or np.any(train["y"] >= classes) or np.any(valid["y"] < 0) or np.any(valid["y"] >= classes):
         raise ValueError("label outside class space")
@@ -408,14 +410,19 @@ def cmd_scale(args):
         raise ValueError("invalid preregistered scale/active/update profile")
     if args.pattern not in ("same","partial","distinct") or args.requests<1 or args.requests>100_000:
         raise ValueError("invalid workload")
+    if args.dim<1 or args.dim>512 or args.cache_entries<0 or args.max_head_bytes<1:
+        raise ValueError("invalid bounded scale dimensions or memory")
     rng=np.random.default_rng(args.seed)
     # A bounded synthetic numeric projection, not Laya/ModernBERT inference.
     raw_dim=32
+    probe=Head(args.kind,args.dim,2,args.budget,args.seed)
+    expected_head_bytes=args.cells*sum(v.nbytes for v in probe.p.values())
+    if expected_head_bytes>args.max_head_bytes:
+        raise ValueError("head memory cap exceeded in allocation preflight")
     projection=rng.normal(0,0.05,(raw_dim,args.dim)).astype(np.float32)
-    heads=[Head(args.kind,args.dim,2,args.budget,args.seed+i) for i in range(args.cells)]
+    heads=[probe]+[Head(args.kind,args.dim,2,args.budget,args.seed+i) for i in range(1,args.cells)]
     resident_weights=sum(sum(v.nbytes for v in h.p.values()) for h in heads)
-    if resident_weights > args.max_head_bytes:
-        raise ValueError("head memory cap exceeded before benchmarking")
+    assert resident_weights==expected_head_bytes
     cache={}
     from collections import deque
     order=deque()
@@ -426,7 +433,7 @@ def cmd_scale(args):
     for i in range(args.requests):
         started=time.perf_counter()
         cell_index=(i*37)%args.cells
-        if (cell_index/args.cells) > args.active:
+        if (cell_index/args.cells) >= args.active:
             continue
         j=0 if args.pattern=="same" else (i if args.pattern=="distinct" else i % len(raw_table))
         raw=raw_table[j]
