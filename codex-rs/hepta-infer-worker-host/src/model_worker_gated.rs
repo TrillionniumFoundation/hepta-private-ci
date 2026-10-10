@@ -430,7 +430,14 @@ mod tests {
         }
     }
 
-    fn feature(id: &str, head_digest: String) -> NeuronFeatureRequest {
+    fn manifest_for(candidates: &[GatedHeadCandidateV2]) -> ModelManifest {
+        let mut selected = manifest();
+        selected.weights_digest = GatedHeadCpuDriverV2::catalog_digest_for(candidates)
+            .expect("catalog digest");
+        selected
+    }
+
+    fn feature(id: &str, head_digest: String, weights_digest: String) -> NeuronFeatureRequest {
         let mut request = NeuronFeatureRequest {
             authorization: WorkerRequest {
                 request_id: id.into(),
@@ -446,7 +453,7 @@ mod tests {
             },
             encoder_digest: "a".repeat(64),
             head_digest,
-            weights_digest: "3".repeat(64),
+            weights_digest,
             input_digest: "c".repeat(64),
             feature_vector_q24: vec![Q24 / 2, -Q24 / 4],
             expected_output_width: 1,
@@ -467,11 +474,13 @@ mod tests {
 
     #[test]
     fn actual_gated_cpu_batch_runs_independent_heads_and_does_not_fabricate_logits() {
-        let mut driver = GatedHeadCpuDriverV2::new(manifest()).expect("driver");
-        let ha = driver.register_head(head("cell.a")).expect("head a");
-        let mut hb = head("cell.b");
-        hb.gate_q24 = vec![Q24 * 2, Q24];
-        let hb = driver.register_head(hb).expect("head b");
+        let ha_candidate = head("cell.a");
+        let mut hb_candidate = head("cell.b");
+        hb_candidate.gate_q24 = vec![Q24 * 2, Q24];
+        let selected = manifest_for(&[ha_candidate.clone(), hb_candidate.clone()]);
+        let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
+        let ha = driver.register_head(ha_candidate).expect("head a");
+        let hb = driver.register_head(hb_candidate).expect("head b");
         assert_ne!(ha, hb);
         assert_eq!(driver.parameter_bytes(), 16 * 8);
         let grant = ResourceGrant {
@@ -487,10 +496,10 @@ mod tests {
         };
         let mut worker = InferenceWorker::new(1, "worker.heads".into(), 3, grant, driver)
             .expect("worker");
-        worker.load_model(1, manifest()).expect("load");
+        worker.load_model(1, selected.clone()).expect("load");
         let rows = worker.run_neuron_features_batch(100, "model.gated", vec![
-            feature("req.a", ha),
-            feature("req.b", hb),
+            feature("req.a", ha, selected.weights_digest.clone()),
+            feature("req.b", hb, selected.weights_digest.clone()),
         ]).expect("run actual cpu head");
         assert_eq!(rows.len(), 2);
         assert_eq!(rows[0].drive_q24, vec![Q24 / 2]);
@@ -502,16 +511,26 @@ mod tests {
 
     #[test]
     fn rejects_excess_capacity_and_stale_head_before_returning_output() {
-        let mut driver = GatedHeadCpuDriverV2::new(manifest()).expect("driver");
+        let selected = manifest_for(&[head("cell.a")]);
+        let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
         let mut invalid = head("cell.invalid");
         invalid.gate_q24.push(Q24);
         assert_eq!(driver.register_head(invalid), Err(Error::FeatureLimit));
         let digest = driver.register_head(head("cell.a")).expect("head");
-        let mut unauthorized = feature("r", "f".repeat(64));
-        let handle = driver.load(&manifest()).expect("load");
+        let mut unauthorized = feature("r", "f".repeat(64), selected.weights_digest.clone());
+        let handle = driver.load(&selected).expect("load");
         assert_eq!(driver.run_neuron_features(&handle, &unauthorized), Err(Error::ModelNotLoaded));
         unauthorized.head_digest = digest;
         assert!(driver.run_neuron_features(&handle, &unauthorized).is_ok());
+        assert_eq!(driver.register_head(head("cell.new")), Err(Error::ActiveRequests));
+    }
+
+    #[test]
+    fn a_manifest_without_the_actual_head_catalog_is_not_loadable() {
+        let wrong = manifest();
+        let mut driver = GatedHeadCpuDriverV2::new(wrong.clone()).expect("driver");
+        driver.register_head(head("cell.a")).expect("register");
+        assert_eq!(driver.load(&wrong), Err(Error::ModelMismatch));
     }
 
     #[test]
