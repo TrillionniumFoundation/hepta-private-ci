@@ -179,8 +179,8 @@ def project(plan, labels, chains, questions, *, revoked):
             a = new["conditions"][review_arm]
             b = new["conditions"][original_arm]
             if (
-                a["bundle"]["selected"] != b["bundle"]["selected"]
-                or a["delivered_evidence"] != b["delivered_evidence"]
+                digest(a["bundle"]["selected"]) != digest(b["bundle"]["selected"])
+                or digest(a["delivered_evidence"]) != digest(b["delivered_evidence"])
                 or a["independent_review"] is not False
                 or a["sufficient_context_certified"] is not False
             ):
