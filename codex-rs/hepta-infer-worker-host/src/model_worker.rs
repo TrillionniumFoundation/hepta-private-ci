@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
@@ -137,6 +138,8 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    /// Native batch execution is not available in the selected driver.
+    BatchUnsupported,
 }
 
 impl fmt::Display for Error {
@@ -500,6 +503,18 @@ pub trait NeuronFeatureDriver: ModelDriver {
         handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error>;
+
+    /// A genuine single backend invocation for an ordered batch. The default
+    /// rejects batching instead of disguising N sequential driver calls as a
+    /// performance improvement. Implementations must return exactly one result
+    /// per request, in the same order, or fail the entire non-retryable batch.
+    fn run_neuron_features_batch(
+        &mut self,
+        _handle: &DriverModelHandle,
+        _requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
+        Err(Error::BatchUnsupported)
+    }
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
@@ -611,6 +626,122 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
+        feature_receipt_from_observation(request_copy, observed)
+
+    }
+
+    /// No sequential fallback: a multi-request group must be handled by a
+    /// genuinely native feature-batch backend or fail without replay.
+    pub(crate) fn run_neuron_features_batch_receipts(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        requests: Vec<NeuronFeatureRequest>,
+    ) -> Result<Vec<NeuronFeatureReceiptV1>, Error> {
+        self.validate_current_grant(now_ms)?;
+        validate_identity(model_id, "model")?;
+        if requests.len() < 2 || requests.len() > MAX_ACTIVE_REQUESTS {
+            return Err(Error::RequestCapacity);
+        }
+        let total = self
+            .active_requests
+            .len()
+            .checked_add(requests.len())
+            .ok_or(Error::RequestCapacity)?;
+        if total > self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS) {
+            return Err(Error::RequestCapacity);
+        }
+        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let manifest = loaded.manifest.clone();
+        let handle = loaded.handle.clone();
+        let mut distinct = BTreeSet::new();
+        for request in &requests {
+            validate_request(now_ms, &request.authorization)?;
+            validate_neuron_feature_request(request)?;
+            let auth = &request.authorization;
+            if auth.cancelled || !distinct.insert(auth.request_id.clone()) {
+                return Err(Error::FeatureContract);
+            }
+            if self.active_requests.contains_key(&auth.request_id) {
+                return Err(Error::RequestCapacity);
+            }
+            if auth.model_digest != manifest.model_digest
+                || auth.reservation_model_digest != manifest.model_digest
+                || request.weights_digest != manifest.weights_digest
+            {
+                return Err(Error::ModelMismatch);
+            }
+            if auth.maximum_tokens > manifest.maximum_tokens
+                || auth.maximum_tokens > auth.reservation_maximum_tokens
+            {
+                return Err(Error::TokenLimit);
+            }
+            let digest = canonical_neuron_feature_payload_digest(request);
+            if auth.payload_digest != digest || auth.lease_payload_digest != digest {
+                return Err(Error::PayloadMismatch);
+            }
+        }
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        loaded.active_requests = loaded
+            .active_requests
+            .checked_add(requests.len())
+            .ok_or(Error::ArithmeticOverflow)?;
+        for request in &requests {
+            self.active_requests
+                .insert(request.authorization.request_id.clone(), model_id.to_owned());
+        }
+        // One physical driver call, no per-request fallback and no retry after
+        // unknown/partial backend effects. All active markers are retired.
+        let results = self.driver.run_neuron_features_batch(&handle, &requests);
+        for request in &requests {
+            self.active_requests.remove(&request.authorization.request_id);
+        }
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
+        let results = results?;
+        if results.len() != requests.len() {
+            return Err(Error::FeatureOutputMismatch);
+        }
+        let mut receipts = Vec::with_capacity(requests.len());
+        for (request, observed) in requests.into_iter().zip(results) {
+            if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+                return Err(Error::ModelCapacity);
+            }
+            let status = if !observed.terminal_observed {
+                ExecutionStatus::Indeterminate
+            } else if observed.succeeded {
+                validate_neuron_feature_output(&request, &observed)?;
+                ExecutionStatus::Succeeded
+            } else {
+                ExecutionStatus::Failed
+            };
+            let execution = NeuronFeatureExecutionObservation {
+                request_id: request.authorization.request_id.clone(),
+                reservation_id: request.authorization.reservation_id.clone(),
+                worker_generation: self.generation,
+                manifest: manifest.clone(),
+                encoder_digest: observed.encoder_digest,
+                head_digest: observed.head_digest,
+                input_digest: request.input_digest.clone(),
+                status,
+                drive_q24: observed.drive_q24,
+                prediction_q24: observed.prediction_q24,
+                observed_memory_bytes: observed.observed_memory_bytes,
+                transient_allocation_bytes: observed.transient_allocation_bytes,
+                queue_age_micros: observed.queue_age_micros,
+                latency_micros: observed.latency_micros,
+                terminal_observed: observed.terminal_observed,
+            };
+            receipts.push(feature_receipt_from_observation(request, execution)?);
+        }
+        Ok(receipts)
+    }
+}
+
+fn feature_receipt_from_observation(
+    request_copy: NeuronFeatureRequest,
+    observed: NeuronFeatureExecutionObservation,
+) -> Result<NeuronFeatureReceiptV1, Error> {
         let generation =
             Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
         let control_request = NeuronFeatureRequestV1 {
@@ -658,7 +789,6 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             },
         )
         .map_err(|_| Error::FeatureContract)
-    }
 }
 
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {
