@@ -89,12 +89,18 @@ class LearningGateTests(unittest.TestCase):
 
     def test_no_learning_is_not_cell_learning(self):
         rows, base, frozen, trained = sample_fixture()
+        # Use a genuinely better-than-no-change frozen Head, so the candidate
+        # can pass the baseline quality gate without gaining anything from
+        # training. Previously frozen predicted the wrong label and the
+        # asserted positive accuracy gain was mathematically impossible.
+        frozen = [{**p, "probabilities": [.99, .01]} for p in frozen]
         fake_learning = [
             {**p, "probabilities": f["probabilities"]} for p, f in zip(trained, frozen)
         ]
         observed = qualify(rows, base, fake_learning, frozen_head=frozen, replicates=1000)
         self.assertTrue(observed["offline_quality_gate_passed"])
         self.assertFalse(observed["cell_learning_gate_passed"])
+        self.assertFalse(observed["production_promotion_permitted"])
 
 
 if __name__ == "__main__":
