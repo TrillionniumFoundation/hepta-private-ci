@@ -2,6 +2,7 @@
 
 import base64
 import hashlib
+import json
 import shutil
 import subprocess
 import sys
@@ -22,7 +23,8 @@ from hepta_cell_split_observer_gate import (
     raw_evidence_root_digest,
     verify_observer_packet,
 )
-from hepta_cell_split_perf_gate import MODES, SCOPES, InvalidEvidence, analyze
+from hepta_cell_split_perf_gate import FIELDS, MODES, SCOPES, TRACE_FIELD, InvalidEvidence, analyze
+from hepta_cell_split_matrix_capture import MEASUREMENT_SCHEMA
 from test_hepta_cell_split_perf_gate import synthetic_matrix
 
 
@@ -162,8 +164,21 @@ class IndependentObserverTests(unittest.TestCase):
     def test_raw_evidence_root_requires_retained_bytes_and_rejects_mutation(self):
         raw = Path(self.directory.name) / "raw-measurements"
         raw.mkdir()
-        receipt = raw / "64-no_split.json"
-        receipt.write_bytes(b"real-observer-owned-raw-record")
+        for row in self.matrix["runs"]:
+            packet = {
+                "schema": MEASUREMENT_SCHEMA,
+                "source_sha": self.matrix["source_sha"],
+                "hardware_id": self.matrix["hardware_id"],
+                "model_digest": self.matrix["model_digest"],
+                "workload_digest": self.matrix["workload_digest"],
+                "scopes": row["scopes"],
+                "mode": row["mode"],
+                "measurement_source": "unit-test:process-counters",
+                TRACE_FIELD: row[TRACE_FIELD],
+                **{field: row[field] for field in FIELDS},
+            }
+            name = f"{row['scopes']}-{row['mode']}.json"
+            (raw / name).write_text(json.dumps(packet), encoding="utf-8")
         self.claim["raw_evidence_root_sha256"] = raw_evidence_root_digest(raw)
         self.signed = self.sign(self.claim)
         result = verify_observer_packet(
@@ -171,8 +186,23 @@ class IndependentObserverTests(unittest.TestCase):
         )
         self.assertTrue(result["raw_evidence_retention_verified"])
         self.assertFalse(result["production_activation_authorized"])
-        receipt.write_bytes(b"modified-underlying-record")
+        receipt = raw / "64-no_split.json"
+        packet = json.loads(receipt.read_text(encoding="utf-8"))
+        packet["cpu_seconds"] += 1
+        receipt.write_text(json.dumps(packet), encoding="utf-8")
+        with self.assertRaisesRegex(InvalidEvidence, "raw measurement"):
+            verify_observer_packet(
+                self.matrix, self.comparison, self.signed, self.public, self.pin, raw
+            )
+        packet["cpu_seconds"] -= 1
+        receipt.write_text(json.dumps(packet), encoding="utf-8")
+        (raw / "unrelated.log").write_text("unexpected change", encoding="utf-8")
         with self.assertRaisesRegex(InvalidEvidence, "retained bytes"):
+            verify_observer_packet(
+                self.matrix, self.comparison, self.signed, self.public, self.pin, raw
+            )
+        (raw / "256-logical_split.json").unlink()
+        with self.assertRaisesRegex(InvalidEvidence, "missing real raw"):
             verify_observer_packet(
                 self.matrix, self.comparison, self.signed, self.public, self.pin, raw
             )
