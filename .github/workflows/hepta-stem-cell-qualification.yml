@@ -1,0 +1,37 @@
+name: Hepta Stem Cell research qualification (L1 only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/**'
+      - '.github/workflows/hepta-stem-cell-qualification.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-contract-tests:
+    name: Offline contract and trace tests (not model results)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact tested commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Report tested commit identity
+        run: |
+          git rev-parse HEAD
+          git rev-parse HEAD^{tree}
+          python3 --version
+      - name: Run strict L1 tests without model fetching
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 -m unittest discover -v -s qualification/stem-cell-v1 -p 'test_*.py'
+          python3 -m json.tool qualification/stem-cell-v1/protocol.json > /dev/null
+      - name: Check tested source remains unmodified
+        run: |
+          git diff --check
+          git diff --exit-code
