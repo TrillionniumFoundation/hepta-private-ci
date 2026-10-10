@@ -322,7 +322,9 @@ impl DurableControlRoleOwnerV1 {
                 use std::os::unix::fs::OpenOptionsExt;
                 options.mode(0o600);
             }
-            let mut file = options.open(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+            let mut file = options
+                .open(&path)
+                .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             let mut initial = Vec::new();
             initial.extend_from_slice(DURABLE_CONTROL_MAGIC_V1);
             initial.extend_from_slice(&0_u32.to_be_bytes());
@@ -1495,7 +1497,11 @@ mod tests {
         {
             let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open genesis");
             assert_eq!(
-                std::fs::metadata(&path).expect("genesis metadata").permissions().mode() & 0o777,
+                std::fs::metadata(&path)
+                    .expect("genesis metadata")
+                    .permissions()
+                    .mode()
+                    & 0o777,
                 0o600
             );
             owner
@@ -1506,12 +1512,21 @@ mod tests {
                 )
                 .expect("durable replacement");
             assert_eq!(
-                std::fs::metadata(&path).expect("replacement metadata").permissions().mode() & 0o777,
+                std::fs::metadata(&path)
+                    .expect("replacement metadata")
+                    .permissions()
+                    .mode()
+                    & 0o777,
                 0o600
             );
         }
         let reopened = DurableControlRoleOwnerV1::open(&path).expect("reopen");
-        assert!(reopened.inner().active_generations.contains_key(&StableId::new("cell.control").expect("id")));
+        assert!(
+            reopened
+                .inner()
+                .active_generations
+                .contains_key(&StableId::new("cell.control").expect("id"))
+        );
         drop(reopened);
         std::fs::remove_dir_all(directory).expect("cleanup");
     }
