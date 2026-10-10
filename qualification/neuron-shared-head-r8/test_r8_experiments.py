@@ -78,5 +78,30 @@ class Tests(unittest.TestCase):
                     seed=7,cache_entries=128,max_head_bytes=512*1024*1024,
                     output=str(Path(d)/"unexpected.json")))
 
+    def test_original_laya_export_contract_without_model_weights(self):
+        from export_laya_reference import convert_predictions, validate_input
+        data={
+            "schema":"hepta.neuron.laya-choice-input.v1",
+            "question_id":"q",
+            "question":{"type":"choice","criteria":{"left":"Left option","right":"Right option"}},
+            "train_groups":["train-group"],"valid_groups":["valid-group"],
+            "valid_time_max":20,
+            "rows":[{"id":"future-1","group":"future-group","time":25,
+                     "state":"An explicit future observation"}],
+        }
+        rows,_,keys=validate_input(data)
+        response=[{"usage":{"truncated":False,"state_tokens_dropped":0},
+                   "answers":{"q":{"type":"choice",
+                                   "probabilities":{"right":0.6,"left":0.4}}}}]
+        observed=convert_predictions(rows,response,"q",keys)
+        self.assertEqual(observed[0]["probabilities"],[0.4,0.6])
+        response[0]["usage"]["truncated"]=True
+        with self.assertRaisesRegex(ValueError,"truncated"):
+            convert_predictions(rows,response,"q",keys)
+        response[0]["usage"]["truncated"]=False
+        del response[0]["answers"]["q"]["probabilities"]["left"]
+        with self.assertRaisesRegex(ValueError,"probabilities"):
+            convert_predictions(rows,response,"q",keys)
+
 if __name__=="__main__":
     unittest.main()
