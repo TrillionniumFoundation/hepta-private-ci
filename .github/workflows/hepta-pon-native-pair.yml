@@ -34,9 +34,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 22073a37e1e33c79de6695e47d97c3fea485c189
+      CHAIN_SOURCE_SHA: 8f17e2a777df8ddee8d1645457a75b8da8cc2a61
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '22073a37e1e33c79de6695e47d97c3fea485c189' || '108029280d72a24d4b78f5bf5554eb079251bc62' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '8f17e2a777df8ddee8d1645457a75b8da8cc2a61' || 'aa0c88102dee36d08d2b15e1a0ebe486271dd34c' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -117,7 +117,7 @@ jobs:
           TRNM_RETAINED_DELTA_COST_PATH: ${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests 28 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests 32 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-query-bound.json" --minimum-tests 14 -- python3 ../chain/formal/pon-nakamoto-v1/test_work_query_bound.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cache-receipt.json" --minimum-tests 18 -- python3 -m unittest discover -s ../chain/scripts/ci -p test_read_native_cache_observation.py -v
       - name: Require every cached-owner integrity and cold-reopen selector
@@ -125,6 +125,12 @@ jobs:
           set -euo pipefail
           for selector in cached_block_reads_do_not_hide_genesis_damage_or_rollback cached_parent_reads_observe_changed_work_then_exact_restore cached_commitment_reads_preserve_limits_missing_and_rollback cached_genesis_snapshot_is_reread_and_survives_cold_reopen; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "store::native_authenticated::cached_owner_read_tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require bounded fixed-field copies and exact original error semantics
+        run: |
+          set -euo pipefail
+          for selector in fixed_blob_projection_bounds_owned_bytes_and_preserves_sql_types fixed_block_fields_match_original_errors_after_warm_cache_and_rollback fixed_parent_work_matches_original_and_rereads_after_restore fixed_fields_genesis_failure_order_and_cold_reopen_keep_state; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "store::native_authenticated::native_fixed_blob_tests::$selector" -- --exact --show-output --test-threads=1
           done
       - name: Require every live public-owner mutation, rollback and cold-open selector
         run: |
@@ -174,6 +180,11 @@ jobs:
           # Use the same working directory, pinned toolchain and Cargo config as just test.
           # This prepares dependencies only. No native test failure is retried.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- bash -c 'cd codex-rs && exec cargo fetch --locked'
+      - name: Require all original Fleet controls on the exact paired source
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/fleet-complete.json" --minimum-tests 49 -- just test --locked -p codex-hepta-fleet --no-capture
       - name: Compile complete Agentd and run subprocess and observation regressions
         env:
           CARGO_NET_OFFLINE: "true"
