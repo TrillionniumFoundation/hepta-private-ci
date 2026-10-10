@@ -59,6 +59,8 @@ pub struct StemHeadBindingV1 {
     pub required_stem_model_id: StableId,
     pub required_stem_generation: Generation,
     pub required_encoder_digest: Digest32,
+    pub required_tokenizer_digest: Digest32,
+    pub required_preprocessor_digest: Digest32,
     pub required_projection_digest: Digest32,
     pub required_feature_width: usize,
     pub expected_output_width: usize,
@@ -134,6 +136,8 @@ pub fn bind_stem_feature_request_v1(
         selected_head.head_digest,
         selected_head.head_weights_digest,
         selected_head.required_encoder_digest,
+        selected_head.required_tokenizer_digest,
+        selected_head.required_preprocessor_digest,
         selected_head.required_projection_digest,
     ] {
         if digest.is_zero() {
@@ -171,6 +175,8 @@ pub fn bind_stem_feature_request_v1(
     if selected_head.required_stem_model_id != source.stem_model_id
         || selected_head.required_stem_generation != source.stem_generation
         || selected_head.required_encoder_digest != source.stem_weights_digest
+        || selected_head.required_tokenizer_digest != source.tokenizer_digest
+        || selected_head.required_preprocessor_digest != source.preprocessor_digest
         || selected_head.required_projection_digest != source.projection_digest
         || selected_head.required_feature_width != source.feature_width
     {
@@ -270,6 +276,8 @@ mod tests {
             required_stem_model_id: id("jina-v5-text-nano"),
             required_stem_generation: generation(7),
             required_encoder_digest: digest(b"stem"),
+            required_tokenizer_digest: digest(b"tokenizer"),
+            required_preprocessor_digest: digest(b"preprocessor"),
             required_projection_digest: digest(b"matryoshka256-q24"),
             required_feature_width: features.len(),
             expected_output_width: 5,
@@ -347,6 +355,12 @@ mod tests {
             Err(StemFeatureBindingError::IncompatibleHead)
         );
         selected.required_projection_digest = digest(b"matryoshka256-q24");
+        selected.required_tokenizer_digest = digest(b"other-tokenizer");
+        assert_eq!(
+            bind_stem_feature_request_v1(&source, &access, selected.clone(), &values),
+            Err(StemFeatureBindingError::IncompatibleHead)
+        );
+        selected.required_tokenizer_digest = digest(b"tokenizer");
         selected.required_feature_width = 512;
         assert_eq!(
             bind_stem_feature_request_v1(&source, &access, selected, &values),
