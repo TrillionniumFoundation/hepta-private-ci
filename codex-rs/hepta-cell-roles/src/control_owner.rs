@@ -347,8 +347,11 @@ impl DurableControlRoleOwnerV1 {
         // Do the O(n) state clone, mutation and encoding outside the OS lock.
         // Only the short authoritative compare/rename/fsync is serialized.
         let mut candidate = self.inner.clone();
-        let output = mutation(&mut candidate)?;
-        let encoded = if candidate != self.inner {
+        // A local MissingDispatch or stale generation may be caused by a
+        // newer writer, not by invalid caller intent. Never return the
+        // speculative result before checking the authoritative disk frontier.
+        let mutation_result = mutation(&mut candidate);
+        let encoded = if mutation_result.is_ok() && candidate != self.inner {
             Some(encode_durable_control(&candidate)?)
         } else {
             None
@@ -358,6 +361,7 @@ impl DurableControlRoleOwnerV1 {
         if decode_durable_control(&bytes)? != self.inner {
             return Err(ControlOwnerErrorV1::StaleWriter);
         }
+        let output = mutation_result?;
         if let Some(encoded) = encoded {
             persist_durable_control(&self.path, &encoded)?;
             self.inner = candidate;
