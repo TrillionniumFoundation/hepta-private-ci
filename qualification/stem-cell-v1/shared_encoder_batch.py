@@ -293,7 +293,8 @@ class FrozenLocalHfBackend:
         self.tokenizer = AutoTokenizer.from_pretrained(
             str(snapshot), local_files_only=True, trust_remote_code=False)
         self.model = AutoModel.from_pretrained(
-            str(snapshot), local_files_only=True, trust_remote_code=False).to(device).eval()
+            str(snapshot), local_files_only=True, trust_remote_code=False,
+            use_safetensors=True).to(device).eval()
         for p in self.model.parameters():
             p.requires_grad_(False)
         self.invocations = 0
@@ -316,8 +317,11 @@ class FrozenLocalHfBackend:
             t.cuda.synchronize()
         self.invocations += 1
         results = []
+        masks_cpu = masks.bool().cpu()
         for i, count in enumerate(lengths):
-            tokens = hidden[i, :count]
+            # Works for both left- and right-padding; :count silently reads
+            # padding on left-padded models and drops valid suffix tokens.
+            tokens = hidden[i][masks_cpu[i]]
             if representation == "mean":
                 values = tokens.mean(dim=0).tolist()
             else:
