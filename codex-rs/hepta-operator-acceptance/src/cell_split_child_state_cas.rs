@@ -31,6 +31,7 @@ use crate::durable::{
 
 const SCHEMA: &str = "hepta.learning.cell-split.child-state-batch-cas.v1";
 const FROZEN: &str = "migration-frozen-plan.json";
+const FROZEN_INPUT: &str = "migration-frozen-input.json";
 const MAX_CHILD_BYTES: usize = 16 * 1024 * 1024;
 const MAX_MANIFEST_BYTES: usize = 64 * 1024;
 
@@ -108,6 +109,7 @@ pub struct CellSplitChildStateCasOwnerV1<A: CellSplitMigrationAuthorityPortV1> {
     plan: CellSplitExecutionPlanV1,
     plan_digest: String,
     migration: CellStateMigrationV1,
+    frozen_input_bytes: Vec<u8>,
     authority: A,
     _lock: SidecarLock,
 }
@@ -151,6 +153,7 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
         let plan_digest = sha256(&canonical_json(&plan)?);
         let frozen_path = root.join(FROZEN);
         let frozen_bytes = canonical_json(&plan)?;
+        let frozen_input_bytes = frozen_migration_bytes(&migration, &plan_digest)?;
         match fs::symlink_metadata(&frozen_path) {
             Ok(_) if secure_read(&frozen_path, MAX_MANIFEST_BYTES)? != frozen_bytes => {
                 return Err(CellSplitChildStateCasErrorV1::Invalid);
@@ -161,7 +164,20 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             }
             Err(error) => return Err(error.into()),
         }
-        Ok(Self { root, plan, plan_digest, migration, authority, _lock: lock })
+        let input_path = root.join(FROZEN_INPUT);
+        match fs::symlink_metadata(&input_path) {
+            Ok(_) if secure_read(&input_path, MAX_MANIFEST_BYTES)? != frozen_input_bytes => {
+                return Err(CellSplitChildStateCasErrorV1::Invalid);
+            }
+            Ok(_) => {}
+            Err(error) if error.kind() == ErrorKind::NotFound => {
+                write_private_new(&input_path, &frozen_input_bytes)?;
+            }
+            Err(error) => return Err(error.into()),
+        }
+        Ok(Self {
+            root, plan, plan_digest, migration, frozen_input_bytes, authority, _lock: lock
+        })
     }
 
     fn binding(
@@ -183,6 +199,8 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             || !digest_shape(&intent.idempotency_key)
             || secure_read(&self.root.join(FROZEN), MAX_MANIFEST_BYTES)?
                 != canonical_json(&self.plan)?
+            || secure_read(&self.root.join(FROZEN_INPUT), MAX_MANIFEST_BYTES)?
+                != self.frozen_input_bytes
         {
             return Err(CellSplitChildStateCasErrorV1::Invalid);
         }
@@ -396,6 +414,34 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
         Ok(self.migration.parent_anchor().sequence)
     }
+}
+
+/// The validated projection is frozen independently of the coordinator plan.
+/// This prevents an alternate parent checkpoint or alternate Q24 children
+/// from being replayed under the same split ID after a lost acknowledgement.
+fn frozen_migration_bytes(
+    migration: &CellStateMigrationV1,
+    plan_digest: &str,
+) -> Result<Vec<u8>, CellSplitChildStateCasErrorV1> {
+    let children = migration.children().iter().map(|child| {
+        let encoded = encode_cell_state_v1(child);
+        (
+            child.child_cell_id.to_string(),
+            child.state_digest.to_string(),
+            sha256(&encoded),
+            encoded.len() as u64,
+        )
+    }).collect::<Vec<_>>();
+    canonical_json(&(
+        "hepta.learning.cell-split.frozen-migration-input.v1",
+        plan_digest,
+        migration.operation_id().as_str(),
+        migration.parent_anchor().sequence,
+        migration.parent_anchor().checkpoint_digest.to_string(),
+        migration.split_digest().to_string(),
+        migration.fence_digest().to_string(),
+        children,
+    )).map_err(Into::into)
 }
 
 fn digest_shape(value: &str) -> bool {
