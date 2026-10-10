@@ -3,6 +3,7 @@
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
 mod authority_signer;
+mod cell_split_finalization;
 mod control;
 mod daemon;
 mod daemon_client;
@@ -169,6 +170,10 @@ pub use supervisor_qualification::H8H9SupervisorState;
 pub use supervisor_qualification::H8ShadowSupervisor;
 pub use supervisor_qualification::H9ShadowRollbackMachine;
 pub use supervisor_qualification::QualificationSupervisor;
+pub use cell_split_finalization::CellSplitFinalizationAuthorityV1;
+pub use cell_split_finalization::CellSplitFinalizationBindingV1;
+pub use cell_split_finalization::CellSplitFinalizationErrorV1;
+pub use cell_split_finalization::CellSplitSupervisorJournalFinalizerV1;
 pub use writer_handoff::DurableWriterHandoffJournalV1;
 pub use writer_handoff::WriterHandoffAdvanceV1;
 pub use writer_handoff::WriterHandoffCheckpointV1;
