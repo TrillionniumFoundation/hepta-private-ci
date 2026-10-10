@@ -10,6 +10,7 @@ mod governance_store;
 mod governance_validation;
 mod historical;
 pub mod metrics_group_commit;
+pub mod metrics_sink;
 mod provider_claim;
 mod provider_effect_store;
 mod provider_insert;
