@@ -1,0 +1,54 @@
+name: MemoryCell isolated evidence-bundle formatter
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-bundle-format.yml'
+permissions:
+  contents: read
+jobs:
+  format-candidate:
+    if: github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Prepare a formatter-only branch; never change main or the PR ref
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/bundle-format-python
+          /tmp/bundle-format-python/bin/pip install uv==0.8.22
+          export PATH="/tmp/bundle-format-python/bin:$PATH"
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          root = Path('scripts/memory_cell')
+          names = ['evidence_bundle.py', 'bundle_reader.py', 'bundle_trial.py', 'bundle_census.py', 'bundle_assets.py', 'test_evidence_bundle.py', 'test_bundle_trial.py']
+          before = {str(root / n): ast.dump(ast.parse((root/n).read_text())) for n in names}
+          Path('/tmp/bundle-asts.json').write_text(json.dumps(before))
+          PY
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/bundle-asts.json').read_text())
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          if set(changed) - set(before): raise ValueError('out-of-scope format change')
+          for path, tree in before.items():
+              if ast.dump(ast.parse(Path(path).read_text())) != tree: raise ValueError('changed executable AST')
+          if changed: subprocess.run(['git', 'add', '--', *changed], check=True)
+          PY
+          git rm .github/workflows/hepta-memory-bundle-format.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format evidence-set sources and remove temporary formatter'
+          git push origin "HEAD:refs/heads/codex/memory-bundle-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
