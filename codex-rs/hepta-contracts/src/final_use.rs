@@ -697,6 +697,27 @@ impl FinalUseAuthority {
         Ok(result)
     }
 
+    /// Hold the revocation fence for every independently signed request in a
+    /// native model batch. All entries are verified before the single backend
+    /// invocation. A denied member prevents the entire batch from executing;
+    /// claimed one-shot nonces are deliberately never refunded.
+    pub fn with_verified_effect_batch<T>(
+        &self,
+        claims: Vec<(VerifiedUseToken, FinalUseBinding)>,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
+        if claims.is_empty() {
+            return Err(FinalUseError::InvalidGrant);
+        }
+        let mut fences = Vec::with_capacity(claims.len());
+        for (token, binding) in claims {
+            fences.push(self.enter_verified_effect(token, &binding)?);
+        }
+        let result = consumer();
+        drop(fences);
+        Ok(result)
+    }
+
     /// Guard an async provider effect without holding the owner mutex over
     /// await. Revocation commits return `DispatchInProgress` while active;
     /// completion, panic or future cancellation releases the fence.
