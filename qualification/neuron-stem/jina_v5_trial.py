@@ -6,6 +6,7 @@ pooling. Results are predictions and measured research costs, never approval to
 install a model or change runtime weights.
 """
 import argparse
+import copy
 import hashlib
 import json
 import random
@@ -93,6 +94,7 @@ def execute(args):
             "cache_hit_head" if trace["cache_hits"] else "encoder_warm", elapsed)
     head, params = make_head(torch, nn, args.head, args.dimension, classes, args.budget)
     head = head.to(args.device)
+    frozen_head = copy.deepcopy(head).eval()
     if args.budget < params:
         raise ValueError("Cell head exceeded complete parameter ceiling")
     optimizer = torch.optim.AdamW(head.parameters(), lr=args.learning_rate)
@@ -123,9 +125,15 @@ def execute(args):
         grid = (.5, .75, 1., 1.25, 1.5, 2., 3., 4., 6.)
         temperature = min(grid, key=lambda t: nn.functional.cross_entropy(
             calibrated_logits / t, calibrated_labels).item())
+        frozen_logits = torch.stack([
+            frozen_head(features[row["case_id"]].to(args.device)) for row in calibration])
+        frozen_temperature = min(grid, key=lambda t: nn.functional.cross_entropy(
+            frozen_logits / t, calibrated_labels).item())
     weights_digest = effective_weights_digest(head)
+    frozen_weights_digest = effective_weights_digest(frozen_head)
     process = psutil.Process()
     predictions = []
+    frozen_predictions = []
     for row in task_rows:
         if row["split"] == "train":
             continue
@@ -135,6 +143,25 @@ def execute(args):
                                           dim=-1).cpu().tolist()
         head_ms = (time.perf_counter_ns() - began) / 1e6
         execution_path, embedding_ms = source_timing[row["case_id"]]
+        frozen_start = time.perf_counter_ns()
+        with torch.inference_mode():
+            frozen_probabilities = torch.softmax(
+                frozen_head(features[row["case_id"]].to(args.device)) / frozen_temperature,
+                dim=-1).cpu().tolist()
+        frozen_head_ms = (time.perf_counter_ns() - frozen_start) / 1e6
+        frozen_predictions.append({
+            "case_id": row["case_id"], "scope_id": row["scope_id"],
+            "model_id": args.model + "/frozen-head",
+            "model_revision": args.revision,
+            "encoder_digest": stem.manifest_digest,
+            "head_digest": frozen_weights_digest,
+            "runtime_generation": args.generation, "status": "Succeeded",
+            "probabilities": frozen_probabilities,
+            "execution_path": execution_path,
+            "latency_ms": frozen_head_ms + embedding_ms,
+            "rss_bytes": process.memory_info().rss,
+            "backend_batch_size": 1,
+        })
         predictions.append({
             "case_id": row["case_id"],
             "scope_id": row["scope_id"],
@@ -147,11 +174,14 @@ def execute(args):
             "backend_batch_size": 1,
         })
     output = Path(args.output)
-    if output.exists() or Path(str(output) + ".manifest.json").exists():
+    frozen_output = Path(str(output) + ".frozen-head.jsonl")
+    if any(p.exists() for p in (output, frozen_output, Path(str(output) + ".manifest.json"))):
         raise ValueError("refusing to overwrite prior qualification evidence")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("".join(json.dumps(x, sort_keys=True) + "\n"
                               for x in predictions), encoding="utf-8")
+    frozen_output.write_text("".join(json.dumps(x, sort_keys=True) + "\n"
+                                     for x in frozen_predictions), encoding="utf-8")
     write_json(str(output) + ".manifest.json", {
         "schema": "hepta.jina-v5-shadow-trial.v1",
         "status": "shadow_only", "production_promotion_permitted": False,
@@ -165,6 +195,12 @@ def execute(args):
         "feature_manifest_digest": stem.manifest_digest,
         "head_parameters": params, "head_ceiling": args.budget,
         "head_digest": weights_digest,
+        "frozen_head_digest": frozen_weights_digest,
+        "frozen_head_predictions": str(frozen_output),
+        "frozen_head_predictions_sha256": sha256_record(frozen_predictions),
+        "frozen_head_temperature": frozen_temperature,
+        "matched_frozen_head_ablation_produced": True,
+        "no_change_production_baseline_still_required": True,
         "shared_trainable_projection_parameters": 0,
         "per_cell_trainable_parameters": params,
         "seed": args.seed, "shots": args.shots, "steps": args.steps,
