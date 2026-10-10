@@ -165,9 +165,15 @@ def conditions(case, review, *, revoked):
         )
         bundle.validate(q, originals, frontier=case["frontier"], revoked=revoked)
         name = (
-            "publisher_claim_pair" if omitted is None else "publisher_claim_without_" + omitted
-        ) if publisher else (
-            "reviewed_minimal" if omitted is None else "reviewed_without_" + omitted
+            (
+                "publisher_claim_pair"
+                if omitted is None
+                else "publisher_claim_without_" + omitted
+            )
+            if publisher
+            else (
+                "reviewed_minimal" if omitted is None else "reviewed_without_" + omitted
+            )
         )
         result[name] = dict(
             bundle=asdict(bundle),
@@ -178,7 +184,8 @@ def conditions(case, review, *, revoked):
             omitted_requirement=omitted,
             oracle_kind=(
                 "published_three_votes_not_necessity_or_sufficiency_certification"
-                if publisher else "external_claim_not_authenticated_here"
+                if publisher
+                else "external_claim_not_authenticated_here"
             ),
             independent_review=False,
             sufficient_context_certified=False,

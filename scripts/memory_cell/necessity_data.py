@@ -28,7 +28,9 @@ CHAIN_BLOB = "d17c485e51cc44944070d725ad297067d4817b0e"
 CHAIN_BYTES = 311732
 OBQA_SHA = "82368cf05df2e3b309c17d162e10b888b4d768fad6e171e0a041954c8553be46"
 OBQA_BYTES = 1446098
-OBQA_URL = "https://s3-us-west-2.amazonaws.com/ai2-website/data/OpenBookQA-V1-Sep2018.zip"
+OBQA_URL = (
+    "https://s3-us-west-2.amazonaws.com/ai2-website/data/OpenBookQA-V1-Sep2018.zip"
+)
 HEADER = "QID\tChain#\tTag\tQuestion\tAnswer\tFact1\tFact2\tWOL score\tTurk\tTurks\tExtra Facts\tDF"
 LIMITS = {"train": 8, "capability": 8, "transfer": 4, "retention": 4}
 PROFILE = "hepta.publisher-unanimous-necessity.v1"
@@ -46,9 +48,7 @@ def root_of(text):
 
 
 def verified_chains(raw):
-    git_blob = hashlib.sha1(
-        b"blob " + str(len(raw)).encode() + b"\0" + raw
-    ).hexdigest()
+    git_blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
     if len(raw) != CHAIN_BYTES or git_blob != CHAIN_BLOB:
         raise ValueError("published chain bytes differ from immutable Git blob")
     return parse_chains(raw)
@@ -98,7 +98,9 @@ def verified_questions(raw):
             or len(choices) != 4
             or {c["label"] for c in choices} != set("ABCD")
             or row["answerKey"] not in set("ABCD")
-            or any(not isinstance(c["text"], str) or not c["text"].strip() for c in choices)
+            or any(
+                not isinstance(c["text"], str) or not c["text"].strip() for c in choices
+            )
         ):
             raise ValueError("invalid original question/options")
     return by_id, content
@@ -111,14 +113,19 @@ def decision(record, questions):
         return "unresolved_original_question"
     if normalized(r["Question"]) != normalized(q["question"]["stem"]):
         return "original_question_mismatch"
-    answer = next(c["text"] for c in q["question"]["choices"] if c["label"] == q["answerKey"])
+    answer = next(
+        c["text"] for c in q["question"]["choices"] if c["label"] == q["answerKey"]
+    )
     if normalized(answer) != normalized(r["Answer"]):
         return "original_answer_mismatch"
     if r["Turk"] != "yes" or r["Turks"].split() != ["yes", "yes", "yes"]:
         return "not_unanimous_two_fact_judgement"
     if r["Extra Facts"].strip() != "NIL":
         return "unprovided_extra_requirement"
-    if any(not r[k].strip() or "\0" in r[k] or len(r[k].encode()) > 4096 for k in ("Fact1", "Fact2")):
+    if any(
+        not r[k].strip() or "\0" in r[k] or len(r[k].encode()) > 4096
+        for k in ("Fact1", "Fact2")
+    ):
         return "invalid_source_sentence"
     if root_of(r["Fact1"]) == root_of(r["Fact2"]):
         return "identical_facts_not_two_requirements"
@@ -151,7 +158,11 @@ def select(records, questions, *, limits=LIMITS, profile=PROFILE):
     for record in eligible:
         r = record["row"]
         qid = r["QID"]
-        keys = ["q:" + normalized(r["Question"]), root_of(r["Fact1"]), root_of(r["Fact2"])]
+        keys = [
+            "q:" + normalized(r["Question"]),
+            root_of(r["Fact1"]),
+            root_of(r["Fact2"]),
+        ]
         for key in keys:
             if key in owners:
                 a, b = find(qid), find(owners[key])
@@ -168,15 +179,18 @@ def select(records, questions, *, limits=LIMITS, profile=PROFILE):
     representatives.sort(key=lambda r: digest((profile, r["family"])))
     counts = dict(Counter(r["status"] for r in dispositions))
     census = dict(
-        original_chains=len(records), original_questions=len(questions),
-        statuses=counts, unanimous_components=len(representatives),
-        original_test_repurposed_as_development=True, independent_samples_certified=False,
+        original_chains=len(records),
+        original_questions=len(questions),
+        statuses=counts,
+        unanimous_components=len(representatives),
+        original_test_repurposed_as_development=True,
+        independent_samples_certified=False,
     )
     if len(representatives) < sum(limits.values()):
         return None, dispositions, census
     result, offset = {}, 0
     for phase, count in limits.items():
-        result[phase] = representatives[offset:offset + count]
+        result[phase] = representatives[offset : offset + count]
         offset += count
     census["selected_counts"] = limits
     census["selected_profile"] = profile
@@ -191,40 +205,83 @@ def make_case(record, question, noise, acquired_at, phase):
     if len(facts) > 8 or len({root_of(s) for s in facts}) != len(facts):
         raise ValueError("distinct bounded evidence view")
     scope = "eobqa:" + r["QID"]
-    options = "\n".join(f"({c['label']}) {c['text']}" for c in question["question"]["choices"])
+    options = "\n".join(
+        f"({c['label']}) {c['text']}" for c in question["question"]["choices"]
+    )
     text = question["question"]["stem"] + "\nOriginal answer options:\n" + options
     text += "\nGive the answer text, not just its option letter."
     q = Question(scope, record["family"], scope, text, acquired_at)
-    docs = tuple(Document("eobqa-sentence:" + sha(t.encode()), root_of(t), scope,
-                          "publisher-chain", acquired_at, t) for t in facts)
+    docs = tuple(
+        Document(
+            "eobqa-sentence:" + sha(t.encode()),
+            root_of(t),
+            scope,
+            "publisher-chain",
+            acquired_at,
+            t,
+        )
+        for t in facts
+    )
     frontier = digest([asdict(d) for d in docs])
-    spans = tuple(EvidenceSpan(d.identity, d.root, d.scope, d.session, d.observed_at,
-                              0, len(d.content.encode()), d.content, digest(d.content)) for d in docs)
+    spans = tuple(
+        EvidenceSpan(
+            d.identity,
+            d.root,
+            d.scope,
+            d.session,
+            d.observed_at,
+            0,
+            len(d.content.encode()),
+            d.content,
+            digest(d.content),
+        )
+        for d in docs
+    )
     selections = {
-        "publisher_pair": spans[:2], "pair_reversed": tuple(reversed(spans[:2])),
-        "without_fact1": spans[1:2], "without_fact2": spans[:1],
-        "noise_before": spans[2:4] + spans[:2], "noise_after": spans[:2] + spans[2:4],
+        "publisher_pair": spans[:2],
+        "pair_reversed": tuple(reversed(spans[:2])),
+        "without_fact1": spans[1:2],
+        "without_fact2": spans[:1],
+        "noise_before": spans[2:4] + spans[:2],
+        "noise_after": spans[:2] + spans[2:4],
         "empty": (),
     }
     conditions = {}
     for name, selected in selections.items():
         bundle = EvidenceBundle(digest(asdict(q)), frontier, selected, name)
-        bundle.validate(q, {d.identity: d for d in docs}, frontier=frontier, revoked=set())
-        conditions[name] = dict(
-            bundle=asdict(bundle), bundle_digest=bundle.seal(),
-            delivered_evidence=bundle.delivered(), token_limit=2048,
-            oracle_kind="published_unanimous_chain_claim_not_Hepta_certificate",
-            review_row_sha256=record["raw_sha256"], world_answerability_unchanged=True,
-            independent_review=False, sufficient_context_certified=False,
+        bundle.validate(
+            q, {d.identity: d for d in docs}, frontier=frontier, revoked=set()
         )
-    case = dict(question=asdict(q), phase=phase, family=record["family"],
-                originals=[asdict(d) for d in docs], frontier=frontier, conditions=conditions,
-                source_time_kind="download_observation_not_fact_validity")
-    label = dict(answer=r["Answer"], unanswerable=False,
-                 support_roots=[root_of(r[k]) for k in ("Fact1", "Fact2")],
-                 publication_review=record, reviewed_at=None,
-                 necessary_requirements_claimed_by="three_original_affirmative_votes",
-                 original_question_sha256=digest(question), production_accepted=False)
+        conditions[name] = dict(
+            bundle=asdict(bundle),
+            bundle_digest=bundle.seal(),
+            delivered_evidence=bundle.delivered(),
+            token_limit=2048,
+            oracle_kind="published_unanimous_chain_claim_not_Hepta_certificate",
+            review_row_sha256=record["raw_sha256"],
+            world_answerability_unchanged=True,
+            independent_review=False,
+            sufficient_context_certified=False,
+        )
+    case = dict(
+        question=asdict(q),
+        phase=phase,
+        family=record["family"],
+        originals=[asdict(d) for d in docs],
+        frontier=frontier,
+        conditions=conditions,
+        source_time_kind="download_observation_not_fact_validity",
+    )
+    label = dict(
+        answer=r["Answer"],
+        unanswerable=False,
+        support_roots=[root_of(r[k]) for k in ("Fact1", "Fact2")],
+        publication_review=record,
+        reviewed_at=None,
+        necessary_requirements_claimed_by="three_original_affirmative_votes",
+        original_question_sha256=digest(question),
+        production_accepted=False,
+    )
     return case, label
 
 
@@ -232,14 +289,16 @@ def prepare(output, source_commit, *, mode="full"):
     if mode not in ("full", "diagnostic"):
         raise ValueError("registered preparation mode required")
     limits, profile = (
-        (LIMITS, PROFILE) if mode == "full"
-        else (DIAGNOSTIC_LIMITS, DIAGNOSTIC_PROFILE)
+        (LIMITS, PROFILE) if mode == "full" else (DIAGNOSTIC_LIMITS, DIAGNOSTIC_PROFILE)
     )
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("exact implementation source required")
     output.mkdir()
     urls = {
-        "reviews.tsv": (f"https://raw.githubusercontent.com/{REPOSITORY}/{REVISION}/{CHAIN_PATH}", CHAIN_BYTES),
+        "reviews.tsv": (
+            f"https://raw.githubusercontent.com/{REPOSITORY}/{REVISION}/{CHAIN_PATH}",
+            CHAIN_BYTES,
+        ),
         "openbookqa.zip": (OBQA_URL, OBQA_BYTES),
     }
     data = {}
@@ -257,38 +316,68 @@ def prepare(output, source_commit, *, mode="full"):
     write(output / "all-review-dispositions.json", dispositions)
     print(__import__("json").dumps(census, indent=2))
     if selected is None:
-        raise ValueError("insufficient unanimous disjoint chains; fixed horizon not reduced")
+        raise ValueError(
+            "insufficient unanimous disjoint chains; fixed horizon not reduced"
+        )
     acquired = datetime.now(timezone.utc).isoformat()
     cases, labels = [], {}
     for phase, members in selected.items():
-        universe = sorted({r["row"][k] for r in members for k in ("Fact1", "Fact2")}, key=digest)
+        universe = sorted(
+            {r["row"][k] for r in members for k in ("Fact1", "Fact2")}, key=digest
+        )
         for record in members:
             positive = {root_of(record["row"][k]) for k in ("Fact1", "Fact2")}
             noise = [t for t in universe if root_of(t) not in positive][:6]
-            case, label = make_case(record, questions[record["row"]["QID"]], noise, acquired, phase)
+            case, label = make_case(
+                record, questions[record["row"]["QID"]], noise, acquired, phase
+            )
             cases.append(case)
             labels[case["question"]["identity"]] = label
-    plan = dict(schema="hepta.bundle-diagnostic.plan.v1", profile=profile,
-                source_commit=source_commit, cases=cases, frozen_counts=limits,
-                chain_blob=CHAIN_BLOB, dataset_sha256=sha(data["reviews.tsv"]),
-                original_question_archive_sha256=OBQA_SHA, acquisition_time=acquired,
-                data_selection_before_model_execution=True, prospective_windows=0,
-                publisher_test_repurposed_for_development=True,
-                publisher_review_not_independent_Hepta_acceptance=True,
-                diagnostic_only_no_training=mode == "diagnostic",
-                production_accepted=False)
+    plan = dict(
+        schema="hepta.bundle-diagnostic.plan.v1",
+        profile=profile,
+        source_commit=source_commit,
+        cases=cases,
+        frozen_counts=limits,
+        chain_blob=CHAIN_BLOB,
+        dataset_sha256=sha(data["reviews.tsv"]),
+        original_question_archive_sha256=OBQA_SHA,
+        acquisition_time=acquired,
+        data_selection_before_model_execution=True,
+        prospective_windows=0,
+        publisher_test_repurposed_for_development=True,
+        publisher_review_not_independent_Hepta_acceptance=True,
+        diagnostic_only_no_training=mode == "diagnostic",
+        production_accepted=False,
+    )
     write(output / "plan.json", plan)
     write(output / "labels.json", labels)
-    write(output / "provenance.json", dict(
-        repository=REPOSITORY, revision=REVISION, chain_path=CHAIN_PATH,
-        chain_git_blob=CHAIN_BLOB, chain_sha256=sha(data["reviews.tsv"]),
-        question_sha256=OBQA_SHA, license="CC-BY-4.0 (eOBQA annotations)",
-        attribution="Harsh Jhamtani and Peter Clark, Learning to Explain, EMNLP 2020; OpenBookQA, Mihaylov et al., EMNLP 2018",
-        acquisition_time=acquired, reviewer_ids=None, original_review_time=None,
-        publication_judgements_are_fallible=True, independent_acceptance=False))
-    write(output / "READY.json", dict(plan_sha256=sha((output / "plan.json").read_bytes()),
-                                      labels_sha256=sha((output / "labels.json").read_bytes()),
-                                      production_accepted=False))
+    write(
+        output / "provenance.json",
+        dict(
+            repository=REPOSITORY,
+            revision=REVISION,
+            chain_path=CHAIN_PATH,
+            chain_git_blob=CHAIN_BLOB,
+            chain_sha256=sha(data["reviews.tsv"]),
+            question_sha256=OBQA_SHA,
+            license="CC-BY-4.0 (eOBQA annotations)",
+            attribution="Harsh Jhamtani and Peter Clark, Learning to Explain, EMNLP 2020; OpenBookQA, Mihaylov et al., EMNLP 2018",
+            acquisition_time=acquired,
+            reviewer_ids=None,
+            original_review_time=None,
+            publication_judgements_are_fallible=True,
+            independent_acceptance=False,
+        ),
+    )
+    write(
+        output / "READY.json",
+        dict(
+            plan_sha256=sha((output / "plan.json").read_bytes()),
+            labels_sha256=sha((output / "labels.json").read_bytes()),
+            production_accepted=False,
+        ),
+    )
 
 
 if __name__ == "__main__":

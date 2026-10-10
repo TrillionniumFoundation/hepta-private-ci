@@ -59,7 +59,8 @@ def project(plan, labels, chains, questions, *, revoked):
     limits = plan.get("frozen_counts")
     profile = plan.get("profile")
     if (
-        (limits, profile) not in (
+        (limits, profile)
+        not in (
             (LIMITS, PROFILE),
             (DIAGNOSTIC_LIMITS, DIAGNOSTIC_PROFILE),
         )
@@ -181,7 +182,9 @@ def project(plan, labels, chains, questions, *, revoked):
                 or a["independent_review"] is not False
                 or a["sufficient_context_certified"] is not False
             ):
-                raise ValueError("publication review could change evidence or authority")
+                raise ValueError(
+                    "publication review could change evidence or authority"
+                )
     capability = deepcopy(augmented)
     capability["cases"] = [c for c in capability["cases"] if c["phase"] == CAPABILITY]
     if len(capability["cases"]) != LIMITS[CAPABILITY]:
@@ -215,7 +218,9 @@ def project(plan, labels, chains, questions, *, revoked):
 def export(source: Path, destination: Path):
     ready = json.loads(_read_binary(source / "READY.json", 4096))
     plan = strict_read(source / "plan.json", ready["plan_sha256"], 64 * 1024 * 1024)
-    labels = strict_read(source / "labels.json", ready["labels_sha256"], 64 * 1024 * 1024)
+    labels = strict_read(
+        source / "labels.json", ready["labels_sha256"], 64 * 1024 * 1024
+    )
     raw = _read_binary(source / "reviews.tsv", MAX_CHAIN_BYTES)
     questions = _read_binary(source / "openbookqa.zip", MAX_QUESTIONS_BYTES)
     package, augmented, capability, votes, stats = project(

@@ -3,16 +3,45 @@
 import copy
 import unittest
 
-from necessity_data import HEADER, LIMITS, decision, make_case, parse_chains, select, verified_chains, verified_questions
+from necessity_data import (
+    HEADER,
+    LIMITS,
+    decision,
+    make_case,
+    parse_chains,
+    select,
+    verified_chains,
+    verified_questions,
+)
 from native import digest
 
 
 def fixture(i=0):
-    q = dict(id=str(i), question=dict(stem=f"What links item{i}?", choices=[
-        dict(label=k, text=f"answer{i}" if k == "A" else f"other{i}{k}") for k in "ABCD"]), answerKey="A")
-    cells = [str(i), "1", "test", q["question"]["stem"], f"answer{i}",
-             f"item{i} needs bridge{i}", f"bridge{i} yields answer{i}", "1.0", "yes",
-             "yes yes yes", "NIL", f"item{i} yields answer{i}"]
+    q = dict(
+        id=str(i),
+        question=dict(
+            stem=f"What links item{i}?",
+            choices=[
+                dict(label=k, text=f"answer{i}" if k == "A" else f"other{i}{k}")
+                for k in "ABCD"
+            ],
+        ),
+        answerKey="A",
+    )
+    cells = [
+        str(i),
+        "1",
+        "test",
+        q["question"]["stem"],
+        f"answer{i}",
+        f"item{i} needs bridge{i}",
+        f"bridge{i} yields answer{i}",
+        "1.0",
+        "yes",
+        "yes yes yes",
+        "NIL",
+        f"item{i} yields answer{i}",
+    ]
     raw = (HEADER + "\n" + "\t".join(cells) + "\n").encode()
     return parse_chains(raw)[0], q
 
@@ -20,19 +49,30 @@ def fixture(i=0):
 class NecessityDataTests(unittest.TestCase):
     def test_unknown_single_fact_and_disagreement_are_not_two_fact_support(self):
         record, q = fixture()
-        self.assertEqual(decision(record, {q["id"]: q}), "eligible_published_unanimous_claim")
-        for aggregate, votes in (("fact1", "fact1 fact1 yes"), ("yes", "yes yes no"),
-                                 ("yes", "yes yes"), ("?", "yes no"), ("no", "yes yes yes")):
+        self.assertEqual(
+            decision(record, {q["id"]: q}), "eligible_published_unanimous_claim"
+        )
+        for aggregate, votes in (
+            ("fact1", "fact1 fact1 yes"),
+            ("yes", "yes yes no"),
+            ("yes", "yes yes"),
+            ("?", "yes no"),
+            ("no", "yes yes yes"),
+        ):
             changed = copy.deepcopy(record)
             changed["row"].update(Turk=aggregate, Turks=votes)
-            self.assertEqual(decision(changed, {q["id"]: q}), "not_unanimous_two_fact_judgement")
+            self.assertEqual(
+                decision(changed, {q["id"]: q}), "not_unanimous_two_fact_judgement"
+            )
 
     def test_extra_fact_and_original_join_mismatch_stay_excluded(self):
         record, q = fixture()
-        for field, value, expected in (("Extra Facts", "missing premise", "unprovided_extra_requirement"),
-                                        ("Question", "wrong", "original_question_mismatch"),
-                                        ("Answer", "wrong", "original_answer_mismatch"),
-                                        ("Fact2", record["row"]["Fact1"], "identical_facts_not_two_requirements")):
+        for field, value, expected in (
+            ("Extra Facts", "missing premise", "unprovided_extra_requirement"),
+            ("Question", "wrong", "original_question_mismatch"),
+            ("Answer", "wrong", "original_answer_mismatch"),
+            ("Fact2", record["row"]["Fact1"], "identical_facts_not_two_requirements"),
+        ):
             changed = copy.deepcopy(record)
             changed["row"][field] = value
             self.assertEqual(decision(changed, {q["id"]: q}), expected)
@@ -59,7 +99,9 @@ class NecessityDataTests(unittest.TestCase):
         self.assertEqual(len(dispositions), len(records))
         records[1]["row"]["Fact1"] = records[0]["row"]["Fact1"]
         _, _, coalesced = select(records, questions)
-        self.assertEqual(coalesced["unanimous_components"], census["unanimous_components"] - 1)
+        self.assertEqual(
+            coalesced["unanimous_components"], census["unanimous_components"] - 1
+        )
         missing, rows, _ = select(records[:3], questions)
         self.assertIsNone(missing)
         self.assertEqual(len(rows), 3)
@@ -70,10 +112,14 @@ class NecessityDataTests(unittest.TestCase):
         case, label = make_case(record, q, ["noise"], "2026-01-01T00:00:00Z", "train")
         poisoned = copy.deepcopy(q)
         poisoned["answerKey"] = "B"
-        other, _ = make_case(record, poisoned, ["noise"], "2026-01-01T00:00:00Z", "train")
+        other, _ = make_case(
+            record, poisoned, ["noise"], "2026-01-01T00:00:00Z", "train"
+        )
         self.assertEqual(case, other)
         for choice in q["question"]["choices"]:
-            self.assertIn(f"({choice['label']}) {choice['text']}", case["question"]["content"])
+            self.assertIn(
+                f"({choice['label']}) {choice['text']}", case["question"]["content"]
+            )
         self.assertIsNone(label["reviewed_at"])
         self.assertNotIn("yes yes yes", case["question"]["content"])
         full = case["conditions"]["publisher_pair"]
