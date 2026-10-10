@@ -1,0 +1,102 @@
+name: Generate exact PoN snapshot pair
+on:
+  push:
+    branches: [dev/pon-snapshot-pair-delivery-20261010]
+permissions:
+  contents: read
+jobs:
+  pair-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      HEPTA_SOURCE: 201bdbe4c3e1d4860c8a4a07e8435b58b4811c6f
+      CHAIN_SOURCE: 657512e850e128c605830c4bb961706cb74d03b3
+      CHAIN_MERGE: a2f234dc2bdceefe5654acccdb928b67ac557929
+      CHAIN_BASE: 9fedf7ecbbe07177069c030592b4e03dcffebb81
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.HEPTA_SOURCE }}
+          path: hepta
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: TrillionniumFoundation/Trillionnium-Chain
+          ref: ${{ env.CHAIN_MERGE }}
+          path: chain
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Generate only the existing pair workflow and inspect retained failure source
+        working-directory: hepta
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEPTA_SOURCE"
+          test "$(git -C ../chain rev-parse HEAD)" = "$CHAIN_MERGE"
+          test "$(git -C ../chain show -s --format=%P HEAD)" = "$CHAIN_BASE $CHAIN_SOURCE"
+          test "$(git -C ../chain rev-parse HEAD^{tree})" = "$(git -C ../chain merge-tree --write-tree "$CHAIN_BASE" "$CHAIN_SOURCE")"
+          (cd ../chain && bash scripts/project-preflight.sh --audit)
+          mkdir -p "$RUNNER_TEMP/pair-source"
+          python3 - <<'PY'
+          import json,os,subprocess,yaml
+          from pathlib import Path
+          path=Path('.github/workflows/hepta-pon-native-pair.yml')
+          original=path.read_text()
+          old=yaml.safe_load(original)
+          assert old['jobs']['pair']['timeout-minutes']==60
+          assert original.count('228b156dc14ea938300b9503092e1ddd55014e4a')==2
+          assert original.count('51a9c62296431961838dba5caad29c03a89271f8')==1
+          new=original.replace('228b156dc14ea938300b9503092e1ddd55014e4a',os.environ['CHAIN_SOURCE']).replace('51a9c62296431961838dba5caad29c03a89271f8',os.environ['CHAIN_MERGE'])
+          lines=[
+            '      - name: Require complete non-committing proof and single-snapshot nonce controls',
+            '        run: |',
+            '          set -euo pipefail',
+            '          test "$(git -C ../chain hash-object trillionnium/crates/trnm-pon-node/src/store.rs)" = 49ca8f8e494fdf48c7a92665e0b842e7c2faef7f',
+            '          test "$(git -C ../chain hash-object trillionnium/crates/trnm-pon-node/src/native_account_query_tests.rs)" = 81a7be219e562dcd6759c786ef3f8489d00abfa1',
+            '          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-read-snapshot.json" --minimum-tests 11 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_account_query_tests:: -- --show-output --test-threads=1',
+            '          for selector in native_account_query_final_callback_write_is_rejected_and_rolled_back native_account_query_write_then_restore_still_has_no_commit_authority native_account_query_cancel_after_write_keeps_original_error_and_rollback native_nonce_batch_dimensions_precede_database_and_preserve_single_reads native_nonce_batch_rechecks_actual_state_and_reopens_without_a_verdict_cache native_nonce_batch_arithmetic_retains_absence_bad_nonce_and_overflow_rules native_nonce_batch_tracks_signed_execution_heavier_reorg_and_cold_reopen native_nonce_batch_complete_call_observation_preserves_reference_results; do',
+            '            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "store::native_account_query_tests::$selector" -- --exact --show-output --test-threads=1',
+            '          done',
+          ]
+          anchor='      - name: Require every cached-owner integrity and cold-reopen selector\n'
+          assert new.count(anchor)==1
+          new=new.replace(anchor,'\n'.join(lines)+'\n'+anchor)
+          parsed=yaml.safe_load(new)
+          assert parsed['jobs']['pair']['timeout-minutes']==60
+          assert parsed['jobs']['pair']['strategy']==old['jobs']['pair']['strategy']
+          previous=old['jobs']['pair']['steps']
+          current=parsed['jobs']['pair']['steps']
+          assert len(current)==len(previous)+1
+          assert [step for step in current if step.get('name')!=lines[0].split(': ',1)[1]]==previous
+          out=Path(os.environ['RUNNER_TEMP'])/'pair-source'
+          (out/'pair.yml').write_text(new)
+          (out/'blob-request.json').write_text(json.dumps({'content':new,'encoding':'utf-8'}))
+          (out/'identity.txt').write_text(subprocess.check_output(['git','show','-s','--format=%H%n%T%n%P','HEAD'],text=True))
+          names=subprocess.check_output(['git','grep','-l','sqlite_reopen_rejects_weakened_episode_element_ownership_trigger'],text=True).splitlines() if subprocess.run(['git','grep','-q','sqlite_reopen_rejects_weakened_episode_element_ownership_trigger']).returncode==0 else []
+          for name in names:
+              text=Path(name).read_text()
+              i=text.index('sqlite_reopen_rejects_weakened_episode_element_ownership_trigger')
+              excerpt=text[max(0,i-1000):i+9000]
+              print('FAILURE SOURCE',name,excerpt)
+              (out/'cognitive-source.txt').write_text(name+'\n'+excerpt)
+          assert not subprocess.check_output(['git','status','--porcelain'],text=True)
+          print('Preserved',len(previous),'original steps; added one source-bound native step.')
+          PY
+      - name: Store reviewed workflow blob without moving any product branch
+        working-directory: hepta
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --method POST repos/TrillionniumFoundation/hepta-private-ci/git/blobs --input "$RUNNER_TEMP/pair-source/blob-request.json" | tee "$RUNNER_TEMP/pair-source/blob.json"
+          test "$(git rev-parse HEAD)" = "$HEPTA_SOURCE"
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: exact-snapshot-pair-source-${{ github.sha }}
+          path: ${{ runner.temp }}/pair-source/
+          if-no-files-found: error
+          retention-days: 14
