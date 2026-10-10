@@ -119,8 +119,9 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         # Tighten against the logical-split control, not a different workload.
         if optimized["throughput_rps"] < logical["throughput_rps"]:
             violations.append(f"{scope}: optimized throughput below logical split")
-        if optimized["p99_ms"] > logical["p99_ms"] * (1 + max_p99_regression):
-            violations.append(f"{scope}: optimized p99 regressed")
+        for percentile in ("p50_ms", "p95_ms", "p99_ms"):
+            if optimized[percentile] > logical[percentile] * (1 + max_p99_regression):
+                violations.append(f"{scope}: optimized {percentile.removesuffix('_ms')} regressed")
         for key in ("cpu_per_request_s", "communication_per_request_bytes",
                     "fsync_per_request", "lock_wait_per_request_ms",
                     "rss_peak_bytes", "recovery_ms"):
@@ -136,8 +137,9 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         # inheriting the optimized-logical pass result.
         if physical["throughput_rps"] < baseline["throughput_rps"]:
             violations.append(f"{scope}: physical throughput below no-split")
-        if physical["p99_ms"] > baseline["p99_ms"] * (1 + max_p99_regression):
-            violations.append(f"{scope}: physical p99 regressed")
+        for percentile in ("p50_ms", "p95_ms", "p99_ms"):
+            if physical[percentile] > baseline[percentile] * (1 + max_p99_regression):
+                violations.append(f"{scope}: physical {percentile.removesuffix('_ms')} regressed")
         for key in ("cpu_per_request_s", "communication_per_request_bytes",
                     "fsync_per_request", "lock_wait_per_request_ms",
                     "rss_peak_bytes", "recovery_ms"):
