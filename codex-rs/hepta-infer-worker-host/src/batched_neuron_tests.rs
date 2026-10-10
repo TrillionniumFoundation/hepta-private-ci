@@ -182,7 +182,7 @@ fn corrupt_signed_grant_cannot_invoke_driver() {
     let completed = execution.poll_and_execute(101).unwrap();
     assert_eq!(completed.outcomes.len(), 1);
     assert!(matches!(
-        completed.outcomes[0].result,
+        &completed.outcomes[0].result,
         Err(BatchWorkerErrorV1::Authority)
     ));
 }

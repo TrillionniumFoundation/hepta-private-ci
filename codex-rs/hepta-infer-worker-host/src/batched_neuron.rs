@@ -261,3 +261,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         removed
     }
 }
+
+#[cfg(test)]
+#[path = "batched_neuron_tests.rs"]
+mod tests;
