@@ -1,8 +1,8 @@
 """Source-preserving explanations on the fixed inherited event census.
 
-An input-representation diagnostic using the same frozen model, evidence choices
-and decoder as event_memory_trial. No optimizer, human certification, new labels,
-new retrieval or production writes. The old raw-view experiment stays unchanged.
+The optional, externally pinned read policy is already trained before this command
+opens tasks. The knowledge writer is not needed for this matched frozen-reader
+experiment. Existing baseline behavior and production owners remain unchanged.
 """
 
 import argparse
@@ -31,7 +31,6 @@ def preflight(plan_dir, inputs, plan_sha):
         or len(locked["cases"]) != 8
     ):
         raise ValueError("original complete controlled plan required")
-    # Pin label bytes now; do not parse any answers into the model process.
     labels = inputs / "labels.json"
     if (
         labels.is_symlink()
@@ -69,15 +68,31 @@ def preflight(plan_dir, inputs, plan_sha):
     return locked, originals
 
 
-def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
+def run(
+    plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha,
+    policy_path=None, policy_sha=None,
+):
     from native_citation import capture_native
 
     source_commit = os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", "")
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("exact generating source required")
+    if (policy_path is None) != (policy_sha is None):
+        raise ValueError("policy file and external pin must be supplied together")
+    # The policy snapshot is read before opening tasks, and never updated here.
+    policy = read(policy_path, policy_sha) if policy_path is not None else None
     locked, originals = preflight(plan_dir, inputs, plan_sha)
     stage = read(model_dir / "stage.json", stage_sha)
     inventory = read(model_dir / "inventory.json", stage["inventory_sha256"])
+    active, arms = locked, ARMS
+    if policy is not None:
+        from policy_read_audit import ALL_ARMS, extend_controls
+
+        active = extend_controls(
+            locked, originals, policy,
+            reader_identity=inventory["inventory_digest"], revoked=set(),
+        )
+        arms = ALL_ARMS
     output.mkdir()
     write(
         output / "execution.json",
@@ -94,17 +109,23 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
             optimizer_executed=False,
             independent_semantic_review=False,
             production_accepted=False,
+            read_policy_sha=policy_sha,
+            arms=arms,
+            policy_trained_in_an_earlier_process=policy is not None,
         ),
     )
+    if policy is not None:
+        write(output / "read-policy.json", policy)
+        write(output / "actual-controls.json", active)
     started = time.perf_counter()
     reader = EventPresentationReader(
         model_dir / "reader", expected_inventory=inventory["inventory_digest"]
     )
     rows = []
     with (output / "raw-answers.jsonl").open("x", encoding="utf-8") as journal:
-        for case in locked["cases"]:
+        for case in active["cases"]:
             query = Question(**case["query"])
-            for arm in ARMS:
+            for arm in arms:
                 selected = case["controls"][arm]["selected"]
                 spans = tuple(
                     EvidenceSpan(
@@ -129,6 +150,7 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
                     kind=case["kind"],
                     selected=list(selected),
                     candidate_digest=case["candidate_digest"],
+                    selection_receipt=case["controls"][arm].get("selection", {}),
                 )
                 try:
                     answer, receipt = reader.answer(
@@ -146,7 +168,7 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
                             input_ids_sha256=receipt["input_ids_digest"],
                             delivered_evidence=receipt["delivered_evidence"],
                         ),
-                        experiment_digest=digest((plan_sha, PROFILE, arm)),
+                        experiment_digest=digest((plan_sha, PROFILE, arm, policy_sha)),
                         family_digest=digest(query.family),
                     )
                     row.update(
@@ -193,7 +215,15 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
             row["strict_task_success"] = receipt["exit_code"] == 0
             verification_seconds += receipt["seconds"]
     write(output / "scored-answers.json", rows)
-    result = summarize(rows, [case["query"]["identity"] for case in locked["cases"]])
+    expected = [case["query"]["identity"] for case in locked["cases"]]
+    baseline = summarize([r for r in rows if r["arm"] in ARMS], expected)
+    if policy is None:
+        result = baseline
+    else:
+        from policy_read_audit import audit_policy
+
+        result = audit_policy(rows, expected, policy)
+        result["frozen_control_summary"] = baseline
     result.update(
         source_commit=source_commit,
         input_representation=PROFILE,
@@ -201,7 +231,7 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
         procedure_verification_seconds=verification_seconds,
         inherited_extraction=locked["extraction"],
         inherited_index_and_projection=locked["frozen"]["costs"],
-        training_seconds=0.0,
+        reader_training_seconds=0.0,
         total_lifecycle_cost=None,
         unavailable_costs=["production retention", "deployed maintenance and recovery"],
         next_stage="no parameter or production adoption from this diagnostic",
@@ -218,6 +248,8 @@ if __name__ == "__main__":
         parser.add_argument(name, type=Path)
     parser.add_argument("--plan-sha", required=True)
     parser.add_argument("--stage-sha", required=True)
+    parser.add_argument("--policy", type=Path)
+    parser.add_argument("--policy-sha")
     args = parser.parse_args()
     print(
         json.dumps(
@@ -228,6 +260,8 @@ if __name__ == "__main__":
                 args.output,
                 plan_sha=args.plan_sha,
                 stage_sha=args.stage_sha,
+                policy_path=args.policy,
+                policy_sha=args.policy_sha,
             )
         )
     )
