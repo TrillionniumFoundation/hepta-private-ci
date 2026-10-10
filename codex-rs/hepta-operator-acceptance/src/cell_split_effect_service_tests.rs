@@ -207,6 +207,9 @@ fn four_independent_socket_owners_recover_exact_committed_prefix_and_fence_revoc
     let root = tempfile::tempdir().expect("fixture");
     let ledger = root.path().join("ledger");
     fs::create_dir(&ledger).expect("ledger");
+    use std::os::unix::fs::PermissionsExt as _;
+    fs::set_permissions(&ledger, fs::Permissions::from_mode(0o700))
+        .expect("private coordinator ledger");
     let owner_ids = [
         "cas-owner".to_owned(),
         "migration-owner".to_owned(),
