@@ -6,6 +6,7 @@ on:
     paths:
       - 'qualification/stem-cell-v1/**'
       - 'codex-rs/hepta-infer-worker-host/src/model_worker*.rs'
+      - 'codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs'
       - '.github/workflows/hepta-stem-cell-qualification.yml'
 
 permissions:
@@ -39,7 +40,7 @@ jobs:
           git diff --exit-code
 
   native-worker-batch:
-    name: Native Neuron worker batch contracts (L1, no tensor weights)
+    name: Native Neuron Head/batch and final-use ordering contracts (L1 only)
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -59,9 +60,15 @@ jobs:
       - name: Compile native worker contract
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-infer-worker-host --lib
-      - name: Execute native worker tests
+      # This L1 lane qualifies the changed Worker/Head implementation and a
+      # source-order final-use guard. Other App Server end-to-end tests require
+      # an actual Codex executable: they remain separate, non-waived gates
+      # for overall production acceptance and must not be reported as passing.
+      - name: Execute targeted native Worker and final-use-ordering tests
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-infer-worker-host --lib
+        run: >
+          just test --locked -p codex-hepta-infer-worker-host --lib
+          -E 'test(model_worker::) | test(cognitive_final_use_revalidation_follows_durable_dispatch)'
       - name: Enforce Rust formatting
         if: always()
         working-directory: codex-rs
