@@ -165,11 +165,14 @@ class ExperienceReader(ReferenceReader):
         self.scopes, self.roots = set(), set()
         self.quarantined = False
 
-    def fit_sources(self, documents, *, revision, allowed_roots, revoked):
+    def fit_sources(
+        self, documents, *, revision, allowed_roots, revoked, loss_backend="full"
+    ):
         import torch
         from peft import get_peft_model_state_dict
         from pretrained import frozen_digest
         from source_write_schedule import prepare
+        from source_completion_loss import completion_loss
 
         examples, dispositions = source_examples(
             documents,
@@ -189,19 +192,16 @@ class ExperienceReader(ReferenceReader):
         }
         optimizer = torch.optim.AdamW(params, lr=0.0002)
         started, tokens, supervised, losses = time.perf_counter(), 0, 0, []
+        projected = 0
         self.model.train()
         try:
             print(json.dumps(dict(event="source-write-plan", plan=plan)), flush=True)
             for index in plan["entries"]:
                 ids, labels = prepared[index]
-                x = torch.tensor([ids], dtype=torch.long)
                 optimizer.zero_grad(set_to_none=True)
-                loss = self.model(
-                    input_ids=x,
-                    attention_mask=torch.ones_like(x),
-                    labels=torch.tensor([labels], dtype=torch.long),
-                    use_cache=False,
-                ).loss
+                loss, computation = completion_loss(
+                    self.model, ids, labels, backend=loss_backend
+                )
                 if not torch.isfinite(loss):
                     raise ValueError("nonfinite source-writing loss")
                 loss.backward()
@@ -211,6 +211,7 @@ class ExperienceReader(ReferenceReader):
                     raise ValueError("nonfinite source-writing parameters")
                 tokens += len(ids)
                 supervised += sum(i != -100 for i in labels)
+                projected += computation["actual_projection_positions"]
                 losses.append(float(loss.detach()))
                 if len(losses) % 8 == 0 or len(losses) == plan["planned_steps"]:
                     print(
@@ -221,6 +222,8 @@ class ExperienceReader(ReferenceReader):
                                 completed_steps=len(losses),
                                 input_tokens=tokens,
                                 supervised_tokens=supervised,
+                                loss_backend=loss_backend,
+                                actual_projection_positions=projected,
                                 seconds=time.perf_counter() - started,
                             ),
                             allow_nan=False,
@@ -252,6 +255,10 @@ class ExperienceReader(ReferenceReader):
                 dispositions=dispositions,
                 training_digest=digest((examples, prepared)),
                 write_schedule=plan,
+                loss_backend=loss_backend,
+                full_projection_positions=tokens,
+                actual_projection_positions=projected,
+                prompt_detached=False,
                 schedule_sha256=digest(plan),
                 roots=sorted(self.roots),
                 scopes=plan["scopes"],
