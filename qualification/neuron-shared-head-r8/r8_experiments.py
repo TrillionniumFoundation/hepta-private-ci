@@ -533,6 +533,16 @@ def fixture(directory:Path, *, seed=13):
     write_json(directory/"future_outcomes.json",{"schema":SCHEMA,"window":"future","source":"independent_observation","rows":events,"SYNTHETIC":True})
     uniform=[{"id":e["id"],"group":e["group"],"time":e["time"],"probabilities":[0.5,0.5]} for e in events]
     write_json(directory/"no_change.json",{"schema":SCHEMA,"model_file_sha256":"no-change","train_groups":[],"valid_groups":[],"rows":uniform,"production_admitted":False})
+    # Disjoint synthetic OOD observations; no claim of real deployment OOD.
+    ood_n=32
+    ood_x=(rng.standard_normal((ood_n,32))*2.5+1.5).astype(np.float32)
+    ood={**common,"x":ood_x,"id":np.array([f"ood-{i}" for i in range(ood_n)]),
+         "group":np.array([f"ood-episode-{i//4}" for i in range(ood_n)]),
+         "time":np.arange(3000,3000+ood_n,dtype=np.int64),"cell":np.array(["cell:a"]*ood_n)}
+    np.savez_compressed(directory/"ood_unlabelled.npz",**ood)
+    ood_rows=[{"id":str(ood["id"][i]),"group":str(ood["group"][i]),"time":int(ood["time"][i])} for i in range(ood_n)]
+    write_json(directory/"ood_outcomes.json",{"schema":SCHEMA,"window":"ood","source":"independent_observation","rows":ood_rows,"SYNTHETIC":True})
+    write_json(directory/"no_change_ood.json",{"schema":SCHEMA,"model_file_sha256":"no-change","train_groups":[],"valid_groups":[],"rows":[{**row,"probabilities":[0.5,0.5]} for row in ood_rows],"production_admitted":False})
 
 
 def main():
