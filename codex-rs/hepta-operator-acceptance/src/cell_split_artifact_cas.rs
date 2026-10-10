@@ -366,6 +366,11 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1
             return Ok(false);
         };
         self.verify_parent()?;
+        // Authenticated readback must not authorize advancing a later step
+        // after the independent NDU/Selector decision has been withdrawn.
+        self.authority
+            .verify_current_authority(&self.plan, intent)
+            .map_err(|e| CellSplitArtifactCasErrorV1::Denied(e.to_string()))?;
         Ok(effect.owner_sequence == self.frontier()?
             && record.object_bytes == self.object_size()?
             && effect.owner_receipt_bytes == bytes)
