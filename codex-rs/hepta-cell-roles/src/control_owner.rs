@@ -838,7 +838,12 @@ fn persist_durable_control(path: &Path, bytes: &[u8]) -> Result<(), ControlOwner
         // std has no portable parent-directory fsync on Windows. Flush the
         // replaced file, and leave power-loss qualification to the actual
         // platform-specific host rather than inventing a durability witness.
-        File::open(path)
+        // FlushFileBuffers on Windows requires a write-capable handle.
+        // File::open is read-only and fails with AccessDenied on this path.
+        fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path)
             .and_then(|file| file.sync_all())
             .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     }
