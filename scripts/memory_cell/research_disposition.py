@@ -23,7 +23,11 @@ RULE = "hepta.observed-development-triage.v1"
 
 def decide(candidate, comparisons, planned):
     """Require every control; observed ties are not independent module gains."""
-    if candidate not in CONTROLS or type(planned) is not int or not 1 <= planned <= 20000:
+    if (
+        candidate not in CONTROLS
+        or type(planned) is not int
+        or not 1 <= planned <= 20000
+    ):
         raise ValueError("registered candidate and complete task count required")
     controls = CONTROLS[candidate]
     if set(comparisons) != set(controls):
@@ -39,13 +43,18 @@ def decide(candidate, comparisons, planned):
         if sum(values) > planned:
             raise ValueError("paired outcomes exceed planned census")
         bounds = pair["all_planned_effect_bounds"]
-        expected = [(wins - losses - absent) / planned, (wins - losses + absent) / planned]
+        expected = [
+            (wins - losses - absent) / planned,
+            (wins - losses + absent) / planned,
+        ]
+        denominator = pair.get("planned_pairs", planned)
         if (
             not isinstance(bounds, list)
             or len(bounds) != 2
             or any(type(v) not in (int, float) or not math.isfinite(v) for v in bounds)
             or bounds != expected
-            or pair.get("planned_pairs", planned) != planned
+            or type(denominator) is not int
+            or denominator != planned
         ):
             raise ValueError("missing-outcome bounds or denominator changed")
         if absent:
@@ -64,6 +73,9 @@ def decide(candidate, comparisons, planned):
         )
     if missing:
         disposition = "inconclusive_incomplete_execution"
+    elif candidate == "parameter_only":
+        # This arm diagnoses compression fidelity, not universal RAG replacement.
+        disposition = "compression_boundary_only"
     elif regression:
         disposition = "reject_observed_task_regression"
     elif no_increment:

@@ -34,7 +34,9 @@ class DispositionTests(unittest.TestCase):
         comparisons = {name: pair(4, 1) for name in CONTROLS["learned_policy"]}
         result = decide("learned_policy", comparisons, 8)
         self.assertEqual(result["disposition"], "reject_observed_task_regression")
-        self.assertEqual(result["regression_controls"], list(CONTROLS["learned_policy"]))
+        self.assertEqual(
+            result["regression_controls"], list(CONTROLS["learned_policy"])
+        )
 
     def test_missing_pair_is_inconclusive_not_a_reduced_success_census(self):
         comparisons = policy() | {"organized": pair(1, missing=1)}
@@ -51,11 +53,12 @@ class DispositionTests(unittest.TestCase):
         self.assertFalse(result["production_accepted"])
         self.assertFalse(result["modifies_serving_state"])
 
-    def test_module_only_beating_empty_is_not_compression_parity_with_rag(self):
+    def test_module_only_boundary_does_not_require_beating_rag(self):
         comparisons = dict(empty=pair(4), organized=pair(0, 4))
         result = decide("parameter_only", comparisons, 8)
-        self.assertEqual(result["disposition"], "reject_observed_task_regression")
+        self.assertEqual(result["disposition"], "compression_boundary_only")
         self.assertEqual(result["regression_controls"], ["organized"])
+        self.assertFalse(result["production_accepted"])
 
     def test_missing_strong_control_cannot_be_replaced_by_weaker_control(self):
         for candidate in CONTROLS:
@@ -74,6 +77,7 @@ class DispositionTests(unittest.TestCase):
             ("all_planned_effect_bounds", [float("nan"), 1]),
             ("all_planned_effect_bounds", [0, 1]),
             ("planned_pairs", 7),
+            ("planned_pairs", True),
         ):
             comparisons = deepcopy(policy())
             comparisons["hybrid"][key] = value
@@ -83,9 +87,14 @@ class DispositionTests(unittest.TestCase):
             decide("learned_policy", policy() | {"organized": pair(8, 1)}, 8)
 
     def test_unregistered_candidate_or_denominator_is_not_a_decision(self):
-        for candidate, count in (("unknown", 8), ("learned_policy", True), ("knowledge", 0)):
-            with self.subTest(candidate=candidate, count=count), self.assertRaises(ValueError):
-                decide(candidate, policy(), count)
+        for candidate, count in (
+            ("unknown", 8),
+            ("learned_policy", True),
+            ("knowledge", 0),
+        ):
+            with self.subTest(candidate=candidate, count=count):
+                with self.assertRaises(ValueError):
+                    decide(candidate, policy(), count)
 
     def test_control_mapping_order_does_not_change_decision(self):
         comparisons = policy()
