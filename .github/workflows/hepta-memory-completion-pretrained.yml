@@ -1,0 +1,84 @@
+name: MemoryCell pretrained completion projection probe
+on:
+  push:
+    branches:
+      - "codex/memory-cell-completion-20261011"
+    paths:
+      - "scripts/memory_cell/source_completion_probe.py"
+      - ".github/workflows/hepta-memory-completion-pretrained.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pretrained-pairs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      PYTHONPATH: scripts/memory_cell
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify and stage only source data and original dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/completion-pretrained
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/probe-input.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          path = Path('/tmp/probe-input.zip')
+          assert path.stat().st_size < 64 * 1024 * 1024
+          assert hashlib.sha256(path.read_bytes()).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile(path) as archive:
+              for name, limit in [('environment.txt', 65536), ('observations/sources.json', 16 * 1024 * 1024)]:
+                  info = archive.getinfo(name)
+                  assert info.file_size <= limit
+                  dest = Path('/tmp/completion-pretrained') / Path(name).name
+                  dest.write_bytes(archive.read(name))
+          PY
+          python3 -m venv /tmp/probe-python
+          /tmp/probe-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/probe-python/bin/pip install -r /tmp/completion-pretrained/environment.txt
+          /tmp/probe-python/bin/pip freeze > /tmp/completion-pretrained/actual-environment.txt
+          diff -u /tmp/completion-pretrained/environment.txt /tmp/completion-pretrained/actual-environment.txt
+      - name: Isolated actual library and complete regression gates
+        run: |
+          set -euo pipefail
+          /tmp/probe-python/bin/python scripts/memory_cell/check_source_completion_qwen.py /tmp/completion-pretrained/library 2>&1 | tee /tmp/completion-pretrained/library.log
+          /tmp/probe-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/completion-pretrained/tests.log
+      - name: Stage the exact existing pretrained reader
+        run: |
+          set -euo pipefail
+          /tmp/probe-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/completion-model
+          cp /tmp/completion-model/stage.json /tmp/completion-model/inventory.json /tmp/completion-model/publisher.json /tmp/completion-pretrained/
+      - name: Execute two original source examples on both loss implementations
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/completion-pretrained/resource.txt /tmp/probe-python/bin/python scripts/memory_cell/source_completion_probe.py /tmp/completion-pretrained/sources.json /tmp/completion-model /tmp/completion-pretrained/probe --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/completion-model/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/completion-pretrained/probe.log
+      - name: Retain evidence without distributing pretrained or derived weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/completion-pretrained/source
+          cp scripts/memory_cell/source_completion*.py scripts/memory_cell/check_source_completion*.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py /tmp/completion-pretrained/source/
+          git rev-parse HEAD > /tmp/completion-pretrained/tested-commit.txt
+          (cd /tmp/completion-pretrained && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-pretrained-completion-probe
+          path: /tmp/completion-pretrained
+          if-no-files-found: error
