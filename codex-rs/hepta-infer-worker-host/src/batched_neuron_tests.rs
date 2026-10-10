@@ -288,7 +288,11 @@ fn signed_worker_emits_admission_batch_and_terminal_metrics() {
     worker
         .enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();
-    assert!(worker.poll_and_execute(101).unwrap().outcomes[0].result.is_ok());
+    assert!(
+        worker.poll_and_execute(101).unwrap().outcomes[0]
+            .result
+            .is_ok()
+    );
     let events = captured.0.lock().unwrap();
     assert_eq!(events.len(), 3);
     assert_eq!(events[0].phase, PhaseMetricKindV1::Admission);
@@ -309,7 +313,9 @@ fn rejected_signature_records_failed_terminal_without_invoking_driver() {
     grant.signature[0] ^= 0x80;
     let captured = Arc::new(CapturedMetrics::default());
     let mut worker = runner(&signer, dir.path(), model).with_metric_sink(captured.clone());
-    worker.enqueue(100, "model".into(), request, key, grant).unwrap();
+    worker
+        .enqueue(100, "model".into(), request, key, grant)
+        .unwrap();
     let poll = worker.poll_and_execute(101).unwrap();
     assert!(matches!(
         &poll.outcomes[0].result,

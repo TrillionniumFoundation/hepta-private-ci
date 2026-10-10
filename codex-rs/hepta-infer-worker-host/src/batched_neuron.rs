@@ -172,8 +172,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 scope_digest,
                 operation_digest,
                 phase: PhaseMetricKindV1::Admission,
-                latency_micros: u64::try_from(started.elapsed().as_micros())
-                    .unwrap_or(u64::MAX),
+                latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
                 succeeded: result.is_ok(),
             });
         }
