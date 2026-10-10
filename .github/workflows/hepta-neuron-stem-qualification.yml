@@ -36,11 +36,27 @@ jobs:
           assert plan["production_promotion_permitted"] is False
           assert all(arm["activation"]=="shadow" for arm in plan["arms"])
           PY
+          python3 qualification/neuron-stem/jina_v5_matrix.py \
+            --models qualification/neuron-stem/models.json \
+            --out jina-v5-shadow-matrix.json
+          python3 - jina-v5-shadow-matrix.json <<'PY'
+          import json,sys
+          plan=json.load(open(sys.argv[1], encoding="utf-8"))
+          assert plan["schema"]=="hepta.jina-v5-precommitted-shadow-matrix.v1"
+          assert len(plan["head_arms"]) > 0
+          assert len(plan["resource_arms"]) == 2*4*3*3*3
+          assert len(plan["multimodal_arms"]) == 2*3*2
+          assert plan["production_promotion_permitted"] is False
+          assert plan["independent_ndu_signature_verified"] is False
+          assert all(a["activation"]=="shadow" and a["promotion"] is False
+                     for arm in ("head_arms","resource_arms","multimodal_arms")
+                     for a in plan[arm])
+          PY
       - name: Retain immutable qualification matrix
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: neuron-stem-qualification-matrix
-          path: stem-matrix.json
+          path: |\n            stem-matrix.json\n            jina-v5-shadow-matrix.json
           if-no-files-found: ignore
           retention-days: 14
