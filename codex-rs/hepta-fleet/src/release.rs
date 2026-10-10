@@ -472,7 +472,6 @@ impl FleetRegistry {
     pub fn allowed_releases(
         &self,
         agent_id: &AgentId,
-        release_id: &ReleaseId,
     ) -> Result<Vec<ReleaseId>, FleetRegistryError> {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
