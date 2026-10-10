@@ -519,6 +519,91 @@ fn signed_member(
     signed
 }
 
+#[test]
+fn signed_cpu_matrix_batch_executes_across_two_scopes() {
+    use crate::cpu_neuron_backend::CpuNeuronFeatureDriverV1;
+    use crate::cpu_neuron_backend::CpuNeuronWeightBundleV1;
+
+    let directory = tempfile::tempdir().expect("state dir");
+    let signer = SigningKey::from_bytes(&[83; 32]);
+    let q = 1_i64 << 24;
+    let weights = CpuNeuronWeightBundleV1::new(
+        2,
+        2,
+        vec![q, 0, 0, q],
+        vec![0, q, q, 0],
+        digest(b"encoder"),
+        digest(b"head"),
+    )
+    .expect("pinned matrix");
+    let (mut model, mut first, first_scope) = fixture_request();
+    model.weights_digest = weights.weight_digest().to_string();
+    model.quantization_digest = digest(b"quant.q24").to_string();
+    model.runtime_digest = digest(b"runtime.cpu.matrix").to_string();
+    model.device_digest = digest(b"device.cpu").to_string();
+    first.weights_digest = model.weights_digest.clone();
+    first.feature_vector_q24 = vec![q, q / 2];
+    first.expected_output_width = 2;
+    let first_payload = canonical_neuron_feature_payload_digest(&first);
+    first.authorization.payload_digest = first_payload.clone();
+    first.authorization.lease_payload_digest = first_payload;
+
+    let mut second = second_request(&first);
+    second.feature_vector_q24 = vec![-q / 2, q];
+    second.input_digest = digest(b"second.native.input").to_string();
+    let second_payload = canonical_neuron_feature_payload_digest(&second);
+    second.authorization.payload_digest = second_payload.clone();
+    second.authorization.lease_payload_digest = second_payload;
+    let mut second_scope = first_scope.clone();
+    second_scope.scope_id = StableId::new("scope.second").expect("scope ID");
+    second_scope.route_fence = 3;
+
+    let driver = CpuNeuronFeatureDriverV1::new(
+        weights,
+        digest(b"model"),
+        digest(b"runtime.cpu.matrix"),
+        digest(b"quant.q24"),
+        digest(b"device.cpu"),
+    )
+    .expect("CPU native driver");
+    let mut worker = runner_with_driver(&signer, directory.path(), model, driver, 2);
+    let first_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &first_scope, &first).expect("binding");
+    let second_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &second_scope, &second).expect("binding");
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            first_scope,
+            signed_member(&signer, first_binding, "native-cpu-first", 91),
+        )
+        .expect("first authorized intent");
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            second_scope,
+            signed_member(&signer, second_binding, "native-cpu-second", 92),
+        )
+        .expect("second authorized intent");
+    // The two lanes are individually half-full and coalesce only at the
+    // physical batch deadline; authorization scopes remain distinct.
+    let observed = worker.poll_and_execute(105).expect("poll");
+    assert_eq!(observed.outcomes.len(), 2);
+    assert_eq!(worker.pending(), 0);
+    assert!(observed.outcomes.iter().all(|item| {
+        matches!(
+            &item.result,
+            Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        )
+    }));
+    assert_eq!(observed.outcomes[0].request_id.as_str(), "req-one");
+    assert_eq!(observed.outcomes[1].request_id.as_str(), "req-two");
+}
+
 fn second_request(first: &NeuronFeatureRequest) -> NeuronFeatureRequest {
     let mut next = first.clone();
     next.authorization.request_id = "req-two".into();
