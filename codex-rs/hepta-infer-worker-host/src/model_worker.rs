@@ -561,6 +561,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureExecutionObservation, Error> {
+        self.run_neuron_features_borrowed(now_ms, model_id, &request)
+    }
+
+    /// Retain only a borrowed view of the source feature vector during
+    /// physical execution. The final typed receipt consumes the original Vec
+    /// without cloning/re-materializing its Q24 payload.
+    fn run_neuron_features_borrowed(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: &NeuronFeatureRequest,
+    ) -> Result<NeuronFeatureExecutionObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
@@ -590,13 +602,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         }
         if request.authorization.cancelled {
             return Ok(NeuronFeatureExecutionObservation {
-                request_id: request.authorization.request_id,
-                reservation_id: request.authorization.reservation_id,
+                request_id: request.authorization.request_id.clone(),
+                reservation_id: request.authorization.reservation_id.clone(),
                 worker_generation: self.generation,
                 manifest: loaded.manifest.clone(),
-                encoder_digest: request.encoder_digest,
-                head_digest: request.head_digest,
-                input_digest: request.input_digest,
+                encoder_digest: request.encoder_digest.clone(),
+                head_digest: request.head_digest.clone(),
+                input_digest: request.input_digest.clone(),
                 status: ExecutionStatus::Cancelled,
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
@@ -633,13 +645,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             ExecutionStatus::Failed
         };
         Ok(NeuronFeatureExecutionObservation {
-            request_id: request.authorization.request_id,
-            reservation_id: request.authorization.reservation_id,
+            request_id: request.authorization.request_id.clone(),
+            reservation_id: request.authorization.reservation_id.clone(),
             worker_generation: self.generation,
             manifest: loaded.manifest.clone(),
             encoder_digest: observed.encoder_digest,
             head_digest: observed.head_digest,
-            input_digest: request.input_digest,
+            input_digest: request.input_digest.clone(),
             status,
             drive_q24: observed.drive_q24,
             prediction_q24: observed.prediction_q24,
@@ -661,9 +673,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
-        let request_copy = request.clone();
-        let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        feature_receipt_from_observation(request_copy, observed)
+        let observed = self.run_neuron_features_borrowed(now_ms, model_id, &request)?;
+        feature_receipt_from_observation(request, observed)
     }
 
     /// No sequential fallback: a multi-request group must be handled by a
