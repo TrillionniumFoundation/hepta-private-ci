@@ -252,14 +252,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let started = Instant::now();
         let poll = self
             .scheduler
-            .poll(now_ms)
+            .poll_physically_compatible(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
         if let (Some(sink), Some(batch)) = (&self.metric_sink, &poll.batch) {
             // One phase sample per admitted request, not just the first
             // member of a batch (which would silently undercount throughput).
             for intent in &batch.requests {
                 let _ = sink.record(PhaseMetricEventV1 {
-                    scope_digest: Digest32::of_bytes(batch.key.scope_id.as_str().as_bytes()),
+                    scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                     operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
                     phase: PhaseMetricKindV1::Microbatch,
                     latency_micros: u64::try_from(started.elapsed().as_micros())
@@ -374,7 +374,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             for (intent, pending) in &items {
                 let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
                 if pending.feature.digest() != intent.feature_digest
-                    || pending.signed.grant.authority_epoch != key.authority_epoch
+                    || !intent.key.physical_compatible_with(key)
+                    || pending.signed.grant.authority_epoch != intent.key.authority_epoch
                     || pending.request.authorization.request_id != intent.request_id.as_str()
                 {
                     return Err(BatchWorkerErrorV1::InvalidBinding);
@@ -388,7 +389,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 }
                 let mut request = pending.request.clone();
                 request.feature_vector_q24 = pending.feature.as_slice().to_vec();
-                if neuron_batch_final_use_binding_v1(self.worker.worker_id(), key, &request)?
+                if neuron_batch_final_use_binding_v1(self.worker.worker_id(), &intent.key, &request)?
                     != pending.binding
                 {
                     return Err(BatchWorkerErrorV1::InvalidBinding);
@@ -425,7 +426,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .map(|((intent, _), result)| {
                 if let Some(sink) = &self.metric_sink {
                     let _ = sink.record(PhaseMetricEventV1 {
-                        scope_digest: Digest32::of_bytes(key.scope_id.as_str().as_bytes()),
+                        scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                         operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
                         phase: PhaseMetricKindV1::NeuronFeature,
                         latency_micros: u64::try_from(started.elapsed().as_micros())
