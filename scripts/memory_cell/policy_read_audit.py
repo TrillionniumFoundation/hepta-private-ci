@@ -85,7 +85,11 @@ def audit_policy(rows, expected, policy):
             raise ValueError("missing task/support disposition")
         receipt = row["receipt"]
         profiles.add(
-            (receipt["reader_identity"], receipt["reader_profile"], receipt["token_limit"])
+            (
+                receipt["reader_identity"],
+                receipt["reader_profile"],
+                receipt["token_limit"],
+            )
         )
         measured(receipt["seconds"])
         for key in ("input_tokens", "generated_tokens"):
@@ -132,19 +136,27 @@ def audit_policy(rows, expected, policy):
             generated_tokens=sum(r["receipt"]["generated_tokens"] for r in good),
             selection_seconds=(
                 sum(r["selection_receipt"]["seconds"] for r in good)
-                if arm in POLICY_ARMS else None
+                if arm in POLICY_ARMS
+                else None
             ),
             procedure_seconds=sum(
                 r["procedure_verification"]["seconds"]
-                for r in good if r["kind"] == "procedure"
+                for r in good
+                if r["kind"] == "procedure"
             ),
             semantic_citation_precision=None,
         )
     contrasts = {}
     for baseline in ("policy_initial", "hybrid", "organized"):
-        values = dict(wins=0, losses=0, ties=0, failed_pairs=0,
-                      selection_changed=0, answer_changed=0,
-                      support_gain_without_task_gain=0)
+        values = dict(
+            wins=0,
+            losses=0,
+            ties=0,
+            failed_pairs=0,
+            selection_changed=0,
+            answer_changed=0,
+            support_gain_without_task_gain=0,
+        )
         for group in grouped.values():
             left, right = group[baseline], group["policy"]
             if left["status"] != "succeeded" or right["status"] != "succeeded":
@@ -156,7 +168,8 @@ def audit_policy(rows, expected, policy):
             values["answer_changed"] += left["answer"] != right["answer"]
             values["support_gain_without_task_gain"] += (
                 right["required_sources_covered"]
-                and not left["required_sources_covered"] and delta <= 0
+                and not left["required_sources_covered"]
+                and delta <= 0
             )
         values["all_planned_success_delta"] = (
             stats["policy"]["strict_success"] - stats[baseline]["strict_success"]
@@ -171,10 +184,16 @@ def audit_policy(rows, expected, policy):
         contrasts=contrasts,
         all_attempts=len(rows),
         policy_training=policy,
-        amortized_policy_write_seconds={str(n): write_seconds / n for n in (1, 10, 100, 1000)},
+        amortized_policy_write_seconds={
+            str(n): write_seconds / n for n in (1, 10, 100, 1000)
+        },
         latency_sample_is_not_a_benchmark=True,
         total_lifecycle_cost=None,
-        missing_costs=["production maintenance", "longitudinal retention", "cross-host recovery"],
+        missing_costs=[
+            "production maintenance",
+            "longitudinal retention",
+            "cross-host recovery",
+        ],
         general_semantic_accuracy=None,
         independently_reviewed=False,
         source_families_are_authored_controls=True,

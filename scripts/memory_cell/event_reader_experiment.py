@@ -69,8 +69,15 @@ def preflight(plan_dir, inputs, plan_sha):
 
 
 def run(
-    plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha,
-    policy_path=None, policy_sha=None,
+    plan_dir,
+    inputs,
+    model_dir,
+    output,
+    *,
+    plan_sha,
+    stage_sha,
+    policy_path=None,
+    policy_sha=None,
 ):
     from native_citation import capture_native
 
@@ -89,8 +96,11 @@ def run(
         from policy_read_audit import ALL_ARMS, extend_controls
 
         active = extend_controls(
-            locked, originals, policy,
-            reader_identity=inventory["inventory_digest"], revoked=set(),
+            locked,
+            originals,
+            policy,
+            reader_identity=inventory["inventory_digest"],
+            revoked=set(),
         )
         arms = ALL_ARMS
     output.mkdir()
