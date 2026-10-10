@@ -80,6 +80,38 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         self.assertTrue(any("1024: optimized p99" in x for x in result["violations"]))
         self.assertFalse(result["production_activation_authorized"])
 
+    def test_reject_unmatched_ablation_request_counts(self):
+        packet = synthetic_matrix()
+        packet["runs"][2]["attempted"] += 1
+        packet["runs"][2]["completed"] += 1
+        with self.assertRaisesRegex(InvalidEvidence, "unmatched attempted-request"):
+            analyze(packet)
+
+    def test_native_batch_requires_actual_backend_call(self):
+        packet = synthetic_matrix()
+        run = next(row for row in packet["runs"]
+                   if row["scopes"] == 64 and row["mode"] == "optimized_logical_split")
+        run["native_backend_calls"] = 0
+        with self.assertRaisesRegex(InvalidEvidence, "without a backend call"):
+            analyze(packet)
+
+    def test_rss_and_recovery_regressions_are_blocking(self):
+        packet = synthetic_matrix()
+        run = next(row for row in packet["runs"]
+                   if row["scopes"] == 64 and row["mode"] == "optimized_logical_split")
+        run["rss_peak_bytes"] += 1
+        run["recovery_ms"] += 1
+        result = analyze(packet)
+        self.assertFalse(result["comparative_gate_passed"])
+        self.assertTrue(any("peak RSS regressed" in v for v in result["violations"]))
+        self.assertTrue(any("recovery time regressed" in v for v in result["violations"]))
+
+    def test_physical_split_never_implicitly_qualifies_on_throughput_alone(self):
+        packet = synthetic_matrix()
+        result = analyze(packet)
+        self.assertFalse(result["comparisons"][0]["physical_split_resource_eligible"])
+        self.assertFalse(result["production_activation_authorized"])
+
     def test_reject_nonfinite_and_inconsistent_measurements(self):
         packet = synthetic_matrix()
         packet["runs"][0]["cpu_seconds"] = float("nan")

@@ -77,6 +77,10 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
             raise InvalidEvidence(f"{key}: percentiles out of order")
         if vals["native_batch_requests"] > vals["completed"]:
             raise InvalidEvidence(f"{key}: impossible native batch accounting")
+        if vals["native_batch_requests"] and not vals["native_backend_calls"]:
+            raise InvalidEvidence(f"{key}: native batch requests without a backend call")
+        if vals["rss_peak_bytes"] == 0:
+            raise InvalidEvidence(f"{key}: missing peak resident memory measurement")
         if vals["negative_transfer_rate"] > 1:
             raise InvalidEvidence(f"{key}: negative-transfer rate is not a fraction")
         vals["throughput_rps"] = vals["completed"] / vals["elapsed_seconds"]
@@ -92,6 +96,13 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         measurements[key] = vals
     if len(measurements) != 16:
         raise InvalidEvidence("missing mode/scope combination")
+    # Equal workload digests alone do not ensure that each ablation actually
+    # attempted the same number of requests. Reject unmatched cohorts rather
+    # than presenting their throughput as a comparable split experiment.
+    for scope in SCOPES:
+        attempted = {measurements[(scope, mode)]["attempted"] for mode in MODES}
+        if len(attempted) != 1:
+            raise InvalidEvidence(f"{scope}: unmatched attempted-request counts across modes")
 
     comparisons = []
     violations = []
@@ -100,8 +111,21 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         logical = measurements[(scope, "logical_split")]
         optimized = measurements[(scope, "optimized_logical_split")]
         physical = measurements[(scope, "physical_split")]
+        physical_eligible = (
+            physical["throughput_rps"] >= baseline["throughput_rps"]
+            and physical["p99_ms"] <= baseline["p99_ms"] * (1 + max_p99_regression)
+            and physical["rss_peak_bytes"] <= baseline["rss_peak_bytes"]
+            and physical["cpu_per_request_s"] <= baseline["cpu_per_request_s"]
+            and physical["communication_per_request_bytes"] <= baseline["communication_per_request_bytes"]
+            and physical["fsync_per_request"] <= baseline["fsync_per_request"]
+            and physical["lock_wait_per_request_ms"] <= baseline["lock_wait_per_request_ms"]
+            and physical["recovery_ms"] <= baseline["recovery_ms"]
+            and physical["failure_rate"] <= baseline["failure_rate"]
+            and physical["negative_transfer_rate"] <= baseline["negative_transfer_rate"]
+        )
         comparisons.append({
             "scopes": scope,
+            "physical_split_resource_eligible": physical_eligible,
             "no_split": baseline,
             "logical_split": logical,
             "optimized_logical_split": optimized,
@@ -118,6 +142,10 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
                     "fsync_per_request", "lock_wait_per_request_ms"):
             if optimized[key] > logical[key]:
                 violations.append(f"{scope}: optimized {key} regressed")
+        if optimized["rss_peak_bytes"] > logical["rss_peak_bytes"]:
+            violations.append(f"{scope}: optimized peak RSS regressed")
+        if optimized["recovery_ms"] > logical["recovery_ms"]:
+            violations.append(f"{scope}: optimized recovery time regressed")
         if optimized["failure_rate"] > logical["failure_rate"]:
             violations.append(f"{scope}: optimized failure rate regressed")
         if optimized["negative_transfer_rate"] > logical["negative_transfer_rate"]:
