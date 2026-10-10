@@ -405,7 +405,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 CellSplitExecutionErrorV1::Invalid("transcript missing intent"),
             )?;
             if prepared != canonical_json(&intent)? {
-                return Err(CellSplitExecutionErrorV1::Invalid("transcript intent drift"));
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "transcript intent drift",
+                ));
             }
             let stored = read_frame(&frame_path(&self.root, index, "committed"))?.ok_or(
                 CellSplitExecutionErrorV1::Invalid("transcript missing commit"),
@@ -413,7 +415,8 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&stored)?;
             validate_receipt(&intent, &receipt)?;
             self.trust.verify(&intent, &receipt)?;
-            self.port.verify_committed(&intent, &receipt)
+            self.port
+                .verify_committed(&intent, &receipt)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
             predecessor = receipt.receipt_digest.clone();
             receipts.push(receipt);
