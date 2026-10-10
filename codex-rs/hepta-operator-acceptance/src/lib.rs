@@ -1,4 +1,6 @@
 #[cfg(unix)]
+mod cell_split_artifact_cas;
+#[cfg(unix)]
 mod cell_split_effect_rpc;
 #[cfg(unix)]
 mod cell_split_effect_service;
@@ -52,6 +54,12 @@ use trust::TRUST_POLICY_SCOPE;
 use trust::TrustAnchor;
 use trust::TrustInputs;
 
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitArtifactCasErrorV1;
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitArtifactCasOwnerV1;
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitCasFinalUsePortV1;
 #[cfg(unix)]
 pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
 #[cfg(unix)]
