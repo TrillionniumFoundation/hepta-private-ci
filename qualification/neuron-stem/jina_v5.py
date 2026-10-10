@@ -129,8 +129,13 @@ class FrozenJinaV5:
         self.load_ms = (time.perf_counter_ns() - start) / 1e6
 
     def _key(self, value, scope_id, principal_id, authority_epoch, generation, intent):
+        # Omni paths can change while a filename stays the same. Disable
+        # path-based caching even for apparently textual inputs in an Omni
+        # instance; multimedia callers must never reuse stale media features.
+        if self.spec.omni and self.modality != "text":
+            return None
         if not isinstance(value, str) or not value:
-            return None  # Media files and mixed tuples are never cached by path.
+            return None  # Mixed-modal tuples are never cached by path.
         if not all(isinstance(x, str) and x for x in (scope_id, principal_id)):
             raise ValueError("scope and principal are required")
         if type(authority_epoch) is not int or authority_epoch < 1:
