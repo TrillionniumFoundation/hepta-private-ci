@@ -128,6 +128,7 @@ pub enum Error {
     ModelAlreadyLoaded,
     ModelNotLoaded,
     ModelMismatch,
+    ModelUnloadIndeterminate,
     PayloadMismatch,
     TokenLimit,
     DeadlineExpired,
@@ -165,6 +166,9 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    // A driver may have applied an unload before returning an error. Keep
+    // the old identity fenced until a new worker-generation reconciliation.
+    unload_indeterminate: bool,
 }
 
 #[derive(Debug)]
@@ -174,6 +178,9 @@ pub struct InferenceWorker<D: ModelDriver> {
     grant: ResourceGrant,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
+    // Secondary lookup avoids O(models) scans on each admission/load and
+    // prevents digest aliases to distinct physical driver handles.
+    model_digest_index: BTreeMap<Digest32, String>,
     active_requests: BTreeMap<String, String>,
 }
 
@@ -196,6 +203,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             grant,
             driver,
             models: BTreeMap::new(),
+            model_digest_index: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
     }
@@ -214,9 +222,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     /// Admit only the currently loaded, exact model identity for this digest.
     pub(crate) fn model_matches_digest(&self, model_id: &str, digest: Digest32) -> bool {
-        self.models.get(model_id).is_some_and(|model| {
-            Digest32::from_str(&model.manifest.model_digest).ok() == Some(digest)
-        })
+        self.model_digest_index
+            .get(&digest)
+            .is_some_and(|id| id == model_id)
+            && self
+                .models
+                .get(model_id)
+                .is_some_and(|model| !model.unload_indeterminate)
     }
 
     pub fn load_model(
@@ -226,14 +238,11 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
-        // One model digest maps to exactly one live handle per worker.
-        // Physical batching relies on this invariant and cannot safely
-        // coalesce distinct model handles merely because digests match.
+        let model_digest = Digest32::from_str(&manifest.model_digest)
+            .map_err(|_| Error::InvalidDigest("model"))?;
+        // One digest maps to one live or indeterminate physical handle.
         if self.models.contains_key(&manifest.model_id)
-            || self
-                .models
-                .values()
-                .any(|loaded| loaded.manifest.model_digest == manifest.model_digest)
+            || self.model_digest_index.contains_key(&model_digest)
         {
             return Err(Error::ModelAlreadyLoaded);
         }
@@ -254,12 +263,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
             observed_memory_bytes: handle.observed_memory_bytes,
             terminal_observed: true,
         };
+        self.model_digest_index
+            .insert(model_digest, manifest.model_id.clone());
         self.models.insert(
             manifest.model_id.clone(),
             LoadedModel {
                 manifest,
                 handle,
                 active_requests: 0,
+                unload_indeterminate: false,
             },
         );
         Ok(observation)
@@ -284,6 +296,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -366,12 +381,22 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelUnloadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
+        // Fence *before* the uncertain external call. On failure we keep the
+        // model and digest reserved, but disallow any reuse or re-unload.
+        loaded.unload_indeterminate = true;
+        let handle = loaded.handle.clone();
+        self.driver.unload(handle)?;
         let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        let digest = Digest32::from_str(&loaded.manifest.model_digest)
+            .map_err(|_| Error::InvalidDigest("model"))?;
+        self.model_digest_index.remove(&digest);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -565,6 +590,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
@@ -677,6 +705,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         let manifest = loaded.manifest.clone();
         let handle = loaded.handle.clone();
         let mut distinct = BTreeSet::new();
