@@ -627,3 +627,22 @@ fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
     cas_thread.join().expect("CAS server");
     state_thread.join().expect("migration server");
 }
+
+
+#[test]
+fn frozen_projected_input_tamper_is_denied_without_publishing_children() {
+    let root = private_root();
+    let (migration, anchor) = prepared();
+    let auth = ObservedAuthority::new(anchor);
+    let request = operation(&execution_plan());
+    let mut batch = owner(root.path(), migration.clone(), auth.clone());
+    let path = root.path().join("migration-frozen-input.json");
+    let original = fs::read(&path).expect("frozen original projection");
+    assert!(!original.is_empty());
+    fs::write(&path, b"alternate state substituted").expect("out-of-band change");
+    assert!(batch.authorize_execute(&request).is_err());
+    assert!(batch.read_committed(&request).is_err());
+    assert!(!batch.commit_path(&request).exists());
+    drop(batch);
+    assert!(owner_try_reopen(root.path(), migration, auth).is_err());
+}
