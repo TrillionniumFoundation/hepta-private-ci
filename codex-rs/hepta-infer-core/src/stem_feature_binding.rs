@@ -100,9 +100,7 @@ impl StdError for StemFeatureBindingError {}
 /// Deterministic research-side digest of the exact signed Q24 vector.
 /// This digest is **not** a signed worker observation, inference receipt,
 /// or replacement for the Neuron request digest.
-pub fn stem_feature_vector_digest_v1(
-    values: &[i64],
-) -> Result<Digest32, StemFeatureBindingError> {
+pub fn stem_feature_vector_digest_v1(values: &[i64]) -> Result<Digest32, StemFeatureBindingError> {
     if values.is_empty() || values.len() > MAX_FEATURE_WIDTH {
         return Err(StemFeatureBindingError::InvalidFeatureWidth);
     }
@@ -196,7 +194,11 @@ pub fn bind_stem_feature_request_v1(
     neuron_feature_request_digest_v1(&request)
         .map_err(|_| StemFeatureBindingError::InvalidNeuronRequest)?;
     let mut bytes = b"hepta.inference.stem-feature-ref.v1".to_vec();
-    for id in [&source.scope_id, &source.principal_id, &source.stem_model_id] {
+    for id in [
+        &source.scope_id,
+        &source.principal_id,
+        &source.stem_model_id,
+    ] {
         let raw = id.to_string();
         bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
         bytes.extend_from_slice(raw.as_bytes());
@@ -257,7 +259,8 @@ mod tests {
             preprocessor_digest: digest(b"preprocessor"),
             projection_digest: digest(b"matryoshka256-q24"),
             input_digest: digest(b"scoped-input"),
-            feature_digest: stem_feature_vector_digest_v1(&features).unwrap(),
+            feature_digest: stem_feature_vector_digest_v1(&features)
+                .expect("valid fixture feature digest"),
             feature_width: features.len(),
         };
         let access = StemAccessContextV1 {
@@ -292,7 +295,9 @@ mod tests {
             .expect("valid scoped feature");
         assert_eq!(result.request.feature_vector_q24, values);
         assert_eq!(
-            stem_feature_vector_digest_v1(&values).unwrap().to_string(),
+            stem_feature_vector_digest_v1(&values)
+                .expect("valid Q24 golden vector")
+                .to_string(),
             "148ae0b91ab97729f72d745e989ac7b03614438cc6030edb2f79748049c70b59"
         );
         assert_eq!(result.request.generation, generation(7));
