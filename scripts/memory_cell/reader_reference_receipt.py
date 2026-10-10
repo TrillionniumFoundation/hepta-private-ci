@@ -184,7 +184,9 @@ def replay(inputs, files):
                 d["identity"]: Document(**(d | {"assets": tuple(d["assets"])}))
                 for d in case["originals"]
             }
-            bundle.validate(query, originals, frontier=case["frontier"], revoked=withdrawn)
+            bundle.validate(
+                query, originals, frontier=case["frontier"], revoked=withdrawn
+            )
             receipt = row["receipt"]
             if any(
                 receipt[k] != v
@@ -239,21 +241,25 @@ def replay(inputs, files):
     saved_gate = object_at(files, "run/diagnostic/reviewed-diagnostic.json")
     if any(saved_gate[k] != v for k, v in gate.items()):
         raise ValueError("original capability screen differs")
-    return plan, by_key, dict(
-        tier=tier,
-        generated_source=SOURCE,
-        rebuilt_citation_requests=requests,
-        verified_delivered_spans=spans,
-        complete_census=len(raw),
-        summaries=metrics,
-        original_capability_screen=gate,
-        stage_seconds=reference["stage_seconds"],
-        model_file_bytes=reference["model_file_bytes"],
-        upstream_extraction_index_cost=None,
-        training_seconds=0,
-        new_model_execution=False,
-        independent_semantic_judgement=False,
-        production_accepted=False,
+    return (
+        plan,
+        by_key,
+        dict(
+            tier=tier,
+            generated_source=SOURCE,
+            rebuilt_citation_requests=requests,
+            verified_delivered_spans=spans,
+            complete_census=len(raw),
+            summaries=metrics,
+            original_capability_screen=gate,
+            stage_seconds=reference["stage_seconds"],
+            model_file_bytes=reference["model_file_bytes"],
+            upstream_extraction_index_cost=None,
+            training_seconds=0,
+            new_model_execution=False,
+            independent_semantic_judgement=False,
+            production_accepted=False,
+        ),
     )
 
 
@@ -320,9 +326,18 @@ if __name__ == "__main__":
         for arm in ("reviewed_minimal", "retrieved2", "empty"):
             for tier, records in models.items():
                 row = records[(qid, arm)]
-                print(json.dumps(dict(
-                    question_id=qid, question=case["question"]["content"],
-                    tier=tier, arm=arm, status=row["status"],
-                    answer=row.get("answer"), diagnostic_f1=row.get("f1"),
-                    semantic_verdict=None,
-                ), ensure_ascii=False))
+                print(
+                    json.dumps(
+                        dict(
+                            question_id=qid,
+                            question=case["question"]["content"],
+                            tier=tier,
+                            arm=arm,
+                            status=row["status"],
+                            answer=row.get("answer"),
+                            diagnostic_f1=row.get("f1"),
+                            semantic_verdict=None,
+                        ),
+                        ensure_ascii=False,
+                    )
+                )
