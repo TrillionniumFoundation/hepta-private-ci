@@ -79,7 +79,7 @@ pub struct CellSplitExecutionPlanV1 {
 }
 
 impl CellSplitExecutionPlanV1 {
-    fn validate(&self) -> Result<(), CellSplitExecutionErrorV1> {
+    pub(crate) fn validate(&self) -> Result<(), CellSplitExecutionErrorV1> {
         let mut distinct_owners = BTreeSet::new();
         if self.split_id.is_empty()
             || self.split_id.len() > 256
