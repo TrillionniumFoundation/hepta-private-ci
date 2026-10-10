@@ -216,8 +216,7 @@ def strict_records(payload):
         parse_constant=invalid_constant,
     )
     if not isinstance(records, list) or any(
-        not isinstance(row, dict)
-        or not {"question_id", "arm", "status"}.issubset(row)
+        not isinstance(row, dict) or not {"question_id", "arm", "status"}.issubset(row)
         for row in records
     ):
         raise ValueError("reference outcomes array required")
