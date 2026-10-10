@@ -7,9 +7,9 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
 use codex_hepta_types::StableId;
-use codex_hepta_types::Digest32;
 
 use crate::JournalAnchor;
 use crate::JournalError;

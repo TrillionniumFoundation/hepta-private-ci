@@ -47,7 +47,6 @@ fn refuses_missing_identity_and_stale_writer_lock() {
     assert!(reopened.healthy());
 }
 
-
 #[test]
 fn metrics_flush_barrier_and_restart_preserve_exact_committed_sample_counts() {
     let dir = tempfile::tempdir().unwrap();
@@ -62,7 +61,8 @@ fn metrics_flush_barrier_and_restart_preserve_exact_committed_sample_counts() {
     }
     {
         let sink = DurablePhaseMetricSinkV1::open(&path, 8, 3, 60_000).unwrap();
-        sink.record(sample(PhaseMetricKindV1::NeuronFeature)).unwrap();
+        sink.record(sample(PhaseMetricKindV1::NeuronFeature))
+            .unwrap();
         sink.flush().unwrap();
         assert_eq!(sink.status().persisted_rows, 1);
     }
@@ -79,21 +79,25 @@ fn metrics_abrupt_exit_fixture() {
         return;
     };
     let mut writer = MetricsGroupCommitV1::open(path).unwrap();
-    writer.stage(MetricSampleV1 {
-        scope_digest: Digest32::of_bytes(b"scope"),
-        operation_digest: Digest32::of_bytes(b"committed"),
-        phase: MetricPhaseV1::Admission,
-        latency_micros: 1,
-        succeeded: true,
-    }).unwrap();
+    writer
+        .stage(MetricSampleV1 {
+            scope_digest: Digest32::of_bytes(b"scope"),
+            operation_digest: Digest32::of_bytes(b"committed"),
+            phase: MetricPhaseV1::Admission,
+            latency_micros: 1,
+            succeeded: true,
+        })
+        .unwrap();
     writer.flush().unwrap();
-    writer.stage(MetricSampleV1 {
-        scope_digest: Digest32::of_bytes(b"scope"),
-        operation_digest: Digest32::of_bytes(b"not-committed"),
-        phase: MetricPhaseV1::Microbatch,
-        latency_micros: 2,
-        succeeded: true,
-    }).unwrap();
+    writer
+        .stage(MetricSampleV1 {
+            scope_digest: Digest32::of_bytes(b"scope"),
+            operation_digest: Digest32::of_bytes(b"not-committed"),
+            phase: MetricPhaseV1::Microbatch,
+            latency_micros: 2,
+            succeeded: true,
+        })
+        .unwrap();
     std::process::exit(91);
 }
 

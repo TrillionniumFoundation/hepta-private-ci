@@ -638,7 +638,6 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
         feature_receipt_from_observation(request_copy, observed)
-
     }
 
     /// No sequential fallback: a multi-request group must be handled by a
@@ -698,14 +697,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             .checked_add(requests.len())
             .ok_or(Error::ArithmeticOverflow)?;
         for request in &requests {
-            self.active_requests
-                .insert(request.authorization.request_id.clone(), model_id.to_owned());
+            self.active_requests.insert(
+                request.authorization.request_id.clone(),
+                model_id.to_owned(),
+            );
         }
         // One physical driver call, no per-request fallback and no retry after
         // unknown/partial backend effects. All active markers are retired.
         let results = self.driver.run_neuron_features_batch(&handle, &requests);
         for request in &requests {
-            self.active_requests.remove(&request.authorization.request_id);
+            self.active_requests
+                .remove(&request.authorization.request_id);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
@@ -759,53 +761,53 @@ fn feature_receipt_from_observation(
     request_copy: NeuronFeatureRequest,
     observed: NeuronFeatureExecutionObservation,
 ) -> Result<NeuronFeatureReceiptV1, Error> {
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
-                .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
-        };
-        let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
-            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
-            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
-            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
-            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
-            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
-            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
-            device_digest: parse_digest32(&observed.manifest.device_digest)?,
-        };
-        let status = match observed.status {
-            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
-            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
-            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
-            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
-        };
-        build_neuron_feature_receipt_v1(
-            &control_request,
-            runtime_tuple,
-            NeuronFeatureObservationV1 {
-                encoder_digest: parse_digest32(&observed.encoder_digest)?,
-                head_digest: parse_digest32(&observed.head_digest)?,
-                drive_q24: observed.drive_q24,
-                prediction_q24: observed.prediction_q24,
-                observed_memory_bytes: observed.observed_memory_bytes,
-                transient_allocation_bytes: observed.transient_allocation_bytes,
-                queue_age_micros: observed.queue_age_micros,
-                latency_micros: observed.latency_micros,
-                status,
-            },
-        )
-        .map_err(|_| Error::FeatureContract)
+    let generation =
+        Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
+    let control_request = NeuronFeatureRequestV1 {
+        request_id: StableId::new(request_copy.authorization.request_id)
+            .map_err(|_| Error::FeatureContract)?,
+        generation,
+        model_id: StableId::new(observed.manifest.model_id.clone())
+            .map_err(|_| Error::FeatureContract)?,
+        encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
+        head_digest: parse_digest32(&request_copy.head_digest)?,
+        weights_digest: parse_digest32(&request_copy.weights_digest)?,
+        input_digest: parse_digest32(&request_copy.input_digest)?,
+        feature_vector_q24: request_copy.feature_vector_q24,
+        expected_output_width: request_copy.expected_output_width,
+    };
+    let runtime_tuple = NeuronModelRuntimeTupleV1 {
+        model_id: control_request.model_id.clone(),
+        model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
+        weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
+        tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
+        preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
+        quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
+        runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
+        device_digest: parse_digest32(&observed.manifest.device_digest)?,
+    };
+    let status = match observed.status {
+        ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
+        ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
+        ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
+        ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
+    };
+    build_neuron_feature_receipt_v1(
+        &control_request,
+        runtime_tuple,
+        NeuronFeatureObservationV1 {
+            encoder_digest: parse_digest32(&observed.encoder_digest)?,
+            head_digest: parse_digest32(&observed.head_digest)?,
+            drive_q24: observed.drive_q24,
+            prediction_q24: observed.prediction_q24,
+            observed_memory_bytes: observed.observed_memory_bytes,
+            transient_allocation_bytes: observed.transient_allocation_bytes,
+            queue_age_micros: observed.queue_age_micros,
+            latency_micros: observed.latency_micros,
+            status,
+        },
+    )
+    .map_err(|_| Error::FeatureContract)
 }
 
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {

@@ -318,7 +318,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                         scope_digest: Digest32::of_bytes(
                                             batch.key.scope_id.as_str().as_bytes(),
                                         ),
-                                        operation_digest: Digest32::of_bytes(id.as_str().as_bytes()),
+                                        operation_digest: Digest32::of_bytes(
+                                            id.as_str().as_bytes(),
+                                        ),
                                         phase: PhaseMetricKindV1::NeuronFeature,
                                         latency_micros: u64::try_from(start.elapsed().as_micros())
                                             .unwrap_or(u64::MAX),
@@ -397,12 +399,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             let mut claimed = Vec::with_capacity(items.len());
             for (_, pending) in &items {
                 let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
-                let token = FinalUseAuthority::claim(
-                    &self.authority,
-                    &pending.signed,
-                    &pending.binding,
-                )
-                .map_err(|_| BatchWorkerErrorV1::Authority)?;
+                let token =
+                    FinalUseAuthority::claim(&self.authority, &pending.signed, &pending.binding)
+                        .map_err(|_| BatchWorkerErrorV1::Authority)?;
                 claimed.push((token, pending.binding.clone()));
             }
             FinalUseAuthority::with_verified_effect_batch(&self.authority, claimed, || {

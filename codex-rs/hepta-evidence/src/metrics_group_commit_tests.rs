@@ -61,7 +61,6 @@ fn tampered_group_is_rejected_and_phase_times_failures() {
     ));
 }
 
-
 #[test]
 fn replay_exposes_exact_committed_count_without_counting_unsynced_staging() {
     let dir = tempfile::tempdir().unwrap();
@@ -88,7 +87,9 @@ fn replay_exposes_exact_committed_count_without_counting_unsynced_staging() {
     assert_eq!(reopened.committed_head(), first_head);
     assert_eq!(reopened.pending(), 0);
     assert!(reopened.flush().unwrap().is_none());
-    reopened.stage(sample(MetricPhaseV1::NeuronFeature)).unwrap();
+    reopened
+        .stage(sample(MetricPhaseV1::NeuronFeature))
+        .unwrap();
     assert_eq!(reopened.flush().unwrap().unwrap().sequence, 2);
     drop(reopened);
     let final_view = MetricsGroupCommitV1::open(&path).unwrap();
