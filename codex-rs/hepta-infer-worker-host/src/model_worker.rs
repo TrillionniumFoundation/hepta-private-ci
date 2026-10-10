@@ -231,13 +231,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
-        let digest = Digest32::from_str(&manifest.model_digest)
-            .map_err(|_| Error::InvalidManifest)?;
+        let digest =
+            Digest32::from_str(&manifest.model_digest).map_err(|_| Error::InvalidManifest)?;
         // One model digest maps to exactly one live handle per worker.
         // Physical batching relies on this invariant and cannot safely
         // coalesce distinct model handles merely because digests match.
-        if self.models.contains_key(&manifest.model_id)
-            || self.model_digests.contains_key(&digest)
+        if self.models.contains_key(&manifest.model_id) || self.model_digests.contains_key(&digest)
         {
             return Err(Error::ModelAlreadyLoaded);
         }
@@ -258,8 +257,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             observed_memory_bytes: handle.observed_memory_bytes,
             terminal_observed: true,
         };
-        self.model_digests
-            .insert(digest, manifest.model_id.clone());
+        self.model_digests.insert(digest, manifest.model_id.clone());
         self.models.insert(
             manifest.model_id.clone(),
             LoadedModel {
