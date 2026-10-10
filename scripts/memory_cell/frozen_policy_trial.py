@@ -339,9 +339,7 @@ def run(
         original_index_bytes=sum(
             v["index_bytes"] for v in locked["frozen"]["costs"].values()
         ),
-        model_bytes=sum(v["bytes"] for v in inventory["files"].values())
-        if "files" in inventory
-        else None,
+        model_bytes=sum(v["bytes"] for v in reader.inventory.values()),
         production_lifecycle_cost=None,
         retention_after_parameter_update=None,
         deployed_recovery_cost=None,
