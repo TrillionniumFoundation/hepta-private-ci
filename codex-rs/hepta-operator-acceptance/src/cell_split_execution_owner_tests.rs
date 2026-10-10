@@ -368,7 +368,8 @@ fn live_completion_requires_all_real_owner_receipts() {
     let witness = owner
         .verify_live_completion()
         .expect("live external owner readback");
-    assert_eq!(witness.plan_digest(), plan().digest().expect("plan digest"));
+    let expected = plan().digest().expect("plan digest");
+    assert_eq!(witness.plan_digest(), expected.as_str());
     assert_eq!(witness.final_receipt_digest().len(), 64);
     let verified_before = state.borrow().verifications;
     owner
