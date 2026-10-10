@@ -30,8 +30,8 @@ For each Laya arm, models[arm] requires model_id, revision (40-hex HF commit),
 weights_sha256 and artifact_tree_sha256. The latter is the sha_tree() digest
 over a complete offline model directory (all files, symlinks forbidden).
 Record actual upstream pretraining and any license/SBOM decisions independently.
-For heads, head requires input_dimension, state_width, seed, epochs, batch_size
-and learning_rate. The 512-in, 256-width example has a baseline cap of 262656
+For heads, head requires encoder_digest, input_dimension, state_width,
+seed, epochs, batch_size and learning_rate. The 512-in, 256-width example has a baseline cap of 262656
 trainable parameters; both alternative heads remain within 1%.
 
 Every sample must contain id, split, source_group, observed_at_ms. The splits
