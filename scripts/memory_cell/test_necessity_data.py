@@ -79,9 +79,9 @@ class NecessityDataTests(unittest.TestCase):
         full = case["conditions"]["publisher_pair"]
         a = case["conditions"]["without_fact1"]
         b = case["conditions"]["without_fact2"]
-        self.assertEqual(len(full["bundle"]["spans"]), 2)
-        self.assertEqual(a["bundle"]["spans"], full["bundle"]["spans"][1:])
-        self.assertEqual(b["bundle"]["spans"], full["bundle"]["spans"][:1])
+        self.assertEqual(len(full["bundle"]["selected"]), 2)
+        self.assertEqual(a["bundle"]["selected"], full["bundle"]["selected"][1:])
+        self.assertEqual(b["bundle"]["selected"], full["bundle"]["selected"][:1])
         self.assertTrue(a["world_answerability_unchanged"])
         self.assertFalse(full["sufficient_context_certified"])
         self.assertEqual(case["frontier"], digest(case["originals"]))
