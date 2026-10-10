@@ -438,3 +438,192 @@ fn signed_migration_rpc_requires_reopening_real_child_bytes() {
     assert_eq!(client.reconcile(&request).expect("reopened readback"), Some(signed));
     server.join().expect("server completed");
 }
+
+
+/// Two physical durable operations, two independent signed RPC owners, one
+/// coordinator ledger. CNS and Supervisor deliberately have no service:
+/// neither can be inferred from the earlier Artifact + migration commits.
+#[test]
+fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
+    use std::io::ErrorKind;
+    use std::os::unix::fs::PermissionsExt as _;
+    use crate::{
+        CellSplitArtifactCasOwnerV1, CellSplitCasFinalUsePortV1,
+        CellSplitExecutionOwnerV1, CellSplitOwnerTrustV1,
+    };
+
+    #[derive(Clone)]
+    struct CasFinalUse(Arc<AtomicBool>);
+    impl CellSplitCasFinalUsePortV1 for CasFinalUse {
+        type Error = &'static str;
+        fn verify_current_authority(
+            &mut self,
+            plan: &CellSplitExecutionPlanV1,
+            intent: &CellSplitExecutionIntentV1,
+        ) -> Result<(), Self::Error> {
+            if self.0.load(Ordering::Acquire)
+                && plan.owner_ids[0] == intent.owner_id
+            {
+                Ok(())
+            } else {
+                Err("CAS owner final use denied")
+            }
+        }
+    }
+
+    let root = private_root();
+    let cas_root = root.path().join("artifact-cas");
+    let state_root = root.path().join("state-batch");
+    let ledger = root.path().join("split-ledger");
+    for dir in [&cas_root, &state_root, &ledger] {
+        fs::create_dir(dir).expect("independent private owner root");
+        fs::set_permissions(dir, fs::Permissions::from_mode(0o700))
+            .expect("private owner permissions");
+    }
+    let parent = root.path().join("parent-artifact");
+    let child = root.path().join("child-artifact");
+    fs::write(&parent, b"real parent artifact").expect("parent bytes");
+    fs::write(&child, b"real child artifact").expect("child bytes");
+    for path in [&parent, &child] {
+        fs::set_permissions(path, fs::Permissions::from_mode(0o600))
+            .expect("private input artifact");
+    }
+
+    let plan = execution_plan();
+    let (migration, anchor) = prepared();
+    let migration_auth = ObservedAuthority::new(anchor);
+    let stop = Arc::new(AtomicBool::new(false));
+    let cas_socket = root.path().join("cas.sock");
+    let migration_socket = root.path().join("migration.sock");
+    let cas_listener = UnixListener::bind(&cas_socket).expect("CAS socket");
+    let state_listener = UnixListener::bind(&migration_socket).expect("migration socket");
+    cas_listener.set_nonblocking(true).expect("CAS listener");
+    state_listener.set_nonblocking(true).expect("state listener");
+    let plan_digest = sha256(&canonical_json(&plan).expect("frozen plan"));
+
+    let cas_stop = stop.clone();
+    let cas_plan = plan.clone();
+    let cas_plan_digest = plan_digest.clone();
+    let cas_root_copy = cas_root.clone();
+    let cas_thread = thread::spawn(move || {
+        let backend = CellSplitArtifactCasOwnerV1::open(
+            &cas_root_copy, &parent, &child, cas_plan.clone(),
+            CasFinalUse(Arc::new(AtomicBool::new(true)))
+        ).expect("actual Artifact CAS");
+        let mut service = CellSplitEffectServiceV1::new(
+            CellSplitExecutionStepV1::ArtifactCas,
+            cas_plan.owner_ids[0].clone(),
+            cas_plan_digest,
+            SigningKey::from_bytes(&[1; 32]),
+            backend,
+        ).expect("CAS signer");
+        while !cas_stop.load(Ordering::Acquire) {
+            match cas_listener.accept() {
+                Ok((mut stream, _)) => {
+                    let _ = service.serve_connection(&mut stream);
+                }
+                Err(e) if e.kind() == ErrorKind::WouldBlock => {
+                    thread::sleep(Duration::from_millis(1));
+                }
+                Err(e) => panic!("CAS endpoint failure: {e}"),
+            }
+        }
+    });
+    let state_stop = stop.clone();
+    let state_plan = plan.clone();
+    let state_migration = migration.clone();
+    let state_auth = migration_auth.clone();
+    let state_root_copy = state_root.clone();
+    let state_thread = thread::spawn(move || {
+        let backend = CellSplitChildStateCasOwnerV1::open(
+            &state_root_copy, state_plan.clone(), state_migration, state_auth
+        ).expect("typed migration owner");
+        let mut service = CellSplitEffectServiceV1::new(
+            CellSplitExecutionStepV1::ChildStateMigration,
+            state_plan.owner_ids[1].clone(),
+            sha256(&canonical_json(&state_plan).expect("frozen state plan")),
+            SigningKey::from_bytes(&[2; 32]),
+            backend,
+        ).expect("independent migration signer");
+        while !state_stop.load(Ordering::Acquire) {
+            match state_listener.accept() {
+                Ok((mut stream, _)) => {
+                    let _ = service.serve_connection(&mut stream);
+                }
+                Err(e) if e.kind() == ErrorKind::WouldBlock => {
+                    thread::sleep(Duration::from_millis(1));
+                }
+                Err(e) => panic!("migration endpoint failure: {e}"),
+            }
+        }
+    });
+    let keys = [1_u8, 2, 3, 4]
+        .map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
+    let endpoints = [
+        cas_socket, migration_socket,
+        root.path().join("missing-cns.sock"),
+        root.path().join("missing-supervisor.sock"),
+    ];
+    let trust = CellSplitOwnerTrustV1::new(&plan, keys.clone())
+        .expect("four distinct pinned owner identities");
+    let migration_receipt;
+    {
+        let client = CellSplitUnixEffectPortV1::new(
+            endpoints.clone(), keys.clone(), Duration::from_secs(3)
+        ).expect("four owner connections");
+        let mut coordinator = CellSplitExecutionOwnerV1::open(
+            &ledger, plan.clone(), trust.clone(), client
+        ).expect("frozen coordinator");
+        let artifact = coordinator.advance().expect("real CAS").expect("step zero");
+        assert_eq!(artifact.intent.step, CellSplitExecutionStepV1::ArtifactCas);
+        assert_eq!(coordinator.completed_steps(), 1);
+        *migration_auth.exact_cas_receipt.lock().expect("CAS witness") =
+            artifact.receipt_digest.clone();
+        let state = coordinator.advance()
+            .expect("durable child migration").expect("step one");
+        assert_eq!(state.intent.step, CellSplitExecutionStepV1::ChildStateMigration);
+        migration_receipt = state.clone();
+        assert_eq!(state.intent.previous_receipt_digest, artifact.receipt_digest);
+        assert_eq!(coordinator.completed_steps(), 2);
+        assert!(coordinator.advance().is_err(), "no CNS owner, no route cutover");
+        assert!(!coordinator.is_complete());
+    }
+    assert!(cas_root.join(format!(
+        "sha256-{}", plan.child_artifact_digest
+    )).exists(), "actual immutable artifact was published");
+    for (index, state) in migration.children().iter().enumerate() {
+        let path = state_root.join(format!(
+            "child-{}-{index:02}-{}.q24",
+            migration_receipt.intent.idempotency_key,
+            CellStateMigrationV1::child_payload_digest(state),
+        ));
+        assert_eq!(fs::read(path).expect("physically committed state"),
+            encode_cell_state_v1(state));
+    }
+    {
+        let client = CellSplitUnixEffectPortV1::new(
+            endpoints.clone(), keys.clone(), Duration::from_secs(3)
+        ).expect("reopened transport");
+        let mut coordinator = CellSplitExecutionOwnerV1::open(
+            &ledger, plan.clone(), trust.clone(), client
+        ).expect("read two real current owner receipts");
+        assert_eq!(coordinator.completed_steps(), 2);
+        assert!(coordinator.advance().is_err(), "missing CNS is ambiguous");
+    }
+    let corrupt = state_root.join(format!(
+        "child-{}-{:02}-{}.q24",
+        migration_receipt.intent.idempotency_key, 0,
+        CellStateMigrationV1::child_payload_digest(&migration.children()[0]),
+    ));
+    fs::write(corrupt, b"tampered after committed batch")
+        .expect("external corruption");
+    let client = CellSplitUnixEffectPortV1::new(
+        endpoints, keys, Duration::from_secs(3)
+    ).expect("readback client");
+    assert!(CellSplitExecutionOwnerV1::open(
+        &ledger, plan, trust, client
+    ).is_err(), "a stale migration readback must fail closed");
+    stop.store(true, Ordering::Release);
+    cas_thread.join().expect("CAS server");
+    state_thread.join().expect("migration server");
+}
