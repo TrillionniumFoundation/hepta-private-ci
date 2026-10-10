@@ -714,7 +714,7 @@ fn validate_neuron_feature_output(
 
 #[path = "model_worker_batch.rs"]
 mod batch;
-pub use batch::NeuronFeatureBatchDriver;
+pub use batch::{NeuronFeatureBatchDriver, NeuronFeatureBatchItemObservationV2};
 
 #[path = "model_worker_gated.rs"]
 mod gated_cpu;
