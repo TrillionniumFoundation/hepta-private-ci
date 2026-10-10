@@ -67,7 +67,7 @@ class ReviewTests(unittest.TestCase):
         self.assertFalse(out["production_promotion_permitted"])
         self.assertTrue(all(r["decision"] == "未判定" for r in out["rows"][1:]))
         self.assertIn("待测", markdown_report(out))
-        self.assertIn("4096 Cell", markdown_report(out))
+        self.assertIn("4096逻辑Cell", markdown_report(out))
 
     def test_complete_offline_evidence_remains_shadow_and_ndu_unproven(self):
         with tempfile.TemporaryDirectory() as folder:
