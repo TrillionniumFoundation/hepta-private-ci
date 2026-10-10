@@ -383,7 +383,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // A post-open edit to the frozen plan or a pending/future frame must
         // fence all external effects before the next RPC is dispatched.
         let plan_path = self.root.join("cell-split-frozen-plan.json");
-        if read_frame(&plan_path)?.as_deref() != Some(canonical_json(&self.plan)?.as_slice()) {
+        if read_frame(&plan_path)? != Some(canonical_json(&self.plan)?) {
             return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
         }
         if self.cursor < STEP_COUNT {
