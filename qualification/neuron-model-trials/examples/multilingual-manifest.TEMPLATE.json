@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.neuron.model-trial.v1",
+  "source_sha": "REPLACE_WITH_EXACT_40_HEX_GIT_SHA",
+  "dataset_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
+  "blind_dataset_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
+  "host_profile_digest": "REPLACE_WITH_VERIFIED_64_HEX",
+  "family": "multilingual",
+  "parameter_cap": 425000000,
+  "max_len": 512,
+  "sdk_tree_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
+  "models": {
+    "laya": {
+      "model_id": "convaiinnovations/laya",
+      "revision": "REPLACE_WITH_EXACT_40_HEX_GIT_SHA",
+      "weights_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
+      "artifact_tree_sha256": "REPLACE_WITH_VERIFIED_64_HEX"
+    },
+    "multilingual": {
+      "model_id": "convaiinnovations/laya-multilingual",
+      "revision": "REPLACE_WITH_EXACT_40_HEX_GIT_SHA",
+      "weights_sha256": "REPLACE_WITH_VERIFIED_64_HEX",
+      "artifact_tree_sha256": "REPLACE_WITH_VERIFIED_64_HEX"
+    }
+  }
+}
