@@ -190,10 +190,14 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/physical-cpu-native-batch.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib cpu_neuron_backend -- --nocapture
-          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-cell-roles -p codex-hepta-evidence -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-cell-roles -p codex-hepta-intelligence-eval -p codex-hepta-evidence -- --check
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-neuron-mechanism.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib runtime::tests -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/role-control-durable-cas.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-cell-roles --lib control_owner -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-final-use-library.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --lib final_use::tests -- --nocapture
+          # Compile the stripped backend-neutral worker without Agentd/App Server.
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib --no-default-features
+          # Prove write-ahead retirement intent, receipt binding and replay denial.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/split-retirement-replay.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval --lib cell_split_automation::tests -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-batch-worker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib batched_neuron -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-ndu-reader.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_ndu_read -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-agentd-neuron.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_runtime -- --nocapture
