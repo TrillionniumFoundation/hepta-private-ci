@@ -124,7 +124,7 @@ fn batch_claim_durably_commits_all_nonces_before_one_effect() {
     let claims = tokens
         .into_iter()
         .zip(entries.iter())
-        .map(|(token, (_, binding))| (token, (*binding).clone()))
+        .map(|(token, (_, binding))| (token, (**binding).clone()))
         .collect();
     assert_eq!(
         authority.with_verified_effect_batch(claims, || 7),
