@@ -1,0 +1,138 @@
+name: MemoryCell learned policy actual task comparison
+on:
+  pull_request:
+    paths:
+      - 'scripts/memory_cell/policy_read_audit.py'
+      - 'scripts/memory_cell/test_policy_read_audit.py'
+      - 'scripts/memory_cell/event_reader_experiment.py'
+      - '.github/workflows/hepta-memory-policy-task.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-policy-task-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Required repository format check
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || '78fdb0cf8537e3a84fc6e0a849707559c80881e8' }}
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/policy-format
+          /tmp/policy-format/bin/pip install uv==0.8.22
+          export PATH="/tmp/policy-format/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE"
+  model:
+    needs: format
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Fetch exact existing source and baseline plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/policy-result
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/policy-input.zip
+          python3 - <<'PY'
+          import hashlib, stat, zipfile
+          from pathlib import Path, PurePosixPath
+          raw = Path('/tmp/policy-input.zip').read_bytes()
+          assert len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          root = Path('/tmp/policy-input')
+          root.mkdir()
+          with zipfile.ZipFile('/tmp/policy-input.zip') as z:
+              assert len(z.infolist()) <= 512
+              assert sum(i.file_size for i in z.infolist()) <= 64 * 1024 * 1024
+              seen = set()
+              for item in z.infolist():
+                  p = PurePosixPath(item.filename)
+                  assert not p.is_absolute() and '..' not in p.parts and '\\' not in item.filename
+                  assert not stat.S_ISLNK(item.external_attr >> 16)
+                  if item.is_dir():
+                      continue
+                  assert str(p) not in seen
+                  seen.add(str(p))
+                  target = root / p
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(z.read(item))
+          PY
+      - name: Lock the environment and run every Python regression
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/policy-python
+          /tmp/policy-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/policy-python/bin/pip install -r /tmp/policy-input/environment.txt
+          /tmp/policy-python/bin/pip freeze > /tmp/policy-result/environment.txt
+          diff -u /tmp/policy-input/environment.txt /tmp/policy-result/environment.txt
+          /tmp/policy-python/bin/python - <<'PY'
+          from pathlib import Path
+          from reader_reference_receipt import archive
+          archive(Path('/tmp/policy-input.zip'), '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b')
+          PY
+          /tmp/policy-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/policy-result/tests.log
+      - name: Stage the same frozen research reader
+        run: |
+          set -euo pipefail
+          /tmp/policy-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/policy-model
+          cp /tmp/policy-model/stage.json /tmp/policy-model/inventory.json /tmp/policy-model/publisher.json /tmp/policy-result/
+      - name: Train ten weights on original calibration sources only
+        run: |
+          set -euo pipefail
+          /tmp/policy-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from event_experience import SEED
+          from native import digest
+          Path('/tmp/policy-result/scopes.json').write_text(json.dumps([
+              'controlled_' + digest((SEED, i))[:8] for i in range(8)
+          ]))
+          PY
+          READER=$(/tmp/policy-python/bin/python -c "import json; print(json.load(open('/tmp/policy-model/inventory.json'))['inventory_digest'])")
+          /usr/bin/time -v -o /tmp/policy-result/train-resource.txt /tmp/policy-python/bin/python scripts/memory_cell/experience_policy.py /tmp/policy-input/observations/sources.json /tmp/policy-result/scopes.json /tmp/policy-result/policy.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --scopes-sha "$(sha256sum /tmp/policy-result/scopes.json | cut -d ' ' -f1)" --reader-identity "$READER"
+          sha256sum /tmp/policy-result/policy.json > /tmp/policy-result/policy-pin.txt
+      - name: A new process generates all eight conditions and executes procedures
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/policy-result/read-resource.txt /tmp/policy-python/bin/python scripts/memory_cell/event_reader_experiment.py /tmp/policy-input/plan /tmp/policy-input/observations /tmp/policy-model /tmp/policy-result/experiment --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --stage-sha "$(sha256sum /tmp/policy-model/stage.json | cut -d ' ' -f1)" --policy /tmp/policy-result/policy.json --policy-sha "$(cut -d ' ' -f1 /tmp/policy-result/policy-pin.txt)" 2>&1 | tee /tmp/policy-result/reader.log
+      - name: Preserve the exact source, pinned inputs, raw outcomes and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/policy-result/source /tmp/policy-result/original-inputs
+          cp scripts/memory_cell/policy_read_audit.py scripts/memory_cell/test_policy_read_audit.py scripts/memory_cell/event_reader_experiment.py scripts/memory_cell/experience_policy.py /tmp/policy-result/source/
+          cp -r /tmp/policy-input/plan /tmp/policy-input/observations /tmp/policy-result/original-inputs/ || true
+          git rev-parse HEAD > /tmp/policy-result/tested-commit.txt
+          (cd /tmp/policy-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-policy-task-evidence
+          path: /tmp/policy-result
+          if-no-files-found: error
