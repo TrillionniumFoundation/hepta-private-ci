@@ -247,9 +247,14 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
 
 #[test]
 fn neuron_feature_rejects_token_budget_without_backend_dispatch() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.tokens".to_string(), 3, grant(), Driver::default())
-            .expect("worker");
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.tokens".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let mut oversized = neuron_feature_request();
     oversized.authorization.maximum_tokens = 129;

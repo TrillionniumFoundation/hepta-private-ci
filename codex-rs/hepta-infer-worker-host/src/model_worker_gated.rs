@@ -19,10 +19,10 @@ use super::ModelDriver;
 use super::ModelManifest;
 use super::NeuronFeatureBatchDriver;
 use super::NeuronFeatureBatchItemObservationV2;
-use super::NeuronSharedFeatureBatchDriverV2;
-use super::SharedNeuronFeatureRequestV2;
 use super::NeuronFeatureDriver;
 use super::NeuronFeatureRequest;
+use super::NeuronSharedFeatureBatchDriverV2;
+use super::SharedNeuronFeatureRequestV2;
 use super::WorkerRequest;
 use super::validate_manifest;
 
@@ -91,9 +91,11 @@ impl GatedHeadCpuDriverV2 {
             return Err(Error::ModelCapacity);
         }
         validate_candidate(&candidate)?;
-        if self.heads.values().any(|head| {
-            head.candidate.cell_identity == candidate.cell_identity
-        }) {
+        if self
+            .heads
+            .values()
+            .any(|head| head.candidate.cell_identity == candidate.cell_identity)
+        {
             // Multiple active revisions for one Cell need separate generations.
             return Err(Error::ModelAlreadyLoaded);
         }
@@ -101,7 +103,9 @@ impl GatedHeadCpuDriverV2 {
         let bytes = parameter_count
             .checked_mul(std::mem::size_of::<i64>())
             .ok_or(Error::ArithmeticOverflow)?;
-        let next_bytes = self.tensor_bytes.checked_add(bytes)
+        let next_bytes = self
+            .tensor_bytes
+            .checked_add(bytes)
             .ok_or(Error::ArithmeticOverflow)?;
         if next_bytes > MAX_TENSOR_BYTES {
             return Err(Error::ModelCapacity);
@@ -128,9 +132,7 @@ impl GatedHeadCpuDriverV2 {
 
     /// Calculate an exact bundle identity from the admitted immutable tensors,
     /// without trusting a manifest-supplied, unverified string.
-    pub fn catalog_digest_for(
-        candidates: &[GatedHeadCandidateV2],
-    ) -> Result<String, Error> {
+    pub fn catalog_digest_for(candidates: &[GatedHeadCandidateV2]) -> Result<String, Error> {
         if candidates.is_empty() || candidates.len() > MAX_REGISTERED_HEADS {
             return Err(Error::ModelCapacity);
         }
@@ -144,7 +146,10 @@ impl GatedHeadCpuDriverV2 {
             return Err(Error::ModelAlreadyLoaded);
         }
         let mut cells = std::collections::BTreeSet::new();
-        if candidates.iter().any(|head| !cells.insert(head.cell_identity.as_str())) {
+        if candidates
+            .iter()
+            .any(|head| !cells.insert(head.cell_identity.as_str()))
+        {
             return Err(Error::ModelAlreadyLoaded);
         }
         Ok(catalog_digest_sorted(&digests))
@@ -155,7 +160,9 @@ impl GatedHeadCpuDriverV2 {
     }
 
     fn verify_loaded(&self, handle: &DriverModelHandle) -> Result<(), Error> {
-        if !self.loaded || handle.opaque_id != format!("gated.cpu:{}", self.selected_manifest.model_id) {
+        if !self.loaded
+            || handle.opaque_id != format!("gated.cpu:{}", self.selected_manifest.model_id)
+        {
             return Err(Error::ModelNotLoaded);
         }
         Ok(())
@@ -206,14 +213,12 @@ impl GatedHeadCpuDriverV2 {
         )?;
         Ok((drive, prediction))
     }
-
 }
 
 impl ModelDriver for GatedHeadCpuDriverV2 {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
-        let selected_catalog = catalog_digest_sorted(
-            &self.heads.keys().cloned().collect::<Vec<_>>(),
-        );
+        let selected_catalog =
+            catalog_digest_sorted(&self.heads.keys().cloned().collect::<Vec<_>>());
         if *manifest != self.selected_manifest
             || self.loaded
             || self.heads.is_empty()
@@ -278,7 +283,10 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
         requests: &[NeuronFeatureRequest],
     ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
         self.verify_loaded(handle)?;
-        self.batch_calls = self.batch_calls.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+        self.batch_calls = self
+            .batch_calls
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
         let started = Instant::now();
         let mut observed = Vec::with_capacity(requests.len());
         // One bounded driver call; this reference CPU implementation uses
@@ -289,21 +297,21 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
                 request_id: request.authorization.request_id.clone(),
                 payload_digest: request.authorization.payload_digest.clone(),
                 feature: DriverNeuronFeatureObservation {
-                terminal_observed: true,
-                succeeded: true,
-                encoder_digest: request.encoder_digest.clone(),
-                head_digest: request.head_digest.clone(),
-                drive_q24: drive,
-                prediction_q24: prediction,
-                observed_memory_bytes: handle.observed_memory_bytes,
-                transient_allocation_bytes: transient_bytes(request)?,
-                queue_age_micros: 0,
-                latency_micros: 0,
+                    terminal_observed: true,
+                    succeeded: true,
+                    encoder_digest: request.encoder_digest.clone(),
+                    head_digest: request.head_digest.clone(),
+                    drive_q24: drive,
+                    prediction_q24: prediction,
+                    observed_memory_bytes: handle.observed_memory_bytes,
+                    transient_allocation_bytes: transient_bytes(request)?,
+                    queue_age_micros: 0,
+                    latency_micros: 0,
                 },
             });
         }
-        let batch_micros = u64::try_from(started.elapsed().as_micros())
-            .map_err(|_| Error::ArithmeticOverflow)?;
+        let batch_micros =
+            u64::try_from(started.elapsed().as_micros()).map_err(|_| Error::ArithmeticOverflow)?;
         for item in &mut observed {
             item.feature.latency_micros = batch_micros;
         }
@@ -354,8 +362,8 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
                 },
             });
         }
-        let elapsed = u64::try_from(started.elapsed().as_micros())
-            .map_err(|_| Error::ArithmeticOverflow)?;
+        let elapsed =
+            u64::try_from(started.elapsed().as_micros()).map_err(|_| Error::ArithmeticOverflow)?;
         for item in &mut observations {
             item.feature.latency_micros = elapsed;
         }
@@ -372,7 +380,11 @@ fn transient_bytes(request: &NeuronFeatureRequest) -> Result<u64, Error> {
 
 fn transient_dimensions_bytes(input_width: usize, output_width: usize) -> Result<u64, Error> {
     let count = input_width
-        .checked_add(output_width.checked_mul(2).ok_or(Error::ArithmeticOverflow)?)
+        .checked_add(
+            output_width
+                .checked_mul(2)
+                .ok_or(Error::ArithmeticOverflow)?,
+        )
         .ok_or(Error::ArithmeticOverflow)?;
     let bytes = count.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
     u64::try_from(bytes).map_err(|_| Error::ArithmeticOverflow)
@@ -387,7 +399,9 @@ fn validate_candidate(candidate: &GatedHeadCandidateV2) -> Result<(), Error> {
         || candidate.output_width > MAX_DIM
         || candidate.gate_q24.len() != candidate.input_width
         || candidate.drive_weights_q24.len()
-            != candidate.input_width.checked_mul(candidate.output_width)
+            != candidate
+                .input_width
+                .checked_mul(candidate.output_width)
                 .ok_or(Error::ArithmeticOverflow)?
         || candidate.prediction_weights_q24.len() != candidate.drive_weights_q24.len()
         || candidate.drive_bias_q24.len() != candidate.output_width
@@ -415,11 +429,14 @@ fn validate_candidate(candidate: &GatedHeadCandidateV2) -> Result<(), Error> {
 }
 
 fn parameter_count(candidate: &GatedHeadCandidateV2) -> Result<usize, Error> {
-    let dense = candidate.input_width
+    let dense = candidate
+        .input_width
         .checked_mul(candidate.output_width)
         .and_then(|n| n.checked_mul(2))
         .ok_or(Error::ArithmeticOverflow)?;
-    candidate.input_width.checked_add(dense)
+    candidate
+        .input_width
+        .checked_add(dense)
         .and_then(|n| n.checked_add(candidate.output_width * 2))
         .ok_or(Error::ArithmeticOverflow)
 }
@@ -461,8 +478,7 @@ fn q24_round_checked(raw_q48: i128) -> Result<i64, Error> {
     let floor = raw_q48.div_euclid(divisor);
     let remainder = raw_q48.rem_euclid(divisor);
     let twice = remainder * 2;
-    let rounded = floor
-        + i128::from(twice > divisor || (twice == divisor && floor % 2 != 0));
+    let rounded = floor + i128::from(twice > divisor || (twice == divisor && floor % 2 != 0));
     if !(-i128::from(Q24_BOUND)..=i128::from(Q24_BOUND)).contains(&rounded) {
         return Err(Error::FeatureOutputMismatch);
     }
@@ -485,10 +501,10 @@ fn dense_q24(input: &[i64], weights: &[i64], bias: &[i64]) -> Result<Vec<i64>, E
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::{
         InferenceWorker, ResourceGrant, WorkerRequest, canonical_neuron_feature_payload_digest,
     };
+    use super::*;
 
     fn manifest() -> ModelManifest {
         ModelManifest {
@@ -520,8 +536,8 @@ mod tests {
 
     fn manifest_for(candidates: &[GatedHeadCandidateV2]) -> ModelManifest {
         let mut selected = manifest();
-        selected.weights_digest = GatedHeadCpuDriverV2::catalog_digest_for(candidates)
-            .expect("catalog digest");
+        selected.weights_digest =
+            GatedHeadCpuDriverV2::catalog_digest_for(candidates).expect("catalog digest");
         selected
     }
 
@@ -555,9 +571,15 @@ mod tests {
     #[test]
     fn q24_rounding_is_ties_to_even_in_both_directions() {
         assert_eq!(q24_round_checked(i128::from(Q24) / 2).expect("round"), 0);
-        assert_eq!(q24_round_checked(i128::from(Q24) * 3 / 2).expect("round"), 2);
+        assert_eq!(
+            q24_round_checked(i128::from(Q24) * 3 / 2).expect("round"),
+            2
+        );
         assert_eq!(q24_round_checked(-i128::from(Q24) / 2).expect("round"), 0);
-        assert_eq!(q24_round_checked(-i128::from(Q24) * 3 / 2).expect("round"), -2);
+        assert_eq!(
+            q24_round_checked(-i128::from(Q24) * 3 / 2).expect("round"),
+            -2
+        );
     }
 
     #[test]
@@ -582,13 +604,19 @@ mod tests {
             maximum_memory_bytes: 1024,
             semantic_digest: "1".repeat(64),
         };
-        let mut worker = InferenceWorker::new(1, "worker.heads".into(), 3, grant, driver)
-            .expect("worker");
+        let mut worker =
+            InferenceWorker::new(1, "worker.heads".into(), 3, grant, driver).expect("worker");
         worker.load_model(1, selected.clone()).expect("load");
-        let rows = worker.run_neuron_features_batch(100, "model.gated", vec![
-            feature("req.a", ha, selected.weights_digest.clone()),
-            feature("req.b", hb, selected.weights_digest.clone()),
-        ]).expect("run actual cpu head");
+        let rows = worker
+            .run_neuron_features_batch(
+                100,
+                "model.gated",
+                vec![
+                    feature("req.a", ha, selected.weights_digest.clone()),
+                    feature("req.b", hb, selected.weights_digest.clone()),
+                ],
+            )
+            .expect("run actual cpu head");
         assert_eq!(rows.len(), 2);
         assert_eq!(rows[0].drive_q24, vec![Q24 / 2]);
         assert_eq!(rows[0].prediction_q24, vec![-Q24 / 4]);
@@ -607,10 +635,16 @@ mod tests {
         let digest = driver.register_head(head("cell.a")).expect("head");
         let mut unauthorized = feature("r", "f".repeat(64), selected.weights_digest.clone());
         let handle = driver.load(&selected).expect("load");
-        assert_eq!(driver.run_neuron_features(&handle, &unauthorized), Err(Error::ModelNotLoaded));
+        assert_eq!(
+            driver.run_neuron_features(&handle, &unauthorized),
+            Err(Error::ModelNotLoaded)
+        );
         unauthorized.head_digest = digest;
         assert!(driver.run_neuron_features(&handle, &unauthorized).is_ok());
-        assert_eq!(driver.register_head(head("cell.new")), Err(Error::ActiveRequests));
+        assert_eq!(
+            driver.register_head(head("cell.new")),
+            Err(Error::ActiveRequests)
+        );
     }
 
     #[test]
@@ -681,8 +715,8 @@ mod tests {
                 weights_digest: selected.weights_digest.clone(),
                 expected_output_width: 1,
             };
-            let digest = super::super::canonical_shared_neuron_payload_digest_v2(&request)
-                .expect("payload");
+            let digest =
+                super::super::canonical_shared_neuron_payload_digest_v2(&request).expect("payload");
             request.authorization.payload_digest = digest.clone();
             request.authorization.lease_payload_digest = digest;
             request
@@ -702,8 +736,7 @@ mod tests {
             semantic_digest: "1".repeat(64),
         };
         let mut worker =
-            InferenceWorker::new(1, "worker.reference".into(), 3, grant, driver)
-                .expect("worker");
+            InferenceWorker::new(1, "worker.reference".into(), 3, grant, driver).expect("worker");
         worker.load_model(1, selected).expect("load");
         let results = worker
             .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
@@ -751,10 +784,7 @@ mod tests {
         let selected = manifest_for(&[first.clone()]);
         let mut driver = GatedHeadCpuDriverV2::new(selected).expect("driver");
         driver.register_head(first).expect("first");
-        assert_eq!(
-            driver.register_head(second),
-            Err(Error::ModelAlreadyLoaded)
-        );
+        assert_eq!(driver.register_head(second), Err(Error::ModelAlreadyLoaded));
     }
 
     #[test]

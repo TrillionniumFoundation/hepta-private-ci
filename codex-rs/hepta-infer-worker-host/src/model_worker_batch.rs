@@ -58,7 +58,10 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             return Err(Error::FeatureLimit);
         }
         let request_limit = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
-        let next_active = self.active_requests.len().checked_add(requests.len())
+        let next_active = self
+            .active_requests
+            .len()
+            .checked_add(requests.len())
             .ok_or(Error::ArithmeticOverflow)?;
         if next_active > request_limit {
             return Err(Error::RequestCapacity);
@@ -82,8 +85,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 return Err(Error::ModelMismatch);
             }
             if item.authorization.maximum_tokens > selected.manifest.maximum_tokens
-                || item.authorization.maximum_tokens
-                    > item.authorization.reservation_maximum_tokens
+                || item.authorization.maximum_tokens > item.authorization.reservation_maximum_tokens
             {
                 return Err(Error::TokenLimit);
             }
@@ -94,7 +96,9 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 return Err(Error::FeatureContract);
             }
             if !ids.insert(&item.authorization.request_id)
-                || self.active_requests.contains_key(&item.authorization.request_id)
+                || self
+                    .active_requests
+                    .contains_key(&item.authorization.request_id)
             {
                 return Err(Error::RequestCapacity);
             }
@@ -107,17 +111,19 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         }
 
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
-        loaded.active_requests = loaded.active_requests.checked_add(requests.len())
+        loaded.active_requests = loaded
+            .active_requests
+            .checked_add(requests.len())
             .ok_or(Error::ArithmeticOverflow)?;
         for item in &requests {
-            self.active_requests.insert(
-                item.authorization.request_id.clone(),
-                model_id.to_string(),
-            );
+            self.active_requests
+                .insert(item.authorization.request_id.clone(), model_id.to_string());
         }
 
         // Exactly one backend batch call, without serial fallback.
-        let driver_result = self.driver.run_neuron_features_batch(&loaded.handle, &requests);
+        let driver_result = self
+            .driver
+            .run_neuron_features_batch(&loaded.handle, &requests);
 
         // Release reservations on success AND on backend error or missing output.
         for item in &requests {
@@ -193,17 +199,15 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         copies
             .into_iter()
             .zip(outcomes)
-            .map(|(request, outcome)| {
-                super::project_neuron_feature_receipt_v1(request, outcome)
-            })
+            .map(|(request, outcome)| super::project_neuron_feature_receipt_v1(request, outcome))
             .collect()
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::{DriverRunObservation, ModelManifest, ResourceGrant, WorkerRequest};
+    use super::*;
 
     #[derive(Default)]
     struct BatchMock {
@@ -222,7 +226,11 @@ mod tests {
                 observed_memory_bytes: 1024,
             })
         }
-        fn run(&mut self, _: &DriverModelHandle, _: &WorkerRequest) -> Result<DriverRunObservation, Error> {
+        fn run(
+            &mut self,
+            _: &DriverModelHandle,
+            _: &WorkerRequest,
+        ) -> Result<DriverRunObservation, Error> {
             self.single_calls += 1;
             Err(Error::FeatureContract)
         }
@@ -255,20 +263,20 @@ mod tests {
                     request_id: req.authorization.request_id.clone(),
                     payload_digest: req.authorization.payload_digest.clone(),
                     feature: DriverNeuronFeatureObservation {
-                    terminal_observed: !self.indeterminate_with_output,
-                    succeeded: true,
-                    encoder_digest: req.encoder_digest.clone(),
-                    head_digest: if self.corrupt_head {
-                        "f".repeat(64)
-                    } else {
-                        req.head_digest.clone()
-                    },
-                    drive_q24: vec![1 << 24; req.expected_output_width],
-                    prediction_q24: vec![0; req.expected_output_width],
-                    observed_memory_bytes: 2048,
-                    transient_allocation_bytes: 128,
-                    queue_age_micros: 3,
-                    latency_micros: 10,
+                        terminal_observed: !self.indeterminate_with_output,
+                        succeeded: true,
+                        encoder_digest: req.encoder_digest.clone(),
+                        head_digest: if self.corrupt_head {
+                            "f".repeat(64)
+                        } else {
+                            req.head_digest.clone()
+                        },
+                        drive_q24: vec![1 << 24; req.expected_output_width],
+                        prediction_q24: vec![0; req.expected_output_width],
+                        observed_memory_bytes: 2048,
+                        transient_allocation_bytes: 128,
+                        queue_age_micros: 3,
+                        latency_micros: 10,
                     },
                 })
                 .collect();
@@ -294,19 +302,24 @@ mod tests {
             maximum_memory_bytes: 4096,
             semantic_digest: "1".repeat(64),
         };
-        let mut worker = InferenceWorker::new(1, "worker.v2".into(), 5, grant, driver)
-            .expect("worker");
-        worker.load_model(1, ModelManifest {
-            model_id: "model.v2".into(),
-            model_digest: "2".repeat(64),
-            weights_digest: "3".repeat(64),
-            tokenizer_digest: "4".repeat(64),
-            preprocessor_digest: "5".repeat(64),
-            quantization_digest: "6".repeat(64),
-            runtime_digest: "7".repeat(64),
-            device_digest: "8".repeat(64),
-            maximum_tokens: 128,
-        }).expect("load");
+        let mut worker =
+            InferenceWorker::new(1, "worker.v2".into(), 5, grant, driver).expect("worker");
+        worker
+            .load_model(
+                1,
+                ModelManifest {
+                    model_id: "model.v2".into(),
+                    model_digest: "2".repeat(64),
+                    weights_digest: "3".repeat(64),
+                    tokenizer_digest: "4".repeat(64),
+                    preprocessor_digest: "5".repeat(64),
+                    quantization_digest: "6".repeat(64),
+                    runtime_digest: "7".repeat(64),
+                    device_digest: "8".repeat(64),
+                    maximum_tokens: 128,
+                },
+            )
+            .expect("load");
         worker
     }
 
@@ -341,15 +354,20 @@ mod tests {
     fn dispatches_exactly_one_backend_batch_and_returns_ordered_outputs() {
         let mut worker = worker(BatchMock::default());
         let results = worker
-            .run_neuron_features_batch(100, "model.v2", vec![
-                feature("request.1", 'b'),
-                feature("request.2", 'c'),
-            ])
+            .run_neuron_features_batch(
+                100,
+                "model.v2",
+                vec![feature("request.1", 'b'), feature("request.2", 'c')],
+            )
             .expect("batch");
         assert_eq!(results.len(), 2);
         assert_eq!(results[0].request_id, "request.1");
         assert_eq!(results[1].head_digest, "c".repeat(64));
-        assert!(results.iter().all(|r| r.status == ExecutionStatus::Succeeded));
+        assert!(
+            results
+                .iter()
+                .all(|r| r.status == ExecutionStatus::Succeeded)
+        );
         assert_eq!(worker.driver.batches, 1);
         assert_eq!(worker.driver.single_calls, 0);
         assert!(worker.active_requests.is_empty());
@@ -378,10 +396,11 @@ mod tests {
     fn duplicate_and_payload_drift_fail_before_dispatch() {
         let mut worker = worker(BatchMock::default());
         assert_eq!(
-            worker.run_neuron_features_batch(100, "model.v2", vec![
-                feature("request.1", 'b'),
-                feature("request.1", 'b'),
-            ]),
+            worker.run_neuron_features_batch(
+                100,
+                "model.v2",
+                vec![feature("request.1", 'b'), feature("request.1", 'b'),]
+            ),
             Err(Error::RequestCapacity)
         );
         let mut changed = feature("request.2", 'c');
@@ -421,10 +440,11 @@ mod tests {
         changed.authorization.payload_digest = payload.clone();
         changed.authorization.lease_payload_digest = payload;
         assert_eq!(
-            worker.run_neuron_features_batch(100, "model.v2", vec![
-                feature("request.1", 'b'),
-                changed,
-            ]),
+            worker.run_neuron_features_batch(
+                100,
+                "model.v2",
+                vec![feature("request.1", 'b'), changed,]
+            ),
             Err(Error::FeatureContract)
         );
         let mut cancelled = feature("request.3", 'd');
@@ -438,12 +458,14 @@ mod tests {
 
     #[test]
     fn reordered_identical_head_outputs_are_rejected_as_payload_mismatch() {
-        let mut worker = worker(BatchMock { swap_items: true, ..BatchMock::default() });
+        let mut worker = worker(BatchMock {
+            swap_items: true,
+            ..BatchMock::default()
+        });
         let err = worker.run_neuron_features_batch(
-            100, "model.v2", vec![
-                feature("request.1", 'b'),
-                feature("request.2", 'b'),
-            ],
+            100,
+            "model.v2",
+            vec![feature("request.1", 'b'), feature("request.2", 'b')],
         );
         assert_eq!(err, Err(Error::PayloadMismatch));
         assert!(worker.active_requests.is_empty());
@@ -453,13 +475,24 @@ mod tests {
     #[test]
     fn malformed_driver_results_are_not_published_and_slots_are_released() {
         for driver in [
-            BatchMock { truncated: true, ..BatchMock::default() },
-            BatchMock { corrupt_head: true, ..BatchMock::default() },
-            BatchMock { indeterminate_with_output: true, ..BatchMock::default() },
+            BatchMock {
+                truncated: true,
+                ..BatchMock::default()
+            },
+            BatchMock {
+                corrupt_head: true,
+                ..BatchMock::default()
+            },
+            BatchMock {
+                indeterminate_with_output: true,
+                ..BatchMock::default()
+            },
         ] {
             let mut worker = worker(driver);
             let err = worker.run_neuron_features_batch(
-                100, "model.v2", vec![feature("request.1", 'b'), feature("request.2", 'c')],
+                100,
+                "model.v2",
+                vec![feature("request.1", 'b'), feature("request.2", 'c')],
             );
             assert_eq!(err, Err(Error::FeatureOutputMismatch));
             assert!(worker.active_requests.is_empty());

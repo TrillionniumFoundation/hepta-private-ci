@@ -142,7 +142,9 @@ impl SharedFeatureCacheV2 {
         }
         if features_q24.is_empty()
             || features_q24.len() > MAX_DIMENSION
-            || features_q24.iter().any(|v| !(-Q24_ABSOLUTE_LIMIT..=Q24_ABSOLUTE_LIMIT).contains(v))
+            || features_q24
+                .iter()
+                .any(|v| !(-Q24_ABSOLUTE_LIMIT..=Q24_ABSOLUTE_LIMIT).contains(v))
         {
             return Err(SharedFeatureErrorV2::InvalidFeature);
         }
@@ -175,7 +177,8 @@ impl SharedFeatureCacheV2 {
             expires_at_ms,
             features_q24,
         });
-        self.snapshots.insert(identity_digest, Arc::clone(&snapshot));
+        self.snapshots
+            .insert(identity_digest, Arc::clone(&snapshot));
         self.resident_bytes = next_bytes;
         Ok(snapshot)
     }
@@ -231,7 +234,11 @@ impl SharedFeatureCacheV2 {
     fn retain(&mut self, keep: impl Fn(&ImmutableFeatureSnapshotV2) -> bool) -> usize {
         let old_count = self.snapshots.len();
         self.snapshots.retain(|_, snapshot| keep(snapshot));
-        self.resident_bytes = self.snapshots.values().map(|snapshot| snapshot.features_q24.len() * 8).sum();
+        self.resident_bytes = self
+            .snapshots
+            .values()
+            .map(|snapshot| snapshot.features_q24.len() * 8)
+            .sum();
         old_count - self.snapshots.len()
     }
 }
@@ -273,9 +280,24 @@ mod tests {
         let hit = cache.get(20, &id).expect("lookup").expect("present");
         assert!(Arc::ptr_eq(&frame, &hit));
         assert_eq!(cache.resident_bytes(), 24);
-        assert!(cache.get(20, &identity("principal.b", "purpose.read", 2)).expect("lookup").is_none());
-        assert!(cache.get(20, &identity("principal.a", "purpose.write", 2)).expect("lookup").is_none());
-        assert!(cache.get(20, &identity("principal.a", "purpose.read", 3)).expect("lookup").is_none());
+        assert!(
+            cache
+                .get(20, &identity("principal.b", "purpose.read", 2))
+                .expect("lookup")
+                .is_none()
+        );
+        assert!(
+            cache
+                .get(20, &identity("principal.a", "purpose.write", 2))
+                .expect("lookup")
+                .is_none()
+        );
+        assert!(
+            cache
+                .get(20, &identity("principal.a", "purpose.read", 3))
+                .expect("lookup")
+                .is_none()
+        );
         assert!(cache.get(100, &id).expect("lookup").is_none());
     }
 
@@ -283,18 +305,39 @@ mod tests {
     fn never_replace_cached_identity_with_different_bytes_or_expiry() {
         let mut cache = SharedFeatureCacheV2::new(2, 128).expect("cache");
         let id = identity("p", "q", 2);
-        let existing = cache.insert(10, id.clone(), 100, Arc::from([2_i64, 4])).expect("insert");
-        assert!(Arc::ptr_eq(&existing, &cache.insert(10, id.clone(), 100, Arc::from([2_i64, 4])).expect("idempotent")));
-        assert_eq!(cache.insert(10, id.clone(), 100, Arc::from([2_i64, 5])), Err(SharedFeatureErrorV2::ConflictingSnapshot));
-        assert_eq!(cache.insert(10, id, 110, Arc::from([2_i64, 4])), Err(SharedFeatureErrorV2::ConflictingSnapshot));
+        let existing = cache
+            .insert(10, id.clone(), 100, Arc::from([2_i64, 4]))
+            .expect("insert");
+        assert!(Arc::ptr_eq(
+            &existing,
+            &cache
+                .insert(10, id.clone(), 100, Arc::from([2_i64, 4]))
+                .expect("idempotent")
+        ));
+        assert_eq!(
+            cache.insert(10, id.clone(), 100, Arc::from([2_i64, 5])),
+            Err(SharedFeatureErrorV2::ConflictingSnapshot)
+        );
+        assert_eq!(
+            cache.insert(10, id, 110, Arc::from([2_i64, 4])),
+            Err(SharedFeatureErrorV2::ConflictingSnapshot)
+        );
     }
 
     #[test]
     fn capacity_bounds_and_q24_validation_fail_closed() {
         let mut cache = SharedFeatureCacheV2::new(1, 16).expect("cache");
-        assert_eq!(cache.insert(10, identity("p", "q", 2), 11, Arc::from([9_i64 << 24])), Err(SharedFeatureErrorV2::InvalidFeature));
-        cache.insert(10, identity("p", "q", 2), 20, Arc::from([1_i64, 2])).expect("insert");
-        assert_eq!(cache.insert(10, identity("p2", "q", 2), 20, Arc::from([1_i64])), Err(SharedFeatureErrorV2::CapacityExceeded));
+        assert_eq!(
+            cache.insert(10, identity("p", "q", 2), 11, Arc::from([9_i64 << 24])),
+            Err(SharedFeatureErrorV2::InvalidFeature)
+        );
+        cache
+            .insert(10, identity("p", "q", 2), 20, Arc::from([1_i64, 2]))
+            .expect("insert");
+        assert_eq!(
+            cache.insert(10, identity("p2", "q", 2), 20, Arc::from([1_i64])),
+            Err(SharedFeatureErrorV2::CapacityExceeded)
+        );
         assert_eq!(cache.len(), 1);
         assert_eq!(cache.resident_bytes(), 16);
         assert_eq!(cache.purge_expired(20), 1);
@@ -306,23 +349,57 @@ mod tests {
     fn generation_and_epoch_fences_invalidate_only_target_scope() {
         let mut cache = SharedFeatureCacheV2::new(4, 256).expect("cache");
         for (principal, epoch) in [("p", 2), ("p", 3), ("other", 2)] {
-            cache.insert(5, identity(principal, "purpose", epoch), 100, Arc::from([1_i64]))
+            cache
+                .insert(
+                    5,
+                    identity(principal, "purpose", epoch),
+                    100,
+                    Arc::from([1_i64]),
+                )
                 .expect("insert");
         }
         let p = StableId::new("p".to_string()).expect("p");
         let purpose = StableId::new("purpose".to_string()).expect("purpose");
         assert_eq!(cache.revoke_before_epoch(&p, &purpose, 3), 1);
-        assert!(cache.get(6, &identity("p", "purpose", 2)).expect("lookup").is_none());
-        assert!(cache.get(6, &identity("p", "purpose", 3)).expect("lookup").is_some());
-        assert!(cache.get(6, &identity("other", "purpose", 2)).expect("lookup").is_some());
-        assert_eq!(cache.invalidate_other_generations(&p, &purpose, Generation::new(8).expect("generation")), 1);
+        assert!(
+            cache
+                .get(6, &identity("p", "purpose", 2))
+                .expect("lookup")
+                .is_none()
+        );
+        assert!(
+            cache
+                .get(6, &identity("p", "purpose", 3))
+                .expect("lookup")
+                .is_some()
+        );
+        assert!(
+            cache
+                .get(6, &identity("other", "purpose", 2))
+                .expect("lookup")
+                .is_some()
+        );
+        assert_eq!(
+            cache.invalidate_other_generations(
+                &p,
+                &purpose,
+                Generation::new(8).expect("generation")
+            ),
+            1
+        );
         assert_eq!(cache.len(), 1);
     }
 
     #[test]
     fn feature_digest_binds_shape_order_and_q24_values() {
-        assert_ne!(feature_content_digest_v2(&[1, 2]), feature_content_digest_v2(&[2, 1]));
-        assert_ne!(feature_content_digest_v2(&[1, 2]), feature_content_digest_v2(&[1, 2, 0]));
+        assert_ne!(
+            feature_content_digest_v2(&[1, 2]),
+            feature_content_digest_v2(&[2, 1])
+        );
+        assert_ne!(
+            feature_content_digest_v2(&[1, 2]),
+            feature_content_digest_v2(&[1, 2, 0])
+        );
         let a = identity("p", "q", 2);
         let mut b = a.clone();
         b.input_digest = Digest32::of_bytes(b"new candidate set");

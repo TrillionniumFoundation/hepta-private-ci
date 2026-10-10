@@ -14,10 +14,9 @@ use codex_hepta_infer_core::shared_feature_v2::{
 use codex_hepta_types::{Digest32, NonAuthorizingPosture, StableId};
 
 use super::{
-    DriverModelHandle, DriverNeuronFeatureObservation, Error, ExecutionStatus,
-    InferenceWorker, MAX_ACTIVE_REQUESTS, MAX_NEURON_FEATURES, ModelDriver,
-    NeuronFeatureBatchItemObservationV2, WorkerRequest, validate_digest,
-    validate_identity, validate_request,
+    DriverModelHandle, DriverNeuronFeatureObservation, Error, ExecutionStatus, InferenceWorker,
+    MAX_ACTIVE_REQUESTS, MAX_NEURON_FEATURES, ModelDriver, NeuronFeatureBatchItemObservationV2,
+    WorkerRequest, validate_digest, validate_identity, validate_request,
 };
 
 const MAX_BATCH_ITEMS_V2: usize = 32;
@@ -129,8 +128,7 @@ fn validate_item(
         return Err(Error::FeatureContract);
     }
     if req.authorization.maximum_tokens > manifest.maximum_tokens
-        || req.authorization.maximum_tokens
-            > req.authorization.reservation_maximum_tokens
+        || req.authorization.maximum_tokens > req.authorization.reservation_maximum_tokens
     {
         return Err(Error::TokenLimit);
     }
@@ -147,8 +145,7 @@ fn validate_item(
         .digest()
         .map_err(|_| Error::FeatureContract)?
         .is_zero()
-        || req.snapshot.content_digest
-            != feature_content_digest_v2(&req.snapshot.features_q24)
+        || req.snapshot.content_digest != feature_content_digest_v2(&req.snapshot.features_q24)
     {
         return Err(Error::FeatureContract);
     }
@@ -200,7 +197,10 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             return Err(Error::FeatureLimit);
         }
         let maximum = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
-        if self.active_requests.len().checked_add(requests.len())
+        if self
+            .active_requests
+            .len()
+            .checked_add(requests.len())
             .ok_or(Error::ArithmeticOverflow)?
             > maximum
         {
@@ -227,20 +227,22 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 return Err(Error::FeatureContract);
             }
             if !request_ids.insert(item.authorization.request_id.as_str())
-                || self.active_requests.contains_key(&item.authorization.request_id)
+                || self
+                    .active_requests
+                    .contains_key(&item.authorization.request_id)
             {
                 return Err(Error::RequestCapacity);
             }
         }
 
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
-        loaded.active_requests = loaded.active_requests.checked_add(requests.len())
+        loaded.active_requests = loaded
+            .active_requests
+            .checked_add(requests.len())
             .ok_or(Error::ArithmeticOverflow)?;
         for item in &requests {
-            self.active_requests.insert(
-                item.authorization.request_id.clone(),
-                model_id.to_string(),
-            );
+            self.active_requests
+                .insert(item.authorization.request_id.clone(), model_id.to_string());
         }
         let driver_result = self
             .driver
@@ -263,8 +265,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             }
             let features = batch_result.feature;
             if features.observed_memory_bytes > self.grant.maximum_memory_bytes
-                || features.encoder_digest
-                    != request.snapshot.identity.encoder_digest.to_string()
+                || features.encoder_digest != request.snapshot.identity.encoder_digest.to_string()
                 || features.head_digest != request.head_digest
             {
                 return Err(Error::FeatureOutputMismatch);
@@ -287,20 +288,16 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 {
                     return Err(Error::FeatureOutputMismatch);
                 }
-            } else if !features.drive_q24.is_empty()
-                || !features.prediction_q24.is_empty()
-            {
+            } else if !features.drive_q24.is_empty() || !features.prediction_q24.is_empty() {
                 return Err(Error::FeatureOutputMismatch);
             }
-            let identity_digest = request.snapshot.identity.digest()
+            let identity_digest = request
+                .snapshot
+                .identity
+                .digest()
                 .map_err(|_| Error::FeatureContract)?;
-            let observation_digest = observation_digest_v2(
-                request,
-                &features,
-                status,
-                self.generation,
-                identity_digest,
-            );
+            let observation_digest =
+                observation_digest_v2(request, &features, status, self.generation, identity_digest);
             outputs.push(SharedNeuronFeatureResultV2 {
                 request_id: request.authorization.request_id.clone(),
                 reservation_id: request.authorization.reservation_id.clone(),
@@ -390,9 +387,11 @@ mod tests {
             .expect("frame")
     }
 
-    fn req(cell: &str, token: &str, snapshot: Arc<ImmutableFeatureSnapshotV2>)
-        -> SharedNeuronFeatureRequestV2
-    {
+    fn req(
+        cell: &str,
+        token: &str,
+        snapshot: Arc<ImmutableFeatureSnapshotV2>,
+    ) -> SharedNeuronFeatureRequestV2 {
         let mut value = SharedNeuronFeatureRequestV2 {
             authorization: WorkerRequest {
                 request_id: token.to_string(),
@@ -430,7 +429,10 @@ mod tests {
             canonical_shared_neuron_payload_digest_v2(&a).expect("a"),
             canonical_shared_neuron_payload_digest_v2(&b).expect("b")
         );
-        assert_eq!(a.snapshot.features_q24.as_ref(), &[1_i64 << 23, -(1_i64 << 22)]);
+        assert_eq!(
+            a.snapshot.features_q24.as_ref(),
+            &[1_i64 << 23, -(1_i64 << 22)]
+        );
     }
 
     #[test]
@@ -448,26 +450,53 @@ mod tests {
             maximum_tokens: 64,
         };
         assert!(validate_item(&a, 10, 3, 2, &manifest).is_ok());
-        assert_eq!(validate_item(&a, 1000, 3, 2, &manifest), Err(Error::FeatureContract));
-        assert_eq!(validate_item(&a, 10, 4, 2, &manifest), Err(Error::FeatureContract));
-        assert_eq!(validate_item(&a, 10, 3, 3, &manifest), Err(Error::FeatureContract));
+        assert_eq!(
+            validate_item(&a, 1000, 3, 2, &manifest),
+            Err(Error::FeatureContract)
+        );
+        assert_eq!(
+            validate_item(&a, 10, 4, 2, &manifest),
+            Err(Error::FeatureContract)
+        );
+        assert_eq!(
+            validate_item(&a, 10, 3, 3, &manifest),
+            Err(Error::FeatureContract)
+        );
         manifest.preprocessor_digest = "f".repeat(64);
-        assert_eq!(validate_item(&a, 10, 3, 2, &manifest), Err(Error::ModelMismatch));
+        assert_eq!(
+            validate_item(&a, 10, 3, 2, &manifest),
+            Err(Error::ModelMismatch)
+        );
         let mut changed = a.clone();
         changed.cell_id = id("cell.b");
-        assert_eq!(validate_item(&changed, 10, 3, 2, &manifest), Err(Error::ModelMismatch));
+        assert_eq!(
+            validate_item(&changed, 10, 3, 2, &manifest),
+            Err(Error::ModelMismatch)
+        );
         manifest.preprocessor_digest = a.snapshot.identity.normalizer_digest.to_string();
-        assert_eq!(validate_item(&changed, 10, 3, 2, &manifest), Err(Error::PayloadMismatch));
+        assert_eq!(
+            validate_item(&changed, 10, 3, 2, &manifest),
+            Err(Error::PayloadMismatch)
+        );
         changed = a.clone();
         changed.principal_id = id("other");
-        assert_eq!(validate_item(&changed, 10, 3, 2, &manifest), Err(Error::FeatureContract));
+        assert_eq!(
+            validate_item(&changed, 10, 3, 2, &manifest),
+            Err(Error::FeatureContract)
+        );
         changed = a.clone();
         changed.authorization.maximum_tokens = 65;
-        assert_eq!(validate_item(&changed, 10, 3, 2, &manifest), Err(Error::TokenLimit));
+        assert_eq!(
+            validate_item(&changed, 10, 3, 2, &manifest),
+            Err(Error::TokenLimit)
+        );
         let mut altered_snapshot = (*a.snapshot).clone();
         altered_snapshot.features_q24 = Arc::from([42_i64, 2]);
         changed = a.clone();
         changed.snapshot = Arc::new(altered_snapshot);
-        assert_eq!(validate_item(&changed, 10, 3, 2, &manifest), Err(Error::FeatureContract));
+        assert_eq!(
+            validate_item(&changed, 10, 3, 2, &manifest),
+            Err(Error::FeatureContract)
+        );
     }
 }
