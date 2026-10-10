@@ -14,6 +14,8 @@ use std::fmt;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::time::Instant;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::CellDefinitionV2;
@@ -22,6 +24,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::PhaseLatencyHistogramV1;
 use codex_hepta_types::PhaseLatencySnapshotV1;
+use codex_hepta_types::{PhaseMetricEventV1, PhaseMetricKindV1, PhaseMetricSinkV1};
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer;
@@ -359,6 +362,8 @@ pub struct ArtifactCasOwnerV1 {
     signing_key: SigningKey,
     cas_latency: Arc<PhaseLatencyHistogramV1>,
     signature_latency: Arc<PhaseLatencyHistogramV1>,
+    metrics: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metric_records: Arc<AtomicU64>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -377,6 +382,8 @@ impl ArtifactCasOwnerV1 {
             signing_key,
             cas_latency: Arc::new(PhaseLatencyHistogramV1::default()),
             signature_latency: Arc::new(PhaseLatencyHistogramV1::default()),
+            metrics: None,
+            failed_metric_records: Arc::new(AtomicU64::new(0)),
         })
     }
 
@@ -386,6 +393,46 @@ impl ArtifactCasOwnerV1 {
             cas: self.cas_latency.snapshot(),
             signature: self.signature_latency.snapshot(),
         }
+    }
+
+    /// Production callers install the Evidence-owned sink before CAS use.
+    pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metrics = Some(sink);
+        self
+    }
+
+    pub fn production_metrics_ready(&self) -> bool {
+        self.metrics.is_some() && self.failed_metric_records.load(Ordering::Acquire) == 0
+    }
+
+    fn timed<T, E>(
+        &self,
+        scope: Digest32,
+        operation: Digest32,
+        phase: PhaseMetricKindV1,
+        invoke: impl FnOnce() -> Result<T, E>,
+    ) -> Result<T, E> {
+        let started = Instant::now();
+        let result = invoke();
+        let latency = started.elapsed();
+        let histogram = if phase == PhaseMetricKindV1::Cas {
+            &self.cas_latency
+        } else {
+            &self.signature_latency
+        };
+        histogram.observe(latency, result.is_ok());
+        if let Some(sink) = &self.metrics {
+            if sink.record(PhaseMetricEventV1 {
+                scope_digest: scope,
+                operation_digest: operation,
+                phase,
+                latency_micros: u64::try_from(latency.as_micros()).unwrap_or(u64::MAX),
+                succeeded: result.is_ok(),
+            }).is_err() {
+                self.failed_metric_records.fetch_add(1, Ordering::Release);
+            }
+        }
+        result
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -400,7 +447,9 @@ impl ArtifactCasOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<ArtifactWriteReceiptV1, ProductionOwnerError> {
-        let digest = self.cas_latency.time_result(|| {
+        let scope = Digest32::of_bytes(artifact_id.as_str().as_bytes());
+        let operation = Digest32::of_bytes(operation_id.as_str().as_bytes());
+        let digest = self.timed(scope, operation, PhaseMetricKindV1::Cas, || {
             write_candidate_payload_beneath(root, &relative, registry, artifact_id, bytes)
         })?;
         let manifest = registry
@@ -421,9 +470,9 @@ impl ArtifactCasOwnerV1 {
             signature: [0; 64],
         };
         receipt.receipt_digest = receipt.content_digest();
-        receipt.signature = self.signature_latency.time_value(|| {
-            self.signing_key.sign(&receipt.signing_bytes()).to_bytes()
-        });
+        receipt.signature = self.timed(scope, operation, PhaseMetricKindV1::Signature, || {
+            Ok::<_, ProductionOwnerError>(self.signing_key.sign(&receipt.signing_bytes()).to_bytes())
+        })?;
         Ok(receipt)
     }
 
@@ -439,7 +488,9 @@ impl ArtifactCasOwnerV1 {
         host_evidence_digest: Option<Digest32>,
         observer_evidence_digest: Option<Digest32>,
     ) -> Result<(Vec<u8>, ArtifactLoadReceiptV1), ProductionOwnerError> {
-        self.signature_latency.time_result(|| {
+        let scope = Digest32::of_bytes(artifact_id.as_str().as_bytes());
+        let operation = Digest32::of_bytes(operation_id.as_str().as_bytes());
+        self.timed(scope, operation, PhaseMetricKindV1::Signature, || {
             expected_write.verify(&self.signing_key.verifying_key())
         })?;
         if expected_write.artifact_id != *artifact_id
@@ -447,7 +498,7 @@ impl ArtifactCasOwnerV1 {
         {
             return Err(ProductionOwnerError::PayloadMismatch);
         }
-        let bytes = self.cas_latency.time_result(|| {
+        let bytes = self.timed(scope, operation, PhaseMetricKindV1::Cas, || {
             read_candidate_payload(file, registry, artifact_id)
         })?;
         let manifest = registry
@@ -475,9 +526,9 @@ impl ArtifactCasOwnerV1 {
             signature: [0; 64],
         };
         receipt.receipt_digest = receipt.content_digest();
-        receipt.signature = self.signature_latency.time_value(|| {
-            self.signing_key.sign(&receipt.signing_bytes()).to_bytes()
-        });
+        receipt.signature = self.timed(scope, operation, PhaseMetricKindV1::Signature, || {
+            Ok::<_, ProductionOwnerError>(self.signing_key.sign(&receipt.signing_bytes()).to_bytes())
+        })?;
         Ok((bytes, receipt))
     }
 }
