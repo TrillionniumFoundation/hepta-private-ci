@@ -95,6 +95,30 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         with self.assertRaisesRegex(InvalidEvidence, "without a backend call"):
             analyze(packet)
 
+    def test_reject_float_or_unsafe_rounded_integer_counters(self):
+        packet = synthetic_matrix()
+        packet["runs"][0]["attempted"] = 1000.0
+        with self.assertRaisesRegex(InvalidEvidence, "exact bounded integer"):
+            analyze(packet)
+        packet = synthetic_matrix()
+        packet["runs"][0]["communication_bytes"] = 2**63
+        with self.assertRaisesRegex(InvalidEvidence, "exact bounded integer"):
+            analyze(packet)
+        packet = synthetic_matrix()
+        packet["runs"][0]["fsync_count"] = True
+        with self.assertRaisesRegex(InvalidEvidence, "exact bounded integer"):
+            analyze(packet)
+
+    def test_single_request_native_calls_are_not_physical_batches(self):
+        packet = synthetic_matrix()
+        optimized = next(
+            row for row in packet["runs"]
+            if row["mode"] == "optimized_logical_split" and row["scopes"] == 256
+        )
+        optimized["native_backend_calls"] = optimized["native_batch_requests"]
+        with self.assertRaisesRegex(InvalidEvidence, "density below two"):
+            analyze(packet)
+
     def test_rss_and_recovery_regressions_are_blocking(self):
         packet = synthetic_matrix()
         run = next(row for row in packet["runs"]
