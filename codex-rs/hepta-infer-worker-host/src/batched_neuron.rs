@@ -205,6 +205,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         self.production_metrics_ready()
     }
 
+    fn record_metric(&mut self, event: PhaseMetricEventV1) {
+        if self
+            .metric_sink
+            .as_ref()
+            .is_some_and(|sink| sink.record(event).is_err())
+        {
+            self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
+        }
+    }
+
     /// Admission copies no feature vector; queued payloads share Arc<[i64]>.
     /// Final-use signature verification and durable nonce claim occur only at
     /// actual worker execution, immediately before the model driver is called.
@@ -220,17 +230,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
         let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
-        if let Some(sink) = &self.metric_sink {
-            if sink.record(PhaseMetricEventV1 {
-                scope_digest,
-                operation_digest,
-                phase: PhaseMetricKindV1::Admission,
-                latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
-                succeeded: result.is_ok(),
-            }).is_err() {
-                    self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
-                }
-        }
+        self.record_metric(PhaseMetricEventV1 {
+            scope_digest,
+            operation_digest,
+            phase: PhaseMetricKindV1::Admission,
+            latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
+            succeeded: result.is_ok(),
+        });
         result
     }
 
@@ -303,20 +309,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .scheduler
             .poll_physically_compatible(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
-        if let (Some(sink), Some(batch)) = (&self.metric_sink, &poll.batch) {
-            // One phase sample per admitted request, not just the first
-            // member of a batch (which would silently undercount throughput).
+        if let Some(batch) = &poll.batch {
+            // Preserve one observation per admitted member of a physical batch.
             for intent in &batch.requests {
-                if sink.record(PhaseMetricEventV1 {
+                self.record_metric(PhaseMetricEventV1 {
                     scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                     operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
                     phase: PhaseMetricKindV1::Microbatch,
                     latency_micros: u64::try_from(started.elapsed().as_micros())
                         .unwrap_or(u64::MAX),
                     succeeded: true,
-                }).is_err() {
-                    self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
-                }
+                });
             }
         }
         for id in &poll.expired_request_ids {
@@ -364,26 +367,20 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     .map_err(|_| BatchWorkerErrorV1::Authority)
                                     .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
                                 });
-                                if let Some(sink) = &self.metric_sink {
-                                    if sink.record(PhaseMetricEventV1 {
-                                        scope_digest: Digest32::of_bytes(
-                                            batch.key.scope_id.as_str().as_bytes(),
-                                        ),
-                                        operation_digest: Digest32::of_bytes(
-                                            id.as_str().as_bytes(),
-                                        ),
-                                        phase: PhaseMetricKindV1::NeuronFeature,
-                                        latency_micros: u64::try_from(start.elapsed().as_micros())
-                                            .unwrap_or(u64::MAX),
-                                        succeeded: matches!(
-                                            &result,
-                                            Ok(receipt) if receipt.status
-                                                == NeuronFeatureTerminalStatusV1::Succeeded
-                                        ),
-                                    }).is_err() {
-                    self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
-                }
-                                }
+                                self.record_metric(PhaseMetricEventV1 {
+                                    scope_digest: Digest32::of_bytes(
+                                        batch.key.scope_id.as_str().as_bytes(),
+                                    ),
+                                    operation_digest: Digest32::of_bytes(id.as_str().as_bytes()),
+                                    phase: PhaseMetricKindV1::NeuronFeature,
+                                    latency_micros: u64::try_from(start.elapsed().as_micros())
+                                        .unwrap_or(u64::MAX),
+                                    succeeded: matches!(
+                                        &result,
+                                        Ok(receipt) if receipt.status
+                                            == NeuronFeatureTerminalStatusV1::Succeeded
+                                    ),
+                                });
                                 result
                             }
                         }
@@ -507,22 +504,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .into_iter()
             .zip(results.drain(..))
             .map(|((intent, _), result)| {
-                if let Some(sink) = &self.metric_sink {
-                    if sink.record(PhaseMetricEventV1 {
-                        scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
-                        operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
-                        phase: PhaseMetricKindV1::NeuronFeature,
-                        latency_micros: u64::try_from(started.elapsed().as_micros())
-                            .unwrap_or(u64::MAX),
-                        succeeded: matches!(
-                            &result,
-                            Ok(receipt) if receipt.status
-                                == NeuronFeatureTerminalStatusV1::Succeeded
-                        ),
-                    }).is_err() {
-                    self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
-                }
-                }
+                self.record_metric(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
+                    operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
+                    phase: PhaseMetricKindV1::NeuronFeature,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded: matches!(
+                        &result,
+                        Ok(receipt) if receipt.status
+                            == NeuronFeatureTerminalStatusV1::Succeeded
+                    ),
+                });
                 BatchWorkerItemOutcomeV1 {
                     request_id: intent.request_id,
                     result,
