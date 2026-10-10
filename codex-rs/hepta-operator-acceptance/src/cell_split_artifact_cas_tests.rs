@@ -305,7 +305,6 @@ fn exclusive_writer_and_torn_object_block_recovery_without_receipt_fabrication()
     );
 }
 
-
 /// The actual coordinator commits a concrete CAS object as step zero, but may
 /// not synthesize migration/CNS/Supervisor effects when their services are
 /// missing. Reopening verifies the exact original CAS bytes and stays pending.
@@ -318,8 +317,7 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     let fixture = Fixture::new();
     let ledger = fixture.root.path().join("split-ledger");
     fs::create_dir(&ledger).expect("ledger");
-    fs::set_permissions(&ledger, fs::Permissions::from_mode(0o700))
-        .expect("private ledger");
+    fs::set_permissions(&ledger, fs::Permissions::from_mode(0o700)).expect("private ledger");
     let plan = plan();
     let plan_digest = sha256(&canonical_json(&plan).expect("plan digest"));
     let key = SigningKey::from_bytes(&[1; 32]);
@@ -332,50 +330,71 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     let server_plan = plan.clone();
     let server = thread::spawn(move || {
         let backend = CellSplitArtifactCasOwnerV1::open(
-            &store, &parent, &child, server_plan.clone(), authority
-        ).expect("real CAS backend");
+            &store,
+            &parent,
+            &child,
+            server_plan.clone(),
+            authority,
+        )
+        .expect("real CAS backend");
         let mut service = CellSplitEffectServiceV1::new(
             CellSplitExecutionStepV1::ArtifactCas,
-            server_plan.owner_ids[0].clone(), plan_digest, key, backend,
-        ).expect("signed CAS owner");
+            server_plan.owner_ids[0].clone(),
+            plan_digest,
+            key,
+            backend,
+        )
+        .expect("signed CAS owner");
         for _ in 0..5 {
             let (mut stream, _) = listener.accept().expect("coordinator CAS call");
-            service.serve_connection(&mut stream).expect("real signed CAS operation");
+            service
+                .serve_connection(&mut stream)
+                .expect("real signed CAS operation");
         }
     });
-    let keys = [1_u8, 2, 3, 4]
-        .map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
+    let keys = [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
     let trust = CellSplitOwnerTrustV1::new(&plan, keys.clone()).expect("independent owners");
     let endpoints = [
-        socket, fixture.root.path().join("unavailable-migration.sock"),
+        socket,
+        fixture.root.path().join("unavailable-migration.sock"),
         fixture.root.path().join("unavailable-cns.sock"),
         fixture.root.path().join("unavailable-supervisor.sock"),
     ];
     {
-        let transport = CellSplitUnixEffectPortV1::new(
-            endpoints.clone(), keys.clone(), Duration::from_secs(3)
-        ).expect("RPC client");
-        let mut owner = CellSplitExecutionOwnerV1::open(
-            &ledger, plan.clone(), trust.clone(), transport
-        ).expect("coordinator");
+        let transport =
+            CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+                .expect("RPC client");
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(&ledger, plan.clone(), trust.clone(), transport)
+                .expect("coordinator");
         let committed = owner.advance().expect("step 0").expect("CAS receipt");
         assert_eq!(committed.intent.step, CellSplitExecutionStepV1::ArtifactCas);
         assert_eq!(owner.completed_steps(), 1);
-        assert_eq!(fs::read(fixture.store.join(format!(
-            "sha256-{}", plan.child_artifact_digest
-        ))).expect("actual CAS data"), b"real child artifact bytes");
-        assert!(owner.advance().is_err(), "missing real migration must fail closed");
+        assert_eq!(
+            fs::read(
+                fixture
+                    .store
+                    .join(format!("sha256-{}", plan.child_artifact_digest))
+            )
+            .expect("actual CAS data"),
+            b"real child artifact bytes"
+        );
+        assert!(
+            owner.advance().is_err(),
+            "missing real migration must fail closed"
+        );
     }
     {
-        let transport = CellSplitUnixEffectPortV1::new(
-            endpoints, keys, Duration::from_secs(3)
-        ).expect("reopened RPC client");
-        let mut recovered = CellSplitExecutionOwnerV1::open(
-            &ledger, plan, trust, transport
-        ).expect("signed original CAS is still present");
+        let transport = CellSplitUnixEffectPortV1::new(endpoints, keys, Duration::from_secs(3))
+            .expect("reopened RPC client");
+        let mut recovered = CellSplitExecutionOwnerV1::open(&ledger, plan, trust, transport)
+            .expect("signed original CAS is still present");
         assert_eq!(recovered.completed_steps(), 1);
         assert!(!recovered.is_complete());
-        assert!(recovered.advance().is_err(), "unknown migration is not re-executed");
+        assert!(
+            recovered.advance().is_err(),
+            "unknown migration is not re-executed"
+        );
     }
     server.join().expect("four-step owner test server");
 }
