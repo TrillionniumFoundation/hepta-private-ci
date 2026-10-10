@@ -83,14 +83,14 @@ class Tests(unittest.TestCase):
         data={
             "schema":"hepta.neuron.laya-choice-input.v1",
             "question_id":"q",
-            "question":{"type":"choice","criteria":{"left":"Left option","right":"Right option"}},
+            "question":{"type":"choice","instructions":"Choose the valid route","criteria":{"left":"Left option","right":"Right option"}},
             "train_groups":["train-group"],"valid_groups":["valid-group"],
             "valid_time_max":20,
             "rows":[{"id":"future-1","group":"future-group","time":25,
                      "state":"An explicit future observation"}],
         }
         rows,_,keys=validate_input(data)
-        response=[{"usage":{"truncated":False,"state_tokens_dropped":0},
+        response=[{"usage":{"input_tokens":13,"output_tokens":0},
                    "answers":{"q":{"type":"choice",
                                    "probabilities":{"right":0.6,"left":0.4}}}}]
         observed=convert_predictions(rows,response,"q",keys)
