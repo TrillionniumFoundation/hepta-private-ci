@@ -20,13 +20,12 @@ use codex_hepta_types::Digest32;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{
-    CellSplitDurableEffectBackendV1, CellSplitExecutionIntentV1,
-    CellSplitExecutionPlanV1, CellSplitExecutionStepV1, CellSplitOwnedEffectV1,
-};
 use crate::durable::{
-    SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root,
-    sha256, write_private_new,
+    SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root, sha256, write_private_new,
+};
+use crate::{
+    CellSplitDurableEffectBackendV1, CellSplitExecutionIntentV1, CellSplitExecutionPlanV1,
+    CellSplitExecutionStepV1, CellSplitOwnedEffectV1,
 };
 
 const SCHEMA: &str = "hepta.learning.cell-split.child-state-batch-cas.v1";
@@ -176,7 +175,13 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             Err(error) => return Err(error.into()),
         }
         Ok(Self {
-            root, plan, plan_digest, migration, frozen_input_bytes, authority, _lock: lock
+            root,
+            plan,
+            plan_digest,
+            migration,
+            frozen_input_bytes,
+            authority,
+            _lock: lock,
         })
     }
 
@@ -184,12 +189,15 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
         &self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), CellSplitChildStateCasErrorV1> {
-        let expected_key = sha256(format!(
-            "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
-            self.plan_digest,
-            CellSplitExecutionStepV1::ChildStateMigration.index(),
-            intent.previous_receipt_digest,
-        ).as_bytes());
+        let expected_key = sha256(
+            format!(
+                "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
+                self.plan_digest,
+                CellSplitExecutionStepV1::ChildStateMigration.index(),
+                intent.previous_receipt_digest,
+            )
+            .as_bytes(),
+        );
         if intent.schema != "hepta.learning.cell-split.execution-owner.v1"
             || intent.step != CellSplitExecutionStepV1::ChildStateMigration
             || intent.owner_id != self.plan.owner_ids[1]
@@ -215,7 +223,8 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
         self.authority
             .verify_committed_artifact(&self.plan, &intent.previous_receipt_digest)
             .map_err(|e| CellSplitChildStateCasErrorV1::Denied(e.to_string()))?;
-        if self.authority
+        if self
+            .authority
             .current_parent_anchor(&self.plan)
             .map_err(|e| CellSplitChildStateCasErrorV1::Denied(e.to_string()))?
             != self.migration.parent_anchor()
@@ -226,14 +235,19 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
     }
 
     fn commit_path(&self, intent: &CellSplitExecutionIntentV1) -> PathBuf {
-        self.root.join(format!("migration-{}.json", intent.idempotency_key))
+        self.root
+            .join(format!("migration-{}.json", intent.idempotency_key))
     }
 
     fn child_path(
-        &self, index: usize, intent: &CellSplitExecutionIntentV1, digest: Digest32,
+        &self,
+        index: usize,
+        intent: &CellSplitExecutionIntentV1,
+        digest: Digest32,
     ) -> PathBuf {
         self.root.join(format!(
-            "child-{}-{index:02}-{digest}.q24", intent.idempotency_key
+            "child-{}-{index:02}-{digest}.q24",
+            intent.idempotency_key
         ))
     }
 
@@ -253,7 +267,8 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             }
             let payload_digest = Digest32::of_bytes(&payload);
             if secure_read(
-                &self.child_path(index, intent, payload_digest), MAX_CHILD_BYTES,
+                &self.child_path(index, intent, payload_digest),
+                MAX_CHILD_BYTES,
             )? != payload
             {
                 return Err(CellSplitChildStateCasErrorV1::Invalid);
@@ -278,12 +293,17 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             receipts.push(receipt);
         }
         let witness = Digest32::of_bytes(&canonical_json(&(
-            SCHEMA, &self.plan_digest, intent, self.migration.parent_anchor().sequence,
+            SCHEMA,
+            &self.plan_digest,
+            intent,
+            self.migration.parent_anchor().sequence,
             self.migration.parent_anchor().checkpoint_digest.to_string(),
-            self.migration.fence_digest().to_string(), &entries,
+            self.migration.fence_digest().to_string(),
+            &entries,
         ))?);
         let mut typed = self.migration.clone();
-        typed.record_payloads_durable(receipts.clone())
+        typed
+            .record_payloads_durable(receipts.clone())
             .map_err(|e| CellSplitChildStateCasErrorV1::Migration(e.to_string()))?;
         let batch = CellStateBatchReceiptV1::new(
             self.migration.operation_id().clone(),
@@ -292,9 +312,11 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             receipts.iter().map(|r| r.receipt_digest).collect(),
             witness,
         );
-        typed.commit_children(batch.clone())
+        typed
+            .commit_children(batch.clone())
             .map_err(|e| CellSplitChildStateCasErrorV1::Migration(e.to_string()))?;
-        let acknowledged = typed.acknowledge()
+        let acknowledged = typed
+            .acknowledge()
             .map_err(|e| CellSplitChildStateCasErrorV1::Migration(e.to_string()))?;
         Ok(ChildStateBatchCommitV1 {
             schema: SCHEMA.into(),
@@ -311,18 +333,24 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
     }
 
     fn read_manifest(
-        &self, intent: &CellSplitExecutionIntentV1,
+        &self,
+        intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<Vec<u8>>, CellSplitChildStateCasErrorV1> {
         self.binding(intent)?;
         match fs::symlink_metadata(self.commit_path(intent)) {
-            Ok(_) => Ok(Some(secure_read(&self.commit_path(intent), MAX_MANIFEST_BYTES)?)),
+            Ok(_) => Ok(Some(secure_read(
+                &self.commit_path(intent),
+                MAX_MANIFEST_BYTES,
+            )?)),
             Err(error) if error.kind() == ErrorKind::NotFound => Ok(None),
             Err(error) => Err(error.into()),
         }
     }
 
     fn verify_manifest(
-        &self, intent: &CellSplitExecutionIntentV1, bytes: &[u8],
+        &self,
+        intent: &CellSplitExecutionIntentV1,
+        bytes: &[u8],
     ) -> Result<bool, CellSplitChildStateCasErrorV1> {
         let recorded: ChildStateBatchCommitV1 = serde_json::from_slice(bytes)?;
         let expected = self.expected_manifest(intent)?;
@@ -336,10 +364,12 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
     type Error = CellSplitChildStateCasErrorV1;
 
     fn authorize_execute(
-        &mut self, intent: &CellSplitExecutionIntentV1,
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
         self.verify_live(intent)?;
-        self.authority.verify_final_use(&self.plan, intent)
+        self.authority
+            .verify_final_use(&self.plan, intent)
             .map_err(|e| CellSplitChildStateCasErrorV1::Denied(e.to_string()))
     }
 
@@ -362,17 +392,22 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         }
         for (index, child) in self.migration.children().iter().enumerate() {
             let path = self.child_path(
-                index, intent, CellStateMigrationV1::child_payload_digest(child)
+                index,
+                intent,
+                CellStateMigrationV1::child_payload_digest(child),
             );
             let mut options = fs::OpenOptions::new();
             options.write(true).create_new(true);
             #[cfg(unix)]
             {
                 use std::os::unix::fs::OpenOptionsExt as _;
-                options.mode(0o600).custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+                options
+                    .mode(0o600)
+                    .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
             }
             let file = options.open(&path)?;
-            let receipt = self.migration
+            let receipt = self
+                .migration
                 .persist_child_state(&child.child_cell_id, file)
                 .map_err(|e| CellSplitChildStateCasErrorV1::Migration(e.to_string()))?;
             if receipt.payload_digest != CellStateMigrationV1::child_payload_digest(child) {
@@ -384,35 +419,44 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         fs::File::open(&self.root)?.sync_all()?;
         let manifest = self.expected_manifest(intent)?;
         self.verify_live(intent)?;
-        self.authority.verify_final_use(&self.plan, intent)
+        self.authority
+            .verify_final_use(&self.plan, intent)
             .map_err(|e| CellSplitChildStateCasErrorV1::Denied(e.to_string()))?;
         write_private_new(&self.commit_path(intent), &canonical_json(&manifest)?)?;
         Ok(())
     }
 
     fn read_committed(
-        &mut self, intent: &CellSplitExecutionIntentV1,
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitOwnedEffectV1>, Self::Error> {
-        Ok(self.read_manifest(intent)?.map(|bytes| CellSplitOwnedEffectV1 {
-            owner_sequence: self.migration.parent_anchor().sequence,
-            owner_receipt_bytes: bytes,
-        }))
+        Ok(self
+            .read_manifest(intent)?
+            .map(|bytes| CellSplitOwnedEffectV1 {
+                owner_sequence: self.migration.parent_anchor().sequence,
+                owner_receipt_bytes: bytes,
+            }))
     }
 
     fn verify_current(
-        &mut self, intent: &CellSplitExecutionIntentV1, effect: &CellSplitOwnedEffectV1,
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+        effect: &CellSplitOwnedEffectV1,
     ) -> Result<bool, Self::Error> {
         self.verify_live(intent)?;
         // A persisted old batch never bypasses a revoked Selector/NDU
         // decision when the coordinator is about to advance the CNS stage.
-        self.authority.verify_final_use(&self.plan, intent)
+        self.authority
+            .verify_final_use(&self.plan, intent)
             .map_err(|e| CellSplitChildStateCasErrorV1::Denied(e.to_string()))?;
         let Some(bytes) = self.read_manifest(intent)? else {
             return Ok(false);
         };
-        Ok(effect.owner_sequence == self.migration.parent_anchor().sequence
-            && effect.owner_receipt_bytes == bytes
-            && self.verify_manifest(intent, &bytes)?)
+        Ok(
+            effect.owner_sequence == self.migration.parent_anchor().sequence
+                && effect.owner_receipt_bytes == bytes
+                && self.verify_manifest(intent, &bytes)?,
+        )
     }
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
@@ -427,15 +471,19 @@ fn frozen_migration_bytes(
     migration: &CellStateMigrationV1,
     plan_digest: &str,
 ) -> Result<Vec<u8>, CellSplitChildStateCasErrorV1> {
-    let children = migration.children().iter().map(|child| {
-        let encoded = encode_cell_state_v1(child);
-        (
-            child.child_cell_id.to_string(),
-            child.state_digest.to_string(),
-            sha256(&encoded),
-            encoded.len() as u64,
-        )
-    }).collect::<Vec<_>>();
+    let children = migration
+        .children()
+        .iter()
+        .map(|child| {
+            let encoded = encode_cell_state_v1(child);
+            (
+                child.child_cell_id.to_string(),
+                child.state_digest.to_string(),
+                sha256(&encoded),
+                encoded.len() as u64,
+            )
+        })
+        .collect::<Vec<_>>();
     canonical_json(&(
         "hepta.learning.cell-split.frozen-migration-input.v1",
         plan_digest,
@@ -445,12 +493,15 @@ fn frozen_migration_bytes(
         migration.split_digest().to_string(),
         migration.fence_digest().to_string(),
         children,
-    )).map_err(Into::into)
+    ))
+    .map_err(Into::into)
 }
 
 fn digest_shape(value: &str) -> bool {
     value.len() == 64
-        && value.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
         && value.bytes().any(|b| b != b'0')
 }
 
