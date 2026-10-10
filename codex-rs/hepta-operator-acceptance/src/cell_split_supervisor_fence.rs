@@ -57,6 +57,7 @@ pub struct CellSplitSupervisorLiveFenceV1 {
     pub new_writer_admission_open: bool,
     pub unknown_effect_count: u32,
     pub current_revision: u64,
+    pub challenge_nonce: String,
     pub signed_live_checkpoint_bytes: Vec<u8>,
 }
 
@@ -92,6 +93,7 @@ pub trait CellSplitSupervisorRuntimePortV1 {
         &mut self,
         supervisor_id: &str,
         domain_id: &str,
+        challenge_nonce: &str,
     ) -> Result<CellSplitSupervisorLiveFenceV1, Self::Error>;
 
     fn verify_live(&mut self, live: &CellSplitSupervisorLiveFenceV1)
@@ -213,7 +215,11 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
     fn checked_live(
         &mut self,
     ) -> Result<CellSplitSupervisorLiveFenceV1, CellSplitSupervisorFenceErrorV1> {
-        let live = self.port.read_live(&self.binding.supervisor_id, &self.binding.domain_id)
+        let nonce = rand::random::<[u8; 32]>()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let live = self.port.read_live(&self.binding.supervisor_id, &self.binding.domain_id, &nonce)
             .map_err(|e| CellSplitSupervisorFenceErrorV1::External(e.to_string()))?;
         if live.supervisor_id != self.binding.supervisor_id
             || live.domain_id != self.binding.domain_id
@@ -225,6 +231,7 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
             || !live.old_writer_admission_closed
             || !live.old_writer_result_fenced
             || !live.new_writer_admission_open
+            || live.challenge_nonce != nonce
             || live.unknown_effect_count != 0
             || live.current_revision == 0
             || live.signed_live_checkpoint_bytes.is_empty()
