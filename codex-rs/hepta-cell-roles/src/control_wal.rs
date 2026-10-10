@@ -11,7 +11,8 @@ use super::*;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 const WAL_MAGIC: &[u8] = b"HEPTA-CONTROL-SCOPE-WAL-V1\0";
 const WAL_FRAME_DOMAIN: &[u8] = b"hepta.control.scope-wal.frame.v1";
