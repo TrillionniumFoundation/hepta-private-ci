@@ -134,7 +134,8 @@ fn compatible_scope_lanes_coalesce_without_erasing_original_authority() {
 fn coalescing_cannot_mix_backend_generation_or_epoch() {
     let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
     q.enqueue(1, intent("a", "scopeA", 1, 1, 100)).unwrap();
-    q.enqueue(1, intent("generation", "scopeB", 2, 1, 100)).unwrap();
+    q.enqueue(1, intent("generation", "scopeB", 2, 1, 100))
+        .unwrap();
     let mut changed_epoch = intent("epoch", "scopeC", 1, 1, 100);
     changed_epoch.key.authority_epoch = 2;
     q.enqueue(1, changed_epoch).unwrap();
