@@ -57,6 +57,8 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: neuron-stem-qualification-matrix
-          path: |\n            stem-matrix.json\n            jina-v5-shadow-matrix.json
+          path: |
+            stem-matrix.json
+            jina-v5-shadow-matrix.json
           if-no-files-found: ignore
           retention-days: 14
