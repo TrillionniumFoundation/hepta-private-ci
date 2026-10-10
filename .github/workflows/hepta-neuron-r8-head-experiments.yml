@@ -1,0 +1,121 @@
+name: Hepta Neuron R8 shadow experiments (no promotion)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-shared-head-r8/**'
+      - '.github/workflows/hepta-neuron-r8-head-experiments.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-neuron-r8-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualification:
+    name: Synthetic-only regression (not real-model evidence)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      BASE: qualification/neuron-shared-head-r8
+    steps:
+      - name: Checkout exact immutable candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify candidate
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+
+      - name: Install pinned numeric dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/r8-venv"
+          "$RUNNER_TEMP/r8-venv/bin/python" -m pip install --disable-pip-version-check numpy==2.3.5
+
+      - name: Run negative and numeric regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$BASE"
+          "$RUNNER_TEMP/r8-venv/bin/python" -m unittest discover -v -p 'test_r8_experiments.py'
+
+      - name: Reproduce all head families with fixed synthetic split
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r8-results"
+          py="$RUNNER_TEMP/r8-venv/bin/python"
+          script="$BASE/r8_experiments.py"
+          "$py" "$script" synthetic-fixture --dir "$RUNNER_TEMP/r8-results"
+          # Realized counts are reported; parameter caps never imply forced padding.
+          for kind in linear film lowrank8 lowrank16 mlp swiglu; do
+            for cap in 2048 16384 65536 262144; do
+              "$py" "$script" train --train "$RUNNER_TEMP/r8-results/train.npz" \
+                --valid "$RUNNER_TEMP/r8-results/valid.npz" \
+                --kind "$kind" --budget "$cap" --steps 70 --seed 13 \
+                --output "$RUNNER_TEMP/r8-results/$kind-$cap.npz" \
+                --report "$RUNNER_TEMP/r8-results/$kind-$cap.metrics.json"
+            done
+          done
+          "$py" "$script" predict \
+            --model "$RUNNER_TEMP/r8-results/film-2048.npz" \
+            --input "$RUNNER_TEMP/r8-results/future_unlabelled.npz" \
+            --output "$RUNNER_TEMP/r8-results/candidate.json"
+          "$py" "$script" predict \
+            --model "$RUNNER_TEMP/r8-results/film-2048.npz" \
+            --input "$RUNNER_TEMP/r8-results/ood_unlabelled.npz" \
+            --output "$RUNNER_TEMP/r8-results/candidate-ood.json"
+          "$py" "$script" evaluate \
+            --candidate "$RUNNER_TEMP/r8-results/candidate.json" \
+            --baseline "$RUNNER_TEMP/r8-results/no_change.json" \
+            --outcomes "$RUNNER_TEMP/r8-results/future_outcomes.json" \
+            --candidate-ood "$RUNNER_TEMP/r8-results/candidate-ood.json" \
+            --baseline-ood "$RUNNER_TEMP/r8-results/no_change_ood.json" \
+            --ood-outcomes "$RUNNER_TEMP/r8-results/ood_outcomes.json" \
+            --output "$RUNNER_TEMP/r8-results/evaluator.json"
+          "$py" -c 'import json,os; p=json.load(open(os.environ["RUNNER_TEMP"]+"/r8-results/evaluator.json")); assert p["promotion"]=="BLOCKED" and p["synthetic_outcome"] and 0 <= p["ood_auroc"]["candidate"] <= 1'
+
+      - name: Run twelve input-reuse synthetic scale points and active-training variation
+        shell: bash
+        run: |
+          set -euo pipefail
+          py="$RUNNER_TEMP/r8-venv/bin/python"
+          script="$BASE/r8_experiments.py"
+          for cells in 64 256 1024 4096; do
+            for pattern in same partial distinct; do
+              "$py" "$script" scale --cells "$cells" --pattern "$pattern" \
+                --requests 512 --kind film --budget 2048 --seed 13 \
+                --output "$RUNNER_TEMP/r8-results/scale-$cells-$pattern.json"
+            done
+          done
+          "$py" "$script" scale --cells 4096 --pattern partial \
+            --active 0.25 --train-frequency 0.05 --cache-entries 32 \
+            --requests 512 --kind film --budget 2048 --seed 13 \
+            --output "$RUNNER_TEMP/r8-results/scale-4096-active-quarter-train.json"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain synthetic-only shadow observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-neuron-r8-synthetic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/r8-results
+          if-no-files-found: warn
+          retention-days: 7
