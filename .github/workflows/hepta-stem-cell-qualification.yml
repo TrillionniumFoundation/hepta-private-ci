@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - 'qualification/stem-cell-v1/**'
+      - 'codex-rs/hepta-infer-worker-host/src/model_worker*.rs'
       - '.github/workflows/hepta-stem-cell-qualification.yml'
 
 permissions:
@@ -33,6 +34,39 @@ jobs:
           python3 -m unittest discover -v -s qualification/stem-cell-v1 -p 'test_*.py'
           python3 -m json.tool qualification/stem-cell-v1/protocol.json > /dev/null
       - name: Check tested source remains unmodified
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  native-worker-batch:
+    name: Native Neuron worker batch contracts (L1, no tensor weights)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Record exact source identity
+        run: |
+          git rev-parse HEAD HEAD^{tree}
+          rustc --version
+          cargo --version
+      - name: Install project test harness
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Enforce Rust formatting
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-infer-worker-host -- --check
+      - name: Compile native worker contract
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-infer-worker-host --lib
+      - name: Execute native worker tests
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-infer-worker-host --lib
+      - name: Verify read-only source
+        if: always()
         run: |
           git diff --check
           git diff --exit-code
