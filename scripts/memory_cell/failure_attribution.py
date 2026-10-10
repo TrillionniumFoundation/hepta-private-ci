@@ -196,9 +196,7 @@ def _failure_stages(
     candidates = _candidate_sources(row)
     support = _target_sources(target)
     if answerable is True:
-        if selected is not None and (
-            support and candidates is not None and not support.intersection(candidates)
-        ):
+        if candidates is not None and support and not support.intersection(candidates):
             stages.append("retrieval_or_window")
         elif (
             selected is not None
@@ -209,7 +207,14 @@ def _failure_stages(
             stages.append("ranking")
         if row.get("answer", "").strip() == ABSTAIN:
             stages.append("abstention")
-        elif selected is not None and score is not None and score < 1.0 and not stages:
+        elif (
+            selected is not None
+            and candidates is not None
+            and support
+            and score is not None
+            and score < 1.0
+            and not stages
+        ):
             stages.append("generation")
     elif answerable is False and row.get("answer", "").strip() != ABSTAIN:
         stages.append("abstention")
@@ -311,7 +316,13 @@ def attribute(
                     and support
                 )
             if stage == "generation":
-                eligible = answerable is True and score is not None
+                eligible = (
+                    answerable is True
+                    and selected is not None
+                    and candidates is not None
+                    and support
+                    and score is not None
+                )
             if stage == "abstention":
                 eligible = answerable is not None
             if eligible:

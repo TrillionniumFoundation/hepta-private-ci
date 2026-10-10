@@ -81,7 +81,7 @@ class FailureAttributionTests(unittest.TestCase):
         self.assertEqual(by_arm["ranking"]["failure_stages"], ["ranking"])
         self.assertEqual(by_arm["generation"]["failure_stages"], ["generation"])
         self.assertEqual(by_arm["abstain"]["failure_stages"], ["abstention"])
-        self.assertEqual(by_arm["retrieval"]["failure_stages"], [])
+        self.assertEqual(by_arm["retrieval"]["failure_stages"], ["retrieval_or_window"])
         self.assertEqual(by_arm["negative"]["failure_stages"], [])
         self.assertEqual(by_arm["negative-wrong"]["failure_stages"], ["abstention"])
         self.assertIn("history_ingress", by_arm["failed"]["failure_stages"])
@@ -134,6 +134,7 @@ class FailureAttributionTests(unittest.TestCase):
         self.assertEqual(by_arm["receipt-only"]["failure_stages"], [])
         self.assertEqual(by_arm["missing-target-evidence"]["failure_stages"], [])
         self.assertEqual(result["stage_counts"]["ranking"]["eligible"], 0)
+        self.assertEqual(result["stage_counts"]["generation"]["eligible"], 0)
 
     def test_missing_or_duplicate_planned_attempts_reject(self):
         row = base()
@@ -155,7 +156,8 @@ class FailureAttributionTests(unittest.TestCase):
     def test_missing_support_does_not_masquerade_as_ranking_failure(self):
         row = base(answer="almost", f1=0.4)
         result = attribute([row], {"q": target(evidence=())})
-        self.assertEqual(result["records"][0]["failure_stages"], ["generation"])
+        self.assertEqual(result["records"][0]["failure_stages"], [])
+        self.assertEqual(result["stage_counts"]["generation"]["eligible"], 0)
 
 
 if __name__ == "__main__":
