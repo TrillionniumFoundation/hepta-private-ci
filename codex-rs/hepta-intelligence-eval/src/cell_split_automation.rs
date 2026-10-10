@@ -1334,6 +1334,16 @@ pub trait CellSplitAutomationExecutorV1 {
     fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error>;
 
     fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error>;
+
+    /// Read-only reconciliation with the authoritative durable tombstone
+    /// owner. This must not dispatch, retry or infer a successful effect.
+    /// None means the last known Retained state cannot advance safely.
+    fn observe_retirement(
+        &mut self,
+        _split: &CellSplitV1,
+    ) -> Result<Option<Digest32>, Self::Error> {
+        Ok(None)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -1379,10 +1389,29 @@ where
         journal.record_proposal(proposal.proposal_digest)?;
         owner.commit(&journal)?;
     }
+    if journal.current_state == CellSplitLifecycleStateV1::Retained {
+        // Reopened after the canary and possibly after a physical retirement.
+        // The one-shot retire effect is NEVER repeated: only the real owner
+        // can re-observe its committed tombstone and finish the ledger.
+        if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
+            let observed = executor
+                .observe_retirement(split)
+                .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?;
+            if let Some(tombstone) = observed {
+                if tombstone != split.retirement.tombstone_digest {
+                    return Err(CellSplitAutomationErrorV1::Binding(
+                        "reopened retirement tombstone receipt",
+                    ));
+                }
+                journal.retire(split)?;
+                owner.commit(&journal)?;
+            }
+        }
+        return Ok(outcome(&journal, proposal));
+    }
     if matches!(
         journal.current_state,
-        CellSplitLifecycleStateV1::Retained
-            | CellSplitLifecycleStateV1::Quarantined
+        CellSplitLifecycleStateV1::Quarantined
             | CellSplitLifecycleStateV1::Retired
             | CellSplitLifecycleStateV1::RolledBack
     ) {
@@ -1942,6 +1971,85 @@ mod tests {
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
         assert_eq!(journal.events.len(), 4);
+    }
+
+    #[test]
+    fn reopened_retirement_reconciles_only_a_real_matching_tombstone() {
+        struct ReconcileOnly {
+            observed: Option<Digest32>,
+        }
+        impl CellSplitAutomationExecutorV1 for ReconcileOnly {
+            type Error = &'static str;
+
+            fn evaluate(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                panic!("reopened retirement must not reevaluate")
+            }
+
+            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                panic!("reopened retirement must not rerun canary")
+            }
+
+            fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                panic!("reopened retirement must not reissue effect")
+            }
+
+            fn observe_retirement(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<Option<Digest32>, Self::Error> {
+                Ok(self.observed)
+            }
+        }
+
+        let split = split();
+        let proposal = proposal(&split);
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        // Simulate an unknown result after a successful canary, leaving only
+        // the durable Retained frontier as recoverable evidence.
+        let mut failed = Executor::default();
+        failed.evaluate_disposition = CellSplitEvaluationDispositionV1::EligibleForCanary;
+        let mut journal = CellSplitLifecycleJournalV1::proposed(&split).unwrap();
+        journal.record_proposal(proposal.proposal_digest).unwrap();
+        let evaluation = failed.evaluate(&split).unwrap();
+        journal.apply_evaluation(&split, &evaluation).unwrap();
+        journal.begin_canary(evaluation.binding().evaluation_receipt_digest).unwrap();
+        journal.finish_canary(&failed.canary(&split).unwrap()).unwrap();
+        owner.commit(&journal).unwrap();
+
+        let unchanged = run_cell_split_automation_v1(
+            &split,
+            &proposal,
+            &mut owner,
+            &mut ReconcileOnly { observed: None },
+        )
+        .unwrap();
+        assert_eq!(unchanged.state, CellSplitLifecycleStateV1::Retained);
+
+        assert!(matches!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut owner,
+                &mut ReconcileOnly { observed: Some(digest(34)) },
+            ),
+            Err(CellSplitAutomationErrorV1::Binding(
+                "reopened retirement tombstone receipt"
+            ))
+        ));
+        let recovered = run_cell_split_automation_v1(
+            &split,
+            &proposal,
+            &mut owner,
+            &mut ReconcileOnly {
+                observed: Some(split.retirement.tombstone_digest),
+            },
+        )
+        .unwrap();
+        assert_eq!(recovered.state, CellSplitLifecycleStateV1::Retired);
+        assert_eq!(owner.load(&split.split_id).unwrap().unwrap().events.len(), 5);
     }
 
     #[test]
