@@ -202,8 +202,8 @@ fn execution_plan() -> CellSplitExecutionPlanV1 {
         scope_digest: digest("parent-scope").to_string(),
         parent_generation: 7,
         child_generation: 8,
-        parent_artifact_digest: "11".repeat(32),
-        child_artifact_digest: "22".repeat(32),
+        parent_artifact_digest: sha256(b"real parent artifact"),
+        child_artifact_digest: sha256(b"real child artifact"),
         ndu_snapshot_digest: "33".repeat(32),
         route_fence_digest: "44".repeat(32),
         owner_ids: [
@@ -238,6 +238,7 @@ fn operation(plan: &CellSplitExecutionPlanV1) -> CellSplitExecutionIntentV1 {
 struct ObservedAuthority {
     live: Arc<Mutex<JournalAnchor>>,
     cas_good: Arc<AtomicBool>,
+    exact_cas_receipt: Arc<Mutex<String>>,
     final_use_good: Arc<AtomicBool>,
 }
 
@@ -246,6 +247,7 @@ impl ObservedAuthority {
         Self {
             live: Arc::new(Mutex::new(anchor)),
             cas_good: Arc::new(AtomicBool::new(true)),
+            exact_cas_receipt: Arc::new(Mutex::new("55".repeat(32))),
             final_use_good: Arc::new(AtomicBool::new(true)),
         }
     }
@@ -260,7 +262,9 @@ impl CellSplitMigrationAuthorityPortV1 for ObservedAuthority {
     fn verify_committed_artifact(
         &mut self, _plan: &CellSplitExecutionPlanV1, previous: &str,
     ) -> Result<(), Self::Error> {
-        if self.cas_good.load(Ordering::Acquire) && previous == "55".repeat(32) {
+        if self.cas_good.load(Ordering::Acquire)
+            && previous == *self.exact_cas_receipt.lock().expect("pinned CAS receipt")
+        {
             Ok(())
         } else {
             Err("CAS predecessor no longer committed")
