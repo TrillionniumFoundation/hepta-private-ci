@@ -1,18 +1,18 @@
 name: MemoryCell source-only write and fresh task reads
 on:
-  pull_request:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
     paths:
       - "scripts/memory_cell/experience_*.py"
       - "scripts/memory_cell/test_experience_*.py"
-      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_SOURCE_WRITE.md"
-      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_READ_POLICY.md"
       - ".github/workflows/hepta-memory-write-experiment.yml"
   workflow_dispatch:
 permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-source-write-${{ github.event.pull_request.number || github.ref }}
+  group: memory-source-write-1452
   cancel-in-progress: false
 jobs:
   format:
@@ -21,12 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
       - name: Required repository formatting
         env:
-          BASE: ${{ github.event.pull_request.base.sha || '78fdb0cf8537e3a84fc6e0a849707559c80881e8' }}
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
         run: |
           set -euo pipefail
           python3 -m venv /tmp/source-write-format
@@ -52,19 +52,19 @@ jobs:
   write-and-read:
     needs: format
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 330
     env:
       PYTHONPATH: scripts/memory_cell
       HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
       TOKENIZERS_PARALLELISM: "false"
       OMP_NUM_THREADS: "2"
       MKL_NUM_THREADS: "2"
-      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
       PLAN_SHA: 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Download the immutable controlled source corpus
         env:
@@ -132,8 +132,7 @@ jobs:
           from pathlib import Path
           from event_experience import SEED
           from native import digest
-          # The existing, preregistered generator used i=0..7 for calibration.
-          # No question, label or task-plan file is opened here.
+          # The original generator used i=0..7 for calibration; no task is opened.
           Path('/tmp/experience-result/policy-scopes.json').write_text(json.dumps([
               'controlled_' + digest((SEED, i))[:8] for i in range(8)
           ]))
@@ -150,6 +149,7 @@ jobs:
       - name: Preserve original responses, exact source, costs and failed runs
         if: always()
         run: |
+          set -euo pipefail
           mkdir -p /tmp/experience-result/source
           cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py /tmp/experience-result/source/
           git rev-parse HEAD > /tmp/experience-result/tested-commit.txt
