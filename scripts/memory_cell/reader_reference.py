@@ -50,9 +50,7 @@ def catalogue(info, revision):
         ):
             continue
         lfs = item.lfs
-        algorithm, value = (
-            ("sha256", lfs.sha256) if lfs else ("git-sha1", item.blob_id)
-        )
+        algorithm, value = ("sha256", lfs.sha256) if lfs else ("git-sha1", item.blob_id)
         if (
             name in entries
             or name in (".", "..")
@@ -77,7 +75,11 @@ def catalogue(info, revision):
 def verify_files(root, entries):
     for name, expected in entries.items():
         path = root / name
-        if path.is_symlink() or not path.is_file() or path.stat().st_size != expected["bytes"]:
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.stat().st_size != expected["bytes"]
+        ):
             raise ValueError("model file size/type differs from publisher")
         h = hashlib.sha256() if expected["algorithm"] == "sha256" else hashlib.sha1()
         if expected["algorithm"] == "git-sha1":
@@ -94,8 +96,10 @@ def verify_files(root, entries):
         if index.stat().st_size > 1024 * 1024:
             raise ValueError("tensor index too large")
         names = set(strict_json(index.read_text())["weight_map"].values())
-        if not names or not names.issubset(entries) or any(
-            not n.endswith(".safetensors") for n in names
+        if (
+            not names
+            or not names.issubset(entries)
+            or any(not n.endswith(".safetensors") for n in names)
         ):
             raise ValueError("unlisted tensor shard")
 
@@ -109,7 +113,10 @@ def stage(tier, output):
     started = time.perf_counter()
     info = HfApi().model_info(repo, revision=revision, files_metadata=True, token=False)
     entries = catalogue(info, revision)
-    write(output / "publisher.json", dict(repository=repo, revision=revision, files=entries))
+    write(
+        output / "publisher.json",
+        dict(repository=repo, revision=revision, files=entries),
+    )
     snapshot_download(
         repo,
         revision=revision,
@@ -124,17 +131,32 @@ def stage(tier, output):
         raise ValueError("unexpected staged model files")
     write(
         output / "inventory.json",
-        dict(tier=tier, repository=repo, revision=revision, inventory=inventory,
-             inventory_digest=digest(inventory), model_qualification=False),
+        dict(
+            tier=tier,
+            repository=repo,
+            revision=revision,
+            inventory=inventory,
+            inventory_digest=digest(inventory),
+            model_qualification=False,
+        ),
     )
     write(
         output / "stage.json",
-        dict(tier=tier, repository=repo, revision=revision,
-             inventory_sha256=hashlib.sha256((output / "inventory.json").read_bytes()).hexdigest(),
-             publisher_sha256=hashlib.sha256((output / "publisher.json").read_bytes()).hexdigest(),
-             seconds=time.perf_counter() - started,
-             model_file_bytes=sum(v["bytes"] for v in inventory.values()),
-             research_only=True, production_accepted=False),
+        dict(
+            tier=tier,
+            repository=repo,
+            revision=revision,
+            inventory_sha256=hashlib.sha256(
+                (output / "inventory.json").read_bytes()
+            ).hexdigest(),
+            publisher_sha256=hashlib.sha256(
+                (output / "publisher.json").read_bytes()
+            ).hexdigest(),
+            seconds=time.perf_counter() - started,
+            model_file_bytes=sum(v["bytes"] for v in inventory.values()),
+            research_only=True,
+            production_accepted=False,
+        ),
     )
 
 
@@ -154,14 +176,26 @@ class ReferenceReader(FrozenBundleReader):
             directory, local_files_only=True, trust_remote_code=False
         )
         self.model = AutoModelForCausalLM.from_pretrained(
-            directory, local_files_only=True, trust_remote_code=False,
-            use_safetensors=True, torch_dtype=torch.bfloat16,
-            low_cpu_mem_usage=True, attn_implementation="eager",
+            directory,
+            local_files_only=True,
+            trust_remote_code=False,
+            use_safetensors=True,
+            torch_dtype=torch.bfloat16,
+            low_cpu_mem_usage=True,
+            attn_implementation="eager",
         ).eval()
         self.model.requires_grad_(False)
         self.base_digest = frozen_digest(self.model)
-        self.profile = digest((SYSTEM, GENERATION, self.tokenizer.chat_template,
-                               PRECISION, "eager", "reader-reference-v1"))
+        self.profile = digest(
+            (
+                SYSTEM,
+                GENERATION,
+                self.tokenizer.chat_template,
+                PRECISION,
+                "eager",
+                "reader-reference-v1",
+            )
+        )
 
 
 def summarize(records):
@@ -171,9 +205,20 @@ def summarize(records):
         if key in keys or row["status"] not in ("succeeded", "failed", "unavailable"):
             raise ValueError("duplicate or invalid reference outcome")
         keys.add(key)
-        s = summaries.setdefault(row["arm"], dict(planned=0, succeeded=0, failed=0,
-            unavailable=0, input_tokens=0, output_tokens=0, read_seconds=0.0,
-            diagnostic_f1_sum=0.0, citation_markers=0))
+        s = summaries.setdefault(
+            row["arm"],
+            dict(
+                planned=0,
+                succeeded=0,
+                failed=0,
+                unavailable=0,
+                input_tokens=0,
+                output_tokens=0,
+                read_seconds=0.0,
+                diagnostic_f1_sum=0.0,
+                citation_markers=0,
+            ),
+        )
         s["planned"] += 1
         s[row["status"]] += 1
         if row["status"] != "succeeded":
@@ -216,7 +261,9 @@ def run(inputs_dir, model_dir, output, stage_sha):
     staged = strict_read(model_dir / "stage.json", stage_sha, 1024 * 1024)
     if (staged["repository"], staged["revision"]) != MODELS[staged["tier"]]:
         raise ValueError("undeclared reference model")
-    publisher = strict_read(model_dir / "publisher.json", staged["publisher_sha256"], 1024 * 1024)
+    publisher = strict_read(
+        model_dir / "publisher.json", staged["publisher_sha256"], 1024 * 1024
+    )
     if (publisher["repository"], publisher["revision"]) != MODELS[staged["tier"]]:
         raise ValueError("publisher/model mismatch")
     verify_files(model_dir / "reader", publisher["files"])
@@ -225,24 +272,53 @@ def run(inputs_dir, model_dir, output, stage_sha):
     pins = PINS | dict(inventory=staged["inventory_sha256"])
     inputs = DiagnosticInputs(paths, pins)
     output.mkdir()
-    write(output / "preregistered.json", dict(source_commit=commit,
-        input_pins=pins, tier=staged["tier"], stage_sha256=stage_sha,
-        generation=GENERATION, system=SYSTEM, dtype=PRECISION, attention="eager",
-        historical_float32_profile_comparable=False,
-        protocol="reader-reference-v1", optimization_permitted=False,
-        missing_reviews_remain_unavailable=True, production_accepted=False))
-    result = execute(inputs, model_dir / "reader", output / "diagnostic",
-                     reader_factory=ReferenceReader)
+    write(
+        output / "preregistered.json",
+        dict(
+            source_commit=commit,
+            input_pins=pins,
+            tier=staged["tier"],
+            stage_sha256=stage_sha,
+            generation=GENERATION,
+            system=SYSTEM,
+            dtype=PRECISION,
+            attention="eager",
+            historical_float32_profile_comparable=False,
+            protocol="reader-reference-v1",
+            optimization_permitted=False,
+            missing_reviews_remain_unavailable=True,
+            production_accepted=False,
+        ),
+    )
+    result = execute(
+        inputs,
+        model_dir / "reader",
+        output / "diagnostic",
+        reader_factory=ReferenceReader,
+    )
     from tensor_contract import strict_json
 
-    records = strict_json((output / "diagnostic/execution/scored-answers.json").read_text())
-    write(output / "reference-report.json", dict(source_commit=commit,
-        tier=staged["tier"], summaries=summarize(records), existing_screen=result,
-        stage_seconds=staged["seconds"], model_file_bytes=staged["model_file_bytes"],
-        training_seconds=0, extraction_and_index_seconds=None,
-        inherited_costs="original input artifact; not assumed zero",
-        model_change_is_not_memory_gain=True, selected_reader=None,
-        independent_sufficiency_certified=False, production_accepted=False))
+    records = strict_json(
+        (output / "diagnostic/execution/scored-answers.json").read_text()
+    )
+    write(
+        output / "reference-report.json",
+        dict(
+            source_commit=commit,
+            tier=staged["tier"],
+            summaries=summarize(records),
+            existing_screen=result,
+            stage_seconds=staged["seconds"],
+            model_file_bytes=staged["model_file_bytes"],
+            training_seconds=0,
+            extraction_and_index_seconds=None,
+            inherited_costs="original input artifact; not assumed zero",
+            model_change_is_not_memory_gain=True,
+            selected_reader=None,
+            independent_sufficiency_certified=False,
+            production_accepted=False,
+        ),
+    )
 
 
 if __name__ == "__main__":
