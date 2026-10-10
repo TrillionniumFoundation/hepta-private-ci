@@ -28,6 +28,16 @@ pub(crate) async fn is_tombstoned_tx(
     binding_revision: u64,
     generation: u64,
 ) -> Result<bool, MatrixDurableError> {
+    if crate::quarantine::is_scope_quarantined_tx(
+        transaction,
+        room_id,
+        binding_revision,
+        generation,
+    )
+    .await?
+    {
+        return Ok(true);
+    }
     let blocked: i64 = sqlx::query_scalar(
         "SELECT EXISTS(
             SELECT 1 FROM matrix_sync_mutations_v2
@@ -92,7 +102,7 @@ pub(crate) async fn is_room_replaced_tx(
     Ok(replaced == 1)
 }
 
-pub(crate) async fn active_dispatch_exists_tx(
+pub(crate) async fn dispatched_source_exists_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     mutation: &MatrixSyncMutationV2,
 ) -> Result<bool, MatrixDurableError> {
@@ -104,10 +114,10 @@ pub(crate) async fn active_dispatch_exists_tx(
     };
     let exists: i64 = sqlx::query_scalar(
         "SELECT EXISTS(
-            SELECT 1 FROM matrix_actionable_inbox_dispatches_v2
+            SELECT 1 FROM inbox_dispatches
             WHERE event_id = ? AND room_id = ?
               AND binding_revision = ? AND generation = ?
-              AND state IN ('begun', 'queued', 'admitted')
+              AND state IN ('begun', 'queued', 'admitted', 'completed')
          )",
     )
     .bind(target_event_id.as_str())
