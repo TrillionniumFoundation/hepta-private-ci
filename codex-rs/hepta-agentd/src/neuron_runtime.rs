@@ -5,6 +5,7 @@
 //! one durable nonce for every model invocation. Low-level neuron.tick remains
 //! a mechanism for independent qualification, never an Agentd serving port.
 
+use crate::neuron_ndu_read::{NduReadVerifierV1, SignedNduSnapshotReadV1};
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -28,6 +29,7 @@ where
     inference_control: P,
     final_use: Option<FinalUseAuthority>,
     neuron_owner_id: Option<StableId>,
+    ndu_read_verifier: Option<NduReadVerifierV1>,
 }
 
 /// The kernel-authority issuer signs this exact complete binding after
@@ -76,6 +78,7 @@ where
             inference_control,
             final_use: None,
             neuron_owner_id: None,
+            ndu_read_verifier: None,
         }
     }
 
@@ -86,12 +89,14 @@ where
         inference_control: P,
         neuron_owner_id: StableId,
         final_use: FinalUseAuthority,
+        ndu_read_verifier: NduReadVerifierV1,
     ) -> Self {
         Self {
             runtime,
             inference_control,
             final_use: Some(final_use),
             neuron_owner_id: Some(neuron_owner_id),
+            ndu_read_verifier: Some(ndu_read_verifier),
         }
     }
 
@@ -110,10 +115,17 @@ where
     pub fn tick_bound(
         &mut self,
         input: NeuronTickInputV1,
-        snapshot: &NduSnapshotRefV1,
-        authenticated_read_receipt_digest: Digest32,
+        signed_read: &SignedNduSnapshotReadV1,
         signed_grant: &SignedFinalUseGrant,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        let read_verifier = self
+            .ndu_read_verifier
+            .as_ref()
+            .ok_or(NeuronRuntimeError::InvalidInput)?;
+        let authenticated_read_receipt_digest = read_verifier
+            .verify(signed_read)
+            .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        let snapshot = &signed_read.snapshot;
         let authority = self
             .final_use
             .as_ref()

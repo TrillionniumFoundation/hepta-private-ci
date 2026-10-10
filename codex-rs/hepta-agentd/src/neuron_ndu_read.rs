@@ -72,12 +72,19 @@ impl SignedNduSnapshotReadV1 {
     }
 }
 
-#[derive(Debug)]
 pub struct NduReadVerifierV1 {
     trusted_owner_id: StableId,
     trusted_key: VerifyingKey,
     clock: Arc<dyn AuthorityClock>,
     frontier: Arc<dyn NduReadFrontierPortV1>,
+}
+
+impl fmt::Debug for NduReadVerifierV1 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("NduReadVerifierV1")
+            .field("trusted_owner_id", &self.trusted_owner_id)
+            .finish_non_exhaustive()
+    }
 }
 
 impl NduReadVerifierV1 {
