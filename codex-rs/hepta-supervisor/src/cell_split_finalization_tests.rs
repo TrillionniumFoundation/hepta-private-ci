@@ -172,12 +172,23 @@ fn actually_appends_retired_checkpoint_and_reopens_identical_receipt() {
         assert!(!original.old_writer_valid());
         assert!(original.new_writer_admission_open());
         assert_eq!(owner.read_retired().expect("real state"), Some(original.clone()));
+        let original_bytes = owner.read_retired_receipt_bytes()
+            .expect("original signed-record input").expect("committed bytes");
+        assert_eq!(original_bytes, original.canonical_receipt_bytes_v1().expect("record"));
+        let journal_file = fs::read(root.path().join("writer-handoff.log")).expect("disk");
+        let raw_last = journal_file.split(|byte| *byte == b'\n')
+            .rev().find(|record| !record.is_empty()).expect("last durable record");
+        assert_eq!(original_bytes, raw_last);
         assert_eq!(owner.finalize_once().expect("one original commit"), original);
     }
     let mut recovered = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
         file(&root), &minimum, binding(), auth
     ).expect("journal recovery after process shutdown");
-    assert_eq!(recovered.read_retired().expect("fresh readback"), Some(original));
+    assert_eq!(recovered.read_retired().expect("fresh readback"), Some(original.clone()));
+    assert_eq!(
+        recovered.read_retired_receipt_bytes().expect("recovered bytes"),
+        Some(original.canonical_receipt_bytes_v1().expect("canonical original"))
+    );
 }
 
 #[test]
