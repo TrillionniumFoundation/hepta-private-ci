@@ -145,10 +145,9 @@ class FrozenMemorySession:
         )
         ready = json.loads((self.directory / "READY.json").read_text())
         schema = self.state["schema"]
-        if (
-            ready != dict(snapshot_sha256=expected_snapshot, schema=schema)
-            or schema not in (SCHEMA, TRANSFER_SCHEMA)
-        ):
+        if ready != dict(
+            snapshot_sha256=expected_snapshot, schema=schema
+        ) or schema not in (SCHEMA, TRANSFER_SCHEMA):
             raise ValueError("uncommitted or incompatible memory snapshot")
         self.documents = tuple(
             Document(**(d | {"assets": tuple(d["assets"])}))
@@ -168,11 +167,9 @@ class FrozenMemorySession:
                 through=self.state["through"],
                 policy_roots=self.state["policy_roots"],
             )
-            if (
-                {r["identity"] for r in support} & set(self.originals)
-                or self.state["referenced_policy_source_bytes"]
-                != sum(r["bytes"] for r in support)
-            ):
+            if {r["identity"] for r in support} & set(self.originals) or self.state[
+                "referenced_policy_source_bytes"
+            ] != sum(r["bytes"] for r in support):
                 raise ValueError("policy support differs from committed references")
         elif "policy_support_sources" in self.state:
             raise ValueError("v2 cannot silently acquire transferred ancestry")
@@ -239,7 +236,9 @@ class FrozenMemorySession:
                     revoked,
                 )
                 if bundle.mode not in ("ranked", "coverage", "empty", "stream_policy"):
-                    raise ValueError("oracle/review projection is not an online selector")
+                    raise ValueError(
+                        "oracle/review projection is not an online selector"
+                    )
                 bundle.validate(
                     query,
                     self.originals,
@@ -309,7 +308,9 @@ class FrozenMemorySession:
                 or result.is_symlink()
                 or result.stat().st_size > MAX_RECEIPT
             ):
-                raise ValueError("missing/indeterminate result; recovery cannot regenerate")
+                raise ValueError(
+                    "missing/indeterminate result; recovery cannot regenerate"
+                )
             value = strict_read(result, expected_result_sha256, MAX_RECEIPT)
             if (
                 value.get("snapshot_sha256") != self.expected_snapshot

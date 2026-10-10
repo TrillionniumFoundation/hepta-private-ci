@@ -18,18 +18,30 @@ class PolicyAncestryTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name) / "session"
         self.documents = (
-            Document("test-doc", "test-root", "test", "s", "2024-01-01", "visible source"),
+            Document(
+                "test-doc", "test-root", "test", "s", "2024-01-01", "visible source"
+            ),
         )
         self.train = (
-            Document("train-doc", "train-root", "train", "s", "2023-12-01", "hidden training text"),
+            Document(
+                "train-doc",
+                "train-root",
+                "train",
+                "s",
+                "2023-12-01",
+                "hidden training text",
+            ),
         )
         self.q = Question("q", "family", "test", "What?", "2024-02-01")
 
     def frozen(self, **changes):
         options = dict(
-            through="2024-01-02", policy_bytes=b'{"weights":[1]}',
-            policy_roots={"train-root"}, policy_sources=self.train,
-            reader_identity=Reader.identity, source_commit="a" * 40,
+            through="2024-01-02",
+            policy_bytes=b'{"weights":[1]}',
+            policy_roots={"train-root"},
+            policy_sources=self.train,
+            reader_identity=Reader.identity,
+            source_commit="a" * 40,
         )
         options.update(changes)
         sha = freeze(self.root, self.documents, **options)
@@ -40,7 +52,9 @@ class PolicyAncestryTests(unittest.TestCase):
         self.assertEqual(session.state["schema"], SCHEMA)
         self.assertEqual(session.documents, self.documents)
         self.assertEqual(session.roots, {"train-root", "test-root"})
-        self.assertNotIn("hidden training text", (self.root / "snapshot.json").read_text())
+        self.assertNotIn(
+            "hidden training text", (self.root / "snapshot.json").read_text()
+        )
         seen = []
 
         def selector(q, docs, *args):
@@ -51,11 +65,20 @@ class PolicyAncestryTests(unittest.TestCase):
         result = session.answer(self.q, selector, reader, withdrawals=lambda: set())
         self.assertEqual(seen, list(self.documents))
         reopened = FrozenMemorySession(self.root, expected_snapshot=sha)
-        self.assertEqual(reopened.replay(self.q, withdrawals=lambda: set(),
-            expected_result_sha256=result["result_sha256"]), result)
+        self.assertEqual(
+            reopened.replay(
+                self.q,
+                withdrawals=lambda: set(),
+                expected_result_sha256=result["result_sha256"],
+            ),
+            result,
+        )
         with self.assertRaisesRegex(ValueError, "revoked snapshot"):
-            reopened.replay(self.q, withdrawals=lambda: {"train-root"},
-                expected_result_sha256=result["result_sha256"])
+            reopened.replay(
+                self.q,
+                withdrawals=lambda: {"train-root"},
+                expected_result_sha256=result["result_sha256"],
+            )
         self.assertEqual(reader.calls, 1)
 
     def test_ancestor_withdrawal_during_generation_never_publishes_success(self):
@@ -65,7 +88,11 @@ class PolicyAncestryTests(unittest.TestCase):
         reader.after = lambda: withdrawn.add("train-root")
         with self.assertRaisesRegex(ValueError, "revoked snapshot"):
             session.answer(self.q, select, reader, withdrawals=lambda: withdrawn)
-        result = json.loads((self.root / (digest((self.q.scope, self.q.identity)) + ".result.json")).read_text())
+        result = json.loads(
+            (
+                self.root / (digest((self.q.scope, self.q.identity)) + ".result.json")
+            ).read_text()
+        )
         self.assertEqual(result["status"], "failed")
         self.assertNotIn("answer", result)
         self.assertEqual(reader.calls, 1)
@@ -84,10 +111,19 @@ class PolicyAncestryTests(unittest.TestCase):
             self.assertFalse(self.root.exists())
 
     def test_references_are_exact_and_unrelated_withdrawal_does_not_deny(self):
-        entries = source_references(self.train, through="2024-01-02", policy_roots={"train-root"})
-        self.assertEqual(validate_support(entries, through="2024-01-02", policy_roots={"train-root"}), {"train-root"})
+        entries = source_references(
+            self.train, through="2024-01-02", policy_roots={"train-root"}
+        )
+        self.assertEqual(
+            validate_support(
+                entries, through="2024-01-02", policy_roots={"train-root"}
+            ),
+            {"train-root"},
+        )
         session, _ = self.frozen()
-        result = session.answer(self.q, select, Reader(), withdrawals=lambda: {"unrelated"})
+        result = session.answer(
+            self.q, select, Reader(), withdrawals=lambda: {"unrelated"}
+        )
         self.assertEqual(result["record"]["status"], "succeeded")
         for key, value in (("bytes", True), ("content_sha256", "wrong"), ("scope", "")):
             bad = [entries[0] | {key: value}]
