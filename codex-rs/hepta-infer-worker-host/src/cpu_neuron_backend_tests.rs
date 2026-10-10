@@ -74,7 +74,9 @@ fn native_cpu_batch_uses_one_matrix_pass_and_preserves_request_order() {
         request(&manifest, "first", [q, q / 2]),
         request(&manifest, "second", [-q / 2, q]),
     ];
-    let observed = driver.run_neuron_features_batch(&handle, &requests).unwrap();
+    let observed = driver
+        .run_neuron_features_batch(&handle, &requests)
+        .unwrap();
     assert_eq!(observed.len(), 2);
     assert_eq!(observed[0].request_id, "first");
     assert_eq!(observed[1].request_id, "second");
@@ -105,10 +107,13 @@ fn backend_rejects_unpinned_model_and_incompatible_batch_before_any_call() {
     ));
     assert_eq!(driver.native_batch_counters(), (0, 0));
     assert!(matches!(
-        driver.run_neuron_features(&DriverModelHandle {
-            opaque_id: "other".into(),
-            observed_memory_bytes: 0,
-        }, &valid),
+        driver.run_neuron_features(
+            &DriverModelHandle {
+                opaque_id: "other".into(),
+                observed_memory_bytes: 0,
+            },
+            &valid
+        ),
         Err(Error::ModelNotLoaded)
     ));
     driver.unload(handle).unwrap();
@@ -144,5 +149,8 @@ fn no_synthetic_or_generic_turn_execution_is_exposed() {
         reservation_maximum_tokens: 1,
         cancelled: false,
     };
-    assert!(matches!(driver.run(&handle, &request), Err(Error::DriverFailure(_))));
+    assert!(matches!(
+        driver.run(&handle, &request),
+        Err(Error::DriverFailure(_))
+    ));
 }

@@ -50,7 +50,9 @@ impl CpuNeuronWeightBundleV1 {
         encoder_digest: Digest32,
         head_digest: Digest32,
     ) -> Result<Self, Error> {
-        let elements = input_width.checked_mul(output_width).ok_or(Error::FeatureLimit)?;
+        let elements = input_width
+            .checked_mul(output_width)
+            .ok_or(Error::FeatureLimit)?;
         if input_width == 0
             || input_width > MAX_WIDTH
             || output_width == 0
@@ -59,7 +61,10 @@ impl CpuNeuronWeightBundleV1 {
             || elements != prediction_weights.len()
             || encoder_digest.is_zero()
             || head_digest.is_zero()
-            || drive_weights.iter().chain(&prediction_weights).any(|&x| !(-MAX_Q24..=MAX_Q24).contains(&x))
+            || drive_weights
+                .iter()
+                .chain(&prediction_weights)
+                .any(|&x| !(-MAX_Q24..=MAX_Q24).contains(&x))
         {
             return Err(Error::FeatureContract);
         }
@@ -166,10 +171,15 @@ impl CpuNeuronFeatureDriverV1 {
         for request in requests {
             if request.feature_vector_q24.len() != self.weights.input_width
                 || request.expected_output_width != self.weights.output_width
-                || Digest32::from_str(&request.encoder_digest).ok() != Some(self.weights.encoder_digest)
+                || Digest32::from_str(&request.encoder_digest).ok()
+                    != Some(self.weights.encoder_digest)
                 || Digest32::from_str(&request.head_digest).ok() != Some(self.weights.head_digest)
-                || Digest32::from_str(&request.weights_digest).ok() != Some(self.weights.weight_digest)
-                || request.feature_vector_q24.iter().any(|&x| !(-MAX_Q24..=MAX_Q24).contains(&x))
+                || Digest32::from_str(&request.weights_digest).ok()
+                    != Some(self.weights.weight_digest)
+                || request
+                    .feature_vector_q24
+                    .iter()
+                    .any(|&x| !(-MAX_Q24..=MAX_Q24).contains(&x))
             {
                 return Err(Error::FeatureContract);
             }
@@ -239,7 +249,8 @@ impl CpuNeuronFeatureDriverV1 {
         }
         if count > 1 {
             self.native_batch_calls = self.native_batch_calls.saturating_add(1);
-            self.native_batched_requests = self.native_batched_requests.saturating_add(count as u64);
+            self.native_batched_requests =
+                self.native_batched_requests.saturating_add(count as u64);
         }
         Ok(results)
     }
@@ -270,7 +281,9 @@ impl ModelDriver for CpuNeuronFeatureDriverV1 {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
-        Err(Error::DriverFailure("CPU neuron backend has no generic turn executor".into()))
+        Err(Error::DriverFailure(
+            "CPU neuron backend has no generic turn executor".into(),
+        ))
     }
 
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
@@ -287,7 +300,10 @@ impl NeuronFeatureDriver for CpuNeuronFeatureDriverV1 {
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
         let mut values = self.run_kernel(handle, std::slice::from_ref(request))?;
-        values.pop().map(|entry| entry.observation).ok_or(Error::FeatureContract)
+        values
+            .pop()
+            .map(|entry| entry.observation)
+            .ok_or(Error::FeatureContract)
     }
 
     fn run_neuron_features_batch(
