@@ -9,6 +9,8 @@ jobs:
     name: fleet sealed publication (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
+    permissions:
+      contents: write
     environment:
       name: bazel
       deployment: false
@@ -36,7 +38,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = bb200d54d420847ccfc892c039cbf54d3960a408
+          git merge-base --is-ancestor bb200d54d420847ccfc892c039cbf54d3960a408 HEAD
+          test "$(git diff --name-only bb200d54d420847ccfc892c039cbf54d3960a408 HEAD)" = .github/workflows/pon-baseline-repair-stage.yml
           git diff --exit-code
           python3 - <<'PY'
           import hashlib, json, os, pathlib, subprocess
@@ -191,13 +194,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          wrapper=()
-          native=()
+          wrapper=(--print-failed-action-summary --print-failed-test-logs)
+          native=(--test_output=all --test_arg=--test-threads=1)
           if test "$RUNNER_OS" = Windows; then
             wrapper+=(--windows-msvc-host-platform --remote-download-toplevel)
             native+=(--platforms=//:windows_x86_64_msvc)
           fi
-          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs "${wrapper[@]}" -- test "${native[@]}" --test_output=all --test_arg=--test-threads=1 --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-test.log"
+          ./.github/scripts/run-bazel-ci.sh "${wrapper[@]}" -- test "${native[@]}" --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-test.log"
           grep -E 'test result: ok\. [1-9][0-9]* passed; 0 failed; 0 ignored;' "$RUNNER_TEMP/baseline-repair/fleet-test.log"
           grep -F 'test release::copy_tests::unsealed_final_name_never_grants_admission_even_after_reopen ... ok' "$RUNNER_TEMP/baseline-repair/fleet-test.log"
       - name: Check complete strict native Fleet Bazel Clippy target
@@ -206,13 +209,43 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          wrapper=()
-          native=()
+          wrapper=(--print-failed-action-summary)
+          native=(--config=clippy)
           if test "$RUNNER_OS" = Windows; then
             wrapper+=(--windows-msvc-host-platform --remote-download-toplevel)
             native+=(--platforms=//:windows_x86_64_msvc)
           fi
-          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary "${wrapper[@]}" -- build "${native[@]}" --config=clippy --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-clippy.log"
+          ./.github/scripts/run-bazel-ci.sh "${wrapper[@]}" -- build "${native[@]}" --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-clippy.log"
+      - name: Store exact successful native candidate blobs without changing refs
+        if: success() && runner.os == 'macOS'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64,hashlib,json,os,pathlib,subprocess,urllib.request
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          index=json.loads((out/'candidate.json').read_text())
+          assert subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()==os.environ['GITHUB_SHA']
+          assert sorted(subprocess.check_output(['git','diff','--name-only']).decode().splitlines())==sorted(index)
+          stored={}
+          for name,item in index.items():
+              raw=(out/'candidate'/name).read_bytes()
+              assert pathlib.Path(name).read_bytes().replace(b'\r\n',b'\n')==raw
+              assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==item['candidate_blob']
+              assert hashlib.sha256(raw).hexdigest()==item['sha256']
+              request=urllib.request.Request(
+                  'https://api.github.com/repos/'+os.environ['GITHUB_REPOSITORY']+'/git/blobs',
+                  data=json.dumps({'content':base64.b64encode(raw).decode(),'encoding':'base64'}).encode(),
+                  headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
+                  method='POST')
+              with urllib.request.urlopen(request,timeout=60) as response:
+                  saved=json.load(response)
+              assert saved['sha']==item['candidate_blob']
+              stored[name]=saved['sha']
+          (out/'stored-blobs.json').write_text(json.dumps(stored,indent=2)+'\n')
+          PY
       - name: Retain success and failure without promoting staged source
         if: always()
         shell: bash
@@ -223,7 +256,7 @@ jobs:
           out.mkdir(exist_ok=True)
           (out/'source-after.txt').write_bytes(subprocess.check_output(['git','rev-parse','HEAD','HEAD^{tree}']))
           (out/'diff-after.patch').write_bytes(subprocess.check_output(['git','diff']))
-          (out/'SCOPE.txt').write_text('Staged fail-closed final-name sealing and canonical test fixture on exactbb200d54. All original Fleet tests, digests, allow/revoke/cold-owner gates, child seals, write-handle fsyncs and parent fsync retained; final directory is additionally synced after sealing. Writable named residue remains rejected and is never automatically repaired or overwritten. Candidate native results are not committed-source full baseline, physical power loss, model efficacy or independent adoption. No branch update, deployment, permission promotion, timeout widening or scientific acceptance.\n')
+          (out/'SCOPE.txt').write_text('Staged fail-closed final-name sealing and canonical test fixture on exactbb200d54. All original Fleet tests, digests, allow/revoke/cold-owner gates, child seals, write-handle fsyncs and parent fsync retained; final directory is additionally synced after sealing. Writable named residue remains rejected and is never automatically repaired or overwritten. Successful macOS test+lint may store exact immutable Git blobs only, never commits or refs. Candidate native results are not committed-source full baseline, physical power loss, model efficacy or independent adoption. No branch update, deployment, permission promotion, timeout widening or scientific acceptance.\n')
           with (out/'SHA256SUMS').open('w') as stream:
               for path in sorted(out.rglob('*')):
                   if path.is_file() and path.name!='SHA256SUMS':
