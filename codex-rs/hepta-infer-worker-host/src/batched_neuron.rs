@@ -212,10 +212,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         } else {
                             pending.request.feature_vector_q24 = pending.feature.as_slice().to_vec();
                             let start = Instant::now();
-                            let result = self.authority.claim(&pending.signed, &pending.binding)
+                            let result = FinalUseAuthority::claim(&self.authority, &pending.signed, &pending.binding)
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
                                 .and_then(|token| {
-                                    self.authority.with_verified_effect(
+                                    FinalUseAuthority::with_verified_effect(&self.authority,
                                         token, &pending.binding,
                                         || self.worker.run_neuron_features_receipt(
                                             now_ms, &pending.model_id, pending.request,

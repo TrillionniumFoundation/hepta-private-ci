@@ -116,10 +116,10 @@ where
         let binding = neuron_ndu_final_use_binding_v1(
             owner_id, &input, snapshot, authenticated_read_receipt_digest,
         )?;
-        let token = authority.claim(signed_grant, &binding)
+        let token = FinalUseAuthority::claim(authority, signed_grant, &binding)
             .map_err(|_| NeuronRuntimeError::InvalidInput)?;
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
-        authority.with_verified_effect(token, &binding, || {
+        FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
             self.runtime.tick_with_ndu_snapshot(
                 &mut model, input, snapshot, authenticated_read_receipt_digest,
             )
