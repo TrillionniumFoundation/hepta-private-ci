@@ -368,6 +368,20 @@ def cmd_evaluate(args):
             raise ValueError("prediction/outcome identity mismatch")
     a=_score(cr,labels)
     b=_score(br,labels)
+    negative_transfer="NOT_MEASURED"
+    if labels and all(isinstance(item.get("task"),str) and item["task"] for item in labels.values()):
+        task_set=sorted({row["task"] for row in labels.values()})
+        task_scores={}
+        for task in task_set:
+            keys=[key for key in labels if labels[key]["task"]==task]
+            if len(keys)<8:
+                raise ValueError("task negative-transfer estimate needs at least eight future samples per task")
+            scores_candidate=_score({k:cr[k] for k in keys},{k:labels[k] for k in keys})
+            scores_baseline=_score({k:br[k] for k in keys},{k:labels[k] for k in keys})
+            task_scores[task]={"future_rows":len(keys),"brier_delta":scores_candidate["brier"]-scores_baseline["brier"],
+                               "accuracy_delta":scores_candidate["accuracy"]-scores_baseline["accuracy"]}
+        degraded=sum(item["brier_delta"]>0 for item in task_scores.values())
+        negative_transfer={"task_count":len(task_scores),"tasks":task_scores,"degraded_task_count":degraded,"degraded_task_fraction":degraded/len(task_scores)}
     ood={"candidate":"NOT_MEASURED","no_change":"NOT_MEASURED"}
     candidate_ood=getattr(args,"candidate_ood",None)
     baseline_ood=getattr(args,"baseline_ood",None)
@@ -399,7 +413,7 @@ def cmd_evaluate(args):
              "no_change":auroc(np.array([v[1].max() for v in br.values()])*-1,np.array([v[1].max() for v in b_rows.values()])*-1)}
     # NDU requires separately measured outcomes/counterfactual support and formal
     # existing evaluator/selector. Classification accuracy is not NDU.
-    write_json(Path(args.output),{"schema":SCHEMA,"experiment":"future_window_independent_evaluator","candidate":a,"no_change":b,"delta_brier":a["brier"]-b["brier"],"delta_accuracy":a["accuracy"]-b["accuracy"],"future_outcomes_sha256":sha(Path(args.outcomes)),"candidate_predictions_sha256":sha(Path(args.candidate)),"baseline_predictions_sha256":sha(Path(args.baseline)),"ndu_gain":"NOT_MEASURED","ood_auroc":ood,"negative_transfer":"NOT_MEASURED","promotion":"BLOCKED","evidence_authenticated":False,"synthetic_outcome":bool(rows.get("SYNTHETIC",False)),"production_admitted":False})
+    write_json(Path(args.output),{"schema":SCHEMA,"experiment":"future_window_independent_evaluator","candidate":a,"no_change":b,"delta_brier":a["brier"]-b["brier"],"delta_accuracy":a["accuracy"]-b["accuracy"],"future_outcomes_sha256":sha(Path(args.outcomes)),"candidate_predictions_sha256":sha(Path(args.candidate)),"baseline_predictions_sha256":sha(Path(args.baseline)),"ndu_gain":"NOT_MEASURED","ood_auroc":ood,"negative_transfer":negative_transfer,"promotion":"BLOCKED","evidence_authenticated":False,"synthetic_outcome":bool(rows.get("SYNTHETIC",False)),"production_admitted":False})
 
 
 def cmd_compare_representations(args):
@@ -470,6 +484,9 @@ def cmd_scale(args):
         raise ValueError("head memory cap exceeded in allocation preflight")
     projection=rng.normal(0,0.05,(raw_dim,args.dim)).astype(np.float32)
     heads=[probe]+[Head(args.kind,args.dim,2,args.budget,args.seed+i) for i in range(1,args.cells)]
+    if args.kind.startswith("lowrank"):
+        for h in heads:
+            h.frozen["w0"]=probe.frozen["w0"]  # same immutable shared base tensor
     resident_weights=sum(sum(v.nbytes for v in h.p.values()) for h in heads)
     assert resident_weights==expected_head_bytes
     cache={}
@@ -529,7 +546,7 @@ def fixture(directory:Path, *, seed=13):
             np.savez_compressed(directory/f"{split}.npz",**data,y=y)
         else:
             np.savez_compressed(directory/"future_unlabelled.npz",**data)
-            events=[{"id":str(data["id"][i]),"group":str(data["group"][i]),"time":int(data["time"][i]),"label":int(y[i])} for i in range(n)]
+            events=[{"id":str(data["id"][i]),"group":str(data["group"][i]),"time":int(data["time"][i]),"label":int(y[i]),"task":f"synthetic-task-{(i//4)%2}"} for i in range(n)]
     write_json(directory/"future_outcomes.json",{"schema":SCHEMA,"window":"future","source":"independent_observation","rows":events,"SYNTHETIC":True})
     uniform=[{"id":e["id"],"group":e["group"],"time":e["time"],"probabilities":[0.5,0.5]} for e in events]
     write_json(directory/"no_change.json",{"schema":SCHEMA,"model_file_sha256":"no-change","train_groups":[],"valid_groups":[],"rows":uniform,"production_admitted":False})
