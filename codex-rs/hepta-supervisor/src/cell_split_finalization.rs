@@ -19,10 +19,14 @@ use crate::{
 pub struct CellSplitFinalizationBindingV1 {
     pub operation_id: StableId,
     pub domain_id: StableId,
+    pub source_writer: StableId,
+    pub target_writer: StableId,
     pub old_generation: Generation,
     pub new_generation: Generation,
     pub authority_epoch: u64,
     pub migration_plan_digest: Digest32,
+    pub schema_digest: Digest32,
+    pub rollback_predecessor_digest: Digest32,
     pub cns_cutover_receipt_digest: Digest32,
     pub successor_route_digest: Digest32,
     pub final_use_binding_digest: Digest32,
@@ -33,7 +37,9 @@ impl CellSplitFinalizationBindingV1 {
     #[must_use]
     pub fn retirement_evidence_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.supervisor.cell-split-retirement.v1\0".to_vec();
-        for identity in [&self.operation_id, &self.domain_id] {
+        for identity in [
+            &self.operation_id, &self.domain_id, &self.source_writer, &self.target_writer,
+        ] {
             let raw = identity.as_str().as_bytes();
             bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
             bytes.extend_from_slice(raw);
@@ -43,6 +49,8 @@ impl CellSplitFinalizationBindingV1 {
         bytes.extend_from_slice(&self.authority_epoch.to_be_bytes());
         for digest in [
             self.migration_plan_digest,
+            self.schema_digest,
+            self.rollback_predecessor_digest,
             self.cns_cutover_receipt_digest,
             self.successor_route_digest,
             self.final_use_binding_digest,
@@ -113,16 +121,22 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalFinalizerV1<
         let current = journal.checkpoint();
         if binding.authority_epoch == 0
             || binding.migration_plan_digest.is_zero()
+            || binding.schema_digest.is_zero()
+            || binding.rollback_predecessor_digest.is_zero()
             || binding.cns_cutover_receipt_digest.is_zero()
             || binding.successor_route_digest.is_zero()
             || binding.final_use_binding_digest.is_zero()
             || binding.old_generation >= binding.new_generation
             || current.plan.operation_id != binding.operation_id
             || current.plan.domain_id != binding.domain_id
+            || current.plan.source_writer != binding.source_writer
+            || current.plan.target_writer != binding.target_writer
             || current.plan.old_generation != binding.old_generation
             || current.plan.new_generation != binding.new_generation
             || current.plan.authority_epoch != binding.authority_epoch
             || current.plan.migration_plan_digest != binding.migration_plan_digest
+            || current.plan.schema_digest != binding.schema_digest
+            || current.plan.rollback_predecessor_digest != binding.rollback_predecessor_digest
         {
             return Err(CellSplitFinalizationErrorV1::InvalidBinding);
         }
