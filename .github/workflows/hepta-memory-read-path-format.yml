@@ -1,0 +1,53 @@
+name: MemoryCell temporary read-path formatter
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-read-path-format.yml'
+permissions:
+  contents: read
+jobs:
+  format-candidate:
+    if: github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Produce only an AST-equivalent separate review candidate
+        env:
+          BASE: bba04e2cd9c575023c0744c4942563141a6a26f1
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          names = ['reviewed_bundle', 'test_reviewed_bundle', 'memory_curriculum', 'test_memory_curriculum', 'frozen_memory_session', 'test_frozen_memory_session', 'frozen_session_probe', 'test_frozen_session_probe']
+          before = {str(Path('scripts/memory_cell', n+'.py')): ast.dump(ast.parse(Path('scripts/memory_cell', n+'.py').read_text())) for n in names}
+          Path('/tmp/read-path-ast.json').write_text(json.dumps(before))
+          PY
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/read-path-ast.json').read_text())
+          changed = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
+          if set(changed) - set(before):
+              raise ValueError('out-of-scope formatter change')
+          for path, original in before.items():
+              if ast.dump(ast.parse(Path(path).read_text())) != original:
+                  raise ValueError('formatter changed executable AST')
+          subprocess.run(['git','add','--',*changed], check=True) if changed else None
+          PY
+          git rm .github/workflows/hepta-memory-read-path-format.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format reviewed read path and remove temporary formatter'
+          git push origin "HEAD:refs/heads/codex/memory-read-path-format-${GITHUB_RUN_ID}"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
