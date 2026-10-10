@@ -346,7 +346,6 @@ fn post_open_ledger_tampering_cannot_dispatch_a_successor() {
     assert_eq!(state.borrow().executions, 1);
 }
 
-
 #[test]
 fn live_completion_requires_all_real_owner_receipts() {
     let root = private_tempdir();
