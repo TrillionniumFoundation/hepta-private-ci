@@ -29,7 +29,11 @@ python r8_experiments.py predict --model /results/head.npz \
   --input /data/future_unlabelled.npz --output /results/heldout_predictions.json
 python r8_experiments.py evaluate --candidate /results/heldout_predictions.json \
   --baseline /frozen/no_change_predictions.json \
-  --outcomes /private_evaluator/future_outcomes.json --output /results/future.json
+  --outcomes /private_evaluator/future_outcomes.json \\
+  --candidate-ood /results/candidate_ood.json \\
+  --baseline-ood /frozen/no_change_ood.json \\
+  --ood-outcomes /private_evaluator/ood_outcomes.json \\
+  --output /results/future.json
 ```
 
 Train `linear`, `film`, `lowrank8`, `lowrank16`, `mlp`, `swiglu` at
@@ -39,8 +43,10 @@ training **steps** and independently match compute/time separately; FLOPs are
 not automatically matched by equal steps. Train, validation and future episode
 groups and future timestamps must be disjoint. Training NEVER reads hidden
 future labels, and evaluation never writes the model. Brier, ECE, accuracy and
-NLL are reported. True NDU delta, OOD AUROC and negative transfer remain blocked
-until observed evidence is supplied by existing independent owners.
+NLL are reported. OOD AUROC is computed only when the evaluator receives paired ID/OOD
+predictions and a separate independent-observation OOD manifest; a synthetic
+fixture tests just the calculation. Authentic OOD claims, true NDU delta and
+negative transfer remain blocked until independent evidence is supplied.
 
 ## Experiment 02: external frozen-encoder/teacher comparison
 
@@ -102,8 +108,8 @@ python -m unittest -v test_r8_experiments.py
 
 All `synthetic-fixture` data and results must be marked **synthetic**, must
 never be substituted for the original Laya arm or independent NDU benefit, and
-cannot qualify any production release. The built-in `no_change.json` is a
-synthetic uniform-probability baseline, **not** the user's deployed Cell policy.
+cannot qualify any production release. The built-in `no_change.json` and `no_change_ood.json` are
+synthetic uniform-probability baselines, **not** the user's deployed Cell policy.
 A real experiment must freeze the actual incumbent policy before candidate
 training begins and bind it to the same evaluator windows.
 
