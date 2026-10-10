@@ -1,6 +1,8 @@
 use super::*;
 
 use std::collections::BTreeSet;
+use std::sync::{Arc, Mutex};
+use codex_hepta_types::{PhaseMetricEventV1, PhaseMetricKindV1, PhaseMetricSinkErrorV1, PhaseMetricSinkV1};
 
 use codex_hepta_types::CellBundleBindingV1;
 use codex_hepta_types::CellBundleInheritanceV1;
@@ -54,6 +56,16 @@ use crate::cns_route_digest_v1;
 use crate::cns_route_port_binding_digest_v1;
 use crate::compiled_body_graph_digest_v2;
 use crate::encode_compiled_body_graph_v2;
+
+#[derive(Debug, Default)]
+struct CapturedCnsMetrics(Mutex<Vec<PhaseMetricEventV1>>);
+
+impl PhaseMetricSinkV1 for CapturedCnsMetrics {
+    fn record(&self, event: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1> {
+        self.0.lock().unwrap().push(event);
+        Ok(())
+    }
+}
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid test identity")
@@ -378,8 +390,11 @@ fn cutover_fences_parent_and_emits_child_dispatch_receipt() {
     ];
     let split = split(&predecessor, &parent_route, &successor, &child_routes);
     let old_route = parent_route.clone();
+    let metric_sink = Arc::new(CapturedCnsMetrics::default());
     let mut controller =
-        CellSplitRouteControllerV1::new(predecessor, split.clone(), parent_route).unwrap();
+        CellSplitRouteControllerV1::new(predecessor, split.clone(), parent_route).unwrap()
+            .with_metrics_sink(metric_sink.clone());
+    assert!(controller.production_metrics_ready());
     controller.start_all().unwrap();
     let (_, parent_receipt) = controller
         .dispatch_parent_once(&old_route, b"before")
@@ -391,6 +406,11 @@ fn cutover_fences_parent_and_emits_child_dispatch_receipt() {
     assert_eq!(controller.phase(), CellSplitRoutePhaseV1::ChildrenActive);
     assert_eq!(controller.cns_latency_observations().observations, 1);
     assert_eq!(controller.cns_latency_observations().failures, 0);
+    let observed = metric_sink.0.lock().unwrap();
+    assert_eq!(observed.len(), 1);
+    assert_eq!(observed[0].phase, PhaseMetricKindV1::Cns);
+    assert!(observed[0].succeeded);
+    drop(observed);
     let fence = controller.route_fence_receipt().cloned().unwrap();
     assert_eq!(fence.parent_route_digest, cns_route_digest_v1(&old_route));
     assert_eq!(

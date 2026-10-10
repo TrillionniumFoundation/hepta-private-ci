@@ -1141,6 +1141,16 @@ mod tests {
     use codex_hepta_types::CellRoleV1;
     use codex_hepta_types::CellUpdateModeV1;
 
+    #[derive(Debug, Default)]
+    struct CapturedOwnerMetrics(std::sync::Mutex<Vec<PhaseMetricEventV1>>);
+
+    impl PhaseMetricSinkV1 for CapturedOwnerMetrics {
+        fn record(&self, event: PhaseMetricEventV1) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            self.0.lock().unwrap().push(event);
+            Ok(())
+        }
+    }
+
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("id")
     }
@@ -1205,7 +1215,10 @@ mod tests {
     #[test]
     fn cas_write_load_and_revocation_are_fail_closed() {
         let key = SigningKey::from_bytes(&[7; 32]);
-        let owner = ArtifactCasOwnerV1::new(id("artifact.owner"), key.clone()).expect("owner");
+        let metric_sink = Arc::new(CapturedOwnerMetrics::default());
+        let owner = ArtifactCasOwnerV1::new(id("artifact.owner"), key.clone())
+            .expect("owner").with_metrics_sink(metric_sink.clone());
+        assert!(owner.production_metrics_ready());
         let manifest = crate::ArtifactManifest {
             artifact_id: id("artifact.payload"),
             kind: crate::ArtifactKind::Model,
@@ -1270,6 +1283,12 @@ mod tests {
         assert_eq!(metrics.cas.failures, 0);
         assert_eq!(metrics.signature.observations, 3);
         assert_eq!(metrics.signature.failures, 0);
+        let captured = metric_sink.0.lock().unwrap();
+        assert_eq!(captured.len(), 5);
+        assert_eq!(captured.iter().filter(|e| e.phase == PhaseMetricKindV1::Cas).count(), 2);
+        assert_eq!(captured.iter().filter(|e| e.phase == PhaseMetricKindV1::Signature).count(), 3);
+        assert!(captured.iter().all(|e| e.succeeded));
+        drop(captured);
         std::fs::remove_dir_all(root_path).expect("cleanup");
     }
 
