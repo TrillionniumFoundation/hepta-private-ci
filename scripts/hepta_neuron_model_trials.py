@@ -225,3 +225,287 @@ def run_laya(manifest, rows, arm, artifact_dir, weights_file, device, sdk_digest
         "sdk_tree_sha256": sdk_digest, "artifact_tree_sha256": model["artifact_tree_sha256"],
         "weights_file": str(weight), "native_context": native_context, "native_head_budget": native_head,
         "effective_context": max_len, "effective_head_budget": 192}
+
+
+def make_head(torch, arm, d, out, hidden):
+    nn = torch.nn
+    if arm == "linear":
+        return nn.Linear(d, out)
+    if arm == "mlp":
+        return nn.Sequential(nn.Linear(d, hidden["mlp"]), nn.GELU(), nn.Linear(hidden["mlp"], out))
+    if arm == "swiglu":
+        class SwiGLU(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.gate = nn.Linear(d, hidden["swiglu"])
+                self.value = nn.Linear(d, hidden["swiglu"])
+                self.readout = nn.Linear(hidden["swiglu"], out)
+
+            def forward(self, x):
+                return self.readout(torch.nn.functional.silu(self.gate(x)) * self.value(x))
+        return SwiGLU()
+    raise InvalidTrial("unknown head")
+
+
+def run_head(manifest, rows, arm, device, artifact_out):
+    require(arm in ARMS["heads"] and manifest["family"] == "heads", "wrong head arm")
+    import torch
+    from safetensors.torch import save_file
+    h = manifest["head"]
+    d, w = h["input_dimension"], h["state_width"]
+    expected, hidden = parameter_budget(d, w)
+    require(manifest["parameter_cap"] == expected["linear"], "head cap must equal linear baseline")
+    require(expected[arm] >= .99 * manifest["parameter_cap"], "candidate too small for matched budget")
+    require(all(type(h.get(k)) is int and h[k] > 0 for k in ("seed", "epochs", "batch_size")),
+            "training configuration is incomplete")
+    require(type(h.get("learning_rate")) in (float, int) and 0 < h["learning_rate"] <= .1,
+            "invalid learning rate")
+    torch.manual_seed(h["seed"])
+    torch.use_deterministic_algorithms(True)
+    if device.startswith("cuda"):
+        torch.cuda.manual_seed_all(h["seed"])
+    network = make_head(torch, arm, d, 2 * w, hidden).to(device)
+    nparams = sum(p.numel() for p in network.parameters())
+    require(nparams == expected[arm] and nparams <= manifest["parameter_cap"], "parameter mismatch")
+    train = [r for r in rows if r["split"] == "train"]
+    x = torch.tensor([r["features_q24"] for r in train], dtype=torch.float32, device=device) / Q24
+    y = torch.tensor([r["target_q24"] for r in train], dtype=torch.float32, device=device) / Q24
+    opt = torch.optim.AdamW(network.parameters(), lr=h["learning_rate"], weight_decay=0.01)
+    network.train()
+    start_training = time.perf_counter()
+    for epoch in range(h["epochs"]):
+        generator = torch.Generator().manual_seed(h["seed"] + epoch)
+        order = torch.randperm(len(train), generator=generator).tolist()
+        for start in range(0, len(order), h["batch_size"]):
+            ids = order[start:start + h["batch_size"]]
+            opt.zero_grad(set_to_none=True)
+            loss = torch.nn.functional.mse_loss(network(x[ids]), y[ids])
+            require(bool(torch.isfinite(loss)), "nonfinite training loss")
+            loss.backward()
+            opt.step()
+    if device.startswith("cuda"):
+        torch.cuda.synchronize()
+    training_seconds = time.perf_counter() - start_training
+    network.eval()
+    save_path = Path(artifact_out)
+    require(save_path.is_absolute() and not save_path.exists() and save_path.suffix == ".safetensors",
+            "new absolute safetensors path required")
+    save_file({k: v.detach().cpu().contiguous() for k, v in network.state_dict().items()}, str(save_path))
+    weight_sha = sha_file(save_path)
+    observations = []
+    with torch.no_grad():
+        for row in rows:
+            if row["split"] not in EVAL_SPLITS:
+                continue
+            start = time.perf_counter_ns()
+            values = torch.tensor(row["features_q24"], dtype=torch.float32, device=device).unsqueeze(0) / Q24
+            result = network(values).clamp(-8, 8)
+            if device.startswith("cuda"):
+                torch.cuda.synchronize()
+            elapsed = (time.perf_counter_ns() - start) / 1e6
+            pred = torch.round(result.cpu()[0] * Q24).to(torch.int64).tolist()
+            observations.append({"id": row["id"], "split": row["split"],
+                                 "prediction_q24": pred, "latency_ms": elapsed})
+    return nparams, weight_sha, observations, {"torch": torch.__version__,
+                                                "training_seconds": training_seconds,
+                                                "optimizer": "AdamW", "weight_decay": .01}
+
+
+def percentile(values, fraction):
+    return sorted(values)[max(0, math.ceil(fraction * len(values)) - 1)]
+
+
+def metrics(rows, observations, family):
+    by_id = {r["id"]: r for r in rows if r["split"] in EVAL_SPLITS}
+    require(len(observations) == len(by_id) and len({x["id"] for x in observations}) == len(by_id),
+            "missing or duplicate prediction")
+    summary = {}
+    for split in EVAL_SPLITS:
+        batch = []
+        for item in observations:
+            require(item["id"] in by_id and item["split"] == by_id[item["id"]]["split"],
+                    "prediction identity/split drift")
+            if item["split"] == split:
+                batch.append((by_id[item["id"]], item))
+        require(bool(batch), "missing evaluation window")
+        latencies = [b["latency_ms"] for _, b in batch]
+        require(all(type(t) in (int, float) and math.isfinite(t) and t >= 0 for t in latencies),
+                "invalid latency sample")
+        result = {"count": len(batch), "p50_ms": percentile(latencies, .5),
+                  "p95_ms": percentile(latencies, .95), "p99_ms": percentile(latencies, .99)}
+        if family != "heads":
+            bs, correct, bins, accepted, ood_count = [], [], [[] for _ in range(10)], 0, 0
+            for source, pred in batch:
+                keys = list(source["question"]["criteria"])
+                p = pred["probabilities"]
+                require(isinstance(p, list) and len(p) == len(keys) and
+                        all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 1 for v in p)
+                        and abs(sum(p) - 1) <= .001, "invalid probabilities")
+                p = [v / sum(p) for v in p]
+                label = keys.index(source["gold"])
+                bs.append(sum((v - (i == label)) ** 2 for i, v in enumerate(p)))
+                choice = max(range(len(p)), key=p.__getitem__)
+                win = int(choice == label)
+                correct.append(win)
+                confidence = max(p)
+                bins[min(9, int(confidence * 10))].append((confidence, win))
+                if source["is_ood"]:
+                    ood_count += 1
+                    accepted += int(confidence >= .8)
+            cohort_scores = {}
+            for field in ("language", "domain"):
+                labels = sorted({source[field] for source, _ in batch})
+                cohort_scores[field] = {
+                    label: {
+                        "count": sum(source[field] == label for source, _ in batch),
+                        "accuracy": statistics.mean(int(max(range(len(pred["probabilities"])),
+                               key=pred["probabilities"].__getitem__) ==
+                               list(source["question"]["criteria"]).index(source["gold"]))
+                               for source, pred in batch if source[field] == label),
+                    } for label in labels
+                }
+            result.update({"cohorts": cohort_scores,
+                           "accuracy": statistics.mean(correct), "brier_multiclass": statistics.mean(bs),
+                           "ece10": sum(len(b) * abs(statistics.mean(x for x, _ in b) -
+                                                      statistics.mean(y for _, y in b)) for b in bins if b) / len(batch),
+                           "ood_samples": ood_count,
+                           "ood_false_accept_at_0_8": accepted / ood_count if ood_count else None})
+        else:
+            squares, absolute = [], []
+            for source, pred in batch:
+                p = pred["prediction_q24"]
+                require(isinstance(p, list) and len(p) == len(source["target_q24"]) and
+                        all(type(v) is int and abs(v) <= 8 * Q24 for v in p), "invalid q24 output")
+                for a, b in zip(p, source["target_q24"]):
+                    delta = (a - b) / Q24
+                    squares.append(delta * delta)
+                    absolute.append(abs(delta))
+            result.update({"mse": statistics.mean(squares), "mae": statistics.mean(absolute)})
+        summary[split] = result
+    return summary
+
+
+def compare(manifest, rows, packets, baseline_sha):
+    family = manifest["family"]
+    require(set(packets) == set(ARMS[family]) and is_sha(baseline_sha), "complete arms/frozen baseline required")
+    baseline_arm = ARMS[family][0]
+    require(sha_file(packets[baseline_arm]) == baseline_sha, "no-change baseline receipt changed")
+    receipts = {arm: read_json(file) for arm, file in packets.items()}
+    ids = {r["id"] for r in rows if r["split"] in EVAL_SPLITS}
+    results = {}
+    for arm, receipt in receipts.items():
+        require(receipt.get("schema") == SCHEMA and receipt.get("family") == family and
+                receipt.get("arm") == arm and receipt.get("source_sha") == manifest["source_sha"] and
+                receipt.get("dataset_sha256") == manifest["dataset_sha256"] and
+                receipt.get("host_profile_digest") == manifest["host_profile_digest"],
+                "model/dataset/host identity drift")
+        if family != "heads":
+            model = manifest.get("models", {}).get(arm, {})
+            require(receipt.get("model_id") == MODEL_IDS[arm] == model.get("model_id") and
+                    receipt.get("model_revision") == model.get("revision") and
+                    receipt.get("weights_sha256") == model.get("weights_sha256") and
+                    receipt.get("runtime", {}).get("artifact_tree_sha256") == model.get("artifact_tree_sha256"),
+                    "model identity, bytes or revision drift")
+        require(type(receipt.get("parameters")) is int and 0 < receipt["parameters"] <= manifest["parameter_cap"],
+                "model violates parameter cap")
+        seen = receipt.get("observations")
+        require(isinstance(seen, list) and {x.get("id") for x in seen} == ids,
+                "different attempted cases across models")
+        results[arm] = metrics(rows, seen, family)
+    require(len({receipts[a].get("device") for a in ARMS[family]}) == 1,
+            "arms used different compute devices")
+    if family == "heads":
+        params = [receipts[a]["parameters"] for a in ARMS[family]]
+        require(min(params) >= .99 * max(params), "head arms not within 1% parameter budget")
+    if family == "decisions":
+        require(abs(receipts["laya"]["parameters"] - receipts["typed"]["parameters"]) <=
+                .01 * receipts["laya"]["parameters"], "421M comparison has unmatched parameters")
+    transitions = {}
+    for candidate in ARMS[family][1:]:
+        transitions[candidate] = {}
+        base = {x["id"]: x for x in receipts[baseline_arm]["observations"]}
+        new = {x["id"]: x for x in receipts[candidate]["observations"]}
+        for split in EVAL_SPLITS:
+            harmed, eligible = 0, 0
+            for case in (r for r in rows if r["split"] == split):
+                old, fresh = base[case["id"]], new[case["id"]]
+                if family == "heads":
+                    def error(p):
+                        return sum((a - b) ** 2 for a, b in zip(p, case["target_q24"]))
+                    eligible += 1
+                    harmed += int(error(fresh["prediction_q24"]) > error(old["prediction_q24"]))
+                else:
+                    options = list(case["question"]["criteria"])
+                    if options[max(range(len(options)), key=lambda i: old["probabilities"][i])] == case["gold"]:
+                        eligible += 1
+                        harmed += int(options[max(range(len(options)), key=lambda i: fresh["probabilities"][i])] != case["gold"])
+            transitions[candidate][split] = {"negative_transfer_rate": harmed / eligible if eligible else None,
+                                             "at_risk_cases": eligible}
+    return {"schema": SCHEMA, "family": family, "diagnostic_comparison": True,
+            "results": results, "negative_transfer": transitions,
+            "baseline_sha256": baseline_sha,
+            "production_evidence_verified": False, "ndu_selection_authorized": False,
+            "promotion_authorized": False,
+            "blockers": ["independent evaluator/holdout signature absent",
+                         "NDU utility and future-window retention not independently attested",
+                         "actual target-host deployment/canary and recovery not attested"]}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("mode", choices=("run", "compare"))
+    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--dataset", type=Path, required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--arm", choices=tuple({v for arms in ARMS.values() for v in arms}))
+    parser.add_argument("--device", default="cpu")
+    parser.add_argument("--artifact-dir", type=Path)
+    parser.add_argument("--weights-file", type=Path, default=Path("model.safetensors"))
+    parser.add_argument("--sdk-sha256")
+    parser.add_argument("--checkpoint-out", type=Path)
+    parser.add_argument("--receipt", action="append", default=[], help="arm=absolute-file-path")
+    parser.add_argument("--baseline-sha256")
+    args = parser.parse_args()
+    try:
+        manifest, rows = load_inputs(args.manifest, args.dataset)
+        if args.mode == "compare":
+            require(args.baseline_sha256 is not None, "baseline sha required")
+            pairs = [a.split("=", 1) for a in args.receipt]
+            require(all(len(p) == 2 for p in pairs), "expected arm=path")
+            data = compare(manifest, rows, {arm: path for arm, path in pairs}, args.baseline_sha256)
+        else:
+            require(args.arm in ARMS[manifest["family"]], "invalid arm for family")
+            started_wall = time.perf_counter()
+            started_cpu = time.process_time()
+            if manifest["family"] == "heads":
+                require(args.checkpoint_out is not None, "head checkpoint-out required")
+                parameters, weights, observations, runtime = run_head(
+                    manifest, rows, args.arm, args.device, args.checkpoint_out)
+            else:
+                require(args.artifact_dir is not None and args.sdk_sha256 is not None,
+                        "pinned local model and SDK required")
+                parameters, weights, observations, runtime = run_laya(
+                    manifest, rows, args.arm, args.artifact_dir,
+                    args.weights_file, args.device, args.sdk_sha256)
+            data = {"schema": SCHEMA, "family": manifest["family"], "arm": args.arm,
+                    "model_id": manifest.get("models", {}).get(args.arm, {}).get("model_id"),
+                    "model_revision": manifest.get("models", {}).get(args.arm, {}).get("revision"),
+                    "device": args.device,
+                    "source_sha": manifest["source_sha"], "dataset_sha256": manifest["dataset_sha256"],
+                    "host_profile_digest": manifest["host_profile_digest"],
+                    "parameters": parameters, "weights_sha256": weights,
+                    "runtime": runtime, "hardware": hardware(), "observations": observations,
+                    "end_to_end_wall_seconds": time.perf_counter() - started_wall,
+                    "cpu_seconds": time.process_time() - started_cpu,
+                    "peak_rss_bytes": peak_rss_bytes(),
+                    "steady_state_throughput_per_s": len(observations) * 1000 /
+                        sum(obs["latency_ms"] for obs in observations)
+                        if sum(obs["latency_ms"] for obs in observations) > 0 else None,
+                    "production_evidence_verified": False, "promotion_authorized": False}
+        write_new(args.output, data)
+    except (InvalidTrial, KeyError, TypeError, ValueError, OSError) as error:
+        parser.exit(2, f"blocked: {error}\n")
+
+
+if __name__ == "__main__":
+    main()
