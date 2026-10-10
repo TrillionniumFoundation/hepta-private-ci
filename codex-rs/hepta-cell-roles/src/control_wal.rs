@@ -49,6 +49,120 @@ impl ControlWalOutputV1 {
     }
 }
 
+/// Small inverse delta for one scope-local mutation. The old WAL writer
+/// cloned the entire growing dispatch map before every append, making each
+/// apparently incremental fsync O(scope history). The inverse instead retains
+/// only the affected record, idempotency binding or generation.
+enum ControlWalUndoV1 {
+    Prepare {
+        dispatch_id: StableId,
+        previous_record: Option<ControlDispatchRecordV1>,
+        idempotency_key: Digest32,
+        previous_index: Option<StableId>,
+        next_sequence: u64,
+    },
+    Record {
+        dispatch_id: StableId,
+        previous_record: Option<ControlDispatchRecordV1>,
+    },
+    Activate {
+        cell_id: StableId,
+        previous: Option<(Generation, Digest32)>,
+    },
+    Clock(u64),
+}
+
+impl ControlWalUndoV1 {
+    fn capture(event: &ControlWalEventV1, owner: &InMemoryControlRoleOwnerV1) -> Self {
+        match event {
+            ControlWalEventV1::Prepare(intent) => Self::Prepare {
+                dispatch_id: intent.dispatch_id.clone(),
+                previous_record: owner.records.get(&intent.dispatch_id).cloned(),
+                idempotency_key: intent.idempotency_key_digest,
+                previous_index: owner.idempotency_index.get(&intent.idempotency_key_digest).cloned(),
+                next_sequence: owner.next_sequence,
+            },
+            ControlWalEventV1::Forward(id)
+            | ControlWalEventV1::Terminal(id, _)
+            | ControlWalEventV1::Reconcile(id) => Self::Record {
+                dispatch_id: id.clone(),
+                previous_record: owner.records.get(id).cloned(),
+            },
+            ControlWalEventV1::Activate(cell_id, _, _) => Self::Activate {
+                cell_id: cell_id.clone(),
+                previous: owner.active_generations.get(cell_id).copied(),
+            },
+            ControlWalEventV1::Clock(_) => Self::Clock(owner.now_ms),
+        }
+    }
+
+    fn changed(&self, owner: &InMemoryControlRoleOwnerV1) -> bool {
+        match self {
+            Self::Prepare {
+                dispatch_id,
+                previous_record,
+                idempotency_key,
+                previous_index,
+                next_sequence,
+            } => {
+                owner.records.get(dispatch_id) != previous_record.as_ref()
+                    || owner.idempotency_index.get(idempotency_key) != previous_index.as_ref()
+                    || owner.next_sequence != *next_sequence
+            }
+            Self::Record {
+                dispatch_id,
+                previous_record,
+            } => owner.records.get(dispatch_id) != previous_record.as_ref(),
+            Self::Activate { cell_id, previous } => {
+                owner.active_generations.get(cell_id) != previous.as_ref()
+            }
+            Self::Clock(previous) => owner.now_ms != *previous,
+        }
+    }
+
+    fn restore(self, owner: &mut InMemoryControlRoleOwnerV1) {
+        match self {
+            Self::Prepare {
+                dispatch_id,
+                previous_record,
+                idempotency_key,
+                previous_index,
+                next_sequence,
+            } => {
+                if let Some(record) = previous_record {
+                    owner.records.insert(dispatch_id, record);
+                } else {
+                    owner.records.remove(&dispatch_id);
+                }
+                if let Some(id) = previous_index {
+                    owner.idempotency_index.insert(idempotency_key, id);
+                } else {
+                    owner.idempotency_index.remove(&idempotency_key);
+                }
+                owner.next_sequence = next_sequence;
+            }
+            Self::Record {
+                dispatch_id,
+                previous_record,
+            } => {
+                if let Some(record) = previous_record {
+                    owner.records.insert(dispatch_id, record);
+                } else {
+                    owner.records.remove(&dispatch_id);
+                }
+            }
+            Self::Activate { cell_id, previous } => {
+                if let Some(previous) = previous {
+                    owner.active_generations.insert(cell_id, previous);
+                } else {
+                    owner.active_generations.remove(&cell_id);
+                }
+            }
+            Self::Clock(previous) => owner.now_ms = previous,
+        }
+    }
+}
+
 impl ControlWalEventV1 {
     fn apply(
         &self,
