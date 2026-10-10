@@ -20,6 +20,8 @@ from composition_evidence import sha, write
 from native import Question, digest
 from necessity_data import (
     CHAIN_BLOB,
+    DIAGNOSTIC_LIMITS,
+    DIAGNOSTIC_PROFILE,
     LIMITS,
     OBQA_SHA,
     PROFILE,
@@ -54,12 +56,18 @@ def project(plan, labels, chains, questions, *, revoked):
     No answer text, benchmark gold, reviewer identity or review timestamp is
     invented. All missing/disputed publisher rows remain in the original census.
     """
+    limits = plan.get("frozen_counts")
+    profile = plan.get("profile")
     if (
-        plan.get("schema") != "hepta.bundle-diagnostic.plan.v1"
-        or plan.get("profile") != PROFILE
+        (limits, profile) not in (
+            (LIMITS, PROFILE),
+            (DIAGNOSTIC_LIMITS, DIAGNOSTIC_PROFILE),
+        )
+        or plan.get("schema") != "hepta.bundle-diagnostic.plan.v1"
         or plan.get("chain_blob") != CHAIN_BLOB
         or plan.get("original_question_archive_sha256") != OBQA_SHA
-        or plan.get("frozen_counts") != LIMITS
+        or (profile == DIAGNOSTIC_PROFILE)
+        != (plan.get("diagnostic_only_no_training") is True)
         or not isinstance(labels, dict)
         or not isinstance(revoked, set)
     ):
@@ -74,11 +82,13 @@ def project(plan, labels, chains, questions, *, revoked):
     cases = plan["cases"]
     ids = [c["question"]["identity"] for c in cases]
     if (
-        len(ids) != sum(LIMITS.values())
+        len(ids) != sum(limits.values())
         or len(set(ids)) != len(ids)
         or set(ids) != set(labels)
-        or any(sum(c["phase"] == phase for c in cases) != total
-               for phase, total in LIMITS.items())
+        or any(
+            sum(c["phase"] == phase for c in cases) != total
+            for phase, total in limits.items()
+        )
         or len({c["family"] for c in cases}) != len(cases)
     ):
         raise ValueError("lost question, phase or independent grouping")
@@ -182,6 +192,8 @@ def project(plan, labels, chains, questions, *, revoked):
         original_chains=len(rows),
         original_questions=len(originals),
         selected_records=len(cases),
+        review_horizon=profile,
+        diagnostic_only_no_training=profile == DIAGNOSTIC_PROFILE,
         capability_questions=len(capability["cases"]),
         published_three_vote_claims=len(reviews),
         review_package_digest=digest(package),
