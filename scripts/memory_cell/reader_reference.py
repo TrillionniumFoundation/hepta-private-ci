@@ -298,9 +298,24 @@ def run(inputs_dir, model_dir, output, stage_sha):
     )
     from tensor_contract import strict_json
 
-    records = strict_json(
-        (output / "diagnostic/execution/scored-answers.json").read_text()
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate reference record field")
+            result[key] = value
+        return result
+
+    def invalid_constant(value):
+        raise ValueError(f"nonfinite JSON constant: {value}")
+
+    records = json.loads(
+        (output / "diagnostic/execution/scored-answers.json").read_text(),
+        object_pairs_hook=unique,
+        parse_constant=invalid_constant,
     )
+    if not isinstance(records, list) or any(not isinstance(row, dict) for row in records):
+        raise ValueError("reference records array required")
     write(
         output / "reference-report.json",
         dict(
