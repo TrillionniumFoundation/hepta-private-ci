@@ -561,6 +561,12 @@ impl DurableCellStateCasDirectoryOwnerV1 {
         }
         let mut receipts = Vec::with_capacity(migration.children.len());
         for child in &migration.children {
+            if !child.verify_digest()
+                || child.parent_checkpoint_digest != migration.parent_anchor.checkpoint_digest
+                || child.parent_cell_id != migration.parent_cell_id
+            {
+                return Err(CellStateMigrationErrorV1::ParentAnchorMismatch);
+            }
             let bytes = encode_child_state(child);
             let digest = Digest32::of_bytes(&bytes);
             let path = self.root.join(format!("object-{digest}.q24"));
