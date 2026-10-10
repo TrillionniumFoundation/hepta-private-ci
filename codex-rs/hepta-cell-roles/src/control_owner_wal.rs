@@ -162,6 +162,7 @@ impl IncrementalControlRoleWalV2 {
             #[cfg(unix)]
             sync_control_directory(&path)?;
         }
+        require_private_wal(&path)?;
         let bytes = fs::read(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         if bytes.len() as u64 > MAX_WAL_BYTES || !bytes.starts_with(MAGIC) {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
@@ -196,6 +197,9 @@ impl IncrementalControlRoleWalV2 {
             if event.apply(&mut owner).map_err(|_| ControlOwnerErrorV1::InvalidDurableSnapshot)?
                 != expected_output
             {
+                return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+            }
+            if owner.records.len() > DURABLE_CONTROL_MAX_RECORDS_V1 {
                 return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
             }
             head = next_head;
@@ -234,9 +238,13 @@ impl IncrementalControlRoleWalV2 {
         // writer lock; only the bounded append/fsync owns that lock.
         let mut successor = self.inner.clone();
         let result = operation.apply(&mut successor)?;
+        if successor.records.len() > DURABLE_CONTROL_MAX_RECORDS_V1 {
+            return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+        }
         let payload = operation.encode()?;
         let _lock = lock_durable_control_writer(&self.path)?;
         reject_durable_path(&self.path)?;
+        require_private_wal(&self.path)?;
         let mut file = fs::OpenOptions::new()
             .read(true)
             .append(true)
@@ -352,6 +360,21 @@ impl ControlRoleOwnerV1 for IncrementalControlRoleWalV2 {
         self.commit(Event::Reconcile(id.clone()))?;
         self.inner.dispatch_receipt(id).cloned().ok_or(ControlOwnerErrorV1::MissingDispatch)
     }
+}
+
+#[cfg(unix)]
+fn require_private_wal(path: &Path) -> Result<(), ControlOwnerErrorV1> {
+    use std::os::unix::fs::MetadataExt;
+    let metadata = fs::symlink_metadata(path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+    if !metadata.is_file() || metadata.nlink() != 1 || metadata.mode() & 0o077 != 0 {
+        return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn require_private_wal(path: &Path) -> Result<(), ControlOwnerErrorV1> {
+    reject_durable_path(path)
 }
 
 #[cfg(test)]
