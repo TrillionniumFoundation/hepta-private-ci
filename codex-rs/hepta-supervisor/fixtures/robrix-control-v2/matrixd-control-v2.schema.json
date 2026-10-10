@@ -1,0 +1,1089 @@
+{
+  "$defs": {
+    "AgentId": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    },
+    "ApprovalDecision": {
+      "enum": [
+        "accept",
+        "accept_for_session",
+        "decline",
+        "cancel"
+      ]
+    },
+    "Digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "MatrixRoomId": {
+      "maxLength": 255,
+      "minLength": 3,
+      "pattern": "^![^\\s:]+:.+$",
+      "type": "string"
+    },
+    "MatrixUserId": {
+      "maxLength": 255,
+      "minLength": 3,
+      "pattern": "^@[^\\s:]+:.+$",
+      "type": "string"
+    },
+    "MatrixdBootstrapMethod": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "health"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "snapshot"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "MatrixdEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "$ref": "#/$defs/MatrixdEventKind"
+        }
+      },
+      "required": [
+        "cursor",
+        "kind"
+      ],
+      "type": "object"
+    },
+    "MatrixdEventBatch": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "gap": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "events": {
+                "maxItems": 0
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "events": {
+          "items": {
+            "$ref": "#/$defs/MatrixdEvent"
+          },
+          "maxItems": 256,
+          "type": "array"
+        },
+        "gap": {
+          "type": "boolean"
+        },
+        "latest_cursor": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "next_cursor": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "events",
+        "gap",
+        "next_cursor",
+        "latest_cursor"
+      ],
+      "type": "object"
+    },
+    "MatrixdEventKind": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "lifecycle": {
+              "$ref": "#/$defs/MatrixdLifecycle"
+            },
+            "type": {
+              "const": "lifecycle"
+            }
+          },
+          "required": [
+            "type",
+            "lifecycle"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "connected": {
+              "type": "boolean"
+            },
+            "generation": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "type": {
+              "const": "agent_connection"
+            }
+          },
+          "required": [
+            "type",
+            "connected",
+            "generation"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "connected": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "matrix_connection"
+            }
+          },
+          "required": [
+            "type",
+            "connected"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "inbox": {
+              "maximum": 4294967295,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "outbox": {
+              "maximum": 4294967295,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "type": {
+              "const": "queue_depth"
+            }
+          },
+          "required": [
+            "type",
+            "inbox",
+            "outbox"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "thread_id": {
+              "$ref": "#/$defs/RuntimeId"
+            },
+            "turn_id": {
+              "$ref": "#/$defs/RuntimeId"
+            },
+            "type": {
+              "const": "turn_started"
+            }
+          },
+          "required": [
+            "type",
+            "thread_id",
+            "turn_id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "thread_id": {
+              "$ref": "#/$defs/RuntimeId"
+            },
+            "turn_id": {
+              "$ref": "#/$defs/RuntimeId"
+            },
+            "type": {
+              "const": "turn_completed"
+            }
+          },
+          "required": [
+            "type",
+            "thread_id",
+            "turn_id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "approval": {
+              "$ref": "#/$defs/PendingApproval"
+            },
+            "type": {
+              "const": "approval_pending"
+            }
+          },
+          "required": [
+            "type",
+            "approval"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "approval_key": {
+              "$ref": "#/$defs/RuntimeId"
+            },
+            "type": {
+              "const": "approval_resolved"
+            }
+          },
+          "required": [
+            "type",
+            "approval_key"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "reason_code": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_]+$",
+              "type": "string"
+            },
+            "type": {
+              "const": "resync_required"
+            }
+          },
+          "required": [
+            "type",
+            "reason_code"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "MatrixdFence": {
+      "additionalProperties": false,
+      "properties": {
+        "attached_agent_generation": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "binding_digest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "binding_revision": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "plane_epoch": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "process_incarnation": {
+          "$ref": "#/$defs/RuntimeId"
+        }
+      },
+      "required": [
+        "binding_revision",
+        "binding_digest",
+        "attached_agent_generation",
+        "process_incarnation",
+        "plane_epoch"
+      ],
+      "type": "object"
+    },
+    "MatrixdFencedMethod": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "after_cursor": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "limit": {
+              "maximum": 256,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "type": {
+              "const": "events"
+            }
+          },
+          "required": [
+            "type",
+            "after_cursor",
+            "limit"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "thread_id": {
+              "$ref": "#/$defs/RuntimeId"
+            },
+            "turn_id": {
+              "$ref": "#/$defs/RuntimeId"
+            },
+            "type": {
+              "const": "cancel_turn"
+            }
+          },
+          "required": [
+            "type",
+            "thread_id",
+            "turn_id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "approval_key": {
+              "$ref": "#/$defs/RuntimeId"
+            },
+            "decision": {
+              "$ref": "#/$defs/ApprovalDecision"
+            },
+            "type": {
+              "const": "resolve_approval"
+            }
+          },
+          "required": [
+            "type",
+            "approval_key",
+            "decision"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "MatrixdHealth": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "fenced": {
+                  "const": true
+                },
+                "lifecycle": {
+                  "const": "fenced"
+                }
+              }
+            },
+            {
+              "properties": {
+                "fenced": {
+                  "const": false
+                },
+                "lifecycle": {
+                  "enum": [
+                    "starting",
+                    "syncing",
+                    "ready",
+                    "degraded",
+                    "draining"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "agentd_connected": {
+          "type": "boolean"
+        },
+        "fenced": {
+          "type": "boolean"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/MatrixdLifecycle"
+        },
+        "matrix_sync_connected": {
+          "type": "boolean"
+        },
+        "process_id": {
+          "maximum": 4294967295,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "lifecycle",
+        "process_id",
+        "agentd_connected",
+        "matrix_sync_connected",
+        "fenced"
+      ],
+      "type": "object"
+    },
+    "MatrixdLifecycle": {
+      "enum": [
+        "starting",
+        "syncing",
+        "ready",
+        "degraded",
+        "draining",
+        "fenced"
+      ]
+    },
+    "MatrixdMethod": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/MatrixdBootstrapMethod"
+        },
+        {
+          "$ref": "#/$defs/MatrixdFencedMethod"
+        }
+      ]
+    },
+    "MatrixdPayload": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "oneOf": [
+                {
+                  "properties": {
+                    "fenced": {
+                      "const": true
+                    },
+                    "lifecycle": {
+                      "const": "fenced"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "fenced": {
+                      "const": false
+                    },
+                    "lifecycle": {
+                      "enum": [
+                        "starting",
+                        "syncing",
+                        "ready",
+                        "degraded",
+                        "draining"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "agentd_connected": {
+              "type": "boolean"
+            },
+            "fenced": {
+              "type": "boolean"
+            },
+            "lifecycle": {
+              "$ref": "#/$defs/MatrixdLifecycle"
+            },
+            "matrix_sync_connected": {
+              "type": "boolean"
+            },
+            "process_id": {
+              "maximum": 4294967295,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "type": {
+              "const": "health"
+            }
+          },
+          "required": [
+            "type",
+            "lifecycle",
+            "process_id",
+            "agentd_connected",
+            "matrix_sync_connected",
+            "fenced"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "oneOf": [
+                {
+                  "properties": {
+                    "active_thread_id": {
+                      "type": "null"
+                    },
+                    "active_turn_id": {
+                      "type": "null"
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "active_thread_id": {
+                      "$ref": "#/$defs/RuntimeId"
+                    },
+                    "active_turn_id": {
+                      "$ref": "#/$defs/RuntimeId"
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "properties": {
+            "active_rooms": {
+              "items": {
+                "$ref": "#/$defs/MatrixRoomId"
+              },
+              "maxItems": 256,
+              "type": "array",
+              "uniqueItems": true
+            },
+            "active_thread_id": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/RuntimeId"
+                }
+              ]
+            },
+            "active_turn_id": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/RuntimeId"
+                }
+              ]
+            },
+            "event_cursor": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "expected_mxid": {
+              "$ref": "#/$defs/MatrixUserId"
+            },
+            "inbox_depth": {
+              "maximum": 4294967295,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "lifecycle": {
+              "$ref": "#/$defs/MatrixdLifecycle"
+            },
+            "oldest_inbox_age_seconds": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              ]
+            },
+            "oldest_outbox_age_seconds": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              ]
+            },
+            "outbox_depth": {
+              "maximum": 4294967295,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "pending_approvals": {
+              "items": {
+                "$ref": "#/$defs/PendingApproval"
+              },
+              "maxItems": 256,
+              "type": "array"
+            },
+            "resync_required": {
+              "type": "boolean"
+            },
+            "type": {
+              "const": "snapshot"
+            }
+          },
+          "required": [
+            "type",
+            "lifecycle",
+            "expected_mxid",
+            "active_rooms",
+            "inbox_depth",
+            "outbox_depth",
+            "oldest_inbox_age_seconds",
+            "oldest_outbox_age_seconds",
+            "active_thread_id",
+            "active_turn_id",
+            "pending_approvals",
+            "resync_required",
+            "event_cursor"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "gap": {
+                    "const": true
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "events": {
+                    "maxItems": 0
+                  }
+                }
+              }
+            }
+          ],
+          "properties": {
+            "events": {
+              "items": {
+                "$ref": "#/$defs/MatrixdEvent"
+              },
+              "maxItems": 256,
+              "type": "array"
+            },
+            "gap": {
+              "type": "boolean"
+            },
+            "latest_cursor": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "next_cursor": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "type": {
+              "const": "events"
+            }
+          },
+          "required": [
+            "type",
+            "events",
+            "gap",
+            "next_cursor",
+            "latest_cursor"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "accepted"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[a-z0-9_]+$",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1024,
+              "minLength": 1,
+              "type": "string",
+              "x-hepta-max-utf8-bytes": 1024,
+              "x-hepta-safe-text-profile": "safe_message"
+            },
+            "type": {
+              "const": "error"
+            }
+          },
+          "required": [
+            "type",
+            "code",
+            "message"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "MatrixdRequest": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "agent_id": {
+              "$ref": "#/$defs/AgentId"
+            },
+            "fence": {
+              "type": "null"
+            },
+            "method": {
+              "$ref": "#/$defs/MatrixdBootstrapMethod"
+            },
+            "request_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "schema_version": {
+              "const": 2
+            }
+          },
+          "required": [
+            "schema_version",
+            "request_id",
+            "agent_id",
+            "fence",
+            "method"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "agent_id": {
+              "$ref": "#/$defs/AgentId"
+            },
+            "fence": {
+              "$ref": "#/$defs/MatrixdFence"
+            },
+            "method": {
+              "$ref": "#/$defs/MatrixdFencedMethod"
+            },
+            "request_id": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "schema_version": {
+              "const": 2
+            }
+          },
+          "required": [
+            "schema_version",
+            "request_id",
+            "agent_id",
+            "fence",
+            "method"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "MatrixdResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": {
+          "$ref": "#/$defs/AgentId"
+        },
+        "attached_agent_generation": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "binding_digest": {
+          "$ref": "#/$defs/Digest"
+        },
+        "binding_revision": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "payload": {
+          "$ref": "#/$defs/MatrixdPayload"
+        },
+        "plane_epoch": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "process_incarnation": {
+          "$ref": "#/$defs/RuntimeId"
+        },
+        "release_id": {
+          "$ref": "#/$defs/RuntimeId"
+        },
+        "request_id": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": 2
+        }
+      },
+      "required": [
+        "schema_version",
+        "request_id",
+        "agent_id",
+        "release_id",
+        "binding_revision",
+        "binding_digest",
+        "attached_agent_generation",
+        "process_incarnation",
+        "plane_epoch",
+        "payload"
+      ],
+      "type": "object"
+    },
+    "MatrixdSnapshot": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "active_thread_id": {
+                  "type": "null"
+                },
+                "active_turn_id": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "properties": {
+                "active_thread_id": {
+                  "$ref": "#/$defs/RuntimeId"
+                },
+                "active_turn_id": {
+                  "$ref": "#/$defs/RuntimeId"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "active_rooms": {
+          "items": {
+            "$ref": "#/$defs/MatrixRoomId"
+          },
+          "maxItems": 256,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "active_thread_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RuntimeId"
+            }
+          ]
+        },
+        "active_turn_id": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/RuntimeId"
+            }
+          ]
+        },
+        "event_cursor": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "expected_mxid": {
+          "$ref": "#/$defs/MatrixUserId"
+        },
+        "inbox_depth": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "lifecycle": {
+          "$ref": "#/$defs/MatrixdLifecycle"
+        },
+        "oldest_inbox_age_seconds": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "minimum": 0,
+              "type": "integer"
+            }
+          ]
+        },
+        "oldest_outbox_age_seconds": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "minimum": 0,
+              "type": "integer"
+            }
+          ]
+        },
+        "outbox_depth": {
+          "maximum": 4294967295,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "pending_approvals": {
+          "items": {
+            "$ref": "#/$defs/PendingApproval"
+          },
+          "maxItems": 256,
+          "type": "array"
+        },
+        "resync_required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "lifecycle",
+        "expected_mxid",
+        "active_rooms",
+        "inbox_depth",
+        "outbox_depth",
+        "oldest_inbox_age_seconds",
+        "oldest_outbox_age_seconds",
+        "active_thread_id",
+        "active_turn_id",
+        "pending_approvals",
+        "resync_required",
+        "event_cursor"
+      ],
+      "type": "object"
+    },
+    "PendingApproval": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_decisions": {
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          },
+          "maxItems": 4,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "approval_key": {
+          "$ref": "#/$defs/RuntimeId"
+        },
+        "created_at_ms": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "kind": {
+          "$ref": "#/$defs/RuntimeId"
+        },
+        "summary": {
+          "maxLength": 1024,
+          "minLength": 1,
+          "type": "string",
+          "x-hepta-max-utf8-bytes": 1024,
+          "x-hepta-safe-text-profile": "safe_message"
+        },
+        "thread_id": {
+          "$ref": "#/$defs/RuntimeId"
+        },
+        "turn_id": {
+          "$ref": "#/$defs/RuntimeId"
+        }
+      },
+      "required": [
+        "approval_key",
+        "kind",
+        "thread_id",
+        "turn_id",
+        "summary",
+        "created_at_ms",
+        "allowed_decisions"
+      ],
+      "type": "object"
+    },
+    "RuntimeId": {
+      "maxLength": 512,
+      "minLength": 1,
+      "type": "string",
+      "x-hepta-max-utf8-bytes": 512,
+      "x-hepta-safe-text-profile": "runtime_identifier"
+    }
+  },
+  "$id": "https://hepta.local/schema/robrix-matrixd-control-v2.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/MatrixdRequest"
+    },
+    {
+      "$ref": "#/$defs/MatrixdResponse"
+    }
+  ],
+  "title": "Robrix owner-local Matrix companion protocol v2",
+  "x-hepta-authoritative-semantic-validator": "generated_cross_parser_corpus_with_rust_protocol_validation",
+  "x-hepta-non-schema-invariant-classes": [
+    "selected_process_context",
+    "cross_object_field_equality",
+    "cross_element_key_uniqueness",
+    "requested_cursor_contiguity",
+    "cross_field_ordering"
+  ],
+  "x-hepta-non-schema-invariants": [
+    "request_agent_and_fence_match_selected_process",
+    "response_envelope_matches_selected_process_and_request",
+    "pending_approval_keys_are_unique",
+    "event_cursors_are_contiguous_from_requested_after_cursor",
+    "event_latest_cursor_is_not_less_than_next_cursor"
+  ],
+  "x-hepta-validation-role": "structural_and_locally_expressible_invariants_only"
+}

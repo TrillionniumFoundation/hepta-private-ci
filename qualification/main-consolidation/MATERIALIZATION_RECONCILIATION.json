@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.materialization-reconciliation.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewedMain": "f6850c68e29c96ced24f3b8fc43277bb121e7fb8",
+  "selectedProductTree": "b80d5b6e4bbf2eed13a0b4412db9e346f7afee47",
+  "policy": "Preserve the latest ordinary source and canonical specification set. Resolve older implementation snapshots to reviewed later versions; preserve all original incoming histories. Retire invalid or superseded transport workflows rather than restoring generators that overwrite the current source. Retention is not execution or qualification of hidden payloads.",
+  "comparisonTrees": {
+    "r12": "b2528aad39cbd6362e12504adca2140549063c69",
+    "v82": "9b535d296df8af95338c39c47d1483c04264c8a3",
+    "ordinaryFinalBlockerOutput": "96b91eff5f8b7fbeef1bd7031d5d64456a7ba7a8",
+    "verifiedHistoricalSource": "dd26b8b10a8a6be6b77102c413b964fae0266e78"
+  },
+  "comparisonOnlyObjects": ["260cb2b9a5c35ac09f630bf2501dd6947147f4e3", "e6787e6323d93a67812c0b27ef95689dedddd717", "81419f497461127a6f28166c28609d95774b262f"],
+  "comparisonOnlyObjectsAreNotIntegrationParents": true,
+  "resolutions": [
+    {
+      "head": "a33221ac258889707acdbfdbbf40dbe8fbace5b1",
+      "branch": "codex/close-v8-blockers-20260901",
+      "disposition": "Retain later ordinary runtime, manifest, lock and documentation-verifier versions. Retire hepta-one-shot-docs-patch.yml and scripts/.hepta-docs-payload from the active tree; the full workflow was read and is expressly a temporary source-replacement transport. Its encoded replacement verifier and subsequent textual rewrite are not executed or asserted to be equivalent to current verifier behavior. Preserve the original material and proposed repair in history, not as active candidate CI. Do not replace current status or canonical version pointers with historical generated values."
+    },
+    {
+      "head": "43407ba86b5fd75e13f22e864c7e574499a40bc0",
+      "branch": "codex/hepta-gap-closure-diagnostics-20260904",
+      "disposition": "Ordinary source follows the reviewed 91104656 closure snapshot and later main. Retain current typed-source, readiness, work-package and independent-evidence corrections. Retire tmp-gap-closure-diagnostics.yml and tmp-gap-closure-rust-macos.yml as branch-specific diagnostic orchestration; retain their history."
+    },
+    {
+      "head": "a6ce2f1414065fdaec01852282eaf9137b07734e",
+      "branch": "codex/hepta-precode-doc-closure-20260904",
+      "disposition": "Direct tree comparison against the retained V8.2 snapshot shows the later ordinary typed packages, caller checks and readiness specifications. Keep current canonical registries and their subsequent source bindings; do not restore .transport/hepta-precode/part-00.b64 or let it regenerate older documents."
+    },
+    {
+      "head": "bb371de0c763afdabbe7f7ebcd61fb861babd502",
+      "branch": "codex/tmp-export-hepta291-20260902",
+      "disposition": "The ordinary specification and reference roots are represented in the current tree, with later formatting, lint, source-binding and verifier corrections. Direct comparison with final blocker output isolates the temporary tmp-export-hepta291.yml addition alongside the already reviewed later corrections. Retire that export workflow, not its recoverable history."
+    },
+    {
+      "head": "a5cf15a28af4de76d5530effb20d0bb4568619a1",
+      "branch": "codex/tmp-final-converge-v2-20260902",
+      "disposition": "Keep the real current blocking CI and canary instead of the retired candidate's small replacement stubs. Retire tmp-final-converge-v2.yml; retain the later ordinary code, all subordinate specifications and readiness work. No echo-only workflow outcome becomes product evidence."
+    },
+    {
+      "head": "ae799d8e76e1061f33eb704c2b922b5802b0a175",
+      "branch": "codex/tmp-formatted-hepta291-output-20260902",
+      "disposition": "Retain the later ordinary formatted/linted source and documentation validators. Direct comparisons against the ordinary final blocker output and V8.2 snapshots identify later HNMF reference, paper-byte binding, host-path, Cargo, CI and readiness corrections; no second module or algorithm specification tree is restored."
+    },
+    {
+      "head": "7815277838e077f0c865b0448f3d55e053ba31d3",
+      "branch": "codex/tmp-generate-cargo-lock-20260902",
+      "disposition": "The head tree contains only tmp-converge-arm.yml and candidate-r2.patch.b64. This is a transport snapshot, not a request to delete the rest of the repository. Reject its apparent whole-tree deletions and retire its active generator. The ordinary output 725605e is separately reconciled in main, including its unique CNS handoff detail. This resolution does not claim to have executed or certified the encoded patch."
+    },
+    {
+      "head": "81864ecd273fed624127bbda9d82f63963dd3bb1",
+      "branch": "codex/tmp-materialize-readiness-20260904",
+      "disposition": "Keep the ordinary V8.2 readiness implementation, its subsequent corrections, and the current single global plan. Retire hepta-materialize-readiness.yml and .hepta-materializer/part-00.b64 through part-05.b64. Do not restore a source-replacement transport or historical generated completion assertions."
+    },
+    {
+      "head": "4eeed916d02d693d1752f06b366ebd513adce8ae",
+      "branch": "codex/tmp-materialize-v8-final-blockers-20260902-r1",
+      "disposition": "Direct comparison with c14ca24a ordinary output contains only the temporary materialization workflow, Bazel lock refresh, and HNMF adversarial recall/test changes. Retain the later lock/reference corrections and retire tmp-materialize-v8-final-blockers-r1.yml."
+    },
+    {
+      "head": "c14ca24a26ef6d3ffab68697db329b0db92e3ab1",
+      "branch": "codex/tmp-materialized-v8-final-output-20260902-r1",
+      "disposition": "Keep its ordinary-source and reference work through the already reviewed later main snapshot: preserve the later Windows wrappers, native-host path validation, type/wire/operation packages, readiness overlays, current work-package decisions and stronger evidence verification. No extra active documentation copy is required."
+    },
+    {
+      "head": "9a2994860e486d1b34505629e9768c31da9e271a",
+      "branch": "codex/hnmf-blocker-closure-20260902",
+      "disposition": "Retain the ordinary HNMF documentation and reference crate already present exactly in main and the later contract/adversarial extensions. Retire hnmf-materialize.yml, hnmf-product.yml, materialize-hnmf-product.py and their encoded carriers from the active tree. The product workflow references generated targets absent from this head's ordinary source and must not be represented as proof of those targets. The current four-part loader cannot decode its exact stored inputs; its hidden prototype is neither recovered nor imported nor qualified. All original carrier bytes remain recoverable through this original head's history."
+    }
+  ],
+  "hnmfOrdinarySourceProof": {
+    "docsSubtree": "2f2ca2cbf8344e530424fbd26ce003d6d486f9b5",
+    "referenceSubtree": "a35bb3861574da84b7813d66a136a13d493481b1",
+    "incomingVerifierBlob": "4efab4385966a7673f0286021118cf561bef0bd8",
+    "existingOrdinaryReferenceReconciliation": "qualification/main-consolidation/HNMF_RECONCILIATION.json",
+    "loaderBlob": "5d4ac3f717f971fbf50b85954e9146759a782bca",
+    "loaderExpectedDecodedSha256": "2cc4b2dcf8ceeb09041d67cc65d42c7810552e5cfdeac76ea80343bb400bc453",
+    "rawPartsVerified": [
+      {"part": 0, "bytes": 4636, "gitBlob": "cbb14480db3fee9d02f065e7ba08c9582c55539c", "strictBase64": "valid"},
+      {"part": 1, "bytes": 4636, "gitBlob": "87101e438ede9bb0fe4bff87191eef0fb896e3e0", "strictBase64": "valid"},
+      {"part": 2, "bytes": 4635, "gitBlob": "4a295d06a23476285d412a632494dd7e21e3b4bf", "strictBase64": "Incorrect padding"},
+      {"part": 3, "bytes": 4633, "gitBlob": "90b6f4501905db4fa312db8d50ef25964b65a9f8", "strictBase64": "Excess padding not allowed"}
+    ],
+    "rawPartHashesMatched": true,
+    "loaderExecuted": false,
+    "prototypeRecovered": false,
+    "legacyThreePartPayloadDecoded": false,
+    "productionHnmfClaimGranted": false
+  },
+  "validationScope": "Content-level reconciliation and original-history retention. Earlier selected wrapper and CNS reference tests remain scoped to their exact reconstructed source projection. No new full-runtime compilation or whole-repository CI pass is asserted by this receipt.",
+  "runtimeActivation": false,
+  "wholeRepositoryCiPassed": false,
+  "defaultBranchChangedByThisReceipt": false,
+  "remoteBranchesDeletedByThisReceipt": false
+}

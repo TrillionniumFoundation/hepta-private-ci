@@ -1,0 +1,414 @@
+#!/usr/bin/python3
+"""Darwin-native publication and legacy-writer barrier for Hepta cutover."""
+
+import argparse
+import ctypes
+import errno
+import hashlib
+import json
+import os
+import re
+import shutil
+import stat
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+RENAME_EXCL = 0x00000004
+LABEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+SEAL_SCHEMA = "hepta_vnext_writer_barrier_v1"
+RESTORE_SCHEMA = "hepta_vnext_writer_barrier_restore_v1"
+
+
+def fail(message):
+    raise SystemExit(message)
+
+
+def canonical_non_root(raw, kind=None):
+    path = Path(raw)
+    if not path.is_absolute() or str(path) == "/" or path.is_symlink():
+        fail(f"path must be absolute, non-root, and non-symlink: {raw}")
+    resolved = path.resolve(strict=True)
+    if resolved != path:
+        fail(f"path must be physical and canonical: {raw}")
+    info = path.lstat()
+    if kind == "file" and not stat.S_ISREG(info.st_mode):
+        fail(f"path must be a regular file: {raw}")
+    if kind == "directory" and not stat.S_ISDIR(info.st_mode):
+        fail(f"path must be a directory: {raw}")
+    return path, info
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with open(path, "rb", buffering=0) as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def canonical_json(value):
+    return (json.dumps(value, sort_keys=True, separators=(",", ":")) + "\n").encode()
+
+
+def publish_json_no_replace(path, value, mode=0o444):
+    parent = path.parent
+    canonical_non_root(parent, "directory")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+    parent_fd = os.open(
+        parent,
+        os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0),
+    )
+    descriptor = os.open(path.name, flags, mode, dir_fd=parent_fd)
+    try:
+        payload = canonical_json(value)
+        written = 0
+        while written < len(payload):
+            written += os.write(descriptor, payload[written:])
+        os.fsync(descriptor)
+        os.fchmod(descriptor, mode)
+    finally:
+        os.close(descriptor)
+    try:
+        os.fsync(parent_fd)
+    finally:
+        os.close(parent_fd)
+
+
+def launchd_unloaded(uid, label):
+    if not LABEL_RE.fullmatch(label):
+        fail(f"invalid launchd label: {label}")
+    result = subprocess.run(
+        ["/bin/launchctl", "print", f"gui/{uid}/{label}"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
+    if result.returncode == 0:
+        fail(f"legacy launchd job is still loaded: {label}")
+    if "Could not find service" not in result.stdout:
+        fail(f"could not prove legacy launchd job is unloaded: {result.stdout.strip()}")
+
+
+def state_root_quiescent(state_root):
+    result = subprocess.run(
+        ["/usr/sbin/lsof", "-nP", "+D", str(state_root)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 1 or result.stdout:
+        fail(f"state root is not quiescent: {result.stdout.strip()}")
+
+
+def require_root():
+    if os.geteuid() != 0:
+        fail("writer barrier mutation requires root")
+
+
+def seal_writer(args):
+    require_root()
+    program, program_info = canonical_non_root(args.program, "file")
+    state_root, state_info = canonical_non_root(args.state_root, "directory")
+    receipt = Path(args.receipt)
+    if not receipt.is_absolute() or receipt.exists() or receipt.is_symlink():
+        fail("receipt must be a new absolute path")
+    if program_info.st_mode & 0o111 == 0:
+        fail("legacy program is not executable before sealing")
+    if len(set(args.legacy_label)) != len(args.legacy_label):
+        fail("legacy launchd labels must be unique")
+    for label in args.legacy_label:
+        launchd_unloaded(args.operator_uid, label)
+    state_root_quiescent(state_root)
+    canonical_non_root(receipt.parent, "directory")
+    original_mode = stat.S_IMODE(program_info.st_mode)
+    program_sha = sha256_file(program)
+    sealed = None
+    try:
+        os.chmod(program, 0o400)
+        sealed_flags = program_info.st_flags | stat.SF_IMMUTABLE
+        os.chflags(program, sealed_flags)
+        sealed = program.lstat()
+        if stat.S_IMODE(sealed.st_mode) != 0o400 or not sealed.st_flags & stat.SF_IMMUTABLE:
+            fail("legacy program did not enter the immutable non-executable state")
+    except BaseException:
+        current = program.lstat()
+        if current.st_flags & stat.SF_IMMUTABLE:
+            os.chflags(program, current.st_flags & ~stat.SF_IMMUTABLE)
+        os.chmod(program, original_mode)
+        raise
+    value = {
+        "schema": SEAL_SCHEMA,
+        "status": "ready",
+        "operator_uid": args.operator_uid,
+        "legacy_label": args.legacy_label[0],
+        "legacy_labels": args.legacy_label,
+        "program": str(program),
+        "program_dev": program_info.st_dev,
+        "program_inode": program_info.st_ino,
+        "program_sha256": program_sha,
+        "original_mode": format(original_mode, "04o"),
+        "sealed_mode": "0400",
+        "system_immutable": True,
+        "state_root": str(state_root),
+        "state_root_dev": state_info.st_dev,
+        "state_root_inode": state_info.st_ino,
+        "launchd_unloaded": True,
+        "state_root_quiescent": True,
+        "writer_admission_closed": True,
+    }
+    try:
+        publish_json_no_replace(receipt, value)
+    except BaseException:
+        os.chflags(program, sealed.st_flags & ~stat.SF_IMMUTABLE)
+        os.chmod(program, original_mode)
+        raise
+    print(canonical_json(value).decode(), end="")
+
+
+def load_seal_receipt(raw):
+    receipt, info = canonical_non_root(raw, "file")
+    if stat.S_IMODE(info.st_mode) not in (0o400, 0o444):
+        fail("writer barrier receipt must be read-only")
+    value = json.loads(receipt.read_text())
+    if value.get("schema") != SEAL_SCHEMA or value.get("status") != "ready":
+        fail("invalid writer barrier receipt")
+    return receipt, value
+
+
+def verify_writer(args):
+    receipt, value = load_seal_receipt(args.receipt)
+    program, info = canonical_non_root(value["program"], "file")
+    state_root, state_info = canonical_non_root(value["state_root"], "directory")
+    if (
+        info.st_dev != value["program_dev"]
+        or info.st_ino != value["program_inode"]
+        or sha256_file(program) != value["program_sha256"]
+        or stat.S_IMODE(info.st_mode) != 0o400
+        or not info.st_flags & stat.SF_IMMUTABLE
+        or state_info.st_dev != value["state_root_dev"]
+        or state_info.st_ino != value["state_root_inode"]
+    ):
+        fail("writer barrier subject changed")
+    labels = value.get("legacy_labels", [value["legacy_label"]])
+    if not isinstance(labels, list) or not labels or len(set(labels)) != len(labels):
+        fail("invalid writer barrier launchd label set")
+    for label in labels:
+        launchd_unloaded(value["operator_uid"], label)
+    state_root_quiescent(state_root)
+    result = {
+        "schema": "hepta_vnext_writer_barrier_verification_v1",
+        "status": "ready",
+        "receipt": str(receipt),
+        "receipt_sha256": sha256_file(receipt),
+        "writer_admission_closed": True,
+    }
+    print(canonical_json(result).decode(), end="")
+
+
+def restore_writer(args):
+    require_root()
+    receipt, value = load_seal_receipt(args.receipt)
+    output_receipt = Path(args.output_receipt)
+    if not output_receipt.is_absolute() or output_receipt.exists() or output_receipt.is_symlink():
+        fail("restore receipt must be a new absolute path")
+    canonical_non_root(output_receipt.parent, "directory")
+    program, info = canonical_non_root(value["program"], "file")
+    if (
+        info.st_dev != value["program_dev"]
+        or info.st_ino != value["program_inode"]
+        or sha256_file(program) != value["program_sha256"]
+        or stat.S_IMODE(info.st_mode) != 0o400
+        or not info.st_flags & stat.SF_IMMUTABLE
+    ):
+        fail("writer barrier subject changed before restore")
+    original_mode = int(value["original_mode"], 8)
+    os.chflags(program, info.st_flags & ~stat.SF_IMMUTABLE)
+    os.chmod(program, original_mode)
+    restored = program.lstat()
+    if stat.S_IMODE(restored.st_mode) != original_mode or restored.st_flags & stat.SF_IMMUTABLE:
+        fail("legacy program restore did not complete")
+    result = {
+        "schema": RESTORE_SCHEMA,
+        "status": "ready",
+        "barrier_receipt": str(receipt),
+        "barrier_receipt_sha256": sha256_file(receipt),
+        "program": str(program),
+        "program_sha256": value["program_sha256"],
+        "restored_mode": value["original_mode"],
+        "writer_admission_closed": False,
+    }
+    publish_json_no_replace(output_receipt, result)
+    print(canonical_json(result).decode(), end="")
+
+
+def verify_restore(args):
+    receipt, value = load_seal_receipt(args.receipt)
+    restore_receipt, restore_info = canonical_non_root(args.restore_receipt, "file")
+    if stat.S_IMODE(restore_info.st_mode) not in (0o400, 0o444):
+        fail("writer restore receipt must be read-only")
+    restored = json.loads(restore_receipt.read_text())
+    program, info = canonical_non_root(value["program"], "file")
+    expected_mode = int(value["original_mode"], 8)
+    if (
+        restored.get("schema") != RESTORE_SCHEMA
+        or restored.get("status") != "ready"
+        or restored.get("barrier_receipt") != str(receipt)
+        or restored.get("barrier_receipt_sha256") != sha256_file(receipt)
+        or restored.get("program") != str(program)
+        or restored.get("program_sha256") != value["program_sha256"]
+        or restored.get("restored_mode") != value["original_mode"]
+        or restored.get("writer_admission_closed") is not False
+        or info.st_dev != value["program_dev"]
+        or info.st_ino != value["program_inode"]
+        or sha256_file(program) != value["program_sha256"]
+        or stat.S_IMODE(info.st_mode) != expected_mode
+        or info.st_flags & stat.SF_IMMUTABLE
+    ):
+        fail("writer restore receipt or restored program changed")
+    print(
+        canonical_json(
+            {
+                "schema": "hepta_vnext_writer_barrier_restore_verification_v1",
+                "status": "ready",
+                "barrier_receipt": str(receipt),
+                "restore_receipt": str(restore_receipt),
+                "restore_receipt_sha256": sha256_file(restore_receipt),
+                "writer_admission_closed": False,
+            }
+        ).decode(),
+        end="",
+    )
+
+
+def publish_directory(args):
+    staged, staged_info = canonical_non_root(args.staged, "directory")
+    destination = Path(args.destination)
+    if not destination.is_absolute() or destination.exists() or destination.is_symlink():
+        fail("destination must be a new absolute path")
+    source_parent, _ = canonical_non_root(staged.parent, "directory")
+    destination_parent, _ = canonical_non_root(destination.parent, "directory")
+    parent_flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    source_parent_fd = os.open(source_parent, parent_flags)
+    destination_parent_fd = os.open(destination_parent, parent_flags)
+    staged_fd = os.open(staged.name, parent_flags, dir_fd=source_parent_fd)
+    try:
+        libc = ctypes.CDLL(None, use_errno=True)
+        rename = libc.renameatx_np
+        rename.argtypes = [
+            ctypes.c_int,
+            ctypes.c_char_p,
+            ctypes.c_int,
+            ctypes.c_char_p,
+            ctypes.c_uint,
+        ]
+        rename.restype = ctypes.c_int
+        rc = rename(
+            source_parent_fd,
+            os.fsencode(staged.name),
+            destination_parent_fd,
+            os.fsencode(destination.name),
+            RENAME_EXCL,
+        )
+        if rc != 0:
+            current_errno = ctypes.get_errno()
+            fail(f"renameatx_np(RENAME_EXCL) failed: {os.strerror(current_errno)}")
+        os.fsync(source_parent_fd)
+        if destination_parent_fd != source_parent_fd:
+            os.fsync(destination_parent_fd)
+        destination_fd = os.open(destination.name, parent_flags, dir_fd=destination_parent_fd)
+        try:
+            before = os.fstat(staged_fd)
+            after = os.fstat(destination_fd)
+            if (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
+                fail("published destination identity differs from staged directory")
+        finally:
+            os.close(destination_fd)
+        try:
+            os.stat(staged.name, dir_fd=source_parent_fd, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            fail("staged directory still exists after publication")
+    finally:
+        os.close(staged_fd)
+        os.close(destination_parent_fd)
+        os.close(source_parent_fd)
+    print(
+        canonical_json(
+            {
+                "schema": "hepta_vnext_darwin_directory_publication_v1",
+                "status": "ready",
+                "destination": str(destination),
+                "rename_excl": True,
+                "dirfd_bound": True,
+                "durable_parent": True,
+            }
+        ).decode(),
+        end="",
+    )
+
+
+def self_test(_args):
+    root = Path(tempfile.mkdtemp(prefix="hepta-cutover-guard."))
+    try:
+        parent = root / "parent"
+        parent.mkdir(mode=0o700)
+        staged = parent / "staged"
+        staged.mkdir(mode=0o700)
+        (staged / "payload").write_text("payload\n")
+        destination = parent / "ready"
+        publish_directory(argparse.Namespace(staged=str(staged), destination=str(destination)))
+        if (destination / "payload").read_text() != "payload\n":
+            fail("publication self-test payload mismatch")
+        conflict = parent / "conflict"
+        conflict.mkdir()
+        incoming = parent / "incoming"
+        incoming.mkdir()
+        try:
+            publish_directory(argparse.Namespace(staged=str(incoming), destination=str(conflict)))
+        except SystemExit:
+            pass
+        else:
+            fail("publication self-test replaced an existing destination")
+        print('{"schema":"hepta_vnext_cutover_guard_self_test_v1","status":"ready"}')
+    finally:
+        shutil.rmtree(root, ignore_errors=True)
+
+
+def parser():
+    root = argparse.ArgumentParser()
+    commands = root.add_subparsers(dest="command", required=True)
+    seal = commands.add_parser("seal-writer")
+    seal.add_argument("--program", required=True)
+    seal.add_argument("--state-root", required=True)
+    seal.add_argument("--legacy-label", action="append", required=True)
+    seal.add_argument("--operator-uid", type=int, required=True)
+    seal.add_argument("--receipt", required=True)
+    seal.set_defaults(handler=seal_writer)
+    verify = commands.add_parser("verify-writer")
+    verify.add_argument("--receipt", required=True)
+    verify.set_defaults(handler=verify_writer)
+    restore = commands.add_parser("restore-writer")
+    restore.add_argument("--receipt", required=True)
+    restore.add_argument("--output-receipt", required=True)
+    restore.set_defaults(handler=restore_writer)
+    verify_restored = commands.add_parser("verify-restore")
+    verify_restored.add_argument("--receipt", required=True)
+    verify_restored.add_argument("--restore-receipt", required=True)
+    verify_restored.set_defaults(handler=verify_restore)
+    publish = commands.add_parser("publish-directory")
+    publish.add_argument("--staged", required=True)
+    publish.add_argument("--destination", required=True)
+    publish.set_defaults(handler=publish_directory)
+    test = commands.add_parser("self-test")
+    test.set_defaults(handler=self_test)
+    return root
+
+
+if __name__ == "__main__":
+    arguments = parser().parse_args()
+    arguments.handler(arguments)

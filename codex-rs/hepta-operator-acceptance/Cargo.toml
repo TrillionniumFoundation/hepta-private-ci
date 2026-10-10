@@ -1,0 +1,41 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-operator-acceptance"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_operator_acceptance"
+path = "src/lib.rs"
+doctest = false
+
+[[bin]]
+name = "hepta-operator-acceptance"
+path = "src/main.rs"
+test = false
+
+[[bin]]
+name = "hepta-g5-trust-assessor"
+path = "src/g5_main.rs"
+test = false
+
+[lints]
+workspace = true
+
+[dependencies]
+base64 = { workspace = true }
+ed25519-dalek = { workspace = true }
+libc = { workspace = true }
+rand = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+thiserror = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+winapi-util = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+tempfile = { workspace = true }

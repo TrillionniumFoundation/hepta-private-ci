@@ -1,0 +1,177 @@
+name: MemoryCell exact preference record receipt
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-memory-preference-receipt.yml"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  receipt:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Observe only the exact already-started model run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, time
+          from urllib.request import Request, urlopen
+          url = 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/37949325144'
+          for _ in range(90):
+              request = Request(url, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+              with urlopen(request, timeout=30) as response:
+                  run = json.load(response)
+              if run['head_sha'] != 'c9b9365818b4ba0de290180b7999d6c4890b28e4':
+                  raise ValueError('wrong model source')
+              if run['status'] == 'completed':
+                  if run['conclusion'] != 'success':
+                      raise ValueError('exact model run did not succeed')
+                  break
+              time.sleep(15)
+          else:
+              raise ValueError('model run not completed within receipt bound')
+          PY
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-evidence-preference
+          run-id: 37949325144
+          github-token: ${{ github.token }}
+          path: /tmp/model-evidence
+      - name: Verify unchanged raw answers and reaggregate conditional diagnostics
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          mkdir /tmp/preference-receipt
+          python3 - <<'PY'
+          from pathlib import Path, PurePosixPath
+          from types import SimpleNamespace
+          import hashlib, json, math, re, subprocess
+          from native import digest
+          from native_citation import capture_native
+          from citation_audit import MARKER, request_payload, sha
+          root = Path('/tmp/model-evidence')
+          expected_source = 'c9b9365818b4ba0de290180b7999d6c4890b28e4'
+          manifest = {}
+          for line in (root / 'SHA256SUMS').read_text().splitlines():
+              hashed, name = line.split('  ', 1)
+              path = PurePosixPath(name)
+              if path.is_absolute() or '..' in path.parts or name in manifest or not re.fullmatch('[0-9a-f]{64}', hashed):
+                  raise ValueError('invalid manifest path/digest')
+              target = root / path
+              if target.is_symlink() or not target.is_file() or target.stat().st_size > 64 * 1024 * 1024:
+                  raise ValueError('nonregular or oversized model receipt')
+              if hashlib.sha256(target.read_bytes()).hexdigest() != hashed:
+                  raise ValueError('model artifact file hash mismatch')
+              manifest[name] = hashed
+          if (root / 'tested-commit.txt').read_text().strip() != expected_source:
+              raise ValueError('tested commit mismatch')
+          def unique(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError('duplicate JSON key')
+                  result[key] = value
+              return result
+          def invalid(value):
+              raise ValueError('nonfinite JSON: ' + value)
+          def decode(text):
+              return json.loads(text, object_pairs_hook=unique, parse_constant=invalid)
+          def read(name):
+              return decode((root / 'experiment' / name).read_text())
+          plan = read('preregistered.json')
+          if plan['source_commit'] != expected_source or plan['candidate_objective'] != 'preference' or plan['production_accepted'] is not False:
+              raise ValueError('unexpected generating plan')
+          arms = tuple(f'{e}_{r}' for e in ('native', 'token', 'empty') for r in ('base', 'legacy', 'preference'))
+          if tuple(plan['arms']) != arms:
+              raise ValueError('arm census changed')
+          cases = [(phase, qid) for phase, qs in plan['questions'].items() if phase not in ('train', 'select') for qid in qs]
+          if len(cases) != len(set(cases)) or len({q for _, q in cases}) != len(cases):
+              raise ValueError('duplicate planned questions')
+          expected = {(p, q, a) for p, q in cases for a in arms}
+          raw = [decode(line) for line in (root / 'experiment/raw-answers.jsonl').read_text().splitlines()]
+          scored = read('scored-answers.json')
+          key = lambda r: (r['phase'], r['question_id'], r['arm'])
+          original = {key(r): r for r in raw}
+          enriched = {key(r): r for r in scored}
+          if set(original) != expected or set(enriched) != expected or len(raw) != len(expected) or len(scored) != len(expected):
+              raise ValueError('incomplete or duplicated answer census')
+          summary, groups, profiles = {}, {}, set()
+          request_count = 0
+          for identity, row in original.items():
+              final = enriched[identity]
+              stripped = {k: v for k, v in final.items() if k not in ('target_unanswerable', 'exact_match', 'f1')}
+              if stripped != row:
+                  raise ValueError('scoring changed the original answer/receipt')
+              if final['target_unanswerable'] not in (None, True, False):
+                  raise ValueError('invalid answerability')
+              for metric in ('f1', 'exact_match'):
+                  value = final[metric]
+                  if value is not None and (type(value) not in (int, float) or not 0 <= value <= 1):
+                      raise ValueError('invalid recorded score')
+              groups.setdefault((row['phase'], row['question_id']), {})[row['arm']] = final
+              if row['status'] == 'succeeded':
+                  rec, queue = row['receipt'], row['citation_audit']
+                  request = queue['request']
+                  q = SimpleNamespace(identity=request['query_id'], scope=request['scope'], content=request['question'], observed_at=request['question_time'])
+                  if q.identity != row['question_id']:
+                      raise ValueError('citation query changed')
+                  rebuilt = capture_native(q, row['answer'], dict(input_ids_sha256=rec['input_ids_digest'], delivered_evidence=rec['delivered_evidence']), experiment_digest=digest((plan, row['arm'])), family_digest=digest(row['family']))
+                  if rebuilt != queue or sha(request_payload(request)) != queue['request_sha256']:
+                      raise ValueError('citation request/answer/delivery binding mismatch')
+                  profiles.add((rec['base_identity'], rec['prompt_profile']))
+                  request_count += 1
+              elif row['status'] != 'failed' or final['f1'] is not None:
+                  raise ValueError('failed result relabelled as scored success')
+          if len(profiles) != 1:
+              raise ValueError('base or decoder drift')
+          for group in groups.values():
+              first = group[arms[0]]
+              if any(any(r[k] != first[k] for k in ('family', 'phase', 'pool_digest', 'target_unanswerable')) for r in group.values()):
+                  raise ValueError('unmatched family/target/pool')
+              for evidence in ('native', 'token', 'empty'):
+                  items = [group[f'{evidence}_{r}'] for r in ('base', 'legacy', 'preference')]
+                  if any(r['selected'] != items[0]['selected'] for r in items):
+                      raise ValueError('reader comparison changed ranking')
+                  receipts = [r['receipt'] for r in items if r['status'] == 'succeeded']
+                  if any(any(r[k] != receipts[0][k] for k in ('input_ids_digest', 'delivered_evidence')) for r in receipts):
+                      raise ValueError('reader comparison changed actual inputs')
+          abstain = 'I do not have enough evidence.'
+          for phase in sorted({p for p, _ in cases}):
+              for arm in arms:
+                  rows = [r for r in scored if r['phase'] == phase and r['arm'] == arm]
+                  good = [r for r in rows if r['status'] == 'succeeded']
+                  entry = dict(planned=len(rows), succeeded=len(good), failed=len(rows)-len(good), exact_refusals=sum(r['answer'].strip() == abstain for r in good), markers=0, invalid_markers=0, semantic_precision=None)
+                  for label, flag in (('answerable', False), ('unanswerable', True)):
+                      values = [r['f1'] for r in good if r['target_unanswerable'] is flag and r['f1'] is not None]
+                      entry[label] = dict(n=len(values), f1=sum(values)/len(values) if values else None)
+                  for row in good:
+                      markers = list(MARKER.finditer(row['answer'].encode()))
+                      labels = {s['label'] for s in row['receipt']['delivered_evidence']}
+                      entry['markers'] += len(markers)
+                      entry['invalid_markers'] += sum(m.group()[1:-1].decode() not in labels for m in markers)
+                  summary[f'{phase}/{arm}'] = entry
+          training = read('preference-training.json')
+          if training['actor_forwards'] != 5 * training['steps'] or training['tokens'] != training['actor_tokens'] + training['reference_tokens'] or training['tokens'] > training['token_ceiling']:
+              raise ValueError('preference accounting inconsistency')
+          if training['tokens'] != sum(r['input_tokens'] for r in training['paired_steps']) or any(r['question_id'] != r['empty_question_id'] for r in training['paired_steps']):
+              raise ValueError('counterfactual schedule/cost mismatch')
+          result = dict(model_source=expected_source, auditor_source=subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(), manifested_files=len(manifest), planned_cases=len(cases), raw_attempts=len(raw), rebuilt_unsigned_requests=request_count, metrics=summary, training=dict(steps=training['steps'], actor_forwards=training['actor_forwards'], reference_forwards=training['reference_forwards'], actor_tokens=training['actor_tokens'], reference_tokens=training['reference_tokens'], parameter_delta=training['adapter_delta_squared_norm']), independent_semantic_review=False, diagnostics_reaggregated_not_independently_judged=True, production_accepted=False)
+          Path('/tmp/preference-receipt/receipt.json').write_text(json.dumps(result, indent=2, allow_nan=False) + '\n')
+          print(json.dumps(result, indent=2, allow_nan=False))
+          PY
+          git rev-parse HEAD > /tmp/preference-receipt/auditor-source.txt
+          (cd /tmp/preference-receipt && sha256sum receipt.json auditor-source.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-preference-record-receipt
+          path: /tmp/preference-receipt
+          if-no-files-found: error

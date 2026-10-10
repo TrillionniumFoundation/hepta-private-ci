@@ -1,0 +1,523 @@
+{
+  "schema": "hepta.path-ownership.v3",
+  "schemaVersion": 3,
+  "documentClass": "canonical_registry",
+  "authorityScope": "source_namespace_and_concurrent_write_conflict_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "moduleNamespaces": [
+    {
+      "module": "platform.types",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-types",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "platform.wire",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-wire",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "kernel.authority",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-contracts",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "kernel.operations",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-operations",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/state/src/lib.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/state/src/sqlite.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/state/src/sqlite_recovery.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/state/src/sqlite_recovery_tests.rs",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "kernel.evidence",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-evidence",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "runtime.supervisor",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-supervisor",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "runtime.fleet",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-fleet",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "runtime.agentd",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-agentd",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "runtime.codex",
+      "rootBindings": [
+        {
+          "path": "codex-rs/codex-app-server",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-codex-adapter",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "auth.authbus",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-authbus",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-authbus-p1-3-qualification",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "secrets.heptabao",
+      "rootBindings": [
+        {
+          "path": "external/HeptaBao",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "inference.control",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-infer-core",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-inferd",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "inference.worker",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-infer-worker-host",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "objective.compiler",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-objective",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "utility.ndu",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-ndu",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "neuron.runtime",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-neuron",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "intuition.policy",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-intuition",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "prompt.registry",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-prompt-registry",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "prompt.optimizer",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-prompt-optimizer",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "context.compiler",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-context-compiler",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "intelligence.control",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-intelligence",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-cognitive-types",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "cognitive.store",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-cognitive-store",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/lib.rs",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "cognitive.read",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-cognitive-read",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "memory.retrieval",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-memory-retrieval",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "memory.federation",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-memory-federation",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "knowledge.graph",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-kg",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "compact.engine",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-compact-engine",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "learning.ledger",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-learning-ledger",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "learning.operator",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-bellman-operator",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "learning.eval",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "learning.artifacts",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-learning-artifacts",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-shadow-qualification/tests/durable_learning_roundtrip.rs",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "learning.plasticity",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-plasticity",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "automation.taskflow",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-automation",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "channel.matrix",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-matrix-sdk",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-matrixd",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-store",
+          "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-protocol",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "browser.servo",
+      "rootBindings": [
+        {
+          "path": "apps/hepta-browser",
+          "mode": "exclusive"
+        },
+        {
+          "path": "third_party/servo-patches",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "ui.control",
+      "rootBindings": [
+        {
+          "path": "apps/hepta-control-ui",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "ui.native",
+      "rootBindings": [
+        {
+          "path": "apps/hepta-native",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "control.runtime",
+      "rootBindings": [
+        {
+          "path": "codex-rs/hepta-control-plane",
+          "mode": "exclusive"
+        }
+      ]
+    },
+    {
+      "module": "control.engineering",
+      "rootBindings": [
+        {
+          "path": "tools/hepta-engineering-control",
+          "mode": "exclusive"
+        }
+      ]
+    }
+  ],
+  "developmentDocumentNamespace": {
+    "owner": "control.engineering",
+    "paths": [
+      "README.md",
+      "docs/**",
+      "scripts/hepta-docs.py",
+      ".github/workflows/hepta-development-docs.yml",
+      "scripts/hepta-algorithm-docs.py",
+      ".github/workflows/hepta-algorithm-docs.yml",
+      "scripts/hepta-gap-closure.py",
+      "qualification/gap-closure/**",
+      ".github/workflows/hepta-consolidated-source.yml",
+      "qualification/module-execution-dossiers/**",
+      "scripts/hepta-implementation-dossiers.py",
+      "scripts/hepta-technical-closure.py",
+      "scripts/hepta_source_registry_closure.py",
+      "scripts/test_hepta_gap_closure.py"
+    ]
+  },
+  "rules": {
+    "onePrimaryOwnerPerPath": true,
+    "foreignNamespaceRequiresCoOwner": true,
+    "overlapRequiresDagOrderingOrLease": true,
+    "unboundedRepositoryScopeAllowed": false
+  },
+  "activeLeases": [
+    {
+      "leaseId": "LEASE-TASKFLOW-MATRIX-QUALIFICATION-001",
+      "packageA": "MATRIX-1-CHANNEL-BOUNDARY",
+      "packageB": "TASKFLOW-1-EXECUTION-BOUNDARY",
+      "normalizedExactPaths": [
+        ".github/workflows/hepta-lane-b-truth.yml"
+      ],
+      "pathSetSha256": "eaebdea539636893407409fb6631db3ace7254e21e0450e52d7a05b29e705a05",
+      "purpose": "shared_taskflow_matrix_qualification",
+      "status": "requires_external_attestation",
+      "reviewBinding": {
+        "identitySource": "github_pull_request_review",
+        "repositorySource": "github.event.repository.id",
+        "pullRequestSource": "github.event.pull_request.number",
+        "baseSource": "github.event.pull_request.base.sha",
+        "headSource": "github.event.pull_request.head.sha",
+        "reviewCommitSource": "github.event.review.commit_id",
+        "reviewerIdSource": "github.event.review.user.id",
+        "authorIdSource": "github.event.pull_request.user.id",
+        "requiredState": "approved",
+        "reviewCommitMustEqualHead": true,
+        "reviewerMustDifferFromAuthor": true,
+        "invalidateOnHeadChange": true,
+        "reusable": false,
+        "maximumAttestationAgeSeconds": 86400
+      },
+      "lifecycle": {
+        "activation": "trusted_external_attestation_after_exact_changed_path_match",
+        "changeSetBinding": "exact_normalized_lease_path_set",
+        "expiresOn": "head_change_review_dismissal_or_ttl",
+        "retention": "manifest_only_no_authority"
+      },
+      "authorityGranted": false,
+      "authorityDelta": "none"
+    }
+  ],
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

@@ -1,0 +1,33 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-intelligence-eval"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_intelligence_eval"
+path = "src/lib.rs"
+doctest = false
+
+[features]
+default = []
+# Explicit compatibility escape hatch for trusted in-process fixtures only.
+# Production and qualification consumers must use signed admission APIs.
+trusted-inprocess-eval = []
+
+[[test]]
+name = "operator_claim"
+path = "tests/operator_claim.rs"
+required-features = ["trusted-inprocess-eval"]
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+ed25519-dalek = { workspace = true }
+pretty_assertions = { workspace = true }

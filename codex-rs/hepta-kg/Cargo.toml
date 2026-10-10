@@ -1,0 +1,18 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-kg"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_kg"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
+codex-hepta-types = { path = "../hepta-types" }

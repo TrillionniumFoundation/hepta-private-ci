@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.archived-branch-reconciliation.v1",
+  "incoming": "7074996caed82910e5b22054134c51e8982cb680",
+  "incomingBranch": "archive/hepta-v8-pr295-7074996-20260904",
+  "mainBefore": "793dc433156369d58ea7826ee284062c868a7079",
+  "trackingPullRequest": 315,
+  "changedPathsEnumeratedAcrossAllPrPages": 178,
+  "verifiedReference": {
+    "commit": "08c017d8186d0861f85bb65182dca62a60b51021",
+    "tree": "dd26b8b10a8a6be6b77102c413b964fae0266e78",
+    "sourceArchiveSha256": "c84914aa9d56b55e69f714049b39b82dccf4416d2fea1849c82ea24c89454ba8",
+    "recomputedTrackedFiles": 7317,
+    "wholeArchiveTreeMatched": true,
+    "retainedAsMainAncestor": true
+  },
+  "projectionComparison": {
+    "tree": "71b703c0da3de3172bb57452a7d286b780859d66",
+    "purpose": "Diagnostic projection only; never selected as the product source tree.",
+    "identicalIncomingPathsAtReference": 141,
+    "differingIncomingPathsAtReference": 37,
+    "rustResolution": "Every incoming Rust source path is already present byte-for-byte at the retained reference. Cargo.toml and Cargo.lock differ only by later additive workspace registrations and lock records. No incoming Rust code is omitted.",
+    "ciResolution": "Retain later additive readiness, CNS, HNMF and privileged-caller checks plus the explicit installed-Cargo canary invocation; do not regress to the archived workflow versions.",
+    "cnsResolution": "Retain graph-size and duplicate-edge bounds, independent fallback-cycle checks, duplicate resource rejection, state-age and exact-deadline reflex validation, and registry-driven anatomy instead of the earlier eight-organ toy graph. Retain updated callers and tests.",
+    "documentationResolution": "Keep the later canonical plan, static rather than cached live-state policy, readiness protocol imports, delivery DAG extensions, expanded work packages, source-binding updates, generated module metadata and subordinate readiness sections. Keep original algorithm specifications and HNMF documents already present in the reference; do not create versioned document copies.",
+    "verifierResolution": "Retain the expanded subordinate document verifiers and their no-positive-authority and no-cached-dynamic-fact checks. Keep current main's later pinned-evidence ancestry and typed-source changes as well."
+  },
+  "result": "All archived delta paths reconciled by preserving the newer main tree and retaining the archived head as a parent. The only new working-tree file is this administrative receipt.",
+  "sourceFilesReplacedByThisCommit": [],
+  "runtimeOrProductionAuthorityGranted": false,
+  "wholeRepositoryCiPassed": false,
+  "allRepositoryBranchesReconciled": false,
+  "branchDeletionPerformedByThisCommit": false
+}

@@ -1,0 +1,644 @@
+{
+  "schemaVersion": 2,
+  "lane": "LANE-A-FOUNDATION",
+  "documentationPolicy": "docs/lane-a-foundation/BOUNDARY_POLICY.md",
+  "capabilityEvidenceMap": "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json",
+  "nativeBindingOverride": "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json",
+  "moduleCoverage": 7,
+  "statusAxes": [
+    "source",
+    "implementation",
+    "durability",
+    "qualification",
+    "activation",
+    "acceptance"
+  ],
+  "closure": {
+    "repositoryControlledDocumentationGaps": "closed",
+    "currentImplementationTruth": "source_and_test_anchored",
+    "automatedDriftGate": "closed",
+    "nativeQualification": "workflow_required",
+    "targetArchitectureImplementation": "partial",
+    "productionActivation": "not_claimed",
+    "externalAcceptance": "not_claimed"
+  },
+  "modules": [
+    {
+      "module": "platform.types",
+      "profile": "pure_types",
+      "formalGuide": "docs/modules/platform.types/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/platform.types/PRIMITIVES_V1.md",
+      "states": {
+        "source": "implemented",
+        "implementation": "native_protocol_primitives_generated_bindings",
+        "durability": "none",
+        "qualification": "candidate_workflow_required",
+        "activation": "library_only",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "bounded values, profiled identifiers and monotonic identities",
+        "sealed non-authorizing posture with raw one-byte grant-bit rejection",
+        "canonical HPTC V1 encode/digest/raw-byte validation with accepted/rejected cross-language conformance",
+        "immutable schema/normalization and numeric-profile admission registry",
+        "checked numeric conversion with registered profiles and explicit Q32 arithmetic split",
+        "deterministically generated Python/JavaScript runtime bindings and TypeScript declarations"
+      ],
+      "targetOnlyCapabilities": [
+        "RandomStreamManifestV1 native source",
+        "ExternalSystemManifestV1 native source",
+        "SensorCalibrationManifestV1 native source",
+        "named authenticated product composition and registry-generation provisioning",
+        "full consumer compile matrix, independent semantic review and target-host qualification"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-types/src/lib.rs",
+          "mustContain": [
+            "#![forbid(unsafe_code)]",
+            "pub use identity::NonAuthorizingPosture;",
+            "pub use canonical_digest::canonical_validate_v1;",
+            "pub use numeric_profile::NumericProfileDefinitionV1;",
+            "pub use numeric_conversion::rescale_signal_registered;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
+          "mustContain": [
+            "unicode-nfc-is-not-normalized-v1",
+            "invalid-bool-byte-v1",
+            "invalid-value-tag-v1"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/bindings/PLATFORM_TYPES_BINDINGS_V1.json",
+          "mustContain": [
+            "fixed-q32-toward-zero-v1",
+            "signed-q32-nearest-ties-even-v1",
+            "authorityWireV1"
+          ]
+        }
+      ],
+      "productCallerState": "not_composed"
+    },
+    {
+      "module": "platform.wire",
+      "profile": "stateless_codec",
+      "formalGuide": "docs/modules/platform.wire/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
+      "states": {
+        "source": "implemented",
+        "implementation": "versioned_v1_v2_codec",
+        "durability": "none",
+        "qualification": "boundary_property_cross_runtime_source_evidence",
+        "activation": "library_only",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "frozen HPTA V1 and metadata-bound HPTA V2 encode/decode",
+        "explicit HPTN version and capability negotiation with fail-closed pinning",
+        "schema admission, typed payload codec boundary and bounded streaming decode"
+      ],
+      "targetOnlyCapabilities": [
+        "authenticated negotiation transcript and encoded-frame binding at the selected production transport",
+        "additional product-domain schema codec admission",
+        "independent target-host qualification, activation and external acceptance"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-wire/src/lib.rs",
+          "mustContain": [
+            "pub use envelope::WireEnvelope;",
+            "pub use envelope_v2::WireEnvelopeV2;",
+            "pub use version::negotiate;",
+            "pub use schema::SchemaRegistry;",
+            "pub use stream::StreamingDecoder;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/envelope_v2_tests.rs",
+          "mustContain": [
+            "v2_round_trip_and_frozen_bytes_are_exact",
+            "metadata_mutation_is_bound_by_v2_digest"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
+          "mustContain": [
+            "rust_python_live_v2_session_negotiates_and_loads_typed_payload",
+            "frame digest mismatch"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "kernel.authority",
+      "profile": "authority_kernel",
+      "formalGuide": "docs/modules/kernel.authority/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/kernel.authority/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "codex-rs/hepta-contracts/FINAL_USE.md",
+      "states": {
+        "source": "implemented",
+        "implementation": "final_use_and_authority_lease_owner",
+        "durability": "local_fsync_stores_with_host_frontier",
+        "qualification": "source_tests_and_exact_candidate_workflow_required",
+        "activation": "registered_host_composed_not_product_activated",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "independently signed final-use grant verification through canonical claim and delivery entrypoints",
+        "single-use nonce and monotonic revocation persistence with capacity/frontier observability",
+        "durable authority leases with owner-CAS mutation, CAS revocation, trusted time and anti-rollback frontier input",
+        "non-serializable final-use and lease verified-use tokens",
+        "independent operator approval and authenticated revocation-feed verification",
+        "closed registered Bao consumer host source composition",
+        "bounded fleet revocation catch-up/quarantine/stale-feed admission over authenticated update and acknowledgement evidence",
+        "runtime.fleet concrete generic-lease consumer revalidates exact AllocationGrant binding before LeaseLedger issue"
+      ],
+      "targetOnlyCapabilities": [
+        "general identity provider and complete approval-policy engine",
+        "deployed fleet revocation wire fanout and measured convergence/freshness SLA",
+        "external durable anti-rollback oracle for legacy final-use state",
+        "attested trusted-time service and clock rollback detection",
+        "cross-platform durable authority backend",
+        "selected product-process activation and operator acceptance"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "mustContain": [
+            "pub struct FinalUseAuthority",
+            "pub struct FinalUseCapacity",
+            "pub struct VerifiedUseToken",
+            "pub fn claim_final_use(",
+            "pub fn deliver_final_use",
+            "verify_strict",
+            "const MAX_LIFETIME_MS: u64 = 300_000;"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+          "mustContain": [
+            "pub struct AuthorityLeaseRegistry",
+            "pub fn put_lease(",
+            "pub fn revoke(",
+            "pub fn advance_epoch(",
+            "pub fn verify_use(",
+            "AntiRollbackViolation"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+          "mustContain": [
+            "pub struct FinalUseApprovalVerifier",
+            "pub struct FinalUseRevocationFeedVerifier",
+            "verify_strict",
+            "update_revocations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-contracts/FINAL_USE.md",
+          "mustContain": [
+            "Final-use authority and independent issuer",
+            "These files are not an external anti-rollback oracle"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
+          "mustContain": [
+            "pub struct FleetRevocationCoordinator",
+            "CatchingUp",
+            "Quarantined",
+            "FeedStale",
+            "is_superset"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "pub struct FleetAuthorityPort",
+            "pub fn issue(",
+            ".verify_use(",
+            ".with_verified_use("
+          ]
+        }
+      ]
+    },
+    {
+      "module": "kernel.operations",
+      "profile": "durable_operation_owner_with_reference_oracle",
+      "formalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md",
+      "states": {
+        "source": "implemented",
+        "implementation": "durable_owner_source_implemented",
+        "durability": "sqlite_wal_full_integrated_owner",
+        "qualification": "source_tests_present_exact_candidate_pending",
+        "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "bounded deterministic operation-state reference model",
+        "bounded in-memory outbox claim and acknowledgement model",
+        "generation-fenced idempotent terminal observation",
+        "atomic SQLite OperationIntentV1 and source outbox owner",
+        "bounded durable dispatch attempts expiry renewal backoff and takeover",
+        "full semantic final-use dispatch destination CAS and independent terminal reconciliation",
+        "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default"
+      ],
+      "targetOnlyCapabilities": [
+        "external production authority/grant enrollment and selected-host activation",
+        "destination-owned adapter and terminal observer for every remaining registered effect destination",
+        "bounded segment checkpoint compaction for long-lived append-only history",
+        "target-host power-loss storage qualification and independent acceptance"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-operations/src/model.rs",
+          "mustContain": [
+            "pub struct OperationIntentV1",
+            "pub fn semantic_digest",
+            "expected_predecessor"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_writer.rs",
+          "mustContain": [
+            "pub async fn prepare_operation",
+            "pub struct ProductionDispatchRequest",
+            "operation_semantic_sha256",
+            "expected_predecessor_sha256",
+            "ProductionFinalUseOutboxDispatcher"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+          "mustContain": [
+            "pub(crate) async fn claim",
+            "pub(crate) async fn renew",
+            "next_eligible_at_unix_ms",
+            "attempt"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+          "mustContain": [
+            "BEGIN IMMEDIATE",
+            "expected_predecessor",
+            "ProductionTargetOutcome::NotApplied",
+            "observe_terminal"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "mustContain": [
+            "AgentdProductionWriterHost",
+            "ProductionFinalUseOutboxDispatcher",
+            "AgentdFinalUseGrantProvider"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/ledger.rs",
+          "mustContain": [
+            "MAX_MODEL_OPERATION_RECORDS",
+            "pub struct OperationLedger",
+            "pub fn observe_terminal"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/outbox.rs",
+          "mustContain": [
+            "MAX_MODEL_OUTBOX_RECORDS",
+            "claim_with_lease",
+            "renew_claim"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/config.rs",
+          "mustContain": [
+            "with_production_operations",
+            "take_production_operations"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/runtime.rs",
+          "mustContain": [
+            "run_production_operation_reconciler",
+            "attach_production_operations",
+            "CompletedRuntimeTask::Operations"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "kernel.evidence",
+      "profile": "sqlite_evidence_store",
+      "formalGuide": "docs/modules/kernel.evidence/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/kernel.evidence/STORE_V1.md",
+      "states": {
+        "source": "implemented",
+        "implementation": "sqlite_qualification_evidence_store",
+        "durability": "sqlite_migrations_0001_0012",
+        "qualification": "native_tests_and_agentd_product_test_present",
+        "activation": "agentd_product_composed_config_gated",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "governance and historical evidence storage",
+        "provider intent terminal and effect evidence storage",
+        "schema migration and integrity validation",
+        "authenticated exact-candidate qualification evidence append query and verification",
+        "signed recovery frontier snapshot and Agentd startup verification"
+      ],
+      "targetOnlyCapabilities": [
+        "external durable monotonic CAS/latest-frontier backend and backup publication acknowledgement",
+        "independent external acceptance ceremony",
+        "promotion or release authority"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/lib.rs",
+          "mustContain": [
+            "pub use store::HeptaEvidenceStore;",
+            "pub enum EvidenceError"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/store.rs",
+          "mustContain": [
+            "verify_current_migration_ledger",
+            "verify_quick_check",
+            "open_existing_read_only"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0001_governance.sql",
+          "mustContain": [
+            "CREATE TABLE",
+            "governance_decisions_no_update"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0008_provider_effect_ack_source.sql",
+          "mustContain": [
+            "ALTER TABLE",
+            "status_lookup"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0010_authbus_outbox.sql",
+          "mustContain": [
+            "CREATE TABLE authbus_outbox",
+            "authbus_outbox_active_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE qualification_evidence",
+            "qualification_evidence_no_update",
+            "qualification_evidence_no_delete",
+            "CREATE TABLE evidence_recovery_identity"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn append_receipt",
+            "pub async fn query_claim",
+            "pub async fn verify_chain",
+            "IndependentDecisionReceiptV1"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+          "mustContain": [
+            "pub(crate) struct EvidenceHost",
+            "pub(crate) async fn append",
+            "pub(crate) async fn verify"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+          "mustContain": [
+            "EvidenceRecoverySnapshotV1",
+            "pub async fn recovery_snapshot",
+            "pub async fn bind_recovery_store_id"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+          "mustContain": [
+            "EvidenceRecoveryFrontierV1",
+            "verify_evidence_recovery_frontier",
+            "recovery_required"
+          ]
+        }
+      ],
+      "namedProductCallers": [
+        "runtime.agentd"
+      ]
+    },
+    {
+      "module": "secrets.heptabao",
+      "profile": "bounded_external_secret_reader",
+      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+      "states": {
+        "source": "implemented",
+        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
+        "durability": "external_authority_plus_local_final_use_state",
+        "qualification": "source_tests_and_exact_candidate_workflow_required",
+        "activation": "registered_host_composed_not_product_activated",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "pinned-CA HTTPS read of one exact KV-v2 string field",
+        "canonical final-use claim and delivery boundaries",
+        "registered signed consumer-id to trusted callback mapping",
+        "independent approval before dispatch and authenticated revocation ingestion",
+        "metadata-only receipt without raw secret value"
+      ],
+      "targetOnlyCapabilities": [
+        "secret mutation",
+        "generic secret lease renewal API",
+        "durable operation and evidence composition",
+        "fleet revocation distribution and freshness enforcement",
+        "automatic production enrollment and selected process caller"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "pub struct BaoClient",
+            "consume_kv_v2",
+            "MAX_RESPONSE_BYTES",
+            "claim_final_use(authority, grant, &binding)",
+            "deliver_final_use(authority, verified, &binding"
+          ],
+          "mustNotContain": [
+            ".claim(grant, &binding)",
+            ".with_verified_use(verified"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+          "mustContain": [
+            "pub struct BaoFinalUseHost",
+            "UnregisteredConsumer",
+            "approval_verifier",
+            "revocation_verifier"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/README.md",
+          "mustContain": [
+            "Authorized HeptaBao HTTPS consumer",
+            "Only read operations exist here"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "auth.authbus",
+      "profile": "durable_authorization_quota_with_signed_ingress",
+      "formalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
+      "formalGuideRole": "target_architecture",
+      "currentSpecification": "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
+      "currentSpecificationRole": "current_executable_contract",
+      "implementationDetail": "codex-rs/hepta-authbus/SIGNED_ADMISSION.md",
+      "states": {
+        "source": "implemented",
+        "implementation": "durable_policy_quota_reservation_owner",
+        "durability": "sqlite_dual_checkpointed_authbus_owners",
+        "qualification": "source_tests_present",
+        "activation": "host_composition_required",
+        "acceptance": "not_granted"
+      },
+      "currentCapabilities": [
+        "bounded SQLite replay admission keyed by issuer epoch subject and scope",
+        "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
+        "deny-all admission receipts and legacy preverified in-process replay",
+        "transactional bounded AuthBus message outbox with recoverable fenced delivery",
+        "durable revision-bound policy issuer and signed trusted-time ownership",
+        "conservation-safe quota reservation cancellation settlement and restart reconciliation",
+        "external rollback checkpoints for replay and authority semantic frontiers",
+        "Bao KV-v2 operation quota final-use and signed settlement composition"
+      ],
+      "targetOnlyCapabilities": [
+        "production-durable kernel.operations transaction owner",
+        "independently operated issuer key trusted-time and checkpoint services",
+        "distributed multi-host AuthBus ownership",
+        "target-host qualification independent acceptance promotion and release"
+      ],
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-authbus/src/signed.rs",
+          "mustContain": [
+            "pub struct IssuerRegistration",
+            "pub struct SignedMessageClaims",
+            "pub struct AuthenticatedMessage",
+            "pub fn authenticate(",
+            ".verify_strict("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/host.rs",
+          "mustContain": [
+            "pub struct AuthBusAuthorityHost",
+            "pub async fn sync_checkpoint",
+            "pub async fn reserve(",
+            "pub async fn settle("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/authority_store.rs",
+          "mustContain": [
+            "pub struct AuthBusAuthorityStore",
+            "pub async fn create_policy(",
+            "pub async fn authorize(",
+            "record_policy_history"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/quota_store.rs",
+          "mustContain": [
+            "pub async fn reserve(",
+            "MAX_ACTIVE_RESERVATIONS",
+            "compact_terminal_reservations",
+            "ensure_recovery_complete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/settlement_store.rs",
+          "mustContain": [
+            "pub async fn mark_dispatch_attempted(",
+            "pub async fn cancel_reservation(",
+            "pub async fn settle("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-authbus/src/recovery.rs",
+          "mustContain": [
+            "pub struct AuthorityCheckpoint",
+            "reconcile_authority_checkpoint",
+            "reconcile_after_restart",
+            "authority_frontier_digest_tx"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
+          "mustContain": [
+            "pub async fn enqueue_authbus_message(",
+            "advance_replay(&mut tx, &authenticated)"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_recovery.rs",
+          "mustContain": [
+            "reconcile_authbus_restore_checkpoint",
+            "advance_authbus_restore_checkpoint",
+            "RollbackDetected"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/authbus_ingress.rs",
+          "mustContain": [
+            "sync_replay_checkpoint",
+            "enqueue_authbus_message",
+            "ReplayCheckpointFile"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "consume_kv_v2_with_authbus",
+            "mark_dispatch_attempted",
+            "FinalUseAuthority",
+            "settle_observed"
+          ]
+        }
+      ],
+      "namedProductCallers": [
+        "codex-hepta-agentd signed-text ingress"
+      ]
+    }
+  ]
+}

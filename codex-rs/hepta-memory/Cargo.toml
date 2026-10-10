@@ -1,0 +1,42 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-memory"
+version.workspace = true
+
+[lib]
+name = "codex_hepta_memory"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+base64 = { workspace = true }
+codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
+codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-memory-federation = { path = "../hepta-memory-federation" }
+codex-hepta-kg = { path = "../hepta-kg" }
+codex-hepta-paths = { workspace = true }
+codex-hepta-operations = { path = "../hepta-operations" }
+codex-hepta-types = { path = "../hepta-types" }
+codex-state = { workspace = true }
+codex-utils-absolute-path = { workspace = true }
+ed25519-dalek = { workspace = true }
+libc = { workspace = true }
+futures = { workspace = true, features = ["std"] }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+sqlx = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["time"] }
+unicode-segmentation = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

@@ -1,0 +1,1558 @@
+{
+  "schema": "hepta.implementation-readiness-gap-ledger.v1",
+  "schemaVersion": 1,
+  "documentClass": "canonical_subordinate_registry",
+  "authorityScope": "pre_coding_documentation_gap_closure_only",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "overlayVersion": "8.2.0-readiness",
+  "scope": "implementation_semantics_protocols_fixtures_parallelization_and_assimilation",
+  "allDocumentationGapsClosed": true,
+  "sourceImplementationClaimed": false,
+  "gaps": [
+    {
+      "id": "RDY-GAP-SRC-001",
+      "family": "RDY-SRC",
+      "gap": "exact_candidate_identity_and_tree",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "BranchPurposeManifestV1",
+        "CanonicalSourceReceiptV1",
+        "IntegrationCheckpointV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "kernel.evidence",
+        "runtime.supervisor"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SRC-002",
+      "family": "RDY-SRC",
+      "gap": "branch_classification_and_purpose_manifest",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "BranchPurposeManifestV1",
+        "CanonicalSourceReceiptV1",
+        "IntegrationCheckpointV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "kernel.evidence",
+        "runtime.supervisor"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SRC-003",
+      "family": "RDY-SRC",
+      "gap": "synthetic_merge_identity_and_parent_order",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "BranchPurposeManifestV1",
+        "CanonicalSourceReceiptV1",
+        "IntegrationCheckpointV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "kernel.evidence",
+        "runtime.supervisor"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SRC-004",
+      "family": "RDY-SRC",
+      "gap": "base_drift_and_dynamic_freshness_policy",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "BranchPurposeManifestV1",
+        "CanonicalSourceReceiptV1",
+        "IntegrationCheckpointV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "kernel.evidence",
+        "runtime.supervisor"
+      ]
+    },
+    {
+      "id": "RDY-GAP-OBJ-001",
+      "family": "RDY-OBJ",
+      "gap": "objective_input_dsl_and_bounded_ir",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveConstraintSetV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveCompileReceiptV1"
+      ],
+      "boundModules": [
+        "objective.compiler",
+        "intelligence.control",
+        "kernel.authority",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-OBJ-002",
+      "family": "RDY-OBJ",
+      "gap": "hard_constraint_precedence_and_minimal_conflict_set",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveConstraintSetV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveCompileReceiptV1"
+      ],
+      "boundModules": [
+        "objective.compiler",
+        "intelligence.control",
+        "kernel.authority",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-OBJ-003",
+      "family": "RDY-OBJ",
+      "gap": "canonicalization_digest_and_revision_semantics",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveConstraintSetV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveCompileReceiptV1"
+      ],
+      "boundModules": [
+        "objective.compiler",
+        "intelligence.control",
+        "kernel.authority",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-OBJ-004",
+      "family": "RDY-OBJ",
+      "gap": "compiler_state_machine_and_error_codes",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveConstraintSetV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveCompileReceiptV1"
+      ],
+      "boundModules": [
+        "objective.compiler",
+        "intelligence.control",
+        "kernel.authority",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-OBJ-005",
+      "family": "RDY-OBJ",
+      "gap": "adversarial_instruction_and_scope_rejection",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveConstraintSetV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveCompileReceiptV1"
+      ],
+      "boundModules": [
+        "objective.compiler",
+        "intelligence.control",
+        "kernel.authority",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-OBJ-006",
+      "family": "RDY-OBJ",
+      "gap": "objective_golden_vectors_and_resource_bounds",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveConstraintSetV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveCompileReceiptV1"
+      ],
+      "boundModules": [
+        "objective.compiler",
+        "intelligence.control",
+        "kernel.authority",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NDU-001",
+      "family": "RDY-NDU",
+      "gap": "cross_organ_utility_contribution_contract",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "UtilityContributionV1",
+        "NduIterationReceiptV1",
+        "NduConvergenceCertificateV1"
+      ],
+      "boundModules": [
+        "utility.ndu",
+        "objective.compiler",
+        "control.runtime",
+        "intuition.policy",
+        "learning.eval",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NDU-002",
+      "family": "RDY-NDU",
+      "gap": "vector_utility_pareto_and_scalarization_policy",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "UtilityContributionV1",
+        "NduIterationReceiptV1",
+        "NduConvergenceCertificateV1"
+      ],
+      "boundModules": [
+        "utility.ndu",
+        "objective.compiler",
+        "control.runtime",
+        "intuition.policy",
+        "learning.eval",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NDU-003",
+      "family": "RDY-NDU",
+      "gap": "deterministic_four_level_update_schedule",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "UtilityContributionV1",
+        "NduIterationReceiptV1",
+        "NduConvergenceCertificateV1"
+      ],
+      "boundModules": [
+        "utility.ndu",
+        "objective.compiler",
+        "control.runtime",
+        "intuition.policy",
+        "learning.eval",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NDU-004",
+      "family": "RDY-NDU",
+      "gap": "convergence_infeasibility_and_multiple_solution_disposition",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "UtilityContributionV1",
+        "NduIterationReceiptV1",
+        "NduConvergenceCertificateV1"
+      ],
+      "boundModules": [
+        "utility.ndu",
+        "objective.compiler",
+        "control.runtime",
+        "intuition.policy",
+        "learning.eval",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NDU-005",
+      "family": "RDY-NDU",
+      "gap": "fixed_point_units_tolerances_and_conservation",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "UtilityContributionV1",
+        "NduIterationReceiptV1",
+        "NduConvergenceCertificateV1"
+      ],
+      "boundModules": [
+        "utility.ndu",
+        "objective.compiler",
+        "control.runtime",
+        "intuition.policy",
+        "learning.eval",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NDU-006",
+      "family": "RDY-NDU",
+      "gap": "goodhart_wireheading_and_proxy_tampering_controls",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "UtilityContributionV1",
+        "NduIterationReceiptV1",
+        "NduConvergenceCertificateV1"
+      ],
+      "boundModules": [
+        "utility.ndu",
+        "objective.compiler",
+        "control.runtime",
+        "intuition.policy",
+        "learning.eval",
+        "learning.ledger"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NEU-001",
+      "family": "RDY-NEU",
+      "gap": "runtime_state_layout_and_generation_binding",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NEURON_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1"
+      ],
+      "boundModules": [
+        "neuron.runtime",
+        "intuition.policy",
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NEU-002",
+      "family": "RDY-NEU",
+      "gap": "deterministic_tick_order_topk_and_inhibition",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NEURON_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1"
+      ],
+      "boundModules": [
+        "neuron.runtime",
+        "intuition.policy",
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NEU-003",
+      "family": "RDY-NEU",
+      "gap": "clock_sequence_concurrency_and_single_writer_checkpoint",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NEURON_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1"
+      ],
+      "boundModules": [
+        "neuron.runtime",
+        "intuition.policy",
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NEU-004",
+      "family": "RDY-NEU",
+      "gap": "crash_reopen_and_fallback_semantics",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NEURON_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1"
+      ],
+      "boundModules": [
+        "neuron.runtime",
+        "intuition.policy",
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NEU-005",
+      "family": "RDY-NEU",
+      "gap": "latency_memory_and_allocation_envelope",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NEURON_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1"
+      ],
+      "boundModules": [
+        "neuron.runtime",
+        "intuition.policy",
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts"
+      ]
+    },
+    {
+      "id": "RDY-GAP-NEU-006",
+      "family": "RDY-NEU",
+      "gap": "lesion_ablation_and_golden_fixture_matrix",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/NEURON_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1"
+      ],
+      "boundModules": [
+        "neuron.runtime",
+        "intuition.policy",
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts"
+      ]
+    },
+    {
+      "id": "RDY-GAP-LRN-001",
+      "family": "RDY-LRN",
+      "gap": "preregistered_evaluation_and_frozen_analysis",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "EvaluationPlanV1",
+        "EvaluatorIndependenceReceiptV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts",
+        "learning.operator",
+        "learning.plasticity",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-LRN-002",
+      "family": "RDY-LRN",
+      "gap": "candidate_completeness_propensity_and_support_audit",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "EvaluationPlanV1",
+        "EvaluatorIndependenceReceiptV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts",
+        "learning.operator",
+        "learning.plasticity",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-LRN-003",
+      "family": "RDY-LRN",
+      "gap": "independent_delayed_outcome_observation",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "EvaluationPlanV1",
+        "EvaluatorIndependenceReceiptV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts",
+        "learning.operator",
+        "learning.plasticity",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-LRN-004",
+      "family": "RDY-LRN",
+      "gap": "ope_cross_fitting_confidence_and_multiplicity",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "EvaluationPlanV1",
+        "EvaluatorIndependenceReceiptV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts",
+        "learning.operator",
+        "learning.plasticity",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-LRN-005",
+      "family": "RDY-LRN",
+      "gap": "future_time_windows_and_retention_slices",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "EvaluationPlanV1",
+        "EvaluatorIndependenceReceiptV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts",
+        "learning.operator",
+        "learning.plasticity",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-LRN-006",
+      "family": "RDY-LRN",
+      "gap": "unlearning_lineage_and_restore_non_resurrection",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "EvaluationPlanV1",
+        "EvaluatorIndependenceReceiptV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts",
+        "learning.operator",
+        "learning.plasticity",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-LRN-007",
+      "family": "RDY-LRN",
+      "gap": "evaluator_generator_selector_identity_separation",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "EvaluationPlanV1",
+        "EvaluatorIndependenceReceiptV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.ledger",
+        "learning.eval",
+        "learning.artifacts",
+        "learning.operator",
+        "learning.plasticity",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SI-001",
+      "family": "RDY-SI",
+      "gap": "typed_mutation_grammar_and_no_change_candidate",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SELF_ITERATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "MutationGrammarManifestV1",
+        "SandboxExecutionReceiptV1",
+        "CandidateLineageV1",
+        "EvaluatorIndependenceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.plasticity",
+        "control.engineering",
+        "learning.eval",
+        "learning.artifacts",
+        "intelligence.control",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SI-002",
+      "family": "RDY-SI",
+      "gap": "protected_roots_and_evaluator_immutability",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SELF_ITERATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "MutationGrammarManifestV1",
+        "SandboxExecutionReceiptV1",
+        "CandidateLineageV1",
+        "EvaluatorIndependenceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.plasticity",
+        "control.engineering",
+        "learning.eval",
+        "learning.artifacts",
+        "intelligence.control",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SI-003",
+      "family": "RDY-SI",
+      "gap": "credential_free_sandbox_and_path_escape_controls",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SELF_ITERATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "MutationGrammarManifestV1",
+        "SandboxExecutionReceiptV1",
+        "CandidateLineageV1",
+        "EvaluatorIndependenceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.plasticity",
+        "control.engineering",
+        "learning.eval",
+        "learning.artifacts",
+        "intelligence.control",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SI-004",
+      "family": "RDY-SI",
+      "gap": "candidate_lineage_state_machine_and_exact_base",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SELF_ITERATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "MutationGrammarManifestV1",
+        "SandboxExecutionReceiptV1",
+        "CandidateLineageV1",
+        "EvaluatorIndependenceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.plasticity",
+        "control.engineering",
+        "learning.eval",
+        "learning.artifacts",
+        "intelligence.control",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SI-005",
+      "family": "RDY-SI",
+      "gap": "independent_evaluation_selection_and_merge_separation",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SELF_ITERATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "MutationGrammarManifestV1",
+        "SandboxExecutionReceiptV1",
+        "CandidateLineageV1",
+        "EvaluatorIndependenceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.plasticity",
+        "control.engineering",
+        "learning.eval",
+        "learning.artifacts",
+        "intelligence.control",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-SI-006",
+      "family": "RDY-SI",
+      "gap": "canary_abort_rollback_and_reconciliation",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/SELF_ITERATION_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "MutationGrammarManifestV1",
+        "SandboxExecutionReceiptV1",
+        "CandidateLineageV1",
+        "EvaluatorIndependenceReceiptV1"
+      ],
+      "boundModules": [
+        "learning.plasticity",
+        "control.engineering",
+        "learning.eval",
+        "learning.artifacts",
+        "intelligence.control",
+        "kernel.evidence"
+      ]
+    },
+    {
+      "id": "RDY-GAP-EMB-001",
+      "family": "RDY-EMB",
+      "gap": "sensor_identity_calibration_clock_and_staleness",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EMBODIED_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "SensorCalibrationManifestV1",
+        "RealTimeLoopProfileV1",
+        "EmergencyStopReceiptV1",
+        "ActuatorReconciliationReceiptV1"
+      ],
+      "boundModules": [
+        "control.runtime",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "kernel.authority",
+        "kernel.operations",
+        "browser.servo",
+        "channel.matrix",
+        "automation.taskflow",
+        "inference.worker"
+      ]
+    },
+    {
+      "id": "RDY-GAP-EMB-002",
+      "family": "RDY-EMB",
+      "gap": "body_generation_proprioception_and_integrity",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EMBODIED_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "SensorCalibrationManifestV1",
+        "RealTimeLoopProfileV1",
+        "EmergencyStopReceiptV1",
+        "ActuatorReconciliationReceiptV1"
+      ],
+      "boundModules": [
+        "control.runtime",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "kernel.authority",
+        "kernel.operations",
+        "browser.servo",
+        "channel.matrix",
+        "automation.taskflow",
+        "inference.worker"
+      ]
+    },
+    {
+      "id": "RDY-GAP-EMB-003",
+      "family": "RDY-EMB",
+      "gap": "real_time_loop_period_deadline_and_jitter",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EMBODIED_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "SensorCalibrationManifestV1",
+        "RealTimeLoopProfileV1",
+        "EmergencyStopReceiptV1",
+        "ActuatorReconciliationReceiptV1"
+      ],
+      "boundModules": [
+        "control.runtime",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "kernel.authority",
+        "kernel.operations",
+        "browser.servo",
+        "channel.matrix",
+        "automation.taskflow",
+        "inference.worker"
+      ]
+    },
+    {
+      "id": "RDY-GAP-EMB-004",
+      "family": "RDY-EMB",
+      "gap": "reflex_dominance_and_emergency_stop",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EMBODIED_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "SensorCalibrationManifestV1",
+        "RealTimeLoopProfileV1",
+        "EmergencyStopReceiptV1",
+        "ActuatorReconciliationReceiptV1"
+      ],
+      "boundModules": [
+        "control.runtime",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "kernel.authority",
+        "kernel.operations",
+        "browser.servo",
+        "channel.matrix",
+        "automation.taskflow",
+        "inference.worker"
+      ]
+    },
+    {
+      "id": "RDY-GAP-EMB-005",
+      "family": "RDY-EMB",
+      "gap": "actuator_idempotency_terminal_observation_and_reconciliation",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EMBODIED_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "SensorCalibrationManifestV1",
+        "RealTimeLoopProfileV1",
+        "EmergencyStopReceiptV1",
+        "ActuatorReconciliationReceiptV1"
+      ],
+      "boundModules": [
+        "control.runtime",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "kernel.authority",
+        "kernel.operations",
+        "browser.servo",
+        "channel.matrix",
+        "automation.taskflow",
+        "inference.worker"
+      ]
+    },
+    {
+      "id": "RDY-GAP-EMB-006",
+      "family": "RDY-EMB",
+      "gap": "hardware_in_loop_sim_to_real_and_fault_matrix",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EMBODIED_RUNTIME_EXECUTION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "SensorCalibrationManifestV1",
+        "RealTimeLoopProfileV1",
+        "EmergencyStopReceiptV1",
+        "ActuatorReconciliationReceiptV1"
+      ],
+      "boundModules": [
+        "control.runtime",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "kernel.authority",
+        "kernel.operations",
+        "browser.servo",
+        "channel.matrix",
+        "automation.taskflow",
+        "inference.worker"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-001",
+      "family": "RDY-ASM",
+      "gap": "authorized_external_system_discovery",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-002",
+      "family": "RDY-ASM",
+      "gap": "canonical_manifest_and_service_graph",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-003",
+      "family": "RDY-ASM",
+      "gap": "contract_synthesis_and_capability_boundary",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-004",
+      "family": "RDY-ASM",
+      "gap": "debian_dpkg_apt_systemd_dbus_adapter_semantics",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-005",
+      "family": "RDY-ASM",
+      "gap": "sandbox_behavior_parity_and_fault_injection",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-006",
+      "family": "RDY-ASM",
+      "gap": "state_migration_quiescence_and_rollback",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-007",
+      "family": "RDY-ASM",
+      "gap": "sbom_license_signature_and_vulnerability_provenance",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-008",
+      "family": "RDY-ASM",
+      "gap": "independent_qualification_and_lifecycle",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-ASM-009",
+      "family": "RDY-ASM",
+      "gap": "multi_host_federation_without_autonomous_propagation",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "boundModules": [
+        "control.engineering",
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "runtime.supervisor",
+        "runtime.agentd",
+        "runtime.fleet",
+        "memory.federation"
+      ]
+    },
+    {
+      "id": "RDY-GAP-PAR-001",
+      "family": "RDY-PAR",
+      "gap": "all_forty_modules_bound_to_one_primary_lane",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/PARALLEL_DEVELOPMENT.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ParallelLaneEnvelopeV1",
+        "IntegrationCheckpointV1",
+        "CanonicalSourceReceiptV1"
+      ],
+      "boundModules": [
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "auth.authbus",
+        "secrets.heptabao",
+        "runtime.supervisor",
+        "runtime.fleet",
+        "runtime.agentd",
+        "runtime.codex",
+        "inference.control",
+        "inference.worker",
+        "automation.taskflow",
+        "channel.matrix",
+        "browser.servo",
+        "ui.control",
+        "ui.native",
+        "cognitive.types",
+        "cognitive.store",
+        "cognitive.read",
+        "memory.retrieval",
+        "memory.federation",
+        "knowledge.graph",
+        "compact.engine",
+        "prompt.registry",
+        "context.compiler",
+        "objective.compiler",
+        "utility.ndu",
+        "control.runtime",
+        "learning.ledger",
+        "learning.operator",
+        "learning.eval",
+        "learning.artifacts",
+        "neuron.runtime",
+        "intuition.policy",
+        "prompt.optimizer",
+        "learning.plasticity",
+        "intelligence.control",
+        "control.engineering"
+      ]
+    },
+    {
+      "id": "RDY-GAP-PAR-002",
+      "family": "RDY-PAR",
+      "gap": "frozen_contract_and_source_inputs",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/PARALLEL_DEVELOPMENT.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ParallelLaneEnvelopeV1",
+        "IntegrationCheckpointV1",
+        "CanonicalSourceReceiptV1"
+      ],
+      "boundModules": [
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "auth.authbus",
+        "secrets.heptabao",
+        "runtime.supervisor",
+        "runtime.fleet",
+        "runtime.agentd",
+        "runtime.codex",
+        "inference.control",
+        "inference.worker",
+        "automation.taskflow",
+        "channel.matrix",
+        "browser.servo",
+        "ui.control",
+        "ui.native",
+        "cognitive.types",
+        "cognitive.store",
+        "cognitive.read",
+        "memory.retrieval",
+        "memory.federation",
+        "knowledge.graph",
+        "compact.engine",
+        "prompt.registry",
+        "context.compiler",
+        "objective.compiler",
+        "utility.ndu",
+        "control.runtime",
+        "learning.ledger",
+        "learning.operator",
+        "learning.eval",
+        "learning.artifacts",
+        "neuron.runtime",
+        "intuition.policy",
+        "prompt.optimizer",
+        "learning.plasticity",
+        "intelligence.control",
+        "control.engineering"
+      ]
+    },
+    {
+      "id": "RDY-GAP-PAR-003",
+      "family": "RDY-PAR",
+      "gap": "cross_lane_checkpoint_and_merge_order",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/PARALLEL_DEVELOPMENT.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ParallelLaneEnvelopeV1",
+        "IntegrationCheckpointV1",
+        "CanonicalSourceReceiptV1"
+      ],
+      "boundModules": [
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "auth.authbus",
+        "secrets.heptabao",
+        "runtime.supervisor",
+        "runtime.fleet",
+        "runtime.agentd",
+        "runtime.codex",
+        "inference.control",
+        "inference.worker",
+        "automation.taskflow",
+        "channel.matrix",
+        "browser.servo",
+        "ui.control",
+        "ui.native",
+        "cognitive.types",
+        "cognitive.store",
+        "cognitive.read",
+        "memory.retrieval",
+        "memory.federation",
+        "knowledge.graph",
+        "compact.engine",
+        "prompt.registry",
+        "context.compiler",
+        "objective.compiler",
+        "utility.ndu",
+        "control.runtime",
+        "learning.ledger",
+        "learning.operator",
+        "learning.eval",
+        "learning.artifacts",
+        "neuron.runtime",
+        "intuition.policy",
+        "prompt.optimizer",
+        "learning.plasticity",
+        "intelligence.control",
+        "control.engineering"
+      ]
+    },
+    {
+      "id": "RDY-GAP-PAR-004",
+      "family": "RDY-PAR",
+      "gap": "bounded_write_paths_stop_conditions_and_evidence",
+      "state": "closed_specification",
+      "evidence": [
+        "docs/readiness/PARALLEL_DEVELOPMENT.md",
+        "docs/readiness/PROTOCOLS.json"
+      ],
+      "protocols": [
+        "ParallelLaneEnvelopeV1",
+        "IntegrationCheckpointV1",
+        "CanonicalSourceReceiptV1"
+      ],
+      "boundModules": [
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "auth.authbus",
+        "secrets.heptabao",
+        "runtime.supervisor",
+        "runtime.fleet",
+        "runtime.agentd",
+        "runtime.codex",
+        "inference.control",
+        "inference.worker",
+        "automation.taskflow",
+        "channel.matrix",
+        "browser.servo",
+        "ui.control",
+        "ui.native",
+        "cognitive.types",
+        "cognitive.store",
+        "cognitive.read",
+        "memory.retrieval",
+        "memory.federation",
+        "knowledge.graph",
+        "compact.engine",
+        "prompt.registry",
+        "context.compiler",
+        "objective.compiler",
+        "utility.ndu",
+        "control.runtime",
+        "learning.ledger",
+        "learning.operator",
+        "learning.eval",
+        "learning.artifacts",
+        "neuron.runtime",
+        "intuition.policy",
+        "prompt.optimizer",
+        "learning.plasticity",
+        "intelligence.control",
+        "control.engineering"
+      ]
+    }
+  ],
+  "externalCapabilityGates": [
+    {
+      "id": "RDY-EXT-001",
+      "gate": "source_modules_materialized_and_compiling",
+      "state": "requires_source_implementation",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-002",
+      "gate": "independent_semantic_review",
+      "state": "requires_distinct_reviewer",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-003",
+      "gate": "real_model_consumer_and_runtime_identity",
+      "state": "requires_runtime_evidence",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-004",
+      "gate": "future_calendar_longitudinal_efficacy",
+      "state": "requires_future_windows",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-005",
+      "gate": "empirical_functional_biomimicry",
+      "state": "requires_ablation_and_lesion_evidence",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-006",
+      "gate": "target_host_real_time_and_hardware_in_loop",
+      "state": "requires_target_host_and_hardware",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-007",
+      "gate": "authorized_external_system_fixture",
+      "state": "requires_explicit_owner_consent",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-008",
+      "gate": "independent_operator_acceptance",
+      "state": "requires_external_decision",
+      "repositoryDocumentationMaySelfCertify": false
+    },
+    {
+      "id": "RDY-EXT-009",
+      "gate": "production_canary_selection_promotion_release",
+      "state": "requires_separate_governed_decisions",
+      "repositoryDocumentationMaySelfCertify": false
+    }
+  ],
+  "completionSemantics": {
+    "closedSpecificationMeans": "normative bounded algorithm, protocol, state, failure, resource, test and coding-entry semantics exist and are machine validated",
+    "closedSpecificationDoesNotMean": "source implementation, runtime activation, efficacy, physical safety, acceptance, selection, merge, promotion or release"
+  },
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

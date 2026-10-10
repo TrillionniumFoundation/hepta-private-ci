@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "runId": "34405219760",
+  "runAttempt": "1",
+  "baseRef": "origin/ops/hepta-final-convergence-review-anchor-20260909",
+  "baseCommit": "05981ed1adfb931a87a47b0606f1cedaa69f123b",
+  "targetBranch": "integration/hepta-global-gap-closure-20260910-r4",
+  "selectedLaneBranches": {
+    "A": "codex/lane-a-gap-closure-20260910",
+    "B": "codex/hepta-lane-b-gap-closure-20260910",
+    "C": "codex/lane-c-full-gap-closure-20260910",
+    "D": "codex/hepta-lane-d-gap-closure-20260910",
+    "E": "codex/hepta-lane-e-gap-closure-20260910",
+    "F": "codex/lane-f-gap-closure-20260910",
+    "G": "codex/lane-g-full-closure-20260910"
+  },
+  "mergeReceipts": [
+    {
+      "lane": "A",
+      "branch": "codex/lane-a-gap-closure-20260910",
+      "merged": true,
+      "before": "05981ed1adfb931a87a47b0606f1cedaa69f123b",
+      "after": "9816d00b6cb95b80fc42fd417c46f814d66b5be7",
+      "autoResolvedGeneratedOnly": true,
+      "conflicts": [
+        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+      ]
+    },
+    {
+      "lane": "B",
+      "branch": "codex/hepta-lane-b-gap-closure-20260910",
+      "merged": true,
+      "before": "9816d00b6cb95b80fc42fd417c46f814d66b5be7",
+      "after": "29d06150e0c684cd727d14f355331452f78c3057",
+      "autoResolvedGeneratedOnly": true,
+      "conflicts": [
+        "qualification/module-execution-dossiers/NATIVE_BINDINGS.json"
+      ]
+    },
+    {
+      "lane": "C",
+      "branch": "codex/lane-c-full-gap-closure-20260910",
+      "merged": true,
+      "before": "29d06150e0c684cd727d14f355331452f78c3057",
+      "after": "5ffd812f3886d55f941e5c6de6005f2abf790241",
+      "autoResolvedGeneratedOnly": false,
+      "conflicts": []
+    },
+    {
+      "lane": "D",
+      "branch": "codex/hepta-lane-d-gap-closure-20260910",
+      "merged": true,
+      "before": "5ffd812f3886d55f941e5c6de6005f2abf790241",
+      "after": "f7ebdda818421b86f068b43e51892f726ca11b96",
+      "autoResolvedGeneratedOnly": false,
+      "conflicts": []
+    },
+    {
+      "lane": "E",
+      "branch": "codex/hepta-lane-e-gap-closure-20260910",
+      "merged": false,
+      "before": "f7ebdda818421b86f068b43e51892f726ca11b96",
+      "conflicts": [
+        "docs/lane-e/README.md"
+      ],
+      "tail": [
+        "Auto-merging codex-rs/Cargo.lock",
+        "Auto-merging docs/lane-e/README.md",
+        "CONFLICT (add/add): Merge conflict in docs/lane-e/README.md",
+        "Auto-merging qualification/module-execution-dossiers/NATIVE_BINDINGS.json",
+        "Automatic merge failed; fix conflicts and then commit the result."
+      ]
+    }
+  ],
+  "repositoryInternalGapsClosed": false,
+  "allGapsClosed": false,
+  "authorityGranted": false
+}

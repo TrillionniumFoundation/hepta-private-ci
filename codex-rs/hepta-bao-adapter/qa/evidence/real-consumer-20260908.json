@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.bao.real-consumer-smoke.v1",
+  "passed": [
+    "initialize",
+    "unseal",
+    "write_version",
+    "first-read_binding",
+    "first-read_issuer",
+    "redacted_process_output",
+    "real_tls_consumer",
+    "version_and_digest",
+    "replay_denied_across_process_restart",
+    "forged-read_binding",
+    "forged-read_issuer",
+    "forged_signature_denied",
+    "provider-denial_binding",
+    "provider-denial_issuer",
+    "provider_denied",
+    "unseal_after_sigkill",
+    "after-server-restart_binding",
+    "after-server-restart_issuer",
+    "read_after_server_sigkill",
+    "audit_contains_no_secret"
+  ],
+  "count": 20,
+  "version": 1,
+  "secret_sha256": "df0d2a00341a2deb7c3cbba19173adebab0152cb500d9d662167ef87eda020d7"
+}

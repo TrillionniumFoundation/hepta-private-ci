@@ -1,0 +1,1949 @@
+{
+  "schema": "hepta.implementation-readiness-registry.v1",
+  "schemaVersion": 1,
+  "documentClass": "canonical_subordinate_registry",
+  "authorityScope": "pre_coding_implementation_semantics_only",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "overlayId": "HEPTA-V8-PRECODING-READINESS",
+  "overlayVersion": "8.2.0-readiness",
+  "parentSource": {
+    "baseCandidateCommit": "d75a857bff625fb79663eb16544ebc7f74093859",
+    "baseCandidateTree": "b2528aad39cbd6362e12504adca2140549063c69",
+    "selectionPolicy": "exact_receipt_required_no_branch_name_authority"
+  },
+  "claimBoundary": {
+    "documentationReady": true,
+    "sourceImplementation": false,
+    "runtimeActivation": false,
+    "longitudinalEfficacy": false,
+    "functionalBiomimicry": false,
+    "physicalSafetyQualification": false,
+    "autonomousPropagation": false
+  },
+  "documents": [
+    {
+      "id": "RDY-SRC",
+      "path": "docs/readiness/SOURCE_BASELINE_AND_BRANCH_POLICY.md",
+      "title": "Canonical source, branch and base-drift policy",
+      "boundModules": [
+        "control.engineering",
+        "kernel.evidence",
+        "runtime.supervisor"
+      ],
+      "protocols": [
+        "BranchPurposeManifestV1",
+        "CanonicalSourceReceiptV1",
+        "IntegrationCheckpointV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-SRC-001",
+        "RDY-GAP-SRC-002",
+        "RDY-GAP-SRC-003",
+        "RDY-GAP-SRC-004"
+      ],
+      "workPackages": [
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+        "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "DOC-REGISTRY-CLOSED-WORLD",
+        "ECP-1-ENGINEERING-CONTROL-PLANE",
+        "P0.7A-RUNTIME-BOOTSTRAP",
+        "P0.8B-READINESS",
+        "P0.8C-RESOURCE-BUDGETS",
+        "P0.9-EXTERNAL-GATES",
+        "SELF-1-CODE-CANDIDATE-PIPELINE"
+      ],
+      "requiredSections": [
+        "## 1. Scope and authority boundary",
+        "## 2. Source identity model",
+        "## 3. Branch classes and purpose manifests",
+        "## 4. Exact-source and merge-candidate algorithm",
+        "## 5. Base drift and freshness",
+        "## 6. Failure semantics",
+        "## 7. Security controls",
+        "## 8. Verification fixtures",
+        "## 9. Coding-entry checklist"
+      ]
+    },
+    {
+      "id": "RDY-OBJ",
+      "path": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+      "title": "Objective compiler execution specification",
+      "boundModules": [
+        "intelligence.control",
+        "kernel.authority",
+        "learning.ledger",
+        "objective.compiler"
+      ],
+      "protocols": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveConstraintSetV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveCompileReceiptV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-OBJ-001",
+        "RDY-GAP-OBJ-002",
+        "RDY-GAP-OBJ-003",
+        "RDY-GAP-OBJ-004",
+        "RDY-GAP-OBJ-005",
+        "RDY-GAP-OBJ-006"
+      ],
+      "workPackages": [
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "INT-2-AGENTD-CODEX-COMPOSITION",
+        "INTELLIGENCE-A0-Q0.63",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B2-TOOL-NET-FS",
+        "P0.7B-B3-BOUNDARIES",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.8A-AST-RATCHET"
+      ],
+      "requiredSections": [
+        "## 1. Scope and authority boundary",
+        "## 2. Input grammar and canonical IR",
+        "## 3. Constraint precedence and conflict resolution",
+        "## 4. Deterministic compilation algorithm",
+        "## 5. State machine and persistence",
+        "## 6. Error taxonomy and fallback",
+        "## 7. Security and adversarial inputs",
+        "## 8. Performance envelope",
+        "## 9. Golden fixtures and tests",
+        "## 10. Implementation sequence",
+        "## 11. Coding-entry checklist"
+      ]
+    },
+    {
+      "id": "RDY-NDU",
+      "path": "docs/readiness/NDU_SYSTEM_EXECUTION.md",
+      "title": "NDU system integration and solver specification",
+      "boundModules": [
+        "control.runtime",
+        "intuition.policy",
+        "learning.eval",
+        "learning.ledger",
+        "objective.compiler",
+        "utility.ndu"
+      ],
+      "protocols": [
+        "UtilityContributionV1",
+        "NduIterationReceiptV1",
+        "NduConvergenceCertificateV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-NDU-001",
+        "RDY-GAP-NDU-002",
+        "RDY-GAP-NDU-003",
+        "RDY-GAP-NDU-004",
+        "RDY-GAP-NDU-005",
+        "RDY-GAP-NDU-006"
+      ],
+      "workPackages": [
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "INT-1-CALIBRATED-INTUITION-POLICY",
+        "LONG-1-TEMPORAL-HOLDOUT",
+        "LONG-2-RETENTION-FORGETTING",
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "LRN-2-CAUSAL-EVALUATION",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "NDU-2-AGENT-DOMAIN-HIERARCHY",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "RCP-1-RUNTIME-CONTROL-PLANE"
+      ],
+      "requiredSections": [
+        "## 1. Scope and authority boundary",
+        "## 2. Cross-organ utility contract",
+        "## 3. Multi-objective feasibility and Pareto policy",
+        "## 4. Deterministic hierarchical solver",
+        "## 5. Convergence, infeasibility and multiple solutions",
+        "## 6. State, persistence and scheduling",
+        "## 7. Goodhart and wireheading controls",
+        "## 8. Numerical and resource envelope",
+        "## 9. Golden fixtures and tests",
+        "## 10. Implementation sequence",
+        "## 11. Coding-entry checklist"
+      ]
+    },
+    {
+      "id": "RDY-NEU",
+      "path": "docs/readiness/NEURON_RUNTIME_EXECUTION.md",
+      "title": "Neuron runtime execution specification",
+      "boundModules": [
+        "intuition.policy",
+        "learning.artifacts",
+        "learning.eval",
+        "learning.ledger",
+        "neuron.runtime"
+      ],
+      "protocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-NEU-001",
+        "RDY-GAP-NEU-002",
+        "RDY-GAP-NEU-003",
+        "RDY-GAP-NEU-004",
+        "RDY-GAP-NEU-005",
+        "RDY-GAP-NEU-006"
+      ],
+      "workPackages": [
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "INT-1-CALIBRATED-INTUITION-POLICY",
+        "LONG-1-TEMPORAL-HOLDOUT",
+        "LONG-2-RETENTION-FORGETTING",
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "LRN-2-CAUSAL-EVALUATION",
+        "NEU-1-LOCAL-MODEL-BAKEOFF",
+        "NEU-2-TEMPORAL-SIGNAL-RUNTIME"
+      ],
+      "requiredSections": [
+        "## 1. Scope and authority boundary",
+        "## 2. Runtime state layout",
+        "## 3. Tick ordering and fixed-point semantics",
+        "## 4. Concurrency, clock and checkpoint model",
+        "## 5. Failure detection and fallback",
+        "## 6. Security and privacy",
+        "## 7. Performance envelope",
+        "## 8. Lesion, ablation and golden fixtures",
+        "## 9. Implementation sequence",
+        "## 10. Coding-entry checklist"
+      ]
+    },
+    {
+      "id": "RDY-LRN",
+      "path": "docs/readiness/LEARNING_EVALUATION_EXECUTION.md",
+      "title": "Causal and longitudinal evaluation execution specification",
+      "boundModules": [
+        "kernel.evidence",
+        "learning.artifacts",
+        "learning.eval",
+        "learning.ledger",
+        "learning.operator",
+        "learning.plasticity"
+      ],
+      "protocols": [
+        "EvaluationPlanV1",
+        "EvaluatorIndependenceReceiptV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-LRN-001",
+        "RDY-GAP-LRN-002",
+        "RDY-GAP-LRN-003",
+        "RDY-GAP-LRN-004",
+        "RDY-GAP-LRN-005",
+        "RDY-GAP-LRN-006",
+        "RDY-GAP-LRN-007"
+      ],
+      "workPackages": [
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+        "BIO-2-REPLAY-CONSOLIDATION",
+        "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "LONG-1-TEMPORAL-HOLDOUT",
+        "LONG-2-RETENTION-FORGETTING",
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "LRN-2-CAUSAL-EVALUATION",
+        "P0.9-EXTERNAL-GATES",
+        "PLS-1-PARAMETER-PLASTICITY",
+        "PLS-2-TOPOLOGY-PROPOSAL",
+        "PLS-3-BOUNDED-STRUCTURAL-CANARY"
+      ],
+      "requiredSections": [
+        "## 1. Scope and authority boundary",
+        "## 2. Preregistered evaluation plan",
+        "## 3. Candidate support and propensity integrity",
+        "## 4. Delayed outcomes and independent observation",
+        "## 5. Estimation, confidence and multiplicity",
+        "## 6. Future windows and retention",
+        "## 7. Unlearning and non-resurrection",
+        "## 8. State machine and failure taxonomy",
+        "## 9. Performance envelope",
+        "## 10. Golden fixtures and tests",
+        "## 11. Implementation sequence",
+        "## 12. Coding-entry checklist"
+      ]
+    },
+    {
+      "id": "RDY-SI",
+      "path": "docs/readiness/SELF_ITERATION_EXECUTION.md",
+      "title": "Governed self-iteration execution specification",
+      "boundModules": [
+        "control.engineering",
+        "intelligence.control",
+        "kernel.evidence",
+        "learning.artifacts",
+        "learning.eval",
+        "learning.plasticity"
+      ],
+      "protocols": [
+        "MutationGrammarManifestV1",
+        "SandboxExecutionReceiptV1",
+        "CandidateLineageV1",
+        "EvaluatorIndependenceReceiptV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-SI-001",
+        "RDY-GAP-SI-002",
+        "RDY-GAP-SI-003",
+        "RDY-GAP-SI-004",
+        "RDY-GAP-SI-005",
+        "RDY-GAP-SI-006"
+      ],
+      "workPackages": [
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+        "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "DOC-REGISTRY-CLOSED-WORLD",
+        "ECP-1-ENGINEERING-CONTROL-PLANE",
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "INT-2-AGENTD-CODEX-COMPOSITION",
+        "INTELLIGENCE-A0-Q0.63",
+        "LONG-1-TEMPORAL-HOLDOUT",
+        "LONG-2-RETENTION-FORGETTING",
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "LRN-2-CAUSAL-EVALUATION",
+        "P0.9-EXTERNAL-GATES",
+        "PLS-1-PARAMETER-PLASTICITY",
+        "PLS-2-TOPOLOGY-PROPOSAL",
+        "PLS-3-BOUNDED-STRUCTURAL-CANARY",
+        "SELF-1-CODE-CANDIDATE-PIPELINE"
+      ],
+      "requiredSections": [
+        "## 1. Scope and authority boundary",
+        "## 2. Typed mutation grammar",
+        "## 3. Protected surfaces and sandbox isolation",
+        "## 4. Candidate lineage and state machine",
+        "## 5. Independent evaluation and selection",
+        "## 6. Canary abort and rollback",
+        "## 7. Security, privacy and reward-hacking controls",
+        "## 8. Resource envelope",
+        "## 9. Golden fixtures and tests",
+        "## 10. Implementation sequence",
+        "## 11. Coding-entry checklist"
+      ]
+    },
+    {
+      "id": "RDY-EMB",
+      "path": "docs/readiness/EMBODIED_RUNTIME_EXECUTION.md",
+      "title": "Embodied and digital-organ runtime execution specification",
+      "boundModules": [
+        "automation.taskflow",
+        "browser.servo",
+        "channel.matrix",
+        "control.runtime",
+        "inference.worker",
+        "kernel.authority",
+        "kernel.operations",
+        "runtime.agentd",
+        "runtime.supervisor"
+      ],
+      "protocols": [
+        "SensorCalibrationManifestV1",
+        "RealTimeLoopProfileV1",
+        "EmergencyStopReceiptV1",
+        "ActuatorReconciliationReceiptV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-EMB-001",
+        "RDY-GAP-EMB-002",
+        "RDY-GAP-EMB-003",
+        "RDY-GAP-EMB-004",
+        "RDY-GAP-EMB-005",
+        "RDY-GAP-EMB-006"
+      ],
+      "workPackages": [
+        "BROWSER-WEB-C1",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "EMB-0-EMBODIED-CONTRACTS",
+        "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+        "EMB-2-REFLEX-MOTOR-ACTUATION",
+        "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION",
+        "INFER-V4-T4",
+        "INFER-V4-T5",
+        "MATRIX-1-CHANNEL-BOUNDARY",
+        "NDU-2-AGENT-DOMAIN-HIERARCHY",
+        "NEU-1-LOCAL-MODEL-BAKEOFF",
+        "P0.7A-RUNTIME-BOOTSTRAP",
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B2-TOOL-NET-FS",
+        "P0.7B-B3-BOUNDARIES",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.7D-FAULT-MATRIX",
+        "P0.8A-AST-RATCHET",
+        "P0.8B-READINESS",
+        "P0.8C-RESOURCE-BUDGETS",
+        "P0.8D-VERTICAL-SLICE",
+        "RCP-1-RUNTIME-CONTROL-PLANE",
+        "TASKFLOW-1-EXECUTION-BOUNDARY"
+      ],
+      "requiredSections": [
+        "## 1. Scope and authority boundary",
+        "## 2. Time domains and control-loop classes",
+        "## 3. Sensor identity, calibration and fusion",
+        "## 4. Body generation and proprioception",
+        "## 5. Motor planning, reflex and actuation",
+        "## 6. Emergency stop and recovery",
+        "## 7. Hardware-in-loop and sim-to-real",
+        "## 8. Failure taxonomy and degradation",
+        "## 9. Performance and safety envelope",
+        "## 10. Golden fixtures and tests",
+        "## 11. Implementation sequence",
+        "## 12. Coding-entry checklist"
+      ]
+    },
+    {
+      "id": "RDY-ASM",
+      "path": "docs/readiness/EXTERNAL_SYSTEM_ASSIMILATION.md",
+      "title": "Authorized external-system assimilation specification",
+      "boundModules": [
+        "control.engineering",
+        "kernel.authority",
+        "kernel.evidence",
+        "kernel.operations",
+        "memory.federation",
+        "platform.types",
+        "platform.wire",
+        "runtime.agentd",
+        "runtime.fleet",
+        "runtime.supervisor"
+      ],
+      "protocols": [
+        "ExternalSystemManifestV1",
+        "ServiceGraphV1",
+        "CapabilityBoundaryV1",
+        "AssimilationProposalV1",
+        "MigrationPlanV1",
+        "AssimilationQualificationReceiptV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-ASM-001",
+        "RDY-GAP-ASM-002",
+        "RDY-GAP-ASM-003",
+        "RDY-GAP-ASM-004",
+        "RDY-GAP-ASM-005",
+        "RDY-GAP-ASM-006",
+        "RDY-GAP-ASM-007",
+        "RDY-GAP-ASM-008",
+        "RDY-GAP-ASM-009"
+      ],
+      "workPackages": [
+        "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+        "ASM-1-DISCOVERY-MANIFEST",
+        "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+        "ASM-3-STATE-MIGRATION-QUALIFICATION",
+        "ASM-4-FEDERATED-ORGAN-ENROLLMENT",
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+        "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "DOC-REGISTRY-CLOSED-WORLD",
+        "ECP-1-ENGINEERING-CONTROL-PLANE",
+        "FLEET-1-ALLOCATION-CONTRACT",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "MEM-3-FEDERATION",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "P0.7A-RUNTIME-BOOTSTRAP",
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B2-TOOL-NET-FS",
+        "P0.7B-B3-BOUNDARIES",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.7D-FAULT-MATRIX",
+        "P0.7E-DEPENDENCY-INVERSION",
+        "P0.8A-AST-RATCHET",
+        "P0.8B-READINESS",
+        "P0.8C-RESOURCE-BUDGETS",
+        "P0.8D-VERTICAL-SLICE",
+        "P0.9-EXTERNAL-GATES",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "PLATFORM-0-TYPE-BOUNDARY",
+        "SELF-1-CODE-CANDIDATE-PIPELINE"
+      ],
+      "requiredSections": [
+        "## 1. Scope, consent and non-propagation boundary",
+        "## 2. Component ownership map",
+        "## 3. Discovery and external-system manifest",
+        "## 4. Contract synthesis and capability boundary",
+        "## 5. Debian and POSIX adapter semantics",
+        "## 6. Sandbox, migration and rollback",
+        "## 7. Provenance, qualification and federation",
+        "## 8. Lifecycle and maturity ladder",
+        "## 9. Failure taxonomy and security",
+        "## 10. Performance envelope",
+        "## 11. Golden fixtures and tests",
+        "## 12. Implementation sequence",
+        "## 13. Coding-entry checklist"
+      ]
+    },
+    {
+      "id": "RDY-PAR",
+      "path": "docs/readiness/PARALLEL_DEVELOPMENT.md",
+      "title": "Parallel module development and integration specification",
+      "boundModules": [
+        "auth.authbus",
+        "automation.taskflow",
+        "browser.servo",
+        "channel.matrix",
+        "cognitive.read",
+        "cognitive.store",
+        "cognitive.types",
+        "compact.engine",
+        "context.compiler",
+        "control.engineering",
+        "control.runtime",
+        "inference.control",
+        "inference.worker",
+        "intelligence.control",
+        "intuition.policy",
+        "kernel.authority",
+        "kernel.evidence",
+        "kernel.operations",
+        "knowledge.graph",
+        "learning.artifacts",
+        "learning.eval",
+        "learning.ledger",
+        "learning.operator",
+        "learning.plasticity",
+        "memory.federation",
+        "memory.retrieval",
+        "neuron.runtime",
+        "objective.compiler",
+        "platform.types",
+        "platform.wire",
+        "prompt.optimizer",
+        "prompt.registry",
+        "runtime.agentd",
+        "runtime.codex",
+        "runtime.fleet",
+        "runtime.supervisor",
+        "secrets.heptabao",
+        "ui.control",
+        "ui.native",
+        "utility.ndu"
+      ],
+      "protocols": [
+        "ParallelLaneEnvelopeV1",
+        "IntegrationCheckpointV1",
+        "CanonicalSourceReceiptV1"
+      ],
+      "gapIds": [
+        "RDY-GAP-PAR-001",
+        "RDY-GAP-PAR-002",
+        "RDY-GAP-PAR-003",
+        "RDY-GAP-PAR-004"
+      ],
+      "workPackages": [
+        "ART-1-LEARNING-ARTIFACT-REGISTRY",
+        "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+        "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+        "ASM-1-DISCOVERY-MANIFEST",
+        "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+        "ASM-3-STATE-MIGRATION-QUALIFICATION",
+        "ASM-4-FEDERATED-ORGAN-ENROLLMENT",
+        "AUTHBUS-P1.3-V12",
+        "BIO-0-NEURON-INTUITION-CONTRACTS",
+        "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+        "BIO-2-REPLAY-CONSOLIDATION",
+        "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
+        "BROWSER-WEB-C1",
+        "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+        "CTX-1-CONTEXT-COMPILER",
+        "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+        "DOC-1-V8-SEMANTIC-UPGRADE",
+        "DOC-2-DEFAULT-BRANCH-SELECTION",
+        "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+        "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+        "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+        "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+        "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+        "DOC-REGISTRY-CLOSED-WORLD",
+        "ECP-1-ENGINEERING-CONTROL-PLANE",
+        "EMB-0-EMBODIED-CONTRACTS",
+        "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+        "EMB-2-REFLEX-MOTOR-ACTUATION",
+        "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION",
+        "FLEET-1-ALLOCATION-CONTRACT",
+        "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+        "HBO-1-OPERATOR-SENSOR-CORE",
+        "HBO-2-BELLMAN-OPERATOR-SHADOW",
+        "HEPTABAO-1-SECRET-BOUNDARY",
+        "INFER-V4-T1",
+        "INFER-V4-T2",
+        "INFER-V4-T3",
+        "INFER-V4-T4",
+        "INFER-V4-T5",
+        "INT-1-CALIBRATED-INTUITION-POLICY",
+        "INT-2-AGENTD-CODEX-COMPOSITION",
+        "INTELLIGENCE-A0-Q0.63",
+        "LONG-1-TEMPORAL-HOLDOUT",
+        "LONG-2-RETENTION-FORGETTING",
+        "LONG-3-UNLEARNING-NON-RESURRECTION",
+        "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+        "LRN-1-DURABLE-EPISODE-LEDGER",
+        "LRN-2-CAUSAL-EVALUATION",
+        "MATRIX-1-CHANNEL-BOUNDARY",
+        "MEM-0-TYPES",
+        "MEM-1-STORE",
+        "MEM-2-RETRIEVAL",
+        "MEM-3-FEDERATION",
+        "MEM-4-KG",
+        "MEM-5-COMPACT",
+        "MEM-8-PRODUCTION-WRITER",
+        "MEM-READ-1-SNAPSHOT-PORT",
+        "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+        "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+        "NDU-2-AGENT-DOMAIN-HIERARCHY",
+        "NEU-1-LOCAL-MODEL-BAKEOFF",
+        "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+        "OBJ-0-OBJECTIVE-CONTRACTS",
+        "OBJ-1-OBJECTIVE-COMPILER",
+        "P0.7A-RUNTIME-BOOTSTRAP",
+        "P0.7B-B0-VERIFIED-USE",
+        "P0.7B-B1A-PROVIDER-BOUNDARY",
+        "P0.7B-B1B-MODEL-BOUNDARY",
+        "P0.7B-B2-TOOL-NET-FS",
+        "P0.7B-B3-BOUNDARIES",
+        "P0.7B-B4-CALLSITE-PROOF",
+        "P0.7D-FAULT-MATRIX",
+        "P0.7E-DEPENDENCY-INVERSION",
+        "P0.8A-AST-RATCHET",
+        "P0.8B-READINESS",
+        "P0.8C-RESOURCE-BUDGETS",
+        "P0.8D-VERTICAL-SLICE",
+        "P0.9-EXTERNAL-GATES",
+        "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+        "PIM-1-PROMPT-FACTOR-REGISTRY",
+        "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+        "PIM-3-FACTOR-EVOLUTION",
+        "PLATFORM-0-TYPE-BOUNDARY",
+        "PLS-1-PARAMETER-PLASTICITY",
+        "PLS-2-TOPOLOGY-PROPOSAL",
+        "PLS-3-BOUNDED-STRUCTURAL-CANARY",
+        "RCP-1-RUNTIME-CONTROL-PLANE",
+        "SELF-1-CODE-CANDIDATE-PIPELINE",
+        "TASKFLOW-1-EXECUTION-BOUNDARY",
+        "UI-NATIVE-1-SHELL",
+        "UI-V5"
+      ],
+      "requiredSections": [
+        "## 1. Scope and authority boundary",
+        "## 2. Frozen inputs and lane envelopes",
+        "## 3. Primary implementation lanes",
+        "## 4. Cross-lane integration tracks",
+        "## 5. Integration checkpoints",
+        "## 6. Branch, PR and merge discipline",
+        "## 7. Stop conditions and escalation",
+        "## 8. Required evidence per lane",
+        "## 9. Coding-entry checklist"
+      ]
+    }
+  ],
+  "moduleBindings": [
+    {
+      "module": "platform.types",
+      "primaryLane": "LANE-A-FOUNDATION",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-ASM",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [
+        "ExternalSystemManifestV1",
+        "SensorCalibrationManifestV1"
+      ],
+      "consumedReadinessProtocols": [
+        "ParallelLaneEnvelopeV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "platform.wire",
+      "primaryLane": "LANE-A-FOUNDATION",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-ASM",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [
+        "ServiceGraphV1"
+      ],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "kernel.authority",
+      "primaryLane": "LANE-A-FOUNDATION",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-OBJ",
+        "RDY-EMB",
+        "RDY-ASM"
+      ],
+      "ownedReadinessProtocols": [
+        "CapabilityBoundaryV1",
+        "EmergencyStopReceiptV1"
+      ],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "kernel.operations",
+      "primaryLane": "LANE-A-FOUNDATION",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB",
+        "RDY-ASM"
+      ],
+      "ownedReadinessProtocols": [
+        "ActuatorReconciliationReceiptV1",
+        "MigrationPlanV1",
+        "RollbackPointV1"
+      ],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "kernel.evidence",
+      "primaryLane": "LANE-A-FOUNDATION",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-LRN",
+        "RDY-SI",
+        "RDY-ASM",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [
+        "AssimilationQualificationReceiptV1",
+        "CanonicalSourceReceiptV1",
+        "EvaluatorIndependenceReceiptV1"
+      ],
+      "consumedReadinessProtocols": [
+        "ActuatorReconciliationReceiptV1",
+        "AssimilationProposalV1",
+        "BranchPurposeManifestV1",
+        "CapabilityBoundaryV1",
+        "EmergencyStopReceiptV1",
+        "ExternalSystemManifestV1",
+        "IntegrationCheckpointV1",
+        "MigrationPlanV1",
+        "ObjectiveSourceEnvelopeV1",
+        "RealTimeLoopProfileV1",
+        "RollbackPointV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "runtime.supervisor",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB",
+        "RDY-ASM"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "ActuatorReconciliationReceiptV1",
+        "AssimilationProposalV1",
+        "AssimilationQualificationReceiptV1",
+        "BranchPurposeManifestV1",
+        "CanonicalSourceReceiptV1",
+        "EmergencyStopReceiptV1",
+        "ExternalSystemManifestV1",
+        "IntegrationCheckpointV1",
+        "RealTimeLoopProfileV1",
+        "RollbackPointV1",
+        "SensorCalibrationManifestV1",
+        "ServiceGraphV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "runtime.fleet",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-ASM",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "runtime.agentd",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB",
+        "RDY-ASM"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "CapabilityBoundaryV1",
+        "MigrationPlanV1",
+        "ParallelLaneEnvelopeV1",
+        "ServiceGraphV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "runtime.codex",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "auth.authbus",
+      "primaryLane": "LANE-A-FOUNDATION",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "secrets.heptabao",
+      "primaryLane": "LANE-A-FOUNDATION",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "inference.control",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "inference.worker",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "SensorCalibrationManifestV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "objective.compiler",
+      "primaryLane": "LANE-D-OBJECTIVE-VALUE",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-OBJ",
+        "RDY-NDU"
+      ],
+      "ownedReadinessProtocols": [
+        "ObjectiveCompileReceiptV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveConstraintSetV1",
+        "ObjectiveSourceEnvelopeV1"
+      ],
+      "consumedReadinessProtocols": [
+        "ParallelLaneEnvelopeV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "utility.ndu",
+      "primaryLane": "LANE-D-OBJECTIVE-VALUE",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-NDU"
+      ],
+      "ownedReadinessProtocols": [
+        "NduIterationReceiptV1",
+        "UtilityContributionV1"
+      ],
+      "consumedReadinessProtocols": [
+        "NduConvergenceCertificateV1",
+        "ObjectiveCompileReceiptV1",
+        "ObjectiveConstraintSetV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "neuron.runtime",
+      "primaryLane": "LANE-F-ADAPTIVE-POLICY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-NEU"
+      ],
+      "ownedReadinessProtocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1"
+      ],
+      "consumedReadinessProtocols": [
+        "ParallelLaneEnvelopeV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "intuition.policy",
+      "primaryLane": "LANE-F-ADAPTIVE-POLICY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-NDU",
+        "RDY-NEU"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "NeuronRuntimeConfigV1",
+        "NeuronTickInputV1",
+        "NeuronTickReceiptV1",
+        "ObjectiveConstraintSetV1",
+        "UtilityContributionV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "prompt.registry",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "prompt.optimizer",
+      "primaryLane": "LANE-F-ADAPTIVE-POLICY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "context.compiler",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "intelligence.control",
+      "primaryLane": "LANE-F-ADAPTIVE-POLICY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-OBJ",
+        "RDY-SI",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "ObjectiveCompileReceiptV1",
+        "ObjectiveConflictReceiptV1",
+        "ObjectiveSourceEnvelopeV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "cognitive.types",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "ParallelLaneEnvelopeV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "cognitive.store",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "cognitive.read",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "memory.retrieval",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "memory.federation",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-ASM"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "knowledge.graph",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "compact.engine",
+      "primaryLane": "LANE-C-MEMORY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "learning.ledger",
+      "primaryLane": "LANE-E-LEARNING",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-OBJ",
+        "RDY-NDU",
+        "RDY-NEU",
+        "RDY-LRN"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "EvaluationPlanV1",
+        "NduIterationReceiptV1",
+        "NeuronTickReceiptV1",
+        "ObjectiveCompileReceiptV1",
+        "ObjectiveConflictReceiptV1",
+        "ParallelLaneEnvelopeV1",
+        "UtilityContributionV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "learning.operator",
+      "primaryLane": "LANE-E-LEARNING",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-LRN"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "learning.eval",
+      "primaryLane": "LANE-E-LEARNING",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-NDU",
+        "RDY-NEU",
+        "RDY-LRN",
+        "RDY-SI",
+        "RDY-EMB",
+        "RDY-ASM"
+      ],
+      "ownedReadinessProtocols": [
+        "EvaluationPlanV1",
+        "NduConvergenceCertificateV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "consumedReadinessProtocols": [
+        "AssimilationProposalV1",
+        "CandidateLineageV1",
+        "EvaluatorIndependenceReceiptV1",
+        "MutationGrammarManifestV1",
+        "NduIterationReceiptV1",
+        "NeuronRuntimeConfigV1",
+        "NeuronTickReceiptV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "learning.artifacts",
+      "primaryLane": "LANE-E-LEARNING",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-NEU",
+        "RDY-LRN",
+        "RDY-SI"
+      ],
+      "ownedReadinessProtocols": [
+        "CandidateLineageV1"
+      ],
+      "consumedReadinessProtocols": [
+        "EvaluationPlanV1",
+        "NduConvergenceCertificateV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "learning.plasticity",
+      "primaryLane": "LANE-F-ADAPTIVE-POLICY",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-LRN",
+        "RDY-SI"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "CandidateLineageV1",
+        "MutationGrammarManifestV1",
+        "RetentionSliceReceiptV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "automation.taskflow",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "ActuatorReconciliationReceiptV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "channel.matrix",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "browser.servo",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [
+        "SensorCalibrationManifestV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "ui.control",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "ui.native",
+      "primaryLane": "LANE-B-RUNTIME",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [],
+      "consumedReadinessProtocols": [],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "control.runtime",
+      "primaryLane": "LANE-D-OBJECTIVE-VALUE",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-NDU",
+        "RDY-EMB"
+      ],
+      "ownedReadinessProtocols": [
+        "RealTimeLoopProfileV1"
+      ],
+      "consumedReadinessProtocols": [
+        "EmergencyStopReceiptV1",
+        "NduConvergenceCertificateV1",
+        "NduIterationReceiptV1",
+        "ObjectiveConstraintSetV1",
+        "SensorCalibrationManifestV1",
+        "UtilityContributionV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    },
+    {
+      "module": "control.engineering",
+      "primaryLane": "LANE-G-ENGINEERING",
+      "specifications": [
+        "RDY-SRC",
+        "RDY-PAR",
+        "RDY-SI",
+        "RDY-ASM"
+      ],
+      "ownedReadinessProtocols": [
+        "AssimilationProposalV1",
+        "BranchPurposeManifestV1",
+        "IntegrationCheckpointV1",
+        "MutationGrammarManifestV1",
+        "ParallelLaneEnvelopeV1",
+        "SandboxExecutionReceiptV1"
+      ],
+      "consumedReadinessProtocols": [
+        "AssimilationQualificationReceiptV1",
+        "CandidateLineageV1",
+        "CanonicalSourceReceiptV1",
+        "CapabilityBoundaryV1",
+        "EvaluatorIndependenceReceiptV1",
+        "ExternalSystemManifestV1",
+        "MigrationPlanV1",
+        "RollbackPointV1",
+        "ServiceGraphV1"
+      ],
+      "codingGate": [
+        "current_canonical_source_receipt",
+        "frozen_contract_and_readiness_digest",
+        "bounded_existing_work_package_envelope",
+        "all_mandatory_fixtures_defined",
+        "authority_delta_none"
+      ]
+    }
+  ],
+  "implementationLanes": [
+    {
+      "id": "LANE-A-FOUNDATION",
+      "owner": "kernel-contracts",
+      "deputy": "architecture",
+      "modules": [
+        "platform.types",
+        "platform.wire",
+        "kernel.authority",
+        "kernel.operations",
+        "kernel.evidence",
+        "auth.authbus",
+        "secrets.heptabao"
+      ],
+      "dependsOn": [],
+      "entryGate": [
+        "canonical_source_receipt",
+        "readiness_closed"
+      ],
+      "exitGate": [
+        "shared_types_compile",
+        "authority_negative_tests",
+        "fault_taxonomy_frozen"
+      ]
+    },
+    {
+      "id": "LANE-B-RUNTIME",
+      "owner": "runtime-control",
+      "deputy": "security-authority",
+      "modules": [
+        "runtime.supervisor",
+        "runtime.fleet",
+        "runtime.agentd",
+        "runtime.codex",
+        "inference.control",
+        "inference.worker",
+        "automation.taskflow",
+        "channel.matrix",
+        "browser.servo",
+        "ui.control",
+        "ui.native"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION"
+      ],
+      "entryGate": [
+        "foundation_contract_snapshot"
+      ],
+      "exitGate": [
+        "effect_boundaries_typed",
+        "readiness_graph_complete",
+        "deterministic_fallbacks"
+      ]
+    },
+    {
+      "id": "LANE-C-MEMORY",
+      "owner": "cognitive-platform",
+      "deputy": "durability-kernel",
+      "modules": [
+        "cognitive.types",
+        "cognitive.store",
+        "cognitive.read",
+        "memory.retrieval",
+        "memory.federation",
+        "knowledge.graph",
+        "compact.engine",
+        "prompt.registry",
+        "context.compiler"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION"
+      ],
+      "entryGate": [
+        "foundation_contract_snapshot"
+      ],
+      "exitGate": [
+        "coherent_snapshot_reads",
+        "single_writer_stores",
+        "deletion_non_resurrection_fixture"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJECTIVE-VALUE",
+      "owner": "intelligence-platform",
+      "deputy": "learning-platform",
+      "modules": [
+        "objective.compiler",
+        "utility.ndu",
+        "control.runtime"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION",
+        "LANE-C-MEMORY"
+      ],
+      "entryGate": [
+        "objective_and_ndu_specs_bound"
+      ],
+      "exitGate": [
+        "deterministic_objective_compile",
+        "deterministic_ndu_baseline",
+        "resource_conservation"
+      ]
+    },
+    {
+      "id": "LANE-E-LEARNING",
+      "owner": "learning-platform",
+      "deputy": "qualification-plane",
+      "modules": [
+        "learning.ledger",
+        "learning.operator",
+        "learning.eval",
+        "learning.artifacts"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION",
+        "LANE-C-MEMORY",
+        "LANE-D-OBJECTIVE-VALUE"
+      ],
+      "entryGate": [
+        "ledger_and_evaluation_specs_bound"
+      ],
+      "exitGate": [
+        "immutable_episode_chain",
+        "independent_evaluation",
+        "artifact_reload_rollback"
+      ]
+    },
+    {
+      "id": "LANE-F-ADAPTIVE-POLICY",
+      "owner": "learning-platform",
+      "deputy": "intelligence-platform",
+      "modules": [
+        "neuron.runtime",
+        "intuition.policy",
+        "prompt.optimizer",
+        "learning.plasticity",
+        "intelligence.control"
+      ],
+      "dependsOn": [
+        "LANE-B-RUNTIME",
+        "LANE-C-MEMORY",
+        "LANE-D-OBJECTIVE-VALUE",
+        "LANE-E-LEARNING"
+      ],
+      "entryGate": [
+        "selected_local_model_manifest_or_deterministic_fallback"
+      ],
+      "exitGate": [
+        "shadow_only_candidate_path",
+        "no_current_run_mutation",
+        "ablation_plan_bound"
+      ]
+    },
+    {
+      "id": "LANE-G-ENGINEERING",
+      "owner": "developer-productivity",
+      "deputy": "architecture",
+      "modules": [
+        "control.engineering"
+      ],
+      "dependsOn": [
+        "LANE-A-FOUNDATION"
+      ],
+      "entryGate": [
+        "source_and_parallel_specs_bound"
+      ],
+      "exitGate": [
+        "bounded_work_envelopes",
+        "sandbox_candidate_pipeline",
+        "independent_decision_adapter"
+      ]
+    }
+  ],
+  "integrationTracks": [
+    {
+      "id": "TRACK-1-READ-ONLY-VERTICAL",
+      "participants": [
+        "LANE-B-RUNTIME",
+        "LANE-C-MEMORY",
+        "LANE-D-OBJECTIVE-VALUE"
+      ],
+      "after": [
+        "CHECKPOINT-I2-STORES"
+      ],
+      "exitGate": [
+        "request_to_read_only_report",
+        "zero_external_effect",
+        "replay_exact"
+      ]
+    },
+    {
+      "id": "TRACK-2-ADAPTIVE-SHADOW",
+      "participants": [
+        "LANE-C-MEMORY",
+        "LANE-D-OBJECTIVE-VALUE",
+        "LANE-E-LEARNING",
+        "LANE-F-ADAPTIVE-POLICY"
+      ],
+      "after": [
+        "CHECKPOINT-I3-VERTICAL"
+      ],
+      "exitGate": [
+        "complete_candidate_sets",
+        "independent_outcomes",
+        "shadow_artifact_only"
+      ]
+    },
+    {
+      "id": "TRACK-3-EMBODIMENT-AND-ASSIMILATION",
+      "participants": [
+        "LANE-A-FOUNDATION",
+        "LANE-B-RUNTIME",
+        "LANE-E-LEARNING",
+        "LANE-G-ENGINEERING"
+      ],
+      "after": [
+        "CHECKPOINT-I4-SHADOW"
+      ],
+      "exitGate": [
+        "simulator_or_sandbox_only",
+        "explicit_authorization",
+        "rollback_rehearsed"
+      ]
+    }
+  ],
+  "assimilationComponents": [
+    {
+      "id": "assimilation.discovery",
+      "owners": [
+        "control.engineering",
+        "runtime.supervisor"
+      ],
+      "function": "Enumerate packages, services, processes, identities, devices, filesystems, sockets and policy surfaces without mutation.",
+      "targetRoots": [
+        "tools/hepta-engineering-control/assimilation/discovery"
+      ],
+      "authority": "read_only_explicit_scope"
+    },
+    {
+      "id": "assimilation.manifest",
+      "owners": [
+        "platform.types"
+      ],
+      "function": "Canonicalize ExternalSystemManifestV1 and immutable inventory digests.",
+      "targetRoots": [
+        "codex-rs/hepta-types/src/assimilation"
+      ],
+      "authority": "no_external_effect"
+    },
+    {
+      "id": "assimilation.contract-synthesis",
+      "owners": [
+        "platform.wire",
+        "control.engineering"
+      ],
+      "function": "Derive bounded typed adapters from declared CLI, API, D-Bus and service interfaces.",
+      "targetRoots": [
+        "codex-rs/hepta-wire/src/assimilation",
+        "tools/hepta-engineering-control/assimilation/contracts"
+      ],
+      "authority": "candidate_only"
+    },
+    {
+      "id": "bridge.debian",
+      "owners": [
+        "runtime.agentd",
+        "kernel.authority",
+        "kernel.operations"
+      ],
+      "function": "Provide explicit dpkg, APT, systemd, D-Bus, cgroup, namespace and filesystem adapter boundaries.",
+      "targetRoots": [
+        "codex-rs/hepta-agentd/src/assimilation/debian"
+      ],
+      "authority": "verified_use_only"
+    },
+    {
+      "id": "assimilation.sandbox",
+      "owners": [
+        "control.engineering",
+        "runtime.supervisor"
+      ],
+      "function": "Execute candidates in an isolated VM, container or rootfs with no production credentials or uncontrolled network.",
+      "targetRoots": [
+        "tools/hepta-engineering-control/assimilation/sandbox"
+      ],
+      "authority": "sandbox_only"
+    },
+    {
+      "id": "assimilation.state-migration",
+      "owners": [
+        "kernel.operations",
+        "runtime.agentd"
+      ],
+      "function": "Quiesce, snapshot, migrate, verify, reconcile and roll back owned state.",
+      "targetRoots": [
+        "codex-rs/hepta-operations/src/assimilation"
+      ],
+      "authority": "separately_authorized_candidate"
+    },
+    {
+      "id": "assimilation.provenance",
+      "owners": [
+        "kernel.evidence"
+      ],
+      "function": "Bind SBOM, signatures, license, vulnerability, source, build and evaluator evidence.",
+      "targetRoots": [
+        "codex-rs/hepta-evidence/src/assimilation"
+      ],
+      "authority": "evidence_only"
+    },
+    {
+      "id": "assimilation.qualifier",
+      "owners": [
+        "learning.eval",
+        "kernel.evidence"
+      ],
+      "function": "Evaluate behavior parity, safety, resources, fault response, rollback and non-resurrection independently.",
+      "targetRoots": [
+        "codex-rs/hepta-intelligence-eval/src/assimilation"
+      ],
+      "authority": "no_selection"
+    },
+    {
+      "id": "organ.federation",
+      "owners": [
+        "runtime.fleet",
+        "memory.federation"
+      ],
+      "function": "Coordinate multi-host identity, leases, bounded remote reads and failure isolation without autonomous propagation.",
+      "targetRoots": [
+        "codex-rs/hepta-fleet/src/assimilation",
+        "codex-rs/hepta-memory-federation/src/assimilation"
+      ],
+      "authority": "explicit_host_enrollment_only"
+    }
+  ],
+  "codingEntryGate": {
+    "allDocumentationGapsClosed": true,
+    "moduleCoverageRequired": 40,
+    "sourceReceiptRequired": true,
+    "exactSourceAndSyntheticMergeRequired": true,
+    "deterministicFallbackRequired": true,
+    "rollbackSpecifiedRequired": true,
+    "independentDecisionRolesRequired": true,
+    "positiveAuthorityDeltaAllowed": false
+  },
+  "globalClosure": {
+    "documentationGapState": "closed",
+    "state": "closed",
+    "protocolCount": 31,
+    "gapCount": 54,
+    "externalGateCount": 9,
+    "moduleBindingCount": 40
+  },
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

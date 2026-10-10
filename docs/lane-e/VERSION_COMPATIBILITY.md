@@ -1,0 +1,35 @@
+# Lane E version compatibility
+
+This matrix is normative for source compatibility inside Lane E. It does not authorize migration, activation or release.
+
+| Area | Historical form | Current additive form | Read rule | Write rule | Downgrade / rollback rule |
+|---|---|---|---|---|---|
+| Learning ledger events | V1 `LearningLedger` / `DurableLedger` tags 0..3 | Durable authenticated V2 facts behind product `LedgerWriter` plus explicit V1 protocol adapters | V1 remains readable with its original meaning; V2 replay preserves correction/credit/unlearning invariants | New composed writers use `LedgerWriter`; raw durable append remains compatibility/qualification-only | Never relabel V1 evidence as authenticated V2, bypass conserved-credit admission, or downgrade an anchored/witnessed reopen |
+| Frozen datasets | `DatasetSnapshotV1`, then `DatasetSnapshotV2` | owner-native self-verifying `DatasetSnapshotReceiptV3` plus the registered `DatasetSnapshotV1` compatibility adapter | V3 is verified in-process against its complete V2 digest preimage; registered V1 canonical JSON remains readable by cross-module consumers | `LedgerWriter::freeze_dataset` derives and emits V3 from canonical ledger replay; registered cross-module publication uses the V1 adapter until a V3 wire codec/schema is separately registered | Rollback may expose V2 only to an explicitly compatible owner-local caller; no detached digest or unregistered V3 object may satisfy a canonical cross-module consumer |
+| Operator target builder | `train(TrainingRequest)` | `build_targets` | Both names retain identical target-builder behavior | New code calls `build_targets` | Neither name may be described as a neural trainer |
+| Learned operator | V1 complete-grid tabular fit/predict | canonical fit now enforces evidence uniqueness; strict/indexed V2 remains additive | V1 artifacts remain inspectable | New qualification uses dataset-bound verified V2 input; both default and strict fit reject relabelled evidence | A persisted V1 artifact may be read only under an independently selected pin; compatibility APIs cannot bypass verified dataset admission |
+| World model | V1 action-conditioned tabular model | evidence-unique fit plus dataset-bound verified V2 input | Exact supported pairs only | New qualification verifies DatasetSnapshotReceiptV3 and exact source-record evidence before fitting | No version may convert prediction into independent factual outcome or accept caller-only dataset binding |
+| Evaluation estimators | V1 point, cluster, sequential and temporal receipts | complete cross-fold and independent-decision composition | Historical receipts retain estimator and digest version | New claims bind estimand and complete plan/use receipts | A point estimate cannot be upgraded by reinterpretation into longitudinal evidence |
+| Evidence identity | caller-constructed `AuthenticatedPrincipalV1` | `LearningEvidenceVerifierV1`, private verified evidence and signed operator/evaluation V2 admission | Legacy structural validators remain compatibility surfaces | Qualification applicability/regularity and evaluation admission use host-trusted Ed25519 keys with generator/evaluator role and controller separation | Replacing the verifier epoch invalidates previous trust bindings; signatures authenticate attestations, not scientific truth |
+| Metric eligibility | V1 strict superiority for every metric | frozen V2 primary / noninferiority / absolute roles | V1 semantics remain unchanged | Register all roles and margins before holdout consumption; use matching V2 evaluator | V2 metric/plan digests cannot be interpreted with V1 gates or altered roles |
+| Final holdout | in-memory `FinalHoldoutRegistry` | predecessor-bound `FinalHoldoutJournalV1` | Existing typed registry semantics remain readable | Product adapters persist/replay the journal and compare expected head | Restarting with an empty registry is not a valid rollback |
+| Artifact registry | V1 create-only registry and pinned loader | V2 complete manifest and withdrawal state | V1 records remain readable under their original schema | Dataset-derived candidates use V2 provenance | V1 support digests cannot be reinterpreted as complete V2 lineage |
+| Artifact admission | snapshot-local V2 withdrawal check | withdrawal-bound V3 admission | V2 validation remains available for legacy callers | Publication uses V3 and rechecks the same withdrawal head under the writer fence | A stale V3 admission or older backup marker cannot reactivate a withdrawn artifact |
+| Registry-head evidence | V1 typed witness fields | unchanged | Validator checks binding, epoch, predecessor and time | Host authenticates signature before constructing the typed witness | An old self-consistent head is not proof of the newest head |
+| Lifecycle | V1 transition validator | predecessor-bound lifecycle journal profile | Historical transition evidence remains interpretable | Product publication appends against current artifact state/head | Rollback is a new authorized transition; mandatory states cannot be skipped |
+
+The signed evidence APIs are additive. Their presence does not establish that
+all host callers have migrated, that a signature authenticates an estimate's
+scientific validity, or that the system has demonstrated longitudinal learning.
+See [evaluation admission](../../codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md)
+for the exact host boundary, claim limitations and capacity behavior.
+
+## Canonical encoding policy
+
+Every digest domain carries an explicit version. Lengths use checked big-endian integer encoding; IDs use exact UTF-8 bytes with a checked length prefix; digest values use 32 raw bytes; fixed-point values use the registered signed Q32 representation. A stored top-level digest is excluded from its own preimage unless a versioned schema explicitly says otherwise.
+
+Golden vectors must be produced independently of the implementation under test. Adding a field requires a new digest domain or an explicitly registered backward-compatible envelope. Removing, reordering or changing the meaning of a bound field is never an in-place change.
+
+## Mixed-version process rules
+
+A process declares the exact contract versions it consumes and produces at startup. Unsupported pairs fail readiness rather than falling back implicitly. A generation change freezes existing run snapshots; new runs use the newly selected complete tuple. Current correction, revocation and withdrawal frontiers are overlaid before any historical artifact or backup becomes readable.

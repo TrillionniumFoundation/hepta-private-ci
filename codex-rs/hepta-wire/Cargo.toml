@@ -1,0 +1,17 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-wire"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_wire"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-types = { workspace = true }

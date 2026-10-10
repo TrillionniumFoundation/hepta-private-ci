@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.source-migration.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "primarySourceCommit": "3999c9d3101aa5c7501d48cc56101b1b3e7b8dc9",
+  "primarySourcePath": ".g1/trillionnium_os_external_evidence",
+  "reviewRegressionSourceRef": "ops/pr456-review-fix-r4-20260907",
+  "reviewRegressionSourceCommit": "ee1a41ca4617ed9764ade6200c4e40757a9a7d51",
+  "reviewRegressionSourceBlob": "fc3908744dfd17a6b1f21de716b55dcc5db978f2",
+  "status": "unprovisioned_source_candidate",
+  "deploymentPerformed": false,
+  "targetEvidenceProduced": false,
+  "modifications": [
+    "relocate ordinary source and tests to tools/hepta-os-evidence",
+    "remove unnecessary Python future imports",
+    "format readable Python",
+    "adapt historical regression fault injection to durable STARTED and fallback result semantics",
+    "reject mismatched procfs and process PID namespaces before admission/state/signaling and during descendant scans"
+  ],
+  "sourceBlobs": {
+    "EXECUTOR.md": "36ccc8f052473d174f8373255fc23b967bebaa5b",
+    "README.md": "c6d94d16464a17f09ffeaeb036c99a92bef6c81f",
+    "admission_service.py": "74c49a8763631766b5f699b10675549f6267dee8",
+    "execution-policy.template.json": "85c167ede7d4bf0fb5465797a5251f888669cbf5",
+    "policy.template.json": "7d795bb6fea3078580457020df01067ae5e20bf1",
+    "tests/test_admission_service.py": "68d2e3f221666cca69c36ae8109c76a0d9642352",
+    "tests/test_trusted_executor.py": "5e3d48c18746e046a750b8d55699905539763048",
+    "trusted_executor.py": "2091d64deb48e048e883413bacdcab6ec5fecca0"
+  },
+  "validation": {
+    "admissionAndNamespaceTestsPassed": 12,
+    "nativeExecutorTestsSkipped": 25,
+    "skipReason": "procfs does not describe the current process PID namespace; private procfs mount unavailable",
+    "targetEvidenceProduced": false
+  }
+}

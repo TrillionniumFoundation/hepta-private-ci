@@ -1,0 +1,26 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-control-plane"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_control_plane"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-ndu = { path = "../hepta-ndu" }
+codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+codex-hepta-contracts = { workspace = true }
+codex-hepta-operations = { workspace = true }
+ed25519-dalek = { workspace = true }
+pretty_assertions = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
