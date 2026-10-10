@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 from pathlib import Path
 from typing import Any
 
@@ -38,7 +39,7 @@ def positive_number(value: Any, field: str, *, allow_zero: bool = True) -> float
 def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str, Any]:
     if packet.get("schema") != "hepta.cell-split.performance.v1":
         raise InvalidEvidence("unsupported schema")
-    if not isinstance(packet.get("source_sha"), str) or len(packet["source_sha"]) != 40:
+    if not isinstance(packet.get("source_sha"), str) or not re.fullmatch(r"[0-9a-f]{40}", packet["source_sha"]):
         raise InvalidEvidence("missing exact 40-character source SHA")
     for field in ("hardware_id", "model_digest", "workload_digest"):
         if not isinstance(packet.get(field), str) or not packet[field]:
@@ -55,7 +56,7 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
             raise InvalidEvidence("each run must be an object")
         scope = entry.get("scopes")
         mode = entry.get("mode")
-        if isinstance(scope, bool) or scope not in SCOPES or mode not in MODES:
+        if type(scope) is not int or scope not in SCOPES or mode not in MODES:
             raise InvalidEvidence("invalid mode or scope")
         key = (scope, mode)
         if key in measurements:
@@ -70,7 +71,7 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
                       "fsync_count", "failed_requests"):
             if not vals[field].is_integer():
                 raise InvalidEvidence(f"{scope}/{mode}/{field}: expected integer")
-        if vals["completed"] > vals["attempted"] or vals["failed_requests"] > vals["attempted"] - vals["completed"]:
+        if vals["completed"] + vals["failed_requests"] != vals["attempted"]:
             raise InvalidEvidence(f"{key}: inconsistent terminal request accounting")
         if not vals["p50_ms"] <= vals["p95_ms"] <= vals["p99_ms"]:
             raise InvalidEvidence(f"{key}: percentiles out of order")
