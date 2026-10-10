@@ -345,3 +345,96 @@ fn post_open_ledger_tampering_cannot_dispatch_a_successor() {
     ));
     assert_eq!(state.borrow().executions, 1);
 }
+
+
+#[test]
+fn frozen_plan_modified_after_open_cannot_dispatch_any_external_effect() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(observed.clone()),
+    )
+    .expect("open");
+    fs::write(root.path().join("cell-split-frozen-plan.json"), b"{}")
+        .expect("mutate already opened plan");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(observed.borrow().executions, 0);
+}
+
+#[test]
+fn pending_intent_modified_after_lost_ack_cannot_be_reconciled() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(observed.clone());
+    port.drop_ack = true;
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert_eq!(observed.borrow().executions, 1);
+    let path = root.path().join("cell-split-00-prepared.json");
+    let mut intent: CellSplitExecutionIntentV1 =
+        serde_json::from_slice(&fs::read(&path).expect("read")).expect("intent");
+    intent.idempotency_key = "ee".repeat(32);
+    fs::write(&path, canonical_json(&intent).expect("encode")).expect("tamper");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(observed.borrow().executions, 1);
+}
+
+#[test]
+fn post_open_phantom_successor_is_rejected_before_external_cas() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(observed.clone()),
+    )
+    .expect("open");
+    fs::write(
+        root.path().join("cell-split-02-prepared.json"),
+        b"not an admitted successor",
+    )
+    .expect("insert phantom future frame");
+    assert!(owner.advance().is_err());
+    assert_eq!(observed.borrow().executions, 0);
+}
+
+#[test]
+fn forged_commit_after_lost_ack_never_permits_reexecution() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(observed.clone());
+    port.drop_ack = true;
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+    assert!(owner.advance().is_err());
+    let injected = FixturePort::receipt(&make_intent(
+        &plan(),
+        &plan().digest().expect("digest"),
+        CellSplitExecutionStepV1::ArtifactCas,
+        &plan().digest().expect("digest"),
+    ));
+    fs::write(
+        root.path().join("cell-split-00-committed.json"),
+        canonical_json(&injected).expect("receipt"),
+    )
+    .expect("unverified commit injection");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(observed.borrow().executions, 1);
+}
