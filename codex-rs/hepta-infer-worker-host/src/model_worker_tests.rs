@@ -6,15 +6,20 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     fail_unload: bool,
+    fail_load: bool,
+    load_memory_bytes: Option<u64>,
     loaded: usize,
 }
 
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        if self.fail_load {
+            return Err(Error::DriverFailure("load ACK lost after effect".into()));
+        }
         Ok(DriverModelHandle {
             opaque_id: format!("handle.{}", manifest.model_id),
-            observed_memory_bytes: 1_024,
+            observed_memory_bytes: self.load_memory_bytes.unwrap_or(1_024),
         })
     }
 
@@ -214,6 +219,67 @@ fn unloaded_model_digest_can_be_reloaded_but_failed_unload_remains_fenced() {
         failed.load_model(100, alias),
         Err(Error::ModelAlreadyLoaded)
     );
+}
+
+#[test]
+fn uncertain_model_load_fences_digest_and_respects_capacity_bound() {
+    let driver = Driver {
+        fail_load: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.3".to_string(), 3, grant(), driver).expect("worker");
+    assert!(matches!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure(_))
+    ));
+    let digest = Digest32::from_str(&manifest().model_digest).unwrap();
+    assert!(!worker.model_matches_digest("model.1", digest));
+    let mut alias = manifest();
+    alias.model_id = "alias".to_owned();
+    assert_eq!(worker.load_model(100, alias), Err(Error::ModelAlreadyLoaded));
+    // Reservations for uncertain effects consume the same real model limit.
+    let mut second = manifest();
+    second.model_id = "model.2".to_owned();
+    second.model_digest = "a".repeat(64);
+    assert!(matches!(
+        worker.load_model(100, second),
+        Err(Error::DriverFailure(_))
+    ));
+    let mut third = manifest();
+    third.model_id = "model.3".to_owned();
+    third.model_digest = "b".repeat(64);
+    assert_eq!(worker.load_model(100, third), Err(Error::ModelCapacity));
+}
+
+#[test]
+fn oversized_load_with_failed_unload_never_frees_unknown_physical_handle() {
+    let driver = Driver {
+        load_memory_bytes: Some(8_192),
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.4".to_string(), 3, grant(), driver).expect("worker");
+    assert!(matches!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure(_))
+    ));
+    let mut alias = manifest();
+    alias.model_id = "another".to_owned();
+    assert_eq!(worker.load_model(100, alias), Err(Error::ModelAlreadyLoaded));
+
+    // A *confirmed* backend cleanup, unlike an unknown ACK, frees the slot.
+    let driver = Driver {
+        load_memory_bytes: Some(8_192),
+        ..Driver::default()
+    };
+    let mut cleaned =
+        InferenceWorker::new(100, "worker.5".to_string(), 3, grant(), driver).expect("worker");
+    assert_eq!(cleaned.load_model(100, manifest()), Err(Error::ModelCapacity));
+    let mut alias = manifest();
+    alias.model_id = "reloaded".to_owned();
+    assert_eq!(cleaned.load_model(100, alias), Err(Error::ModelCapacity));
 }
 
 #[test]
