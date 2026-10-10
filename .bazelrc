@@ -103,6 +103,8 @@ common:ci --@rules_rust//rust/settings:extra_exec_rustc_flag=-Cdebuginfo=0
 
 # Disable disk cache in CI since we have a remote one and aren't using persistent workers.
 common:ci --disk_cache=
+# Exact zlib mirror; repository-rule SHA-256 remains mandatory.
+common:ci --downloader_config=.bazel_downloader_config
 
 # Shared config for the main Bazel CI workflow.
 common:ci-bazel --config=ci
