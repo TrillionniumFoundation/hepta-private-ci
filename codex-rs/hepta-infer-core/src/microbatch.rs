@@ -256,10 +256,12 @@ impl BoundedMicrobatchSchedulerV1 {
             let Some(key) = self.round_robin.pop_front() else {
                 break;
             };
-            scanned += 1;
             let Some(mut lane) = self.lanes.remove(&key) else {
+                // Coalescing may leave a retired round-robin slot. It must not
+                // consume the active-lane scan budget of the next poll.
                 continue;
             };
+            scanned += 1;
             // A lane cannot exceed one batch: expiry is bounded without a
             // global queue scan, including out-of-order deadlines.
             lane.retain(|queued| {
