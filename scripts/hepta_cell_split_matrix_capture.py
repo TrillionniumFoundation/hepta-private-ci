@@ -19,6 +19,7 @@ from hepta_cell_split_perf_gate import (
     FIELDS,
     MODES,
     SCOPES,
+    TRACE_FIELD,
     InvalidEvidence,
     analyze,
 )
@@ -100,7 +101,13 @@ def validate_measurement(
     missing = [field for field in FIELDS if field not in observed]
     if missing:
         raise InvalidEvidence(f"{scope}/{mode}: missing {missing}")
-    return {"scopes": scope, "mode": mode, **{field: observed[field] for field in FIELDS}}
+    trace = observed.get(TRACE_FIELD)
+    if not isinstance(trace, str) or re.fullmatch(r"[0-9a-f]{64}", trace) is None:
+        raise InvalidEvidence(f"{scope}/{mode}: canonical attempted request trace is required")
+    return {
+        "scopes": scope, "mode": mode, TRACE_FIELD: trace,
+        **{field: observed[field] for field in FIELDS},
+    }
 
 
 def execute_matrix(
