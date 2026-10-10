@@ -12,12 +12,21 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Instant;
 
 use codex_hepta_types::CellParentDispositionV1;
 use codex_hepta_types::CellSplitContractErrorV1;
 use codex_hepta_types::CellSplitV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::PhaseLatencyHistogramV1;
+use codex_hepta_types::PhaseLatencySnapshotV1;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 use codex_hepta_types::StableId;
 
 use crate::CnsDeliveryV1;
@@ -159,6 +168,9 @@ pub struct CellSplitRouteControllerV1 {
     children: BTreeMap<StableId, CellSplitChildRouteV1>,
     fence_receipt: Option<CellSplitRouteFenceReceiptV1>,
     phase: CellSplitRoutePhaseV1,
+    cns_cutover_latency: PhaseLatencyHistogramV1,
+    metrics: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: AtomicU64,
 }
 
 impl CellSplitRouteControllerV1 {
@@ -177,6 +189,9 @@ impl CellSplitRouteControllerV1 {
             children: BTreeMap::new(),
             fence_receipt: None,
             phase: CellSplitRoutePhaseV1::ParentActive,
+            cns_cutover_latency: PhaseLatencyHistogramV1::default(),
+            metrics: None,
+            failed_metrics: AtomicU64::new(0),
         })
     }
 
@@ -186,6 +201,49 @@ impl CellSplitRouteControllerV1 {
 
     pub fn phase(&self) -> CellSplitRoutePhaseV1 {
         self.phase
+    }
+
+    pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metrics = Some(sink);
+        self
+    }
+
+    pub fn production_metrics_ready(&self) -> bool {
+        self.metrics.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metrics else {
+            return false;
+        };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
+    }
+
+    fn report_cutover(&self, started: Instant, operation: Digest32, succeeded: bool) {
+        if let Some(sink) = &self.metrics {
+            if sink
+                .record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(self.split.split_id.as_str().as_bytes()),
+                    operation_digest: operation,
+                    phase: PhaseMetricKindV1::Cns,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded,
+                })
+                .is_err()
+            {
+                self.failed_metrics.fetch_add(1, Ordering::Release);
+            }
+        }
+    }
+
+    pub fn cns_latency_observations(&self) -> PhaseLatencySnapshotV1 {
+        self.cns_cutover_latency.snapshot()
     }
 
     pub fn parent_route(&self) -> &CnsRouteV1 {
@@ -261,11 +319,14 @@ impl CellSplitRouteControllerV1 {
         self.validate_child_routes(&next, &child_routes)?;
         let children = self.bind_child_routes(child_routes)?;
         let fence = CellSplitRouteFenceReceiptV1::new(&self.split, &self.parent_route)?;
-        if let Err(error) = self
-            .host
-            .replace_read_only_generation(expected, next)
-            .map_err(CellSplitRouteErrorV1::Runtime)
-        {
+        let started = Instant::now();
+        let cutover = self.cns_cutover_latency.time_result(|| {
+            self.host
+                .replace_read_only_generation(expected, next)
+                .map_err(CellSplitRouteErrorV1::Runtime)
+        });
+        self.report_cutover(started, fence.fence_digest, cutover.is_ok());
+        if let Err(error) = cutover {
             self.phase = CellSplitRoutePhaseV1::Quarantined;
             return Err(error);
         }
@@ -288,11 +349,14 @@ impl CellSplitRouteControllerV1 {
         self.validate_child_routes(&next, &child_routes)?;
         let children = self.bind_child_routes(child_routes)?;
         let fence = CellSplitRouteFenceReceiptV1::new(&self.split, &self.parent_route)?;
-        if let Err(error) = self
-            .host
-            .replace_read_only_generation_with_migration(expected, next, migration)
-            .map_err(CellSplitRouteErrorV1::Runtime)
-        {
+        let started = Instant::now();
+        let cutover = self.cns_cutover_latency.time_result(|| {
+            self.host
+                .replace_read_only_generation_with_migration(expected, next, migration)
+                .map_err(CellSplitRouteErrorV1::Runtime)
+        });
+        self.report_cutover(started, fence.fence_digest, cutover.is_ok());
+        if let Err(error) = cutover {
             self.phase = CellSplitRoutePhaseV1::Quarantined;
             return Err(error);
         }

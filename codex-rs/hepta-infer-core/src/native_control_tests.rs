@@ -601,3 +601,44 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn native_incremental_slot_counter_replays_across_many_released_records() {
+    let location = path("native-incremental-slots");
+    {
+        let mut owner = DurableInferenceControl::open(&location, 512).unwrap();
+        for index in 0..128 {
+            let id = format!("released-{index}");
+            owner.reserve_native(request(&id), 1).unwrap();
+            assert_eq!(
+                owner
+                    .reserve_native(request(&format!("blocked-{index}")), 1)
+                    .unwrap_err()
+                    .to_string(),
+                Error::CapacityExceeded.to_string()
+            );
+            let released = owner
+                .stop_native_before_dispatch(&id, "proven-before-effect".to_string())
+                .unwrap();
+            assert_eq!(released.state, NativeReservationState::Released);
+        }
+        owner.reserve_native(request("active"), 1).unwrap();
+    }
+    {
+        let mut recovered = DurableInferenceControl::open(&location, 512).unwrap();
+        assert_eq!(
+            recovered
+                .reserve_native(request("fenced"), 1)
+                .unwrap_err()
+                .to_string(),
+            Error::CapacityExceeded.to_string()
+        );
+        recovered
+            .stop_native_before_dispatch("active", "proven-before-effect".to_string())
+            .unwrap();
+        recovered
+            .reserve_native(request("after-reopen"), 1)
+            .unwrap();
+    }
+    std::fs::remove_file(location).unwrap();
+}

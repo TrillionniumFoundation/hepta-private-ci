@@ -236,6 +236,29 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(())
     }
 
+    /// Strict additive path: check an independently admitted NDU read
+    /// receipt's digest binding before running the deterministic tick.
+    /// Legacy tick callers remain available for source compatibility.
+    pub fn tick_with_ndu_snapshot(
+        &mut self,
+        model: &mut impl NeuronModelPort,
+        input: NeuronTickInputV1,
+        snapshot: &codex_hepta_types::NduSnapshotRefV1,
+        admitted_read_receipt_digest: Digest32,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        let tick_digest = input.semantic_digest()?;
+        crate::bind_ndu_snapshot_stage_v1(
+            &input.subject_id,
+            self.config.generation,
+            input.ndu_snapshot_digest,
+            tick_digest,
+            snapshot,
+            admitted_read_receipt_digest,
+        )
+        .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        self.tick(model, input)
+    }
+
     pub fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
