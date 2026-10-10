@@ -19,7 +19,9 @@ struct ControlFrontier(Mutex<NduSnapshotRefV1>);
 
 impl NduReadFrontierPortV1 for ControlFrontier {
     fn latest(&self, scope: &StableId) -> Result<NduSnapshotRefV1, NduReadVerificationErrorV1> {
-        let snapshot = self.0.lock()
+        let snapshot = self
+            .0
+            .lock()
             .map_err(|_| NduReadVerificationErrorV1::FrontierUnavailable)?;
         if &snapshot.scope_id != scope {
             return Err(NduReadVerificationErrorV1::FrontierUnavailable);
@@ -63,23 +65,33 @@ fn independent_signature_time_and_live_frontier_must_all_agree() {
         key.verifying_key().to_bytes(),
         Arc::new(ProtectedClock(1000)),
         frontier.clone(),
-    ).unwrap();
+    )
+    .unwrap();
     let original = signed_read(&key, snapshot());
     let admitted = verifier.verify(&original).unwrap();
     assert!(!admitted.is_zero());
 
     let mut tampered = original.clone();
     tampered.read_receipt_digest = Digest32::of_bytes(b"swapped");
-    assert_eq!(verifier.verify(&tampered), Err(NduReadVerificationErrorV1::Signature));
+    assert_eq!(
+        verifier.verify(&tampered),
+        Err(NduReadVerificationErrorV1::Signature)
+    );
 
     let another = SigningKey::from_bytes(&[40; 32]);
     tampered = signed_read(&another, snapshot());
-    assert_eq!(verifier.verify(&tampered), Err(NduReadVerificationErrorV1::Signature));
+    assert_eq!(
+        verifier.verify(&tampered),
+        Err(NduReadVerificationErrorV1::Signature)
+    );
 
     let mut stale = snapshot();
     stale.route_fence += 1;
     *frontier.0.lock().unwrap() = stale;
-    assert_eq!(verifier.verify(&original), Err(NduReadVerificationErrorV1::StaleFrontier));
+    assert_eq!(
+        verifier.verify(&original),
+        Err(NduReadVerificationErrorV1::StaleFrontier)
+    );
 }
 
 #[test]
@@ -91,9 +103,13 @@ fn read_expiration_and_unknown_owner_are_fail_closed() {
         key.verifying_key().to_bytes(),
         Arc::new(ProtectedClock(1500)),
         frontier,
-    ).unwrap();
+    )
+    .unwrap();
     let read = signed_read(&key, snapshot());
-    assert_eq!(verifier.verify(&read), Err(NduReadVerificationErrorV1::Expired));
+    assert_eq!(
+        verifier.verify(&read),
+        Err(NduReadVerificationErrorV1::Expired)
+    );
     let mut wrong = snapshot();
     wrong.owner_id = StableId::new("intruder").unwrap();
     assert_eq!(
