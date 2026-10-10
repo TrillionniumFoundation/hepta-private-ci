@@ -19,13 +19,12 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::{
-    CellSplitDurableEffectBackendV1, CellSplitExecutionIntentV1,
-    CellSplitExecutionPlanV1, CellSplitExecutionStepV1, CellSplitOwnedEffectV1,
-};
 use crate::durable::{
-    SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root,
-    sha256, write_private_new,
+    SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root, sha256, write_private_new,
+};
+use crate::{
+    CellSplitDurableEffectBackendV1, CellSplitExecutionIntentV1, CellSplitExecutionPlanV1,
+    CellSplitExecutionStepV1, CellSplitOwnedEffectV1,
 };
 
 const FROZEN: &str = "cell-split-cns-frozen.json";
@@ -105,10 +104,7 @@ pub trait CellSplitCnsRuntimePortV1 {
         challenge_nonce: &str,
     ) -> Result<CellSplitCnsLiveRouteV1, Self::Error>;
 
-    fn verify_live(
-        &mut self,
-        observation: &CellSplitCnsLiveRouteV1,
-    ) -> Result<(), Self::Error>;
+    fn verify_live(&mut self, observation: &CellSplitCnsLiveRouteV1) -> Result<(), Self::Error>;
 
     fn publish_once(
         &mut self,
@@ -196,7 +192,14 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             Err(error) => return Err(error.into()),
         }
         let plan_digest = sha256(&canonical_json(&plan)?);
-        Ok(Self { root, plan, plan_digest, binding, port, _lock: lock })
+        Ok(Self {
+            root,
+            plan,
+            plan_digest,
+            binding,
+            port,
+            _lock: lock,
+        })
     }
 
     fn check_intent(
@@ -209,7 +212,8 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
                 self.plan_digest,
                 CellSplitExecutionStepV1::CnsRouteCutover.index(),
                 intent.previous_receipt_digest,
-            ).as_bytes(),
+            )
+            .as_bytes(),
         );
         if intent.schema != "hepta.learning.cell-split.execution-owner.v1"
             || intent.step != CellSplitExecutionStepV1::CnsRouteCutover
@@ -226,14 +230,14 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
         Ok(())
     }
 
-    fn checked_live(
-        &mut self,
-    ) -> Result<CellSplitCnsLiveRouteV1, CellSplitCnsCutoverErrorV1> {
+    fn checked_live(&mut self) -> Result<CellSplitCnsLiveRouteV1, CellSplitCnsCutoverErrorV1> {
         let nonce = rand::random::<[u8; 32]>()
             .iter()
             .map(|byte| format!("{byte:02x}"))
             .collect::<String>();
-        let live = self.port.inspect_live(&self.binding.cns_id, &self.plan.scope_digest, &nonce)
+        let live = self
+            .port
+            .inspect_live(&self.binding.cns_id, &self.plan.scope_digest, &nonce)
             .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         if live.cns_id != self.binding.cns_id
             || live.scope_digest != self.plan.scope_digest
@@ -246,7 +250,8 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
         {
             return Err(CellSplitCnsCutoverErrorV1::Invalid);
         }
-        self.port.verify_live(&live)
+        self.port
+            .verify_live(&live)
             .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         Ok(live)
     }
@@ -268,7 +273,9 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
         &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitCnsRuntimeCommitV1>, CellSplitCnsCutoverErrorV1> {
-        let result = self.port.read_original_commit(&intent.idempotency_key)
+        let result = self
+            .port
+            .read_original_commit(&intent.idempotency_key)
             .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         if let Some(ref record) = result {
             if record.idempotency_key != intent.idempotency_key
@@ -285,7 +292,8 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             {
                 return Err(CellSplitCnsCutoverErrorV1::Invalid);
             }
-            self.port.verify_original_commit(record)
+            self.port
+                .verify_original_commit(record)
                 .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         }
         Ok(result)
@@ -296,17 +304,16 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitOwnedEffectV1>, CellSplitCnsCutoverErrorV1> {
         self.check_intent(intent)?;
-        self.port.verify_preconditions(&self.plan, intent)
+        self.port
+            .verify_preconditions(&self.plan, intent)
             .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         let original = self.checked_original(intent)?;
         let live = self.checked_live()?;
         match original {
-            Some(record) if self.is_child(&live) => {
-                Ok(Some(CellSplitOwnedEffectV1 {
-                    owner_sequence: record.committed_sequence,
-                    owner_receipt_bytes: canonical_json(&record)?,
-                }))
-            }
+            Some(record) if self.is_child(&live) => Ok(Some(CellSplitOwnedEffectV1 {
+                owner_sequence: record.committed_sequence,
+                owner_receipt_bytes: canonical_json(&record)?,
+            })),
             Some(_) => Err(CellSplitCnsCutoverErrorV1::Invalid),
             None if self.is_parent(&live) => Ok(None),
             None => Err(CellSplitCnsCutoverErrorV1::Ambiguous),
@@ -327,16 +334,15 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitDurableEffectBackendV1
         Ok(())
     }
 
-    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<(), Self::Error>
-    {
+    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
         if self.verified_effect(intent)?.is_some() {
             return Ok(());
         }
         // The authoritative CNS port must use its own durable one-shot
         // final-use guard. A lost acknowledgement cannot cause a second
         // runtime generation replacement in this adapter.
-        self.port.publish_once(&self.plan, &self.binding, intent)
+        self.port
+            .publish_once(&self.plan, &self.binding, intent)
             .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         if self.verified_effect(intent)?.is_none() {
             return Err(CellSplitCnsCutoverErrorV1::Ambiguous);
@@ -361,7 +367,9 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitDurableEffectBackendV1
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
         self.checked_live()?;
-        let sequence = self.port.committed_sequence(&self.binding.cns_id)
+        let sequence = self
+            .port
+            .committed_sequence(&self.binding.cns_id)
             .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         if sequence == 0 {
             return Err(CellSplitCnsCutoverErrorV1::Invalid);
@@ -372,7 +380,9 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitDurableEffectBackendV1
 
 fn digest_shape(value: &str) -> bool {
     value.len() == 64
-        && value.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
         && value.bytes().any(|b| b != b'0')
 }
 
