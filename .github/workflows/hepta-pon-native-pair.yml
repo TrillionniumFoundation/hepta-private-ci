@@ -34,9 +34,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 6bfa1c4581b25f6c38e6724bc12a5f3c2be46eae
+      CHAIN_SOURCE_SHA: 47be4b6bb498738ef2bd1da66b040aa6fafe632c
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '6bfa1c4581b25f6c38e6724bc12a5f3c2be46eae' || '51d0e6ec56ec00a954120faf57eae117367789a8' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '47be4b6bb498738ef2bd1da66b040aa6fafe632c' || 'a455b857fba0b41d3be8e7e09dc9652d3eca252f' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -125,6 +125,12 @@ jobs:
           for selector in cached_block_reads_do_not_hide_genesis_damage_or_rollback cached_parent_reads_observe_changed_work_then_exact_restore cached_commitment_reads_preserve_limits_missing_and_rollback cached_genesis_snapshot_is_reread_and_survives_cold_reopen; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "store::native_authenticated::cached_owner_read_tests::$selector" -- --exact --show-output --test-threads=1
           done
+      - name: Require every live public-owner mutation, rollback and cold-open selector
+        run: |
+          set -euo pipefail
+          for selector in live_owner_rechecks_genesis_block_after_committed_damage_and_restore live_owner_rechecks_parent_work_after_real_admission live_owner_rechecks_record_limits_missing_rows_and_sql_types live_owner_snapshot_damage_rolls_back_admission_and_rejects_cold_open; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test authenticated_storage_cli "cached_owner_reads::$selector" -- --exact --show-output --test-threads=1
+          done
       - name: Execute the native growth readback regression module
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-readback.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib growth_reservation_io::tests -- --nocapture
@@ -148,7 +154,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-overlap.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test public_v3_request_accounting actual_depletion::depleted_domain_serves_honest_block_during_rotating_public_false_work -- --exact --show-output --test-threads=1
       - name: Require paired native retained state and recovery
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recovery.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test continuity_authenticated --test authenticated_storage_cli -- --nocapture --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recovery.json" --minimum-tests 8 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test continuity_authenticated --test authenticated_storage_cli -- --nocapture --test-threads=1
       - name: Build the actual pinned native Chain executable
         run: |
           set -euo pipefail
