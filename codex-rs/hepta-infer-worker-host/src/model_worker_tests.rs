@@ -252,10 +252,7 @@ fn uncertain_model_load_fences_digest_and_respects_capacity_bound() {
     let mut third = manifest();
     third.model_id = "model.3".to_owned();
     third.model_digest = "b".repeat(64);
-    assert_eq!(
-        worker.load_model(100, third),
-        Err(Error::ModelCapacity)
-    );
+    assert_eq!(worker.load_model(100, third), Err(Error::ModelCapacity));
 }
 
 #[test]
