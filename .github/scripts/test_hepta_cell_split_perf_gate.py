@@ -91,6 +91,20 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         self.assertTrue(any("1024: optimized p99" in x for x in result["violations"]))
         self.assertFalse(result["production_activation_authorized"])
 
+    def test_p50_p95_regressions_are_independent_gate_failures(self):
+        packet = synthetic_matrix()
+        optimized = next(row for row in packet["runs"]
+                         if row["scopes"] == 256 and row["mode"] == "optimized_logical_split")
+        physical = next(row for row in packet["runs"]
+                        if row["scopes"] == 1024 and row["mode"] == "physical_split")
+        optimized["p95_ms"] = 6
+        physical["p50_ms"] = 3
+        result = analyze(packet)
+        self.assertFalse(result["comparative_gate_passed"])
+        self.assertTrue(any("256: optimized p95" in x for x in result["violations"]))
+        self.assertTrue(any("1024: physical p50" in x for x in result["violations"]))
+        self.assertFalse(result["production_activation_authorized"])
+
     def test_reject_nonfinite_and_inconsistent_measurements(self):
         packet = synthetic_matrix()
         packet["runs"][0]["cpu_seconds"] = float("nan")
