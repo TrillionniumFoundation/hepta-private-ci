@@ -296,3 +296,52 @@ fn tamper_and_invalid_signature_prevent_committed_replay() {
             .is_err()
     );
 }
+
+#[test]
+fn external_predecessor_revocation_fences_every_successor_and_completed_replay() {
+    for completed in 1..=4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("open");
+        for _ in 0..completed {
+            owner.advance().expect("committed effect");
+        }
+        state.borrow_mut().commits.clear();
+        assert!(matches!(
+            owner.advance(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(state.borrow().executions, completed);
+        assert_eq!(owner.completed_steps(), completed);
+    }
+}
+
+#[test]
+fn post_open_ledger_tampering_cannot_dispatch_a_successor() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    owner.advance().expect("first committed effect");
+    let path = root.path().join("cell-split-00-committed.json");
+    let mut receipt: CellSplitExecutionReceiptV1 =
+        serde_json::from_slice(&fs::read(&path).expect("read")).expect("decode");
+    receipt.owner_sequence += 1;
+    fs::write(&path, canonical_json(&receipt).expect("encode")).expect("tamper");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+}
