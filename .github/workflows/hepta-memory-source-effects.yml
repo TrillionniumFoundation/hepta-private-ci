@@ -5,7 +5,7 @@ on:
       - "codex/memory-cell-evidence-20261008"
     paths:
       - "scripts/memory_cell/source_write_effects.py"
-      - "scripts/memory_cell/test_source_write_effects.py"
+      - "scripts/memory_cell/test_source_write*.py"
       - ".github/workflows/hepta-memory-source-effects.yml"
   workflow_dispatch:
 permissions:
@@ -62,13 +62,22 @@ jobs:
           set -euo pipefail
           python3 -m pip install uv==0.8.22
           git fetch --no-tags --depth=1 origin "$BASE"
-          just fmt --check --base "$BASE" 2>&1 | tee /tmp/source-effect-validation/format.log
+          set +e
+          just fmt --check --base "$BASE" > /tmp/source-effect-validation/format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/source-effect-validation/format.log
+          if [ "$status" -ne 0 ]; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py scripts/memory_cell/test_source_write_audit.py > /tmp/source-effect-validation/format.diff || true
+            cat /tmp/source-effect-validation/format.diff
+          fi
+          exit "$status"
       - name: Preserve exact tested source and all observed failures
         if: always()
         run: |
           set -euo pipefail
           mkdir -p /tmp/source-effect-validation/source
-          cp scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py /tmp/source-effect-validation/source/
+          cp scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py /tmp/source-effect-validation/source/
           git rev-parse HEAD > /tmp/source-effect-validation/tested-commit.txt
           (cd /tmp/source-effect-validation && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

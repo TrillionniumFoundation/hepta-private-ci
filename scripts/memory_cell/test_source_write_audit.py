@@ -26,7 +26,9 @@ class SourceWriteAuditTests(unittest.TestCase):
             value = json.loads(doc.content)
             if value["attribute"] == "location":
                 value["attribute"] = "successful_mode"
-                value["value"] = value["value"].replace("site_", "mode_")
+                value["value"] = value["value"].replace(
+                    "site_new", "mode_11112222"
+                ).replace("site_", "mode_")
             rows.append(replace(doc, content=json.dumps(value)))
         cls.documents = sources("calibration") + tuple(rows)
         cls.identity = digest("fixture-reader-not-a-model")
@@ -65,9 +67,14 @@ class SourceWriteAuditTests(unittest.TestCase):
             "hybrid": {"selected": [pool[0]]},
             "empty": {"selected": []},
         }
-        recipe = dict(values=[2, 1], modes={"mode_new": "sort"}, target=[1, 2])
+        recipe = dict(values=[2, 1], modes={"mode_11112222": "sort"}, target=[1, 2])
         labels = [
-            dict(id=q.identity, kind="procedure", expected="mode_new", procedure=recipe)
+            dict(
+                id=q.identity,
+                kind="procedure",
+                expected="mode_11112222",
+                procedure=recipe,
+            )
         ]
         label_sha = self.write("inputs/labels.json", labels)
         source_sha = self.write(
@@ -114,12 +121,13 @@ class SourceWriteAuditTests(unittest.TestCase):
             if condition in controls:
                 ids = controls[condition]["selected"]
             else:
+                weights = INITIAL if arm == "policy_initial" else self.policy["weights"]
                 ids = list(
                     choose(
                         projection,
                         lookup_from_question(q),
                         pool,
-                        INITIAL if arm == "policy_initial" else self.policy["weights"],
+                        weights,
                         revoked=set(),
                     )[0]
                 )
@@ -137,7 +145,8 @@ class SourceWriteAuditTests(unittest.TestCase):
                 )
                 for d in (original[k] for k in ids)
             )
-            delivered = EvidenceBundle(digest(asdict(q)), "frontier", spans, arm).delivered()
+            bundle = EvidenceBundle(digest(asdict(q)), "frontier", spans, arm)
+            delivered = bundle.delivered()
             receipt = dict(
                 reader_identity=self.identity,
                 reader_profile=digest("fixture-profile"),
@@ -149,7 +158,7 @@ class SourceWriteAuditTests(unittest.TestCase):
                 delivered_evidence=delivered,
                 derived_evidence=[],
             )
-            answer = "mode_new"
+            answer = "mode_11112222"
             queue = capture_native(
                 q,
                 answer,
@@ -171,10 +180,10 @@ class SourceWriteAuditTests(unittest.TestCase):
             raw.append(row)
             item = deepcopy(row)
             item.update(
-                parsed_identifier="mode_new",
+                parsed_identifier="mode_11112222",
                 strict_task_success=True,
                 procedure_verification=call_worker(
-                    dict(operation="execute", recipe=recipe, supplied="mode_new")
+                    dict(operation="execute", recipe=recipe, supplied="mode_11112222")
                 ),
             )
             scored.append(item)
@@ -226,7 +235,10 @@ class SourceWriteAuditTests(unittest.TestCase):
 
     def test_replay_clock_is_distinct_but_request_and_result_are_exact(self):
         original = self.scored[0]["procedure_verification"]
-        repeated = original | {"seconds": 0.2, "observed_at": "2027-01-01T00:00:00+00:00"}
+        repeated = original | {
+            "seconds": 0.2,
+            "observed_at": "2027-01-01T00:00:00+00:00",
+        }
         self.assertTrue(procedure_equal(original, repeated))
         self.assertFalse(procedure_equal(original, repeated | {"stdout": "changed"}))
         with self.assertRaises(ValueError):
