@@ -374,11 +374,43 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self.cursor == STEP_COUNT
     }
 
+    /// Read each committed predecessor back from the durable ledger and from
+    /// its real owner immediately before a successor is dispatched. An external
+    /// rollback, stale route or post-open sidecar tamper must fence execution,
+    /// even when the coordinator previously opened successfully.
+    pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
+        let mut predecessor = self.plan_digest.clone();
+        for index in 0..self.cursor {
+            let step = CellSplitExecutionStepV1::at(index)
+                .ok_or(CellSplitExecutionErrorV1::Invalid("step index"))?;
+            let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
+            let prepared = read_frame(&frame_path(&self.root, index, "prepared"))?
+                .ok_or(CellSplitExecutionErrorV1::Invalid("missing committed intent"))?;
+            if prepared != canonical_json(&intent)? {
+                return Err(CellSplitExecutionErrorV1::Invalid("committed intent drift"));
+            }
+            let bytes = read_frame(&frame_path(&self.root, index, "committed"))?
+                .ok_or(CellSplitExecutionErrorV1::Invalid("missing committed receipt"))?;
+            let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
+            validate_receipt(&intent, &receipt)?;
+            self.trust.verify(&intent, &receipt)?;
+            self.port
+                .verify_committed(&intent, &receipt)
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            predecessor = receipt.receipt_digest;
+        }
+        if predecessor != self.previous_receipt_digest {
+            return Err(CellSplitExecutionErrorV1::Invalid("committed prefix drift"));
+        }
+        Ok(())
+    }
+
     /// Advances at most one durable owner effect; never drives a later stage
     /// until the preceding owner receipt is authenticated and fsync'd.
     pub fn advance(
         &mut self,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
+        self.verify_committed_prefix()?;
         let Some(step) = CellSplitExecutionStepV1::at(self.cursor) else {
             return Ok(None);
         };
