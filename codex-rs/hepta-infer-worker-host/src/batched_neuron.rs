@@ -95,15 +95,24 @@ pub fn neuron_batch_final_use_binding_v1(
     }
     let payload_digest =
         Digest32::from_str(&payload_hex).map_err(|_| BatchWorkerErrorV1::InvalidBinding)?;
-    let request_id = request.authorization.request_id.as_bytes();
-    let reservation_id = request.authorization.reservation_id.as_bytes();
-    let model_id = request.authorization.model_digest.as_bytes();
+    // Exact-request final use must also cover quota, reservation model, and
+    // cancellation state. A signed feature payload alone does not authorize
+    // changes to the surrounding worker/reservation claims.
+    let authorization = &request.authorization;
     let mut request_bytes = b"hepta.worker.batch-request.v1".to_vec();
-    for field in [request_id, reservation_id, model_id] {
+    for field in [
+        authorization.request_id.as_bytes(),
+        authorization.reservation_id.as_bytes(),
+        authorization.model_digest.as_bytes(),
+        authorization.reservation_model_digest.as_bytes(),
+    ] {
         request_bytes.extend_from_slice(&(field.len() as u64).to_be_bytes());
         request_bytes.extend_from_slice(field);
     }
-    request_bytes.extend_from_slice(&request.authorization.deadline_ms.to_be_bytes());
+    request_bytes.extend_from_slice(&authorization.deadline_ms.to_be_bytes());
+    request_bytes.extend_from_slice(&authorization.maximum_tokens.to_be_bytes());
+    request_bytes.extend_from_slice(&authorization.reservation_maximum_tokens.to_be_bytes());
+    request_bytes.push(u8::from(authorization.cancelled));
     request_bytes.extend_from_slice(payload_digest.as_array());
 
     let mut scope_bytes = b"hepta.worker.batch-scope.v1".to_vec();

@@ -327,3 +327,55 @@ fn rejected_signature_records_failed_terminal_without_invoking_driver() {
     assert!(events[1].succeeded);
     assert!(!events[2].succeeded);
 }
+
+#[test]
+fn signed_batch_rejects_authorization_quota_and_reservation_mutations() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[27; 32]);
+    let (model, original, key) = fixture_request();
+    let original_grant = || {
+        signed(
+            &signer,
+            neuron_batch_final_use_binding_v1("worker-one", &key, &original).unwrap(),
+        )
+    };
+    let mut worker = runner(&signer, dir.path(), model);
+
+    let mut changed_quota = original.clone();
+    changed_quota.authorization.maximum_tokens += 1;
+    let mut changed_reservation_quota = original.clone();
+    changed_reservation_quota.authorization.reservation_maximum_tokens += 1;
+    let mut changed_reservation_model = original.clone();
+    changed_reservation_model.authorization.reservation_model_digest =
+        digest(b"other-model").to_string();
+
+    for mutated in [
+        changed_quota,
+        changed_reservation_quota,
+        changed_reservation_model,
+    ] {
+        assert_eq!(
+            worker.enqueue(
+                100,
+                "model".into(),
+                mutated,
+                key.clone(),
+                original_grant(),
+            ),
+            Err(BatchWorkerErrorV1::InvalidBinding)
+        );
+        assert_eq!(worker.pending(), 0);
+    }
+
+    // Failed comparisons cannot claim the signed one-shot nonce or poison
+    // the original exact request. It is still admitted and executes once.
+    worker
+        .enqueue(100, "model".into(), original, key, original_grant())
+        .unwrap();
+    let poll = worker.poll_and_execute(101).unwrap();
+    assert_eq!(poll.outcomes.len(), 1);
+    assert_eq!(
+        poll.outcomes[0].result.as_ref().unwrap().status,
+        NeuronFeatureTerminalStatusV1::Succeeded
+    );
+}
