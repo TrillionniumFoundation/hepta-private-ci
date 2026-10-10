@@ -1,0 +1,101 @@
+name: Hepta Fleet source formatting staging
+on:
+  push:
+    branches: [ci/pon-fleet-format-stage-20261010]
+permissions:
+  contents: write
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_HTTP_MULTIPLEXING: "false"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Restore exact paired source without bringing staging into delivery
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/fleet-format-stage"
+          mkdir -p "$out"
+          echo "OUT=$out" >> "$GITHUB_ENV"
+          git rev-parse HEAD > "$out/staging-source.txt"
+          git checkout --detach bc0c0549e892bbfe8e4697e4ed003a072cd31ba1
+          test "$(git rev-parse HEAD^{tree})" = b52cb284d67c25d61ac8842ee174e21fe7827220
+          test "$(git hash-object codex-rs/hepta-fleet/src/release.rs)" = abb574c90087882ec634830ac318273e5f56245c
+          cp codex-rs/hepta-fleet/src/release.rs "$out/original-release.rs"
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: nextest@0.9.103
+      - name: Apply the existing formatter and retain every test
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.96.0 fmt --manifest-path codex-rs/Cargo.toml -- --config imports_granularity=Item 2>&1 | tee "$OUT/format-apply.log"
+          test "$(git diff --name-only)" = codex-rs/hepta-fleet/src/release.rs
+          python3 - <<'PY'
+          import os, re
+          from pathlib import Path
+          before = Path(os.environ['OUT'], 'original-release.rs').read_text()
+          after = Path('codex-rs/hepta-fleet/src/release.rs').read_text()
+          assert before.split('#[cfg(test)]', 1)[0] == after.split('#[cfg(test)]', 1)[0]
+          assert before.count('#[test]') == after.count('#[test]')
+          assert re.findall(r'fn\s+([a-zA-Z_][a-zA-Z_0-9]*)\s*\(', before) == re.findall(r'fn\s+([a-zA-Z_][a-zA-Z_0-9]*)\s*\(', after)
+          print('Original production prefix, all test attributes and all function names retained.')
+          PY
+          git diff --check
+          git add codex-rs/hepta-fleet/src/release.rs
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(fleet): format retained revocation regression controls' -m 'Address actual repo-checks formatter failure at bc0c0549/d44edd95 without changing tests, permissions, runtime behavior or the original format gate. Separate staging metadata does not enter this candidate.'
+          git rev-parse HEAD > "$OUT/candidate.txt"
+          git rev-parse HEAD^{tree} > "$OUT/tree.txt"
+          git hash-object codex-rs/hepta-fleet/src/release.rs > "$OUT/release-blob.txt"
+          git diff HEAD^ HEAD > "$OUT/candidate.patch"
+          cargo +1.96.0 fmt --manifest-path codex-rs/Cargo.toml -- --config imports_granularity=Item --check 2>&1 | tee "$OUT/format-check.log"
+      - name: Execute the unchanged complete native Fleet test command
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-fleet --no-capture 2>&1 | tee "$OUT/fleet-tests.log"
+          python3 - <<'PY'
+          import os, re
+          from pathlib import Path
+          text = Path(os.environ['OUT'], 'fleet-tests.log').read_text()
+          text = re.sub(r'\x1b\[[0-9;]*m', '', text)
+          assert re.search(r'Summary.*[1-9][0-9]* tests run: [1-9][0-9]* passed', text)
+          print('Original complete Fleet command produced a nonempty successful summary.')
+          PY
+      - name: Publish the exact tested formatting-only successor
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate="$(cat "$OUT/candidate.txt")"
+          test "$(git rev-parse HEAD)" = "$candidate"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
+          branch=fix/pon-fleet-format-pair-20261010
+          if git ls-remote --exit-code --heads origin "$branch" > "$OUT/existing-ref.txt"; then
+            test "$(cut -f1 "$OUT/existing-ref.txt")" = "$candidate"
+          else
+            status=$?
+            test "$status" = 2
+            git push origin "$candidate:refs/heads/$branch" 2>&1 | tee "$OUT/push.log"
+          fi
+          git ls-remote --exit-code --heads origin "$branch" | tee "$OUT/published-ref.txt"
+          test "$(cut -f1 "$OUT/published-ref.txt")" = "$candidate"
+          printf '%s\n' 'Formatting and complete local native Fleet controls only. Final source must run original full formatting/Prettier, Bazel/SDK/V8 and exact Chain pairing. No independent deployment, adoption, withdrawal or untouched future-task acceptance is inferred.' > "$OUT/SCOPE.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: fleet-format-stage-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/fleet-format-stage
+          if-no-files-found: error
+          retention-days: 30
