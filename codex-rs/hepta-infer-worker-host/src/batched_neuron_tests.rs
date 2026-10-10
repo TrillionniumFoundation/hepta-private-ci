@@ -344,10 +344,13 @@ fn signed_batch_rejects_authorization_quota_and_reservation_mutations() {
     let mut changed_quota = original.clone();
     changed_quota.authorization.maximum_tokens += 1;
     let mut changed_reservation_quota = original.clone();
-    changed_reservation_quota.authorization.reservation_maximum_tokens += 1;
+    changed_reservation_quota
+        .authorization
+        .reservation_maximum_tokens += 1;
     let mut changed_reservation_model = original.clone();
-    changed_reservation_model.authorization.reservation_model_digest =
-        digest(b"other-model").to_string();
+    changed_reservation_model
+        .authorization
+        .reservation_model_digest = digest(b"other-model").to_string();
 
     for mutated in [
         changed_quota,
@@ -355,13 +358,7 @@ fn signed_batch_rejects_authorization_quota_and_reservation_mutations() {
         changed_reservation_model,
     ] {
         assert_eq!(
-            worker.enqueue(
-                100,
-                "model".into(),
-                mutated,
-                key.clone(),
-                original_grant(),
-            ),
+            worker.enqueue(100, "model".into(), mutated, key.clone(), original_grant()),
             Err(BatchWorkerErrorV1::InvalidBinding)
         );
         assert_eq!(worker.pending(), 0);
