@@ -6,19 +6,18 @@
 //! terminal checkpoint and rereads current generation/result fences.
 //! This adapter never manufactures a Supervisor operation receipt or authority.
 
+use crate::durable::{
+    SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root, sha256, write_private_new,
+};
+use crate::{
+    CellSplitDurableEffectBackendV1, CellSplitExecutionIntentV1, CellSplitExecutionPlanV1,
+    CellSplitExecutionStepV1, CellSplitOwnedEffectV1,
+};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
-use serde::{Deserialize, Serialize};
 use thiserror::Error;
-use crate::{
-    CellSplitDurableEffectBackendV1, CellSplitExecutionIntentV1,
-    CellSplitExecutionPlanV1, CellSplitExecutionStepV1, CellSplitOwnedEffectV1,
-};
-use crate::durable::{
-    SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root,
-    sha256, write_private_new,
-};
 
 const FROZEN: &str = "cell-split-supervisor-frozen.json";
 const MAX_FROZEN_BYTES: usize = 64 * 1024;
@@ -96,8 +95,7 @@ pub trait CellSplitSupervisorRuntimePortV1 {
         challenge_nonce: &str,
     ) -> Result<CellSplitSupervisorLiveFenceV1, Self::Error>;
 
-    fn verify_live(&mut self, live: &CellSplitSupervisorLiveFenceV1)
-        -> Result<(), Self::Error>;
+    fn verify_live(&mut self, live: &CellSplitSupervisorLiveFenceV1) -> Result<(), Self::Error>;
 
     fn finalize_once(
         &mut self,
@@ -182,7 +180,14 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
             Err(error) => return Err(error.into()),
         }
         let plan_digest = sha256(&canonical_json(&plan)?);
-        Ok(Self { root, plan, plan_digest, binding, port, _lock: lock })
+        Ok(Self {
+            root,
+            plan,
+            plan_digest,
+            binding,
+            port,
+            _lock: lock,
+        })
     }
 
     fn intent_valid(
@@ -195,7 +200,8 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
                 self.plan_digest,
                 CellSplitExecutionStepV1::SupervisorGenerationFence.index(),
                 intent.previous_receipt_digest,
-            ).as_bytes(),
+            )
+            .as_bytes(),
         );
         if intent.schema != "hepta.learning.cell-split.execution-owner.v1"
             || intent.step != CellSplitExecutionStepV1::SupervisorGenerationFence
@@ -219,7 +225,9 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
             .iter()
             .map(|byte| format!("{byte:02x}"))
             .collect::<String>();
-        let live = self.port.read_live(&self.binding.supervisor_id, &self.binding.domain_id, &nonce)
+        let live = self
+            .port
+            .read_live(&self.binding.supervisor_id, &self.binding.domain_id, &nonce)
             .map_err(|e| CellSplitSupervisorFenceErrorV1::External(e.to_string()))?;
         if live.supervisor_id != self.binding.supervisor_id
             || live.domain_id != self.binding.domain_id
@@ -239,7 +247,8 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
         {
             return Err(CellSplitSupervisorFenceErrorV1::Invalid);
         }
-        self.port.verify_live(&live)
+        self.port
+            .verify_live(&live)
             .map_err(|e| CellSplitSupervisorFenceErrorV1::External(e.to_string()))?;
         Ok(live)
     }
@@ -248,7 +257,9 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
         &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitSupervisorCommitV1>, CellSplitSupervisorFenceErrorV1> {
-        let original = self.port.read_original_commit(&intent.idempotency_key)
+        let original = self
+            .port
+            .read_original_commit(&intent.idempotency_key)
             .map_err(|e| CellSplitSupervisorFenceErrorV1::External(e.to_string()))?;
         if let Some(ref receipt) = original {
             if receipt.idempotency_key != intent.idempotency_key
@@ -264,7 +275,8 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
             {
                 return Err(CellSplitSupervisorFenceErrorV1::Invalid);
             }
-            self.port.verify_original_commit(receipt)
+            self.port
+                .verify_original_commit(receipt)
                 .map_err(|e| CellSplitSupervisorFenceErrorV1::External(e.to_string()))?;
         }
         Ok(original)
@@ -275,7 +287,8 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitOwnedEffectV1>, CellSplitSupervisorFenceErrorV1> {
         self.intent_valid(intent)?;
-        self.port.verify_preconditions(&self.plan, intent, &self.binding)
+        self.port
+            .verify_preconditions(&self.plan, intent, &self.binding)
             .map_err(|e| CellSplitSupervisorFenceErrorV1::External(e.to_string()))?;
         let original = self.original(intent)?;
         let live = self.checked_live()?;
@@ -310,17 +323,15 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitDurableEffectBackendV1
         Ok(())
     }
 
-    fn commit_once(
-        &mut self,
-        intent: &CellSplitExecutionIntentV1,
-    ) -> Result<(), Self::Error> {
+    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
         if self.actual_effect(intent)?.is_some() {
             return Ok(());
         }
         // Production finalization must be an actual durable writer-handoff
         // transition. The independent port must reverify CNS and final-use
         // immediately before mutating the authoritative handoff journal.
-        self.port.finalize_once(&self.plan, intent, &self.binding)
+        self.port
+            .finalize_once(&self.plan, intent, &self.binding)
             .map_err(|e| CellSplitSupervisorFenceErrorV1::External(e.to_string()))?;
         if self.actual_effect(intent)?.is_none() {
             return Err(CellSplitSupervisorFenceErrorV1::Ambiguous);
@@ -345,7 +356,9 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitDurableEffectBackendV1
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
         self.checked_live()?;
-        let sequence = self.port.durable_revision(&self.binding.supervisor_id)
+        let sequence = self
+            .port
+            .durable_revision(&self.binding.supervisor_id)
             .map_err(|e| CellSplitSupervisorFenceErrorV1::External(e.to_string()))?;
         if sequence == 0 {
             return Err(CellSplitSupervisorFenceErrorV1::Invalid);
@@ -356,7 +369,9 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitDurableEffectBackendV1
 
 fn digest_shape(value: &str) -> bool {
     value.len() == 64
-        && value.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
         && value.bytes().any(|b| b != b'0')
 }
 
