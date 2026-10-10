@@ -26,7 +26,7 @@ jobs:
         run: |
           set -euo pipefail
           cargo fmt -p codex-hepta-contracts -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-hepta-evidence
-          git diff -- codex-rs/hepta-contracts codex-rs/hepta-neuron codex-rs/hepta-agentd codex-rs/hepta-infer-worker-host codex-rs/hepta-evidence > "$RUNNER_TEMP/hepta-owner-rustfmt.diff"
+          git diff -- hepta-contracts hepta-neuron hepta-agentd hepta-infer-worker-host hepta-evidence > "$RUNNER_TEMP/hepta-owner-rustfmt.diff"
           cat "$RUNNER_TEMP/hepta-owner-rustfmt.diff"
           if test -s "$RUNNER_TEMP/hepta-owner-rustfmt.diff"; then
             echo "::error::The candidate source differs from rustfmt; apply reviewed delta."
