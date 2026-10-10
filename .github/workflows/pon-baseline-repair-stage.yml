@@ -1,0 +1,238 @@
+name: PoN baseline repair staging
+on:
+  push:
+    branches: [test/pon-fleet-publication-stage-20261010]
+permissions:
+  contents: read
+jobs:
+  repair:
+    name: fleet sealed publication (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-15
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Stage exact fail-closed owner and fixture corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = bb200d54d420847ccfc892c039cbf54d3960a408
+          git diff --exit-code
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          out.mkdir()
+          expected={
+              'codex-rs/hepta-fleet/src/release.rs':'47d2d1304e6b9ab774dc82f01664a9e4982fa8bd',
+              'codex-rs/hepta-fleet/src/registry_tests.rs':'d462cc845a448c802d32e56ab2de00ee3249ee11',
+              'codex-rs/hepta-fleet/src/release_copy_tests.rs':'b3346a70a496bd0de9b41e95fcddb29468fbd89d'}
+          source={}
+          for name,blob in expected.items():
+              raw=subprocess.check_output(['git','show','HEAD:'+name])
+              assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()==blob, name
+              assert pathlib.Path(name).read_bytes().replace(b'\r\n',b'\n')==raw, name
+              destination=out/'original'/name
+              destination.parent.mkdir(parents=True,exist_ok=True)
+              destination.write_bytes(raw)
+              source[name]=raw.decode()
+          name='codex-rs/hepta-fleet/src/release.rs'
+          before='''            set_mode(&staging, /*mode*/ 0o555)?;
+                      std::fs::rename(&staging, &final_root)?;
+                      sync_directory(self.layout().releases_root())?;'''.replace('\n                      ','\n            ')
+          after='''            // Some native hosts refuse renaming an already read-only directory.
+                      // Children are sealed and synced before the name moves. The name
+                      // alone grants no authority: catalog admission rejects a writable
+                      // outer directory, including residue left before sealing below.
+                      std::fs::rename(&staging, &final_root)?;
+                      set_mode(&final_root, /*mode*/ 0o555)?;
+                      sync_directory(&final_root)?;
+                      sync_directory(self.layout().releases_root())?;'''.replace('\n                      ','\n            ')
+          assert source[name].count(before)==1
+          source[name]=source[name].replace(before,after)
+          name='codex-rs/hepta-fleet/src/registry_tests.rs'
+          before='''            fs::create_dir_all(&path)?;
+                      WorkspaceBinding::new(&path, &fleet.root)'''.replace('\n                      ','\n            ')
+          after='''            fs::create_dir_all(&path)?;
+                      let path = path.canonicalize()?;
+                      WorkspaceBinding::new(&path, &fleet.root)'''.replace('\n                      ','\n            ')
+          assert source[name].count(before)==1
+          source[name]=source[name].replace(before,after)
+          name='codex-rs/hepta-fleet/src/release_copy_tests.rs'
+          source[name]+='''
+          #[test]
+          fn unsealed_final_name_never_grants_admission_even_after_reopen()
+          -> Result<(), Box<dyn std::error::Error>> {
+              use crate::AgentManifest;
+              use crate::ResourceBudget;
+              use crate::WorkspaceBinding;
+
+              let temporary = tempfile::tempdir()?;
+              let source = temporary.path().join("source-program");
+              std::fs::write(&source, b"sealed program bytes")?;
+              let root = HeptaFleetRoot::parse(temporary.path().join("fleet"))?;
+              let registry = FleetRegistry::initialize(root.clone())?;
+              let workspace = temporary.path().join("workspace");
+              std::fs::create_dir(&workspace)?;
+              let workspace = workspace.canonicalize()?;
+              let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?;
+              let record = registry.register(AgentManifest::new(
+                  agent.clone(),
+                  WorkspaceBinding::new(workspace, &root)?,
+                  ResourceBudget::local_default(),
+              )?)?;
+              let release_id = ReleaseId::parse("sealed-publication")?;
+              let installed = registry.install_release(release_id.clone(), &source, Vec::new())?;
+              registry.allow_release(&agent, &release_id)?;
+              let binding = registry.resolve_release_binding(&agent, &release_id)?;
+              let state = registry.load()?;
+              let marker = allowance_path(record.layout.releases_root(), &release_id);
+              let marker_bytes = std::fs::read(&marker)?;
+              let final_root = registry.layout().releases_root().join(release_id.as_str());
+
+              // Model the post-rename/pre-seal residue without granting a repair API.
+              // Even a pre-existing allow marker cannot make this name admissible.
+              set_mode(&final_root, /*mode*/ 0o755)?;
+              validate_immutable_regular_file(&installed.program, /*executable*/ true)?;
+              let reopened = FleetRegistry::open_existing(root)?;
+              for owner in [&registry, &reopened] {
+                  assert!(matches!(
+                      resolve_catalog_release(owner.layout().releases_root(), &release_id),
+                      Err(FleetRegistryError::Corrupt(_))
+                  ));
+                  assert!(matches!(
+                      owner.resolve_release_binding(&agent, &release_id),
+                      Err(FleetRegistryError::Corrupt(_))
+                  ));
+                  assert!(matches!(
+                      owner.allow_release(&agent, &release_id),
+                      Err(FleetRegistryError::Corrupt(_))
+                  ));
+                  assert!(matches!(
+                      owner.install_release(release_id.clone(), &source, Vec::new()),
+                      Err(FleetRegistryError::Invalid(_))
+                  ));
+                  assert_eq!(owner.load()?, state);
+                  assert_eq!(std::fs::read(&marker)?, marker_bytes);
+              }
+              // Fixture-only restoration; production errors never auto-seal residue.
+              set_mode(&final_root, /*mode*/ 0o555)?;
+              sync_directory(&final_root)?;
+              sync_directory(reopened.layout().releases_root())?;
+              assert_eq!(reopened.resolve_release(&agent, &release_id)?, installed);
+              assert_eq!(reopened.resolve_release_binding(&agent, &release_id)?, binding);
+              reopened.revoke_release(&agent, &release_id)?;
+              assert!(reopened.resolve_release(&agent, &release_id).is_err());
+              make_tree_removable(&final_root);
+              Ok(())
+          }
+          '''
+          for name,text in source.items():
+              pathlib.Path(name).write_bytes(text.encode())
+          (out/'source-changes.json').write_text(json.dumps(expected,indent=2)+'\n')
+          (out/'source.txt').write_bytes(subprocess.check_output(['git','rev-parse','HEAD','HEAD^{tree}']))
+          PY
+      - name: Prepare original native Bazel environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: bazel-clippy
+      - name: Install original formatter and lint tools
+        shell: bash
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - name: Format through original recipe and retain exact staged source
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && just fmt)
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          expected=json.loads((out/'source-changes.json').read_text())
+          assert sorted(subprocess.check_output(['git','diff','--name-only']).decode().splitlines())==sorted(expected)
+          index={}
+          for name,blob in expected.items():
+              raw=pathlib.Path(name).read_bytes().replace(b'\r\n',b'\n')
+              original=(out/'original'/name).read_bytes()
+              extra=1 if name.endswith('release_copy_tests.rs') else 0
+              assert raw.count(b'#[test]')==original.count(b'#[test]')+extra, name
+              destination=out/'candidate'/name
+              destination.parent.mkdir(parents=True,exist_ok=True)
+              destination.write_bytes(raw)
+              index[name]={'original_blob':blob,'candidate_blob':hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest(),'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw)}
+          (out/'candidate.json').write_text(json.dumps(index,indent=2)+'\n')
+          (out/'candidate.patch').write_bytes(subprocess.check_output(['git','diff']))
+          PY
+      - name: Execute the complete original Fleet target plus unsealed-name refusal
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          wrapper=()
+          native=()
+          if test "$RUNNER_OS" = Windows; then
+            wrapper+=(--windows-msvc-host-platform --remote-download-toplevel)
+            native+=(--platforms=//:windows_x86_64_msvc)
+          fi
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs "${wrapper[@]}" -- test "${native[@]}" --test_output=all --test_arg=--test-threads=1 --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-test.log"
+          grep -E 'test result: ok\. [1-9][0-9]* passed; 0 failed; 0 ignored;' "$RUNNER_TEMP/baseline-repair/fleet-test.log"
+          grep -F 'test release::copy_tests::unsealed_final_name_never_grants_admission_even_after_reopen ... ok' "$RUNNER_TEMP/baseline-repair/fleet-test.log"
+      - name: Check complete strict native Fleet Bazel Clippy target
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          wrapper=()
+          native=()
+          if test "$RUNNER_OS" = Windows; then
+            wrapper+=(--windows-msvc-host-platform --remote-download-toplevel)
+            native+=(--platforms=//:windows_x86_64_msvc)
+          fi
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary "${wrapper[@]}" -- build "${native[@]}" --config=clippy --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests-bin 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-clippy.log"
+      - name: Retain success and failure without promoting staged source
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,os,pathlib,subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          out.mkdir(exist_ok=True)
+          (out/'source-after.txt').write_bytes(subprocess.check_output(['git','rev-parse','HEAD','HEAD^{tree}']))
+          (out/'diff-after.patch').write_bytes(subprocess.check_output(['git','diff']))
+          (out/'SCOPE.txt').write_text('Staged fail-closed final-name sealing and canonical test fixture on exactbb200d54. All original Fleet tests, digests, allow/revoke/cold-owner gates, child seals, write-handle fsyncs and parent fsync retained; final directory is additionally synced after sealing. Writable named residue remains rejected and is never automatically repaired or overwritten. Candidate native results are not committed-source full baseline, physical power loss, model efficacy or independent adoption. No branch update, deployment, permission promotion, timeout widening or scientific acceptance.\n')
+          with (out/'SHA256SUMS').open('w') as stream:
+              for path in sorted(out.rglob('*')):
+                  if path.is_file() and path.name!='SHA256SUMS':
+                      stream.write(hashlib.sha256(path.read_bytes()).hexdigest()+'  '+path.relative_to(out).as_posix()+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: fleet-sealed-publication-${{ matrix.os }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/baseline-repair
+          if-no-files-found: error
+          retention-days: 14
