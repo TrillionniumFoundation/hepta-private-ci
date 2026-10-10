@@ -40,6 +40,7 @@ pub use cell_split::CellStateSplitPlanV1;
 pub use cell_split::CellStateSplitPlanV1 as NeuronCellStateSplitPlanV1;
 pub use cell_split::MAX_CELL_SPLIT_CHILDREN_V1;
 pub use cell_split::canonical_partition_digest_v1;
+pub use cell_state_migration::DurableCellStateCasDirectoryOwnerV1;
 pub use cell_state_migration::CellStateBatchReceiptV1;
 pub use cell_state_migration::CellStateCasReceiptV1;
 pub use cell_state_migration::CellStateMigrationErrorV1;
