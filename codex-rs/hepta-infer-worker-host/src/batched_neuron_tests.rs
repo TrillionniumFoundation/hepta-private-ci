@@ -567,3 +567,39 @@ fn native_batch_malformed_result_count_cannot_be_partially_committed() {
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert!(observed.outcomes.iter().all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker))));
 }
+
+
+#[test]
+fn native_batch_failed_backend_cannot_replay_consumed_grants_after_owner_reopen() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[51; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let one = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let two = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    let first_grant = signed_member(&signer, one, "grant-1", 52);
+    let second_grant = signed_member(&signer, two, "grant-2", 53);
+    {
+        let driver = NativeTestDriver {
+            invocations: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
+            truncate_outputs: true,
+        };
+        let mut initial = runner_with_driver(&signer, dir.path(), model.clone(), driver, 2);
+        initial.enqueue(100, "model".into(), first.clone(), key.clone(), first_grant.clone()).unwrap();
+        initial.enqueue(100, "model".into(), second.clone(), key.clone(), second_grant.clone()).unwrap();
+        let failed = initial.poll_and_execute(101).unwrap();
+        assert_eq!(failed.outcomes.len(), 2);
+        assert!(failed.outcomes.iter().all(|x| matches!(x.result, Err(BatchWorkerErrorV1::Worker))));
+    }
+    // The authoritative nonce journal is reopened, not reset. Previously
+    // signed grants cannot trigger a duplicate external effect.
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver { invocations: calls.clone(), truncate_outputs: false };
+    let mut recovered = runner_with_driver(&signer, dir.path(), model, driver, 2);
+    recovered.enqueue(200, "model".into(), first, key.clone(), first_grant).unwrap();
+    recovered.enqueue(200, "model".into(), second, key, second_grant).unwrap();
+    let denied = recovered.poll_and_execute(201).unwrap();
+    assert_eq!(denied.outcomes.len(), 2);
+    assert!(denied.outcomes.iter().all(|x| matches!(x.result, Err(BatchWorkerErrorV1::Authority))));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
