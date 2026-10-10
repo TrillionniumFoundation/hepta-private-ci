@@ -603,6 +603,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
+        project_neuron_feature_receipt_v1(request_copy, observed)
+    }
+}
+
+/// Shared, authority-free V1 observation projection, used by both single
+/// requests and admitted native batches. This does not create a signed
+/// independent evaluator or final-use authorization.
+pub(crate) fn project_neuron_feature_receipt_v1(
+    request_copy: NeuronFeatureRequest,
+    observed: NeuronFeatureExecutionObservation,
+) -> Result<NeuronFeatureReceiptV1, Error> {
         let generation =
             Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
         let control_request = NeuronFeatureRequestV1 {
@@ -650,7 +661,6 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             },
         )
         .map_err(|_| Error::FeatureContract)
-    }
 }
 
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {
