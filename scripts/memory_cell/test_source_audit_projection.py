@@ -82,7 +82,9 @@ class SourceAuditTests(unittest.TestCase):
             audit = self.source(base / "source")
             result = self.run_case(base, audit)
             self.assertEqual(result["labels.json"], audit["source_labels_sha256"])
-            queue = json.loads((base / "out/independent-review-inputs.json").read_text())
+            queue = json.loads(
+                (base / "out/independent-review-inputs.json").read_text()
+            )
             self.assertEqual(queue["pending"], 1)
             self.assertEqual(queue["completed"], 0)
             self.assertNotIn("decision", queue["cases"][0])
