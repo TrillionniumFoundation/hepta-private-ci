@@ -108,6 +108,8 @@ python3 qualification/neuron-stem/statistical_gate.py \
   --dataset /approved/decision.jsonl \
   --baseline /evidence/no-change.jsonl \
   --candidate /evidence/nano-predictions.jsonl \
+  --frozen-head /evidence/nano-predictions.jsonl.frozen-head.jsonl \
+  --task-id decision-v1 \
   --min-future-groups 30 --bootstrap-replicates 2000 \
   --output /evidence/nano-offline-quality-gate.json
 ```
@@ -115,7 +117,10 @@ python3 qualification/neuron-stem/statistical_gate.py \
 The bootstrap resamples **source groups**, not individual correlated events,
 and requires the 95% confidence lower bound on accuracy gain > 0 and the
 upper bound on Brier delta < 0, without task-level regressions above the
-precommitted tolerance. Even a passing offline quality gate is advisory only:
+precommitted tolerance. The separate `cell_learning_gate_passed` flag
+requires this to hold **both** against the real no-change baseline **and**
+against the same-encoder, same-initialization frozen Head. Omitting the latter
+cannot prove actual Cell learning. Even a passing offline quality gate is advisory only:
 `production_promotion_permitted` and NDU signature verification remain false.
 
 ### Multimodal shadow pairing
@@ -180,3 +185,67 @@ inference-control worker and scheduler evidence, real target-host resources,
 unclean crash/ack-loss replay, future windows, real utility receipts, and
 Executor/Selector separation. All existing and new scripts fail closed with
 zero authority to change a selected model or active Cell generation.
+
+### Continual per-Cell test-then-learn and retention
+
+Supply approved chronological data with **all existing evaluator columns** plus
+a stable `cell_id` per row. The prequential runner uses exactly one frozen
+Text Nano/Small Stem; initializes bounded distinct Cell-local Heads, trains only
+from the `train` partition, freezes same-initialization Heads, and replays
+`future` events in UTC order. It hashes the prediction **before** reading the
+event label for a bounded update, then separately tests retention on untouched
+historical `test` cases. The historical test labels are never used for a
+gradient; resulting retention diagnostics do not authorize model selection.
+
+```sh
+python3 qualification/neuron-stem/prequential_trial.py \
+  --model jina-v5-text-nano --revision FULL40CHARMODELCOMMITSHA \
+  --dataset /approved/prequential-cell-events.jsonl \
+  --task-id decision-v1 --principal-id local-researcher \
+  --dimension 256 --head film --budget 16384 \
+  --pretrain-steps 4 --update-steps 1 \
+  --max-cells 4096 --max-total-head-parameters 100000000 \
+  --max-future-events 50000 --max-retention-brier-regression .01 \
+  --allow-pinned-remote-code --output /evidence/continual-shadow.json
+```
+
+The complete event replay is an **offline** test-before-learn experiment.
+No signed live outcome, production online learning, inference permission,
+correctness of remote model adapters or NDU causality is inferred from it.
+The model/Head digests, Q24 input conversion, trained and frozen outcomes,
+per-Cell retention, updates, RSS and explicit approximation limits are retained
+in the result.
+
+### Independent research resource budget
+
+Compare the exact same measured research workload for two *distinct* Jina Stems
+(Nano versus Small), with matching input digest, active Head count, batch,
+Cell/Head dimensions, random seed and observed machine/dependency environment.
+Create a separate, precommitted budget JSON file (values below are **field
+names only**, not suggested host targets):
+
+```json
+{
+  "schema": "hepta.neuron-research-resource-budget.v1",
+  "signed_production_budget": false,
+  "max_peak_rss_bytes": 0,
+  "max_request_p99_ms": 0,
+  "min_throughput_rps": 0,
+  "max_cpu_seconds_ratio": 0
+}
+```
+
+Replace every zero with an externally approved **positive** budget; zero
+is intentionally rejected. Then execute:
+
+```sh
+python3 qualification/neuron-stem/resource_gate.py \
+  --reference /evidence/nano-scale.jsonl.summary.json \
+  --candidate /evidence/small-scale.jsonl.summary.json \
+  --budget /approved/research-budget.json \
+  --out /evidence/paired-resource-budget.json
+```
+
+No 'same physical host' cryptographic attestation is manufactured from
+environment equality, and research batch latency cannot prove production
+Rust scheduler microbatch, NDU or crash-recovery qualification.
