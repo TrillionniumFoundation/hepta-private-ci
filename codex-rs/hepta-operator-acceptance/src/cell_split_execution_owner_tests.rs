@@ -423,7 +423,7 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
     );
     let last = recovered.verified_transcript().unwrap().unwrap()
         .receipts[3].intent.idempotency_key.clone();
-    state.borrow_mut().commits.remove(&last);
+    assert!(state.borrow_mut().commits.remove(&last).is_some());
     assert!(matches!(
         recovered.verified_transcript(),
         Err(CellSplitExecutionErrorV1::External(_)),
