@@ -92,8 +92,12 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
             return Err(Error::FeatureBatchLimit);
         }
         let limit = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
-        if self.active_requests.len().checked_add(requests.len())
-            .ok_or(Error::ArithmeticOverflow)? > limit
+        if self
+            .active_requests
+            .len()
+            .checked_add(requests.len())
+            .ok_or(Error::ArithmeticOverflow)?
+            > limit
         {
             return Err(Error::RequestCapacity);
         }
@@ -107,7 +111,9 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
             validate_request(now_ms, &request.authorization)?;
             validate_neuron_feature_request(request)?;
             if !seen.insert(request.authorization.request_id.clone())
-                || self.active_requests.contains_key(&request.authorization.request_id)
+                || self
+                    .active_requests
+                    .contains_key(&request.authorization.request_id)
                 || request.authorization.cancelled
                 || &request.encoder_digest != encoder
                 || request.feature_vector_q24.len() != input_width
@@ -135,24 +141,35 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
         let handle = loaded.handle.clone();
         let manifest = loaded.manifest.clone();
         let count = requests.len();
-        let already_active = loaded.active_requests.checked_add(count)
+        let already_active = loaded
+            .active_requests
+            .checked_add(count)
             .ok_or(Error::ArithmeticOverflow)?;
         let batch_digest = canonical_neuron_batch_digest(model_id, self.generation, &requests);
 
         // Admission is all-or-none, including duplicate-ID and capacity checks.
-        self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?.active_requests = already_active;
+        self.models
+            .get_mut(model_id)
+            .ok_or(Error::ModelNotLoaded)?
+            .active_requests = already_active;
         for request in &requests {
             self.active_requests.insert(
                 request.authorization.request_id.clone(),
                 model_id.to_string(),
             );
         }
-        let executed = self.driver.run_neuron_backend_batch(&handle, &batch_digest, &requests);
+        let executed = self
+            .driver
+            .run_neuron_backend_batch(&handle, &batch_digest, &requests);
         // Always release in-flight reservations, including on driver error.
         for request in &requests {
-            self.active_requests.remove(&request.authorization.request_id);
+            self.active_requests
+                .remove(&request.authorization.request_id);
         }
-        self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?.active_requests -= count;
+        self.models
+            .get_mut(model_id)
+            .ok_or(Error::ModelNotLoaded)?
+            .active_requests -= count;
         let executed = executed?;
 
         if executed.batch_digest != batch_digest
