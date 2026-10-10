@@ -2,8 +2,9 @@
 
 This is **research-only**, strictly non-authorizing qualification code. It is a
 preproduction shadow candidate and must never produce learning-artifact promotion,
-model installation, authority, or deployment receipts. It does **not** execute
-ModernBERT, Laya or live Hepta `NeuronRuntime` by itself.
+model installation, authority, or deployment receipts. The numeric runner does **not** execute ModernBERT, Laya or live Hepta
+`NeuronRuntime` by itself; the optional offline Laya exporter is separate
+and requires explicitly pinned local model weights and SDK.
 
 ## Environment and source bounds
 
@@ -77,6 +78,37 @@ Each arm JSON has `schema=hepta.neuron.head-experiments.v1`,
 claims, not authenticated model execution. External evaluator/selector must
 verify exact effective model identity. No state-only cache is presumed
 numerically equivalent to Laya's question-and-options-conditioned encoder.
+
+## Optional real Original-Laya exporter (not installed, not qualified)
+
+The optional `export_laya_reference.py` provides a **local-only,
+explicitly SHA-256-pinned** Original-Laya inference entry for Experiment 02
+when a qualified host has independently installed the original Laya SDK and
+model weights. It refuses implicit Hub downloads, incomplete choice sets,
+missing/truncated responses, source-group overlap, or nonfuture timestamps.
+Required offline inputs are `--checkpoint`, `--digests`, `--input`,
+`--output`; `--device` and `--batch-size` are bounded options. The choice
+input JSON uses `schema=hepta.neuron.laya-choice-input.v1`,
+`question_id`, `question={type:"choice",criteria:{...}}`, frozen
+`train_groups`/`valid_groups`, `valid_time_max`, and future
+`rows:[{id,group,time,state}]`. For example:
+
+```bash
+python export_laya_reference.py \
+  --checkpoint /pinned/Laya \
+  --digests /pinned/checkpoint-sha256.json \
+  --input /evaluation/laya_future_choice.json \
+  --output /evaluation/laya_original.json \
+  --device cuda:0 --batch-size 8
+```
+
+The exporter is **not run in repository CI** because the real SDK, weights
+and qualified input are unavailable. The import/choice-validation and
+truncation failure tests only cover the pure adapter behavior. An output
+marked `UNATTESTED_SHADOW_EXPORT` requires independent runtime attestation
+and matching model/feature identity; it cannot establish production trust.
+Never treat a shared cached state-only encoder output as Original-Laya
+question/choices-conditioned numerical equivalence.
 
 ## Experiment 03: cell-scale numerical microbenchmark
 
