@@ -41,6 +41,30 @@ def sha256_record(record):
                                     separators=(",", ":")).encode("utf-8")).hexdigest()
 
 
+def research_environment():
+    """Reproducibility metadata; never include usernames, machine IDs or secrets."""
+    import importlib.metadata
+    import os
+    import platform
+    import sys
+
+    packages = {}
+    for package in ("torch", "transformers", "sentence-transformers",
+                    "peft", "psutil", "numpy"):
+        try:
+            packages[package] = importlib.metadata.version(package)
+        except importlib.metadata.PackageNotFoundError:
+            packages[package] = None
+    return {
+        "python": sys.version.split()[0],
+        "os": platform.system(),
+        "machine_arch": platform.machine(),
+        "logical_cpu_count": os.cpu_count(),
+        "dependency_versions": packages,
+        "target_host_hardware_qualified": False,
+    }
+
+
 def validate_identity(model_id, revision, task, dimension, modality, max_tokens):
     if model_id not in MODELS:
         raise ValueError("unregistered Jina v5 model")
