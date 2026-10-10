@@ -8,9 +8,9 @@ mod cell_split_cns_cutover;
 mod cell_split_effect_rpc;
 #[cfg(unix)]
 mod cell_split_effect_service;
+mod cell_split_execution_owner;
 #[cfg(unix)]
 mod cell_split_supervisor_fence;
-mod cell_split_execution_owner;
 mod cell_split_target_host;
 mod cell_split_target_host_evidence;
 mod cell_split_target_host_runtime;
@@ -85,20 +85,6 @@ pub use cell_split_cns_cutover::CellSplitCnsRuntimeCommitV1;
 #[cfg(unix)]
 pub use cell_split_cns_cutover::CellSplitCnsRuntimePortV1;
 #[cfg(unix)]
-pub use cell_split_supervisor_fence::CellSplitSupervisorCommitV1;
-#[cfg(unix)]
-pub use cell_split_supervisor_fence::CellSplitSupervisorFenceBindingV1;
-#[cfg(unix)]
-pub use cell_split_supervisor_fence::CellSplitSupervisorFenceErrorV1;
-#[cfg(unix)]
-pub use cell_split_supervisor_fence::CellSplitSupervisorFenceOwnerV1;
-#[cfg(unix)]
-pub use cell_split_supervisor_fence::CellSplitSupervisorLiveFenceV1;
-#[cfg(unix)]
-pub use cell_split_supervisor_fence::CellSplitSupervisorPhaseV1;
-#[cfg(unix)]
-pub use cell_split_supervisor_fence::CellSplitSupervisorRuntimePortV1;
-#[cfg(unix)]
 pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
 #[cfg(unix)]
 pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_RPC_SCHEMA_V1;
@@ -128,10 +114,24 @@ pub use cell_split_execution_owner::CellSplitExecutionOwnerV1;
 pub use cell_split_execution_owner::CellSplitExecutionPlanV1;
 pub use cell_split_execution_owner::CellSplitExecutionPortV1;
 pub use cell_split_execution_owner::CellSplitExecutionReceiptV1;
-pub use cell_split_execution_owner::CellSplitExecutionTranscriptV1;
 pub use cell_split_execution_owner::CellSplitExecutionStepV1;
+pub use cell_split_execution_owner::CellSplitExecutionTranscriptV1;
 pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
 pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorCommitV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceBindingV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceErrorV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceOwnerV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorLiveFenceV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorPhaseV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorRuntimePortV1;
 pub use cell_split_target_host::CellSplitQualificationOriginV1;
 pub use cell_split_target_host::CellSplitQualificationStateV1;
 pub use cell_split_target_host::CellSplitTargetHostErrorV1;
