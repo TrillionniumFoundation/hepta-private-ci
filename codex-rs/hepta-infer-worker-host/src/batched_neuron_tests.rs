@@ -576,6 +576,38 @@ fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_met
 
 
 #[test]
+fn completed_request_history_does_not_consume_concurrent_queue_capacity() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[72; 32]);
+    let (model, first, key) = fixture_request();
+    let mut worker = runner(&signer, dir.path(), model);
+    for index in 0..12 {
+        let mut request = first.clone();
+        request.authorization.request_id = format!("lifetime-{index}");
+        request.authorization.reservation_id = format!("reservation-{index}");
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let grant = signed_member(&signer, binding, &format!("grant-{index}"), (index + 80) as u8);
+        worker.enqueue(100 + index, "model".into(), request, key.clone(), grant).unwrap();
+        assert_eq!(worker.poll_and_execute(101 + index).unwrap().outcomes.len(), 1);
+        assert_eq!(worker.pending(), 0);
+    }
+    let mut old_request = first.clone();
+    old_request.authorization.request_id = "lifetime-0".into();
+    old_request.authorization.reservation_id = "reservation-0".into();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &old_request).unwrap();
+    assert_eq!(
+        worker.enqueue(
+            120,
+            "model".into(),
+            old_request,
+            key,
+            signed_member(&signer, binding, "replay-new-grant", 99),
+        ),
+        Err(BatchWorkerErrorV1::Duplicate)
+    );
+}
+
+#[test]
 fn native_batch_coalesces_distinct_scopes_without_crossing_authority() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[61; 32]);
