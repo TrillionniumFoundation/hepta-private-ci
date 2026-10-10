@@ -1421,9 +1421,15 @@ where
 
     if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
         match executor.retire(split) {
-            Ok(retirement_digest) => {
+            Ok(retirement_digest) if retirement_digest == split.retirement.tombstone_digest => {
+                // A successful callback alone cannot prove the committed
+                // tombstone matches the frozen retirement plan. Fail closed
+                // rather than recording Retired under an unrelated digest.
                 journal.retire(split)?;
-                let _ = retirement_digest;
+                owner.commit(&journal)?;
+            }
+            Ok(retirement_digest) => {
+                journal.rollback(split, retirement_digest)?;
                 owner.commit(&journal)?;
             }
             Err(error) => {
@@ -1690,9 +1696,9 @@ mod tests {
             .expect("canary"))
         }
 
-        fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+        fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error> {
             self.retired = true;
-            Ok(digest(34))
+            Ok(split.retirement.tombstone_digest)
         }
     }
 
@@ -1863,6 +1869,31 @@ mod tests {
             CellSplitProposalSourceV1.emit(&split, &bad_signal),
             Err(CellSplitAutomationErrorV1::Binding("parent observation"))
         );
+    }
+
+    #[test]
+    fn automation_rejects_wrong_retirement_tombstone_receipt() {
+        let split = split();
+        let receipt = proposal(&split);
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        struct WrongRetirement;
+        impl CellSplitAutomationExecutorV1 for WrongRetirement {
+            type Error = &'static str;
+            fn evaluate(&mut self, split: &CellSplitV1) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                Executor { evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary, ..Executor::default() }.evaluate(split)
+            }
+            fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                Executor::default().canary(split)
+            }
+            fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                Ok(digest(34))
+            }
+        }
+        let outcome = run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut WrongRetirement)
+            .expect("retirement denial");
+        assert_eq!(outcome.state, CellSplitLifecycleStateV1::RolledBack);
+        let journal = owner.load(&split.split_id).expect("load").expect("journal");
+        assert_ne!(journal.current_state, CellSplitLifecycleStateV1::Retired);
     }
 
     #[test]
