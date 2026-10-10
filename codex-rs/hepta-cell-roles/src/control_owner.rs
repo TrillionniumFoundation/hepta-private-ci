@@ -344,16 +344,22 @@ impl DurableControlRoleOwnerV1 {
         &mut self,
         mutation: impl FnOnce(&mut InMemoryControlRoleOwnerV1) -> Result<T, ControlOwnerErrorV1>,
     ) -> Result<T, ControlOwnerErrorV1> {
+        // Do the O(n) state clone, mutation and encoding outside the OS lock.
+        // Only the short authoritative compare/rename/fsync is serialized.
+        let mut candidate = self.inner.clone();
+        let output = mutation(&mut candidate)?;
+        let encoded = if candidate != self.inner {
+            Some(encode_durable_control(&candidate)?)
+        } else {
+            None
+        };
         let _writer_lock = lock_durable_control_writer(&self.path)?;
         let bytes = fs::read(&self.path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         if decode_durable_control(&bytes)? != self.inner {
             return Err(ControlOwnerErrorV1::StaleWriter);
         }
-        let mut candidate = self.inner.clone();
-        let output = mutation(&mut candidate)?;
-        // Avoid rewriting an entire snapshot on idempotent retries.
-        if candidate != self.inner {
-            persist_durable_control(&self.path, &candidate)?;
+        if let Some(encoded) = encoded {
+            persist_durable_control(&self.path, &encoded)?;
             self.inner = candidate;
         }
         Ok(output)
@@ -753,11 +759,12 @@ fn reject_durable_path(path: &Path) -> Result<(), ControlOwnerErrorV1> {
     Ok(())
 }
 
-fn persist_durable_control(
-    path: &Path,
+fn encode_durable_control(
     owner: &InMemoryControlRoleOwnerV1,
-) -> Result<(), ControlOwnerErrorV1> {
-    reject_durable_path(path)?;
+) -> Result<Vec<u8>, ControlOwnerErrorV1> {
+    if owner.records.len() > DURABLE_CONTROL_MAX_RECORDS_V1 {
+        return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+    }
     let mut bytes = Vec::with_capacity(128 + owner.records.len() * 512);
     bytes.extend_from_slice(DURABLE_CONTROL_MAGIC_V1);
     put_u32(&mut bytes, owner.records.len())?;
@@ -776,6 +783,17 @@ fn persist_durable_control(
     put_u64(&mut bytes, owner.now_ms);
     let checksum = digest_bytes(b"hepta.cell-role.control-owner.snapshot.v1", &[&bytes]);
     bytes.extend_from_slice(checksum.as_array());
+    if bytes.len() > DURABLE_CONTROL_MAX_FILE_BYTES_V1 {
+        return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+    }
+    Ok(bytes)
+}
+
+fn persist_durable_control(
+    path: &Path,
+    bytes: &[u8],
+) -> Result<(), ControlOwnerErrorV1> {
+    reject_durable_path(path)?;
     let temp = path.with_extension("control.snapshot.tmp");
     reject_durable_path(&temp)?;
     let mut file = fs::OpenOptions::new()
