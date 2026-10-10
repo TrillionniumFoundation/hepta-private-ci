@@ -1,0 +1,125 @@
+name: PoN baseline repair staging
+on:
+  push:
+    branches: [test/pon-fleet-baseline-diagnostic-20261010]
+permissions:
+  contents: read
+jobs:
+  repair:
+    name: fleet original-owner diagnostic (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: macos-15
+            target: aarch64-apple-darwin
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Preserve exact original owner and annotate original syscall phases only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = bb200d54d420847ccfc892c039cbf54d3960a408
+          git diff --exit-code
+          python3 - <<'PY'
+          import hashlib, os, pathlib, subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          out.mkdir()
+          name='codex-rs/hepta-fleet/src/release.rs'
+          path=pathlib.Path(name)
+          raw=subprocess.check_output(['git','show','HEAD:'+name])
+          assert hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()=='47d2d1304e6b9ab774dc82f01664a9e4982fa8bd'
+          assert path.read_bytes()==raw
+          text=raw.decode()
+          operations=[
+              ('copy-agentd','            copy_immutable_program(&source_agentd, &agentd_program)?;'),
+              ('write-manifest','            write_new_json(&manifest, &metadata)?;'),
+              ('seal-manifest','            set_mode(&manifest, /*mode*/ 0o444)?;'),
+              ('seal-bin','            set_mode(&bin_root, /*mode*/ 0o555)?;'),
+              ('sync-bin','            sync_directory(&bin_root)?;'),
+              ('sync-staging','            sync_directory(&staging)?;'),
+              ('seal-staging','            set_mode(&staging, /*mode*/ 0o555)?;'),
+              ('publish-rename','            std::fs::rename(&staging, &final_root)?;'),
+              ('sync-parent','            sync_directory(self.layout().releases_root())?;'),
+              ('copy-bytes','    std::io::copy(&mut input, &mut output)?;'),
+              ('seal-program','    set_mode(destination, /*mode*/ 0o555)?;'),
+              ('sync-program','    output.sync_all()?;')]
+          for label,original in operations:
+              assert text.count(original)==1, label
+              indent=original[:len(original)-len(original.lstrip())]
+              before=f'{indent}#[cfg(test)]\n{indent}eprintln!("FLEET_PHASE {label} begin");\n'
+              after=f'\n{indent}#[cfg(test)]\n{indent}eprintln!("FLEET_PHASE {label} ok");'
+              text=text.replace(original,before+original+after)
+          destination=out/'original'/name
+          destination.parent.mkdir(parents=True)
+          destination.write_bytes(raw)
+          path.write_bytes(text.encode())
+          (out/'source.txt').write_bytes(subprocess.check_output(['git','rev-parse','HEAD','HEAD^{tree}']))
+          for name in ['codex-rs/hepta-fleet/src/registry.rs','codex-rs/hepta-fleet/src/release_copy_tests.rs']:
+              destination=out/'original'/name
+              destination.parent.mkdir(parents=True,exist_ok=True)
+              destination.write_bytes(subprocess.check_output(['git','show','HEAD:'+name]))
+          PY
+      - name: Prepare original native Bazel environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: bazel-clippy
+      - name: Install original formatter
+        shell: bash
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy --component rust-src
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - name: Format only the temporary diagnostic owner through the original recipe
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd codex-rs && just fmt)
+          test "$(git diff --name-only)" = codex-rs/hepta-fleet/src/release.rs
+          git diff > "$RUNNER_TEMP/baseline-repair/diagnostic.patch"
+      - name: Execute all original fleet tests with ordered syscall markers
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- test --test_output=all --test_arg=--nocapture --test_arg=--test-threads=1 --build_metadata=COMMIT_SHA=${GITHUB_SHA} -- //codex-rs/hepta-fleet:hepta-fleet-unit-tests 2>&1 | tee "$RUNNER_TEMP/baseline-repair/fleet-test.log"
+      - name: Retain original failures and exact diagnostic boundary
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, os, pathlib, subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'baseline-repair'
+          out.mkdir(exist_ok=True)
+          (out/'source-after.txt').write_bytes(subprocess.check_output(['git','rev-parse','HEAD','HEAD^{tree}']))
+          (out/'diff-after.patch').write_bytes(subprocess.check_output(['git','diff']))
+          (out/'SCOPE.txt').write_text('Diagnostic cfg(test) phase labels around exact bb200d54 release owner only. Original operations, order, permissions, sync calls, errors, all41 fleet tests and assertions remain. Not a delivered fix, independent durability/model evidence or final-source full baseline. No branch update, deployment, safety or acceptance promotion.\n')
+          with (out/'SHA256SUMS').open('w') as stream:
+              for path in sorted(out.rglob('*')):
+                  if path.is_file() and path.name!='SHA256SUMS':
+                      stream.write(hashlib.sha256(path.read_bytes()).hexdigest()+'  '+path.relative_to(out).as_posix()+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: fleet-original-owner-${{ matrix.os }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/baseline-repair
+          if-no-files-found: error
+          retention-days: 14
