@@ -25,12 +25,15 @@ use serde::Deserialize;
 use serde::Serialize;
 use thiserror::Error;
 
+use super::cell_split_execution_owner::CellSplitExecutionErrorV1;
 use super::cell_split_execution_owner::CellSplitExecutionIntentV1;
+use super::cell_split_execution_owner::CellSplitExecutionPlanV1;
 use super::cell_split_execution_owner::CellSplitExecutionPortV1;
 use super::cell_split_execution_owner::CellSplitExecutionReceiptV1;
 use crate::AcceptanceError;
 use crate::durable::canonical_json;
 use crate::durable::secure_root;
+use crate::durable::sha256;
 
 const RPC_SCHEMA: &str = "hepta.learning.cell-split.external-effect-rpc.v1";
 const RPC_LIMIT: usize = 128 * 1024;
@@ -56,6 +59,7 @@ struct RpcRequestV1 {
     schema: String,
     operation: RpcOperationV1,
     intent: CellSplitExecutionIntentV1,
+    plan: CellSplitExecutionPlanV1,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -81,6 +85,8 @@ pub enum CellSplitUnixPortErrorV1 {
     Codec(#[from] serde_json::Error),
     #[error(transparent)]
     Durable(#[from] AcceptanceError),
+    #[error(transparent)]
+    Plan(#[from] CellSplitExecutionErrorV1),
 }
 
 /// Exactly four distinct owner sockets in a single canonical, private
@@ -89,19 +95,25 @@ pub enum CellSplitUnixPortErrorV1 {
 /// verifies all four pinned, distinct Ed25519 owner signatures.
 pub struct CellSplitUnixPortV1 {
     root: PathBuf,
+    plan: CellSplitExecutionPlanV1,
+    plan_digest: String,
     endpoints: [CellSplitUnixEndpointV1; OWNER_COUNT],
 }
 
 impl CellSplitUnixPortV1 {
     pub fn new(
         root: &Path,
+        plan: CellSplitExecutionPlanV1,
         endpoints: [CellSplitUnixEndpointV1; OWNER_COUNT],
     ) -> Result<Self, CellSplitUnixPortErrorV1> {
+        plan.validate()?;
+        let plan_digest = sha256(&canonical_json(&plan)?);
         let root = secure_root(root, "external effect socket root")?;
         let mut ids = BTreeSet::new();
         let mut paths = BTreeSet::new();
-        for endpoint in &endpoints {
-            if endpoint.owner_id.is_empty()
+        for (index, endpoint) in endpoints.iter().enumerate() {
+            if endpoint.owner_id != plan.owner_ids[index]
+                || endpoint.owner_id.is_empty()
                 || endpoint.owner_id.len() > 256
                 || !endpoint
                     .owner_id
@@ -116,7 +128,12 @@ impl CellSplitUnixPortV1 {
             }
             Self::check_socket(&root, &endpoint.socket_path)?;
         }
-        Ok(Self { root, endpoints })
+        Ok(Self {
+            root,
+            plan,
+            plan_digest,
+            endpoints,
+        })
     }
 
     fn check_socket(root: &Path, socket: &Path) -> Result<fs::Metadata, CellSplitUnixPortErrorV1> {
@@ -144,8 +161,8 @@ impl CellSplitUnixPortV1 {
             .endpoints
             .get(intent.step.index())
             .ok_or(CellSplitUnixPortErrorV1::Invalid("unknown split step"))?;
-        if endpoint.owner_id != intent.owner_id {
-            return Err(CellSplitUnixPortErrorV1::Invalid("effect owner mismatch"));
+        if endpoint.owner_id != intent.owner_id || intent.plan_digest != self.plan_digest {
+            return Err(CellSplitUnixPortErrorV1::Invalid("effect owner or plan mismatch"));
         }
         let before = Self::check_socket(&self.root, &endpoint.socket_path)?;
         let mut stream = UnixStream::connect(&endpoint.socket_path)?;
@@ -161,6 +178,7 @@ impl CellSplitUnixPortV1 {
             schema: RPC_SCHEMA.to_owned(),
             operation,
             intent: intent.clone(),
+            plan: self.plan.clone(),
         };
         let payload = canonical_json(&request)?;
         if payload.is_empty() || payload.len() > RPC_LIMIT {
