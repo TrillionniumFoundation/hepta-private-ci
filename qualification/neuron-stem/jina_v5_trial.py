@@ -16,6 +16,7 @@ from pathlib import Path
 from hf_trial import make_head
 from jina_v5 import FrozenJinaV5, MODELS, sha256_record, validate_identity
 from qualified_eval import audit_dataset, read_jsonl, write_json
+from q24_bridge import Q24, quantize_q24
 
 
 def render_case(row, representation):
@@ -89,7 +90,11 @@ def execute(args):
             generation=args.generation, authority_epoch=args.authority_epoch,
         )
         elapsed = (time.perf_counter_ns() - began) / 1e6
-        features[row["case_id"]] = torch.tensor(vector[0], dtype=torch.float32)
+        # Head training and inference see the exact same Q24-rounded
+        # bounded feature envelope expected by the Neuron feature contract.
+        q24 = quantize_q24(vector[0])
+        features[row["case_id"]] = torch.tensor(
+            [value / Q24 for value in q24], dtype=torch.float32)
         source_timing[row["case_id"]] = (
             "cache_hit_head" if trace["cache_hits"] else "encoder_warm", elapsed)
     head, params = make_head(torch, nn, args.head, args.dimension, classes, args.budget)
@@ -189,6 +194,8 @@ def execute(args):
         "model": args.model, "revision": args.revision,
         "task_adapter": "classification", "intent": "document",
         "official_pooling": True,
+        "q24_feature_input_enforced": True,
+        "q24_conversion_receipt_signed": False,
         "representation": args.representation,
         "matryoshka_dimension": args.dimension,
         "dataset": audit, "task_id": args.task_id,
