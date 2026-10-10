@@ -91,3 +91,37 @@ python3 scripts/memory_cell/composition_evidence.py DATA --source-commit COMMIT_
 HEPTA_MEMORY_TESTED_COMMIT=COMMIT_SHA HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
   python3 scripts/memory_cell/composition_trial.py DATA MODEL_DIRECTORY NEW_OUTPUT
 ```
+
+## Read-only externally reviewed capability execution
+
+`reviewed_bundle.py` now optionally executes the same frozen reader over
+externally supplied, SHA-256-pinned necessity/sufficiency reviews. This is a
+diagnostic path, **not** a reviewer, authentication service, optimization gate,
+or model promotion path. The ordinary retrieval conditions are preserved
+byte-for-byte and have no access to review labels. Missing review cases are
+retained as `unavailable`, never inferred from QASC fact pairs.
+
+From the repository root, supply independently prepared original inputs:
+
+```sh
+PYTHONPATH=scripts/memory_cell python3 scripts/memory_cell/reviewed_bundle.py \
+  PLAN.json REVIEWS.json WITHDRAWALS.json OUT_DIRECTORY \
+  --plan-sha ORIGINAL_PLAN_SHA256 \
+  --reviews-sha EXTERNALLY_PINNED_REVIEW_SHA256 \
+  --withdrawals-sha CURRENT_WITHDRAWALS_SHA256 \
+  --labels ORIGINAL_LABELS.json --labels-sha ORIGINAL_LABELS_SHA256 \
+  --reader FROZEN_READER_DIR --inventory PINNED_INVENTORY.json
+```
+
+This evaluates **only** frozen `capability` cases, retains every original
+retrieval control plus the reviewed conditions, writes raw model answers before
+opening labels for QA scoring, and records actual delivered source spans. It
+never executes `composition_policy.fit`, never treats published QASC facts as
+authenticated sufficiency, and leaves independent semantic citation precision
+and production qualification unset. Omit the four reader/labels options for
+the original projection-only file mode. Both modes require the existing source
+and current-withdrawal input pins.
+
+Absence of independently admitted reviews cannot be repaired through a changed
+reader threshold, locally fabricated reviewer identity, repeated public test
+usage, or generated fact-pair labels.
