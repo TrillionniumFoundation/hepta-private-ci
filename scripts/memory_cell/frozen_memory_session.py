@@ -17,6 +17,8 @@ import time
 
 from evidence_bundle import MAX_INDEX_BYTES, observed_time
 from native import Document, digest
+from policy_ancestry import SCHEMA as TRANSFER_SCHEMA
+from policy_ancestry import source_references, validate_support
 from reviewed_bundle import strict_read
 
 SCHEMA = "hepta.frozen-experience-session.v2"
@@ -34,7 +36,6 @@ def publish(path, value):
         stream.write(raw)
         stream.flush()
         os.fsync(stream.fileno())
-    # Directory fsync is available on the Linux experiment hosts.
     fd = os.open(path.parent, os.O_RDONLY)
     try:
         os.fsync(fd)
@@ -53,11 +54,14 @@ def freeze(
     reader_identity,
     source_commit,
     predecessor=None,
+    policy_sources=(),
 ):
-    """Persist past experience and an already produced policy; no Query argument.
+    """Persist past experience and already produced policy, without a Query.
 
-    Policy bytes are opaque, hashed artifacts, not pickle/code executed here.
-    Their training provenance/authority must still be checked by existing owners.
+    Optional original policy_sources bind cross-scope training ancestors. Only
+    references are stored; those sources never enter the reader evidence view.
+    Existing source/consumer owners must admit their actual training use. The
+    v3 local profile is explicit; ordinary v2 snapshots keep their old semantics.
     """
     cutoff = observed_time(through)
     if (
@@ -70,6 +74,8 @@ def freeze(
         or not re.fullmatch(r"[0-9a-f]{40}", source_commit)
         or predecessor is not None
         and not re.fullmatch(r"[0-9a-f]{64}", predecessor)
+        or not isinstance(policy_roots, (set, frozenset))
+        or not isinstance(policy_sources, (list, tuple))
     ):
         raise ValueError("bounded immutable experience/policy/reader required")
     total = sum(len(d.content.encode()) for d in documents)
@@ -77,12 +83,20 @@ def freeze(
         observed_time(d.observed_at) > cutoff for d in documents
     ):
         raise ValueError("unobserved future experience or write budget exceeded")
-    roots = {d.root for d in documents}
-    if not isinstance(policy_roots, (set, frozenset)) or not policy_roots <= roots:
+    support = (
+        source_references(policy_sources, through=through, policy_roots=policy_roots)
+        if policy_sources
+        else []
+    )
+    if {r["identity"] for r in support} & {d.identity for d in documents}:
+        raise ValueError("local ancestors must use the original evidence view")
+    roots = {d.root for d in documents} | {r["root"] for r in support}
+    if not policy_roots <= roots:
         raise ValueError("policy has unbound training ancestors")
     documents = tuple(sorted(documents, key=lambda d: d.identity))
+    schema = TRANSFER_SCHEMA if support else SCHEMA
     value = dict(
-        schema=SCHEMA,
+        schema=schema,
         through=through,
         documents=[asdict(d) for d in documents],
         source_frontier=digest([asdict(d) for d in documents]),
@@ -97,14 +111,16 @@ def freeze(
         clock_independently_attested=False,
         production_accepted=False,
     )
+    if support:
+        value["policy_support_sources"] = support
+        value["referenced_policy_source_bytes"] = sum(r["bytes"] for r in support)
     output.mkdir(mode=0o700)
     with (output / "policy.bin").open("xb") as stream:
         stream.write(policy_bytes)
         stream.flush()
         os.fsync(stream.fileno())
-    # READY is the only commit point. Crashes before it cannot open a session.
     snapshot_sha = publish(output / "snapshot.json", value)
-    publish(output / "READY.json", dict(snapshot_sha256=snapshot_sha, schema=SCHEMA))
+    publish(output / "READY.json", dict(snapshot_sha256=snapshot_sha, schema=schema))
     return snapshot_sha
 
 
@@ -128,9 +144,10 @@ class FrozenMemorySession:
             self.directory / "snapshot.json", expected_snapshot, MAX_RECEIPT
         )
         ready = json.loads((self.directory / "READY.json").read_text())
+        schema = self.state["schema"]
         if (
-            ready != dict(snapshot_sha256=expected_snapshot, schema=SCHEMA)
-            or self.state["schema"] != SCHEMA
+            ready != dict(snapshot_sha256=expected_snapshot, schema=schema)
+            or schema not in (SCHEMA, TRANSFER_SCHEMA)
         ):
             raise ValueError("uncommitted or incompatible memory snapshot")
         self.documents = tuple(
@@ -143,7 +160,25 @@ class FrozenMemorySession:
             or digest(self.state["documents"]) != self.state["source_frontier"]
         ):
             raise ValueError("source frontier mismatch")
-        self.roots = {d.root for d in self.documents} | set(self.state["policy_roots"])
+        roots = {d.root for d in self.documents}
+        if schema == TRANSFER_SCHEMA:
+            support = self.state["policy_support_sources"]
+            roots |= validate_support(
+                support,
+                through=self.state["through"],
+                policy_roots=self.state["policy_roots"],
+            )
+            if (
+                {r["identity"] for r in support} & set(self.originals)
+                or self.state["referenced_policy_source_bytes"]
+                != sum(r["bytes"] for r in support)
+            ):
+                raise ValueError("policy support differs from committed references")
+        elif "policy_support_sources" in self.state:
+            raise ValueError("v2 cannot silently acquire transferred ancestry")
+        if not set(self.state["policy_roots"]) <= roots:
+            raise ValueError("unbound policy ancestry in restored snapshot")
+        self.roots = roots | set(self.state["policy_roots"])
         self._current(lambda: set())
 
     def _current(self, withdrawals):
@@ -166,11 +201,7 @@ class FrozenMemorySession:
         return policy, set(current)
 
     def answer(self, query, selector, reader, *, withdrawals, token_limit=2048):
-        """Only query-time reads. The selector gets no gold labels or optimizer.
-
-        The hash lock checks declared artifacts, not all possible Python globals;
-        actual isolation and authorized effect fencing remain existing owners' work.
-        """
+        """Only query-time reads; actual effect fencing remains owner-controlled."""
         if query.scope != self.documents[0].scope or observed_time(
             query.observed_at
         ) <= observed_time(self.state["through"]):
@@ -181,13 +212,10 @@ class FrozenMemorySession:
             raise ValueError("shared reader identity changed")
         with exclusive(self.directory):
             policy, revoked = self._current(withdrawals)
-            # Identity reserves one attempt even when a retry changes its payload.
             key = digest((query.scope, query.identity))
             started = self.directory / (key + ".started.json")
             completed = self.directory / (key + ".result.json")
             if started.exists():
-                # Do not regenerate after lost acknowledgement or crash. Caller may
-                # inspect the retained result, but never bypass current withdrawal.
                 raise ValueError("duplicate or indeterminate task; no implicit replay")
             if len(list(self.directory.glob("*.started.json"))) >= 256:
                 raise ValueError("bounded stream session exhausted")
@@ -211,9 +239,7 @@ class FrozenMemorySession:
                     revoked,
                 )
                 if bundle.mode not in ("ranked", "coverage", "empty", "stream_policy"):
-                    raise ValueError(
-                        "oracle/review projection is not an online selector"
-                    )
+                    raise ValueError("oracle/review projection is not an online selector")
                 bundle.validate(
                     query,
                     self.originals,
@@ -283,9 +309,7 @@ class FrozenMemorySession:
                 or result.is_symlink()
                 or result.stat().st_size > MAX_RECEIPT
             ):
-                raise ValueError(
-                    "missing/indeterminate result; recovery cannot regenerate"
-                )
+                raise ValueError("missing/indeterminate result; recovery cannot regenerate")
             value = strict_read(result, expected_result_sha256, MAX_RECEIPT)
             if (
                 value.get("snapshot_sha256") != self.expected_snapshot
@@ -293,5 +317,4 @@ class FrozenMemorySession:
                 or value.get("query_digest") != digest(asdict(query))
             ):
                 raise ValueError("result identity mismatch")
-            # Replay is a local diagnostic record read, not authenticated user delivery.
             return dict(record=value, result_sha256=expected_result_sha256)
