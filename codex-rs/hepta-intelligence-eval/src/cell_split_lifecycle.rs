@@ -284,6 +284,40 @@ impl CellSplitLifecycleJournalV1 {
         )
     }
 
+    /// Record a *separately observed* retirement receipt, not merely the
+    /// planned tombstone digest. The lifecycle event commits the split identity,
+    /// successor generation, drain/deletion/rollback plan and actual receipt.
+    /// The external owner must verify the receipt's signer and the live CNS
+    /// old-route fence before invoking this pure state transition.
+    pub fn retire_with_execution_receipt(
+        &mut self,
+        split: &CellSplitV1,
+        execution_receipt_digest: Digest32,
+    ) -> Result<(), CellSplitLifecycleErrorV1> {
+        if split.split_id != self.split_id
+            || split.retirement.disposition != CellParentDispositionV1::Retire
+            || execution_receipt_digest.is_zero()
+        {
+            return Err(CellSplitLifecycleErrorV1::InvalidEvidence);
+        }
+        let mut bytes = b"hepta.learning.cell-split.retirement-execution.v1".to_vec();
+        push_id(&mut bytes, &split.split_id);
+        bytes.extend_from_slice(&split.successor_generation.get().to_be_bytes());
+        for digest in [
+            split.retirement.tombstone_digest,
+            split.retirement.drain_watermark_digest,
+            split.retirement.deletion_lineage_digest,
+            split.retirement.rollback_digest,
+            execution_receipt_digest,
+        ] {
+            if digest.is_zero() {
+                return Err(CellSplitLifecycleErrorV1::InvalidEvidence);
+            }
+            bytes.extend_from_slice(digest.as_array());
+        }
+        self.transition(CellSplitLifecycleStateV1::Retired, Digest32::of_bytes(&bytes))
+    }
+
     pub fn rollback(
         &mut self,
         split: &CellSplitV1,
