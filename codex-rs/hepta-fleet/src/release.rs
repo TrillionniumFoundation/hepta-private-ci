@@ -331,7 +331,7 @@ impl FleetRegistry {
             manifest_sha256: sha256_file(&manifest)?,
         };
         let path = allowance_path(record.layout.releases_root(), release_id);
-        if path.exists() {
+        if release_entry_exists(&path)? {
             let actual: ReleaseAllowance = read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
             if matches!(actual.schema_version, 1 | RELEASE_METADATA_SCHEMA_VERSION)
                 && actual.agent_id == allowance.agent_id
@@ -358,7 +358,7 @@ impl FleetRegistry {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
         let path = revocation_path(record.layout.releases_root(), release_id);
-        if path.exists() {
+        if release_entry_exists(&path)? {
             let actual: ReleaseRevocation = read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
             let manifest = release_manifest_path(self.layout().releases_root(), release_id);
             let manifest_sha256 = sha256_file(&manifest)?;
@@ -431,7 +431,7 @@ impl FleetRegistry {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
         })?;
-        if revocation_path(record.layout.releases_root(), release_id).exists() {
+        if release_entry_exists(&revocation_path(record.layout.releases_root(), release_id))? {
             return Err(FleetRegistryError::ReleaseRevoked {
                 agent_id: agent_id.clone(),
                 release_id: release_id.to_string(),
@@ -472,6 +472,7 @@ impl FleetRegistry {
     pub fn allowed_releases(
         &self,
         agent_id: &AgentId,
+        release_id: &ReleaseId,
     ) -> Result<Vec<ReleaseId>, FleetRegistryError> {
         let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
             FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
@@ -812,6 +813,18 @@ fn release_admission_frontier_sha256(root: &Path) -> Result<String, FleetRegistr
         .iter()
         .map(|byte| format!("{byte:02x}"))
         .collect())
+}
+
+// Absence alone permits continuing admission. A retained directory entry,
+// including a dangling or looping symlink, must not be mistaken for absence;
+// unknown metadata failures must not be suppressed. This does not make later
+// owner operations atomic with concurrent policy writes.
+fn release_entry_exists(path: &Path) -> Result<bool, FleetRegistryError> {
+    match std::fs::symlink_metadata(path) {
+        Ok(_) => Ok(true),
+        Err(error) if error.kind() == ErrorKind::NotFound => Ok(false),
+        Err(error) => Err(error.into()),
+    }
 }
 
 fn allowance_path(root: &Path, release_id: &ReleaseId) -> PathBuf {
@@ -1310,6 +1323,203 @@ mod tests {
             fixture.registry.resolve_release(&fixture.first, &v2),
             Err(FleetRegistryError::Corrupt(_))
         ));
+        Ok(())
+    }
+
+    #[test]
+    fn release_entry_presence_distinguishes_absence_and_retained_objects()
+    -> Result<(), FleetRegistryError> {
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("entry");
+        assert!(!release_entry_exists(&path)?);
+        std::fs::write(&path, b"retained")?;
+        assert!(release_entry_exists(&path)?);
+        std::fs::remove_file(&path)?;
+        std::fs::create_dir(&path)?;
+        assert!(release_entry_exists(&path)?);
+        assert!(path.is_dir());
+        Ok(())
+    }
+
+    #[test]
+    fn release_entry_presence_preserves_metadata_errors() {
+        let path = Path::new("invalid\0release-entry");
+        let expected = std::fs::symlink_metadata(path)
+            .expect_err("a NUL path must fail")
+            .kind();
+        assert_ne!(expected, ErrorKind::NotFound);
+        assert!(matches!(
+            release_entry_exists(path),
+            Err(FleetRegistryError::Io(error)) if error.kind() == expected
+        ));
+    }
+
+    #[test]
+    fn real_revocation_is_idempotent_and_remains_denied_after_reopen()
+    -> Result<(), FleetRegistryError> {
+        let fixture = Fixture::new()?;
+        let release_id = ReleaseId::parse("revoked-v1")?;
+        fixture.registry.install_release(
+            release_id.clone(),
+            &fixture.source,
+            Vec::new(),
+        )?;
+        fixture.registry.allow_release(&fixture.first, &release_id)?;
+        fixture.registry.allow_release(&fixture.second, &release_id)?;
+        fixture.registry.resolve_release_binding(&fixture.first, &release_id)?;
+        fixture.registry.revoke_release(&fixture.first, &release_id)?;
+        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        let marker = revocation_path(record.layout.releases_root(), &release_id);
+        let original = std::fs::read(&marker)?;
+        fixture.registry.revoke_release(&fixture.first, &release_id)?;
+        assert_eq!(std::fs::read(&marker)?, original);
+        let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
+        for registry in [&fixture.registry, &reopened] {
+            assert!(matches!(
+                registry.resolve_release(&fixture.first, &release_id),
+                Err(FleetRegistryError::ReleaseRevoked { .. })
+            ));
+            assert!(matches!(
+                registry.resolve_release_binding(&fixture.first, &release_id),
+                Err(FleetRegistryError::ReleaseRevoked { .. })
+            ));
+            assert!(registry.allowed_releases(&fixture.first)?.is_empty());
+            registry.resolve_release_binding(&fixture.second, &release_id)?;
+        }
+        assert_eq!(std::fs::read(marker)?, original);
+        Ok(())
+    }
+
+    #[test]
+    fn revocation_directory_denies_without_repair_or_deletion()
+    -> Result<(), FleetRegistryError> {
+        let fixture = Fixture::new()?;
+        let release_id = ReleaseId::parse("directory-marker")?;
+        fixture.registry.install_release(
+            release_id.clone(),
+            &fixture.source,
+            Vec::new(),
+        )?;
+        fixture.registry.allow_release(&fixture.first, &release_id)?;
+        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        let marker = revocation_path(record.layout.releases_root(), &release_id);
+        std::fs::create_dir(&marker)?;
+        let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
+        for registry in [&fixture.registry, &reopened] {
+            assert!(matches!(
+                registry.resolve_release(&fixture.first, &release_id),
+                Err(FleetRegistryError::ReleaseRevoked { .. })
+            ));
+            assert!(matches!(
+                registry.revoke_release(&fixture.first, &release_id),
+                Err(FleetRegistryError::Corrupt(_))
+            ));
+            assert!(registry.allowed_releases(&fixture.first)?.is_empty());
+        }
+        assert!(std::fs::symlink_metadata(marker)?.is_dir());
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn dangling_revocation_entry_cannot_restore_a_previous_allowance()
+    -> Result<(), FleetRegistryError> {
+        use std::os::unix::fs::symlink;
+
+        let fixture = Fixture::new()?;
+        let release_id = ReleaseId::parse("dangling-revocation")?;
+        fixture.registry.install_release(
+            release_id.clone(),
+            &fixture.source,
+            Vec::new(),
+        )?;
+        fixture.registry.allow_release(&fixture.first, &release_id)?;
+        fixture.registry.allow_release(&fixture.second, &release_id)?;
+        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        let marker = revocation_path(record.layout.releases_root(), &release_id);
+        let missing = fixture._temp.path().join("missing-revocation-target");
+        symlink(&missing, &marker)?;
+        // The original following lookup incorrectly interprets this retained
+        // revocation name as absence. It must not restore the existing grant.
+        assert!(!marker.exists());
+        assert!(release_entry_exists(&marker)?);
+        let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
+        for registry in [&fixture.registry, &reopened] {
+            assert!(matches!(
+                registry.resolve_release(&fixture.first, &release_id),
+                Err(FleetRegistryError::ReleaseRevoked { .. })
+            ));
+            assert!(matches!(
+                registry.resolve_release_binding(&fixture.first, &release_id),
+                Err(FleetRegistryError::ReleaseRevoked { .. })
+            ));
+            assert!(registry.allowed_releases(&fixture.first)?.is_empty());
+            assert!(matches!(
+                registry.revoke_release(&fixture.first, &release_id),
+                Err(FleetRegistryError::Corrupt(_))
+            ));
+            registry.resolve_release_binding(&fixture.second, &release_id)?;
+        }
+        assert_eq!(std::fs::read_link(marker)?, missing);
+        assert!(!missing.exists());
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn looping_revocation_entry_is_denied_without_following_the_target()
+    -> Result<(), FleetRegistryError> {
+        use std::os::unix::fs::symlink;
+
+        let fixture = Fixture::new()?;
+        let release_id = ReleaseId::parse("looping-revocation")?;
+        fixture.registry.install_release(
+            release_id.clone(),
+            &fixture.source,
+            Vec::new(),
+        )?;
+        fixture.registry.allow_release(&fixture.first, &release_id)?;
+        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        let marker = revocation_path(record.layout.releases_root(), &release_id);
+        symlink(&marker, &marker)?;
+        assert!(!marker.exists());
+        assert!(release_entry_exists(&marker)?);
+        assert!(matches!(
+            fixture.registry.resolve_release(&fixture.first, &release_id),
+            Err(FleetRegistryError::ReleaseRevoked { .. })
+        ));
+        assert!(fixture.registry.allowed_releases(&fixture.first)?.is_empty());
+        assert_eq!(std::fs::read_link(&marker)?, marker);
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn dangling_allowance_entry_is_rejected_without_replacing_it()
+    -> Result<(), FleetRegistryError> {
+        use std::os::unix::fs::symlink;
+
+        let fixture = Fixture::new()?;
+        let release_id = ReleaseId::parse("dangling-allowance")?;
+        fixture.registry.install_release(
+            release_id.clone(),
+            &fixture.source,
+            Vec::new(),
+        )?;
+        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        let marker = allowance_path(record.layout.releases_root(), &release_id);
+        let missing = fixture._temp.path().join("missing-allowance-target");
+        symlink(&missing, &marker)?;
+        assert!(matches!(
+            fixture.registry.allow_release(&fixture.first, &release_id),
+            Err(FleetRegistryError::Corrupt(_))
+        ));
+        assert!(matches!(
+            fixture.registry.resolve_release(&fixture.first, &release_id),
+            Err(FleetRegistryError::Corrupt(_))
+        ));
+        assert_eq!(std::fs::read_link(marker)?, missing);
+        assert!(!missing.exists());
         Ok(())
     }
 
