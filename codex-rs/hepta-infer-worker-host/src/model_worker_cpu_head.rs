@@ -16,7 +16,7 @@ const MAX_INPUT: usize = 512;
 const MAX_OUTPUT: usize = 512;
 
 /// Read-only, Q24 affine Head: one hard-sigmoid gate for drive and prediction.
-/// All matrices are row-major [output_width, input_width].
+/// Nonempty matrices are row-major [output_width, input_width]. An empty\n/// prediction or gate matrix means a canonical constant-zero matrix; only\n/// drive weights must be dense. Compact profiles count actual stored tensors.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CpuGatedHead {
     pub input_width: usize,
@@ -41,8 +41,8 @@ impl CpuGatedHead {
         let n = self.input_width.checked_mul(self.output_width)
             .ok_or(Error::ArithmeticOverflow)?;
         if self.drive_weights_q24.len() != n
-            || self.prediction_weights_q24.len() != n
-            || self.gate_weights_q24.len() != n
+            || !(self.prediction_weights_q24.is_empty() || self.prediction_weights_q24.len() == n)
+            || !(self.gate_weights_q24.is_empty() || self.gate_weights_q24.len() == n)
             || self.drive_bias_q24.len() != self.output_width
             || self.prediction_bias_q24.len() != self.output_width
             || self.gate_bias_q24.len() != self.output_width
@@ -98,6 +98,11 @@ impl CpuGatedHead {
         row: usize,
         input: &[i64],
     ) -> Result<i64, Error> {
+        if weights.is_empty() {
+            // Canonical constant-zero matrix profile: reduces physical Head
+            // tensors for compact Linear/no-prediction or constant-gate cells.
+            return Ok(bias);
+        }
         let start = row.checked_mul(self.input_width).ok_or(Error::ArithmeticOverflow)?;
         let mut acc = (bias as i128) * Q;
         for (x, w) in input.iter().zip(&weights[start..start + self.input_width]) {
