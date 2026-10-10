@@ -210,8 +210,14 @@ fn wrong_loaded_model_id_fails_before_consuming_valid_signed_nonce() {
         Err(BatchWorkerErrorV1::InvalidBinding)
     );
     assert_eq!(worker.pending(), 0);
-    worker.enqueue(100, "model".into(), request, key, grant).unwrap();
-    assert!(worker.poll_and_execute(101).unwrap().outcomes[0].result.is_ok());
+    worker
+        .enqueue(100, "model".into(), request, key, grant)
+        .unwrap();
+    assert!(
+        worker.poll_and_execute(101).unwrap().outcomes[0]
+            .result
+            .is_ok()
+    );
 }
 
 #[test]
@@ -574,7 +580,6 @@ fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_met
     }
 }
 
-
 #[test]
 fn completed_request_history_does_not_consume_concurrent_queue_capacity() {
     let dir = tempfile::tempdir().unwrap();
@@ -586,9 +591,19 @@ fn completed_request_history_does_not_consume_concurrent_queue_capacity() {
         request.authorization.request_id = format!("lifetime-{index}");
         request.authorization.reservation_id = format!("reservation-{index}");
         let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
-        let grant = signed_member(&signer, binding, &format!("grant-{index}"), (index + 80) as u8);
-        worker.enqueue(100 + index, "model".into(), request, key.clone(), grant).unwrap();
-        assert_eq!(worker.poll_and_execute(101 + index).unwrap().outcomes.len(), 1);
+        let grant = signed_member(
+            &signer,
+            binding,
+            &format!("grant-{index}"),
+            (index + 80) as u8,
+        );
+        worker
+            .enqueue(100 + index, "model".into(), request, key.clone(), grant)
+            .unwrap();
+        assert_eq!(
+            worker.poll_and_execute(101 + index).unwrap().outcomes.len(),
+            1
+        );
         assert_eq!(worker.pending(), 0);
     }
     let mut old_request = first.clone();
@@ -625,10 +640,24 @@ fn native_batch_coalesces_distinct_scopes_without_crossing_authority() {
     let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2);
     let binding_a = neuron_batch_final_use_binding_v1("worker-one", &first_key, &first).unwrap();
     let binding_b = neuron_batch_final_use_binding_v1("worker-one", &other_key, &second).unwrap();
-    worker.enqueue(100, "model".into(), first, first_key,
-        signed_member(&signer, binding_a, "grant-a", 62)).unwrap();
-    worker.enqueue(100, "model".into(), second, other_key,
-        signed_member(&signer, binding_b, "grant-b", 63)).unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            first_key,
+            signed_member(&signer, binding_a, "grant-a", 62),
+        )
+        .unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            other_key,
+            signed_member(&signer, binding_b, "grant-b", 63),
+        )
+        .unwrap();
     let result = worker.poll_and_execute(106).unwrap();
     assert_eq!(result.outcomes.len(), 2);
     assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
