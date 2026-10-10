@@ -52,6 +52,7 @@ def observed(packet, scope=64, mode="no_split"):
         "scopes": scope,
         "mode": mode,
         "measurement_source": "unit-test:process-counters",
+        "attempted_request_trace_sha256": "b" * 64,
         "attempted": 100,
         "completed": 100,
         "elapsed_seconds": 1,
@@ -98,6 +99,10 @@ class CellSplitMatrixCaptureTests(unittest.TestCase):
             validate_measurement(sample, packet, 64, "no_split")
         sample = observed(packet)
         sample.pop("cpu_seconds")
+        with self.assertRaises(InvalidEvidence):
+            validate_measurement(sample, packet, 64, "no_split")
+        sample = observed(packet)
+        sample.pop("attempted_request_trace_sha256")
         with self.assertRaises(InvalidEvidence):
             validate_measurement(sample, packet, 64, "no_split")
         sample = observed(packet)
