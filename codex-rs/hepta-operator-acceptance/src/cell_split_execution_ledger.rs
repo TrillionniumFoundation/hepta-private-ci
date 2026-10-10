@@ -18,7 +18,10 @@ use ed25519_dalek::{Signature, Verifier, VerifyingKey};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
-use crate::durable::{SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root, sha256, write_private_atomic_replace};
+use crate::durable::{
+    SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root, sha256,
+    write_private_atomic_replace,
+};
 
 const SCHEMA: &str = "hepta.cell-split.execution-ledger.v1";
 const LEDGER_FILE: &str = "cell-split-execution-ledger.json";
@@ -89,7 +92,8 @@ impl CellSplitNativeOperationReceiptV1 {
         let mut unsigned = self.clone();
         unsigned.owner_signature_base64.clear();
         unsigned.observer_signature_base64.clear();
-        canonical_json(&unsigned).map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))
+        canonical_json(&unsigned)
+            .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))
     }
 }
 
@@ -160,7 +164,9 @@ impl EntryV1 {
     fn digest(&self) -> Result<String, CellSplitExecutionErrorV1> {
         let bytes = canonical_json(&(&self.predecessor, &self.effect))
             .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?;
-        Ok(sha256(&[b"hepta.cell-split.execution-entry.v1".as_slice(), &bytes].concat()))
+        Ok(sha256(
+            &[b"hepta.cell-split.execution-entry.v1".as_slice(), &bytes].concat(),
+        ))
     }
 }
 
@@ -225,7 +231,10 @@ impl CellSplitExecutionLedgerOwnerV1 {
             return Err(CellSplitExecutionErrorV1::Trust);
         }
         for step in CellSplitEffectStepV1::ORDER {
-            trust.get(&step).ok_or(CellSplitExecutionErrorV1::Trust)?.validate()?;
+            trust
+                .get(&step)
+                .ok_or(CellSplitExecutionErrorV1::Trust)?
+                .validate()?;
         }
         let root = secure_root(root.as_ref(), "split execution ledger root")
             .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?;
@@ -238,15 +247,18 @@ impl CellSplitExecutionLedgerOwnerV1 {
             let ledger: LedgerV1 = serde_json::from_slice(&bytes)
                 .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?;
             if canonical_json(&ledger)
-                .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))? != bytes
+                .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?
+                != bytes
             {
                 return Err(CellSplitExecutionErrorV1::Transition);
             }
             ledger
         } else {
             let child_generation = parent_generation + 1;
-            let genesis = sha256(&canonical_json(&(GENESIS, split_id, parent_generation, child_generation))
-                .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?);
+            let genesis = sha256(
+                &canonical_json(&(GENESIS, split_id, parent_generation, child_generation))
+                    .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?,
+            );
             LedgerV1 {
                 schema: SCHEMA.to_owned(),
                 split_id: split_id.to_owned(),
@@ -263,7 +275,12 @@ impl CellSplitExecutionLedgerOwnerV1 {
         {
             return Err(CellSplitExecutionErrorV1::Transition);
         }
-        let owner = Self { root, ledger, trust, _lock: lock };
+        let owner = Self {
+            root,
+            ledger,
+            trust,
+            _lock: lock,
+        };
         owner.replay()?;
         if owner.ledger.entries.is_empty() {
             owner.persist(&owner.ledger)?;
@@ -272,11 +289,17 @@ impl CellSplitExecutionLedgerOwnerV1 {
     }
 
     #[must_use]
-    pub fn head(&self) -> &str { &self.ledger.head }
+    pub fn head(&self) -> &str {
+        &self.ledger.head
+    }
 
     #[must_use]
     pub fn completed_steps(&self) -> usize {
-        self.ledger.entries.iter().filter(|entry| matches!(entry.effect, EntryEffectV1::Committed { .. })).count()
+        self.ledger
+            .entries
+            .iter()
+            .filter(|entry| matches!(entry.effect, EntryEffectV1::Committed { .. }))
+            .count()
     }
 
     #[must_use]
@@ -287,7 +310,9 @@ impl CellSplitExecutionLedgerOwnerV1 {
     #[must_use]
     pub fn pending(&self) -> Option<CellSplitPendingEffectV1> {
         let entry = self.ledger.entries.last()?;
-        let EntryEffectV1::Intent { step, operation_id } = &entry.effect else { return None; };
+        let EntryEffectV1::Intent { step, operation_id } = &entry.effect else {
+            return None;
+        };
         Some(CellSplitPendingEffectV1 {
             step: *step,
             operation_id: operation_id.clone(),
@@ -301,9 +326,12 @@ impl CellSplitExecutionLedgerOwnerV1 {
         port: &mut P,
     ) -> Result<CellSplitNativeOperationReceiptV1, CellSplitExecutionErrorV1> {
         self.replay()?;
-        if self.pending().is_some() { return Err(CellSplitExecutionErrorV1::UncertainEffect); }
+        if self.pending().is_some() {
+            return Err(CellSplitExecutionErrorV1::UncertainEffect);
+        }
         let completed = self.completed_steps();
-        let step = *CellSplitEffectStepV1::ORDER.get(completed)
+        let step = *CellSplitEffectStepV1::ORDER
+            .get(completed)
             .ok_or(CellSplitExecutionErrorV1::Complete)?;
         if operation_id.is_empty() || operation_id.len() > 200
             || self.ledger.entries.iter().any(|entry| matches!(&entry.effect, EntryEffectV1::Intent { operation_id: prior, .. } if prior == operation_id))
@@ -311,10 +339,14 @@ impl CellSplitExecutionLedgerOwnerV1 {
             return Err(CellSplitExecutionErrorV1::Transition);
         }
         let predecessor_head = self.ledger.head.clone();
-        self.append(EntryEffectV1::Intent { step, operation_id: operation_id.to_owned() })?;
+        self.append(EntryEffectV1::Intent {
+            step,
+            operation_id: operation_id.to_owned(),
+        })?;
         // After this point ANY callback failure is an uncertain outcome.
         // Never synthesize a rollback or call execute twice.
-        let receipt = port.execute(step, operation_id, &predecessor_head)
+        let receipt = port
+            .execute(step, operation_id, &predecessor_head)
             .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
         self.finish_pending(receipt.clone())?;
         Ok(receipt)
@@ -326,8 +358,15 @@ impl CellSplitExecutionLedgerOwnerV1 {
         port: &mut P,
     ) -> Result<CellSplitNativeOperationReceiptV1, CellSplitExecutionErrorV1> {
         self.replay()?;
-        let pending = self.pending().ok_or(CellSplitExecutionErrorV1::Transition)?;
-        let receipt = port.reconcile(pending.step, &pending.operation_id, &pending.predecessor_head)
+        let pending = self
+            .pending()
+            .ok_or(CellSplitExecutionErrorV1::Transition)?;
+        let receipt = port
+            .reconcile(
+                pending.step,
+                &pending.operation_id,
+                &pending.predecessor_head,
+            )
             .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
             .ok_or(CellSplitExecutionErrorV1::UncertainEffect)?;
         self.finish_pending(receipt.clone())?;
@@ -338,7 +377,9 @@ impl CellSplitExecutionLedgerOwnerV1 {
         &mut self,
         receipt: CellSplitNativeOperationReceiptV1,
     ) -> Result<(), CellSplitExecutionErrorV1> {
-        let pending = self.pending().ok_or(CellSplitExecutionErrorV1::Transition)?;
+        let pending = self
+            .pending()
+            .ok_or(CellSplitExecutionErrorV1::Transition)?;
         self.verify_receipt(&receipt, &pending)?;
         self.append(EntryEffectV1::Committed { receipt })
     }
@@ -348,7 +389,10 @@ impl CellSplitExecutionLedgerOwnerV1 {
         receipt: &CellSplitNativeOperationReceiptV1,
         pending: &CellSplitPendingEffectV1,
     ) -> Result<(), CellSplitExecutionErrorV1> {
-        let trust = self.trust.get(&pending.step).ok_or(CellSplitExecutionErrorV1::Trust)?;
+        let trust = self
+            .trust
+            .get(&pending.step)
+            .ok_or(CellSplitExecutionErrorV1::Trust)?;
         if receipt.step != pending.step
             || receipt.split_id != self.ledger.split_id
             || receipt.operation_id != pending.operation_id
@@ -372,11 +416,18 @@ impl CellSplitExecutionLedgerOwnerV1 {
             .map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)?;
         let readback_json: serde_json::Value = serde_json::from_slice(&readback)
             .map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)?;
-        if native_json.get("schema").and_then(|v| v.as_str()) != Some(receipt.native_receipt_schema.as_str())
-            || native_json.get("operationId").and_then(|v| v.as_str()) != Some(receipt.operation_id.as_str())
-            || native_json.get("commitWitness").and_then(|v| v.as_str()).is_none_or(|s| !is_digest(s))
-            || readback_json.get("operationId").and_then(|v| v.as_str()) != Some(receipt.operation_id.as_str())
-            || readback_json.get("receiptSha256").and_then(|v| v.as_str()) != Some(receipt.native_receipt_sha256.as_str())
+        if native_json.get("schema").and_then(|v| v.as_str())
+            != Some(receipt.native_receipt_schema.as_str())
+            || native_json.get("operationId").and_then(|v| v.as_str())
+                != Some(receipt.operation_id.as_str())
+            || native_json
+                .get("commitWitness")
+                .and_then(|v| v.as_str())
+                .is_none_or(|s| !is_digest(s))
+            || readback_json.get("operationId").and_then(|v| v.as_str())
+                != Some(receipt.operation_id.as_str())
+            || readback_json.get("receiptSha256").and_then(|v| v.as_str())
+                != Some(receipt.native_receipt_sha256.as_str())
             || readback_json.get("committed").and_then(|v| v.as_bool()) != Some(true)
         {
             return Err(CellSplitExecutionErrorV1::NativeReceipt);
@@ -384,9 +435,13 @@ impl CellSplitExecutionLedgerOwnerV1 {
         let payload = receipt.signing_bytes()?;
         let owner_signature = decode_signature(&receipt.owner_signature_base64)?;
         let observer_signature = decode_signature(&receipt.observer_signature_base64)?;
-        trust.owner_key.verify(&payload, &owner_signature)
+        trust
+            .owner_key
+            .verify(&payload, &owner_signature)
             .map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)?;
-        trust.observer_key.verify(&payload, &observer_signature)
+        trust
+            .observer_key
+            .verify(&payload, &observer_signature)
             .map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)?;
         Ok(())
     }
@@ -408,10 +463,19 @@ impl CellSplitExecutionLedgerOwnerV1 {
     }
 
     fn persist(&self, ledger: &LedgerV1) -> Result<(), CellSplitExecutionErrorV1> {
-        let bytes = canonical_json(ledger).map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?;
-        if bytes.len() > MAX_LEDGER_BYTES { return Err(CellSplitExecutionErrorV1::Store("ledger capacity exceeded".to_owned())); }
-        write_private_atomic_replace(&self.root.join(LEDGER_FILE), &self.root.join(LEDGER_TEMP), &bytes)
-            .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))
+        let bytes = canonical_json(ledger)
+            .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?;
+        if bytes.len() > MAX_LEDGER_BYTES {
+            return Err(CellSplitExecutionErrorV1::Store(
+                "ledger capacity exceeded".to_owned(),
+            ));
+        }
+        write_private_atomic_replace(
+            &self.root.join(LEDGER_FILE),
+            &self.root.join(LEDGER_TEMP),
+            &bytes,
+        )
+        .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))
     }
 
     fn replay(&self) -> Result<(), CellSplitExecutionErrorV1> {
@@ -422,8 +486,15 @@ impl CellSplitExecutionLedgerOwnerV1 {
         if ledger.entries.len() > CellSplitEffectStepV1::ORDER.len() * 2 {
             return Err(CellSplitExecutionErrorV1::Transition);
         }
-        let mut head = sha256(&canonical_json(&(GENESIS, &ledger.split_id, ledger.parent_generation, ledger.child_generation))
-            .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?);
+        let mut head = sha256(
+            &canonical_json(&(
+                GENESIS,
+                &ledger.split_id,
+                ledger.parent_generation,
+                ledger.child_generation,
+            ))
+            .map_err(|error| CellSplitExecutionErrorV1::Store(error.to_string()))?,
+        );
         let mut completed = 0;
         let mut pending: Option<CellSplitPendingEffectV1> = None;
         for entry in &ledger.entries {
@@ -432,7 +503,8 @@ impl CellSplitExecutionLedgerOwnerV1 {
             }
             match &entry.effect {
                 EntryEffectV1::Intent { step, operation_id } => {
-                    if pending.is_some() || CellSplitEffectStepV1::ORDER.get(completed) != Some(step)
+                    if pending.is_some()
+                        || CellSplitEffectStepV1::ORDER.get(completed) != Some(step)
                         || operation_id.is_empty()
                     {
                         return Err(CellSplitExecutionErrorV1::Transition);
@@ -444,32 +516,47 @@ impl CellSplitExecutionLedgerOwnerV1 {
                     });
                 }
                 EntryEffectV1::Committed { receipt } => {
-                    let prior = pending.take().ok_or(CellSplitExecutionErrorV1::Transition)?;
+                    let prior = pending
+                        .take()
+                        .ok_or(CellSplitExecutionErrorV1::Transition)?;
                     self.verify_receipt(receipt, &prior)?;
                     completed += 1;
                 }
             }
             head = entry.entry_digest.clone();
         }
-        if ledger.head != head { return Err(CellSplitExecutionErrorV1::Transition); }
+        if ledger.head != head {
+            return Err(CellSplitExecutionErrorV1::Transition);
+        }
         Ok(())
     }
 }
 
 fn is_digest(value: &str) -> bool {
-    value.len() == 64 && value.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
         && value.bytes().any(|b| b != b'0')
 }
 
 fn bounded_decode(encoded: &str) -> Result<Vec<u8>, CellSplitExecutionErrorV1> {
-    if encoded.len() > MAX_PROOF_BYTES * 2 { return Err(CellSplitExecutionErrorV1::NativeReceipt); }
-    let bytes = BASE64.decode(encoded).map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)?;
-    if bytes.len() < 64 || bytes.len() > MAX_PROOF_BYTES { return Err(CellSplitExecutionErrorV1::NativeReceipt); }
+    if encoded.len() > MAX_PROOF_BYTES * 2 {
+        return Err(CellSplitExecutionErrorV1::NativeReceipt);
+    }
+    let bytes = BASE64
+        .decode(encoded)
+        .map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)?;
+    if bytes.len() < 64 || bytes.len() > MAX_PROOF_BYTES {
+        return Err(CellSplitExecutionErrorV1::NativeReceipt);
+    }
     Ok(bytes)
 }
 
 fn decode_signature(encoded: &str) -> Result<Signature, CellSplitExecutionErrorV1> {
-    let bytes = BASE64.decode(encoded).map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)?;
+    let bytes = BASE64
+        .decode(encoded)
+        .map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)?;
     Signature::from_slice(&bytes).map_err(|_| CellSplitExecutionErrorV1::NativeReceipt)
 }
 
