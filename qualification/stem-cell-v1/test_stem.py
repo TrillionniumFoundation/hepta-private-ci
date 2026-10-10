@@ -1,11 +1,12 @@
 import hashlib
+import importlib.util
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
 from scale import generate, trace_report
-from study import (admission, classifier_metrics, paired_group_deltas,
+from study import (admission, classifier_metrics, load_jsonl, paired_group_deltas, wilson_upper,
                    validate_dataset, validate_outcomes, validate_predictions)
 
 DIGEST_A = "a" * 64
@@ -105,6 +106,10 @@ class StemStudyTests(unittest.TestCase):
         self.assertAlmostEqual(metrics["ece_15"], 0.3)
         self.assertEqual(metrics["ood_false_acceptance"], 0.0)
 
+    def test_ood_rate_must_have_confidence_support(self):
+        self.assertGreater(wilson_upper(0, 100), 0.005)
+        self.assertLess(wilson_upper(0, 1000), 0.005)
+
     def test_paired_group_bootstrap_not_cell_calls(self):
         paired = paired_group_deltas(self.ds, self.joined, "no_change", "mmbert_small")
         self.assertEqual(len(paired), 4)  # OOD is not reward evidence
@@ -174,6 +179,67 @@ class ScaleTraceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "incomplete"):
             trace_report(self.jobs, self.events[1:])
 
+
+
+
+class OfflineHeadExecutionTests(unittest.TestCase):
+    @unittest.skipUnless(importlib.util.find_spec("torch") is not None, "optional torch unavailable")
+    def test_frozen_local_encoder_head_train_without_real_model(self):
+        """Synthetic backend smoke test: NOT evidence about any candidate weights."""
+        import sys
+        from types import ModuleType, SimpleNamespace
+        from unittest.mock import patch
+        import torch
+        import model_runner
+
+        class Tokenizer:
+            def __call__(self, text, return_tensors, truncation, max_length=None):
+                vals = [1] + [2 + (ord(c) % 90) for c in text]
+                if truncation:
+                    vals = vals[:max_length]
+                ids = torch.tensor([vals], dtype=torch.long)
+                return {"input_ids": ids, "attention_mask": torch.ones_like(ids)}
+
+        class Model(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.embed = torch.nn.Embedding(128, 16)
+
+            def forward(self, input_ids, attention_mask):
+                return SimpleNamespace(last_hidden_state=self.embed(input_ids))
+
+        hf = ModuleType("transformers")
+        hf.AutoTokenizer = SimpleNamespace(from_pretrained=lambda *args, **kw: Tokenizer())
+        hf.AutoModel = SimpleNamespace(from_pretrained=lambda *args, **kw: Model())
+        with tempfile.TemporaryDirectory() as root:
+            snap = Path(root, "model")
+            snap.mkdir()
+            (snap / "config.json").write_text('{"model_type":"mock"}')
+            dataset_path = Path(root, "dataset.jsonl")
+            output_path = Path(root, "pred.jsonl")
+            rows = []
+            for split, count in (("train", 8), ("calibration", 4), ("held_out", 4),
+                                 ("future_1", 2), ("future_2", 2), ("ood", 2)):
+                for i in range(count):
+                    rows.append(dict(sample_id=f"{split}-{i}", source_group=f"g-{split}-{i}",
+                                     episode_id=f"e-{split}-{i}", split=split,
+                                     language="zh" if i % 2 else "en", label=i % 2,
+                                     state="shared state", question=f"question {i}",
+                                     options=["yes", "no"], scope="same-approved-scope"))
+            dataset_path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+            args = ["model_runner.py", "--dataset", str(dataset_path), "--snapshot", str(snap),
+                    "--expected-snapshot-digest", model_runner.snapshot_digest(snap),
+                    "--model-key", "mmbert_small", "--representation", "cross_attention",
+                    "--head", "linear", "--budget", "2048", "--shots-per-class", "2",
+                    "--train-steps", "3", "--output", str(output_path)]
+            with patch.dict(sys.modules, {"transformers": hf}), patch.object(sys, "argv", args):
+                model_runner.main()
+            predictions = list(load_jsonl(output_path))
+            self.assertEqual(len(predictions), 10)
+            self.assertTrue(all("external_ndu_utility" not in r for r in predictions))
+            self.assertTrue(all(r["head_parameters"] <= 2048 for r in predictions))
+            self.assertTrue(all(abs(sum(r["probabilities"]) - 1) < 1e-6 for r in predictions))
+            self.assertTrue(all(r["backend_kind"] == "offline_hf_shadow" for r in predictions))
 
 if __name__ == "__main__":
     unittest.main()
