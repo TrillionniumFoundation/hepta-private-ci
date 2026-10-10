@@ -9,6 +9,7 @@ import math
 import os
 import platform
 import statistics
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -39,7 +40,8 @@ def require(ok, message):
 
 
 def is_sha(value, length=64):
-    return isinstance(value, str) and len(value) == length and all(c in "0123456789abcdef" for c in value)
+    return (isinstance(value, str) and len(value) == length and
+            any(c != "0" for c in value) and all(c in "0123456789abcdef" for c in value))
 
 
 def sha_file(path):
@@ -76,6 +78,14 @@ def write_new(path, data):
 def read_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+def verify_checkout(expected_sha):
+    result = subprocess.run(["git", "rev-parse", "HEAD"],
+                            cwd=Path(__file__).resolve().parents[1],
+                            capture_output=True, text=True, check=False)
+    require(result.returncode == 0 and result.stdout.strip() == expected_sha,
+            "source checkout differs from frozen manifest")
 
 
 def load_inputs(manifest_file, dataset_file):
@@ -221,6 +231,8 @@ def run_laya(manifest, rows, arm, artifact_dir, weights_file, device, sdk_digest
         observations.append({"id": row["id"], "split": row["split"],
                              "probabilities": p, "latency_ms": elapsed,
                              "input_tokens": result["usage"]["input_tokens"]})
+    require(sha_tree(root) == model["artifact_tree_sha256"],
+            "model artifact was mutated during execution")
     return nparams, model["weights_sha256"], observations, {"torch": torch.__version__,
         "sdk_tree_sha256": sdk_digest, "artifact_tree_sha256": model["artifact_tree_sha256"],
         "weights_file": str(weight), "native_context": native_context, "native_head_budget": native_head,
@@ -468,6 +480,7 @@ def main():
     args = parser.parse_args()
     try:
         manifest, rows = load_inputs(args.manifest, args.dataset)
+        verify_checkout(manifest["source_sha"])
         if args.mode == "compare":
             require(args.baseline_sha256 is not None, "baseline sha required")
             pairs = [a.split("=", 1) for a in args.receipt]
