@@ -129,13 +129,16 @@ def write_memory(sources, model_dir, output, *, source_sha, stage_sha):
     return ready
 
 
-def summarize(rows, expected):
+def summarize(rows, expected, *, policy_enabled=False):
+    arms = dict(ARMS)
+    if policy_enabled:
+        arms.update(policy_initial=("policy_initial", "base"), policy=("policy", "base"))
     if (
         not expected
         or len(set(expected)) != len(expected)
-        or len(rows) != len(expected) * len(ARMS)
+        or len(rows) != len(expected) * len(arms)
         or {(r["question_id"], r["arm"]) for r in rows}
-        != {(q, a) for q in expected for a in ARMS}
+        != {(q, a) for q in expected for a in arms}
     ):
         raise ValueError("complete paired census required")
     profiles, by_query = set(), {}
@@ -146,6 +149,8 @@ def summarize(rows, expected):
         if row["status"] == "succeeded":
             receipt = row["receipt"]
             profiles.add((receipt["reader_identity"], receipt["reader_profile"]))
+            if type(receipt.get("knowledge_module_enabled")) is not bool or receipt["knowledge_module_enabled"] != (arms[row["arm"]][1] == "memory"):
+                raise ValueError("wrong adapter mode for declared arm")
             if type(row["strict_task_success"]) is not bool:
                 raise ValueError("unscored successful task")
     if len(profiles) != 1:
@@ -163,7 +168,7 @@ def summarize(rows, expected):
             ):
                 raise ValueError("parameter contrast changed actual prompt")
     result = {}
-    for arm in ARMS:
+    for arm in arms:
         attempts = [r for r in rows if r["arm"] == arm]
         good = [r for r in attempts if r["status"] == "succeeded"]
         result[arm] = dict(
@@ -195,12 +200,16 @@ def summarize(rows, expected):
             - result["hybrid"]["strict_task_successes"]
         )
         / len(expected),
-        learned_policy_control="not implemented in this experiment",
+        learned_policy_control="source-supervised" if policy_enabled else "not implemented in this experiment",
+        learned_policy_minus_initial=(
+            (result["policy"]["strict_task_successes"] - result["policy_initial"]["strict_task_successes"]) / len(expected)
+        ) if policy_enabled else None,
     )
 
 
 def read_memory(
-    plan_dir, inputs, model_dir, snapshot, output, *, plan_sha, stage_sha, ready_sha
+    plan_dir, inputs, model_dir, snapshot, output, *, plan_sha, stage_sha, ready_sha,
+    policy_path=None, policy_sha=None
 ):
     from event_reader_experiment import preflight
     from native_citation import capture_native
@@ -214,6 +223,9 @@ def read_memory(
         or ready["task_payload_consumed"] is not False
     ):
         raise ValueError("uncommitted or task-conditioned writer")
+    if (policy_path is None) != (policy_sha is None):
+        raise ValueError("policy file and external pin must be paired")
+    policy = read(policy_path, policy_sha) if policy_path is not None else None
     documents = original_documents(inputs / "sources.json", ready["source_sha"])
     if digest([asdict(d) for d in documents]) != ready["source_documents_digest"]:
         raise ValueError("written source view drift")
@@ -247,6 +259,14 @@ def read_memory(
         != ready["source_documents_digest"]
     ):
         raise ValueError("retrieval and module learned different source views")
+    arms = dict(ARMS)
+    if policy is not None:
+        from experience_policy import INITIAL, choose, lookup_from_question, validate_policy
+        from event_projection import EventProjection
+
+        weights = validate_policy(policy, documents, reader_identity=reader.identity,
+            test_scopes={c["query"]["scope"] for c in locked["cases"]}, revoked=set())
+        arms.update(policy_initial=("policy_initial", "base"), policy=("policy", "base"))
     write(
         output / "execution.json",
         dict(
@@ -259,6 +279,9 @@ def read_memory(
             model_staging=stage,
             separate_write_process=True,
             prior_public_census_exposure=True,
+            learned_policy_sha=policy_sha,
+            learned_policy_training=policy,
+            arms=arms,
             production_accepted=False,
         ),
     )
@@ -266,8 +289,17 @@ def read_memory(
     with (output / "raw-answers.jsonl").open("x", encoding="utf-8") as journal:
         for case in locked["cases"]:
             query = Question(**case["query"])
-            for arm, (condition, mode) in ARMS.items():
-                selected = case["controls"][condition]["selected"]
+            controls = dict(case["controls"])
+            if policy is not None:
+                projection = EventProjection(tuple(d for d in documents if d.scope == query.scope))
+                lookup = lookup_from_question(query)
+                for condition, parameters in (("policy_initial", INITIAL), ("policy", weights)):
+                    selection_start = time.perf_counter()
+                    selected, detail = choose(projection, lookup, case["candidate_ids"], parameters, revoked=set())
+                    detail["seconds"] = time.perf_counter() - selection_start
+                    controls[condition] = dict(selected=selected, selection=detail)
+            for arm, (condition, mode) in arms.items():
+                selected = controls[condition]["selected"]
                 spans = tuple(
                     EvidenceSpan(
                         d.identity,
@@ -291,6 +323,7 @@ def read_memory(
                     kind=case["kind"],
                     selected=list(selected),
                     candidate_digest=case["candidate_digest"],
+                    selection_receipt=controls[condition].get("selection", {}),
                 )
                 try:
                     answer, receipt = reader.answer_with_memory(
@@ -372,11 +405,13 @@ def read_memory(
     if frozen_digest(reader.model) != reader.base_digest:
         raise ValueError("evaluation changed the base")
     write(output / "scored-answers.json", rows)
-    result = summarize(rows, [c["query"]["identity"] for c in locked["cases"]])
+    result = summarize(rows, [c["query"]["identity"] for c in locked["cases"]],
+                       policy_enabled=policy is not None)
     result.update(
         source_commit=commit,
         writer_source=ready["writer_source"],
         training=ready["training"],
+        learned_policy_training=policy,
         write_seconds=ready["write_seconds"],
         original_source_bytes=ready["retained_original_source_bytes"],
         snapshot_bytes=ready["retained_snapshot_bytes_before_marker"],
@@ -415,6 +450,8 @@ if __name__ == "__main__":
         p.add_argument(name, type=Path)
     for name in ("plan-sha", "stage-sha", "ready-sha"):
         p.add_argument("--" + name, required=True)
+    p.add_argument("--policy", type=Path)
+    p.add_argument("--policy-sha")
     a = parser.parse_args()
     if a.mode == "write":
         write_memory(
@@ -430,4 +467,6 @@ if __name__ == "__main__":
             plan_sha=a.plan_sha,
             stage_sha=a.stage_sha,
             ready_sha=a.ready_sha,
+            policy_path=a.policy,
+            policy_sha=a.policy_sha,
         )
