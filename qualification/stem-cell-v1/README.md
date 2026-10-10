@@ -48,7 +48,7 @@ python3 qualification/stem-cell-v1/scale.py analyze \
   --output /scratch/scale-diagnostic.json
 ```
 
-The trace parser rejects incomplete, duplicate, stale-generation, cross-scope, orphan and falsely counted batches. It reports independent cold-encoder and cache-hit-Head p50/p95/p99, queue p99, CPU, RSS, WAL fsync and recovery checks. Such JSON remains an **unverified offline trace**: it cannot authenticate the owner or attest Rust production execution. Longitudinal retention and negative transfer need additional real, independently observed future-window receipts; they are left `null` instead of invented.
+The trace parser rejects incomplete, duplicate, stale-generation, cross-scope, orphan and falsely counted batches. The native trace must record `enqueued_us`, `start_us` and `end_us` using **one actual worker monotonic clock**; the generated `submitted_at_us` values are only workload scheduling offsets, not real timestamps. It reports cold-encoder and cache-hit-Head **end-to-end** p50/p95/p99 plus execution p99 and queue p99 separately, request-attributed CPU (not an independently measured process CPU total), RSS, WAL fsync and recovery checks. Such JSON remains an **unverified offline trace**: it cannot authenticate the owner or attest Rust production execution. Longitudinal retention and negative transfer need additional real, independently observed future-window receipts; they are left `null` instead of invented.
 
 ## Independent evaluation, NDU, acceptance
 
