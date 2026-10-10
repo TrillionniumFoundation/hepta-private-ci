@@ -43,7 +43,7 @@ impl SharedFeatureIdentityV2 {
                 self.input_digest,
             ]
             .iter()
-            .any(Digest32::is_zero)
+            .any(|digest| digest.is_zero())
         {
             return Err(SharedFeatureErrorV2::InvalidIdentity);
         }
