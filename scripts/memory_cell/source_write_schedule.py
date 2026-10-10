@@ -44,7 +44,9 @@ def schedule(prepared, groups, *, maximum_steps, token_ceiling):
             not 1 <= len(ids) <= 2112
             or len(ids) != len(labels)
             or any(type(i) is not int or not 0 <= i < 2**31 for i in ids)
-            or any(type(v) is not int or v not in (-100, i) for i, v in zip(ids, labels))
+            or any(
+                type(v) is not int or v not in (-100, i) for i, v in zip(ids, labels)
+            )
             or not any(v != -100 for v in labels)
         ):
             raise ValueError("complete finite-token completion example required")
@@ -108,7 +110,8 @@ def preflight(sources, output, *, source_sha):
 
     started = time.perf_counter()
     documents = tuple(
-        Document(**(d | {"assets": tuple(d["assets"])})) for d in read(sources, source_sha)
+        Document(**(d | {"assets": tuple(d["assets"])}))
+        for d in read(sources, source_sha)
     )
     examples, dispositions = source_examples(
         documents,
@@ -119,14 +122,22 @@ def preflight(sources, output, *, source_sha):
     output.mkdir()
     repository, revision = MODELS["qwen-3b"]
     entries = catalogue(
-        HfApi().model_info(repository, revision=revision, files_metadata=True, token=False),
+        HfApi().model_info(
+            repository, revision=revision, files_metadata=True, token=False
+        ),
         revision,
     )
     names = {"tokenizer.json", "tokenizer_config.json", "vocab.json", "merges.txt"}
     selected = {n: value for n, value in entries.items() if n in names}
-    if set(selected) != names or sum(v["bytes"] for v in selected.values()) > 32 * 1024**2:
+    if (
+        set(selected) != names
+        or sum(v["bytes"] for v in selected.values()) > 32 * 1024**2
+    ):
         raise ValueError("complete bounded pinned tokenizer required")
-    write(output / "publisher.json", dict(repository=repository, revision=revision, files=selected))
+    write(
+        output / "publisher.json",
+        dict(repository=repository, revision=revision, files=selected),
+    )
     snapshot_download(
         repository,
         revision=revision,
@@ -139,7 +150,9 @@ def preflight(sources, output, *, source_sha):
     tokenizer = AutoTokenizer.from_pretrained(
         output / "tokenizer", local_files_only=True, trust_remote_code=False
     )
-    _, plan = prepare(tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING)
+    _, plan = prepare(
+        tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING
+    )
     result = dict(
         schema="hepta.source-write.preflight.v1",
         writer_profile=PROFILE,

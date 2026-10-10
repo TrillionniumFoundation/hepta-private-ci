@@ -92,7 +92,9 @@ class SourceTrainingTests(unittest.TestCase):
             q = Question(**item["query"])
             prompt = render(self.reader.tokenizer, q, [], [])
             prepared.append(
-                completion_ids(self.reader.tokenizer, prompt, item["target"], maximum=2112)
+                completion_ids(
+                    self.reader.tokenizer, prompt, item["target"], maximum=2112
+                )
             )
             groups.setdefault(q.scope, []).append(len(prepared) - 1)
         scopes = sorted(groups)
@@ -125,18 +127,32 @@ class SourceTrainingTests(unittest.TestCase):
 
     def test_progress_follows_actual_updates_not_planned_steps(self):
         result, log = self.train()
-        self.assertEqual([r["event"] for r in log], ["source-write-plan", "source-write-progress"])
+        self.assertEqual(
+            [r["event"] for r in log], ["source-write-plan", "source-write-progress"]
+        )
         progress = log[-1]
         self.assertEqual(progress["completed_steps"], result["steps"])
         self.assertEqual(progress["input_tokens"], result["input_tokens"])
         self.assertEqual(progress["supervised_tokens"], result["supervised_tokens"])
         self.assertEqual(progress["schedule_sha256"], result["schedule_sha256"])
         self.assertEqual(result["write_schedule"]["planned_steps"], 4)
-        self.assertTrue(all(not p.requires_grad and p.grad is None for p in self.reader.model.parameters()))
+        self.assertTrue(
+            all(
+                not p.requires_grad and p.grad is None
+                for p in self.reader.model.parameters()
+            )
+        )
 
     def test_failed_forward_has_no_completed_progress_and_quarantines(self):
         output = io.StringIO()
-        with redirect_stdout(output), patch.object(self.reader.model, "forward", side_effect=RuntimeError("fixture failure")):
+        with (
+            redirect_stdout(output),
+            patch.object(
+                self.reader.model,
+                "forward",
+                side_effect=RuntimeError("fixture failure"),
+            ),
+        ):
             with self.assertRaises(RuntimeError):
                 self.reader.fit_sources(
                     self.sources, revision=2, allowed_roots=self.roots, revoked=set()
@@ -146,7 +162,12 @@ class SourceTrainingTests(unittest.TestCase):
         self.assertEqual(self.reader.roots, set())
         log = [json.loads(line) for line in output.getvalue().splitlines()]
         self.assertEqual([r["event"] for r in log], ["source-write-plan"])
-        self.assertTrue(all(not p.requires_grad and p.grad is None for p in self.reader.model.parameters()))
+        self.assertTrue(
+            all(
+                not p.requires_grad and p.grad is None
+                for p in self.reader.model.parameters()
+            )
+        )
 
 
 if __name__ == "__main__":
