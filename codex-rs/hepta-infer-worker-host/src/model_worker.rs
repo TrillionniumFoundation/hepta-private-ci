@@ -137,6 +137,8 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    FeatureBatchLimit,
+    FeatureBatchMismatch,
 }
 
 impl fmt::Display for Error {
@@ -603,6 +605,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
+        project_neuron_feature_receipt(request_copy, observed)
+    }
+}
+
+/// Project an already verified native worker observation into the canonical
+/// inference-control model receipt without executing the backend again.
+fn project_neuron_feature_receipt(
+    request_copy: NeuronFeatureRequest,
+    observed: NeuronFeatureExecutionObservation,
+) -> Result<NeuronFeatureReceiptV1, Error> {
         let generation =
             Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
         let control_request = NeuronFeatureRequestV1 {
@@ -650,7 +662,6 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             },
         )
         .map_err(|_| Error::FeatureContract)
-    }
 }
 
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {
@@ -711,6 +722,15 @@ fn validate_neuron_feature_output(
     validate_digest(&value.head_digest, "head")?;
     Ok(())
 }
+
+#[path = "model_worker_batch.rs"]
+mod batch;
+
+pub use batch::DriverNeuronBackendBatch;
+pub use batch::DriverNeuronBatchMember;
+pub use batch::NeuronBackendBatchDriver;
+pub use batch::NeuronBackendBatchReceipt;
+pub use batch::canonical_neuron_batch_digest;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
