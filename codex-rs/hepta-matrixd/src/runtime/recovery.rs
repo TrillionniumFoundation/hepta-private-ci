@@ -88,13 +88,21 @@ impl<B: MatrixRuntimeBridge> MatrixRuntime<B> {
                     } if client_id == &dispatch.client_user_message_id => Some(content),
                     _ => None,
                 });
-                let exact_input = exact_user_items.next();
-                if turn.items_view != TurnItemsView::Full
-                    || exact_input.is_none()
-                    || exact_user_items.next().is_some()
-                    || crate::bridge_user_input_payload_sha256(
-                        exact_input.expect("checked user item"),
-                    )? != crate::bridge_user_input_payload_sha256(&expected_input)?
+                if turn.items_view != TurnItemsView::Full {
+                    return Err(MatrixRuntimeError::Protocol(
+                        "persisted Matrix terminal turn lacks full exact client/input identity"
+                            .to_string(),
+                    ));
+                }
+                let exact_input = exact_user_items.next().ok_or_else(|| {
+                    MatrixRuntimeError::Protocol(
+                        "persisted Matrix terminal turn lacks full exact client/input identity"
+                            .to_string(),
+                    )
+                })?;
+                if exact_user_items.next().is_some()
+                    || crate::bridge_user_input_payload_sha256(exact_input)?
+                        != crate::bridge_user_input_payload_sha256(&expected_input)?
                 {
                     return Err(MatrixRuntimeError::Protocol(
                         "persisted Matrix terminal turn lacks full exact client/input identity"
