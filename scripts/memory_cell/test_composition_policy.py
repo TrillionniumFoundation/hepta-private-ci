@@ -57,7 +57,13 @@ class CompositionPolicyTests(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             readiness(rows[:-1], questions, "a" * 64, "b" * 64)
+        rows[0]["f1"] = None
+        with self.assertRaises(ValueError):
+            readiness(rows, questions, "a" * 64, "b" * 64)
+        rows[0]["f1"] = 1.0
         rows[0]["status"] = "failed"
+        with self.assertRaises(ValueError):
+            readiness(rows, questions, "a" * 64, "b" * 64)
         rows[0]["f1"] = None
         self.assertFalse(
             readiness(rows, questions, "a" * 64, "b" * 64)["development_ready"]
