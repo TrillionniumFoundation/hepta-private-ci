@@ -88,10 +88,14 @@ fn binding() -> CellSplitFinalizationBindingV1 {
     CellSplitFinalizationBindingV1 {
         operation_id: plan().operation_id,
         domain_id: plan().domain_id,
+        source_writer: plan().source_writer,
+        target_writer: plan().target_writer,
         old_generation: gen(7),
         new_generation: gen(8),
         authority_epoch: 11,
         migration_plan_digest: plan().migration_plan_digest,
+        schema_digest: plan().schema_digest,
+        rollback_predecessor_digest: plan().rollback_predecessor_digest,
         cns_cutover_receipt_digest: digest("original signed cns cutover"),
         successor_route_digest: digest("live published successor"),
         final_use_binding_digest: digest("independently verified NDU selection"),
@@ -275,4 +279,41 @@ fn independent_writer_lock_blocks_second_owner() {
         ),
         Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Busy))
     ));
+}
+
+
+#[test]
+fn schema_rollback_and_writer_identity_are_frozen_for_retirement() {
+    let root = tempfile::tempdir().expect("dir");
+    let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
+    let changed_fields = [
+        {
+            let mut alternate = binding();
+            alternate.schema_digest = digest("different checkpoint schema");
+            alternate
+        },
+        {
+            let mut alternate = binding();
+            alternate.rollback_predecessor_digest = digest("different rollback lineage");
+            alternate
+        },
+        {
+            let mut alternate = binding();
+            alternate.source_writer = id("untrusted-old-writer");
+            alternate
+        },
+        {
+            let mut alternate = binding();
+            alternate.target_writer = id("untrusted-successor");
+            alternate
+        },
+    ];
+    for alternate in changed_fields {
+        assert!(matches!(
+            CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+                file(&root), &minimum, alternate, LiveAuthority::allowed()
+            ),
+            Err(CellSplitFinalizationErrorV1::InvalidBinding)
+        ));
+    }
 }
