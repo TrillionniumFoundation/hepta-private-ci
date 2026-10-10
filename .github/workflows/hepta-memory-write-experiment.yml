@@ -2,11 +2,11 @@ name: MemoryCell source-only write and fresh task reads
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/experience_*.py'
-      - 'scripts/memory_cell/test_experience_*.py'
-      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_SOURCE_WRITE.md'
-      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_READ_POLICY.md'
-      - '.github/workflows/hepta-memory-write-experiment.yml'
+      - "scripts/memory_cell/experience_*.py"
+      - "scripts/memory_cell/test_experience_*.py"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_SOURCE_WRITE.md"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_READ_POLICY.md"
+      - ".github/workflows/hepta-memory-write-experiment.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -55,10 +55,10 @@ jobs:
     timeout-minutes: 90
     env:
       PYTHONPATH: scripts/memory_cell
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-      TOKENIZERS_PARALLELISM: 'false'
-      OMP_NUM_THREADS: '2'
-      MKL_NUM_THREADS: '2'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
       HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
       PLAN_SHA: 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897
     steps:
@@ -118,8 +118,8 @@ jobs:
           cp /tmp/experience-model/stage.json /tmp/experience-model/inventory.json /tmp/experience-model/publisher.json /tmp/experience-result/
       - name: Write observed source facts with no test-plan argument
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log
@@ -142,8 +142,8 @@ jobs:
           /tmp/experience-python/bin/python scripts/memory_cell/experience_policy.py /tmp/experience-input/observations/sources.json /tmp/experience-result/policy-scopes.json /tmp/experience-result/read-policy.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --scopes-sha "$(sha256sum /tmp/experience-result/policy-scopes.json | cut -d ' ' -f1)" --reader-identity "$BASE_ID"
       - name: New process reloads both committed modules before task exposure
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/read-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py read /tmp/experience-input/plan /tmp/experience-input/observations /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/tasks --plan-sha "$PLAN_SHA" --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --policy /tmp/experience-result/read-policy.json --policy-sha "$(sha256sum /tmp/experience-result/read-policy.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/read.log
