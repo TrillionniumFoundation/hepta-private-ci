@@ -56,6 +56,11 @@ pub struct StemHeadBindingV1 {
     pub head_model_id: StableId,
     pub head_digest: Digest32,
     pub head_weights_digest: Digest32,
+    pub required_stem_model_id: StableId,
+    pub required_stem_generation: Generation,
+    pub required_encoder_digest: Digest32,
+    pub required_projection_digest: Digest32,
+    pub required_feature_width: usize,
     pub expected_output_width: usize,
 }
 
@@ -79,6 +84,7 @@ pub enum StemFeatureBindingError {
     InvalidFeatureValue,
     FeatureDigestMismatch,
     InvalidHead,
+    IncompatibleHead,
     InvalidNeuronRequest,
 }
 
@@ -127,6 +133,8 @@ pub fn bind_stem_feature_request_v1(
         source.feature_digest,
         selected_head.head_digest,
         selected_head.head_weights_digest,
+        selected_head.required_encoder_digest,
+        selected_head.required_projection_digest,
     ] {
         if digest.is_zero() {
             return Err(StemFeatureBindingError::EmptyDigest);
@@ -159,6 +167,14 @@ pub fn bind_stem_feature_request_v1(
     }
     if selected_head.expected_output_width == 0 || selected_head.expected_output_width > 512 {
         return Err(StemFeatureBindingError::InvalidHead);
+    }
+    if selected_head.required_stem_model_id != source.stem_model_id
+        || selected_head.required_stem_generation != source.stem_generation
+        || selected_head.required_encoder_digest != source.stem_weights_digest
+        || selected_head.required_projection_digest != source.projection_digest
+        || selected_head.required_feature_width != source.feature_width
+    {
+        return Err(StemFeatureBindingError::IncompatibleHead);
     }
     let request = NeuronFeatureRequestV1 {
         request_id: selected_head.request_id,
@@ -251,6 +267,11 @@ mod tests {
             head_model_id: id("cell-head-1"),
             head_digest: digest(b"head-config"),
             head_weights_digest: digest(b"head-weights"),
+            required_stem_model_id: id("jina-v5-text-nano"),
+            required_stem_generation: generation(7),
+            required_encoder_digest: digest(b"stem"),
+            required_projection_digest: digest(b"matryoshka256-q24"),
+            required_feature_width: features.len(),
             expected_output_width: 5,
         };
         (source, access, selected, features)
@@ -308,6 +329,28 @@ mod tests {
         assert_eq!(
             bind_stem_feature_request_v1(&source, &access, head, &values),
             Err(StemFeatureBindingError::Revoked)
+        );
+    }
+
+    #[test]
+    fn head_cannot_rebind_to_another_stem_or_feature_projection() {
+        let (source, access, mut selected, values) = fixture();
+        selected.required_stem_model_id = id("unrelated-encoder");
+        assert_eq!(
+            bind_stem_feature_request_v1(&source, &access, selected.clone(), &values),
+            Err(StemFeatureBindingError::IncompatibleHead)
+        );
+        selected.required_stem_model_id = id("jina-v5-text-nano");
+        selected.required_projection_digest = digest(b"other-projection");
+        assert_eq!(
+            bind_stem_feature_request_v1(&source, &access, selected.clone(), &values),
+            Err(StemFeatureBindingError::IncompatibleHead)
+        );
+        selected.required_projection_digest = digest(b"matryoshka256-q24");
+        selected.required_feature_width = 512;
+        assert_eq!(
+            bind_stem_feature_request_v1(&source, &access, selected, &values),
+            Err(StemFeatureBindingError::IncompatibleHead)
         );
     }
 
