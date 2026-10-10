@@ -17,7 +17,7 @@ def synthetic_matrix():
                 "no_split": 1.0,
                 "logical_split": 1.2,
                 "optimized_logical_split": 1.5,
-                "physical_split": 0.9,
+                "physical_split": 1.1,
             }[mode]
             work = 1000
             optimized = mode == "optimized_logical_split"
@@ -57,6 +57,17 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         self.assertTrue(result["comparative_gate_passed"])
         self.assertEqual(len(result["comparisons"]), 4)
         self.assertFalse(result["production_evidence_verified"])
+        self.assertFalse(result["production_activation_authorized"])
+
+    def test_physical_split_must_not_regress_against_no_change(self):
+        packet = synthetic_matrix()
+        candidate = next(row for row in packet["runs"]
+                         if row["scopes"] == 4096 and row["mode"] == "physical_split")
+        candidate["elapsed_seconds"] = 12
+        result = analyze(packet)
+        self.assertFalse(result["comparative_gate_passed"])
+        self.assertTrue(any("4096: physical throughput" in reason
+                            for reason in result["violations"]))
         self.assertFalse(result["production_activation_authorized"])
 
     def test_reject_missing_and_duplicate_runs(self):
