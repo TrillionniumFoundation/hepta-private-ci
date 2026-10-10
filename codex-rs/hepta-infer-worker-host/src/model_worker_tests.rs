@@ -129,6 +129,28 @@ fn request() -> WorkerRequest {
 }
 
 #[test]
+fn duplicate_model_digest_cannot_create_alias_to_another_live_handle() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut alias = manifest();
+    alias.model_id = "another-model-id".to_string();
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
+    assert!(worker.model_matches_digest(
+        "model.1",
+        Digest32::from_str(&manifest().model_digest).unwrap()
+    ));
+    assert!(!worker.model_matches_digest(
+        "another-model-id",
+        Digest32::from_str(&manifest().model_digest).unwrap()
+    ));
+}
+
+#[test]
 fn loads_runs_and_unloads_exact_model_tuple() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
