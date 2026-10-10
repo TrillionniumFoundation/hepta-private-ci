@@ -20,7 +20,10 @@ where
     W: AnchorWitnessStore,
     M: NeuronModelPort,
 {
-    // Legacy composition has no independently verified NDU read or signed\n    // one-shot final-use grant. It cannot invoke a model.\n    let _ = (runtime, model, tick);\n    Err(NeuronRuntimeError::InvalidInput)
+    // This legacy entry has no independently verified NDU read or signed
+    // one-shot final-use grant. Never execute a model through this path.
+    let _ = (runtime, model, tick);
+    Err(NeuronRuntimeError::InvalidInput)
 }
 
 #[cfg(test)]
