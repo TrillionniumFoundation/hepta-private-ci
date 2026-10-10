@@ -109,6 +109,14 @@ impl DurablePhaseMetricSinkV1 {
 }
 
 impl PhaseMetricSinkV1 for DurablePhaseMetricSinkV1 {
+    fn healthy(&self) -> bool {
+        DurablePhaseMetricSinkV1::healthy(self)
+    }
+
+    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        DurablePhaseMetricSinkV1::flush(self)
+    }
+
     fn record(&self, event: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1> {
         if !self.healthy() || event.scope_digest.is_zero() || event.operation_digest.is_zero() {
             return Err(PhaseMetricSinkErrorV1::Unavailable);

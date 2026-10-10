@@ -31,4 +31,8 @@ pub enum PhaseMetricSinkErrorV1 {
 /// observations through this deliberately non-authorizing port.
 pub trait PhaseMetricSinkV1: std::fmt::Debug + Send + Sync {
     fn record(&self, sample: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1>;
+    /// Healthy means no observed loss, failed commit, or corrupt writer state.
+    fn healthy(&self) -> bool;
+    /// Explicit durable flush barrier for external qualification/export only.
+    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1>;
 }

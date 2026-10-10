@@ -206,7 +206,17 @@ impl CellSplitRouteControllerV1 {
     }
 
     pub fn production_metrics_ready(&self) -> bool {
-        self.metrics.is_some() && self.failed_metrics.load(Ordering::Acquire) == 0
+        self.metrics.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metrics else { return false; };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
     }
 
     fn report_cutover(

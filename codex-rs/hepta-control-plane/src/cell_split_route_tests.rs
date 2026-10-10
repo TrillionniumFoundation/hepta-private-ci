@@ -61,6 +61,8 @@ use crate::encode_compiled_body_graph_v2;
 struct CapturedCnsMetrics(Mutex<Vec<PhaseMetricEventV1>>);
 
 impl PhaseMetricSinkV1 for CapturedCnsMetrics {
+    fn healthy(&self) -> bool { true }
+    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> { Ok(()) }
     fn record(&self, event: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1> {
         self.0.lock().unwrap().push(event);
         Ok(())
@@ -411,6 +413,7 @@ fn cutover_fences_parent_and_emits_child_dispatch_receipt() {
     assert_eq!(observed[0].phase, PhaseMetricKindV1::Cns);
     assert!(observed[0].succeeded);
     drop(observed);
+    assert!(controller.flush_production_metrics());
     let fence = controller.route_fence_receipt().cloned().unwrap();
     assert_eq!(fence.parent_route_digest, cns_route_digest_v1(&old_route));
     assert_eq!(

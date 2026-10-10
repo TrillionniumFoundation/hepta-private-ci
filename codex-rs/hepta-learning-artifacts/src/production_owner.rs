@@ -402,7 +402,18 @@ impl ArtifactCasOwnerV1 {
     }
 
     pub fn production_metrics_ready(&self) -> bool {
-        self.metrics.is_some() && self.failed_metric_records.load(Ordering::Acquire) == 0
+        self.metrics.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metric_records.load(Ordering::Acquire) == 0
+    }
+
+    /// External qualification must cross the Evidence fsync barrier.
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metrics else { return false; };
+        if sink.flush().is_err() {
+            self.failed_metric_records.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
     }
 
     fn timed<T, E>(
@@ -1145,6 +1156,8 @@ mod tests {
     struct CapturedOwnerMetrics(std::sync::Mutex<Vec<PhaseMetricEventV1>>);
 
     impl PhaseMetricSinkV1 for CapturedOwnerMetrics {
+        fn healthy(&self) -> bool { true }
+        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> { Ok(()) }
         fn record(&self, event: PhaseMetricEventV1) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
             self.0.lock().unwrap().push(event);
             Ok(())
@@ -1289,6 +1302,7 @@ mod tests {
         assert_eq!(captured.iter().filter(|e| e.phase == PhaseMetricKindV1::Signature).count(), 3);
         assert!(captured.iter().all(|e| e.succeeded));
         drop(captured);
+        assert!(owner.flush_production_metrics());
         std::fs::remove_dir_all(root_path).expect("cleanup");
     }
 
