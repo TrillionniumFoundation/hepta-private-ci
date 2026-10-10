@@ -1428,9 +1428,13 @@ where
                 journal.retire(split)?;
                 owner.commit(&journal)?;
             }
-            Ok(retirement_digest) => {
-                journal.rollback(split, retirement_digest)?;
-                owner.commit(&journal)?;
+            Ok(_) => {
+                // A mismatched receipt does not prove that rollback ran.
+                // Leave the last witnessed state Retained and require
+                // external reconciliation; never invent a RolledBack receipt.
+                return Err(CellSplitAutomationErrorV1::Binding(
+                    "retirement tombstone receipt",
+                ));
             }
             Err(error) => {
                 journal.rollback(split, error_digest("retire", &error))?;
@@ -1889,11 +1893,12 @@ mod tests {
                 Ok(digest(34))
             }
         }
-        let outcome = run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut WrongRetirement)
-            .expect("retirement denial");
-        assert_eq!(outcome.state, CellSplitLifecycleStateV1::RolledBack);
+        assert!(matches!(
+            run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut WrongRetirement),
+            Err(CellSplitAutomationErrorV1::Binding("retirement tombstone receipt"))
+        ));
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
-        assert_ne!(journal.current_state, CellSplitLifecycleStateV1::Retired);
+        assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
     }
 
     #[test]
