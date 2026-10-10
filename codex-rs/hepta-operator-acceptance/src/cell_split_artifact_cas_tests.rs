@@ -137,13 +137,14 @@ fn committed_artifact_restarts_and_refuses_changed_parent_or_plan() {
     let mut reopened = fixture.owner(authority.clone());
     let committed = reopened.read_committed(&request).unwrap().expect("original bytes");
     assert!(reopened.verify_current(&request, &committed).unwrap());
+    fs::write(&fixture.parent, b"replacement parent artifact").expect("drift");
+    assert!(reopened.verify_current(&request, &committed).is_err());
+    drop(reopened);
     let mut different = plan();
     different.child_generation += 1;
     assert!(CellSplitArtifactCasOwnerV1::open(
         &fixture.store, &fixture.parent, &fixture.child, different, authority
     ).is_err());
-    fs::write(&fixture.parent, b"replacement parent artifact").expect("drift");
-    assert!(reopened.verify_current(&request, &committed).is_err());
 }
 
 #[test]
@@ -204,4 +205,26 @@ fn real_cas_socket_receipt_requires_fresh_state_even_after_backend_restart() {
         b"corrupted on external host").expect("external corruption");
     assert!(client.verify_committed(&operation, &signed).is_err());
     server.join().expect("server");
+}
+
+
+#[test]
+fn exclusive_writer_and_torn_object_block_recovery_without_receipt_fabrication() {
+    use std::os::unix::fs::PermissionsExt as _;
+    let fixture = Fixture::new();
+    let authority = ExternalFinalUse(Arc::new(AtomicBool::new(true)));
+    let request = intent(&plan());
+    let mut first = fixture.owner(authority.clone());
+    assert!(CellSplitArtifactCasOwnerV1::open(
+        &fixture.store, &fixture.parent, &fixture.child, plan(), authority.clone()
+    ).is_err(), "two durable writers may not own the same split");
+    fs::write(first.object_path(), b"interrupted earlier copy").expect("torn object");
+    fs::set_permissions(first.object_path(), fs::Permissions::from_mode(0o600))
+        .expect("private but incorrect CAS object");
+    assert!(first.commit_once(&request).is_err());
+    assert!(first.read_committed(&request).expect("read only").is_none());
+    drop(first);
+    let mut restarted = fixture.owner(authority);
+    assert!(restarted.commit_once(&request).is_err());
+    assert!(restarted.read_committed(&request).expect("no positive commit").is_none());
 }
