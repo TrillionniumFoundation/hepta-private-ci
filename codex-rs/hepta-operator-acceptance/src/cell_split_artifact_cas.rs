@@ -29,6 +29,8 @@ use crate::CellSplitDurableEffectBackendV1;
 use crate::CellSplitOwnedEffectV1;
 use crate::durable::canonical_json;
 use crate::durable::secure_canonical_file_path;
+use crate::durable::lock_sidecar;
+use crate::durable::SidecarLock;
 use crate::durable::secure_hash;
 use crate::durable::secure_read;
 use crate::durable::secure_root;
@@ -97,6 +99,7 @@ pub struct CellSplitArtifactCasOwnerV1<A: CellSplitCasFinalUsePortV1> {
     plan: CellSplitExecutionPlanV1,
     plan_digest: String,
     authority: A,
+    _lock: SidecarLock,
 }
 
 impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
@@ -108,6 +111,7 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
         authority: A,
     ) -> Result<Self, CellSplitArtifactCasErrorV1> {
         let root = secure_root(root, "artifact CAS owner root")?;
+        let lock = lock_sidecar(&root)?;
         let parent = secure_canonical_file_path(parent, "parent artifact")?;
         let child_source = secure_canonical_file_path(child_source, "child source artifact")?;
         if parent == child_source || plan.parent_generation == 0 ||
@@ -129,7 +133,7 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
             Err(error) if error.kind() == ErrorKind::NotFound => write_private_new(&path, &expected)?,
             Err(error) => return Err(error.into()),
         }
-        Ok(Self { root, parent, child_source, plan, plan_digest, authority })
+        Ok(Self { root, parent, child_source, plan, plan_digest, authority, _lock: lock })
     }
 
     fn binding(&self, intent: &CellSplitExecutionIntentV1)
