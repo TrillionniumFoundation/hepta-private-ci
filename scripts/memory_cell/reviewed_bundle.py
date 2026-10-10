@@ -240,7 +240,15 @@ if __name__ == "__main__":
         parser.add_argument(name, type=Path)
     for name in ("plan_sha", "reviews_sha", "withdrawals_sha"):
         parser.add_argument("--" + name.replace("_", "-"), required=True)
+    parser.add_argument("--reader", type=Path, help="Frozen model folder; opt-in actual reader diagnostic")
+    parser.add_argument("--inventory", type=Path, help="Pinned model inventory JSON")
+    parser.add_argument("--labels", type=Path, help="Original separate QA labels JSON")
+    parser.add_argument("--labels-sha", help="External SHA-256 pin for the labels file")
     args = parser.parse_args()
+    if any(v is not None for v in (args.reader, args.inventory, args.labels, args.labels_sha)) and not all(
+        v is not None for v in (args.reader, args.inventory, args.labels, args.labels_sha)
+    ):
+        parser.error("diagnostic requires reader, inventory, labels, and labels-sha together")
     plan = strict_read(args.plan, args.plan_sha, 64 * 1024 * 1024)
     reviews = strict_read(args.reviews, args.reviews_sha, MAX_REVIEW_BYTES)
     withdrawal = strict_read(args.withdrawals, args.withdrawals_sha, MAX_REVIEW_BYTES)
@@ -249,7 +257,53 @@ if __name__ == "__main__":
     ):
         raise ValueError("explicit current withdrawal list required")
     projected = augment(plan, reviews, revoked=set(withdrawal))
-    # Existing run_reader consumes this plan; actual token overflow remains unavailable.
+    # Projected conditions preserve ordinary retrieval controls; only capability
+    # cases are sent to the diagnostic. Training, policy selection and promotion
+    # never run in this command, even if every reported QA score is high.
+    if args.reader is not None:
+        from bundle_reader import FrozenBundleReader
+        from bundle_trial import run_reader
+        from composition_evidence import sha, write
+
+        strict_read(args.labels, args.labels_sha, 64 * 1024 * 1024)
+        if not args.inventory.is_file() or args.inventory.is_symlink():
+            raise ValueError("regular model inventory required")
+        inventory = strict_read(args.inventory, sha(args.inventory.read_bytes()), 1024 * 1024)
+        if not isinstance(inventory, dict) or "inventory_digest" not in inventory:
+            raise ValueError("pinned reader inventory required")
+        cases = [case for case in projected["cases"] if case["phase"] == "capability"]
+        if not cases or len({c["question"]["identity"] for c in cases}) != len(cases):
+            raise ValueError("complete unique capability census required")
+        plan_for_reader = dict(projected)
+        plan_for_reader["cases"] = cases
+        for original in plan["cases"]:
+            item = next(c for c in projected["cases"] if c["question"]["identity"] == original["question"]["identity"])
+            if any(item["conditions"].get(k) != value for k, value in original["conditions"].items()):
+                raise ValueError("review modified ordinary retrieval controls")
+        reader = FrozenBundleReader(args.reader, expected_inventory=inventory["inventory_digest"])
+        args.output.mkdir()
+        write(args.output / "reviewed-plan.json", plan_for_reader)
+        report = run_reader(
+            args.output / "reviewed-plan.json", args.labels, reader,
+            args.output / "execution",
+            plan_sha=sha((args.output / "reviewed-plan.json").read_bytes()),
+            labels_sha=args.labels_sha,
+        )
+        write(args.output / "reviewed-diagnostic.json", dict(
+            schema="hepta.memory.reviewed-read-diagnostic.v1",
+            original_plan_digest=digest(plan),
+            review_package_digest=digest(reviews),
+            reported_cases=len(cases),
+            projected_reviews=sum(c["conditions"].get("reviewed_minimal", {}).get("oracle_kind")
+                                  == "external_claim_not_authenticated_here" for c in cases),
+            official_semantic_judge_executed=False,
+            independent_sufficiency_certified=False,
+            optimizer_executed=False,
+            production_accepted=False,
+            report=report,
+        ))
+        raise SystemExit(0)
+    # Default mode remains a pure projection, without model generation.
     with args.output.open("x", encoding="utf-8") as out:
         json.dump(projected, out, ensure_ascii=False, allow_nan=False, indent=2)
         out.write("\n")
