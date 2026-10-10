@@ -2,10 +2,10 @@ name: MemoryCell evidence sets and frozen reader capability
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/evidence_bundle.py'
-      - 'scripts/memory_cell/bundle_*.py'
-      - 'scripts/memory_cell/test_*bundle*.py'
-      - '.github/workflows/hepta-memory-bundle-diagnostic.yml'
+      - "scripts/memory_cell/evidence_bundle.py"
+      - "scripts/memory_cell/bundle_*.py"
+      - "scripts/memory_cell/test_*bundle*.py"
+      - ".github/workflows/hepta-memory-bundle-diagnostic.yml"
 permissions:
   contents: read
   actions: read
@@ -54,9 +54,9 @@ jobs:
       - name: Freeze native cases and all evidence-set conditions once
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          TOKENIZERS_PARALLELISM: 'false'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          TOKENIZERS_PARALLELISM: "false"
         run: |
           set -euo pipefail
           tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
@@ -86,11 +86,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tier: ['135M', '360M', '1.7B']
+        tier: ["135M", "360M", "1.7B"]
     env:
       PYTHONPATH: scripts/memory_cell
-      TOKENIZERS_PARALLELISM: 'false'
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -115,8 +115,8 @@ jobs:
       - name: Actual offline frozen generation with the same evidence conditions
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           PLAN_SHA=$(/tmp/bundle-python/bin/python -c 'import json; print(json.load(open("/tmp/bundle-plan/READY.json"))["plan_sha256"])')
