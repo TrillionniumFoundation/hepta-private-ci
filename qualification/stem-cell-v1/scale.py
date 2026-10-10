@@ -68,8 +68,11 @@ def trace_report(workload, events):
                     event.get("generation") != job["generation"] or
                     event.get("scope") != job["scope"]):
                 raise ValueError("stale/cross-scope model or generation")
-            if event["start_us"] < job["submitted_at_us"] or event["end_us"] < event["start_us"]:
-                raise ValueError("non-monotone request timing")
+            # The workload contains synthetic arrival OFFSETS. Never compare
+            # them to the worker's actual monotonic clock! All three measured
+            # timestamps must originate from the same native clock domain.
+            if not (event["enqueued_us"] <= event["start_us"] <= event["end_us"]):
+                raise ValueError("non-monotone native request timing")
             if event["path"] not in ("cold_encoder", "cache_hit_head"):
                 raise ValueError("unseparated request path")
             if event["status"] not in ("ok", "rejected", "failed"):
@@ -115,10 +118,12 @@ def trace_report(workload, events):
     lat = {}
     for path in ("cold_encoder", "cache_hit_head"):
         matched = [r for r in ok if r["path"] == path]
-        values = [(r["end_us"] - r["start_us"]) / 1000 for r in matched]
-        queue = [(r["start_us"] - requests[r["request_id"]]["submitted_at_us"]) / 1000 for r in matched]
+        values = [(r["end_us"] - r["enqueued_us"]) / 1000 for r in matched]
+        execution = [(r["end_us"] - r["start_us"]) / 1000 for r in matched]
+        queue = [(r["start_us"] - r["enqueued_us"]) / 1000 for r in matched]
         lat[path] = {"count": len(values), "p50_ms": quantile(values, 0.5),
                      "p95_ms": quantile(values, 0.95), "p99_ms": quantile(values, 0.99),
+                     "execution_p99_ms": quantile(execution, 0.99),
                      "queue_p99_ms": quantile(queue, 0.99)}
     return {"schema": "hepta.stem-cell-scale-observation.v1", "authority": "read_only_diagnostic",
             "trust": "unverified_trace_not_production_attestation",
@@ -130,7 +135,7 @@ def trace_report(workload, events):
             "batch_size_p95": quantile([b["batch_size"] for b in backend_batches.values()], 0.95),
             "actual_backend_multi_request_batches": sum(b["batch_size"] > 1 for b in backend_batches.values()),
             "cache_hit_fraction": sum(r["path"] == "cache_hit_head" for r in ok) / len(ok) if ok else None,
-            "cpu_seconds": sum(r["cpu_us"] for r in requests_trace.values()) / 1e6,
+            "request_attributed_cpu_seconds": sum(r["cpu_us"] for r in requests_trace.values()) / 1e6,
             "peak_rss_bytes": max(r["rss_bytes"] for r in requests_trace.values()),
             "wal_fsync_p99_ms": quantile(wal, 0.99),
             "crash_recovery_p99_ms": quantile([r["recovery_ms"] for r in restarts], 0.99),
