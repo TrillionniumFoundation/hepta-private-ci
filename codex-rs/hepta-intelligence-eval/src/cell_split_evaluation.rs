@@ -466,15 +466,10 @@ pub(crate) fn test_receipt_for_lifecycle(
     CellSplitLongHorizonEvaluationReceiptV1 {
         split_id: split.split_id.clone(),
         subject_digest,
-        binding: CellSplitEvaluationBindingV1 {
-            no_change_baseline_id: split.evaluation.no_change_baseline_id.clone(),
-            evaluation_id: split.evaluation.evaluation_id.clone(),
-            evaluator_id: split.evaluator_id.clone(),
-            evaluation_receipt_digest: Digest32::from_array([24; 32]),
-            retention_receipt_digest: Digest32::from_array([25; 32]),
-            negative_transfer_receipt_digest: Digest32::from_array([26; 32]),
-            cost_receipt_digest: Digest32::from_array([27; 32]),
-        },
+        // Preserve the exact frozen evaluator contract in this test-only
+        // fixture. A synthetic receipt cannot silently substitute its own
+        // publication digest for the split's preregistered binding.
+        binding: split.evaluation.clone(),
         decision,
         publication_digest: Digest32::from_array([28; 32]),
         resource_authentication_digest: Digest32::from_array([29; 32]),
