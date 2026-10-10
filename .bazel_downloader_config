@@ -1,0 +1,6 @@
+# Exact failed zlib artifact only. The repository rule's sha256 is unchanged.
+# archive.ubuntu.com returned 404 in actual forced-mirror testing; retain that failure.
+# Launchpad primary archive is an alternate transport, never an authority for bytes.
+# Keep the original snapshot as an alternate. No global host rewrite or HTTP downgrade.
+rewrite snapshot[.]ubuntu[.]com/ubuntu/20260801T000000Z/pool/main/z/zlib/(zlib1g_1[.]3[.]dfsg-3[.]1ubuntu2[.]1_amd64[.]deb) launchpad.net/ubuntu/+archive/primary/+files/$1
+rewrite snapshot[.]ubuntu[.]com/ubuntu/20260801T000000Z/pool/main/z/zlib/(zlib1g_1[.]3[.]dfsg-3[.]1ubuntu2[.]1_amd64[.]deb) snapshot.ubuntu.com/ubuntu/20260801T000000Z/pool/main/z/zlib/$1
