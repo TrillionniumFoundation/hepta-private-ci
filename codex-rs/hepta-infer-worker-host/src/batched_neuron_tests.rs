@@ -551,6 +551,38 @@ fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_met
     }
 }
 
+
+#[test]
+fn native_batch_coalesces_distinct_scopes_without_crossing_authority() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[61; 32]);
+    let (model, first, first_key) = fixture_request();
+    let second = second_request(&first);
+    let mut other_key = first_key.clone();
+    other_key.scope_id = StableId::new("different-scope").unwrap();
+    other_key.route_fence = 18;
+    let invocations = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: invocations.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2);
+    let binding_a = neuron_batch_final_use_binding_v1("worker-one", &first_key, &first).unwrap();
+    let binding_b = neuron_batch_final_use_binding_v1("worker-one", &other_key, &second).unwrap();
+    worker.enqueue(100, "model".into(), first, first_key,
+        signed_member(&signer, binding_a, "grant-a", 62)).unwrap();
+    worker.enqueue(100, "model".into(), second, other_key,
+        signed_member(&signer, binding_b, "grant-b", 63)).unwrap();
+    let result = worker.poll_and_execute(106).unwrap();
+    assert_eq!(result.outcomes.len(), 2);
+    assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert!(result.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+}
+
 #[test]
 fn native_batch_denies_all_effects_when_one_signature_is_invalid() {
     let dir = tempfile::tempdir().unwrap();
