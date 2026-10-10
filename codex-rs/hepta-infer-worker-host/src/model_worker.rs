@@ -212,6 +212,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.grant.authority_epoch
     }
 
+    /// Admit only the currently loaded, exact model identity for this digest.
+    pub(crate) fn model_matches_digest(&self, model_id: &str, digest: Digest32) -> bool {
+        self.models.get(model_id).is_some_and(|model| {
+            Digest32::from_str(&model.manifest.model_digest).ok() == Some(digest)
+        })
+    }
+
     pub fn load_model(
         &mut self,
         now_ms: u64,
@@ -219,7 +226,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
-        if self.models.contains_key(&manifest.model_id) {
+        // One model digest maps to exactly one live handle per worker.
+        // Physical batching relies on this invariant and cannot safely
+        // coalesce distinct model handles merely because digests match.
+        if self.models.contains_key(&manifest.model_id)
+            || self.models.values().any(|loaded| {
+                loaded.manifest.model_digest == manifest.model_digest
+            })
+        {
             return Err(Error::ModelAlreadyLoaded);
         }
         let model_limit = self.grant.maximum_models.min(MAX_MODELS);
