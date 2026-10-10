@@ -211,6 +211,18 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalFinalizerV1<
         }
     }
 
+    /// Return the exact original fsynced journal record's canonical bytes.
+    /// Unlike a separate receipt cache, the original record is recoverable
+    /// after a lost ack and can be signed by the external Supervisor service.
+    /// This method never mints signing authority itself.
+    pub fn read_retired_receipt_bytes(
+        &mut self,
+    ) -> Result<Option<Vec<u8>>, CellSplitFinalizationErrorV1> {
+        self.read_retired()?
+            .map(|checkpoint| checkpoint.canonical_receipt_bytes_v1().map_err(Into::into))
+            .transpose()
+    }
+
     #[must_use]
     pub fn checkpoint(&self) -> &WriterHandoffCheckpointV1 {
         self.journal.checkpoint()
