@@ -555,6 +555,7 @@ pub trait NeuronFeatureDriver: ModelDriver {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    #[cfg(test)]
     pub(crate) fn run_neuron_features(
         &mut self,
         now_ms: u64,
