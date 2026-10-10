@@ -255,3 +255,69 @@ fn revoked_scope_drops_queued_intent_without_driver_effect() {
     assert!(outcome.outcomes.is_empty());
     assert_eq!(execution.pending(), 0);
 }
+
+#[derive(Debug, Default)]
+struct CapturedMetrics(std::sync::Mutex<Vec<PhaseMetricEventV1>>);
+
+impl PhaseMetricSinkV1 for CapturedMetrics {
+    fn record(
+        &self,
+        event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        self.0.lock().unwrap().push(event);
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
+#[test]
+fn signed_worker_emits_admission_batch_and_terminal_metrics() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[23; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let captured = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model).with_metric_sink(captured.clone());
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert!(worker.poll_and_execute(101).unwrap().outcomes[0].result.is_ok());
+    let events = captured.0.lock().unwrap();
+    assert_eq!(events.len(), 3);
+    assert_eq!(events[0].phase, PhaseMetricKindV1::Admission);
+    assert_eq!(events[1].phase, PhaseMetricKindV1::Microbatch);
+    assert_eq!(events[2].phase, PhaseMetricKindV1::NeuronFeature);
+    assert!(events.iter().all(|event| event.succeeded));
+    assert!(events.iter().all(|event| !event.scope_digest.is_zero()));
+    assert!(events.iter().all(|event| !event.operation_digest.is_zero()));
+}
+
+#[test]
+fn rejected_signature_records_failed_terminal_without_invoking_driver() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[25; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut grant = signed(&signer, binding);
+    grant.signature[0] ^= 0x80;
+    let captured = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model).with_metric_sink(captured.clone());
+    worker.enqueue(100, "model".into(), request, key, grant).unwrap();
+    let poll = worker.poll_and_execute(101).unwrap();
+    assert!(matches!(
+        &poll.outcomes[0].result,
+        Err(BatchWorkerErrorV1::Authority)
+    ));
+    let events = captured.0.lock().unwrap();
+    assert_eq!(events.len(), 3);
+    assert!(events[0].succeeded);
+    assert!(events[1].succeeded);
+    assert!(!events[2].succeeded);
+}

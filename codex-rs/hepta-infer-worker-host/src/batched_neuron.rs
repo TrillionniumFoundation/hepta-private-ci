@@ -32,6 +32,7 @@ use crate::model_worker::NeuronFeatureDriver;
 use crate::model_worker::NeuronFeatureRequest;
 use crate::model_worker::canonical_neuron_feature_payload_digest;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BatchWorkerErrorV1 {
@@ -158,6 +159,31 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         &mut self,
         now_ms: u64,
         model_id: String,
+        request: NeuronFeatureRequest,
+        key: MicrobatchKeyV1,
+        signed: SignedFinalUseGrant,
+    ) -> Result<(), BatchWorkerErrorV1> {
+        let started = Instant::now();
+        let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
+        let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
+        let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
+        if let Some(sink) = &self.metric_sink {
+            let _ = sink.record(PhaseMetricEventV1 {
+                scope_digest,
+                operation_digest,
+                phase: PhaseMetricKindV1::Admission,
+                latency_micros: u64::try_from(started.elapsed().as_micros())
+                    .unwrap_or(u64::MAX),
+                succeeded: result.is_ok(),
+            });
+        }
+        result
+    }
+
+    fn enqueue_inner(
+        &mut self,
+        now_ms: u64,
+        model_id: String,
         mut request: NeuronFeatureRequest,
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
@@ -215,10 +241,23 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         &mut self,
         now_ms: u64,
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
+        let started = Instant::now();
         let poll = self
             .scheduler
             .poll(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
+        if let (Some(sink), Some(batch)) = (&self.metric_sink, &poll.batch) {
+            if let Some(first) = batch.requests.first() {
+                let _ = sink.record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(batch.key.scope_id.as_str().as_bytes()),
+                    operation_digest: Digest32::of_bytes(first.request_id.as_str().as_bytes()),
+                    phase: PhaseMetricKindV1::Microbatch,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded: true,
+                });
+            }
+        }
         for id in &poll.expired_request_ids {
             self.pending.remove(id);
             self.retired.insert(id.clone());
@@ -270,7 +309,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     phase: PhaseMetricKindV1::NeuronFeature,
                                     latency_micros: u64::try_from(start.elapsed().as_micros())
                                         .unwrap_or(u64::MAX),
-                                    succeeded: result.is_ok(),
+                                    succeeded: matches!(
+                                        &result,
+                                        Ok(receipt) if receipt.status
+                                            == NeuronFeatureTerminalStatusV1::Succeeded
+                                    ),
                                 });
                             }
                             result
