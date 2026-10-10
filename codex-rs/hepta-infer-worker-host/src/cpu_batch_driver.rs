@@ -230,6 +230,17 @@ impl CpuBatchFeatureDriverV1 {
                 .ok_or(Error::ArithmeticOverflow)?,
         )
         .map_err(|_| Error::ArithmeticOverflow)?;
+        let output_bytes = u64::try_from(
+            slots
+                .checked_mul(2 * std::mem::size_of::<i64>())
+                .ok_or(Error::ArithmeticOverflow)?,
+        )
+        .map_err(|_| Error::ArithmeticOverflow)?;
+        let peak_bytes = handle
+            .observed_memory_bytes
+            .checked_add(scratch_bytes)
+            .and_then(|bytes| bytes.checked_add(output_bytes))
+            .ok_or(Error::ArithmeticOverflow)?;
         let micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         let mut results = Vec::with_capacity(requests.len());
         for batch in 0..requests.len() {
@@ -247,7 +258,7 @@ impl CpuBatchFeatureDriverV1 {
                 head_digest: w.head_digest.clone(),
                 drive_q24: d,
                 prediction_q24: p,
-                observed_memory_bytes: handle.observed_memory_bytes,
+                observed_memory_bytes: peak_bytes,
                 transient_allocation_bytes: scratch_bytes,
                 queue_age_micros: 0,
                 latency_micros: micros,
