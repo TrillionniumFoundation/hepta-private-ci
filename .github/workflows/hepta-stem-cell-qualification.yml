@@ -56,15 +56,16 @@ jobs:
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Enforce Rust formatting
-        working-directory: codex-rs
-        run: cargo fmt --package codex-hepta-infer-worker-host -- --check
       - name: Compile native worker contract
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-infer-worker-host --lib
       - name: Execute native worker tests
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-infer-worker-host --lib
+      - name: Enforce Rust formatting
+        if: always()
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-infer-worker-host -- --check
       - name: Verify read-only source
         if: always()
         run: |
