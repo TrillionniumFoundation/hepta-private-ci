@@ -262,9 +262,8 @@ impl CellSplitMigrationAuthorityPortV1 for ObservedAuthority {
     fn verify_committed_artifact(
         &mut self, _plan: &CellSplitExecutionPlanV1, previous: &str,
     ) -> Result<(), Self::Error> {
-        if self.cas_good.load(Ordering::Acquire)
-            && previous == *self.exact_cas_receipt.lock().expect("pinned CAS receipt")
-        {
+        let pinned = self.exact_cas_receipt.lock().expect("pinned CAS receipt");
+        if self.cas_good.load(Ordering::Acquire) && previous == pinned.as_str() {
             Ok(())
         } else {
             Err("CAS predecessor no longer committed")
