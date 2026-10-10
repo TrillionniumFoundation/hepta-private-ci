@@ -9,6 +9,7 @@ on:
       - .github/workflows/hepta-pon-native-pair.yml
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: hepta-pon-pair-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -34,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 8f17e2a777df8ddee8d1645457a75b8da8cc2a61
+      CHAIN_SOURCE_SHA: 2d16f4cf72938e38b12f9a9c1a814b6317d56741
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '8f17e2a777df8ddee8d1645457a75b8da8cc2a61' || 'aa0c88102dee36d08d2b15e1a0ebe486271dd34c' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '2d16f4cf72938e38b12f9a9c1a814b6317d56741' || 'aafe75813b8ad5506960a3c6435a69b3585e8362' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -117,9 +118,9 @@ jobs:
           TRNM_RETAINED_DELTA_COST_PATH: ${{ runner.temp }}/pon-pair/chain-retained-delta-cost.jsonl
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests 32 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests 37 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-query-bound.json" --minimum-tests 14 -- python3 ../chain/formal/pon-nakamoto-v1/test_work_query_bound.py -v
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cache-receipt.json" --minimum-tests 18 -- python3 -m unittest discover -s ../chain/scripts/ci -p test_read_native_cache_observation.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cache-receipt.json" --minimum-tests 34 -- python3 -m unittest discover -s ../chain/scripts/ci -p test_read_native_cache_observation.py -v
       - name: Require every cached-owner integrity and cold-reopen selector
         run: |
           set -euo pipefail
@@ -131,6 +132,12 @@ jobs:
           set -euo pipefail
           for selector in fixed_blob_projection_bounds_owned_bytes_and_preserves_sql_types fixed_block_fields_match_original_errors_after_warm_cache_and_rollback fixed_parent_work_matches_original_and_rereads_after_restore fixed_fields_genesis_failure_order_and_cold_reopen_keep_state; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "store::native_authenticated::native_fixed_blob_tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require all nullable BLOB corruption controls on the paired native owner
+        run: |
+          set -euo pipefail
+          for selector in nullable_delta_projection_preserves_null_empty_types_and_bounds nullable_delta_empty_bytes_are_not_absence_after_warm_cache nullable_delta_late_failure_keeps_cancellation_and_cursor_recovery nullable_genesis_packet_empty_rejects_and_rollback_restores nullable_real_insertion_empty_preimage_rejects_live_and_cold_owner; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "store::native_authenticated::nullable_blob_tests::$selector" -- --exact --show-output --test-threads=1
           done
       - name: Require every live public-owner mutation, rollback and cold-open selector
         run: |
@@ -211,6 +218,26 @@ jobs:
           CARGO_NET_OFFLINE: "true"
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/pon-pair.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib -E 'test(real_chain_sealed_submit_reconcile_confirm_reorg)' --run-ignored only --no-capture
+      - name: Retain read-only source and prior Windows failure diagnostics
+        if: always() && matrix.runner == 'ubuntu-24.04' && matrix.lane == 'source-head'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/pon-pair"
+          mkdir -p "$out"
+          git archive --format=tar.gz --output="$out/hepta-source.tar.gz" "$TESTED_SHA"
+          sha256sum "$out/hepta-source.tar.gz" > "$out/hepta-source.sha256"
+          for job in 114191442196 114191438176; do
+            code=0
+            curl --fail --silent --show-error --location --max-time 60 --max-filesize 20971520 \
+              --header "Authorization: Bearer $GH_TOKEN" \
+              --header 'Accept: application/vnd.github+json' \
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/$job/logs" \
+              --output "$out/prior-windows-$job.log" || code=$?
+            printf '%s\n' "$code" > "$out/prior-windows-$job.fetch-exit"
+          done
+          printf 'Prior-source diagnostic retrieval only; fetch exit codes are not build or test results. No failed/cancelled baseline is reclassified.\n' > "$out/prior-windows-SCOPE.txt"
       - name: Preserve exact tested source and scope
         if: always()
         run: |
