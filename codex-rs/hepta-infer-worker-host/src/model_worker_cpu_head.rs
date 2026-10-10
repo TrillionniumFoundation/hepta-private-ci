@@ -38,7 +38,9 @@ impl CpuGatedHead {
         {
             return Err(Error::FeatureLimit);
         }
-        let n = self.input_width.checked_mul(self.output_width)
+        let n = self
+            .input_width
+            .checked_mul(self.output_width)
             .ok_or(Error::ArithmeticOverflow)?;
         if self.drive_weights_q24.len() != n
             || !(self.prediction_weights_q24.is_empty() || self.prediction_weights_q24.len() == n)
@@ -49,9 +51,11 @@ impl CpuGatedHead {
         {
             return Err(Error::FeatureLimit);
         }
-        if self.all_tensors().iter().any(|items| items.iter()
-            .any(|v| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(v)))
-        {
+        if self.all_tensors().iter().any(|items| {
+            items
+                .iter()
+                .any(|v| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(v))
+        }) {
             return Err(Error::FeatureLimit);
         }
         Ok(())
@@ -86,24 +90,21 @@ impl CpuGatedHead {
     fn tracked_parameter_bytes(&self) -> Result<u64, Error> {
         self.all_tensors().iter().try_fold(0u64, |total, tensor| {
             let len = u64::try_from(tensor.len()).map_err(|_| Error::ArithmeticOverflow)?;
-            total.checked_add(len.checked_mul(8).ok_or(Error::ArithmeticOverflow)?)
+            total
+                .checked_add(len.checked_mul(8).ok_or(Error::ArithmeticOverflow)?)
                 .ok_or(Error::ArithmeticOverflow)
         })
     }
 
-    fn dot(
-        &self,
-        weights: &[i64],
-        bias: i64,
-        row: usize,
-        input: &[i64],
-    ) -> Result<i64, Error> {
+    fn dot(&self, weights: &[i64], bias: i64, row: usize, input: &[i64]) -> Result<i64, Error> {
         if weights.is_empty() {
             // Canonical constant-zero matrix profile: reduces physical Head
             // tensors for compact Linear/no-prediction or constant-gate cells.
             return Ok(bias);
         }
-        let start = row.checked_mul(self.input_width).ok_or(Error::ArithmeticOverflow)?;
+        let start = row
+            .checked_mul(self.input_width)
+            .ok_or(Error::ArithmeticOverflow)?;
         let mut acc = (bias as i128) * Q;
         for (x, w) in input.iter().zip(&weights[start..start + self.input_width]) {
             acc += (*x as i128) * (*w as i128);
@@ -113,20 +114,23 @@ impl CpuGatedHead {
 
     fn infer(&self, input: &[i64]) -> Result<(Vec<i64>, Vec<i64>), Error> {
         if input.len() != self.input_width
-            || input.iter().any(|v| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(v))
+            || input
+                .iter()
+                .any(|v| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(v))
         {
             return Err(Error::FeatureLimit);
         }
         let mut drive = Vec::with_capacity(self.output_width);
         let mut prediction = Vec::with_capacity(self.output_width);
         for row in 0..self.output_width {
-            let gate_pre = self.dot(
-                &self.gate_weights_q24, self.gate_bias_q24[row], row, input
-            )?;
+            let gate_pre = self.dot(&self.gate_weights_q24, self.gate_bias_q24[row], row, input)?;
             // Hard sigmoid: clamp((gate_pre + 1) / 2, 0, 1).
             let gate = ((gate_pre as i128 + Q).clamp(0, 2 * Q)) / 2;
             let d = self.dot(
-                &self.drive_weights_q24, self.drive_bias_q24[row], row, input
+                &self.drive_weights_q24,
+                self.drive_bias_q24[row],
+                row,
+                input,
             )?;
             let p = self.dot(
                 &self.prediction_weights_q24,
@@ -167,7 +171,9 @@ pub fn cpu_gated_bundle_weights_digest(
     if heads.is_empty() {
         return Err(Error::ModelNotLoaded);
     }
-    let mut hashes = heads.iter().map(CpuGatedHead::digest)
+    let mut hashes = heads
+        .iter()
+        .map(CpuGatedHead::digest)
         .collect::<Result<Vec<_>, _>>()?;
     hashes.sort();
     if hashes.windows(2).any(|w| w[0] == w[1]) {
@@ -235,7 +241,10 @@ impl CpuGatedHeadDriver {
         {
             return Err(Error::ModelMismatch);
         }
-        let head = self.heads.get(&request.head_digest).ok_or(Error::ModelMismatch)?;
+        let head = self
+            .heads
+            .get(&request.head_digest)
+            .ok_or(Error::ModelMismatch)?;
         if head.input_width != request.feature_vector_q24.len()
             || head.output_width != request.expected_output_width
         {
@@ -288,9 +297,9 @@ impl NeuronFeatureDriver for CpuGatedHeadDriver {
         let started = Instant::now();
         let head = self.validate_selected(handle, request)?;
         let (drive, prediction) = head.infer(&request.feature_vector_q24)?;
-        let transient = u64::try_from(
-            (drive.capacity() + prediction.capacity()) * std::mem::size_of::<i64>()
-        ).map_err(|_| Error::ArithmeticOverflow)?;
+        let transient =
+            u64::try_from((drive.capacity() + prediction.capacity()) * std::mem::size_of::<i64>())
+                .map_err(|_| Error::ArithmeticOverflow)?;
         Ok(DriverNeuronFeatureObservation {
             terminal_observed: true,
             succeeded: true,
@@ -319,7 +328,10 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
         let started = Instant::now();
         let width = requests[0].feature_vector_q24.len();
         let mut contiguous = Vec::with_capacity(
-            requests.len().checked_mul(width).ok_or(Error::ArithmeticOverflow)?
+            requests
+                .len()
+                .checked_mul(width)
+                .ok_or(Error::ArithmeticOverflow)?,
         );
         for request in requests {
             self.validate_selected(handle, request)?;
@@ -356,14 +368,20 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
                         .map_err(|_| Error::ArithmeticOverflow)?,
                     queue_age_micros: 0,
                     latency_micros: per_member_started
-                        .elapsed().as_micros().try_into().unwrap_or(u64::MAX),
+                        .elapsed()
+                        .as_micros()
+                        .try_into()
+                        .unwrap_or(u64::MAX),
                 },
             });
         }
-        let input_bytes = contiguous.capacity().checked_mul(std::mem::size_of::<i64>())
+        let input_bytes = contiguous
+            .capacity()
+            .checked_mul(std::mem::size_of::<i64>())
             .ok_or(Error::ArithmeticOverflow)?;
         // Only tracked numeric allocations; not process RSS or a GPU allocator peak.
-        let peak = self.tracked_weights_bytes
+        let peak = self
+            .tracked_weights_bytes
             .checked_add(u64::try_from(input_bytes).map_err(|_| Error::ArithmeticOverflow)?)
             .and_then(|n| n.checked_add(tracked_outputs))
             .ok_or(Error::ArithmeticOverflow)?;
