@@ -47,8 +47,16 @@ jobs:
         run: |
           set -euo pipefail
           cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets
+      - name: Build real Codex executable for Agentd E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
+          test -x codex-rs/target/debug/codex
       - name: Run original and V2 owner regression tests
         shell: bash
+        env:
+          HEPTA_TEST_CODEX_EXECUTABLE: ${{ github.workspace }}/codex-rs/target/debug/codex
         run: |
           set -euo pipefail
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
