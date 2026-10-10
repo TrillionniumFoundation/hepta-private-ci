@@ -4,7 +4,9 @@ on:
   pull_request:
     paths:
       - 'scripts/hepta_neuron_model_trials.py'
+      - 'scripts/hepta_neuron_trial_evidence_gate.py'
       - '.github/scripts/test_hepta_neuron_model_trials.py'
+      - '.github/scripts/test_hepta_neuron_trial_evidence_gate.py'
       - '.github/workflows/hepta-neuron-model-trials.yml'
       - 'qualification/neuron-model-trials/**'
   workflow_dispatch:
@@ -20,8 +22,12 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - name: Strict offline Python protocol checks (no weights or model claims)
+      - name: Install isolated signature verification dependency
         run: |
-          python3 -m py_compile scripts/hepta_neuron_model_trials.py
-          python3 -m unittest discover -s .github/scripts -p test_hepta_neuron_model_trials.py -v
+          python3 -m venv /tmp/hepta-neuron-trial-venv
+          /tmp/hepta-neuron-trial-venv/bin/python -m pip install --disable-pip-version-check --no-input 'cryptography==46.0.4'
+      - name: Strict offline protocol checks (no weights, no production model claims)
+        run: |
+          /tmp/hepta-neuron-trial-venv/bin/python -m py_compile scripts/hepta_neuron_model_trials.py scripts/hepta_neuron_trial_evidence_gate.py
+          /tmp/hepta-neuron-trial-venv/bin/python -m unittest discover -s .github/scripts -p 'test_hepta_neuron*.py' -v
           git diff --check
