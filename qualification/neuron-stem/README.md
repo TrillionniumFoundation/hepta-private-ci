@@ -293,3 +293,48 @@ head update. The result manifest binds the journal digest and count. This
 is only write-ahead **research evidence** (not a signed independent evaluator
 or atomic production checkpoint). A partial journal from a failed run cannot
 be overwritten by retry under the same output path.
+
+### Final no-change-first main review report
+
+Use `review_report.py` for the single final review matrix. It enumerates
+**every** registered model and preserves No-change as the first retained
+baseline, even when all experimental evidence is missing. A real candidate
+requires a future-window `statistical_gate.py` receipt with the same-encoder
+frozen-Head control; a resource result requires an exact paired
+`resource_gate.py` receipt for that same revision. Only a full 4096 logical
+Cell resource cohort may populate the 4096-cell throughput column.
+
+Create `/approved/stem-review-input.json` such as:
+
+```json
+{
+  "schema": "hepta.neuron-stem-review-input.v1",
+  "candidates": [
+    {
+      "model_id": "jina-v5-text-nano",
+      "quality_receipt": "nano-offline-quality-gate.json",
+      "resource_receipt": "nano-paired-resource-budget.json"
+    }
+  ]
+}
+```
+
+All paths are resolved **relative to the manifest location** and must refer
+to actual files; an absent optional model remains `待测`, while a named
+missing/mismatched/unpinned file is a hard error. Run:
+
+```sh
+python3 qualification/neuron-stem/review_report.py \
+  --models qualification/neuron-stem/models.json \
+  --manifest /approved/stem-review-input.json \
+  --out /evidence/stem-review.json
+```
+
+This writes a companion `stem-review.md` with the requested future gain,
+negative transfer, measured peak RSS, research p99 and **only if truly
+measured** 4096 Cell throughput. It labels offline classifier gains
+separately from **unproven causal NDU**. The report is not a signed source
+verification, does not approve the research budget, and unconditionally
+denies production promotion. Separate independent signature validation,
+signed real NDU, real production Worker, crash recovery and final-use gate
+remain mandatory.
