@@ -3,6 +3,8 @@ mod cell_split_artifact_cas;
 #[cfg(unix)]
 mod cell_split_child_state_cas;
 #[cfg(unix)]
+mod cell_split_cns_cutover;
+#[cfg(unix)]
 mod cell_split_effect_rpc;
 #[cfg(unix)]
 mod cell_split_effect_service;
@@ -68,6 +70,18 @@ pub use cell_split_child_state_cas::CellSplitChildStateCasErrorV1;
 pub use cell_split_child_state_cas::CellSplitChildStateCasOwnerV1;
 #[cfg(unix)]
 pub use cell_split_child_state_cas::CellSplitMigrationAuthorityPortV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsCutoverErrorV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsCutoverOwnerV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsLiveRouteV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsRouteBindingV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsRuntimeCommitV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsRuntimePortV1;
 #[cfg(unix)]
 pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
 #[cfg(unix)]
