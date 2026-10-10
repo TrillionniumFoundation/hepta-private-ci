@@ -32,6 +32,9 @@ OBQA_URL = "https://s3-us-west-2.amazonaws.com/ai2-website/data/OpenBookQA-V1-Se
 HEADER = "QID\tChain#\tTag\tQuestion\tAnswer\tFact1\tFact2\tWOL score\tTurk\tTurks\tExtra Facts\tDF"
 LIMITS = {"train": 8, "capability": 8, "transfer": 4, "retention": 4}
 PROFILE = "hepta.publisher-unanimous-necessity.v1"
+# A separate eight-case diagnostic, never a reduced acceptance/training cohort.
+DIAGNOSTIC_LIMITS = {"capability": 8}
+DIAGNOSTIC_PROFILE = "hepta.publisher-unanimous-diagnostic-only.v1"
 
 
 def normalized(text):
@@ -122,7 +125,12 @@ def decision(record, questions):
     return "eligible_published_unanimous_claim"
 
 
-def select(records, questions):
+def select(records, questions, *, limits=LIMITS, profile=PROFILE):
+    if (limits, profile) not in (
+        (LIMITS, PROFILE),
+        (DIAGNOSTIC_LIMITS, DIAGNOSTIC_PROFILE),
+    ):
+        raise ValueError("unregistered publisher cohort/horizon")
     dispositions, eligible = [], []
     for record in records:
         status = decision(record, questions)
@@ -157,20 +165,22 @@ def select(records, questions):
         ids = sorted({r["row"]["QID"] for r in group})
         chosen = min(group, key=lambda r: digest(r["row"]))
         representatives.append(chosen | {"family": "eobqa-group:" + digest(ids)})
-    representatives.sort(key=lambda r: digest((PROFILE, r["family"])))
+    representatives.sort(key=lambda r: digest((profile, r["family"])))
     counts = dict(Counter(r["status"] for r in dispositions))
     census = dict(
         original_chains=len(records), original_questions=len(questions),
         statuses=counts, unanimous_components=len(representatives),
         original_test_repurposed_as_development=True, independent_samples_certified=False,
     )
-    if len(representatives) < sum(LIMITS.values()):
+    if len(representatives) < sum(limits.values()):
         return None, dispositions, census
     result, offset = {}, 0
-    for phase, count in LIMITS.items():
+    for phase, count in limits.items():
         result[phase] = representatives[offset:offset + count]
         offset += count
-    census["selected_counts"] = LIMITS
+    census["selected_counts"] = limits
+    census["selected_profile"] = profile
+    census["diagnostic_only_no_training"] = profile == DIAGNOSTIC_PROFILE
     census["unused_eligible_components"] = len(representatives) - offset
     return result, dispositions, census
 
@@ -218,7 +228,13 @@ def make_case(record, question, noise, acquired_at, phase):
     return case, label
 
 
-def prepare(output, source_commit):
+def prepare(output, source_commit, *, mode="full"):
+    if mode not in ("full", "diagnostic"):
+        raise ValueError("registered preparation mode required")
+    limits, profile = (
+        (LIMITS, PROFILE) if mode == "full"
+        else (DIAGNOSTIC_LIMITS, DIAGNOSTIC_PROFILE)
+    )
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
         raise ValueError("exact implementation source required")
     output.mkdir()
@@ -234,7 +250,9 @@ def prepare(output, source_commit):
     records = verified_chains(data["reviews.tsv"])
     questions, original = verified_questions(data["openbookqa.zip"])
     (output / "original-test.jsonl").write_bytes(original)
-    selected, dispositions, census = select(records, questions)
+    selected, dispositions, census = select(
+        records, questions, limits=limits, profile=profile
+    )
     write(output / "acquisition-census.json", census)
     write(output / "all-review-dispositions.json", dispositions)
     print(__import__("json").dumps(census, indent=2))
@@ -250,13 +268,14 @@ def prepare(output, source_commit):
             case, label = make_case(record, questions[record["row"]["QID"]], noise, acquired, phase)
             cases.append(case)
             labels[case["question"]["identity"]] = label
-    plan = dict(schema="hepta.bundle-diagnostic.plan.v1", profile=PROFILE,
-                source_commit=source_commit, cases=cases, frozen_counts=LIMITS,
+    plan = dict(schema="hepta.bundle-diagnostic.plan.v1", profile=profile,
+                source_commit=source_commit, cases=cases, frozen_counts=limits,
                 chain_blob=CHAIN_BLOB, dataset_sha256=sha(data["reviews.tsv"]),
                 original_question_archive_sha256=OBQA_SHA, acquisition_time=acquired,
                 data_selection_before_model_execution=True, prospective_windows=0,
                 publisher_test_repurposed_for_development=True,
                 publisher_review_not_independent_Hepta_acceptance=True,
+                diagnostic_only_no_training=mode == "diagnostic",
                 production_accepted=False)
     write(output / "plan.json", plan)
     write(output / "labels.json", labels)
@@ -276,5 +295,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path)
     parser.add_argument("--source-commit", required=True)
+    parser.add_argument("--mode", choices=("full", "diagnostic"), default="full")
     args = parser.parse_args()
-    prepare(args.output, args.source_commit)
+    prepare(args.output, args.source_commit, mode=args.mode)
