@@ -131,6 +131,23 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         if optimized["negative_transfer_rate"] > logical["negative_transfer_rate"]:
             violations.append(f"{scope}: optimized negative transfer regressed")
 
+        # Physical split pays an additional IPC / placement / recovery tax.
+        # It must independently beat the no-change baseline instead of
+        # inheriting the optimized-logical pass result.
+        if physical["throughput_rps"] < baseline["throughput_rps"]:
+            violations.append(f"{scope}: physical throughput below no-split")
+        if physical["p99_ms"] > baseline["p99_ms"] * (1 + max_p99_regression):
+            violations.append(f"{scope}: physical p99 regressed")
+        for key in ("cpu_per_request_s", "communication_per_request_bytes",
+                    "fsync_per_request", "lock_wait_per_request_ms",
+                    "rss_peak_bytes", "recovery_ms"):
+            if physical[key] > baseline[key]:
+                violations.append(f"{scope}: physical {key} regressed")
+        if physical["failure_rate"] > baseline["failure_rate"]:
+            violations.append(f"{scope}: physical failure rate regressed")
+        if physical["negative_transfer_rate"] > baseline["negative_transfer_rate"]:
+            violations.append(f"{scope}: physical negative transfer regressed")
+
     return {
         "schema": "hepta.cell-split.performance.comparison.v1",
         "source_sha": packet["source_sha"],
