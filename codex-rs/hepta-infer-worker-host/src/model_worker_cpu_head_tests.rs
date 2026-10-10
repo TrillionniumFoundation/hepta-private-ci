@@ -193,3 +193,19 @@ fn gated_head_driver_refuses_generic_text_model_execution() {
         Err(Error::DriverFailure(_))
     ));
 }
+
+#[test]
+fn compact_constant_gate_and_zero_prediction_do_not_triple_head_storage() {
+    let mut compact = sample_head(false);
+    compact.prediction_weights_q24.clear();
+    compact.gate_weights_q24.clear();
+    let full = sample_head(false);
+    assert!(compact.digest().is_ok());
+    assert_ne!(compact.digest().expect("digest"), full.digest().expect("digest"));
+    assert!(compact.tracked_parameter_bytes().expect("bytes")
+        < full.tracked_parameter_bytes().expect("bytes"));
+    let (drive, prediction) = compact.infer(&[Q24 / 2, Q24 / 4])
+        .expect("compact inference");
+    assert_eq!(drive, vec![Q24 / 2, Q24 / 4]);
+    assert_eq!(prediction, vec![0, 0]);
+}
