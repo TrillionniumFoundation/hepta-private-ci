@@ -267,7 +267,7 @@ class OfflineHeadExecutionTests(unittest.TestCase):
                     "--expected-snapshot-digest", model_runner.snapshot_digest(snap),
                     "--model-key", "mmbert_small", "--representation", "cross_attention",
                     "--head", "linear", "--budget", "2048", "--shots-per-class", "2",
-                    "--train-steps", "3", "--output", str(output_path)]
+                    "--train-steps", "3", "--export-q24", "--output", str(output_path)]
             with patch.dict(sys.modules, {"transformers": hf}), patch.object(sys, "argv", args):
                 model_runner.main()
             predictions = list(load_jsonl(output_path))
@@ -280,6 +280,18 @@ class OfflineHeadExecutionTests(unittest.TestCase):
             self.assertTrue(all(r["head_parameters"] <= 2048 for r in predictions))
             self.assertTrue(all(abs(sum(r["probabilities"]) - 1) < 1e-6 for r in predictions))
             self.assertTrue(all(r["backend_kind"] == "offline_hf_shadow" for r in predictions))
+            q24_path = Path(str(output_path) + ".q24.json")
+            artifact = json.loads(q24_path.read_text())
+            self.assertFalse(artifact["production_authorized"])
+            self.assertEqual(artifact["source_head_kind"], "linear")
+            self.assertEqual(artifact["calibration_source"], "calibration_fold_only")
+            self.assertEqual(hashlib.sha256(q24_path.read_bytes()).hexdigest(),
+                             manifest["native_q24_shadow_artifact_sha256"])
+            self.assertEqual(artifact["native_stored_coefficients"],
+                             manifest["native_q24_stored_coefficients"])
+            with patch.dict(sys.modules, {"transformers": hf}), patch.object(sys, "argv", args):
+                with self.assertRaises(FileExistsError):
+                    model_runner.main()
 
 if __name__ == "__main__":
     unittest.main()
