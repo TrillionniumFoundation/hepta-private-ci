@@ -477,6 +477,15 @@ pub struct DriverNeuronFeatureObservation {
     pub latency_micros: u64,
 }
 
+/// Exact request correlation returned by a native batch backend. Positional
+/// results alone would allow two valid output shapes to be swapped silently.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DriverNeuronFeatureBatchObservationV1 {
+    pub request_id: String,
+    pub input_digest: String,
+    pub observation: DriverNeuronFeatureObservation,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronFeatureExecutionObservation {
     pub request_id: String,
@@ -514,7 +523,7 @@ pub trait NeuronFeatureDriver: ModelDriver {
         &mut self,
         _handle: &DriverModelHandle,
         _requests: &[NeuronFeatureRequest],
-    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
+    ) -> Result<Vec<DriverNeuronFeatureBatchObservationV1>, Error> {
         Err(Error::BatchUnsupported)
     }
 }
@@ -705,7 +714,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::FeatureOutputMismatch);
         }
         let mut receipts = Vec::with_capacity(requests.len());
-        for (request, observed) in requests.into_iter().zip(results) {
+        for (request, batch) in requests.into_iter().zip(results) {
+            if batch.request_id != request.authorization.request_id
+                || batch.input_digest != request.input_digest
+            {
+                return Err(Error::FeatureContract);
+            }
+            let observed = batch.observation;
             if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
                 return Err(Error::ModelCapacity);
             }
