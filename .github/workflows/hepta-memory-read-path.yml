@@ -3,9 +3,10 @@ on:
   pull_request:
     paths:
       - 'scripts/memory_cell/reviewed_bundle.py'
+      - 'scripts/memory_cell/reviewed_diagnostic.py'
       - 'scripts/memory_cell/memory_curriculum.py'
       - 'scripts/memory_cell/frozen*.py'
-      - 'scripts/memory_cell/test_reviewed_bundle.py'
+      - 'scripts/memory_cell/test_reviewed*.py'
       - 'scripts/memory_cell/test_memory_curriculum.py'
       - 'scripts/memory_cell/test_frozen*.py'
       - '.github/workflows/hepta-memory-read-path.yml'
@@ -16,6 +17,32 @@ concurrency:
   group: memory-read-path-${{ github.event.pull_request.head.sha }}
   cancel-in-progress: false
 jobs:
+  source-evidence:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Preserve exact source and Git blob identities before environment setup
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reviewed-reader-source/scripts /tmp/reviewed-reader-source/.github
+          cp -r scripts/memory_cell /tmp/reviewed-reader-source/scripts/
+          cp AGENTS.md justfile /tmp/reviewed-reader-source/
+          cp -r .github/workflows /tmp/reviewed-reader-source/.github/
+          git rev-parse HEAD > /tmp/reviewed-reader-source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/reviewed-reader-source/tested-tree.txt
+          git ls-tree -r HEAD scripts/memory_cell .github/workflows AGENTS.md justfile > /tmp/reviewed-reader-source/git-tree.txt
+          (cd /tmp/reviewed-reader-source && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-reviewed-reader-source
+          path: /tmp/reviewed-reader-source
+          include-hidden-files: true
+          if-no-files-found: error
   verify:
     if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
