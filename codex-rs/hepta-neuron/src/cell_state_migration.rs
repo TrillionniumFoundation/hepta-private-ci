@@ -526,7 +526,9 @@ impl DurableCellStateCasDirectoryOwnerV1 {
     pub fn open(root: impl AsRef<Path>) -> Result<Self, CellStateMigrationErrorV1> {
         let root = root.as_ref().canonicalize().map_err(cas_io)?;
         if !root.is_dir() {
-            return Err(CellStateMigrationErrorV1::CasCorruption("CAS root is not a directory"));
+            return Err(CellStateMigrationErrorV1::CasCorruption(
+                "CAS root is not a directory",
+            ));
         }
         let lock_path = root.join(".hepta-cell-state-cas-owner.lock");
         let writer_lock = OpenOptions::new()
@@ -543,7 +545,9 @@ impl DurableCellStateCasDirectoryOwnerV1 {
             Err(TryLockError::Error(error)) => return Err(cas_io(error)),
         }
         // Persist any newly created lock entry before accepting operations.
-        File::open(&root).and_then(|directory| directory.sync_all()).map_err(cas_io)?;
+        File::open(&root)
+            .and_then(|directory| directory.sync_all())
+            .map_err(cas_io)?;
         Ok(Self { root, writer_lock })
     }
 
@@ -634,7 +638,9 @@ impl DurableCellStateCasDirectoryOwnerV1 {
             marker_bytes.extend_from_slice(digest.as_array());
         }
 
-        let commit_path = self.root.join(format!("commit-{}.ack", migration.fence_digest));
+        let commit_path = self
+            .root
+            .join(format!("commit-{}.ack", migration.fence_digest));
         match OpenOptions::new()
             .read(true)
             .write(true)
@@ -826,10 +832,8 @@ mod durable_cas_tests {
     impl TempRoot {
         fn new() -> Self {
             let id = SERIAL.fetch_add(1, Ordering::Relaxed);
-            let root = std::env::temp_dir().join(format!(
-                "hepta-child-state-cas-{}-{id}",
-                std::process::id()
-            ));
+            let root = std::env::temp_dir()
+                .join(format!("hepta-child-state-cas-{}-{id}", std::process::id()));
             fs::create_dir(&root).expect("create private fixture root");
             Self(root)
         }
@@ -926,7 +930,9 @@ mod durable_cas_tests {
         let mut replay = migration();
         let mut reopened = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
         assert_eq!(
-            reopened.persist_commit_and_acknowledge(&mut replay).unwrap(),
+            reopened
+                .persist_commit_and_acknowledge(&mut replay)
+                .unwrap(),
             receipt
         );
         assert_eq!(replay.phase(), CellStateMigrationPhaseV1::Acknowledged);
@@ -945,12 +951,10 @@ mod durable_cas_tests {
         owner.persist_commit_and_acknowledge(&mut first).unwrap();
         drop(owner);
         let child = &first.children[0];
-        let object = root
-            .0
-            .join(format!(
-                "object-{}.q24",
-                CellStateMigrationV1::child_payload_digest(child)
-            ));
+        let object = root.0.join(format!(
+            "object-{}.q24",
+            CellStateMigrationV1::child_payload_digest(child)
+        ));
         fs::write(object, b"forged payload after commit").unwrap();
         let mut next = migration();
         let mut reopened = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
