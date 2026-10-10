@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.stem-cell-shadow-experiment.v1",
+  "stage": "shadow_only",
+  "authority": {"selection": false, "production_write": false, "promotion": false, "external_effect": false},
+  "parent_registry": "docs/learning/EXPERIMENTS.json",
+  "model_candidates": {
+    "mmbert_small": {"source": "jhu-clsp/mmBERT-small", "parameter_count_estimate": 140000000, "max_tokens": 8192},
+    "modernbert_base": {"source": "answerdotai/ModernBERT-base", "parameter_count_estimate": 149000000, "max_tokens": 8192},
+    "jina_zh": {"source": "jinaai/jina-embeddings-v2-base-zh", "parameter_count_estimate": 161000000, "max_tokens": 8192, "custom_model_code": "audit_required"},
+    "bge_small_zh": {"source": "BAAI/bge-small-zh-v1.5", "parameter_count_estimate": 24000000, "max_tokens": 512}
+  },
+  "teacher_baselines": ["laya_421m", "laya_multilingual_322m"],
+  "experiment_1": {"shot_counts": [0, 8, 32, 128, 512], "languages": ["zh", "en", "cross"], "data_splits": ["train", "calibration", "held_out", "future_1", "future_2", "ood"], "metrics": ["task_accuracy", "multiclass_brier", "ece_15", "ood_false_acceptance", "cold_encoder_ms", "warm_head_ms", "peak_rss_bytes", "total_cpu_seconds", "external_ndu_utility"]},
+  "experiment_2": {"representations": ["joint", "sentence_cache", "landmarks", "cross_attention"], "heads": ["linear", "film", "rank8", "rank16", "mlp", "swiglu"], "trainable_parameter_budgets": [2048, 16384, 65536, 262144], "landmarks": 8, "parameters_must_fit_budget": true, "equal_examples_epochs_and_optimizer_steps": true},
+  "experiment_3": {"logical_cells": [64, 256, 1024, 4096], "active_fractions": [0.01, 0.1, 0.5, 1.0], "input_repeat_fractions": [0.0, 0.5, 0.9], "task_similarity": ["same_family", "mixed_family", "disjoint_family"], "metrics": ["real_backend_batch_size", "feature_cache_hit_rate", "queue_age_p99_ms", "cold_encoder_p99_ms", "cached_head_p99_ms", "cpu_seconds", "peak_rss_bytes", "wal_fsync_p99_ms", "crash_recovery_ms", "future_retention", "negative_transfer_rate"]},
+  "frozen_admission": {"independent_episode_groups_minimum": 400, "future_windows_minimum": 2, "independent_snapshots_minimum": 3, "confidence_level": 0.95, "bootstrap_replicates": 2000, "max_old_task_degradation": 0.02, "max_ood_false_acceptance": 0.005, "minimum_ndu_gain_lcb": 0.0, "maximum_cost_ratio": 1.0, "multiple_comparison": "bonferroni", "no_change_arm": "no_change"},
+  "evidence": {"model_revisions_must_be_content_pinned": true, "dataset_partition_by_source_group": true, "calibration_fit_only_on_calibration_split": true, "candidate_and_baseline_same_episode_ids": true, "independent_outcome_observer_required": true, "unknown_outcomes_are_not_zero": true, "record_backend_identity": true, "native_hepta_worker_required_for_production_latency_claim": true, "no_schema_promotion_without_owner_review": true}
+}
