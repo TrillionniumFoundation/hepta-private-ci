@@ -124,7 +124,7 @@ fn create_only_cas_has_real_bytes_and_fails_closed_when_final_use_denied() {
     assert_eq!(owner.read_committed(&request).unwrap(), Some(receipt.clone()));
 
     fs::write(owner.object_path(), b"tampered object").expect("external CAS drift");
-    assert!(!owner.verify_current(&request, &receipt).expect("state readback"));
+    assert!(owner.verify_current(&request, &receipt).is_err());
     assert!(owner.commit_once(&request).is_err());
 }
 
