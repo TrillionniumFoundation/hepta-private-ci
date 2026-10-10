@@ -403,6 +403,10 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         &mut self, intent: &CellSplitExecutionIntentV1, effect: &CellSplitOwnedEffectV1,
     ) -> Result<bool, Self::Error> {
         self.verify_live(intent)?;
+        // A persisted old batch never bypasses a revoked Selector/NDU
+        // decision when the coordinator is about to advance the CNS stage.
+        self.authority.verify_final_use(&self.plan, intent)
+            .map_err(|e| CellSplitChildStateCasErrorV1::Denied(e.to_string()))?;
         let Some(bytes) = self.read_manifest(intent)? else {
             return Ok(false);
         };
