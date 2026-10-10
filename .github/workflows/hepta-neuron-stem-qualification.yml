@@ -1,0 +1,45 @@
+name: Hepta Neuron Stem Shadow Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'qualification/neuron-stem/**'
+      - '.github/workflows/hepta-neuron-stem-qualification.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Verify exact-source Python qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 -m compileall -q qualification/neuron-stem
+          PYTHONPATH=qualification/neuron-stem python3 -m unittest discover -s qualification/neuron-stem -p 'test_*.py' -v
+          python3 qualification/neuron-stem/qualified_eval.py matrix \
+            --models qualification/neuron-stem/models.json \
+            --out stem-matrix.json
+          python3 - stem-matrix.json <<'PY'
+          import json,sys
+          plan=json.load(open(sys.argv[1], encoding="utf-8"))
+          assert len(plan["arms"]) == 4*4*6*4
+          assert plan["production_promotion_permitted"] is False
+          assert all(arm["activation"]=="shadow" for arm in plan["arms"])
+          PY
+      - name: Retain immutable qualification matrix
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-stem-qualification-matrix
+          path: stem-matrix.json
+          if-no-files-found: ignore
+          retention-days: 14
