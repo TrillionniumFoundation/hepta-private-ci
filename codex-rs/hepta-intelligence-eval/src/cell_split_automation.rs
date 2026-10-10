@@ -2271,4 +2271,147 @@ mod tests {
         );
         assert_eq!(replayed.events.len(), 5);
     }
+
+    #[test]
+    fn pending_canary_reconciles_from_original_owner_without_replaying_any_effect() {
+        struct ReadOnlyCanary {
+            observed: Option<CellSplitCanaryReceiptV1>,
+        }
+        impl CellSplitAutomationExecutorV1 for ReadOnlyCanary {
+            type Error = &'static str;
+
+            fn evaluate(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                panic!("reopened canary must not reevaluate")
+            }
+            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                panic!("reopened canary must not redispatch")
+            }
+            fn observe_canary(
+                &mut self,
+                _split: &CellSplitV1,
+                _evaluation_receipt_digest: Digest32,
+            ) -> Result<Option<CellSplitCanaryReceiptV1>, Self::Error> {
+                Ok(self.observed.clone())
+            }
+            fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                Ok(split.retirement.tombstone_digest)
+            }
+        }
+        let split = split();
+        let proposal = proposal(&split);
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        let mut journal = CellSplitLifecycleJournalV1::proposed(&split).unwrap();
+        journal.record_proposal(proposal.proposal_digest).unwrap();
+        let evaluation = crate::cell_split_evaluation::test_receipt_for_lifecycle(
+            &split,
+            CellSplitEvaluationDispositionV1::EligibleForCanary,
+        );
+        journal.apply_evaluation(&split, &evaluation).unwrap();
+        journal
+            .begin_canary(evaluation.binding().evaluation_receipt_digest)
+            .unwrap();
+        owner.commit(&journal).unwrap();
+
+        assert!(matches!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut owner,
+                &mut ReadOnlyCanary { observed: None },
+            ),
+            Err(CellSplitAutomationErrorV1::Binding(
+                "pending canary requires owner reconciliation"
+            ))
+        ));
+        assert_eq!(
+            owner.load(&split.split_id).unwrap().unwrap().current_state,
+            CellSplitLifecycleStateV1::CanaryRunning
+        );
+        let canary = Executor::default().canary(&split).unwrap();
+        assert_eq!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut owner,
+                &mut ReadOnlyCanary { observed: Some(canary) },
+            )
+            .unwrap()
+            .state,
+            CellSplitLifecycleStateV1::Retired
+        );
+    }
+
+    #[test]
+    fn accepted_evaluation_restarts_from_durable_receipt_without_reevaluation() {
+        struct AcceptedOnly;
+        impl CellSplitAutomationExecutorV1 for AcceptedOnly {
+            type Error = &'static str;
+            fn evaluate(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                panic!("accepted evaluation is durable")
+            }
+            fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                Executor::default().canary(split)
+            }
+            fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                Ok(split.retirement.tombstone_digest)
+            }
+        }
+        let split = split();
+        let proposal = proposal(&split);
+        let mut journal = CellSplitLifecycleJournalV1::proposed(&split).unwrap();
+        journal.record_proposal(proposal.proposal_digest).unwrap();
+        let evaluation = crate::cell_split_evaluation::test_receipt_for_lifecycle(
+            &split,
+            CellSplitEvaluationDispositionV1::EligibleForCanary,
+        );
+        journal.apply_evaluation(&split, &evaluation).unwrap();
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        owner.commit(&journal).unwrap();
+        assert_eq!(
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut AcceptedOnly)
+                .unwrap().state,
+            CellSplitLifecycleStateV1::Retired
+        );
+    }
+
+    #[test]
+    fn ambiguous_canary_keeps_pending_frontier_instead_of_fabricating_quarantine() {
+        struct UnknownCanary;
+        impl CellSplitAutomationExecutorV1 for UnknownCanary {
+            type Error = &'static str;
+            fn evaluate(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                Ok(crate::cell_split_evaluation::test_receipt_for_lifecycle(
+                    split,
+                    CellSplitEvaluationDispositionV1::EligibleForCanary,
+                ))
+            }
+            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                Err("ACK lost")
+            }
+            fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                panic!("must not retire without canary receipt")
+            }
+        }
+        let split = split();
+        let proposal = proposal(&split);
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        assert!(matches!(
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut UnknownCanary),
+            Err(CellSplitAutomationErrorV1::Executor(message))
+                if message.contains("requires reconciliation")
+        ));
+        assert_eq!(
+            owner.load(&split.split_id).unwrap().unwrap().current_state,
+            CellSplitLifecycleStateV1::CanaryRunning
+        );
+    }
 }
