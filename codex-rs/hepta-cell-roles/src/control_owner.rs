@@ -233,6 +233,7 @@ pub enum ControlOwnerErrorV1 {
     EffectBoundaryMissing,
     AuthorityGranted,
     GenerationRegression,
+    ClockRegressed,
     RouteFenceMismatch,
     IdempotencyConflict,
     MissingDispatch,
@@ -399,6 +400,11 @@ impl DurableControlRoleOwnerV1 {
 
     pub fn set_now_ms(&mut self, now_ms: u64) -> Result<(), ControlOwnerErrorV1> {
         self.apply_mutation(|owner| {
+            // The durable clock is an admission frontier. Allowing it to move
+            // backwards after restart can re-admit expired dispatch intents.
+            if now_ms < owner.now_ms {
+                return Err(ControlOwnerErrorV1::ClockRegressed);
+            }
             owner.set_now_ms(now_ms);
             Ok(())
         })
@@ -1381,6 +1387,32 @@ mod tests {
         fn drop(&mut self) {
             let _ = std::fs::remove_dir_all(&self.0);
         }
+    }
+
+    #[test]
+    fn durable_control_clock_frontier_survives_restart_and_rejects_regression() {
+        let root = DurableTestDirectory::new();
+        let path = root.file();
+        {
+            let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open owner");
+            owner.set_now_ms(200).expect("advance clock");
+            assert_eq!(
+                owner.set_now_ms(199),
+                Err(ControlOwnerErrorV1::ClockRegressed)
+            );
+            assert_eq!(owner.inner().now_ms, 200);
+        }
+        let mut reopened = DurableControlRoleOwnerV1::open(&path).expect("recover owner");
+        assert_eq!(reopened.inner().now_ms, 200);
+        assert_eq!(
+            reopened.set_now_ms(100),
+            Err(ControlOwnerErrorV1::ClockRegressed)
+        );
+        reopened.set_now_ms(200).expect("idempotent clock");
+        reopened.set_now_ms(201).expect("forward clock");
+        drop(reopened);
+        let replay = DurableControlRoleOwnerV1::open(&path).expect("replay");
+        assert_eq!(replay.inner().now_ms, 201);
     }
 
     #[test]
