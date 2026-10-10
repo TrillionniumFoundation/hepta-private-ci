@@ -712,7 +712,7 @@ fn native_batch_backend_absence_fails_closed_instead_of_sequential_fallback() {
         observed
             .outcomes
             .iter()
-            .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::Worker)))
+            .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::BatchUnsupported)))
     );
 }
 
