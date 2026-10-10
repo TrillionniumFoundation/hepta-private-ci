@@ -124,6 +124,9 @@ pub trait CellSplitCnsRuntimePortV1 {
         &mut self,
         commit: &CellSplitCnsRuntimeCommitV1,
     ) -> Result<(), Self::Error>;
+
+    /// Durable runtime-owner sequence, never a locally guessed generation.
+    fn committed_sequence(&mut self, cns_id: &str) -> Result<u64, Self::Error>;
 }
 
 #[derive(Debug, Error)]
@@ -350,24 +353,16 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitDurableEffectBackendV1
     }
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
-        let live = self.checked_live()?;
-        let original = if self.is_child(&live) {
-            // A current child route by itself is never an authoritative
-            // sequence/commit witness. Each lookup uses its exact intent.
-            return Err(CellSplitCnsCutoverErrorV1::Ambiguous);
-        } else if self.is_parent(&live) {
-            None
-        } else {
-            return Err(CellSplitCnsCutoverErrorV1::Ambiguous);
-        };
-        let _ = original;
-        Ok(self.plan.parent_generation)
+        self.checked_live()?;
+        let sequence = self.port.committed_sequence(&self.binding.cns_id)
+            .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
+        if sequence == 0 {
+            return Err(CellSplitCnsCutoverErrorV1::Invalid);
+        }
+        Ok(sequence)
     }
 }
 
-/// Runtime readbacks after commit need a durable original receipt sequence,
-/// not a generation number. This is served through verified_effect instead
-/// of deriving an independent sequence from an observation.
 fn digest_shape(value: &str) -> bool {
     value.len() == 64
         && value.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
