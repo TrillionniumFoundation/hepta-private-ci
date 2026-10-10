@@ -737,6 +737,7 @@ mod tests {
         let sequence = owner.committed_events();
 
         let mut expired = intent(scope);
+        expired.deadline_ms = 9;
         expired.expiry_ms = 10;
         assert!(matches!(
             owner.prepare(expired),
