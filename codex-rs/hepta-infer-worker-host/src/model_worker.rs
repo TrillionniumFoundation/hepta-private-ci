@@ -230,9 +230,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
         // Physical batching relies on this invariant and cannot safely
         // coalesce distinct model handles merely because digests match.
         if self.models.contains_key(&manifest.model_id)
-            || self.models.values().any(|loaded| {
-                loaded.manifest.model_digest == manifest.model_digest
-            })
+            || self
+                .models
+                .values()
+                .any(|loaded| loaded.manifest.model_digest == manifest.model_digest)
         {
             return Err(Error::ModelAlreadyLoaded);
         }
