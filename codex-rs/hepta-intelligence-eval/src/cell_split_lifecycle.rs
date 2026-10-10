@@ -110,7 +110,7 @@ pub enum CellSplitLifecycleStateV1 {
 }
 
 impl CellSplitLifecycleStateV1 {
-    const fn tag(self) -> u8 {
+    pub(crate) const fn tag(self) -> u8 {
         match self {
             Self::Proposed => 0,
             Self::EvaluationPending => 1,
@@ -121,6 +121,20 @@ impl CellSplitLifecycleStateV1 {
             Self::Retired => 6,
             Self::RolledBack => 7,
         }
+    }
+
+    pub(crate) const fn from_tag(tag: u8) -> Option<Self> {
+        Some(match tag {
+            0 => Self::Proposed,
+            1 => Self::EvaluationPending,
+            2 => Self::EvaluationAccepted,
+            3 => Self::CanaryRunning,
+            4 => Self::Retained,
+            5 => Self::Quarantined,
+            6 => Self::Retired,
+            7 => Self::RolledBack,
+            _ => return None,
+        })
     }
 }
 
