@@ -35,7 +35,12 @@ struct DiskCns {
 
 impl DiskCns {
     fn open(root: PathBuf, signer: SigningKey, ready: Arc<AtomicBool>) -> Self {
-        Self { root, signer, migration_ready: ready, replay_old_readback: false }
+        Self {
+            root,
+            signer,
+            migration_ready: ready,
+            replay_old_readback: false,
+        }
     }
     fn with_stale_readback(mut self) -> Self {
         self.replay_old_readback = true;
@@ -55,7 +60,8 @@ impl DiskCns {
             &self.route_path(),
             &self.root.join("route-stage.tmp"),
             &canonical_json(next).map_err(|e| e.to_string())?,
-        ).map_err(|e| e.to_string())
+        )
+        .map_err(|e| e.to_string())
     }
 }
 
@@ -87,9 +93,9 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         } else {
             challenge_nonce.to_owned()
         };
-        let signed = self.signer.sign(
-            &canonical_json(&(&observed, &actual_nonce)).map_err(|e| e.to_string())?
-        );
+        let signed = self
+            .signer
+            .sign(&canonical_json(&(&observed, &actual_nonce)).map_err(|e| e.to_string())?);
         Ok(CellSplitCnsLiveRouteV1 {
             cns_id: observed.cns,
             scope_digest: observed.scope,
@@ -105,9 +111,7 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         })
     }
 
-    fn verify_live(&mut self, state: &CellSplitCnsLiveRouteV1)
-        -> Result<(), Self::Error>
-    {
+    fn verify_live(&mut self, state: &CellSplitCnsLiveRouteV1) -> Result<(), Self::Error> {
         let actual = self.route();
         if state.cns_id != actual.cns
             || state.scope_digest != actual.scope
@@ -121,12 +125,15 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         {
             return Err("signed route no longer equals the serving CNS route".into());
         }
-        let signature = Signature::from_slice(&state.live_runtime_proof_bytes)
-            .map_err(|e| e.to_string())?;
-        self.signer.verifying_key().verify_strict(
-            &canonical_json(&(&actual, &state.challenge_nonce)).map_err(|e| e.to_string())?,
-            &signature,
-        ).map_err(|e| e.to_string())
+        let signature =
+            Signature::from_slice(&state.live_runtime_proof_bytes).map_err(|e| e.to_string())?;
+        self.signer
+            .verifying_key()
+            .verify_strict(
+                &canonical_json(&(&actual, &state.challenge_nonce)).map_err(|e| e.to_string())?,
+                &signature,
+            )
+            .map_err(|e| e.to_string())
     }
 
     fn publish_once(
@@ -169,7 +176,8 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         crate::durable::write_private_new(
             &self.commit_path(&intent.idempotency_key),
             &canonical_json(&receipt).map_err(|e| e.to_string())?,
-        ).map_err(|e| e.to_string())
+        )
+        .map_err(|e| e.to_string())
     }
 
     fn read_original_commit(
@@ -177,7 +185,9 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         key: &str,
     ) -> Result<Option<CellSplitCnsRuntimeCommitV1>, Self::Error> {
         match fs::read(self.commit_path(key)) {
-            Ok(bytes) => serde_json::from_slice(&bytes).map(Some).map_err(|e| e.to_string()),
+            Ok(bytes) => serde_json::from_slice(&bytes)
+                .map(Some)
+                .map_err(|e| e.to_string()),
             Err(e) if e.kind() == ErrorKind::NotFound => Ok(None),
             Err(e) => Err(e.to_string()),
         }
@@ -189,9 +199,10 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
     ) -> Result<(), Self::Error> {
         let signature = Signature::from_slice(&receipt.original_runtime_signature_bytes)
             .map_err(|e| e.to_string())?;
-        self.signer.verifying_key().verify_strict(
-            &receipt.original_runtime_receipt_bytes, &signature,
-        ).map_err(|e| e.to_string())
+        self.signer
+            .verifying_key()
+            .verify_strict(&receipt.original_runtime_receipt_bytes, &signature)
+            .map_err(|e| e.to_string())
     }
 
     fn committed_sequence(&mut self, _cns_id: &str) -> Result<u64, Self::Error> {
@@ -210,8 +221,10 @@ fn plan() -> CellSplitExecutionPlanV1 {
         ndu_snapshot_digest: "44".repeat(32),
         route_fence_digest: "55".repeat(32),
         owner_ids: [
-            "cas-owner".into(), "migration-owner".into(),
-            "cns-owner".into(), "supervisor-owner".into(),
+            "cas-owner".into(),
+            "migration-owner".into(),
+            "cns-owner".into(),
+            "supervisor-owner".into(),
         ],
     }
 }
@@ -228,13 +241,17 @@ fn binding() -> CellSplitCnsRouteBindingV1 {
 fn intent() -> CellSplitExecutionIntentV1 {
     let plan_digest = sha256(&canonical_json(&plan()).expect("plan"));
     let predecessor = "77".repeat(32);
-    let key = sha256(format!(
-        "hepta.learning.cell-split.execution-owner.v1\0{plan_digest}\0{}\0{predecessor}",
-        CellSplitExecutionStepV1::CnsRouteCutover.index()
-    ).as_bytes());
+    let key = sha256(
+        format!(
+            "hepta.learning.cell-split.execution-owner.v1\0{plan_digest}\0{}\0{predecessor}",
+            CellSplitExecutionStepV1::CnsRouteCutover.index()
+        )
+        .as_bytes(),
+    );
     CellSplitExecutionIntentV1 {
         schema: "hepta.learning.cell-split.execution-owner.v1".into(),
-        plan_digest, step: CellSplitExecutionStepV1::CnsRouteCutover,
+        plan_digest,
+        step: CellSplitExecutionStepV1::CnsRouteCutover,
         owner_id: "cns-owner".into(),
         idempotency_key: key,
         previous_receipt_digest: predecessor,
@@ -259,18 +276,20 @@ fn private_root() -> tempfile::TempDir {
     };
     crate::durable::write_private_new(
         &root.path().join("actual-runtime-route.json"),
-        &canonical_json(&route).expect("route bytes")
-    ).expect("initial route");
+        &canonical_json(&route).expect("route bytes"),
+    )
+    .expect("initial route");
     root
 }
 
-fn owner(root: &Path, ready: Arc<AtomicBool>)
-    -> CellSplitCnsCutoverOwnerV1<DiskCns>
-{
+fn owner(root: &Path, ready: Arc<AtomicBool>) -> CellSplitCnsCutoverOwnerV1<DiskCns> {
     CellSplitCnsCutoverOwnerV1::open(
-        root, plan(), binding(),
-        DiskCns::open(root.to_path_buf(), SigningKey::from_bytes(&[9; 32]), ready)
-    ).expect("owner")
+        root,
+        plan(),
+        binding(),
+        DiskCns::open(root.to_path_buf(), SigningKey::from_bytes(&[9; 32]), ready),
+    )
+    .expect("owner")
 }
 
 #[test]
@@ -280,24 +299,41 @@ fn requires_original_runtime_effect_and_exact_live_route() {
     let request = intent();
     let mut cns = owner(root.path(), ready.clone());
     assert!(cns.commit_once(&request).is_err());
-    assert_eq!(cns.read_committed(&request).expect_err("missing authority").to_string().contains("unavailable"), true);
+    assert_eq!(
+        cns.read_committed(&request)
+            .expect_err("missing authority")
+            .to_string()
+            .contains("unavailable"),
+        true
+    );
     ready.store(true, Ordering::Release);
-    cns.commit_once(&request).expect("real route mutation and durable receipt");
+    cns.commit_once(&request)
+        .expect("real route mutation and durable receipt");
     let first = cns.read_committed(&request).expect("live").expect("effect");
     assert_eq!(first.owner_sequence, 11);
-    assert!(cns.verify_current(&request, &first).expect("current runtime route"));
-    cns.commit_once(&request).expect("no duplicate runtime cutover");
+    assert!(
+        cns.verify_current(&request, &first)
+            .expect("current runtime route")
+    );
+    cns.commit_once(&request)
+        .expect("no duplicate runtime cutover");
     drop(cns);
 
     let mut recovered = owner(root.path(), ready);
-    assert_eq!(recovered.read_committed(&request).expect("reopened CNS"), Some(first.clone()));
+    assert_eq!(
+        recovered.read_committed(&request).expect("reopened CNS"),
+        Some(first.clone())
+    );
     let mut backend = DiskCns::open(
-        root.path().to_path_buf(), SigningKey::from_bytes(&[9; 32]),
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),
     );
     let mut mutated = backend.route();
     mutated.route = "aa".repeat(32);
-    backend.durable_replace(&mutated).expect("out-of-band route drift");
+    backend
+        .durable_replace(&mutated)
+        .expect("out-of-band route drift");
     assert!(recovered.verify_current(&request, &first).is_err());
 }
 
@@ -310,7 +346,8 @@ fn lost_runtime_ack_is_ambiguous_and_cannot_forge_success() {
     // A simulated crash between real route mutation and the separately
     // persisted original owner receipt. No second cutover is permitted.
     let mut backend = DiskCns::open(
-        root.path().to_path_buf(), SigningKey::from_bytes(&[9; 32]),
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),
     );
     let mut route = backend.route();
@@ -318,9 +355,12 @@ fn lost_runtime_ack_is_ambiguous_and_cannot_forge_success() {
     route.generation = plan().child_generation;
     route.artifact = plan().child_artifact_digest;
     route.fence = plan().route_fence_digest;
-    backend.durable_replace(&route).expect("cutover interrupted");
+    backend
+        .durable_replace(&route)
+        .expect("cutover interrupted");
     assert!(matches!(
-        owner.read_committed(&request), Err(CellSplitCnsCutoverErrorV1::Ambiguous)
+        owner.read_committed(&request),
+        Err(CellSplitCnsCutoverErrorV1::Ambiguous)
     ));
     assert!(owner.commit_once(&request).is_err());
     assert!(!backend.commit_path(&request.idempotency_key).exists());
@@ -335,35 +375,54 @@ fn signed_socket_fences_forged_positive_readback_after_restart() {
     let ready = Arc::new(AtomicBool::new(true));
     let server = thread::spawn(move || {
         let mut service = CellSplitEffectServiceV1::new(
-            CellSplitExecutionStepV1::CnsRouteCutover, "cns-owner".into(),
+            CellSplitExecutionStepV1::CnsRouteCutover,
+            "cns-owner".into(),
             sha256(&canonical_json(&plan()).expect("plan")),
             SigningKey::from_bytes(&[3; 32]),
             DiskCnsOwner::new(&root_copy, ready.clone()),
-        ).expect("server");
+        )
+        .expect("server");
         for _ in 0..2 {
             let (mut stream, _) = listener.accept().expect("RPC");
             service.serve_connection(&mut stream).expect("trusted call");
         }
         drop(service);
         let mut reopened = CellSplitEffectServiceV1::new(
-            CellSplitExecutionStepV1::CnsRouteCutover, "cns-owner".into(),
+            CellSplitExecutionStepV1::CnsRouteCutover,
+            "cns-owner".into(),
             sha256(&canonical_json(&plan()).expect("plan")),
             SigningKey::from_bytes(&[3; 32]),
             DiskCnsOwner::new(&root_copy, ready),
-        ).expect("reopened");
+        )
+        .expect("reopened");
         let (mut stream, _) = listener.accept().expect("recovered read");
         reopened.serve_connection(&mut stream).expect("read");
     });
-    let keys = [1u8, 2, 3, 4]
-        .map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
-    let mut client = CellSplitUnixEffectPortV1::new([
-        root.path().join("cas.sock"), root.path().join("migration.sock"),
-        socket, root.path().join("supervisor.sock"),
-    ], keys, Duration::from_secs(3)).expect("client");
+    let keys = [1u8, 2, 3, 4].map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
+    let mut client = CellSplitUnixEffectPortV1::new(
+        [
+            root.path().join("cas.sock"),
+            root.path().join("migration.sock"),
+            socket,
+            root.path().join("supervisor.sock"),
+        ],
+        keys,
+        Duration::from_secs(3),
+    )
+    .expect("client");
     let request = intent();
-    let signed = client.execute(&request).expect("original signed CNS cutover");
-    client.verify_committed(&request, &signed).expect("fresh serving route");
-    assert_eq!(client.reconcile(&request).expect("recovered original runtime proof"), Some(signed));
+    let signed = client
+        .execute(&request)
+        .expect("original signed CNS cutover");
+    client
+        .verify_committed(&request, &signed)
+        .expect("fresh serving route");
+    assert_eq!(
+        client
+            .reconcile(&request)
+            .expect("recovered original runtime proof"),
+        Some(signed)
+    );
     server.join().expect("server");
 }
 
@@ -377,27 +436,32 @@ impl DiskCnsOwner {
 }
 impl CellSplitDurableEffectBackendV1 for DiskCnsOwner {
     type Error = CellSplitCnsCutoverErrorV1;
-    fn authorize_execute(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<(), Self::Error> {
+    fn authorize_execute(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
         self.0.authorize_execute(intent)
     }
-    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<(), Self::Error> {
+    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
         self.0.commit_once(intent)
     }
-    fn read_committed(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<Option<CellSplitOwnedEffectV1>, Self::Error> {
+    fn read_committed(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<Option<CellSplitOwnedEffectV1>, Self::Error> {
         self.0.read_committed(intent)
     }
-    fn verify_current(&mut self, intent: &CellSplitExecutionIntentV1,
-        receipt: &CellSplitOwnedEffectV1) -> Result<bool, Self::Error> {
+    fn verify_current(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+        receipt: &CellSplitOwnedEffectV1,
+    ) -> Result<bool, Self::Error> {
         self.0.verify_current(intent, receipt)
     }
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
         self.0.current_sequence()
     }
 }
-
 
 #[test]
 fn corrupted_runtime_signature_cannot_become_a_signed_cns_readback() {
@@ -406,10 +470,13 @@ fn corrupted_runtime_signature_cannot_become_a_signed_cns_readback() {
     let mut cns = owner(root.path(), ready);
     let request = intent();
     cns.commit_once(&request).expect("committed original");
-    let signed = cns.read_committed(&request).unwrap().expect("signed original");
-    let path = root.path().join(format!(
-        "runtime-cutover-{}.json", request.idempotency_key
-    ));
+    let signed = cns
+        .read_committed(&request)
+        .unwrap()
+        .expect("signed original");
+    let path = root
+        .path()
+        .join(format!("runtime-cutover-{}.json", request.idempotency_key));
     let mut tampered: CellSplitCnsRuntimeCommitV1 =
         serde_json::from_slice(&fs::read(&path).expect("original")).expect("receipt");
     tampered.original_runtime_signature_bytes[0] ^= 0x80;
@@ -419,7 +486,6 @@ fn corrupted_runtime_signature_cannot_become_a_signed_cns_readback() {
     assert!(cns.read_committed(&request).is_err());
 }
 
-
 #[test]
 fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
     let root = private_root();
@@ -427,10 +493,10 @@ fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
         root.path().to_path_buf(),
         SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),
-    ).with_stale_readback();
-    let mut owner = CellSplitCnsCutoverOwnerV1::open(
-        root.path(), plan(), binding(), port,
-    ).expect("frozen CNS");
+    )
+    .with_stale_readback();
+    let mut owner =
+        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), port).expect("frozen CNS");
     assert!(matches!(
         owner.read_committed(&intent()),
         Err(CellSplitCnsCutoverErrorV1::Invalid)
