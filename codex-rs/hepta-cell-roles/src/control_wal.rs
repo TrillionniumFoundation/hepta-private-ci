@@ -479,36 +479,56 @@ impl ScopedControlWalOwnerV1 {
         if self.poisoned || self.sequence >= MAX_WAL_EVENTS {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
         }
-        let mut next = self.inner.clone();
-        let output = event.apply(&mut next, &self.cell_id, self.scope_digest)?;
-        if next == self.inner {
+        let undo = ControlWalUndoV1::capture(&event, &self.inner);
+        let output = match event.apply(&mut self.inner, &self.cell_id, self.scope_digest) {
+            Ok(output) => output,
+            Err(error) => {
+                // The underlying owner is normally mutation-on-success; even a
+                // future failed validation cannot leak uncommitted state.
+                undo.restore(&mut self.inner);
+                return Err(error);
+            }
+        };
+        if !undo.changed(&self.inner) {
             return Ok(output);
         }
-        let next_sequence = self.sequence + 1;
-        let (frame, head) =
-            wal_frame(next_sequence, self.head, output.digest()?, &event.encode()?)?;
-        let len = self
-            .bytes
-            .checked_add(frame.len())
-            .ok_or(ControlOwnerErrorV1::InvalidDurableSnapshot)?;
-        if len > MAX_WAL_BYTES {
-            return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
-        }
-        // Failure after any partial append poisons this writer. It must be
-        // reopened/reconciled; no automatic retry can reissue a downstream effect.
+        let candidate = (|| {
+            let next_sequence = self.sequence + 1;
+            let (frame, head) =
+                wal_frame(next_sequence, self.head, output.digest()?, &event.encode()?)?;
+            let len = self
+                .bytes
+                .checked_add(frame.len())
+                .ok_or(ControlOwnerErrorV1::InvalidDurableSnapshot)?;
+            if len > MAX_WAL_BYTES {
+                return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+            }
+            Ok((next_sequence, frame, head, len))
+        })();
+        let (next_sequence, frame, head, len) = match candidate {
+            Ok(candidate) => candidate,
+            Err(error) => {
+                undo.restore(&mut self.inner);
+                return Err(error);
+            }
+        };
+        // The &mut lane writer is exclusively borrowed during the staged
+        // mutation. No caller can observe it until the chained frame is fsync'd.
+        // Failure after a partial append restores the visible state and poisons
+        // the lane: only read-only external reconciliation may resolve the tail.
         if self
             .writer
             .write_all(&frame)
             .and_then(|()| self.writer.sync_all())
             .is_err()
         {
+            undo.restore(&mut self.inner);
             self.poisoned = true;
             return Err(ControlOwnerErrorV1::DurableIo);
         }
         self.bytes = len;
         self.head = head;
         self.sequence = next_sequence;
-        self.inner = next;
         Ok(output)
     }
 
