@@ -1358,19 +1358,32 @@ mod tests {
     -> Result<(), FleetRegistryError> {
         let fixture = Fixture::new()?;
         let release_id = ReleaseId::parse("revoked-v1")?;
-        fixture.registry.install_release(
-            release_id.clone(),
-            &fixture.source,
-            Vec::new(),
-        )?;
-        fixture.registry.allow_release(&fixture.first, &release_id)?;
-        fixture.registry.allow_release(&fixture.second, &release_id)?;
-        fixture.registry.resolve_release_binding(&fixture.first, &release_id)?;
-        fixture.registry.revoke_release(&fixture.first, &release_id)?;
-        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        fixture
+            .registry
+            .install_release(release_id.clone(), &fixture.source, Vec::new())?;
+        fixture
+            .registry
+            .allow_release(&fixture.first, &release_id)?;
+        fixture
+            .registry
+            .allow_release(&fixture.second, &release_id)?;
+        fixture
+            .registry
+            .resolve_release_binding(&fixture.first, &release_id)?;
+        fixture
+            .registry
+            .revoke_release(&fixture.first, &release_id)?;
+        let record = fixture
+            .registry
+            .load()?
+            .agent(&fixture.first)
+            .unwrap()
+            .clone();
         let marker = revocation_path(record.layout.releases_root(), &release_id);
         let original = std::fs::read(&marker)?;
-        fixture.registry.revoke_release(&fixture.first, &release_id)?;
+        fixture
+            .registry
+            .revoke_release(&fixture.first, &release_id)?;
         assert_eq!(std::fs::read(&marker)?, original);
         let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
         for registry in [&fixture.registry, &reopened] {
@@ -1390,17 +1403,21 @@ mod tests {
     }
 
     #[test]
-    fn revocation_directory_denies_without_repair_or_deletion()
-    -> Result<(), FleetRegistryError> {
+    fn revocation_directory_denies_without_repair_or_deletion() -> Result<(), FleetRegistryError> {
         let fixture = Fixture::new()?;
         let release_id = ReleaseId::parse("directory-marker")?;
-        fixture.registry.install_release(
-            release_id.clone(),
-            &fixture.source,
-            Vec::new(),
-        )?;
-        fixture.registry.allow_release(&fixture.first, &release_id)?;
-        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        fixture
+            .registry
+            .install_release(release_id.clone(), &fixture.source, Vec::new())?;
+        fixture
+            .registry
+            .allow_release(&fixture.first, &release_id)?;
+        let record = fixture
+            .registry
+            .load()?
+            .agent(&fixture.first)
+            .unwrap()
+            .clone();
         let marker = revocation_path(record.layout.releases_root(), &release_id);
         std::fs::create_dir(&marker)?;
         let reopened = FleetRegistry::open_existing(fixture.root.clone())?;
@@ -1427,14 +1444,21 @@ mod tests {
 
         let fixture = Fixture::new()?;
         let release_id = ReleaseId::parse("dangling-revocation")?;
-        fixture.registry.install_release(
-            release_id.clone(),
-            &fixture.source,
-            Vec::new(),
-        )?;
-        fixture.registry.allow_release(&fixture.first, &release_id)?;
-        fixture.registry.allow_release(&fixture.second, &release_id)?;
-        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        fixture
+            .registry
+            .install_release(release_id.clone(), &fixture.source, Vec::new())?;
+        fixture
+            .registry
+            .allow_release(&fixture.first, &release_id)?;
+        fixture
+            .registry
+            .allow_release(&fixture.second, &release_id)?;
+        let record = fixture
+            .registry
+            .load()?
+            .agent(&fixture.first)
+            .unwrap()
+            .clone();
         let marker = revocation_path(record.layout.releases_root(), &release_id);
         let missing = fixture._temp.path().join("missing-revocation-target");
         symlink(&missing, &marker)?;
@@ -1472,40 +1496,55 @@ mod tests {
 
         let fixture = Fixture::new()?;
         let release_id = ReleaseId::parse("looping-revocation")?;
-        fixture.registry.install_release(
-            release_id.clone(),
-            &fixture.source,
-            Vec::new(),
-        )?;
-        fixture.registry.allow_release(&fixture.first, &release_id)?;
-        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        fixture
+            .registry
+            .install_release(release_id.clone(), &fixture.source, Vec::new())?;
+        fixture
+            .registry
+            .allow_release(&fixture.first, &release_id)?;
+        let record = fixture
+            .registry
+            .load()?
+            .agent(&fixture.first)
+            .unwrap()
+            .clone();
         let marker = revocation_path(record.layout.releases_root(), &release_id);
         symlink(&marker, &marker)?;
         assert!(!marker.exists());
         assert!(release_entry_exists(&marker)?);
         assert!(matches!(
-            fixture.registry.resolve_release(&fixture.first, &release_id),
+            fixture
+                .registry
+                .resolve_release(&fixture.first, &release_id),
             Err(FleetRegistryError::ReleaseRevoked { .. })
         ));
-        assert!(fixture.registry.allowed_releases(&fixture.first)?.is_empty());
+        assert!(
+            fixture
+                .registry
+                .allowed_releases(&fixture.first)?
+                .is_empty()
+        );
         assert_eq!(std::fs::read_link(&marker)?, marker);
         Ok(())
     }
 
     #[cfg(unix)]
     #[test]
-    fn dangling_allowance_entry_is_rejected_without_replacing_it()
-    -> Result<(), FleetRegistryError> {
+    fn dangling_allowance_entry_is_rejected_without_replacing_it() -> Result<(), FleetRegistryError>
+    {
         use std::os::unix::fs::symlink;
 
         let fixture = Fixture::new()?;
         let release_id = ReleaseId::parse("dangling-allowance")?;
-        fixture.registry.install_release(
-            release_id.clone(),
-            &fixture.source,
-            Vec::new(),
-        )?;
-        let record = fixture.registry.load()?.agent(&fixture.first).unwrap().clone();
+        fixture
+            .registry
+            .install_release(release_id.clone(), &fixture.source, Vec::new())?;
+        let record = fixture
+            .registry
+            .load()?
+            .agent(&fixture.first)
+            .unwrap()
+            .clone();
         let marker = allowance_path(record.layout.releases_root(), &release_id);
         let missing = fixture._temp.path().join("missing-allowance-target");
         symlink(&missing, &marker)?;
@@ -1514,7 +1553,9 @@ mod tests {
             Err(FleetRegistryError::Corrupt(_))
         ));
         assert!(matches!(
-            fixture.registry.resolve_release(&fixture.first, &release_id),
+            fixture
+                .registry
+                .resolve_release(&fixture.first, &release_id),
             Err(FleetRegistryError::Corrupt(_))
         ));
         assert_eq!(std::fs::read_link(marker)?, missing);
