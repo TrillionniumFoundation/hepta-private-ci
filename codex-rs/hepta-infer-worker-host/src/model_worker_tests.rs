@@ -346,7 +346,9 @@ impl NeuronBackendBatchDriver for MockBatchDriver {
             BatchFault::Missing => {
                 members.pop();
             }
-            BatchFault::None | BatchFault::WrongDigest | BatchFault::WrongMemory
+            BatchFault::None
+            | BatchFault::WrongDigest
+            | BatchFault::WrongMemory
             | BatchFault::DriverError => {}
         }
         Ok(DriverNeuronBackendBatch {
@@ -408,7 +410,14 @@ fn native_batch_boundary_calls_driver_once_and_binds_distinct_cell_heads() {
     assert_eq!(result.batch_digest, expected);
     assert_eq!(result.backend_elapsed_micros, 120);
     assert_eq!(result.receipts.len(), 2);
-    assert_ne!(result.receipts[0].receipt_digest, result.receipts[1].receipt_digest);
+    assert_ne!(
+        result.receipts[0].request_digest,
+        result.receipts[1].request_digest
+    );
+    assert_ne!(
+        result.receipts[0].receipt_digest,
+        result.receipts[1].receipt_digest
+    );
     assert_eq!(result.receipts[0].head_digest.to_string(), "b".repeat(64));
     assert_eq!(result.receipts[1].head_digest.to_string(), "d".repeat(64));
     assert!(result.receipts.iter().all(|r| !r.authority.grants_any()));
@@ -449,11 +458,11 @@ fn batch_rejects_wrong_member_order_and_missing_or_forged_driver_evidence() {
         BatchFault::WrongMemory,
     ] {
         let mut worker = batch_worker(fault);
-        assert!(worker.run_neuron_features_backend_batch(
-            100,
-            "model.1",
-            two_batch_requests()
-        ).is_err());
+        assert!(
+            worker
+                .run_neuron_features_backend_batch(100, "model.1", two_batch_requests())
+                .is_err()
+        );
         assert_eq!(worker.driver.backend_calls, 1);
         worker.unload_model(100, "model.1").expect("released");
     }
@@ -482,11 +491,7 @@ fn batch_driver_error_releases_active_ids_and_allows_retry() {
 fn batch_capacity_and_cancelled_requests_fail_closed() {
     let mut worker = batch_worker(BatchFault::None);
     assert_eq!(
-        worker.run_neuron_features_backend_batch(
-            100,
-            "model.1",
-            vec![neuron_feature_request()]
-        ),
+        worker.run_neuron_features_backend_batch(100, "model.1", vec![neuron_feature_request()]),
         Err(Error::FeatureBatchLimit)
     );
     let mut cancelled = two_batch_requests();
