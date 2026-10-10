@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.neuron.upstream-artifacts.v1",
+  "repository": "convaiinnovations/laya",
+  "revision": "7b928d828b7b0e022f929d9bd2e44165aa270148",
+  "licence": "apache-2.0",
+  "variants": {
+    "laya": {
+      "model_id": "convaiinnovations/laya",
+      "subfolder": "",
+      "weights_path": "model.safetensors",
+      "weights_sha256": "891102d372688fc2a094dac56a384bc537b87c63f21f9f3dac0be2b7cbc8d86c",
+      "required_files": ["model.safetensors", "rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json", "tokenizer/tokenizer_config.json"]
+    },
+    "typed": {
+      "model_id": "convaiinnovations/laya-typed-decisions",
+      "subfolder": "typed-decisions",
+      "weights_path": "model.safetensors",
+      "weights_sha256": "4fa56de72383a9d3efa9cfa78955733c81b9fc8067a587ca4beb82c78107a24e",
+      "required_files": ["model.safetensors", "rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json", "tokenizer/tokenizer_config.json"]
+    },
+    "multilingual": {
+      "model_id": "convaiinnovations/laya-multilingual",
+      "subfolder": "multilingual",
+      "weights_path": "model.safetensors",
+      "weights_sha256": "9d628fd971b700382ac6f65920a86f149777b2e748e0c955fb3b19695aa8f204",
+      "required_files": ["model.safetensors", "rl_agent_config.json", "encoder/config.json", "tokenizer/tokenizer.json", "tokenizer/tokenizer_config.json"]
+    }
+  },
+  "source_evidence_urls": {
+    "laya": "https://huggingface.co/convaiinnovations/laya/blob/main/model.safetensors",
+    "typed": "https://huggingface.co/convaiinnovations/laya/blob/main/typed-decisions/model.safetensors",
+    "multilingual": "https://huggingface.co/convaiinnovations/laya/blob/main/multilingual/model.safetensors"
+  }
+}

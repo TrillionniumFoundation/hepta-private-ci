@@ -22,28 +22,53 @@ rounded by Laya's SDK; ECE10 is diagnostic, not a calibrated grant. `is_ood` is
 external ground truth; the 0.8 confidence rejection is a **proxy**, not an
 independent OOD head. The head trial is Q24 regression, not a decision-policy test.
 
-## Local inputs (no bundled labels or weights)
+## Pinned upstream family: metadata first, local bytes second
 
-Create separate manifests and JSONL data for each family, with immutable sealed and blinded input
-SHA-256, exact Git `source_sha`, nonzero `host_profile_digest`, parameter cap,
-chronological disjoint `train`, `calibration`, `holdout`, `future_1`, `future_2`
-windows and `source_group` identifiers. The `observed_at_ms` intervals must not
-overlap. Keep heldout/future source groups out of training.
+`upstream-weights.lock.json` freezes the single source repository
+`convaiinnovations/laya` at revision
+`7b928d828b7b0e022f929d9bd2e44165aa270148` and the three upstream
+**publisher-advertised** safetensors SHA-256 pointers. It does **not** mean
+any weight file was downloaded or any code executed. The historical variant IDs
+remain logical experiment arm IDs; `typed` and `multilingual` are stored under
+`typed-decisions/` and `multilingual/` inside that same upstream revision.
 
-For choice tasks provide `id`, `split`, `source_group`, `observed_at_ms`,
-`state`, `question` (`type=choice`, `instructions`, ordered `criteria` map),
-`gold`, `is_ood`, `language`, `domain`, and **`option_order`** (an explicit,
-complete, unique list of option IDs; never infer indices from JSON map order).
-`multilingual` requires `en`, `zh`,
-`cross` in each evaluation window. For heads provide `features_q24` and
-`target_q24` arrays (lengths d and 2w, each signed [-8,8] Q24). No real data
-is shipped in this repository.
+Validate the metadata-only lock offline (no model weights, no network):
 
-Three deliberately invalid templates requiring actual signed pins are included
-in `qualification/neuron-model-trials/examples`. They must never be used as
-CI model evidence until each placeholder is replaced and independently checked.
+```sh
+python scripts/hepta_neuron_artifact_preflight.py catalog \
+  --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+  --output /absolute/new/catalog-diagnostic.json
+```
 
-Manifest example fields:
+A separately authorized operator must acquire each *complete* immutable source
+subtree onto the named host, without symlinks or implicit downloads during a
+trial. For illustration only, an authenticated HF CLI session could explicitly
+fetch the fixed revision's `model.safetensors`, `rl_agent_config.json`,
+`encoder/config.json`, and `tokenizer/{tokenizer.json,tokenizer_config.json}`
+and stage each variant in its own offline bundle directory. Do not use `main`
+for actual downloads and do not commit model weights or private data into Git.
+
+Physically verify bytes **after** staging (requires `safetensors`):
+
+```sh
+python scripts/hepta_neuron_artifact_preflight.py local \
+  --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+  --arm typed --artifact-dir /absolute/staged/typed \
+  --output /absolute/new/typed-local-preflight.json
+```
+
+This computes a real full-file SHA-256, reads tensor shapes without model
+execution, checks model config, tokenizer/encoder metadata, symlink absence, and
+full local artifact-tree SHA. `local_weight_bytes_verified=true` only proves
+that those physical local bytes match the public metadata lock; neither that
+lock nor its receipt is independently authenticated production evidence.
+
+**Full-model manifests must bind** `upstream_lock_sha256` and use the locked
+common source revision and expected weight hash for each model. Pass
+`--upstream-lock qualification/neuron-model-trials/upstream-weights.lock.json`
+on `blind`, `run` and `compare`. The full-model CLI fails closed otherwise.
+The `artifact_tree_sha256` field is still filled **after** actual staging and
+must match the physically measured subtree; no synthetic placeholder qualifies.
 
 ```json
 {"schema":"hepta.neuron.model-trial.v1","family":"decisions",
@@ -103,70 +128,4 @@ Requires an isolated Python runtime and, for actual inference, PyTorch,
 ```sh
 python scripts/hepta_neuron_model_trials.py run --manifest decisions.json --dataset /model-runner/decisions-blind.jsonl \
   --arm laya --artifact-dir /absolute/local/laya --weights-file model.safetensors \
-  --sdk-sha256 EXACT_INSTALLED_LAYA_TREE_SHA256 --device cpu --output /absolute/laya.json
-python scripts/hepta_neuron_model_trials.py run --manifest heads.json --dataset /model-runner/heads-blind.jsonl \
-  --arm swiglu --device cpu --checkpoint-out /absolute/swiglu.safetensors \
-  --output /absolute/swiglu.json
-python scripts/hepta_neuron_model_trials.py compare --manifest decisions.json \
-  --dataset /secure-evaluator/decisions.jsonl --receipt laya=/absolute/laya.json \
-  --receipt typed=/absolute/typed.json \
-  --baseline-sha256 EXACT_EARLIER_FROZEN_LAYA_RECEIPT_SHA256 --output /absolute/compare.json
-```
-
-Repeat per remaining arm/family. The evaluator interprets each probability by `option_order`, not JSON object
-iteration order. The `input_tokens` count is checked against the same 512-token
-maximum for each full-model experiment. Peak CPU RSS is recorded through Linux
-`VmHWM`; CUDA runs additionally report PyTorch peak allocated/reserved bytes
-rather than treating these as complete device-memory telemetry.
-
-Baseline hash must originate from the retained
-no-change measurement before inspecting candidate results. The script checks
-this hash, but cannot authenticate its timestamp or independent issuer.
-Model and SDK tree digests authenticate local bytes but **do not prove** a
-self-reported upstream model revision; external artifact-owner verification
-is required. Chronological bins also do not prove truly prospective future
-windows without independent observation timestamps. Archive signed artifact manifests separately.
-
-## Externally signed claims: verification only
-
-`hepta_neuron_trial_evidence_gate.py` checks four independently pinned Ed25519
-role keys and distinct principals: `shadow`, `evaluator`, `ndu`, and `recovery`.
-The operator, **not the trainer**, provisions the trust JSON and records its
-SHA-256 out of band. Every signed envelope uses the schema
-`hepta.neuron.trial-external-evidence.v1`, the role, role-bound key ID, an
-exactly bound evidence body and `signature_ed25519_hex` over canonical JSON.
-
-- Shadow: per-arm receipt hashes, zero effects, shadow-only and signed trace.
-- Evaluator: sealed labels and separate scoring over holdout and both future windows.
-- NDU: no-change baseline, real utility/resources/retention/negative-transfer,
-  with signed net gains over both windows for every candidate.
-- Recovery: journal CAS, generation fence, old route rejection, governed rollback,
-  and tombstone no-resurrection; source/host/manifest/receipt bindings remain fixed.
-
-```sh
-python scripts/hepta_neuron_trial_evidence_gate.py \
-  --manifest decisions.json --comparison /absolute/compare.json \
-  --trust /operator-only/trust.json --trust-sha256 OPERATOR_PINNED_SHA256 \
-  --shadow /signed/shadow.json --evaluator /signed/evaluator.json \
-  --ndu /signed/ndu.json --recovery /signed/recovery.json \
-  --output /absolute/attestation-check.json
-```
-
-The completed signature packet permits only **manual inspection**, not an
-"eligible for production" verdict. Valid signatures authenticate *claims*
-and their bytes, not physical truth.
-Even if positive signed NDU gains are present, this validator explicitly keeps
-`production_evidence_verified=false`, `ndu_selection_authorized=false` and
-`promotion_authorized=false`. A real evaluator and host must separately replay
-and attest effects, seals, recovery and NDU utility before operator review.
-
-## Nonnegotiable promotion boundaries
-
-A report always writes `production_evidence_verified=false`,
-`ndu_selection_authorized=false`, `promotion_authorized=false`. A separate
-independent evaluator must authenticate model/host measurements, labels,
-calibration and OOD, then issue a signed sealed-holdout result. NDU must compare
-real task utility, negative transfer, retention and total resources over at
-least two future windows against frozen no-change, and owner-governed shadow,
-recovery, rollback, fence and canary must pass before any production selection.
-No CI fixture, local digest or JSON report can satisfy these gates.
+  --sdk-sha256 EXACT_INSTALLED_LAYA_TREE_SHA256 --upstream-lock qualification/neuron-model-trials/upstream-weights.lock.json --device cpu --output /absolute/laya.json
