@@ -248,7 +248,7 @@ def trial(args):
         precommit = prediction_precommit(row, learned_prob, before_digest, index)
         precommit["record_digest"] = sha256_record(precommit)
         line = (json.dumps(precommit, ensure_ascii=False, sort_keys=True,
-                           separators=(",", ":")) + "\\n").encode("utf-8")
+                           separators=(",", ":")) + "\n").encode("utf-8")
         # Durable write-ahead boundary before revealing a training label.
         # The journal is advisory/unsigned; fsync does not authenticate input.
         with prediction_journal_path.open("ab") as journal:
