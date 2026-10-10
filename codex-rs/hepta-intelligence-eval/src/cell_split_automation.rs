@@ -1331,7 +1331,41 @@ pub trait CellSplitAutomationExecutorV1 {
         split: &CellSplitV1,
     ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error>;
 
+    /// Read back a previously recorded evaluation without rerunning an
+    /// effectful evaluator after restart. A missing observation is fail-closed.
+    fn observe_evaluation(
+        &mut self,
+        _split: &CellSplitV1,
+    ) -> Result<Option<CellSplitLongHorizonEvaluationReceiptV1>, Self::Error> {
+        Ok(None)
+    }
+
+    /// Executor identity is distinct from the generator, evaluator and
+    /// independently signed selector; no inferred identity is allowed.
+    fn execution_owner_id(&self) -> Option<StableId> {
+        None
+    }
+
+    /// Pure read of the separately admitted, opaque NDU selector token. This
+    /// callback MUST NOT mint signatures, dispatch work or mutate the selector.
+    fn observe_selector_admission(
+        &mut self,
+        _split: &CellSplitV1,
+        _evaluation: &CellSplitLongHorizonEvaluationReceiptV1,
+    ) -> Result<Option<crate::CellSplitSelectorAdmissionV1>, Self::Error> {
+        Ok(None)
+    }
+
     fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error>;
+
+    /// Read-only canary reconciliation when CanaryRunning survived a crash.
+    /// A missing receipt must not cause a second child dispatch.
+    fn observe_canary(
+        &mut self,
+        _split: &CellSplitV1,
+    ) -> Result<Option<CellSplitCanaryReceiptV1>, Self::Error> {
+        Ok(None)
+    }
 
     fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error>;
 
@@ -1418,21 +1452,75 @@ where
         return Ok(outcome(&journal, proposal));
     }
 
-    let evaluation = match executor.evaluate(split) {
-        Ok(receipt) => receipt,
-        Err(error) => {
-            journal.quarantine(error_digest("evaluation", &error))?;
-            owner.commit(&journal)?;
-            return Ok(outcome(&journal, proposal));
+    // An in-flight canary can have dispatched before the crash. NEVER issue
+    // it twice: only the real read-only host can confirm and finish it.
+    if journal.current_state == CellSplitLifecycleStateV1::CanaryRunning {
+        let observed = executor
+            .observe_canary(split)
+            .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?
+            .ok_or(CellSplitAutomationErrorV1::Binding(
+                "canary outcome requires reconciliation",
+            ))?;
+        journal.finish_canary(&observed)?;
+        owner.commit(&journal)?;
+        return Ok(outcome(&journal, proposal));
+    }
+
+    let evaluation = if journal.current_state == CellSplitLifecycleStateV1::EvaluationAccepted {
+        // Evaluation was durable on the previous process. Calling evaluate()
+        // again could cross an expensive or one-shot evidence boundary.
+        let observed = executor
+            .observe_evaluation(split)
+            .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?
+            .ok_or(CellSplitAutomationErrorV1::Binding(
+                "accepted evaluation requires readback",
+            ))?;
+        observed
+            .verify_contract(split)
+            .map_err(|_| CellSplitAutomationErrorV1::Binding("evaluation readback"))?;
+        if journal.events.last().map(|event| event.evidence_digest)
+            != Some(observed.binding().evaluation_receipt_digest)
+        {
+            return Err(CellSplitAutomationErrorV1::Binding(
+                "evaluation readback journal anchor",
+            ));
         }
+        observed
+    } else {
+        let evaluated = match executor.evaluate(split) {
+            Ok(receipt) => receipt,
+            Err(error) => {
+                journal.quarantine(error_digest("evaluation", &error))?;
+                owner.commit(&journal)?;
+                return Ok(outcome(&journal, proposal));
+            }
+        };
+        journal.apply_evaluation(split, &evaluated)?;
+        owner.commit(&journal)?;
+        evaluated
     };
-    journal.apply_evaluation(split, &evaluation)?;
-    owner.commit(&journal)?;
     if !crate::cell_split_evaluation::disposition_allows_canary(&evaluation) {
         return Ok(outcome(&journal, proposal));
     }
 
-    journal.begin_canary(evaluation.binding().evaluation_receipt_digest)?;
+    // Evaluator eligibility is NOT selection authority. Independently issued
+    // selector proof must bind the frozen no-change baseline, longitudinal
+    // measurements, exact candidate artifact set and executor identity.
+    let executor_id = executor
+        .execution_owner_id()
+        .ok_or(CellSplitAutomationErrorV1::Binding("execution principal"))?;
+    let selected = executor
+        .observe_selector_admission(split, &evaluation)
+        .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?;
+    let Some(selected) = selected else {
+        // Keep the accepted evaluation durable, but never enter CanaryRunning
+        // or dispatch a child without an independent selector.
+        return Ok(outcome(&journal, proposal));
+    };
+    selected
+        .verify_for_canary(split, &evaluation, &executor_id)
+        .map_err(|_| CellSplitAutomationErrorV1::Binding("selector admission"))?;
+    journal.begin_canary(selected.admission_digest())?;
     owner.commit(&journal)?;
     let canary = match executor.canary(split) {
         Ok(receipt) => receipt,
