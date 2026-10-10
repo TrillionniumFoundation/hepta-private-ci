@@ -258,6 +258,25 @@ pub enum CellSplitExecutionErrorV1 {
     Codec(#[from] serde_json::Error),
 }
 
+/// Read-after-write witness for the current four live, externally signed
+/// owner effects. It is intentionally not serializable or an authority token;
+/// a caller must re-observe the owners at its own final use boundary.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellSplitLiveCompletionV1 {
+    plan_digest: String,
+    final_receipt_digest: String,
+}
+
+impl CellSplitLiveCompletionV1 {
+    pub fn plan_digest(&self) -> &str {
+        &self.plan_digest
+    }
+
+    pub fn final_receipt_digest(&self) -> &str {
+        &self.final_receipt_digest
+    }
+}
+
 /// Owns exactly one frozen split in an exclusively locked private directory.
 /// All transitions are write-once, fsync'd frames. A step is *never* invoked
 /// again after an intent frame exists: recovery instead queries the original
@@ -374,11 +393,39 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self.cursor == STEP_COUNT
     }
 
+    /// Re-read every committed external owner at the final use site. A
+    /// historical completed ledger is not proof that any effect is still live.
+    /// This returns only an observation: it is NOT an activation, selection,
+    /// deployment or independent-observer authorization.
+    pub fn verify_live_completion(
+        &mut self,
+    ) -> Result<CellSplitLiveCompletionV1, CellSplitExecutionErrorV1> {
+        if !self.is_complete() || self.pending {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "cell split has not committed all effect owners",
+            ));
+        }
+        self.verify_committed_prefix()?;
+        Ok(CellSplitLiveCompletionV1 {
+            plan_digest: self.plan_digest.clone(),
+            final_receipt_digest: self.previous_receipt_digest.clone(),
+        })
+    }
+
     /// Read each committed predecessor back from the durable ledger and from
     /// its real owner immediately before a successor is dispatched. An external
     /// rollback, stale route or post-open sidecar tamper must fence execution,
     /// even when the coordinator previously opened successfully.
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
+        // The frozen plan is part of the live ledger, not just a startup
+        // preflight. Reject post-open substitution before any new effect.
+        let frozen = read_frame(&self.root.join("cell-split-frozen-plan.json"))?
+            .ok_or(CellSplitExecutionErrorV1::Invalid("frozen plan missing"))?;
+        if frozen != canonical_json(&self.plan)? {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "frozen plan changed after open",
+            ));
+        }
         let mut predecessor = self.plan_digest.clone();
         for index in 0..self.cursor {
             let step = CellSplitExecutionStepV1::at(index)
