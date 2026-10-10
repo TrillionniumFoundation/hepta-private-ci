@@ -7,6 +7,7 @@ production-promotion path. Media bytes are never written to the result.
 """
 import argparse
 from collections import defaultdict
+from datetime import datetime, timezone
 import hashlib
 import json
 import math
@@ -50,11 +51,12 @@ def safe_media(root, row):
 
 
 def audit_multimodal(rows):
-    seen, groups, texts = set(), {}, set()
+    seen, groups, texts, media_splits = set(), {}, set(), {}
+    timestamps = defaultdict(list)
     valid_splits = {"test", "future", "ood"}
     for row in rows:
         required = ("case_id", "group_id", "scope_id", "split",
-                    "modality", "path", "paired_text", "media_sha256")
+                    "modality", "path", "paired_text", "media_sha256", "event_time")
         if any(not isinstance(row.get(k), str) or not row[k] for k in required):
             raise ValueError("invalid or missing paired row fields")
         if row["case_id"] in seen:
@@ -65,6 +67,16 @@ def audit_multimodal(rows):
         if len(row["media_sha256"]) != 64 or any(c not in "0123456789abcdef"
                                                   for c in row["media_sha256"]):
             raise ValueError("invalid media SHA256")
+        try:
+            instant = datetime.fromisoformat(row["event_time"].replace("Z", "+00:00"))
+            if instant.tzinfo is None:
+                raise ValueError("naive event time")
+            timestamps[row["split"]].append(instant.astimezone(timezone.utc))
+        except ValueError as exc:
+            raise ValueError("invalid UTC-resolvable media event time") from exc
+        prior_split = media_splits.setdefault(row["media_sha256"], row["split"])
+        if prior_split != row["split"]:
+            raise ValueError("identical media bytes leaked across time windows")
         group_key = (row["scope_id"], row["group_id"])
         if group_key in groups and groups[group_key] != row["split"]:
             raise ValueError("paired media leakage across splits")
@@ -73,11 +85,13 @@ def audit_multimodal(rows):
         if semantic_key in texts:
             raise ValueError("ambiguous duplicate positive text within ranking cohort")
         texts.add(semantic_key)
-    if not any(row["split"] == "test" for row in rows) or not any(
-            row["split"] == "future" for row in rows):
+    if not timestamps["test"] or not timestamps["future"]:
         raise ValueError("both held-out test and genuine future splits are required")
+    if max(timestamps["test"]) >= min(timestamps["future"]):
+        raise ValueError("future media window is not strictly after test window")
     return {"cases": len(rows), "independent_groups": len(groups),
-            "dataset_digest": sha256_record(rows)}
+            "dataset_digest": sha256_record(rows),
+            "future_temporal_order_checked": True}
 
 
 def paired_ranking(examples):
@@ -159,6 +173,9 @@ def run(args):
             [path], scope_id=row["scope_id"], principal_id=args.principal_id,
             generation=args.generation, authority_epoch=args.authority_epoch, intent="document")
         media_ms = (time.perf_counter_ns() - start) / 1e6
+        # Detect common stale-file races. This is not a filesystem-level
+        # immutable CAS proof; host artifact ownership remains external.
+        safe_media(args.media_root, row)
         observations.append({
             "case_id": row["case_id"], "scope_id": row["scope_id"],
             "split": row["split"], "modality": row["modality"],
