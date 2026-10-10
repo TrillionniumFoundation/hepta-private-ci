@@ -716,6 +716,10 @@ fn validate_neuron_feature_output(
 mod batch;
 pub use batch::NeuronFeatureBatchDriver;
 
+#[path = "model_worker_gated.rs"]
+mod gated_cpu;
+pub use gated_cpu::{GatedHeadCandidateV2, GatedHeadCpuDriverV2};
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
