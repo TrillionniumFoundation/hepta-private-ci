@@ -36,12 +36,14 @@ fn model_manifest(weights_digest: String) -> ModelManifest {
 fn local_worker() -> (InferenceWorker<CpuGatedHeadDriver>, Vec<String>) {
     let encoder = "a".repeat(64);
     let specs = vec![sample_head(false), sample_head(true)];
-    let head_digests = specs.iter().map(|head| head.digest().expect("digest"))
+    let head_digests = specs
+        .iter()
+        .map(|head| head.digest().expect("digest"))
         .collect::<Vec<_>>();
     let weights = cpu_gated_bundle_weights_digest(&encoder, &specs).expect("weights");
     let manifest = model_manifest(weights);
-    let driver = CpuGatedHeadDriver::new(manifest.clone(), encoder, specs)
-        .expect("pinned local tensors");
+    let driver =
+        CpuGatedHeadDriver::new(manifest.clone(), encoder, specs).expect("pinned local tensors");
     let grant = ResourceGrant {
         grant_id: "grant.cpu".to_string(),
         authority_epoch: 4,
@@ -53,9 +55,8 @@ fn local_worker() -> (InferenceWorker<CpuGatedHeadDriver>, Vec<String>) {
         maximum_memory_bytes: 1_000_000,
         semantic_digest: "1".repeat(64),
     };
-    let mut worker = InferenceWorker::new(
-        100, "worker.cpu".to_string(), 3, grant, driver
-    ).expect("worker");
+    let mut worker =
+        InferenceWorker::new(100, "worker.cpu".to_string(), 3, grant, driver).expect("worker");
     worker.load_model(100, manifest).expect("load");
     (worker, head_digests)
 }
@@ -103,7 +104,10 @@ fn native_cpu_batch_computes_two_distinct_cell_heads() {
     assert_eq!(batch.receipts[0].prediction_q24, vec![Q24 / 4, Q24 / 2]);
     assert_eq!(batch.receipts[1].drive_q24, vec![-Q24 / 4, -Q24 / 8]);
     assert_eq!(batch.receipts[1].prediction_q24, vec![Q24 / 8, Q24 / 4]);
-    assert_ne!(batch.receipts[0].receipt_digest, batch.receipts[1].receipt_digest);
+    assert_ne!(
+        batch.receipts[0].receipt_digest,
+        batch.receipts[1].receipt_digest
+    );
     assert!(batch.receipts.iter().all(|r| !r.authority.grants_any()));
     assert!(batch.observed_peak_memory_bytes >= worker.driver.tracked_weights_bytes);
     worker.unload_model(100, "model.cpu-head").expect("unload");
@@ -114,14 +118,16 @@ fn native_cpu_single_and_batch_have_same_numeric_outputs() {
     let (mut worker, heads) = local_worker();
     let weights = worker.driver.manifest.weights_digest.clone();
     let first = cpu_request(1, heads[0].clone(), weights.clone());
-    let single = worker.run_neuron_features_receipt(
-        100, "model.cpu-head", first.clone()
-    ).expect("single");
-    let batch = worker.run_neuron_features_backend_batch(
-        100,
-        "model.cpu-head",
-        vec![first, cpu_request(2, heads[1].clone(), weights)],
-    ).expect("batch");
+    let single = worker
+        .run_neuron_features_receipt(100, "model.cpu-head", first.clone())
+        .expect("single");
+    let batch = worker
+        .run_neuron_features_backend_batch(
+            100,
+            "model.cpu-head",
+            vec![first, cpu_request(2, heads[1].clone(), weights)],
+        )
+        .expect("batch");
     assert_eq!(single.drive_q24, batch.receipts[0].drive_q24);
     assert_eq!(single.prediction_q24, batch.receipts[0].prediction_q24);
     assert_eq!(single.request_digest, batch.receipts[0].request_digest);
@@ -141,9 +147,15 @@ fn native_cpu_rejects_tampered_tensors_and_head_identity() {
     let (mut worker, heads) = local_worker();
     let mut request = cpu_request(1, "f".repeat(64), weights.clone());
     let mut request2 = cpu_request(2, heads[1].clone(), weights);
-    assert!(worker.run_neuron_features_backend_batch(
-        100, "model.cpu-head", vec![request.clone(), request2.clone()]
-    ).is_err());
+    assert!(
+        worker
+            .run_neuron_features_backend_batch(
+                100,
+                "model.cpu-head",
+                vec![request.clone(), request2.clone()]
+            )
+            .is_err()
+    );
     request.encoder_digest = "f".repeat(64);
     request.head_digest = heads[0].clone();
     let payload = canonical_neuron_feature_payload_digest(&request);
@@ -154,9 +166,7 @@ fn native_cpu_rejects_tampered_tensors_and_head_identity() {
     request2.authorization.payload_digest = payload.clone();
     request2.authorization.lease_payload_digest = payload;
     assert_eq!(
-        worker.run_neuron_features_backend_batch(
-            100, "model.cpu-head", vec![request, request2]
-        ),
+        worker.run_neuron_features_backend_batch(100, "model.cpu-head", vec![request, request2]),
         Err(Error::ModelMismatch)
     );
 }
@@ -209,10 +219,16 @@ fn compact_constant_gate_and_zero_prediction_do_not_triple_head_storage() {
             .expect("cross-language bundle digest"),
         "277d9ebc5a6066bcf29e846081cd771578b05e570fd3dbad8785cc3ce05162df"
     );
-    assert_ne!(compact.digest().expect("digest"), full.digest().expect("digest"));
-    assert!(compact.tracked_parameter_bytes().expect("bytes")
-        < full.tracked_parameter_bytes().expect("bytes"));
-    let (drive, prediction) = compact.infer(&[Q24 / 2, Q24 / 4])
+    assert_ne!(
+        compact.digest().expect("digest"),
+        full.digest().expect("digest")
+    );
+    assert!(
+        compact.tracked_parameter_bytes().expect("bytes")
+            < full.tracked_parameter_bytes().expect("bytes")
+    );
+    let (drive, prediction) = compact
+        .infer(&[Q24 / 2, Q24 / 4])
         .expect("compact inference");
     assert_eq!(drive, vec![Q24 / 2, Q24 / 4]);
     assert_eq!(prediction, vec![0, 0]);
