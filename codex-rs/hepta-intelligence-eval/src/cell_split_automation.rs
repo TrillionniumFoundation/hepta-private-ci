@@ -1381,12 +1381,16 @@ where
     }
     if matches!(
         journal.current_state,
-        CellSplitLifecycleStateV1::Retained
-            | CellSplitLifecycleStateV1::Quarantined
+        CellSplitLifecycleStateV1::Quarantined
             | CellSplitLifecycleStateV1::Retired
             | CellSplitLifecycleStateV1::RolledBack
     ) {
         return Ok(outcome(&journal, proposal));
+    }
+    // A crash after canary retention but before retirement must not rerun
+    // evaluation or canary. A pending retirement never reruns its effect.
+    if journal.current_state == CellSplitLifecycleStateV1::Retained {
+        return retire_if_ready(split, proposal, owner, executor, &mut journal);
     }
 
     let evaluation = match executor.evaluate(split) {
@@ -1419,28 +1423,47 @@ where
         return Ok(outcome(&journal, proposal));
     }
 
-    if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
-        match executor.retire(split) {
-            Ok(retirement_digest) => {
-                // The actual owner receipt must be bound to the retired event;
-                // a planned tombstone alone does not prove route withdrawal.
-                // Missing evidence is an uncertain effect requiring owner
-                // reconciliation, never an implicit retry or rollback.
-                if retirement_digest.is_zero() {
-                    return Err(CellSplitAutomationErrorV1::Binding(
-                        "missing retirement execution receipt",
-                    ));
-                }
-                journal.retire_with_execution_receipt(split, retirement_digest)?;
-                owner.commit(&journal)?;
-            }
-            Err(error) => {
-                journal.rollback(split, error_digest("retire", &error))?;
-                owner.commit(&journal)?;
-            }
-        }
+    retire_if_ready(split, proposal, owner, executor, &mut journal)
+}
+
+/// One write-ahead owner transition is persisted before the physical
+/// retirement callback. If its result or subsequent commit is unknown, the
+/// persisted intent requires explicit reconciliation. Retrying the automation
+/// must never re-dispatch the same possibly completed route/tombstone effect.
+fn retire_if_ready<Owner, Executor>(
+    split: &CellSplitV1,
+    proposal: &CellSplitProposalReceiptV1,
+    owner: &mut Owner,
+    executor: &mut Executor,
+    journal: &mut CellSplitLifecycleJournalV1,
+) -> Result<CellSplitAutomationOutcomeV1, CellSplitAutomationErrorV1>
+where
+    Owner: CellSplitAutomationJournalOwnerV1,
+    Executor: CellSplitAutomationExecutorV1,
+{
+    if journal.retirement_pending() {
+        return Err(CellSplitAutomationErrorV1::Binding(
+            "retirement pending independent reconciliation",
+        ));
     }
-    Ok(outcome(&journal, proposal))
+    if split.retirement.disposition != codex_hepta_types::CellParentDispositionV1::Retire {
+        return Ok(outcome(journal, proposal));
+    }
+    journal.prepare_retirement(split)?;
+    owner.commit(journal)?;
+    let retirement_digest = executor.retire(split).map_err(|error| {
+        CellSplitAutomationErrorV1::Executor(format!(
+            "retirement outcome requires independent reconciliation: {error}",
+        ))
+    })?;
+    if retirement_digest.is_zero() {
+        return Err(CellSplitAutomationErrorV1::Binding(
+            "missing retirement execution receipt",
+        ));
+    }
+    journal.retire_with_execution_receipt(split, retirement_digest)?;
+    owner.commit(journal)?;
+    Ok(outcome(journal, proposal))
 }
 
 fn outcome(
