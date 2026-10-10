@@ -42,11 +42,6 @@ jobs:
           cd codex-rs
           rustc --version --verbose
           cargo --version
-      - name: Check formatting on selected owner crates
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
       - name: Locked all-target compilation
         shell: bash
         run: |
@@ -63,6 +58,12 @@ jobs:
         run: |
           set -euo pipefail
           cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+      - name: Check formatting on selected owner crates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
       - name: Verify no test checkout mutation
         if: always()
         shell: bash
