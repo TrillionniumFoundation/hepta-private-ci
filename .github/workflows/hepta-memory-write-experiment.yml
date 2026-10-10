@@ -154,7 +154,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/experience-result/source
-          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py /tmp/experience-result/source/
+          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py /tmp/experience-result/source/
           git rev-parse HEAD > /tmp/experience-result/tested-commit.txt
           # Base and research-derived model weights are not redistributed.
           find /tmp/experience-result -name '*.safetensors' -delete
