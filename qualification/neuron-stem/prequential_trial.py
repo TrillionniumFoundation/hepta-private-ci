@@ -1,0 +1,314 @@
+#!/usr/bin/env python3
+"""Shadow-only test-then-learn continual Cell trial with one frozen shared Stem.
+
+Future labels are revealed to the learner only after a prediction is
+materialized. Cell-local Heads have isolated optimizers, a distinct frozen
+same-initialization control, and explicitly measured update costs. This is
+an offline chronological replay, not live NDU, production learning or proof
+of long-term efficacy.
+"""
+import argparse
+from collections import defaultdict
+import copy
+from datetime import datetime, timezone
+import json
+import math
+from pathlib import Path
+import time
+
+from hf_trial import make_head
+from jina_v5 import FrozenJinaV5, research_environment, sha256_record
+from jina_v5_trial import effective_weights_digest, render_case
+from q24_bridge import Q24, quantize_q24
+from qualified_eval import audit_dataset, read_jsonl, write_json
+
+
+def iso_time(row):
+    try:
+        t = datetime.fromisoformat(row["event_time"].replace("Z", "+00:00"))
+        if t.tzinfo is None:
+            raise ValueError("naive event timestamp")
+        return t.astimezone(timezone.utc)
+    except (ValueError, TypeError, KeyError) as exc:
+        raise ValueError("time must contain an explicit UTC-resolvable offset") from exc
+
+
+def prepare_chronology(dataset, task_id):
+    source_audit = audit_dataset(dataset)
+    task_rows = [row for row in dataset if row["task_id"] == task_id]
+    if not task_rows:
+        raise ValueError("no task matching the required ID")
+    if not all(any(row["split"] == split for row in task_rows)
+               for split in ("train", "calibration", "test", "future", "ood")):
+        raise ValueError("selected task requires all five partitions")
+    cells = {}
+    seen_inputs = set()
+    for row in task_rows:
+        ident = row.get("cell_id")
+        if not isinstance(ident, str) or not ident:
+            raise ValueError("cell_id must be an explicit nonempty string")
+        key = (row["scope_id"], ident)
+        if key in cells and cells[key] != task_id:
+            raise ValueError("Cell identity changed task")
+        cells[key] = task_id
+        if row["split"] == "future":
+            fingerprint = sha256_record([row["scope_id"], ident, row["state"],
+                                          row["question"], row["options"]])
+            if fingerprint in seen_inputs:
+                raise ValueError("duplicate future Cell input")
+            seen_inputs.add(fingerprint)
+    widths = {len(row["options"]) for row in task_rows}
+    if len(widths) != 1:
+        raise ValueError("task option count inconsistent")
+    future = sorted((row for row in task_rows if row["split"] == "future"),
+                    key=lambda row: (iso_time(row), row["case_id"]))
+    if not future or max(iso_time(row) for row in task_rows if row["split"] != "future") >= iso_time(future[0]):
+        # OOD may be deliberately sampled after future; only train/calibration/
+        # test must precede future, as enforced by audit_dataset.
+        earlier = [row for row in task_rows
+                   if row["split"] in ("train", "calibration", "test")]
+        if max(iso_time(row) for row in earlier) >= iso_time(future[0]):
+            raise ValueError("future overlaps earlier observed evaluation windows")
+    return task_rows, future, sorted(cells), widths.pop(), source_audit
+
+
+def accuracy_brier(outcomes):
+    if not outcomes:
+        return None
+    return {
+        "events": len(outcomes),
+        "accuracy": sum(x["correct"] for x in outcomes) / len(outcomes),
+        "multiclass_brier": sum(x["brier"] for x in outcomes) / len(outcomes),
+    }
+
+
+def score_prediction(probs, truth):
+    if not isinstance(probs, (list, tuple)) or not 0 <= truth < len(probs):
+        raise ValueError("malformed prediction/label")
+    if any(type(p) not in (int, float) or not math.isfinite(p) or not 0 <= p <= 1 for p in probs):
+        raise ValueError("invalid predicted probability")
+    if abs(sum(probs) - 1.0) > 1e-5:
+        raise ValueError("invalid distribution mass")
+    return {
+        "correct": int(max(range(len(probs)), key=probs.__getitem__) == truth),
+        "brier": sum((p - float(j == truth)) ** 2 for j, p in enumerate(probs)) / len(probs),
+    }
+
+
+def trial(args):
+    import psutil
+    import torch
+    from torch import nn
+
+    if args.model not in ("jina-v5-text-nano", "jina-v5-text-small"):
+        raise ValueError("prequential trial is text-only; Omni requires a separate qualified trainer")
+    if not 1 <= args.max_cells <= 4096 or args.pretrain_steps < 0 or args.update_steps < 0:
+        raise ValueError("training parameters outside finite bounded profile")
+    if args.learning_rate <= 0 or args.max_grad_norm <= 0:
+        raise ValueError("learning rates/gradient limits must be positive")
+    rows = read_jsonl(args.dataset)
+    task_rows, future, keys, classes, audit = prepare_chronology(rows, args.task_id)
+    if len(keys) > args.max_cells:
+        raise ValueError("dataset would instantiate more than approved Cell limit")
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    manifest = Path(str(args.output) + ".manifest.json")
+    if args.output.exists() or manifest.exists():
+        raise ValueError("refusing to overwrite frozen evidence")
+    torch.manual_seed(args.seed)
+    torch.set_num_threads(args.threads)
+    stem = FrozenJinaV5(
+        args.model, args.revision, task="classification", dimension=args.dimension,
+        modality="text", max_tokens=args.max_tokens, device=args.device,
+        cache_entries=args.cache_entries, allow_download=args.allow_model_download,
+        allow_pinned_remote_code=args.allow_pinned_remote_code,
+    )
+    feature_cache = {}
+    def feature(row):
+        if row["case_id"] not in feature_cache:
+            v, _ = stem.encode_batch(
+                [render_case(row, "joint")], scope_id=row["scope_id"],
+                principal_id=args.principal_id, generation=args.generation,
+                authority_epoch=args.authority_epoch, intent="document",
+            )
+            feature_cache[row["case_id"]] = torch.tensor(
+                [x / Q24 for x in quantize_q24(v[0])],
+                dtype=torch.float32, device=args.device)
+        return feature_cache[row["case_id"]]
+
+    cell_heads, control_heads, optimizers, parameter_total = {}, {}, {}, 0
+    for index, key in enumerate(keys):
+        torch.manual_seed(args.seed + index)
+        head, params = make_head(
+            torch, nn, args.head, args.dimension, classes, args.budget)
+        head = head.to(args.device)
+        if params > args.budget:
+            raise ValueError("Cell exceeded actual head parameter ceiling")
+        optimizers[key] = torch.optim.AdamW(head.parameters(), lr=args.learning_rate)
+        cell_heads[key] = head
+        parameter_total += params
+
+    # Only historical train labels are used during the initial training phase.
+    train_rows = sorted((row for row in task_rows if row["split"] == "train"),
+                        key=lambda row: (iso_time(row), row["case_id"]))
+    start_train = time.perf_counter_ns()
+    for row in train_rows:
+        key = (row["scope_id"], row["cell_id"])
+        head, opt = cell_heads[key], optimizers[key]
+        head.train()
+        for _ in range(args.pretrain_steps):
+            logits = head(feature(row))
+            loss = nn.functional.cross_entropy(
+                logits.unsqueeze(0), torch.tensor([row["label"]], device=args.device))
+            opt.zero_grad(set_to_none=True)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(head.parameters(), args.max_grad_norm)
+            opt.step()
+            if not all(torch.isfinite(p).all().item() for p in head.parameters()):
+                raise ValueError("nonfinite local Cell weights after pretraining")
+    train_ms = (time.perf_counter_ns() - start_train) / 1e6
+    for key, head in cell_heads.items():
+        control_heads[key] = copy.deepcopy(head).eval()
+        head.eval()
+    initial_digests = {
+        str(key): effective_weights_digest(cell_heads[key]) for key in keys}
+
+    outcomes, frozen_outcomes, records = [], [], []
+    update_ms = 0.
+    process = psutil.Process()
+    for index, row in enumerate(future):
+        key = (row["scope_id"], row["cell_id"])
+        head, frozen, optimizer = cell_heads[key], control_heads[key], optimizers[key]
+        observed = feature(row)
+        with torch.inference_mode():
+            learned_prob = torch.softmax(head(observed), dim=-1).cpu().tolist()
+            frozen_prob = torch.softmax(frozen(observed), dim=-1).cpu().tolist()
+        # Prediction evidence is calculated BEFORE any access to this event's
+        # label is used for an update. The label is only read below this fence.
+        before_digest = effective_weights_digest(head)
+        sealed = sha256_record({
+            "case_id": row["case_id"], "cell_id": row["cell_id"],
+            "scope_id": row["scope_id"], "prediction": learned_prob,
+            "head_digest": before_digest, "logical_order": index,
+        })
+        # Offline replay owns outcome labels; a real stream must obtain an
+        # authenticated outcome from a separate result/evaluation owner.
+        truth = row["label"]
+        outcomes.append(score_prediction(learned_prob, truth))
+        frozen_outcomes.append(score_prediction(frozen_prob, truth))
+        began_update = time.perf_counter_ns()
+        head.train()
+        for _ in range(args.update_steps):
+            logits = head(observed)
+            loss = nn.functional.cross_entropy(
+                logits.unsqueeze(0), torch.tensor([truth], device=args.device))
+            optimizer.zero_grad(set_to_none=True)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(head.parameters(), args.max_grad_norm)
+            optimizer.step()
+            if not all(torch.isfinite(p).all().item() for p in head.parameters()):
+                raise ValueError("nonfinite local Cell weights after update")
+        head.eval()
+        duration = (time.perf_counter_ns() - began_update) / 1e6
+        update_ms += duration
+        after_digest = effective_weights_digest(head)
+        records.append({
+            "event_order": index, "event_time": row["event_time"],
+            "case_id": row["case_id"], "scope_id": row["scope_id"],
+            "cell_id": row["cell_id"],
+            "prediction_seal_before_label_update": sealed,
+            "preupdate_head_digest": before_digest,
+            "postupdate_head_digest": after_digest,
+            "trained_probabilities": learned_prob,
+            "frozen_same_initialization_probabilities": frozen_prob,
+            "outcome_label_revealed_after_prediction": True,
+            "local_update_steps_after_prediction": args.update_steps,
+            "local_update_wall_ms": duration,
+            "rss_bytes": process.memory_info().rss,
+        })
+    # No train/test labels may be used after the future window starts to
+    # update weights, and controls remain at their post-pretrain parameters.
+    final_digests = {
+        str(key): effective_weights_digest(cell_heads[key]) for key in keys}
+    result = {
+        "schema": "hepta.jina-v5-cell-prequential-shadow.v1",
+        "status": "offline_test_then_learn_descriptive_not_production_evidence",
+        "production_promotion_permitted": False,
+        "independent_ndu_signature_verified": False,
+        "genuine_future_outcomes_authenticated": False,
+        "model": args.model, "revision": args.revision,
+        "feature_manifest_digest": stem.manifest_digest,
+        "dataset_audit": audit, "task_id": args.task_id,
+        "principal_id": args.principal_id,
+        "cells": len(keys), "head": args.head,
+        "per_cell_head_parameters": parameter_total // len(keys),
+        "total_cell_head_parameters": parameter_total,
+        "seed": args.seed, "feature_dimension": args.dimension,
+        "pretrain_steps_per_historical_event": args.pretrain_steps,
+        "update_steps_per_future_event": args.update_steps,
+        "future_event_count": len(future),
+        "pretrain_wall_ms": train_ms, "future_update_wall_ms": update_ms,
+        "initial_head_digests": initial_digests,
+        "final_head_digests": final_digests,
+        "frozen_future_metrics": accuracy_brier(frozen_outcomes),
+        "learned_future_metrics": accuracy_brier(outcomes),
+        "observed_future_brier_gain_vs_frozen": (
+            accuracy_brier(frozen_outcomes)["multiclass_brier"]
+            - accuracy_brier(outcomes)["multiclass_brier"]
+        ),
+        "encoder_calls": stem.encoder_calls, "cache_hits": stem.cache_hits,
+        "model_load_ms": stem.load_ms,
+        "max_observed_rss_bytes": max(row["rss_bytes"] for row in records),
+        "environment": research_environment(),
+        "temporal_receipts": records,
+        "limitations": [
+            "Offline replay labels are not authenticated live outcomes",
+            "This reports descriptive prequential effects, not causal NDU",
+            "Observed label is never trained before its prediction seal",
+            "Same Cell Head used for prediction and bounded local update, no selector promotion",
+            "Not a Rust checked Q24 checkpoint/CAS/signed inference production receipt",
+        ],
+    }
+    write_json(args.output, result)
+    write_json(manifest, {
+        "schema": "hepta.jina-v5-cell-prequential-run-manifest.v1",
+        "trial_digest": sha256_record(result),
+        "production_promotion_permitted": False,
+        "source_model_revision": args.revision,
+        "dataset_digest": audit["dataset_digest"],
+        "signed_evaluator_receipt": False,
+    })
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--dataset", required=True)
+    p.add_argument("--task-id", required=True)
+    p.add_argument("--principal-id", required=True)
+    p.add_argument("--model", required=True,
+                   choices=("jina-v5-text-nano", "jina-v5-text-small"))
+    p.add_argument("--revision", required=True)
+    p.add_argument("--output", required=True, type=Path)
+    p.add_argument("--head", choices=("linear", "film", "rank8", "rank16", "mlp", "swiglu"),
+                   default="linear")
+    p.add_argument("--dimension", type=int, default=256)
+    p.add_argument("--budget", type=int, choices=(2048, 16384, 65536, 262144),
+                   default=16384)
+    p.add_argument("--pretrain-steps", type=int, default=4)
+    p.add_argument("--update-steps", type=int, default=1)
+    p.add_argument("--learning-rate", type=float, default=.0005)
+    p.add_argument("--max-grad-norm", type=float, default=1.)
+    p.add_argument("--max-cells", type=int, default=4096)
+    p.add_argument("--max-tokens", type=int, default=512)
+    p.add_argument("--cache-entries", type=int, default=256)
+    p.add_argument("--device", default="cpu")
+    p.add_argument("--threads", type=int, default=4)
+    p.add_argument("--seed", type=int, default=20261011)
+    p.add_argument("--generation", type=int, default=1)
+    p.add_argument("--authority-epoch", type=int, default=1)
+    p.add_argument("--allow-pinned-remote-code", action="store_true")
+    p.add_argument("--allow-model-download", action="store_true")
+    trial(p.parse_args())
+
+
+if __name__ == "__main__":
+    main()
