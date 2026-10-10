@@ -7,9 +7,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 
-use ed25519_dalek::{Signature, Signer as _, SigningKey};
 use super::*;
 use crate::{CellSplitEffectServiceV1, CellSplitExecutionPortV1, CellSplitUnixEffectPortV1};
+use ed25519_dalek::{Signature, Signer as _, SigningKey};
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -38,7 +38,12 @@ struct DiskSupervisor {
 
 impl DiskSupervisor {
     fn new(root: PathBuf, authorized: Arc<AtomicBool>) -> Self {
-        Self { root, signer: SigningKey::from_bytes(&[13; 32]), authorized, replay_old_readback: false }
+        Self {
+            root,
+            signer: SigningKey::from_bytes(&[13; 32]),
+            authorized,
+            replay_old_readback: false,
+        }
     }
     fn with_stale_readback(mut self) -> Self {
         self.replay_old_readback = true;
@@ -56,9 +61,11 @@ impl DiskSupervisor {
     }
     fn replace(&self, state: &HandoffFile) -> Result<(), String> {
         crate::durable::write_private_atomic_replace(
-            &self.state_path(), &self.root.join("staged-handoff.tmp"),
+            &self.state_path(),
+            &self.root.join("staged-handoff.tmp"),
             &canonical_json(state).map_err(|e| e.to_string())?,
-        ).map_err(|e| e.to_string())
+        )
+        .map_err(|e| e.to_string())
     }
 }
 
@@ -74,7 +81,8 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
         if !self.authorized.load(Ordering::Acquire)
             || intent.previous_receipt_digest != "77".repeat(32)
             || fs::read_to_string(self.root.join("actual-cns-route.txt"))
-                .map_err(|e| e.to_string())? != binding.successor_route_digest
+                .map_err(|e| e.to_string())?
+                != binding.successor_route_digest
         {
             return Err("independent CNS receipt, final-use or route is unavailable".into());
         }
@@ -93,9 +101,9 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
         } else {
             challenge_nonce.to_owned()
         };
-        let signature = self.signer.sign(
-            &canonical_json(&(&state, &actual_nonce)).map_err(|e| e.to_string())?
-        );
+        let signature = self
+            .signer
+            .sign(&canonical_json(&(&state, &actual_nonce)).map_err(|e| e.to_string())?);
         Ok(CellSplitSupervisorLiveFenceV1 {
             supervisor_id: state.supervisor_id,
             domain_id: state.domain_id,
@@ -138,10 +146,14 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
         }
         let signature = Signature::from_slice(&observed.signed_live_checkpoint_bytes)
             .map_err(|e| e.to_string())?;
-        self.signer.verifying_key().verify_strict(
-            &canonical_json(&(&current, &observed.challenge_nonce)).map_err(|e| e.to_string())?,
-            &signature,
-        ).map_err(|e| e.to_string())
+        self.signer
+            .verifying_key()
+            .verify_strict(
+                &canonical_json(&(&current, &observed.challenge_nonce))
+                    .map_err(|e| e.to_string())?,
+                &signature,
+            )
+            .map_err(|e| e.to_string())
     }
 
     fn finalize_once(
@@ -181,7 +193,8 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
         crate::durable::write_private_new(
             &self.receipt_path(&intent.idempotency_key),
             &canonical_json(&receipt).map_err(|e| e.to_string())?,
-        ).map_err(|e| e.to_string())
+        )
+        .map_err(|e| e.to_string())
     }
 
     fn read_original_commit(
@@ -189,7 +202,9 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
         key: &str,
     ) -> Result<Option<CellSplitSupervisorCommitV1>, Self::Error> {
         match fs::read(self.receipt_path(key)) {
-            Ok(bytes) => serde_json::from_slice(&bytes).map(Some).map_err(|e| e.to_string()),
+            Ok(bytes) => serde_json::from_slice(&bytes)
+                .map(Some)
+                .map_err(|e| e.to_string()),
             Err(e) if e.kind() == ErrorKind::NotFound => Ok(None),
             Err(e) => Err(e.to_string()),
         }
@@ -201,10 +216,10 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
     ) -> Result<(), Self::Error> {
         let signature = Signature::from_slice(&receipt.original_checkpoint_signature_bytes)
             .map_err(|e| e.to_string())?;
-        self.signer.verifying_key().verify_strict(
-            &receipt.original_checkpoint_bytes,
-            &signature,
-        ).map_err(|e| e.to_string())
+        self.signer
+            .verifying_key()
+            .verify_strict(&receipt.original_checkpoint_bytes, &signature)
+            .map_err(|e| e.to_string())
     }
 
     fn durable_revision(&mut self, _id: &str) -> Result<u64, Self::Error> {
@@ -223,8 +238,10 @@ fn plan() -> CellSplitExecutionPlanV1 {
         ndu_snapshot_digest: "44".repeat(32),
         route_fence_digest: "55".repeat(32),
         owner_ids: [
-            "cas-owner".into(), "migration-owner".into(),
-            "cns-owner".into(), "supervisor-owner".into(),
+            "cas-owner".into(),
+            "migration-owner".into(),
+            "cns-owner".into(),
+            "supervisor-owner".into(),
         ],
     }
 }
@@ -240,10 +257,13 @@ fn binding() -> CellSplitSupervisorFenceBindingV1 {
 fn intent() -> CellSplitExecutionIntentV1 {
     let digest = sha256(&canonical_json(&plan()).expect("plan"));
     let predecessor = "77".repeat(32);
-    let key = sha256(format!(
-        "hepta.learning.cell-split.execution-owner.v1\0{digest}\0{}\0{predecessor}",
-        CellSplitExecutionStepV1::SupervisorGenerationFence.index()
-    ).as_bytes());
+    let key = sha256(
+        format!(
+            "hepta.learning.cell-split.execution-owner.v1\0{digest}\0{}\0{predecessor}",
+            CellSplitExecutionStepV1::SupervisorGenerationFence.index()
+        )
+        .as_bytes(),
+    );
     CellSplitExecutionIntentV1 {
         schema: "hepta.learning.cell-split.execution-owner.v1".into(),
         plan_digest: digest,
@@ -256,12 +276,12 @@ fn intent() -> CellSplitExecutionIntentV1 {
 fn root() -> tempfile::TempDir {
     use std::os::unix::fs::PermissionsExt as _;
     let root = tempfile::tempdir().expect("private root");
-    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
-        .expect("root permissions");
+    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700)).expect("root permissions");
     let state = HandoffFile {
         supervisor_id: binding().supervisor_id,
         domain_id: binding().domain_id,
-        old_generation: 3, new_generation: 4,
+        old_generation: 3,
+        new_generation: 4,
         epoch: 7,
         route_fence: plan().route_fence_digest,
         plan_digest: binding().handoff_plan_digest,
@@ -275,21 +295,24 @@ fn root() -> tempfile::TempDir {
     crate::durable::write_private_new(
         &root.path().join("actual-writer-handoff.json"),
         &canonical_json(&state).expect("handoff"),
-    ).expect("initial durable handoff");
+    )
+    .expect("initial durable handoff");
     crate::durable::write_private_new(
         &root.path().join("actual-cns-route.txt"),
         binding().successor_route_digest.as_bytes(),
-    ).expect("CNS currently serves successor");
+    )
+    .expect("CNS currently serves successor");
     root
 }
 
-fn owner(root: &Path, allowed: Arc<AtomicBool>)
-    -> CellSplitSupervisorFenceOwnerV1<DiskSupervisor>
-{
+fn owner(root: &Path, allowed: Arc<AtomicBool>) -> CellSplitSupervisorFenceOwnerV1<DiskSupervisor> {
     CellSplitSupervisorFenceOwnerV1::open(
-        root, plan(), binding(),
+        root,
+        plan(),
+        binding(),
         DiskSupervisor::new(root.to_path_buf(), allowed),
-    ).expect("verified frozen Supervisor")
+    )
+    .expect("verified frozen Supervisor")
 }
 
 #[test]
@@ -299,19 +322,29 @@ fn requires_closed_old_writer_and_current_route_before_finalizing() {
     let mut owner = owner(root.path(), allowed.clone());
     assert!(owner.commit_once(&intent()).is_err());
     allowed.store(true, Ordering::Release);
-    owner.commit_once(&intent()).expect("actual journal retirement");
-    let original = owner.read_committed(&intent()).expect("read").expect("committed");
+    owner
+        .commit_once(&intent())
+        .expect("actual journal retirement");
+    let original = owner
+        .read_committed(&intent())
+        .expect("read")
+        .expect("committed");
     assert_eq!(original.owner_sequence, 9);
     assert!(owner.verify_current(&intent(), &original).expect("live"));
     owner.commit_once(&intent()).expect("idempotent original");
     drop(owner);
     let mut reopened = owner_factory(root.path(), allowed.clone());
-    assert_eq!(reopened.read_committed(&intent()).unwrap(), Some(original.clone()));
+    assert_eq!(
+        reopened.read_committed(&intent()).unwrap(),
+        Some(original.clone())
+    );
     allowed.store(false, Ordering::Release);
     assert!(reopened.verify_current(&intent(), &original).is_err());
 }
-fn owner_factory(root: &Path, allowed: Arc<AtomicBool>)
-    -> CellSplitSupervisorFenceOwnerV1<DiskSupervisor> {
+fn owner_factory(
+    root: &Path,
+    allowed: Arc<AtomicBool>,
+) -> CellSplitSupervisorFenceOwnerV1<DiskSupervisor> {
     owner(root, allowed)
 }
 
@@ -320,17 +353,17 @@ fn missing_original_checkpoint_or_old_result_fence_blocks_recovery() {
     let root = root();
     let allowed = Arc::new(AtomicBool::new(true));
     let mut instance = owner(root.path(), allowed);
-    let disk = DiskSupervisor::new(
-        root.path().to_path_buf(), Arc::new(AtomicBool::new(true)),
-    );
+    let disk = DiskSupervisor::new(root.path().to_path_buf(), Arc::new(AtomicBool::new(true)));
     let mut state = disk.snapshot();
     state.old_result_fenced = false;
-    disk.replace(&state).expect("external old-writer fence regression");
+    disk.replace(&state)
+        .expect("external old-writer fence regression");
     assert!(instance.commit_once(&intent()).is_err());
     state.old_result_fenced = true;
     state.phase = CellSplitSupervisorPhaseV1::Retired;
     state.revision = 9;
-    disk.replace(&state).expect("unknown terminal state without original");
+    disk.replace(&state)
+        .expect("unknown terminal state without original");
     assert!(matches!(
         instance.read_committed(&intent()),
         Err(CellSplitSupervisorFenceErrorV1::Ambiguous)
@@ -340,8 +373,8 @@ fn missing_original_checkpoint_or_old_result_fence_blocks_recovery() {
 #[test]
 fn signed_supervisor_rpc_reopens_original_terminal_checkpoint() {
     let root = root();
-    let listener = UnixListener::bind(root.path().join("supervisor.sock"))
-        .expect("real Supervisor socket");
+    let listener =
+        UnixListener::bind(root.path().join("supervisor.sock")).expect("real Supervisor socket");
     let root_copy = root.path().to_path_buf();
     let allowed = Arc::new(AtomicBool::new(true));
     let server = thread::spawn(move || {
@@ -351,10 +384,13 @@ fn signed_supervisor_rpc_reopens_original_terminal_checkpoint() {
             sha256(&canonical_json(&plan()).expect("plan")),
             SigningKey::from_bytes(&[4; 32]),
             owner(&root_copy, allowed.clone()),
-        ).expect("signature owner");
+        )
+        .expect("signature owner");
         for _ in 0..2 {
             let (mut stream, _) = listener.accept().expect("RPC");
-            service.serve_connection(&mut stream).expect("signed original");
+            service
+                .serve_connection(&mut stream)
+                .expect("signed original");
         }
         drop(service);
         let mut reopened = CellSplitEffectServiceV1::new(
@@ -363,31 +399,48 @@ fn signed_supervisor_rpc_reopens_original_terminal_checkpoint() {
             sha256(&canonical_json(&plan()).expect("plan")),
             SigningKey::from_bytes(&[4; 32]),
             owner(&root_copy, allowed),
-        ).expect("reopened owner");
+        )
+        .expect("reopened owner");
         let (mut stream, _) = listener.accept().expect("reopen read");
-        reopened.serve_connection(&mut stream).expect("current signed readback");
+        reopened
+            .serve_connection(&mut stream)
+            .expect("current signed readback");
     });
-    let keys = [1u8, 2, 3, 4]
-        .map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
-    let mut client = CellSplitUnixEffectPortV1::new([
-        root.path().join("cas.sock"), root.path().join("migration.sock"),
-        root.path().join("cns.sock"), root.path().join("supervisor.sock"),
-    ], keys, Duration::from_secs(3)).expect("trusted client");
+    let keys = [1u8, 2, 3, 4].map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
+    let mut client = CellSplitUnixEffectPortV1::new(
+        [
+            root.path().join("cas.sock"),
+            root.path().join("migration.sock"),
+            root.path().join("cns.sock"),
+            root.path().join("supervisor.sock"),
+        ],
+        keys,
+        Duration::from_secs(3),
+    )
+    .expect("trusted client");
     let committed = client.execute(&intent()).expect("actual terminal");
-    client.verify_committed(&intent(), &committed).expect("fresh readback");
-    assert_eq!(client.reconcile(&intent()).expect("reopened"), Some(committed));
+    client
+        .verify_committed(&intent(), &committed)
+        .expect("fresh readback");
+    assert_eq!(
+        client.reconcile(&intent()).expect("reopened"),
+        Some(committed)
+    );
     server.join().expect("real socket owner");
 }
-
 
 #[test]
 fn corrupted_terminal_handoff_signature_never_grants_finalization() {
     let root = root();
     let mut owner = owner(root.path(), Arc::new(AtomicBool::new(true)));
     let request = intent();
-    owner.commit_once(&request).expect("real terminal checkpoint");
+    owner
+        .commit_once(&request)
+        .expect("real terminal checkpoint");
     let original = owner.read_committed(&request).unwrap().expect("original");
-    let path = root.path().join(format!("handoff-{}.json", request.idempotency_key));
+    let path = root
+        .path()
+        .join(format!("handoff-{}.json", request.idempotency_key));
     let mut tampered: CellSplitSupervisorCommitV1 =
         serde_json::from_slice(&fs::read(&path).expect("checkpoint")).expect("receipt");
     tampered.original_checkpoint_signature_bytes[0] ^= 0x80;
@@ -397,16 +450,13 @@ fn corrupted_terminal_handoff_signature_never_grants_finalization() {
     assert!(owner.read_committed(&request).is_err());
 }
 
-
 #[test]
 fn replayed_supervisor_checkpoint_is_not_a_fresh_readback() {
     let root = root();
-    let port = DiskSupervisor::new(
-        root.path().to_path_buf(), Arc::new(AtomicBool::new(true)),
-    ).with_stale_readback();
-    let mut owner = CellSplitSupervisorFenceOwnerV1::open(
-        root.path(), plan(), binding(), port,
-    ).expect("frozen Supervisor");
+    let port = DiskSupervisor::new(root.path().to_path_buf(), Arc::new(AtomicBool::new(true)))
+        .with_stale_readback();
+    let mut owner = CellSplitSupervisorFenceOwnerV1::open(root.path(), plan(), binding(), port)
+        .expect("frozen Supervisor");
     assert!(matches!(
         owner.read_committed(&intent()),
         Err(CellSplitSupervisorFenceErrorV1::Invalid)
