@@ -59,6 +59,7 @@ pub struct CellSplitCnsLiveRouteV1 {
     pub authority_epoch: u64,
     pub old_writer_fenced: bool,
     pub unknown_effect_count: u32,
+    pub challenge_nonce: String,
     pub live_runtime_proof_bytes: Vec<u8>,
 }
 
@@ -101,6 +102,7 @@ pub trait CellSplitCnsRuntimePortV1 {
         &mut self,
         cns_id: &str,
         scope_digest: &str,
+        challenge_nonce: &str,
     ) -> Result<CellSplitCnsLiveRouteV1, Self::Error>;
 
     fn verify_live(
@@ -227,11 +229,16 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
     fn checked_live(
         &mut self,
     ) -> Result<CellSplitCnsLiveRouteV1, CellSplitCnsCutoverErrorV1> {
-        let live = self.port.inspect_live(&self.binding.cns_id, &self.plan.scope_digest)
+        let nonce = rand::random::<[u8; 32]>()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let live = self.port.inspect_live(&self.binding.cns_id, &self.plan.scope_digest, &nonce)
             .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
         if live.cns_id != self.binding.cns_id
             || live.scope_digest != self.plan.scope_digest
             || live.authority_epoch != self.binding.authority_epoch
+            || live.challenge_nonce != nonce
             || live.unknown_effect_count != 0
             || !live.old_writer_fenced
             || live.live_runtime_proof_bytes.is_empty()
