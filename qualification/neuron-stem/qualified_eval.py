@@ -10,6 +10,7 @@ import json
 import math
 import statistics
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 SPLITS = {"train", "calibration", "test", "future", "ood"}
@@ -89,8 +90,15 @@ def audit_dataset(rows):
             raise ValueError(f"identical example leaked across splits: {case_id}")
         content_split[fingerprint] = split
         if not isinstance(row["event_time"], str) or "T" not in row["event_time"]:
-            raise ValueError(f"event_time must be ISO-8601-like: {case_id}")
-        timestamps[split].append(row["event_time"])
+            raise ValueError(f"event_time must be ISO-8601: {case_id}")
+        try:
+            timestamp = datetime.fromisoformat(row["event_time"].replace("Z", "+00:00"))
+            if timestamp.tzinfo is None:
+                raise ValueError("naive timestamp")
+            timestamp = timestamp.astimezone(timezone.utc)
+        except ValueError as exc:
+            raise ValueError(f"invalid UTC-resolvable event_time: {case_id}") from exc
+        timestamps[split].append(timestamp)
         counts[(split, row["language"])] += 1
     if any(not timestamps[part] for part in SPLITS):
         raise ValueError("all train, calibration, test, future and ood splits required")
@@ -215,6 +223,22 @@ def evaluate(dataset, baseline, candidate):
                     "delta_brier": after["brier"] - before["brier"],
                     "delta_ece": after["ece_15"] - before["ece_15"],
                 }
+    task_results = {}
+    regressions = []
+    for task in sorted({r["task_id"] for r in dataset}):
+        task_results[task] = {}
+        for split in ("test", "future"):
+            subset = [r for r in dataset if r["task_id"] == task and r["split"] == split]
+            if not subset:
+                continue
+            before, after = brier_and_ece(subset, a), brier_and_ece(subset, b)
+            delta = after["brier"] - before["brier"]
+            task_results[task][split] = {
+                "cases": len(subset), "no_change": before, "candidate": after,
+                "delta_brier": delta,
+            }
+            if delta > 0:
+                regressions.append({"task": task, "split": split, "delta_brier": delta})
     ndu = []
     for row in dataset:
         if row["split"] in ("test", "future"):
@@ -236,7 +260,9 @@ def evaluate(dataset, baseline, candidate):
         "descriptive_ndu_delta": statistics.mean(ndu) if ndu else None,
         "ndu_matched_receipt_count": len(ndu),
         "ndu_independent_signature_verified": False,
-        "future_and_negative_transfer": "review per-task/source-group results before promotion",
+        "per_task_results": task_results,
+        "negative_transfer_regressions": regressions,
+        "future_regression_detected": any(r["split"] == "future" for r in regressions),
         "production_promotion_permitted": False,
     }
 
