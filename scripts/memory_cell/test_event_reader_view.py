@@ -31,8 +31,15 @@ def context(rows=None):
     projection = EventProjection(rows)
     spans = tuple(
         EvidenceSpan(
-            d.identity, d.root, d.scope, d.session, d.observed_at,
-            0, len(d.content.encode()), d.content, digest(d.content),
+            d.identity,
+            d.root,
+            d.scope,
+            d.session,
+            d.observed_at,
+            0,
+            len(d.content.encode()),
+            d.content,
+            digest(d.content),
         )
         for d in rows
     )
@@ -57,8 +64,13 @@ class EventViewTests(unittest.TestCase):
         reader = object.__new__(FrozenBundleReader)
         reader.tokenizer = Tokenizer()
         expected = compile_prompt(
-            reader.tokenizer, q, bundle, originals,
-            frontier=frontier, revoked=set(), token_limit=2048,
+            reader.tokenizer,
+            q,
+            bundle,
+            originals,
+            frontier=frontier,
+            revoked=set(),
+            token_limit=2048,
         )
         actual = reader.compile_input(
             q, bundle, originals, frontier=frontier, revoked=set(), token_limit=2048
@@ -92,8 +104,11 @@ class EventViewTests(unittest.TestCase):
         q, bundle, originals, frontier = context((doc("a"), doc("b", entity="other")))
         with self.assertRaises(ValueError):
             self.render(
-                q, replace(bundle, selected=bundle.selected[:1]), originals,
-                frontier, revoked={"root_b"},
+                q,
+                replace(bundle, selected=bundle.selected[:1]),
+                originals,
+                frontier,
+                revoked={"root_b"},
             )
         changed = replace(bundle, source_frontier="changed")
         with self.assertRaises(ValueError):
@@ -137,7 +152,9 @@ class EventViewTests(unittest.TestCase):
             (doc("a"), doc("b", value="site_abcdefgh", revision=2, supersedes=("a",)))
         )
         _, receipt = self.render(q, bundle, originals, frontier)
-        self.assertIn("Superseded event IDs: a.", receipt["derived_evidence"][1]["text"])
+        self.assertIn(
+            "Superseded event IDs: a.", receipt["derived_evidence"][1]["text"]
+        )
         self.assertEqual(len(receipt["derived_evidence"]), 2)
         self.assertFalse(receipt["independent_semantic_review"])
 

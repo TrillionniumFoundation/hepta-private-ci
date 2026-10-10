@@ -37,13 +37,16 @@ class ReaderExperimentTests(unittest.TestCase):
         docs, cases, labels = [], [], []
         for index in range(8):
             name = f"q{index}"
-            source = replace(doc(f"event{index}", value=f"site_{index:08x}"), scope=name)
+            source = replace(
+                doc(f"event{index}", value=f"site_{index:08x}"), scope=name
+            )
             query = Question(name, name, name, "Where?", "2026-01-02T00:00:00Z")
             projection = EventProjection((source,))
             docs.append(asdict(source))
             cases.append(
                 dict(
-                    query=asdict(query), kind="new_fact",
+                    query=asdict(query),
+                    kind="new_fact",
                     candidate_ids=[source.identity],
                     candidate_digest=digest((source.identity,)),
                     frontier=projection.frontier,
@@ -55,17 +58,23 @@ class ReaderExperimentTests(unittest.TestCase):
             )
             labels.append(
                 dict(
-                    id=name, expected=f"site_{index:08x}",
-                    support=[source.identity], kind="new_fact",
+                    id=name,
+                    expected=f"site_{index:08x}",
+                    support=[source.identity],
+                    kind="new_fact",
                 )
             )
         write(self.inputs / "labels.json", labels)
         write(self.plan_dir / "source-view.json", docs)
         self.plan = dict(
-            schema="hepta.event-organization.plan.v1", arms=ARMS, token_limit=2048,
-            cases=cases, labels_sha=pin(self.inputs / "labels.json"),
+            schema="hepta.event-organization.plan.v1",
+            arms=ARMS,
+            token_limit=2048,
+            cases=cases,
+            labels_sha=pin(self.inputs / "labels.json"),
             source_view_sha=pin(self.plan_dir / "source-view.json"),
-            extraction={}, frozen=dict(costs={}),
+            extraction={},
+            frozen=dict(costs={}),
         )
         write(self.plan_dir / "plan.json", self.plan)
         write(self.model / "inventory.json", dict(inventory_digest="fixture-reader"))
@@ -83,16 +92,22 @@ class ReaderExperimentTests(unittest.TestCase):
             def __init__(self, *args, **kwargs):
                 pass
 
-            def answer(self, query, bundle, originals, *, frontier, revoked, token_limit):
+            def answer(
+                self, query, bundle, originals, *, frontier, revoked, token_limit
+            ):
                 bundle.validate(query, originals, frontier=frontier, revoked=revoked)
                 calls.append((query.identity, bundle.mode, bundle.delivered()))
                 if len(calls) == fail_at:
                     raise ValueError("explicit injected test failure")
                 answer = "site_ffffffff [E1]" if bundle.selected else "I do not know."
                 return answer, dict(
-                    reader_identity="fixture-reader", reader_profile="fixture-view",
-                    token_limit=token_limit, input_ids_digest=digest(asdict(query)),
-                    input_tokens=80, generated_tokens=8, seconds=0.01,
+                    reader_identity="fixture-reader",
+                    reader_profile="fixture-view",
+                    token_limit=token_limit,
+                    input_ids_digest=digest(asdict(query)),
+                    input_tokens=80,
+                    generated_tokens=8,
+                    seconds=0.01,
                     delivered_evidence=bundle.delivered(),
                 )
 
@@ -113,7 +128,10 @@ class ReaderExperimentTests(unittest.TestCase):
             patch.dict("os.environ", {"HEPTA_MEMORY_TESTED_COMMIT": "a" * 40}),
         ):
             result = experiment.run(
-                self.plan_dir, self.inputs, self.model, self.root / "out",
+                self.plan_dir,
+                self.inputs,
+                self.model,
+                self.root / "out",
                 plan_sha=pin(self.plan_dir / "plan.json"),
                 stage_sha=pin(self.model / "stage.json"),
             )
@@ -156,7 +174,9 @@ class ReaderExperimentTests(unittest.TestCase):
     def test_label_byte_change_is_not_allowed_before_generation(self):
         (self.inputs / "labels.json").write_text("[]")
         with self.assertRaises(ValueError):
-            experiment.preflight(self.plan_dir, self.inputs, pin(self.plan_dir / "plan.json"))
+            experiment.preflight(
+                self.plan_dir, self.inputs, pin(self.plan_dir / "plan.json")
+            )
 
 
 if __name__ == "__main__":

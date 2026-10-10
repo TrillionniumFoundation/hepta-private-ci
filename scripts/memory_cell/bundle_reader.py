@@ -91,7 +91,9 @@ class FrozenBundleReader:
         self.base_digest = frozen_digest(self.model)
         self.profile = digest((SYSTEM, GENERATION, self.tokenizer.chat_template))
 
-    def compile_input(self, query, bundle, originals, *, frontier, revoked, token_limit):
+    def compile_input(
+        self, query, bundle, originals, *, frontier, revoked, token_limit
+    ):
         """Keep the default view exact; controlled subclasses may extend it."""
         return compile_prompt(
             self.tokenizer,

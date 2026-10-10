@@ -84,8 +84,11 @@ class RevisionClosureTests(unittest.TestCase):
         rows = (
             doc("a", attribute="component", value="old_part"),
             doc(
-                "b", attribute="component", value="new_part",
-                revision=2, supersedes=("a",),
+                "b",
+                attribute="component",
+                value="new_part",
+                revision=2,
+                supersedes=("a",),
             ),
             doc("c", entity="old_part"),
             doc("d", entity="new_part", value="site_new"),

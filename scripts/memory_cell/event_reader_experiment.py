@@ -56,7 +56,10 @@ def preflight(plan_dir, inputs, plan_sha):
         if set(case["controls"]) != set(ARMS):
             raise ValueError("changed evidence condition census")
         pool = case["candidate_ids"]
-        if len(set(pool)) != len(pool) or digest(tuple(pool)) != case["candidate_digest"]:
+        if (
+            len(set(pool)) != len(pool)
+            or digest(tuple(pool)) != case["candidate_digest"]
+        ):
             raise ValueError("candidate pool identity drift")
         for control in case["controls"].values():
             if len(set(control["selected"])) != len(control["selected"]):
@@ -105,8 +108,15 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
                 selected = case["controls"][arm]["selected"]
                 spans = tuple(
                     EvidenceSpan(
-                        d.identity, d.root, d.scope, d.session, d.observed_at,
-                        0, len(d.content.encode()), d.content, digest(d.content),
+                        d.identity,
+                        d.root,
+                        d.scope,
+                        d.session,
+                        d.observed_at,
+                        0,
+                        len(d.content.encode()),
+                        d.content,
+                        digest(d.content),
                     )
                     for d in (originals[key] for key in selected)
                 )
@@ -122,8 +132,12 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
                 )
                 try:
                     answer, receipt = reader.answer(
-                        query, bundle, originals,
-                        frontier=case["frontier"], revoked=set(), token_limit=LIMIT,
+                        query,
+                        bundle,
+                        originals,
+                        frontier=case["frontier"],
+                        revoked=set(),
+                        token_limit=LIMIT,
                     )
                     queue = capture_native(
                         query,
@@ -136,15 +150,20 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
                         family_digest=digest(query.family),
                     )
                     row.update(
-                        status="succeeded", answer=answer,
-                        receipt=receipt, citation_audit=queue,
+                        status="succeeded",
+                        answer=answer,
+                        receipt=receipt,
+                        citation_audit=queue,
                     )
                 except Exception as error:
                     row.update(
-                        status="failed", error_type=type(error).__name__,
+                        status="failed",
+                        error_type=type(error).__name__,
                         error=str(error)[:1024],
                     )
-                journal.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+                journal.write(
+                    json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                )
                 journal.flush()
                 os.fsync(journal.fileno())
                 rows.append(row)
@@ -165,7 +184,8 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
         if truth["kind"] == "procedure":
             receipt = call_worker(
                 dict(
-                    operation="execute", recipe=truth["procedure"],
+                    operation="execute",
+                    recipe=truth["procedure"],
                     supplied=value or "invalid_response",
                 )
             )
@@ -202,8 +222,12 @@ if __name__ == "__main__":
     print(
         json.dumps(
             run(
-                args.plan, args.inputs, args.model, args.output,
-                plan_sha=args.plan_sha, stage_sha=args.stage_sha,
+                args.plan,
+                args.inputs,
+                args.model,
+                args.output,
+                plan_sha=args.plan_sha,
+                stage_sha=args.stage_sha,
             )
         )
     )

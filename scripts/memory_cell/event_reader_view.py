@@ -96,7 +96,9 @@ class EventPresentationReader(ReferenceReader):
         super().__init__(directory, expected_inventory=expected_inventory)
         self.profile = digest((self.profile, PROFILE))
 
-    def compile_input(self, query, bundle, originals, *, frontier, revoked, token_limit):
+    def compile_input(
+        self, query, bundle, originals, *, frontier, revoked, token_limit
+    ):
         return event_prompt(
             self.tokenizer,
             query,
