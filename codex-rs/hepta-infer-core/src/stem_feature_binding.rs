@@ -262,6 +262,10 @@ mod tests {
         let result = bind_stem_feature_request_v1(&source, &access, selected, &values)
             .expect("valid scoped feature");
         assert_eq!(result.request.feature_vector_q24, values);
+        assert_eq!(
+            stem_feature_vector_digest_v1(&values).unwrap().to_string(),
+            "148ae0b91ab97729f72d745e989ac7b03614438cc6030edb2f79748049c70b59"
+        );
         assert_eq!(result.request.generation, generation(7));
         assert!(!result.feature_ref_digest.is_zero());
         assert!(!result.authority.grants_any());
