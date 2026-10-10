@@ -1,6 +1,7 @@
 """Publisher vote transfer has byte-level tests; no semantic certificate is issued."""
 
 import copy
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -90,6 +91,18 @@ class NecessityBridgeTests(unittest.TestCase):
                 self.assertFalse(a[claimed]["sufficient_context_certified"])
         self.assertEqual(len(cap["cases"]), 8)
         self.assertTrue(all(c["phase"] == "capability" for c in cap["cases"]))
+
+    def test_persisted_json_normalizes_tuple_assets_without_detaching_sources(self):
+        plan, labels, records, questions, raw = cohort()
+        persisted_plan = json.loads(json.dumps(plan))
+        persisted_labels = json.loads(json.dumps(labels))
+        package, projected, cap, _, stats = project_fixture(
+            persisted_plan, persisted_labels, records, questions, raw
+        )
+        self.assertEqual(len(package["reviews"]), 24)
+        self.assertEqual(len(projected["cases"]), 24)
+        self.assertEqual(len(cap["cases"]), 8)
+        self.assertFalse(stats["production_accepted"])
 
     def test_mutated_question_vote_source_or_answer_fail(self):
         plan, labels, records, questions, raw = cohort()
