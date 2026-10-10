@@ -1,6 +1,8 @@
 use super::*;
 use std::fs;
-use std::time::{Instant, SystemTime, UNIX_EPOCH};
+use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 fn p_ns(samples: &mut [u128], pct: usize) -> u128 {
     samples.sort_unstable();
@@ -8,26 +10,40 @@ fn p_ns(samples: &mut [u128], pct: usize) -> u128 {
 }
 
 fn rss_kib() -> Option<u64> {
-    std::fs::read_to_string("/proc/self/status").ok()?
-        .lines().find(|line| line.starts_with("VmRSS:"))?
-        .split_whitespace().nth(1)?.parse().ok()
+    std::fs::read_to_string("/proc/self/status")
+        .ok()?
+        .lines()
+        .find(|line| line.starts_with("VmRSS:"))?
+        .split_whitespace()
+        .nth(1)?
+        .parse()
+        .ok()
 }
 
 fn process_cpu_ticks() -> Option<u64> {
     let stat = std::fs::read_to_string("/proc/self/stat").ok()?;
     let after_comm = stat.rsplit_once(") ")?.1;
     let fields = after_comm.split_whitespace().collect::<Vec<_>>();
-    Some(fields.get(11)?.parse::<u64>().ok()?
-        .saturating_add(fields.get(12)?.parse::<u64>().ok()?))
+    Some(
+        fields
+            .get(11)?
+            .parse::<u64>()
+            .ok()?
+            .saturating_add(fields.get(12)?.parse::<u64>().ok()?),
+    )
 }
 
 #[test]
 #[ignore = "qualified source workload, needs actual target-host storage measurements"]
 fn durable_writer_reopen_64_256_1024_4096_scope_history() {
     for scopes in [64_usize, 256, 1024, 4096] {
-        let nonce = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
         let path = std::env::temp_dir().join(format!(
-            "hepta-durable-scale-{}-{scopes}-{nonce}", std::process::id()
+            "hepta-durable-scale-{}-{scopes}-{nonce}",
+            std::process::id()
         ));
         let baseline_rss = rss_kib();
         let start_cpu = process_cpu_ticks();
@@ -67,15 +83,20 @@ fn durable_writer_reopen_64_256_1024_4096_scope_history() {
         let disk_bytes = fs::metadata(&path).unwrap().len();
         let after_rss = rss_kib();
         let cpu_ticks = process_cpu_ticks()
-            .zip(start_cpu).map(|(after, before)| after.saturating_sub(before));
+            .zip(start_cpu)
+            .map(|(after, before)| after.saturating_sub(before));
         eprintln!(
             "HEPTA_DURABLE_SCALE_V1 scopes={scopes} writes={scopes} \
              append_total_ns={append_total} append_p50_ns={} append_p95_ns={} append_p99_ns={} \
              reopen_ns={reopen_ns} read_p50_ns={} read_p95_ns={} read_p99_ns={} \
              journal_bytes={disk_bytes} rss_before_kib={baseline_rss:?} \
              rss_after_kib={after_rss:?} cpu_process_ticks={cpu_ticks:?}",
-            p_ns(&mut append_ns, 50), p_ns(&mut append_ns, 95), p_ns(&mut append_ns, 99),
-            p_ns(&mut read_ns, 50), p_ns(&mut read_ns, 95), p_ns(&mut read_ns, 99),
+            p_ns(&mut append_ns, 50),
+            p_ns(&mut append_ns, 95),
+            p_ns(&mut append_ns, 99),
+            p_ns(&mut read_ns, 50),
+            p_ns(&mut read_ns, 95),
+            p_ns(&mut read_ns, 99),
         );
         drop(reopened);
         fs::remove_file(path).unwrap();

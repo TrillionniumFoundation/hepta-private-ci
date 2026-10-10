@@ -13,7 +13,8 @@ use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use codex_hepta_types::CellParentDispositionV1;
@@ -23,7 +24,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::PhaseLatencyHistogramV1;
 use codex_hepta_types::PhaseLatencySnapshotV1;
-use codex_hepta_types::{PhaseMetricEventV1, PhaseMetricKindV1, PhaseMetricSinkV1};
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 use codex_hepta_types::StableId;
 
 use crate::CnsDeliveryV1;
@@ -211,7 +214,9 @@ impl CellSplitRouteControllerV1 {
     }
 
     pub fn flush_production_metrics(&self) -> bool {
-        let Some(sink) = &self.metrics else { return false; };
+        let Some(sink) = &self.metrics else {
+            return false;
+        };
         if sink.flush().is_err() {
             self.failed_metrics.fetch_add(1, Ordering::Release);
             return false;
@@ -219,17 +224,19 @@ impl CellSplitRouteControllerV1 {
         self.production_metrics_ready()
     }
 
-    fn report_cutover(
-        &self, started: Instant, operation: Digest32, succeeded: bool,
-    ) {
+    fn report_cutover(&self, started: Instant, operation: Digest32, succeeded: bool) {
         if let Some(sink) = &self.metrics {
-            if sink.record(PhaseMetricEventV1 {
-                scope_digest: Digest32::of_bytes(self.split.split_id.as_str().as_bytes()),
-                operation_digest: operation,
-                phase: PhaseMetricKindV1::Cns,
-                latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
-                succeeded,
-            }).is_err() {
+            if sink
+                .record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(self.split.split_id.as_str().as_bytes()),
+                    operation_digest: operation,
+                    phase: PhaseMetricKindV1::Cns,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded,
+                })
+                .is_err()
+            {
                 self.failed_metrics.fetch_add(1, Ordering::Release);
             }
         }

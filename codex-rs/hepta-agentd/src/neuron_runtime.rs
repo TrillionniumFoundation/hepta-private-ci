@@ -5,14 +5,19 @@
 //! one durable nonce for every model invocation. Low-level neuron.tick remains
 //! a mechanism for independent qualification, never an Agentd serving port.
 
-use codex_hepta_contracts::{
-    FinalUseAuthority, FinalUseBinding, SignedFinalUseGrant,
-};
-use codex_hepta_neuron::{
-    AnchorWitnessStore, InferenceControlModelPort, NeuronInferenceControlPort,
-    NeuronRuntime, NeuronRuntimeError, NeuronRuntimeOutputV1, NeuronTickInputV1,
-};
-use codex_hepta_types::{Digest32, NduSnapshotRefV1, StableId};
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::InferenceControlModelPort;
+use codex_hepta_neuron::NeuronInferenceControlPort;
+use codex_hepta_neuron::NeuronRuntime;
+use codex_hepta_neuron::NeuronRuntimeError;
+use codex_hepta_neuron::NeuronRuntimeOutputV1;
+use codex_hepta_neuron::NeuronTickInputV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::NduSnapshotRefV1;
+use codex_hepta_types::StableId;
 
 pub struct AgentdNeuronOwner<W, P>
 where
@@ -40,7 +45,8 @@ pub fn neuron_ndu_final_use_binding_v1(
         return Err(NeuronRuntimeError::InvalidInput);
     }
     let tick_digest = input.semantic_digest()?;
-    let snapshot_ref_digest = snapshot.semantic_digest()
+    let snapshot_ref_digest = snapshot
+        .semantic_digest()
         .map_err(|_| NeuronRuntimeError::InvalidInput)?;
     let mut payload = b"hepta.agentd.neuron-final-use.v1".to_vec();
     payload.extend_from_slice(tick_digest.as_array());
@@ -108,20 +114,32 @@ where
         authenticated_read_receipt_digest: Digest32,
         signed_grant: &SignedFinalUseGrant,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
-        let authority = self.final_use.as_ref().ok_or(NeuronRuntimeError::InvalidInput)?;
-        let owner_id = self.neuron_owner_id.as_ref().ok_or(NeuronRuntimeError::InvalidInput)?;
+        let authority = self
+            .final_use
+            .as_ref()
+            .ok_or(NeuronRuntimeError::InvalidInput)?;
+        let owner_id = self
+            .neuron_owner_id
+            .as_ref()
+            .ok_or(NeuronRuntimeError::InvalidInput)?;
         if signed_grant.grant.authority_epoch != snapshot.revocation_epoch {
             return Err(NeuronRuntimeError::InvalidInput);
         }
         let binding = neuron_ndu_final_use_binding_v1(
-            owner_id, &input, snapshot, authenticated_read_receipt_digest,
+            owner_id,
+            &input,
+            snapshot,
+            authenticated_read_receipt_digest,
         )?;
         let token = FinalUseAuthority::claim(authority, signed_grant, &binding)
             .map_err(|_| NeuronRuntimeError::InvalidInput)?;
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
             self.runtime.tick_with_ndu_snapshot(
-                &mut model, input, snapshot, authenticated_read_receipt_digest,
+                &mut model,
+                input,
+                snapshot,
+                authenticated_read_receipt_digest,
             )
         })
         .map_err(|_| NeuronRuntimeError::InvalidInput)?

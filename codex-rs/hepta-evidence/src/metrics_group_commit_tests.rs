@@ -4,7 +4,9 @@ fn sample(phase: MetricPhaseV1) -> MetricSampleV1 {
     MetricSampleV1 {
         scope_digest: Digest32::of_bytes(b"scope"),
         operation_digest: Digest32::of_bytes(b"operation"),
-        phase, latency_micros: 42, succeeded: true,
+        phase,
+        latency_micros: 42,
+        succeeded: true,
     }
 }
 #[test]
@@ -40,12 +42,21 @@ fn tampered_group_is_rejected_and_phase_times_failures() {
         writer.flush().unwrap();
     }
     let (result, metric) = measure_phase_v1(
-        Digest32::of_bytes(b"s"), Digest32::of_bytes(b"o"),
-        MetricPhaseV1::Cas, || Err::<(), _>("conflict")
+        Digest32::of_bytes(b"s"),
+        Digest32::of_bytes(b"o"),
+        MetricPhaseV1::Cas,
+        || Err::<(), _>("conflict"),
     );
     assert!(result.is_err());
     assert!(!metric.succeeded);
-    std::fs::OpenOptions::new().append(true).open(&path).unwrap()
-        .write_all(b"truncated").unwrap();
-    assert!(matches!(MetricsGroupCommitV1::open(&path), Err(MetricsJournalErrorV1::Corrupt)));
+    std::fs::OpenOptions::new()
+        .append(true)
+        .open(&path)
+        .unwrap()
+        .write_all(b"truncated")
+        .unwrap();
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
 }

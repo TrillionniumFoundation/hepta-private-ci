@@ -493,7 +493,9 @@ impl DurableInferenceControl {
             records: BTreeMap::new(),
         };
         if let Some(current) = self.native.records.get(request_id) {
-            candidate.records.insert(request_id.to_string(), current.clone());
+            candidate
+                .records
+                .insert(request_id.to_string(), current.clone());
         }
         candidate.apply(event.clone())?;
         let next_record = candidate
@@ -505,7 +507,9 @@ impl DurableInferenceControl {
         self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
         self.native.maximum_in_flight = candidate.maximum_in_flight;
         self.native.in_flight_count = candidate.in_flight_count;
-        self.native.records.insert(request_id.to_string(), next_record.clone());
+        self.native
+            .records
+            .insert(request_id.to_string(), next_record.clone());
         Ok(next_record)
     }
 }
@@ -545,7 +549,10 @@ impl NativeJournal {
             if self.in_flight_count >= maximum_in_flight {
                 return Err(Error::CapacityExceeded);
             }
-            self.in_flight_count = self.in_flight_count.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+            self.in_flight_count = self
+                .in_flight_count
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
             self.maximum_in_flight = Some(maximum_in_flight);
             self.records.insert(
                 request.request_id.clone(),
@@ -757,10 +764,14 @@ impl NativeJournal {
             .ok_or(Error::ArithmeticOverflow)?;
         let now_in_flight = record.state != NativeReservationState::Released;
         if was_in_flight && !now_in_flight {
-            self.in_flight_count = self.in_flight_count.checked_sub(1)
+            self.in_flight_count = self
+                .in_flight_count
+                .checked_sub(1)
                 .ok_or(Error::CorruptJournal("native in-flight counter underflow"))?;
         } else if !was_in_flight && now_in_flight {
-            self.in_flight_count = self.in_flight_count.checked_add(1)
+            self.in_flight_count = self
+                .in_flight_count
+                .checked_add(1)
                 .ok_or(Error::ArithmeticOverflow)?;
         }
         Ok(())

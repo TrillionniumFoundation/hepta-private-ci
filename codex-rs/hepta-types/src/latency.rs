@@ -4,8 +4,10 @@
 //! Reported percentile bounds are logarithmic bucket upper bounds, not exact
 //! hardware p50/p95/p99; the hardware benchmark must measure them separately.
 
-use std::sync::atomic::{AtomicU64, Ordering};
-use std::time::{Duration, Instant};
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
+use std::time::Instant;
 
 const BUCKETS: usize = 64;
 
@@ -94,11 +96,21 @@ impl PhaseLatencyHistogramV1 {
 }
 
 fn bucket_index(micros: u64) -> usize {
-    if micros == 0 { 0 } else { (u64::BITS - 1 - micros.leading_zeros()) as usize }
+    if micros == 0 {
+        0
+    } else {
+        (u64::BITS - 1 - micros.leading_zeros()) as usize
+    }
 }
 
 fn bucket_upper_bound(index: usize) -> u64 {
-    if index == 0 { 1 } else if index >= 63 { u64::MAX } else { (1_u64 << (index + 1)) - 1 }
+    if index == 0 {
+        1
+    } else if index >= 63 {
+        u64::MAX
+    } else {
+        (1_u64 << (index + 1)) - 1
+    }
 }
 
 #[cfg(test)]

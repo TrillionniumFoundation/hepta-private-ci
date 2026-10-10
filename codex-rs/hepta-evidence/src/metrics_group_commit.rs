@@ -5,8 +5,13 @@
 //! authority. The caller must not retry an external effect after a telemetry
 //! failure without independently reconciling that effect.
 
-use std::fs::{self, File, OpenOptions};
-use std::io::{BufRead, BufReader, Read, Write};
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::{self};
+use std::io::BufRead;
+use std::io::BufReader;
+use std::io::Read;
+use std::io::Write;
 use std::path::Path;
 use std::time::Instant;
 
@@ -54,10 +59,14 @@ pub enum MetricsJournalErrorV1 {
     Poisoned,
 }
 impl From<std::io::Error> for MetricsJournalErrorV1 {
-    fn from(error: std::io::Error) -> Self { Self::Io(error) }
+    fn from(error: std::io::Error) -> Self {
+        Self::Io(error)
+    }
 }
 impl std::fmt::Display for MetricsJournalErrorV1 {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{self:?}") }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 impl std::error::Error for MetricsJournalErrorV1 {}
 
@@ -86,7 +95,8 @@ impl MetricsGroupCommitV1 {
             options.mode(0o600);
         }
         let file = options.open(path)?;
-        file.try_lock().map_err(|_| MetricsJournalErrorV1::WriterUnavailable)?;
+        file.try_lock()
+            .map_err(|_| MetricsJournalErrorV1::WriterUnavailable)?;
         let mut reader = BufReader::new(file.try_clone()?);
         let mut line = Vec::new();
         let mut total = 0_u64;
@@ -95,50 +105,89 @@ impl MetricsGroupCommitV1 {
         loop {
             line.clear();
             let remaining = MAX_JOURNAL_BYTES.saturating_sub(total).saturating_add(1);
-            let read = (&mut reader).take(remaining.min(MAX_LINE_BYTES as u64 + 1))
+            let read = (&mut reader)
+                .take(remaining.min(MAX_LINE_BYTES as u64 + 1))
                 .read_until(b'\n', &mut line)?;
-            if read == 0 { break; }
-            total = total.checked_add(read as u64).ok_or(MetricsJournalErrorV1::Capacity)?;
+            if read == 0 {
+                break;
+            }
+            total = total
+                .checked_add(read as u64)
+                .ok_or(MetricsJournalErrorV1::Capacity)?;
             if read > MAX_LINE_BYTES || total > MAX_JOURNAL_BYTES || line.pop() != Some(b'\n') {
                 return Err(MetricsJournalErrorV1::Corrupt);
             }
-            let contents = std::str::from_utf8(&line).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+            let contents =
+                std::str::from_utf8(&line).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
             let (next_sequence, next_head) = parse_group(contents, sequence, head)?;
             sequence = next_sequence;
             head = next_head;
         }
-        Ok(Self { file, staged: Vec::new(), sequence, head, bytes: total, poisoned: false })
+        Ok(Self {
+            file,
+            staged: Vec::new(),
+            sequence,
+            head,
+            bytes: total,
+            poisoned: false,
+        })
     }
 
     pub fn stage(&mut self, sample: MetricSampleV1) -> Result<(), MetricsJournalErrorV1> {
-        if self.poisoned { return Err(MetricsJournalErrorV1::Poisoned); }
+        if self.poisoned {
+            return Err(MetricsJournalErrorV1::Poisoned);
+        }
         if sample.scope_digest.is_zero() || sample.operation_digest.is_zero() {
             return Err(MetricsJournalErrorV1::EmptyDigest);
         }
-        if self.staged.len() >= MAX_GROUP_ROWS { return Err(MetricsJournalErrorV1::Capacity); }
+        if self.staged.len() >= MAX_GROUP_ROWS {
+            return Err(MetricsJournalErrorV1::Capacity);
+        }
         self.staged.push(sample);
         Ok(())
     }
 
-    pub fn pending(&self) -> usize { self.staged.len() }
+    pub fn pending(&self) -> usize {
+        self.staged.len()
+    }
 
     pub fn flush(&mut self) -> Result<Option<MetricsCommitReceiptV1>, MetricsJournalErrorV1> {
-        if self.poisoned { return Err(MetricsJournalErrorV1::Poisoned); }
-        if self.staged.is_empty() { return Ok(None); }
-        let sequence = self.sequence.checked_add(1).ok_or(MetricsJournalErrorV1::Capacity)?;
-        let payload = self.staged.iter().map(encode_sample).collect::<Vec<_>>().join(";");
+        if self.poisoned {
+            return Err(MetricsJournalErrorV1::Poisoned);
+        }
+        if self.staged.is_empty() {
+            return Ok(None);
+        }
+        let sequence = self
+            .sequence
+            .checked_add(1)
+            .ok_or(MetricsJournalErrorV1::Capacity)?;
+        let payload = self
+            .staged
+            .iter()
+            .map(encode_sample)
+            .collect::<Vec<_>>()
+            .join(";");
         let next_head = digest_group(sequence, self.head, &payload);
         let encoded = format!(
             "M1|{}|{}|{}|{}|{}\n",
-            sequence, self.head, next_head, self.staged.len(), payload
+            sequence,
+            self.head,
+            next_head,
+            self.staged.len(),
+            payload
         );
-        let next_bytes = self.bytes.checked_add(encoded.len() as u64)
+        let next_bytes = self
+            .bytes
+            .checked_add(encoded.len() as u64)
             .ok_or(MetricsJournalErrorV1::Capacity)?;
         if encoded.len() > MAX_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
             return Err(MetricsJournalErrorV1::Capacity);
         }
         let started = Instant::now();
-        if let Err(error) = self.file.write_all(encoded.as_bytes())
+        if let Err(error) = self
+            .file
+            .write_all(encoded.as_bytes())
             .and_then(|()| self.file.sync_all())
         {
             self.poisoned = true;
@@ -148,7 +197,9 @@ impl MetricsGroupCommitV1 {
         self.sequence = sequence;
         self.head = next_head;
         let receipt = MetricsCommitReceiptV1 {
-            sequence, head_digest: next_head, rows: self.staged.len(),
+            sequence,
+            head_digest: next_head,
+            rows: self.staged.len(),
             sync_latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
         };
         self.staged.clear();
@@ -167,7 +218,9 @@ pub fn measure_phase_v1<T, E>(
     let start = Instant::now();
     let result = operation();
     let sample = MetricSampleV1 {
-        scope_digest, operation_digest, phase,
+        scope_digest,
+        operation_digest,
+        phase,
         latency_micros: u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX),
         succeeded: result.is_ok(),
     };
@@ -177,8 +230,11 @@ pub fn measure_phase_v1<T, E>(
 fn encode_sample(sample: &MetricSampleV1) -> String {
     format!(
         "{}:{}:{}:{}:{}",
-        sample.scope_digest, sample.operation_digest, sample.phase as u8,
-        sample.latency_micros, u8::from(sample.succeeded)
+        sample.scope_digest,
+        sample.operation_digest,
+        sample.phase as u8,
+        sample.latency_micros,
+        u8::from(sample.succeeded)
     )
 }
 
@@ -197,10 +253,18 @@ fn parse_group(
     previous_head: Digest32,
 ) -> Result<(u64, Digest32), MetricsJournalErrorV1> {
     let mut fields = line.split('|');
-    if fields.next() != Some("M1") { return Err(MetricsJournalErrorV1::Corrupt); }
-    let sequence = fields.next().and_then(|s| s.parse::<u64>().ok())
+    if fields.next() != Some("M1") {
+        return Err(MetricsJournalErrorV1::Corrupt);
+    }
+    let sequence = fields
+        .next()
+        .and_then(|s| s.parse::<u64>().ok())
         .ok_or(MetricsJournalErrorV1::Corrupt)?;
-    if sequence != previous_sequence.checked_add(1).ok_or(MetricsJournalErrorV1::Corrupt)? {
+    if sequence
+        != previous_sequence
+            .checked_add(1)
+            .ok_or(MetricsJournalErrorV1::Corrupt)?
+    {
         return Err(MetricsJournalErrorV1::Corrupt);
     }
     let predecessor_hex = previous_head.to_string();
@@ -208,14 +272,18 @@ fn parse_group(
         return Err(MetricsJournalErrorV1::Corrupt);
     }
     let head = fields.next().ok_or(MetricsJournalErrorV1::Corrupt)?;
-    let count = fields.next().and_then(|s| s.parse::<usize>().ok())
+    let count = fields
+        .next()
+        .and_then(|s| s.parse::<usize>().ok())
         .ok_or(MetricsJournalErrorV1::Corrupt)?;
     let payload = fields.next().ok_or(MetricsJournalErrorV1::Corrupt)?;
     if fields.next().is_some() || count == 0 || count > MAX_GROUP_ROWS {
         return Err(MetricsJournalErrorV1::Corrupt);
     }
     let rows: Vec<_> = payload.split(';').collect();
-    if rows.len() != count { return Err(MetricsJournalErrorV1::Corrupt); }
+    if rows.len() != count {
+        return Err(MetricsJournalErrorV1::Corrupt);
+    }
     for row in rows {
         let columns: Vec<_> = row.split(':').collect();
         if columns.len() != 5
@@ -229,12 +297,16 @@ fn parse_group(
         }
     }
     let expected = digest_group(sequence, previous_head, payload);
-    if head != expected.to_string() { return Err(MetricsJournalErrorV1::Corrupt); }
+    if head != expected.to_string() {
+        return Err(MetricsJournalErrorV1::Corrupt);
+    }
     Ok((sequence, expected))
 }
 
 fn digest_hex(s: &str) -> bool {
-    s.len() == 64 && s.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
+    s.len() == 64
+        && s.bytes()
+            .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b))
 }
 
 #[cfg(test)]

@@ -6,7 +6,9 @@
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
-use codex_hepta_types::{Digest32, Generation, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 pub const MAX_CACHED_SCOPES: usize = 4096;
 
@@ -58,7 +60,11 @@ impl<T> GenerationFenceCacheV1<T> {
         if maximum_scopes == 0 || maximum_scopes > MAX_CACHED_SCOPES {
             return Err(FenceCacheErrorV1::InvalidCapacity);
         }
-        Ok(Self { family, scopes: BTreeMap::new(), maximum_scopes })
+        Ok(Self {
+            family,
+            scopes: BTreeMap::new(),
+            maximum_scopes,
+        })
     }
 
     pub fn scopes(&self) -> usize {
@@ -67,7 +73,10 @@ impl<T> GenerationFenceCacheV1<T> {
 
     /// A new admitted epoch invalidates the old value. A change to the binding
     /// digest in the same epoch is never silently accepted.
-    pub fn observe_binding(&mut self, binding: FenceCacheBindingV1) -> Result<(), FenceCacheErrorV1> {
+    pub fn observe_binding(
+        &mut self,
+        binding: FenceCacheBindingV1,
+    ) -> Result<(), FenceCacheErrorV1> {
         validate(&binding)?;
         match self.scopes.get_mut(&binding.scope) {
             Some(old) => {
@@ -93,7 +102,13 @@ impl<T> GenerationFenceCacheV1<T> {
                 if self.scopes.len() >= self.maximum_scopes {
                     return Err(FenceCacheErrorV1::Capacity);
                 }
-                self.scopes.insert(binding.scope.clone(), CacheScopeV1 { binding, entry: None });
+                self.scopes.insert(
+                    binding.scope.clone(),
+                    CacheScopeV1 {
+                        binding,
+                        entry: None,
+                    },
+                );
                 Ok(())
             }
         }
@@ -109,7 +124,10 @@ impl<T> GenerationFenceCacheV1<T> {
         if expires_at_ms <= now_ms {
             return Err(FenceCacheErrorV1::InvalidExpiry);
         }
-        let state = self.scopes.get_mut(&binding.scope).ok_or(FenceCacheErrorV1::StaleBinding)?;
+        let state = self
+            .scopes
+            .get_mut(&binding.scope)
+            .ok_or(FenceCacheErrorV1::StaleBinding)?;
         if state.binding != *binding {
             return Err(FenceCacheErrorV1::StaleBinding);
         }
@@ -127,7 +145,10 @@ impl<T> GenerationFenceCacheV1<T> {
     }
 
     /// Keep a tombstone watermark at this scope: old epochs cannot re-enter.
-    pub fn invalidate(&mut self, new_binding: FenceCacheBindingV1) -> Result<(), FenceCacheErrorV1> {
+    pub fn invalidate(
+        &mut self,
+        new_binding: FenceCacheBindingV1,
+    ) -> Result<(), FenceCacheErrorV1> {
         self.observe_binding(new_binding.clone())?;
         if let Some(state) = self.scopes.get_mut(&new_binding.scope) {
             state.entry = None;
@@ -148,7 +169,10 @@ pub struct ScopedCachesV1<A, N, W, R> {
 impl<A, N, W, R> ScopedCachesV1<A, N, W, R> {
     pub fn new(maximum_scopes: usize) -> Result<Self, FenceCacheErrorV1> {
         Ok(Self {
-            authority: GenerationFenceCacheV1::new(CacheFamilyV1::AuthorityObservation, maximum_scopes)?,
+            authority: GenerationFenceCacheV1::new(
+                CacheFamilyV1::AuthorityObservation,
+                maximum_scopes,
+            )?,
             ndu: GenerationFenceCacheV1::new(CacheFamilyV1::NduSnapshot, maximum_scopes)?,
             worker: GenerationFenceCacheV1::new(CacheFamilyV1::Worker, maximum_scopes)?,
             retrieval: GenerationFenceCacheV1::new(CacheFamilyV1::RetrievalClient, maximum_scopes)?,

@@ -34,7 +34,10 @@ impl SharedFeatureBufferV1 {
         if values.is_empty() || values.len() > MAX_SHARED_FEATURES {
             return Err(SharedFeatureErrorV1::Width);
         }
-        if values.iter().any(|v| !(-FEATURE_LIMIT_Q24..=FEATURE_LIMIT_Q24).contains(v)) {
+        if values
+            .iter()
+            .any(|v| !(-FEATURE_LIMIT_Q24..=FEATURE_LIMIT_Q24).contains(v))
+        {
             return Err(SharedFeatureErrorV1::OutOfRange);
         }
         let digest = canonical_shared_feature_digest_v1(&values);

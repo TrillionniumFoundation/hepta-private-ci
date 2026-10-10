@@ -446,7 +446,9 @@ impl DurableInferenceControl {
             candidate.insert(request_id.clone(), current.clone());
         }
         apply_event(&mut candidate, &event, /*replay*/ false)?;
-        let next_record = candidate.remove(&request_id).ok_or(Error::RequestNotFound)?;
+        let next_record = candidate
+            .remove(&request_id)
+            .ok_or(Error::RequestNotFound)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
         self.records.insert(request_id.clone(), next_record);

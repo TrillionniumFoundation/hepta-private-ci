@@ -7,11 +7,10 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod durable_control;
 pub mod microbatch;
+mod neuron_feature;
 pub mod scoped_cache;
 pub mod shared_feature;
-mod neuron_feature;
 
-pub use shared_feature::SharedFeatureBufferV1;
 pub use neuron_feature::NeuronFeatureContractError;
 pub use neuron_feature::NeuronFeatureObservationV1;
 pub use neuron_feature::NeuronFeatureReceiptV1;
@@ -21,6 +20,7 @@ pub use neuron_feature::NeuronModelRuntimeTupleV1;
 pub use neuron_feature::build_neuron_feature_receipt_v1;
 pub use neuron_feature::neuron_feature_request_digest_v1;
 pub use neuron_feature::verify_neuron_feature_receipt_v1;
+pub use shared_feature::SharedFeatureBufferV1;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;

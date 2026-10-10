@@ -5,27 +5,32 @@
 //! one-shot final-use grant. The existing real model driver runs each item.
 //! This batches admission and shared storage, not GPU execution kernels.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::str::FromStr;
 use std::sync::Arc;
 use std::time::Instant;
 
-use codex_hepta_contracts::{
-    FinalUseAuthority, FinalUseBinding, SignedFinalUseGrant,
-};
-use codex_hepta_infer_core::microbatch::{
-    BoundedMicrobatchSchedulerV1, InferenceIntentV1, MicrobatchKeyV1,
-    MicrobatchLimitsV1, SchedulerErrorV1,
-};
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::SharedFeatureBufferV1;
-use codex_hepta_types::{
-    Digest32, PhaseMetricEventV1, PhaseMetricKindV1, PhaseMetricSinkV1, StableId,
-};
+use codex_hepta_infer_core::microbatch::BoundedMicrobatchSchedulerV1;
+use codex_hepta_infer_core::microbatch::InferenceIntentV1;
+use codex_hepta_infer_core::microbatch::MicrobatchKeyV1;
+use codex_hepta_infer_core::microbatch::MicrobatchLimitsV1;
+use codex_hepta_infer_core::microbatch::SchedulerErrorV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
+use codex_hepta_types::StableId;
 
-use crate::model_worker::{
-    canonical_neuron_feature_payload_digest, InferenceWorker,
-    ModelDriver, NeuronFeatureDriver, NeuronFeatureRequest,
-};
+use crate::model_worker::InferenceWorker;
+use crate::model_worker::ModelDriver;
+use crate::model_worker::NeuronFeatureDriver;
+use crate::model_worker::NeuronFeatureRequest;
+use crate::model_worker::canonical_neuron_feature_payload_digest;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -87,8 +92,8 @@ pub fn neuron_batch_final_use_binding_v1(
     {
         return Err(BatchWorkerErrorV1::InvalidBinding);
     }
-    let payload_digest = Digest32::from_str(&payload_hex)
-        .map_err(|_| BatchWorkerErrorV1::InvalidBinding)?;
+    let payload_digest =
+        Digest32::from_str(&payload_hex).map_err(|_| BatchWorkerErrorV1::InvalidBinding)?;
     let request_id = request.authorization.request_id.as_bytes();
     let reservation_id = request.authorization.reservation_id.as_bytes();
     let model_id = request.authorization.model_digest.as_bytes();
@@ -124,10 +129,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         authority: FinalUseAuthority,
         limits: MicrobatchLimitsV1,
     ) -> Result<Self, BatchWorkerErrorV1> {
-        let scheduler = BoundedMicrobatchSchedulerV1::new(limits)
-            .map_err(BatchWorkerErrorV1::Scheduler)?;
+        let scheduler =
+            BoundedMicrobatchSchedulerV1::new(limits).map_err(BatchWorkerErrorV1::Scheduler)?;
         Ok(Self {
-            scheduler, worker, authority,
+            scheduler,
+            worker,
+            authority,
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
@@ -140,7 +147,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         self
     }
 
-    pub fn pending(&self) -> usize { self.pending.len() }
+    pub fn pending(&self) -> usize {
+        self.pending.len()
+    }
 
     /// Admission copies no feature vector; queued payloads share Arc<[i64]>.
     /// Final-use signature verification and durable nonce claim occur only at
@@ -172,26 +181,43 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         if signed.grant.binding != binding {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
-        let feature = SharedFeatureBufferV1::from_vec(
-            std::mem::take(&mut request.feature_vector_q24)
-        ).map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
-        self.scheduler.enqueue(now_ms, InferenceIntentV1 {
-            request_id: id.clone(),
-            key,
-            feature_digest: feature.digest(),
-            shared_features: Some(feature.clone()),
-            deadline_ms: request.authorization.deadline_ms,
-        }).map_err(BatchWorkerErrorV1::Scheduler)?;
-        self.pending.insert(id, PendingV1 { model_id, request, feature, signed, binding });
+        let feature =
+            SharedFeatureBufferV1::from_vec(std::mem::take(&mut request.feature_vector_q24))
+                .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
+        self.scheduler
+            .enqueue(
+                now_ms,
+                InferenceIntentV1 {
+                    request_id: id.clone(),
+                    key,
+                    feature_digest: feature.digest(),
+                    shared_features: Some(feature.clone()),
+                    deadline_ms: request.authorization.deadline_ms,
+                },
+            )
+            .map_err(BatchWorkerErrorV1::Scheduler)?;
+        self.pending.insert(
+            id,
+            PendingV1 {
+                model_id,
+                request,
+                feature,
+                signed,
+                binding,
+            },
+        );
         Ok(())
     }
 
     /// Never replay an unknown or failed external effect. Every result,
     /// including authority denial, is terminal within this local generation.
     pub fn poll_and_execute(
-        &mut self, now_ms: u64,
+        &mut self,
+        now_ms: u64,
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
-        let poll = self.scheduler.poll(now_ms)
+        let poll = self
+            .scheduler
+            .poll(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
         for id in &poll.expired_request_ids {
             self.pending.remove(id);
@@ -210,26 +236,40 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         {
                             Err(BatchWorkerErrorV1::InvalidBinding)
                         } else {
-                            pending.request.feature_vector_q24 = pending.feature.as_slice().to_vec();
+                            pending.request.feature_vector_q24 =
+                                pending.feature.as_slice().to_vec();
                             let start = Instant::now();
-                            let result = FinalUseAuthority::claim(&self.authority, &pending.signed, &pending.binding)
+                            let result = FinalUseAuthority::claim(
+                                &self.authority,
+                                &pending.signed,
+                                &pending.binding,
+                            )
+                            .map_err(|_| BatchWorkerErrorV1::Authority)
+                            .and_then(|token| {
+                                FinalUseAuthority::with_verified_effect(
+                                    &self.authority,
+                                    token,
+                                    &pending.binding,
+                                    || {
+                                        self.worker.run_neuron_features_receipt(
+                                            now_ms,
+                                            &pending.model_id,
+                                            pending.request,
+                                        )
+                                    },
+                                )
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|token| {
-                                    FinalUseAuthority::with_verified_effect(&self.authority,
-                                        token, &pending.binding,
-                                        || self.worker.run_neuron_features_receipt(
-                                            now_ms, &pending.model_id, pending.request,
-                                        ),
-                                    )
-                                    .map_err(|_| BatchWorkerErrorV1::Authority)
-                                    .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
-                                });
+                                .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
+                            });
                             if let Some(sink) = &self.metric_sink {
                                 let _ = sink.record(PhaseMetricEventV1 {
-                                    scope_digest: Digest32::of_bytes(batch.key.scope_id.as_str().as_bytes()),
+                                    scope_digest: Digest32::of_bytes(
+                                        batch.key.scope_id.as_str().as_bytes(),
+                                    ),
                                     operation_digest: Digest32::of_bytes(id.as_str().as_bytes()),
                                     phase: PhaseMetricKindV1::NeuronFeature,
-                                    latency_micros: u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX),
+                                    latency_micros: u64::try_from(start.elapsed().as_micros())
+                                        .unwrap_or(u64::MAX),
                                     succeeded: result.is_ok(),
                                 });
                             }
@@ -237,7 +277,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         }
                     }
                 };
-                outcomes.push(BatchWorkerItemOutcomeV1 { request_id: id, result: outcome });
+                outcomes.push(BatchWorkerItemOutcomeV1 {
+                    request_id: id,
+                    result: outcome,
+                });
             }
         }
         Ok(BatchWorkerPollV1 {
@@ -250,10 +293,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
     /// Cutover drops all stale queued requests without ever invoking a driver.
     pub fn fence_scope(
-        &mut self, scope: &StableId, generation: codex_hepta_types::Generation,
-        fence: u64, authority_epoch: u64,
+        &mut self,
+        scope: &StableId,
+        generation: codex_hepta_types::Generation,
+        fence: u64,
+        authority_epoch: u64,
     ) -> Vec<StableId> {
-        let removed = self.scheduler.retain_scope_binding(scope, generation, fence, authority_epoch);
+        let removed =
+            self.scheduler
+                .retain_scope_binding(scope, generation, fence, authority_epoch);
         for id in &removed {
             self.pending.remove(id);
             self.retired.insert(id.clone());

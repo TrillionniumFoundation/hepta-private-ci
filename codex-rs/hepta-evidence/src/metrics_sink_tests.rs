@@ -38,7 +38,10 @@ fn refuses_missing_identity_and_stale_writer_lock() {
     assert!(DurablePhaseMetricSinkV1::open(&path, 2, 2, 25).is_err());
     let mut invalid = sample(PhaseMetricKindV1::NeuronFeature);
     invalid.operation_digest = Digest32::ZERO;
-    assert_eq!(first.record(invalid), Err(PhaseMetricSinkErrorV1::Unavailable));
+    assert_eq!(
+        first.record(invalid),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
     drop(first);
     let reopened = DurablePhaseMetricSinkV1::open(&path, 2, 2, 25).unwrap();
     assert!(reopened.healthy());

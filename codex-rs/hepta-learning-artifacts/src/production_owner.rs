@@ -14,7 +14,8 @@ use std::fmt;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use codex_hepta_types::AuthorityPosture;
@@ -24,7 +25,9 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::PhaseLatencyHistogramV1;
 use codex_hepta_types::PhaseLatencySnapshotV1;
-use codex_hepta_types::{PhaseMetricEventV1, PhaseMetricKindV1, PhaseMetricSinkV1};
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer;
@@ -408,7 +411,9 @@ impl ArtifactCasOwnerV1 {
 
     /// External qualification must cross the Evidence fsync barrier.
     pub fn flush_production_metrics(&self) -> bool {
-        let Some(sink) = &self.metrics else { return false; };
+        let Some(sink) = &self.metrics else {
+            return false;
+        };
         if sink.flush().is_err() {
             self.failed_metric_records.fetch_add(1, Ordering::Release);
             return false;
@@ -433,13 +438,16 @@ impl ArtifactCasOwnerV1 {
         };
         histogram.observe(latency, result.is_ok());
         if let Some(sink) = &self.metrics {
-            if sink.record(PhaseMetricEventV1 {
-                scope_digest: scope,
-                operation_digest: operation,
-                phase,
-                latency_micros: u64::try_from(latency.as_micros()).unwrap_or(u64::MAX),
-                succeeded: result.is_ok(),
-            }).is_err() {
+            if sink
+                .record(PhaseMetricEventV1 {
+                    scope_digest: scope,
+                    operation_digest: operation,
+                    phase,
+                    latency_micros: u64::try_from(latency.as_micros()).unwrap_or(u64::MAX),
+                    succeeded: result.is_ok(),
+                })
+                .is_err()
+            {
                 self.failed_metric_records.fetch_add(1, Ordering::Release);
             }
         }
@@ -482,7 +490,9 @@ impl ArtifactCasOwnerV1 {
         };
         receipt.receipt_digest = receipt.content_digest();
         receipt.signature = self.timed(scope, operation, PhaseMetricKindV1::Signature, || {
-            Ok::<_, ProductionOwnerError>(self.signing_key.sign(&receipt.signing_bytes()).to_bytes())
+            Ok::<_, ProductionOwnerError>(
+                self.signing_key.sign(&receipt.signing_bytes()).to_bytes(),
+            )
         })?;
         Ok(receipt)
     }
@@ -538,7 +548,9 @@ impl ArtifactCasOwnerV1 {
         };
         receipt.receipt_digest = receipt.content_digest();
         receipt.signature = self.timed(scope, operation, PhaseMetricKindV1::Signature, || {
-            Ok::<_, ProductionOwnerError>(self.signing_key.sign(&receipt.signing_bytes()).to_bytes())
+            Ok::<_, ProductionOwnerError>(
+                self.signing_key.sign(&receipt.signing_bytes()).to_bytes(),
+            )
         })?;
         Ok((bytes, receipt))
     }
@@ -1156,9 +1168,16 @@ mod tests {
     struct CapturedOwnerMetrics(std::sync::Mutex<Vec<PhaseMetricEventV1>>);
 
     impl PhaseMetricSinkV1 for CapturedOwnerMetrics {
-        fn healthy(&self) -> bool { true }
-        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> { Ok(()) }
-        fn record(&self, event: PhaseMetricEventV1) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        fn healthy(&self) -> bool {
+            true
+        }
+        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            Ok(())
+        }
+        fn record(
+            &self,
+            event: PhaseMetricEventV1,
+        ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
             self.0.lock().unwrap().push(event);
             Ok(())
         }
@@ -1230,7 +1249,8 @@ mod tests {
         let key = SigningKey::from_bytes(&[7; 32]);
         let metric_sink = Arc::new(CapturedOwnerMetrics::default());
         let owner = ArtifactCasOwnerV1::new(id("artifact.owner"), key.clone())
-            .expect("owner").with_metrics_sink(metric_sink.clone());
+            .expect("owner")
+            .with_metrics_sink(metric_sink.clone());
         assert!(owner.production_metrics_ready());
         let manifest = crate::ArtifactManifest {
             artifact_id: id("artifact.payload"),
@@ -1298,8 +1318,20 @@ mod tests {
         assert_eq!(metrics.signature.failures, 0);
         let captured = metric_sink.0.lock().unwrap();
         assert_eq!(captured.len(), 5);
-        assert_eq!(captured.iter().filter(|e| e.phase == PhaseMetricKindV1::Cas).count(), 2);
-        assert_eq!(captured.iter().filter(|e| e.phase == PhaseMetricKindV1::Signature).count(), 3);
+        assert_eq!(
+            captured
+                .iter()
+                .filter(|e| e.phase == PhaseMetricKindV1::Cas)
+                .count(),
+            2
+        );
+        assert_eq!(
+            captured
+                .iter()
+                .filter(|e| e.phase == PhaseMetricKindV1::Signature)
+                .count(),
+            3
+        );
         assert!(captured.iter().all(|e| e.succeeded));
         drop(captured);
         assert!(owner.flush_production_metrics());

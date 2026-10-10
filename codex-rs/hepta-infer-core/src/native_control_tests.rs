@@ -611,7 +611,8 @@ fn native_incremental_slot_counter_replays_across_many_released_records() {
             let id = format!("released-{index}");
             owner.reserve_native(request(&id), 1).unwrap();
             assert_eq!(
-                owner.reserve_native(request(&format!("blocked-{index}")), 1)
+                owner
+                    .reserve_native(request(&format!("blocked-{index}")), 1)
                     .unwrap_err()
                     .to_string(),
                 Error::CapacityExceeded.to_string()
@@ -626,7 +627,8 @@ fn native_incremental_slot_counter_replays_across_many_released_records() {
     {
         let mut recovered = DurableInferenceControl::open(&location, 512).unwrap();
         assert_eq!(
-            recovered.reserve_native(request("fenced"), 1)
+            recovered
+                .reserve_native(request("fenced"), 1)
                 .unwrap_err()
                 .to_string(),
             Error::CapacityExceeded.to_string()
@@ -634,7 +636,9 @@ fn native_incremental_slot_counter_replays_across_many_released_records() {
         recovered
             .stop_native_before_dispatch("active", "proven-before-effect".to_string())
             .unwrap();
-        recovered.reserve_native(request("after-reopen"), 1).unwrap();
+        recovered
+            .reserve_native(request("after-reopen"), 1)
+            .unwrap();
     }
     std::fs::remove_file(location).unwrap();
 }

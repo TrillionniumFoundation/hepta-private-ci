@@ -1,12 +1,27 @@
 use super::*;
 use std::time::Instant;
 
-fn id(s: &str) -> StableId { StableId::new(s).unwrap() }
-fn digest(s: &str) -> Digest32 { Digest32::of_bytes(s.as_bytes()) }
-fn limits() -> MicrobatchLimitsV1 {
-    MicrobatchLimitsV1 { max_pending: 16_384, max_batch_size: 4, max_lanes_per_poll: 64, max_wait_ms: 10 }
+fn id(s: &str) -> StableId {
+    StableId::new(s).unwrap()
 }
-fn intent(request: &str, scope: &str, generation: u64, fence: u64, deadline: u64) -> InferenceIntentV1 {
+fn digest(s: &str) -> Digest32 {
+    Digest32::of_bytes(s.as_bytes())
+}
+fn limits() -> MicrobatchLimitsV1 {
+    MicrobatchLimitsV1 {
+        max_pending: 16_384,
+        max_batch_size: 4,
+        max_lanes_per_poll: 64,
+        max_wait_ms: 10,
+    }
+}
+fn intent(
+    request: &str,
+    scope: &str,
+    generation: u64,
+    fence: u64,
+    deadline: u64,
+) -> InferenceIntentV1 {
     InferenceIntentV1 {
         request_id: id(request),
         key: MicrobatchKeyV1 {
@@ -50,7 +65,13 @@ fn immutable_payload_is_shared_without_vector_copy() {
     request.shared_features = Some(buffer.clone());
     q.enqueue(1, request).unwrap();
     let plan = q.poll(11).unwrap().batch.unwrap();
-    assert!(plan.requests[0].shared_features.as_ref().unwrap().shares_allocation_with(&buffer));
+    assert!(
+        plan.requests[0]
+            .shared_features
+            .as_ref()
+            .unwrap()
+            .shares_allocation_with(&buffer)
+    );
 }
 
 #[test]
@@ -60,13 +81,22 @@ fn capacity_duplicate_and_expired_fail_closed() {
     conf.max_batch_size = 1;
     let mut q = BoundedMicrobatchSchedulerV1::new(conf).unwrap();
     q.enqueue(1, intent("a", "one", 1, 1, 50)).unwrap();
-    assert_eq!(q.enqueue(1, intent("a", "one", 1, 1, 50)), Err(SchedulerErrorV1::DuplicateRequest));
-    assert_eq!(q.enqueue(1, intent("b", "two", 1, 1, 50)), Err(SchedulerErrorV1::Capacity));
+    assert_eq!(
+        q.enqueue(1, intent("a", "one", 1, 1, 50)),
+        Err(SchedulerErrorV1::DuplicateRequest)
+    );
+    assert_eq!(
+        q.enqueue(1, intent("b", "two", 1, 1, 50)),
+        Err(SchedulerErrorV1::Capacity)
+    );
     let p = q.poll(51).unwrap();
     assert_eq!(p.expired_request_ids, vec![id("a")]);
     assert!(p.batch.is_none());
     assert_eq!(q.pending(), 0);
-    assert_eq!(q.enqueue(50, intent("x", "s", 1, 1, 100)), Err(SchedulerErrorV1::ClockRegressed));
+    assert_eq!(
+        q.enqueue(50, intent("x", "s", 1, 1, 100)),
+        Err(SchedulerErrorV1::ClockRegressed)
+    );
 }
 
 #[test]
@@ -75,7 +105,10 @@ fn cutover_drops_only_stale_scope() {
     q.enqueue(1, intent("old", "scope", 1, 1, 100)).unwrap();
     q.enqueue(1, intent("new", "scope", 2, 2, 100)).unwrap();
     q.enqueue(1, intent("other", "another", 1, 1, 100)).unwrap();
-    assert_eq!(q.retain_scope_binding(&id("scope"), Generation::new(2).unwrap(), 2, 1), vec![id("old")]);
+    assert_eq!(
+        q.retain_scope_binding(&id("scope"), Generation::new(2).unwrap(), 2, 1),
+        vec![id("old")]
+    );
     assert_eq!(q.pending(), 2);
     assert_eq!(q.active_lanes(), 2);
 }
@@ -86,14 +119,17 @@ fn cutover_drops_only_stale_scope() {
 fn benchmark_64_256_1024_4096_scopes() {
     for scopes in [64, 256, 1024, 4096] {
         let conf = MicrobatchLimitsV1 {
-            max_pending: 16_384, max_batch_size: 4,
-            max_lanes_per_poll: 64, max_wait_ms: 10,
+            max_pending: 16_384,
+            max_batch_size: 4,
+            max_lanes_per_poll: 64,
+            max_wait_ms: 10,
         };
         let mut q = BoundedMicrobatchSchedulerV1::new(conf).unwrap();
         let start = Instant::now();
         for i in 0..scopes {
             let name = format!("scope{i}");
-            q.enqueue(1, intent(&format!("req{i}"), &name, 1, 1, 1000)).unwrap();
+            q.enqueue(1, intent(&format!("req{i}"), &name, 1, 1, 1000))
+                .unwrap();
         }
         let admission = start.elapsed();
         let start = Instant::now();
@@ -104,6 +140,10 @@ fn benchmark_64_256_1024_4096_scopes() {
             }
         }
         assert_eq!(count, scopes);
-        eprintln!("scopes={scopes} admission_us={} drain_us={}", admission.as_micros(), start.elapsed().as_micros());
+        eprintln!(
+            "scopes={scopes} admission_us={} drain_us={}",
+            admission.as_micros(),
+            start.elapsed().as_micros()
+        );
     }
 }

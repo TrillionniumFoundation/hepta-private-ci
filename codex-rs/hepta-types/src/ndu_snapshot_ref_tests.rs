@@ -35,8 +35,14 @@ fn every_binding_dimension_changes_digest() {
 fn refuses_missing_projection_or_fence() {
     let mut value = sample();
     value.route_fence = 0;
-    assert_eq!(value.semantic_digest(), Err(NduSnapshotRefErrorV1::InvalidFence));
+    assert_eq!(
+        value.semantic_digest(),
+        Err(NduSnapshotRefErrorV1::InvalidFence)
+    );
     value = sample();
     value.projection_head_digest = Digest32::ZERO;
-    assert_eq!(value.semantic_digest(), Err(NduSnapshotRefErrorV1::EmptyDigest));
+    assert_eq!(
+        value.semantic_digest(),
+        Err(NduSnapshotRefErrorV1::EmptyDigest)
+    );
 }

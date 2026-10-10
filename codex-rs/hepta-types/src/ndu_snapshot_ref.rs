@@ -3,7 +3,9 @@
 //! This reference does not contain projection or policy bytes and is never
 //! itself evidence of an admitted owner signature or grant.
 
-use crate::{Digest32, Generation, StableId};
+use crate::Digest32;
+use crate::Generation;
+use crate::StableId;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduSnapshotRefV1 {

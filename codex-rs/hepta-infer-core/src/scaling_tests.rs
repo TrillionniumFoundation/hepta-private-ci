@@ -4,13 +4,17 @@
 use std::sync::Arc;
 use std::time::Instant;
 
-use codex_hepta_types::{Digest32, Generation, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
-use crate::microbatch::{
-    BoundedMicrobatchSchedulerV1, InferenceIntentV1, MicrobatchKeyV1, MicrobatchLimitsV1,
-};
-use crate::scoped_cache::{FenceCacheBindingV1, ScopedCachesV1};
 use crate::SharedFeatureBufferV1;
+use crate::microbatch::BoundedMicrobatchSchedulerV1;
+use crate::microbatch::InferenceIntentV1;
+use crate::microbatch::MicrobatchKeyV1;
+use crate::microbatch::MicrobatchLimitsV1;
+use crate::scoped_cache::FenceCacheBindingV1;
+use crate::scoped_cache::ScopedCachesV1;
 
 fn id(value: impl Into<String>) -> StableId {
     StableId::new(value).unwrap()
@@ -76,7 +80,10 @@ fn workload_64_256_1024_4096_scope_cells() {
         let mut baseline_count = 0_usize;
         for intent in &intents {
             let started = Instant::now();
-            assert_eq!(intent.shared_features.as_ref().unwrap().digest(), intent.feature_digest);
+            assert_eq!(
+                intent.shared_features.as_ref().unwrap().digest(),
+                intent.feature_digest
+            );
             assert_eq!(intent.key.model_digest, digest("fixed-model"));
             baseline_count += 1;
             baseline_ns.push(started.elapsed().as_nanos());
@@ -85,8 +92,10 @@ fn workload_64_256_1024_4096_scope_cells() {
         assert_eq!(baseline_count, scopes * 2);
 
         let config = MicrobatchLimitsV1 {
-            max_pending: 16_384, max_batch_size: 4,
-            max_lanes_per_poll: 64, max_wait_ms: 5,
+            max_pending: 16_384,
+            max_batch_size: 4,
+            max_lanes_per_poll: 64,
+            max_wait_ms: 5,
         };
         let mut scheduler = BoundedMicrobatchSchedulerV1::new(config).unwrap();
         let mut enqueue_ns = Vec::with_capacity(intents.len());
@@ -112,9 +121,18 @@ fn workload_64_256_1024_4096_scope_cells() {
             assert!(poll.expired_request_ids.is_empty());
             let batch = poll.batch.expect("every cell must drain at max-wait");
             assert_eq!(batch.requests.len(), 2);
-            assert!(batch.requests.iter().all(|request| request.key == batch.key));
+            assert!(
+                batch
+                    .requests
+                    .iter()
+                    .all(|request| request.key == batch.key)
+            );
             assert!(batch.requests.iter().all(|request| {
-                request.shared_features.as_ref().unwrap().shares_allocation_with(&shared)
+                request
+                    .shared_features
+                    .as_ref()
+                    .unwrap()
+                    .shares_allocation_with(&shared)
             }));
             seen += batch.requests.len();
             batches += 1;
@@ -124,14 +142,16 @@ fn workload_64_256_1024_4096_scope_cells() {
         assert_eq!(batches, scopes);
 
         // Four independent facade fields, one generation/fence backend.
-        let mut caches = ScopedCachesV1::<u64,u64,u64,u64>::new(4096).unwrap();
+        let mut caches = ScopedCachesV1::<u64, u64, u64, u64>::new(4096).unwrap();
         let cache_started = Instant::now();
         let mut cache_ns = Vec::with_capacity(scopes);
         for (i, binding) in bindings.iter().enumerate() {
             let started = Instant::now();
             for cache in [
-                &mut caches.authority, &mut caches.ndu,
-                &mut caches.worker, &mut caches.retrieval,
+                &mut caches.authority,
+                &mut caches.ndu,
+                &mut caches.worker,
+                &mut caches.retrieval,
             ] {
                 cache.observe_binding(binding.clone()).unwrap();
                 cache.put(10, binding, Arc::new(i as u64), 100).unwrap();

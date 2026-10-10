@@ -4,10 +4,15 @@
 //! enqueue and again at final use. Grouping never issues a grant or dispatches
 //! a worker. Each lane has at most one batch of work in memory.
 
-use std::collections::{BTreeMap, BTreeSet, VecDeque};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
+use std::collections::VecDeque;
 
-use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
 use crate::SharedFeatureBufferV1;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 pub const MAX_SCHEDULER_PENDING: usize = 16_384;
 pub const MAX_MICROBATCH_SIZE: usize = 256;
@@ -139,7 +144,11 @@ impl BoundedMicrobatchSchedulerV1 {
         if intent.key.model_digest.is_zero() || intent.feature_digest.is_zero() {
             return Err(SchedulerErrorV1::EmptyDigest);
         }
-        if intent.shared_features.as_ref().is_some_and(|buffer| buffer.digest() != intent.feature_digest) {
+        if intent
+            .shared_features
+            .as_ref()
+            .is_some_and(|buffer| buffer.digest() != intent.feature_digest)
+        {
             return Err(SchedulerErrorV1::FeatureMismatch);
         }
         if intent.key.route_fence == 0 || intent.key.authority_epoch == 0 {
@@ -154,7 +163,11 @@ impl BoundedMicrobatchSchedulerV1 {
         if self.pending() >= self.limits.max_pending {
             return Err(SchedulerErrorV1::Capacity);
         }
-        if self.lanes.get(&intent.key).is_some_and(|lane| lane.len() >= self.limits.max_batch_size) {
+        if self
+            .lanes
+            .get(&intent.key)
+            .is_some_and(|lane| lane.len() >= self.limits.max_batch_size)
+        {
             return Err(SchedulerErrorV1::LaneCapacity);
         }
         let key = intent.key.clone();

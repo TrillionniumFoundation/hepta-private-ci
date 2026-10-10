@@ -248,8 +248,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let tick_digest = input.semantic_digest()?;
         crate::bind_ndu_snapshot_stage_v1(
-            &input.subject_id, self.config.generation, input.ndu_snapshot_digest,
-            tick_digest, snapshot, admitted_read_receipt_digest,
+            &input.subject_id,
+            self.config.generation,
+            input.ndu_snapshot_digest,
+            tick_digest,
+            snapshot,
+            admitted_read_receipt_digest,
         )
         .map_err(|_| NeuronRuntimeError::InvalidInput)?;
         self.tick(model, input)

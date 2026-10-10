@@ -1,18 +1,28 @@
 //! Evidence-owned bounded background metrics writer. Telemetry cannot authorize
 //! effects or turn a successful operation into a retry.
 
+use super::metrics_group_commit::MetricPhaseV1;
+use super::metrics_group_commit::MetricSampleV1;
+use super::metrics_group_commit::MetricsGroupCommitV1;
+use super::metrics_group_commit::MetricsJournalErrorV1;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkErrorV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 use std::path::Path;
-use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use std::sync::mpsc::{sync_channel, Receiver, SyncSender, TrySendError, RecvTimeoutError};
-use std::sync::{Arc, Mutex};
-use std::thread::{self, JoinHandle};
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::RecvTimeoutError;
+use std::sync::mpsc::SyncSender;
+use std::sync::mpsc::TrySendError;
+use std::sync::mpsc::sync_channel;
+use std::thread::JoinHandle;
+use std::thread::{self};
 use std::time::Duration;
-use codex_hepta_types::{
-    PhaseMetricEventV1, PhaseMetricKindV1, PhaseMetricSinkErrorV1, PhaseMetricSinkV1,
-};
-use super::metrics_group_commit::{
-    MetricPhaseV1, MetricSampleV1, MetricsGroupCommitV1, MetricsJournalErrorV1,
-};
 
 const MAX_QUEUE: usize = 65_536;
 const MAX_BATCH: usize = 256;
@@ -56,10 +66,15 @@ pub struct PhaseMetricWriterStatusV1 {
 
 impl DurablePhaseMetricSinkV1 {
     pub fn open(
-        path: impl AsRef<Path>, capacity: usize, group_size: usize, flush_interval_ms: u64,
+        path: impl AsRef<Path>,
+        capacity: usize,
+        group_size: usize,
+        flush_interval_ms: u64,
     ) -> Result<Self, MetricsJournalErrorV1> {
-        if capacity == 0 || capacity > MAX_QUEUE
-            || group_size == 0 || group_size > MAX_BATCH
+        if capacity == 0
+            || capacity > MAX_QUEUE
+            || group_size == 0
+            || group_size > MAX_BATCH
             || !(1..=60_000).contains(&flush_interval_ms)
         {
             return Err(MetricsJournalErrorV1::Capacity);
@@ -76,8 +91,20 @@ impl DurablePhaseMetricSinkV1 {
         let observed = Arc::clone(&health);
         let worker = thread::Builder::new()
             .name("hepta-metrics-evidence-writer".to_string())
-            .spawn(move || writer_loop(writer, rx, observed, group_size, Duration::from_millis(flush_interval_ms)))?;
-        Ok(Self { channel: tx, health, worker: Mutex::new(Some(worker)) })
+            .spawn(move || {
+                writer_loop(
+                    writer,
+                    rx,
+                    observed,
+                    group_size,
+                    Duration::from_millis(flush_interval_ms),
+                )
+            })?;
+        Ok(Self {
+            channel: tx,
+            health,
+            worker: Mutex::new(Some(worker)),
+        })
     }
 
     pub fn healthy(&self) -> bool {
@@ -85,11 +112,14 @@ impl DurablePhaseMetricSinkV1 {
             && self.health.dropped.load(Ordering::Acquire) == 0
     }
 
-    pub fn dropped(&self) -> u64 { self.health.dropped.load(Ordering::Relaxed) }
+    pub fn dropped(&self) -> u64 {
+        self.health.dropped.load(Ordering::Relaxed)
+    }
 
     pub fn status(&self) -> PhaseMetricWriterStatusV1 {
         PhaseMetricWriterStatusV1 {
-            healthy: self.healthy(), dropped: self.dropped(),
+            healthy: self.healthy(),
+            dropped: self.dropped(),
             persisted_batches: self.health.persisted_batches.load(Ordering::Acquire),
             persisted_rows: self.health.persisted_rows.load(Ordering::Acquire),
         }
@@ -97,9 +127,12 @@ impl DurablePhaseMetricSinkV1 {
 
     /// Synchronous export barrier; never called inside an effect boundary.
     pub fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
-        if !self.healthy() { return Err(PhaseMetricSinkErrorV1::Unavailable); }
+        if !self.healthy() {
+            return Err(PhaseMetricSinkErrorV1::Unavailable);
+        }
         let (tx, rx) = sync_channel(1);
-        self.channel.send(WriterCommandV1::Flush(tx))
+        self.channel
+            .send(WriterCommandV1::Flush(tx))
             .map_err(|_| PhaseMetricSinkErrorV1::Unavailable)?;
         match rx.recv() {
             Ok(true) if self.healthy() => Ok(()),
@@ -132,7 +165,9 @@ impl PhaseMetricSinkV1 for DurablePhaseMetricSinkV1 {
         let sample = MetricSampleV1 {
             scope_digest: event.scope_digest,
             operation_digest: event.operation_digest,
-            phase, latency_micros: event.latency_micros, succeeded: event.succeeded,
+            phase,
+            latency_micros: event.latency_micros,
+            succeeded: event.succeeded,
         };
         match self.channel.try_send(WriterCommandV1::Record(sample)) {
             Ok(()) => Ok(()),
@@ -152,49 +187,73 @@ impl PhaseMetricSinkV1 for DurablePhaseMetricSinkV1 {
 impl Drop for DurablePhaseMetricSinkV1 {
     fn drop(&mut self) {
         let (tx, rx) = sync_channel(1);
-        if self.channel.send(WriterCommandV1::Stop(tx)).is_ok() { let _ = rx.recv(); }
+        if self.channel.send(WriterCommandV1::Stop(tx)).is_ok() {
+            let _ = rx.recv();
+        }
         if let Ok(mut handle) = self.worker.lock() {
-            if let Some(worker) = handle.take() { let _ = worker.join(); }
+            if let Some(worker) = handle.take() {
+                let _ = worker.join();
+            }
         }
     }
 }
 
-fn flush(writer: &mut MetricsGroupCommitV1, health: &WriterHealthV1) -> Result<(), MetricsJournalErrorV1> {
+fn flush(
+    writer: &mut MetricsGroupCommitV1,
+    health: &WriterHealthV1,
+) -> Result<(), MetricsJournalErrorV1> {
     if let Some(receipt) = writer.flush()? {
-        health.persisted_rows.fetch_add(receipt.rows as u64, Ordering::Release);
+        health
+            .persisted_rows
+            .fetch_add(receipt.rows as u64, Ordering::Release);
         health.persisted_batches.fetch_add(1, Ordering::Release);
     }
     Ok(())
 }
 
 fn writer_loop(
-    mut writer: MetricsGroupCommitV1, rx: Receiver<WriterCommandV1>,
-    health: Arc<WriterHealthV1>, group_size: usize, interval: Duration,
+    mut writer: MetricsGroupCommitV1,
+    rx: Receiver<WriterCommandV1>,
+    health: Arc<WriterHealthV1>,
+    group_size: usize,
+    interval: Duration,
 ) {
     loop {
         match rx.recv_timeout(interval) {
             Ok(WriterCommandV1::Record(sample)) => {
                 let result = writer.stage(sample).and_then(|()| {
-                    if writer.pending() >= group_size { flush(&mut writer, &health)?; }
+                    if writer.pending() >= group_size {
+                        flush(&mut writer, &health)?;
+                    }
                     Ok(())
                 });
-                if result.is_err() { health.healthy.store(false, Ordering::Release); break; }
+                if result.is_err() {
+                    health.healthy.store(false, Ordering::Release);
+                    break;
+                }
             }
             Ok(WriterCommandV1::Flush(reply)) => {
                 let ok = flush(&mut writer, &health).is_ok();
-                if !ok { health.healthy.store(false, Ordering::Release); }
+                if !ok {
+                    health.healthy.store(false, Ordering::Release);
+                }
                 let _ = reply.send(ok);
-                if !ok { break; }
+                if !ok {
+                    break;
+                }
             }
             Ok(WriterCommandV1::Stop(reply)) => {
                 let ok = flush(&mut writer, &health).is_ok();
-                if !ok { health.healthy.store(false, Ordering::Release); }
+                if !ok {
+                    health.healthy.store(false, Ordering::Release);
+                }
                 let _ = reply.send(ok);
                 break;
             }
             Err(RecvTimeoutError::Timeout) => {
                 if flush(&mut writer, &health).is_err() {
-                    health.healthy.store(false, Ordering::Release); break;
+                    health.healthy.store(false, Ordering::Release);
+                    break;
                 }
             }
             Err(RecvTimeoutError::Disconnected) => {

@@ -1,8 +1,12 @@
 use super::*;
 
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkErrorV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 use std::collections::BTreeSet;
-use std::sync::{Arc, Mutex};
-use codex_hepta_types::{PhaseMetricEventV1, PhaseMetricKindV1, PhaseMetricSinkErrorV1, PhaseMetricSinkV1};
+use std::sync::Arc;
+use std::sync::Mutex;
 
 use codex_hepta_types::CellBundleBindingV1;
 use codex_hepta_types::CellBundleInheritanceV1;
@@ -61,8 +65,12 @@ use crate::encode_compiled_body_graph_v2;
 struct CapturedCnsMetrics(Mutex<Vec<PhaseMetricEventV1>>);
 
 impl PhaseMetricSinkV1 for CapturedCnsMetrics {
-    fn healthy(&self) -> bool { true }
-    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> { Ok(()) }
+    fn healthy(&self) -> bool {
+        true
+    }
+    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
     fn record(&self, event: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1> {
         self.0.lock().unwrap().push(event);
         Ok(())
@@ -393,9 +401,9 @@ fn cutover_fences_parent_and_emits_child_dispatch_receipt() {
     let split = split(&predecessor, &parent_route, &successor, &child_routes);
     let old_route = parent_route.clone();
     let metric_sink = Arc::new(CapturedCnsMetrics::default());
-    let mut controller =
-        CellSplitRouteControllerV1::new(predecessor, split.clone(), parent_route).unwrap()
-            .with_metrics_sink(metric_sink.clone());
+    let mut controller = CellSplitRouteControllerV1::new(predecessor, split.clone(), parent_route)
+        .unwrap()
+        .with_metrics_sink(metric_sink.clone());
     assert!(controller.production_metrics_ready());
     controller.start_all().unwrap();
     let (_, parent_receipt) = controller
