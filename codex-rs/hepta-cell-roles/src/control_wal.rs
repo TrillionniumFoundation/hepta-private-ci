@@ -79,7 +79,10 @@ impl ControlWalUndoV1 {
                 dispatch_id: intent.dispatch_id.clone(),
                 previous_record: owner.records.get(&intent.dispatch_id).cloned(),
                 idempotency_key: intent.idempotency_key_digest,
-                previous_index: owner.idempotency_index.get(&intent.idempotency_key_digest).cloned(),
+                previous_index: owner
+                    .idempotency_index
+                    .get(&intent.idempotency_key_digest)
+                    .cloned(),
                 next_sequence: owner.next_sequence,
             },
             ControlWalEventV1::Forward(id)
@@ -751,15 +754,23 @@ mod tests {
         let prepared_sequence = owner.committed_events();
         assert_eq!(owner.prepare(intent(scope)).expect("idempotent"), receipt);
         assert_eq!(owner.committed_events(), prepared_sequence);
-        assert_eq!(owner.forward(&receipt.dispatch_id).expect("forward").sequence, 1);
+        assert_eq!(
+            owner
+                .forward(&receipt.dispatch_id)
+                .expect("forward")
+                .sequence,
+            1
+        );
         drop(owner);
 
         let recovered =
             ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope).expect("replay");
         assert_eq!(recovered.committed_events(), prepared_sequence + 1);
         assert_eq!(
-            recovered.dispatch_receipt(&receipt.dispatch_id)
-                .expect("forwarded").status,
+            recovered
+                .dispatch_receipt(&receipt.dispatch_id)
+                .expect("forwarded")
+                .status,
             ControlDispatchStatusV1::Forwarded
         );
         drop(recovered);
