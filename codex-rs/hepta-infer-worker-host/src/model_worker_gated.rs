@@ -91,6 +91,12 @@ impl GatedHeadCpuDriverV2 {
             return Err(Error::ModelCapacity);
         }
         validate_candidate(&candidate)?;
+        if self.heads.values().any(|head| {
+            head.candidate.cell_identity == candidate.cell_identity
+        }) {
+            // Multiple active revisions for one Cell need separate generations.
+            return Err(Error::ModelAlreadyLoaded);
+        }
         let parameter_count = parameter_count(&candidate)?;
         let bytes = parameter_count
             .checked_mul(std::mem::size_of::<i64>())
@@ -135,6 +141,10 @@ impl GatedHeadCpuDriverV2 {
         }
         digests.sort();
         if digests.windows(2).any(|pair| pair[0] == pair[1]) {
+            return Err(Error::ModelAlreadyLoaded);
+        }
+        let mut cells = std::collections::BTreeSet::new();
+        if candidates.iter().any(|head| !cells.insert(head.cell_identity.as_str())) {
             return Err(Error::ModelAlreadyLoaded);
         }
         Ok(catalog_digest_sorted(&digests))
@@ -727,6 +737,24 @@ mod tests {
         );
         assert_eq!(mismatch, Err(Error::FeatureOutputMismatch));
         assert!(driver.verify_loaded(&handle).is_ok());
+    }
+
+    #[test]
+    fn forbids_two_selected_head_revisions_for_one_cell() {
+        let first = head("cell.a");
+        let mut second = first.clone();
+        second.gate_q24[0] += 1;
+        assert_eq!(
+            GatedHeadCpuDriverV2::catalog_digest_for(&[first.clone(), second.clone()]),
+            Err(Error::ModelAlreadyLoaded)
+        );
+        let selected = manifest_for(&[first.clone()]);
+        let mut driver = GatedHeadCpuDriverV2::new(selected).expect("driver");
+        driver.register_head(first).expect("first");
+        assert_eq!(
+            driver.register_head(second),
+            Err(Error::ModelAlreadyLoaded)
+        );
     }
 
     #[test]

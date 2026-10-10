@@ -63,7 +63,7 @@ pub struct SharedNeuronFeatureResultV2 {
 
 /// A real backend has to implement this separately from the V1 Vec API.
 /// CPU GatedHead reference implements it with scalar kernels, not a GPU GEMM.
-pub trait NeuronSharedFeatureBatchDriverV2: ModelDriver {
+pub(crate) trait NeuronSharedFeatureBatchDriverV2: ModelDriver {
     fn run_shared_neuron_features_batch_v2(
         &mut self,
         handle: &DriverModelHandle,
@@ -188,7 +188,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
     ///
     /// External final-use admission and source policy MUST precede this call;
     /// all returned results explicitly deny authorization.
-    pub fn run_shared_neuron_features_batch_v2(
+    pub(crate) fn run_shared_neuron_features_batch_v2(
         &mut self,
         now_ms: u64,
         model_id: &str,

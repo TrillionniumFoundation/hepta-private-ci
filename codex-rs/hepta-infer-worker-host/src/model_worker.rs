@@ -749,9 +749,10 @@ pub use gated_cpu::{GatedHeadCandidateV2, GatedHeadCpuDriverV2};
 
 #[path = "model_worker_shared_v2.rs"]
 mod shared_v2;
+pub(crate) use shared_v2::NeuronSharedFeatureBatchDriverV2;
 pub use shared_v2::{
-    NeuronSharedFeatureBatchDriverV2, SharedNeuronFeatureRequestV2,
-    SharedNeuronFeatureResultV2, canonical_shared_neuron_payload_digest_v2,
+    SharedNeuronFeatureRequestV2, SharedNeuronFeatureResultV2,
+    canonical_shared_neuron_payload_digest_v2,
 };
 
 #[cfg(test)]
