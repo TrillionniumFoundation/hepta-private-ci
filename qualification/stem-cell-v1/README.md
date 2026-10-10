@@ -139,3 +139,58 @@ trait or its unit tests.
 
 The dedicated CI lane runs Rust formatting/compile/test and Python L1 tests.
 None of these tests load mmBERT weights or issue production selection authority.
+
+## Q24 CPU Head vertical slice (native arithmetic, not Encoder execution)
+
+The separate `model_worker_cpu_head.rs` provides a real, deterministic,
+**local CPU Q24 affine + hard-gated Head** kernel for previously encoded
+feature vectors. Unlike the earlier mock batch driver, this performs actual
+matrix multiplications in Rust. It executes many Cell Heads in a single
+driver-level batch call with individually bound typed receipts and no implicit
+single-request fallback. Signed Q24 uses ties-to-even and rejects results
+outside [-8,8]. A constant gate or zero prediction matrix can be encoded as
+a canonical **empty tensor** to avoid counting or allocating dummy weights.
+
+The 512-feature Neuron V1 limit is a real admission constraint. Native
+profiles do **not** truncate the 768/1152-dimensional outputs produced by
+some Encoder/representation combinations: these require a separately
+preregistered, independently evaluated Organ projection. Current native
+execution remains a **Head-only stage**. No mmBERT, ModernBERT, Jina,
+BGE or Laya encoder weights have been loaded into the Rust worker.
+
+Optional local affine Head export from real, frozen Encoder training:
+
+```sh
+python3 qualification/stem-cell-v1/model_runner.py \
+  --dataset /approved/episodes.jsonl \
+  --snapshot /approved/mmbert-small \
+  --expected-snapshot-digest <audited-local-tree-sha256> \
+  --model-key mmbert_small --representation joint \
+  --head linear --budget 2048 --shots-per-class 32 \
+  --train-steps 100 --device cpu --export-q24 \
+  --output /scratch/mmbert-joint-linear.jsonl
+```
+
+This additionally writes an append-only `.q24.json` candidate, with
+individually SHA-bound Head and bundle weights, Q24 tensor inventory,
+calibration-only parity results and model/runner lineage in `.run.json`.
+`native_bridge.py` folds only truly affine Head families
+(Linear, FiLM, Rank-8/16); it rejects MLP, SwiGLU, unbounded coefficients,
+incompatible feature widths, and over-budget physical tensor inventories.
+The exporter uses a frozen 0.02 maximum absolute calibration-logit error
+and requires zero calibration argmax mismatches. These are *feasibility*
+checks, not independent accuracy or NDU acceptance.
+
+`test_native_bridge.py` compares Python SHA-256/Q24 canonical vectors
+against golden constants also asserted by
+`model_worker_cpu_head_tests.rs`. The Rust CPU measurement reports actual
+CPU kernel elapsed time and *tracked numeric buffer allocations*; it is
+**not** an independent process RSS attestation, a fused Encoder kernel, a
+signed provenance receipt, WAL crash recovery, a target-host 4096-Cell
+benchmark or production admission.
+
+Still missing for L3–L5: exact owner admission and scope/generation fencing,
+authenticated exported tensor CAS load, live microbatch scheduling,
+independent resource measurements, a registered quantized projection for
+wide embeddings, target-hardware throughput/RSS, crash-recovery/WAL cuts,
+independent NDU future-window outcomes, and operator promotion authorization.
