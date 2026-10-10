@@ -329,6 +329,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                     }
                     if let Some(bytes) = outcome {
                         let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
+                        if canonical_json(&receipt)? != bytes {
+                            return Err(CellSplitExecutionErrorV1::Invalid(
+                                "noncanonical committed receipt",
+                            ));
+                        }
                         validate_receipt(&intent, &receipt)?;
                         trust.verify(&intent, &receipt)?;
                         port.verify_committed(&intent, &receipt).map_err(|error| {
@@ -436,6 +441,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 CellSplitExecutionErrorV1::Invalid("missing committed receipt"),
             )?;
             let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
+            if canonical_json(&receipt)? != bytes {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "noncanonical committed receipt",
+                ));
+            }
             validate_receipt(&intent, &receipt)?;
             self.trust.verify(&intent, &receipt)?;
             self.port
@@ -538,6 +548,7 @@ fn validate_receipt(
         || receipt.owner_signature_bytes.len() != 64
         || receipt.output_digest != sha256(&receipt.owner_receipt_bytes)
         || receipt.owner_receipt_bytes.len() > MAX_RECORD_BYTES / 2
+        || canonical_json(receipt)?.len() > MAX_RECORD_BYTES
         || receipt.owner_signature_bytes.len() > 4096
         || receipt.receipt_digest != receipt_digest(receipt)?
     {
