@@ -7,6 +7,7 @@ loads a model, selects a candidate, inserts a citation or invents missing costs.
 
 import argparse
 from dataclasses import asdict
+from datetime import datetime
 import hashlib
 import json
 import math
@@ -36,6 +37,32 @@ def number(value):
     if type(value) not in (int, float) or not math.isfinite(value) or value < 0:
         raise ValueError("finite nonnegative measured value required")
     return value
+
+
+def local_bytes(path):
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("regular immutable record required")
+    with path.open("rb") as stream:
+        value = stream.read(32 * 1024 * 1024 + 1)
+    if not value or len(value) > 32 * 1024 * 1024:
+        raise ValueError("audit input byte bound")
+    return value
+
+
+def procedure_equal(original, repeated):
+    """Compare behavior; replay is a new execution with a distinct clock receipt."""
+    fields = {"request", "stdout", "stderr", "exit_code", "seconds", "observed_at"}
+    for value in (original, repeated):
+        if set(value) != fields or type(value["exit_code"]) is not int:
+            raise ValueError("incomplete procedural execution receipt")
+        number(value["seconds"])
+        date = datetime.fromisoformat(value["observed_at"])
+        if date.tzinfo is None:
+            raise ValueError("procedure observation lacks timezone")
+    return all(
+        original[key] == repeated[key]
+        for key in ("request", "stdout", "stderr", "exit_code")
+    )
 
 
 def align_records(raw, scored, cases):
@@ -196,7 +223,7 @@ def audit(plan_dir, inputs, output_root, *, plan_sha, ready_sha, source_commit):
     plan = read(plan_dir / "plan.json", plan_sha)
     ready = read(output_root / "snapshot/READY.json", ready_sha)
     task_dir = output_root / "tasks"
-    execution = strict_json((task_dir / "execution.json").read_text())
+    execution = strict_json(local_bytes(task_dir / "execution.json").decode())
     if (
         execution["source_commit"] != source_commit
         or execution["writer_source"] != ready["writer_source"]
@@ -221,10 +248,9 @@ def audit(plan_dir, inputs, output_root, *, plan_sha, ready_sha, source_commit):
     if len(cases) != len(plan["cases"]):
         raise ValueError("duplicate case identity")
     raw_path = task_dir / "raw-answers.jsonl"
-    if raw_path.stat().st_size > 32 * 1024 * 1024:
-        raise ValueError("raw journal exceeds audit bound")
-    raw = [strict_json(line) for line in raw_path.read_text().splitlines()]
-    scored = strict_json((task_dir / "scored-answers.json").read_text())
+    raw_bytes = local_bytes(raw_path)
+    raw = [strict_json(line) for line in raw_bytes.decode().splitlines()]
+    scored = strict_json(local_bytes(task_dir / "scored-answers.json").decode())
     result = effects(raw, scored, cases)
     labels_list = read(inputs / "labels.json", plan["labels_sha"])
     labels = {r["id"]: r for r in labels_list}
@@ -280,6 +306,8 @@ def audit(plan_dir, inputs, output_root, *, plan_sha, ready_sha, source_commit):
         if queue != row["citation_audit"]:
             raise ValueError("citation request differs from original delivery")
         truth = labels[row["question_id"]]
+        if truth["kind"] != row["kind"]:
+            raise ValueError("original task kind differs from scoring input")
         parsed = strict_identifier(row["answer"])
         correct = parsed == truth["expected"]
         if truth["kind"] == "procedure":
@@ -290,10 +318,7 @@ def audit(plan_dir, inputs, output_root, *, plan_sha, ready_sha, source_commit):
                     supplied=parsed or "invalid_response",
                 )
             )
-            old = row["procedure_verification"]
-            if {k: v for k, v in observed.items() if k != "seconds"} != {
-                k: v for k, v in old.items() if k != "seconds"
-            }:
+            if not procedure_equal(row["procedure_verification"], observed):
                 raise ValueError("same procedural verifier produced different outcome")
             correct = observed["exit_code"] == 0
             procedure_replays += 1
@@ -304,7 +329,7 @@ def audit(plan_dir, inputs, output_root, *, plan_sha, ready_sha, source_commit):
     result.update(
         generating_source=source_commit,
         writer_source=ready["writer_source"],
-        raw_answers_sha256=hashlib.sha256(raw_path.read_bytes()).hexdigest(),
+        raw_answers_sha256=hashlib.sha256(raw_bytes).hexdigest(),
         snapshot_sha256=ready_sha,
         source_spans_verified=spans_checked,
         repeated_procedure_checks=procedure_replays,
