@@ -2,11 +2,11 @@ name: MemoryCell reviewed source formatting
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/reviewed*.py'
-      - 'scripts/memory_cell/prepare_source_audit.py'
-      - 'scripts/memory_cell/test_reviewed*.py'
-      - 'scripts/memory_cell/test_source_audit*.py'
-      - '.github/workflows/hepta-memory-review-format-final.yml'
+      - "scripts/memory_cell/reviewed*.py"
+      - "scripts/memory_cell/prepare_source_audit.py"
+      - "scripts/memory_cell/test_reviewed*.py"
+      - "scripts/memory_cell/test_source_audit*.py"
+      - ".github/workflows/hepta-memory-review-format-final.yml"
 permissions:
   contents: read
 jobs:

@@ -2,11 +2,11 @@ name: MemoryCell published necessity and conditional learning
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/necessity_*.py'
-      - 'scripts/memory_cell/reviewed_bundle.py'
-      - 'scripts/memory_cell/test_necessity_*.py'
-      - '.github/workflows/hepta-memory-necessity.yml'
-      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_NECESSITY.md'
+      - "scripts/memory_cell/necessity_*.py"
+      - "scripts/memory_cell/reviewed_bundle.py"
+      - "scripts/memory_cell/test_necessity_*.py"
+      - ".github/workflows/hepta-memory-necessity.yml"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_NECESSITY.md"
 permissions:
   contents: read
   actions: read

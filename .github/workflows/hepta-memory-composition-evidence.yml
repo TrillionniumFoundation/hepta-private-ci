@@ -2,10 +2,10 @@ name: MemoryCell publisher composition evidence
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/composition_*.py'
-      - 'scripts/memory_cell/test_composition_*.py'
-      - 'codex-rs/hepta-intelligence-eval/MEMORY_CELL_COMPOSITION.md'
-      - '.github/workflows/hepta-memory-composition-evidence.yml'
+      - "scripts/memory_cell/composition_*.py"
+      - "scripts/memory_cell/test_composition_*.py"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_COMPOSITION.md"
+      - ".github/workflows/hepta-memory-composition-evidence.yml"
 permissions:
   contents: read
   actions: read
@@ -70,11 +70,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tier: ['135M', '360M', '1.7B']
+        tier: ["135M", "360M", "1.7B"]
     env:
       PYTHONPATH: scripts/memory_cell
-      TOKENIZERS_PARALLELISM: 'false'
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -99,8 +99,8 @@ jobs:
       - name: Actual frozen reader diagnosis and only conditionally policy training and transfer
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/composition-result/resources.txt /tmp/composition-python/bin/python scripts/memory_cell/composition_trial.py /tmp/composition-data /tmp/composition-model /tmp/composition-result/execution 2>&1 | tee /tmp/composition-result/run.log

@@ -2,14 +2,14 @@ name: MemoryCell reviewed evidence and frozen read sessions
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/reviewed_bundle.py'
-      - 'scripts/memory_cell/reviewed_diagnostic.py'
-      - 'scripts/memory_cell/memory_curriculum.py'
-      - 'scripts/memory_cell/frozen*.py'
-      - 'scripts/memory_cell/test_reviewed*.py'
-      - 'scripts/memory_cell/test_memory_curriculum.py'
-      - 'scripts/memory_cell/test_frozen*.py'
-      - '.github/workflows/hepta-memory-read-path.yml'
+      - "scripts/memory_cell/reviewed_bundle.py"
+      - "scripts/memory_cell/reviewed_diagnostic.py"
+      - "scripts/memory_cell/memory_curriculum.py"
+      - "scripts/memory_cell/frozen*.py"
+      - "scripts/memory_cell/test_reviewed*.py"
+      - "scripts/memory_cell/test_memory_curriculum.py"
+      - "scripts/memory_cell/test_frozen*.py"
+      - ".github/workflows/hepta-memory-read-path.yml"
 permissions:
   contents: read
   actions: read
@@ -49,8 +49,8 @@ jobs:
     timeout-minutes: 30
     env:
       PYTHONPATH: scripts/memory_cell
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -80,8 +80,8 @@ jobs:
           cp /tmp/session-reader/inventory.json /tmp/read-path-result/inventory.json
       - name: Actual frozen reader, committed state, reopen and current withdrawal
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           INVENTORY_SHA=$(sha256sum /tmp/session-reader/inventory.json | cut -d ' ' -f1)
