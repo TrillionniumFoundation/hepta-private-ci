@@ -112,6 +112,15 @@ fn runner(
     directory: &std::path::Path,
     model: ModelManifest,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    // FinalUseAuthority requires a private owner-controlled state directory.
+    // Temp directory permissions vary with the runner and its inherited umask;
+    // normalize the fixture rather than weakening the production owner gate.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(directory, std::fs::Permissions::from_mode(0o700))
+            .expect("private final-use fixture directory");
+    }
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
