@@ -237,7 +237,10 @@ fn uncertain_model_load_fences_digest_and_respects_capacity_bound() {
     assert!(!worker.model_matches_digest("model.1", digest));
     let mut alias = manifest();
     alias.model_id = "alias".to_owned();
-    assert_eq!(worker.load_model(100, alias), Err(Error::ModelAlreadyLoaded));
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
     // Reservations for uncertain effects consume the same real model limit.
     let mut second = manifest();
     second.model_id = "model.2".to_owned();
@@ -249,7 +252,10 @@ fn uncertain_model_load_fences_digest_and_respects_capacity_bound() {
     let mut third = manifest();
     third.model_id = "model.3".to_owned();
     third.model_digest = "b".repeat(64);
-    assert_eq!(worker.load_model(100, third), Err(Error::ModelCapacity));
+    assert_eq!(
+        worker.load_model(100, third),
+        Err(Error::ModelCapacity)
+    );
 }
 
 #[test]
@@ -267,7 +273,10 @@ fn oversized_load_with_failed_unload_never_frees_unknown_physical_handle() {
     ));
     let mut alias = manifest();
     alias.model_id = "another".to_owned();
-    assert_eq!(worker.load_model(100, alias), Err(Error::ModelAlreadyLoaded));
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
 
     // A *confirmed* backend cleanup, unlike an unknown ACK, frees the slot.
     let driver = Driver {
@@ -276,11 +285,16 @@ fn oversized_load_with_failed_unload_never_frees_unknown_physical_handle() {
     };
     let mut cleaned =
         InferenceWorker::new(100, "worker.5".to_string(), 3, grant(), driver).expect("worker");
-    assert_eq!(cleaned.load_model(100, manifest()), Err(Error::ModelCapacity));
+    assert_eq!(
+        cleaned.load_model(100, manifest()),
+        Err(Error::ModelCapacity)
+    );
     cleaned.driver.load_memory_bytes = Some(1_024);
     let mut alias = manifest();
     alias.model_id = "reloaded".to_owned();
-    cleaned.load_model(100, alias).expect("confirmed cleanup permits retry");
+    cleaned
+        .load_model(100, alias)
+        .expect("confirmed cleanup permits retry");
 }
 
 #[test]
