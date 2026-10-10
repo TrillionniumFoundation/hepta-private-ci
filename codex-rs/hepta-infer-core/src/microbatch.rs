@@ -134,6 +134,9 @@ pub struct BoundedMicrobatchSchedulerV1 {
     lanes: BTreeMap<MicrobatchKeyV1, VecDeque<QueuedIntent>>,
     // Secondary affinity index; never conflates per-scope authorization.
     physical_lanes: BTreeMap<PhysicalBatchKeyV1, BTreeSet<MicrobatchKeyV1>>,
+    // An explicit scope affinity index makes generation cutover proportional
+    // to the retired scope's lanes, not the entire 4096-scope worker.
+    scope_lanes: BTreeMap<StableId, BTreeSet<MicrobatchKeyV1>>,
     physical_cursor: BTreeMap<PhysicalBatchKeyV1, MicrobatchKeyV1>,
     round_robin: VecDeque<MicrobatchKeyV1>,
     queued_ids: BTreeSet<StableId>,
@@ -146,6 +149,7 @@ impl BoundedMicrobatchSchedulerV1 {
             limits: limits.validate()?,
             lanes: BTreeMap::new(),
             physical_lanes: BTreeMap::new(),
+            scope_lanes: BTreeMap::new(),
             physical_cursor: BTreeMap::new(),
             round_robin: VecDeque::new(),
             queued_ids: BTreeSet::new(),
@@ -162,6 +166,14 @@ impl BoundedMicrobatchSchedulerV1 {
     }
 
     fn remove_physical_lane(&mut self, key: &MicrobatchKeyV1) {
+        // All lane-retirement sites converge here so the physical and scope
+        // indexes cannot retain a stale generation after draining/expiry.
+        if let Some(members) = self.scope_lanes.get_mut(&key.scope_id) {
+            members.remove(key);
+            if members.is_empty() {
+                self.scope_lanes.remove(&key.scope_id);
+            }
+        }
         let group = key.physical_key();
         if let Some(members) = self.physical_lanes.get_mut(&group) {
             members.remove(key);
@@ -233,6 +245,10 @@ impl BoundedMicrobatchSchedulerV1 {
         let id = intent.request_id.clone();
         if !self.lanes.contains_key(&key) {
             self.round_robin.push_back(key.clone());
+            self.scope_lanes
+                .entry(key.scope_id.clone())
+                .or_default()
+                .insert(key.clone());
             self.physical_lanes
                 .entry(key.physical_key())
                 .or_default()
@@ -425,27 +441,26 @@ impl BoundedMicrobatchSchedulerV1 {
         authority_epoch: u64,
     ) -> Vec<StableId> {
         let mut dropped = Vec::new();
-        let mut retired_lanes = Vec::new();
-        self.lanes.retain(|key, lane| {
-            if &key.scope_id == scope
-                && (key.generation != generation
-                    || key.route_fence != route_fence
-                    || key.authority_epoch != authority_epoch)
+        // Take only the affected scope's keys from the secondary index.
+        // The round-robin list may contain retired slots until bounded lazy
+        // compaction; those slots never regain dispatch authority.
+        let keys = self.scope_lanes.get(scope).cloned().unwrap_or_default();
+        for key in keys {
+            if key.generation == generation
+                && key.route_fence == route_fence
+                && key.authority_epoch == authority_epoch
             {
+                continue;
+            }
+            if let Some(lane) = self.lanes.remove(&key) {
                 for entry in lane {
                     self.queued_ids.remove(&entry.intent.request_id);
-                    dropped.push(entry.intent.request_id.clone());
+                    dropped.push(entry.intent.request_id);
                 }
-                retired_lanes.push(key.clone());
-                false
-            } else {
-                true
             }
-        });
-        for key in &retired_lanes {
-            self.remove_physical_lane(key);
+            self.remove_physical_lane(&key);
         }
-        self.round_robin.retain(|key| self.lanes.contains_key(key));
+        self.compact_round_robin_if_needed();
         dropped
     }
 }
