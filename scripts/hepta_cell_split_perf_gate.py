@@ -77,6 +77,8 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
             raise InvalidEvidence(f"{key}: percentiles out of order")
         if vals["native_batch_requests"] > vals["completed"]:
             raise InvalidEvidence(f"{key}: impossible native batch accounting")
+        if vals["native_batch_requests"] and not vals["native_backend_calls"]:
+            raise InvalidEvidence(f"{key}: native batch requests without a backend call")
         if vals["negative_transfer_rate"] > 1:
             raise InvalidEvidence(f"{key}: negative-transfer rate is not a fraction")
         vals["throughput_rps"] = vals["completed"] / vals["elapsed_seconds"]
@@ -100,6 +102,11 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         logical = measurements[(scope, "logical_split")]
         optimized = measurements[(scope, "optimized_logical_split")]
         physical = measurements[(scope, "physical_split")]
+        # All four modes must attempt the same frozen workload. Otherwise
+        # performance gains could be manufactured by dropping difficult work.
+        if len({baseline["attempted"], logical["attempted"],
+                optimized["attempted"], physical["attempted"]}) != 1:
+            raise InvalidEvidence(f"{scope}: modes attempted different request counts")
         comparisons.append({
             "scopes": scope,
             "no_split": baseline,
@@ -115,7 +122,8 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         if optimized["p99_ms"] > logical["p99_ms"] * (1 + max_p99_regression):
             violations.append(f"{scope}: optimized p99 regressed")
         for key in ("cpu_per_request_s", "communication_per_request_bytes",
-                    "fsync_per_request", "lock_wait_per_request_ms"):
+                    "fsync_per_request", "lock_wait_per_request_ms",
+                    "rss_peak_bytes", "recovery_ms"):
             if optimized[key] > logical[key]:
                 violations.append(f"{scope}: optimized {key} regressed")
         if optimized["failure_rate"] > logical["failure_rate"]:
