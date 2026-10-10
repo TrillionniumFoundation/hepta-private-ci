@@ -140,7 +140,9 @@ impl CellSplitExecutionOwnerV1 {
         child_state: DurableCellStateCasDirectoryOwnerV1,
         routes: CellSplitRouteControllerV1,
     ) -> Result<Self, CellSplitExecutionErrorV1> {
-        split.validate().map_err(|_| CellSplitExecutionErrorV1::Binding("complete split"))?;
+        split
+            .validate()
+            .map_err(|_| CellSplitExecutionErrorV1::Binding("complete split"))?;
         let plan = &handoff.checkpoint().plan;
         if plan.operation_id != split.split_id
             || plan.domain_id != split.parent_cell_id
@@ -149,7 +151,9 @@ impl CellSplitExecutionOwnerV1 {
             || plan.new_generation != split.successor_generation
             || plan.rollback_predecessor_digest != split.rollback_predecessor_digest
         {
-            return Err(CellSplitExecutionErrorV1::Binding("supervisor handoff plan"));
+            return Err(CellSplitExecutionErrorV1::Binding(
+                "supervisor handoff plan",
+            ));
         }
 
         let selected = selection.receipt();
@@ -164,9 +168,12 @@ impl CellSplitExecutionOwnerV1 {
         {
             return Err(CellSplitExecutionErrorV1::Binding("independent selection"));
         }
-        let admitted = lifecycle
-            .load(&split.split_id)?
-            .ok_or(CellSplitExecutionErrorV1::Binding("missing witnessed lifecycle"))?;
+        let admitted =
+            lifecycle
+                .load(&split.split_id)?
+                .ok_or(CellSplitExecutionErrorV1::Binding(
+                    "missing witnessed lifecycle",
+                ))?;
         // A merely accepted evaluation or in-flight canary is never a physical
         // deployment decision. Retired also allows read-only crash recovery.
         if !matches!(
@@ -180,7 +187,9 @@ impl CellSplitExecutionOwnerV1 {
             WriterHandoffPhaseV1::RoutePublished | WriterHandoffPhaseV1::Retired
         ) && routes.phase() != CellSplitRoutePhaseV1::ChildrenActive
         {
-            return Err(CellSplitExecutionErrorV1::Binding("reopened CNS route unavailable"));
+            return Err(CellSplitExecutionErrorV1::Binding(
+                "reopened CNS route unavailable",
+            ));
         }
         if handoff.checkpoint().phase == WriterHandoffPhaseV1::NewWriterFenced
             && !matches!(
@@ -209,12 +218,11 @@ impl CellSplitExecutionOwnerV1 {
         &self.routes
     }
 
-    fn require_phase(
-        &self,
-        phase: WriterHandoffPhaseV1,
-    ) -> Result<(), CellSplitExecutionErrorV1> {
+    fn require_phase(&self, phase: WriterHandoffPhaseV1) -> Result<(), CellSplitExecutionErrorV1> {
         if self.handoff.checkpoint().phase != phase {
-            return Err(CellSplitExecutionErrorV1::Phase(self.handoff.checkpoint().phase));
+            return Err(CellSplitExecutionErrorV1::Phase(
+                self.handoff.checkpoint().phase,
+            ));
         }
         Ok(())
     }
@@ -256,7 +264,9 @@ impl CellSplitExecutionOwnerV1 {
         // Candidate data is already file-fsynced by the CAS owner; a created
         // directory entry must also survive a host crash before acknowledgement.
         let path = root.join(relative);
-        let parent = path.parent().ok_or(CellSplitExecutionErrorV1::Binding("CAS parent"))?;
+        let parent = path
+            .parent()
+            .ok_or(CellSplitExecutionErrorV1::Binding("CAS parent"))?;
         File::open(parent)
             .and_then(|file| file.sync_all())
             .map_err(|error| CellSplitExecutionErrorV1::Io(error.kind()))?;
@@ -286,7 +296,11 @@ impl CellSplitExecutionOwnerV1 {
             outbox_watermark: None,
             unknown_effect_count: 0,
         })?;
-        Ok(CellSplitArtifactExecutionReceiptV1 { write, load, handoff })
+        Ok(CellSplitArtifactExecutionReceiptV1 {
+            write,
+            load,
+            handoff,
+        })
     }
 
     /// Real child-Q24 CAS and batch marker sync precede migration ack and
@@ -331,10 +345,9 @@ impl CellSplitExecutionOwnerV1 {
         &mut self,
     ) -> Result<WriterHandoffCheckpointV1, CellSplitExecutionErrorV1> {
         self.require_phase(WriterHandoffPhaseV1::Migrated)?;
-        let lifecycle = self
-            .lifecycle
-            .load(&self.split.split_id)?
-            .ok_or(CellSplitExecutionErrorV1::Binding("missing lifecycle after migration"))?;
+        let lifecycle = self.lifecycle.load(&self.split.split_id)?.ok_or(
+            CellSplitExecutionErrorV1::Binding("missing lifecycle after migration"),
+        )?;
         if lifecycle.current_state != CellSplitLifecycleStateV1::Retained {
             return Err(CellSplitExecutionErrorV1::Binding("retention revoked"));
         }
@@ -361,7 +374,9 @@ impl CellSplitExecutionOwnerV1 {
     ) -> Result<CellSplitRouteExecutionReceiptV1, CellSplitExecutionErrorV1> {
         self.require_phase(WriterHandoffPhaseV1::NewWriterFenced)?;
         if self.routes.phase() != CellSplitRoutePhaseV1::ParentActive {
-            return Err(CellSplitExecutionErrorV1::Binding("CNS cutover already dispatched"));
+            return Err(CellSplitExecutionErrorV1::Binding(
+                "CNS cutover already dispatched",
+            ));
         }
         self.routes
             .activate_children(self.split.predecessor_generation, next, child_routes)?;
@@ -378,7 +393,9 @@ impl CellSplitExecutionOwnerV1 {
         if self.routes.phase() != CellSplitRoutePhaseV1::ChildrenActive
             || self.routes.generation() != self.split.successor_generation
         {
-            return Err(CellSplitExecutionErrorV1::Binding("CNS cutover not observed"));
+            return Err(CellSplitExecutionErrorV1::Binding(
+                "CNS cutover not observed",
+            ));
         }
         let fence = self
             .routes
@@ -392,7 +409,10 @@ impl CellSplitExecutionOwnerV1 {
             outbox_watermark: None,
             unknown_effect_count: 0,
         })?;
-        Ok(CellSplitRouteExecutionReceiptV1 { route: fence, handoff })
+        Ok(CellSplitRouteExecutionReceiptV1 {
+            route: fence,
+            handoff,
+        })
     }
 
     /// Revalidate result authority at the final-use boundary. Merely having a
@@ -405,7 +425,9 @@ impl CellSplitExecutionOwnerV1 {
         if fence.generation != self.split.successor_generation
             || self.routes.phase() != CellSplitRoutePhaseV1::ChildrenActive
         {
-            return Err(CellSplitExecutionErrorV1::Binding("successor result not serving"));
+            return Err(CellSplitExecutionErrorV1::Binding(
+                "successor result not serving",
+            ));
         }
         Ok(())
     }
