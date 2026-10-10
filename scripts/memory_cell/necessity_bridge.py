@@ -123,7 +123,9 @@ def project(plan, labels, chains, questions, *, revoked):
         )
         # JSON persists tuples such as Document.assets as arrays; compare canonical
         # representations rather than Python tuple/list container types.
-        if digest(reconstructed) != digest(case) or digest(expected_label) != digest(entry):
+        if digest(reconstructed) != digest(case) or digest(expected_label) != digest(
+            entry
+        ):
             raise ValueError("source facts, answer, options or noise mutated")
         selected = reconstructed["conditions"]["publisher_pair"]["bundle"]["selected"]
         if len(selected) != 2:
