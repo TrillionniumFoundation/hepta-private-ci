@@ -15,6 +15,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use thiserror::Error;
 
+use crate::AcceptanceError;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
@@ -22,7 +23,6 @@ use crate::durable::secure_read;
 use crate::durable::secure_root;
 use crate::durable::sha256;
 use crate::durable::write_private_new;
-use crate::AcceptanceError;
 
 const SCHEMA: &str = "hepta.learning.cell-split.execution-owner.v1";
 const MAX_RECORD_BYTES: usize = 64 * 1024;
@@ -81,9 +81,14 @@ impl CellSplitExecutionPlanV1 {
             || self.split_id.len() > 256
             || self.parent_generation == 0
             || self.parent_generation.checked_add(1) != Some(self.child_generation)
-            || self.owner_ids.iter().any(|id| id.is_empty() || id.len() > 256)
+            || self
+                .owner_ids
+                .iter()
+                .any(|id| id.is_empty() || id.len() > 256)
         {
-            return Err(CellSplitExecutionErrorV1::Invalid("identity or generations"));
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "identity or generations",
+            ));
         }
         for digest in [
             &self.scope_digest,
@@ -106,7 +111,9 @@ impl CellSplitExecutionPlanV1 {
 
 fn valid_digest(value: &str) -> bool {
     value.len() == 64
-        && value.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
         && value.bytes().any(|byte| byte != b'0')
 }
 
@@ -244,13 +251,16 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 }
                 (Some(stored), outcome) => {
                     if stored != expected {
-                        return Err(CellSplitExecutionErrorV1::Invalid("prepared intent changed"));
+                        return Err(CellSplitExecutionErrorV1::Invalid(
+                            "prepared intent changed",
+                        ));
                     }
                     if let Some(bytes) = outcome {
                         let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
                         validate_receipt(&intent, &receipt)?;
-                        port.verify_committed(&intent, &receipt)
-                            .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+                        port.verify_committed(&intent, &receipt).map_err(|error| {
+                            CellSplitExecutionErrorV1::External(error.to_string())
+                        })?;
                         previous_receipt_digest = receipt.receipt_digest;
                         cursor += 1;
                     } else {
@@ -259,7 +269,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                             frame_path(&root, later, "prepared").exists()
                                 || frame_path(&root, later, "committed").exists()
                         }) {
-                            return Err(CellSplitExecutionErrorV1::Invalid("pending step has successors"));
+                            return Err(CellSplitExecutionErrorV1::Invalid(
+                                "pending step has successors",
+                            ));
                         }
                         break;
                     }
@@ -311,15 +323,18 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             self.pending = true;
         }
         let receipt = if pending {
-            self.port.reconcile(&intent)
+            self.port
+                .reconcile(&intent)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
                 .ok_or(CellSplitExecutionErrorV1::Ambiguous)?
         } else {
-            self.port.execute(&intent)
+            self.port
+                .execute(&intent)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
         };
         validate_receipt(&intent, &receipt)?;
-        self.port.verify_committed(&intent, &receipt)
+        self.port
+            .verify_committed(&intent, &receipt)
             .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
         write_private_new(
             &frame_path(&self.root, self.cursor, "committed"),
@@ -338,9 +353,8 @@ fn make_intent(
     step: CellSplitExecutionStepV1,
     predecessor: &str,
 ) -> CellSplitExecutionIntentV1 {
-    let idempotency_key = sha256(
-        format!("{SCHEMA}\0{plan_digest}\0{}\0{predecessor}", step.index()).as_bytes(),
-    );
+    let idempotency_key =
+        sha256(format!("{SCHEMA}\0{plan_digest}\0{}\0{predecessor}", step.index()).as_bytes());
     CellSplitExecutionIntentV1 {
         schema: SCHEMA.to_string(),
         plan_digest: plan_digest.to_string(),
@@ -365,7 +379,9 @@ fn validate_receipt(
         || receipt.owner_signature_bytes.len() > 4096
         || receipt.receipt_digest != receipt_digest(receipt)?
     {
-        return Err(CellSplitExecutionErrorV1::Invalid("unverified operation receipt"));
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "unverified operation receipt",
+        ));
     }
     Ok(())
 }
