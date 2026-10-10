@@ -51,6 +51,7 @@ pub use cell_split_execution::CellSplitExecutionErrorV1;
 pub use cell_split_execution::CellSplitExecutionOwnerV1;
 pub use cell_split_execution::CellSplitMigrationExecutionReceiptV1;
 pub use cell_split_execution::CellSplitRouteExecutionReceiptV1;
+pub use cell_split_execution::CellSplitSelectionExecutionReceiptV1;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;
 pub use shared_terminal_cell::SharedTerminalCellError;
