@@ -2,12 +2,12 @@ name: MemoryCell audited source reader diagnosis
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/reviewed_*.py'
-      - 'scripts/memory_cell/prepare_source_audit.py'
-      - 'scripts/memory_cell/test_reviewed*.py'
-      - 'scripts/memory_cell/test_source_audit*.py'
-      - 'scripts/memory_cell/data/necessity-source-audit-20261010.json'
-      - '.github/workflows/hepta-memory-reviewed-source-diagnostic.yml'
+      - "scripts/memory_cell/reviewed_*.py"
+      - "scripts/memory_cell/prepare_source_audit.py"
+      - "scripts/memory_cell/test_reviewed*.py"
+      - "scripts/memory_cell/test_source_audit*.py"
+      - "scripts/memory_cell/data/necessity-source-audit-20261010.json"
+      - ".github/workflows/hepta-memory-reviewed-source-diagnostic.yml"
 permissions:
   contents: read
   actions: read
@@ -75,10 +75,10 @@ jobs:
         size: [135M, 1.7B]
     env:
       PYTHONPATH: scripts/memory_cell
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-      TOKENIZERS_PARALLELISM: 'false'
-      OMP_NUM_THREADS: '2'
-      MKL_NUM_THREADS: '2'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -102,8 +102,8 @@ jobs:
       - name: Generate every available condition before scoring; no optimizer or admission
         env:
           HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/audited-reader-result/resources.txt /tmp/audited-python/bin/python scripts/memory_cell/reviewed_bundle.py /tmp/audited-input/plan.json /tmp/audited-input/reviews.json /tmp/audited-input/withdrawals.json /tmp/audited-reader-result/diagnostic --plan-sha f1edc186065acab9b56a85e9b38e7d585ef5d670293cd95ff0ecc82579aa0725 --reviews-sha 3cc77008c68dae5cc57f468464b9c0b2ca4e700986de01aedfde8b69033daf79 --withdrawals-sha 37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570 --labels /tmp/audited-input/labels.json --labels-sha 5973e13de088b5973d045db543444ab1050dfe3ede2b843c84642781dfd6232e --reader /tmp/audited-model/reader --inventory /tmp/audited-model/inventory.json --inventory-sha "$(sha256sum /tmp/audited-model/inventory.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/audited-reader-result/run.log
