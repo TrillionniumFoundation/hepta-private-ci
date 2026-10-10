@@ -1,0 +1,62 @@
+name: MemoryCell isolated published-review formatter
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/hepta-memory-necessity-formatter.yml'
+permissions:
+  contents: read
+jobs:
+  format-review-candidate:
+    if: ${{ github.event.pull_request.number == 1452 && github.head_ref == 'codex/memory-cell-evidence-20261008' && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Format only inspected published review sources in an isolated branch
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          python3 - <<'PY'
+          from pathlib import Path
+          import ast, json
+          names = [
+              'necessity_data.py', 'necessity_bridge.py',
+              'reviewed_bundle.py', 'test_necessity_data.py',
+              'test_necessity_bridge.py',
+          ]
+          paths = ['scripts/memory_cell/' + n for n in names]
+          Path('/tmp/review-format-ast.json').write_text(
+              json.dumps({p: ast.dump(ast.parse(Path(p).read_text())) for p in paths})
+          )
+          PY
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --base "$BASE"
+          just fmt --check --base "$BASE"
+          python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/review-format-ast.json').read_text())
+          changed = set(subprocess.check_output(
+              ['git', 'diff', '--name-only'], text=True).splitlines())
+          if changed - set(before):
+              raise ValueError('formatter changed source outside audited paths')
+          for name, tree in before.items():
+              if ast.dump(ast.parse(Path(name).read_text())) != tree:
+                  raise ValueError('formatter changed executable AST')
+          print('FORMATTED_AUDITED_FILES', sorted(changed))
+          PY
+          git add -- scripts/memory_cell/necessity_data.py scripts/memory_cell/necessity_bridge.py scripts/memory_cell/reviewed_bundle.py scripts/memory_cell/test_necessity_data.py scripts/memory_cell/test_necessity_bridge.py
+          git rm .github/workflows/hepta-memory-necessity-formatter.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format inspected published review bridge; remove temporary formatter'
+          git push origin "HEAD:refs/heads/codex/memory-necessity-format-$GITHUB_RUN_ID"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
