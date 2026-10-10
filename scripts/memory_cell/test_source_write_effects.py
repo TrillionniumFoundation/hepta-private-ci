@@ -15,7 +15,11 @@ def fixture():
             kind=kind,
             candidate_digest="pool" + str(i),
             candidate_ids=["source"],
-            controls={"hybrid": {"selected": ["source"]}, "organized": {"selected": ["source"]}, "empty": {"selected": []}},
+            controls={
+                "hybrid": {"selected": ["source"]},
+                "organized": {"selected": ["source"]},
+                "empty": {"selected": []},
+            },
         )
         for arm in ARMS:
             empty = arm in ("parameter_only", "empty")
@@ -30,10 +34,22 @@ def fixture():
                 generated_tokens=1,
                 seconds=0.1,
             )
-            row = dict(question_id=qid, arm=arm, kind=kind, candidate_digest="pool" + str(i), selected=[] if empty else ["source"], status="succeeded", answer="value", receipt=receipt)
+            row = dict(
+                question_id=qid,
+                arm=arm,
+                kind=kind,
+                candidate_digest="pool" + str(i),
+                selected=[] if empty else ["source"],
+                status="succeeded",
+                answer="value",
+                receipt=receipt,
+            )
             raw.append(row)
             annotated = copy.deepcopy(row)
-            annotated.update(parsed_identifier="value", strict_task_success=arm in ("organized", "knowledge", "policy"))
+            annotated.update(
+                parsed_identifier="value",
+                strict_task_success=arm in ("organized", "knowledge", "policy"),
+            )
             if kind == "procedure":
                 annotated["procedure_verification"] = dict(exit_code=0, seconds=0.1)
             scored.append(annotated)
@@ -47,8 +63,12 @@ class SourceEffectTests(unittest.TestCase):
         pairs = report["contrasts"]
         self.assertEqual(pairs["organization_vs_hybrid"]["all"]["wins"], 2)
         self.assertEqual(pairs["policy_vs_initialization"]["all"]["wins"], 2)
-        self.assertEqual(pairs["policy_vs_organized"]["all"]["all_planned_effect_bounds"], [0, 0])
-        self.assertFalse(pairs["knowledge_vs_same_evidence"]["all"]["observed_win_without_loss"])
+        self.assertEqual(
+            pairs["policy_vs_organized"]["all"]["all_planned_effect_bounds"], [0, 0]
+        )
+        self.assertFalse(
+            pairs["knowledge_vs_same_evidence"]["all"]["observed_win_without_loss"]
+        )
         self.assertIsNone(report["semantic_citation_precision"])
         self.assertFalse(report["production_accepted"])
 
@@ -57,7 +77,9 @@ class SourceEffectTests(unittest.TestCase):
         for r in scored:
             if r["arm"] == "parameter_only":
                 r["strict_task_success"] = True
-        item = effects(raw, scored, cases)["contrasts"]["parameter_only_vs_empty"]["all"]
+        item = effects(raw, scored, cases)["contrasts"]["parameter_only_vs_empty"][
+            "all"
+        ]
         self.assertEqual((item["wins"], item["losses"]), (2, 0))
         i = next(i for i, r in enumerate(raw) if r["arm"] == "parameter_only")
         raw[i]["receipt"]["delivered_evidence"] = [{"excerpt": "leaked"}]
@@ -72,7 +94,9 @@ class SourceEffectTests(unittest.TestCase):
         raw[i]["status"] = "failed"
         raw[i]["error_type"] = "TimeoutError"
         scored[i] = copy.deepcopy(raw[i])
-        item = effects(raw, scored, cases)["contrasts"]["knowledge_vs_same_evidence"]["all"]
+        item = effects(raw, scored, cases)["contrasts"]["knowledge_vs_same_evidence"][
+            "all"
+        ]
         self.assertEqual(item["missing_pairs"], 1)
         self.assertEqual(item["all_planned_effect_bounds"], [-0.5, 0.5])
         self.assertFalse(item["observed_win_without_loss"])
@@ -87,7 +111,11 @@ class SourceEffectTests(unittest.TestCase):
         self.assertEqual(item["kind:fact"]["losses"], 0)
 
     def test_source_answer_and_score_mutations_are_not_new_evidence(self):
-        for field, value in (("answer", "repaired [E1]"), ("kind", "different"), ("candidate_digest", "different")):
+        for field, value in (
+            ("answer", "repaired [E1]"),
+            ("kind", "different"),
+            ("candidate_digest", "different"),
+        ):
             raw, scored, cases = fixture()
             scored[0][field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
@@ -110,7 +138,12 @@ class SourceEffectTests(unittest.TestCase):
                 effects(raw, scored, cases)
 
     def test_derived_prompt_or_adapter_drift_invalidates_paired_claim(self):
-        for key, value in (("derived_evidence", []), ("input_ids_digest", "different"), ("knowledge_module_enabled", False), ("reader_identity", "different")):
+        for key, value in (
+            ("derived_evidence", []),
+            ("input_ids_digest", "different"),
+            ("knowledge_module_enabled", False),
+            ("reader_identity", "different"),
+        ):
             raw, scored, cases = fixture()
             i = next(i for i, r in enumerate(raw) if r["arm"] == "knowledge")
             raw[i]["receipt"][key] = value
@@ -119,7 +152,12 @@ class SourceEffectTests(unittest.TestCase):
                 effects(raw, scored, cases)
 
     def test_invalid_observation_numbers_cannot_pass(self):
-        for key, value in (("seconds", float("nan")), ("seconds", -1), ("input_tokens", True), ("generated_tokens", -1)):
+        for key, value in (
+            ("seconds", float("nan")),
+            ("seconds", -1),
+            ("input_tokens", True),
+            ("generated_tokens", -1),
+        ):
             raw, scored, cases = fixture()
             raw[0]["receipt"][key] = value
             scored[0]["receipt"][key] = value
@@ -134,7 +172,9 @@ class SourceEffectTests(unittest.TestCase):
         for r in scored:
             if r["arm"] == "knowledge":
                 r["answer"] = "different"
-        item = effects(raw, scored, cases)["contrasts"]["knowledge_vs_same_evidence"]["all"]
+        item = effects(raw, scored, cases)["contrasts"]["knowledge_vs_same_evidence"][
+            "all"
+        ]
         self.assertEqual(item["changed_answers"], 2)
         self.assertEqual(item["wins"], 0)
 

@@ -78,17 +78,24 @@ def align_records(raw, scored, cases):
         ):
             raise ValueError("selection not from the frozen candidate pool")
         if arm in ("organized", "knowledge", "hybrid", "empty", "parameter_only"):
-            condition = {"knowledge": "organized", "parameter_only": "empty"}.get(arm, arm)
+            condition = {"knowledge": "organized", "parameter_only": "empty"}.get(
+                arm, arm
+            )
             if selected != case["controls"][condition]["selected"]:
                 raise ValueError("fixed control selection changed")
         if original["status"] == "succeeded":
-            if not isinstance(original["answer"], str) or not original["answer"].strip():
+            if (
+                not isinstance(original["answer"], str)
+                or not original["answer"].strip()
+            ):
                 raise ValueError("missing actual answer")
             if type(annotated["strict_task_success"]) is not bool:
                 raise ValueError("missing actual task result")
             receipt = original["receipt"]
             enabled = receipt["knowledge_module_enabled"]
-            if type(enabled) is not bool or enabled != (arm in ("knowledge", "parameter_only")):
+            if type(enabled) is not bool or enabled != (
+                arm in ("knowledge", "parameter_only")
+            ):
                 raise ValueError("declared arm and actual adapter state differ")
             profiles.add((receipt["reader_identity"], receipt["reader_profile"]))
             for key in ("input_tokens", "generated_tokens"):
@@ -104,12 +111,19 @@ def align_records(raw, scored, cases):
     if len(profiles) != 1:
         raise ValueError("mixed or missing reader identity/profile")
     for group in grouped.values():
-        for a, b in (PAIRS["knowledge_vs_same_evidence"], PAIRS["parameter_only_vs_empty"]):
+        for a, b in (
+            PAIRS["knowledge_vs_same_evidence"],
+            PAIRS["parameter_only_vs_empty"],
+        ):
             x, y = group[a], group[b]
             if x["selected"] != y["selected"]:
                 raise ValueError("knowledge contrast changed selection")
             if x["status"] == y["status"] == "succeeded":
-                for key in ("input_ids_digest", "delivered_evidence", "derived_evidence"):
+                for key in (
+                    "input_ids_digest",
+                    "delivered_evidence",
+                    "derived_evidence",
+                ):
                     if key not in x["receipt"] or key not in y["receipt"]:
                         raise ValueError("missing actual input binding")
                     if x["receipt"][key] != y["receipt"][key]:
@@ -122,7 +136,9 @@ def effects(raw, scored, cases):
     result = {}
     cohorts = {"all": tuple(cases)}
     for kind in sorted({c["kind"] for c in cases.values()}):
-        cohorts["kind:" + kind] = tuple(q for q, c in cases.items() if c["kind"] == kind)
+        cohorts["kind:" + kind] = tuple(
+            q for q, c in cases.items() if c["kind"] == kind
+        )
     for name, (baseline, candidate) in PAIRS.items():
         result[name] = {}
         for cohort, ids in cohorts.items():
@@ -240,15 +256,24 @@ def audit(plan_dir, inputs, output_root, *, plan_sha, ready_sha, source_commit):
             )
             if list(selected) != row["selected"]:
                 raise ValueError("actual selection differs from frozen policy")
-        for sid, span in zip(row["selected"], row["receipt"]["delivered_evidence"], strict=True):
+        for sid, span in zip(
+            row["selected"], row["receipt"]["delivered_evidence"], strict=True
+        ):
             doc = source_map[sid]
-            if span["root"] != doc.root or span["excerpt"] != doc.content or span["scope"] != query.scope:
+            if (
+                span["root"] != doc.root
+                or span["excerpt"] != doc.content
+                or span["scope"] != query.scope
+            ):
                 raise ValueError("delivered source differs from original")
             spans_checked += 1
         queue = capture_native(
             query,
             row["answer"],
-            dict(input_ids_sha256=row["receipt"]["input_ids_digest"], delivered_evidence=row["receipt"]["delivered_evidence"]),
+            dict(
+                input_ids_sha256=row["receipt"]["input_ids_digest"],
+                delivered_evidence=row["receipt"]["delivered_evidence"],
+            ),
             experiment_digest=digest((ready_sha, plan_sha, row["arm"])),
             family_digest=digest(query.family),
         )
@@ -258,14 +283,24 @@ def audit(plan_dir, inputs, output_root, *, plan_sha, ready_sha, source_commit):
         parsed = strict_identifier(row["answer"])
         correct = parsed == truth["expected"]
         if truth["kind"] == "procedure":
-            observed = call_worker(dict(operation="execute", recipe=truth["procedure"], supplied=parsed or "invalid_response"))
+            observed = call_worker(
+                dict(
+                    operation="execute",
+                    recipe=truth["procedure"],
+                    supplied=parsed or "invalid_response",
+                )
+            )
             old = row["procedure_verification"]
-            if {k: v for k, v in observed.items() if k != "seconds"} != {k: v for k, v in old.items() if k != "seconds"}:
+            if {k: v for k, v in observed.items() if k != "seconds"} != {
+                k: v for k, v in old.items() if k != "seconds"
+            }:
                 raise ValueError("same procedural verifier produced different outcome")
             correct = observed["exit_code"] == 0
             procedure_replays += 1
         if row["parsed_identifier"] != parsed or row["strict_task_success"] != correct:
-            raise ValueError("task success differs from independently recomputed outcome")
+            raise ValueError(
+                "task success differs from independently recomputed outcome"
+            )
     result.update(
         generating_source=source_commit,
         writer_source=ready["writer_source"],
@@ -291,4 +326,11 @@ if __name__ == "__main__":
     for name in ("plan-sha", "ready-sha", "source-commit"):
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args()
-    audit(args.plan, args.inputs, args.output_root, plan_sha=args.plan_sha, ready_sha=args.ready_sha, source_commit=args.source_commit)
+    audit(
+        args.plan,
+        args.inputs,
+        args.output_root,
+        plan_sha=args.plan_sha,
+        ready_sha=args.ready_sha,
+        source_commit=args.source_commit,
+    )
