@@ -70,16 +70,33 @@ def conditions(case, review, *, revoked):
     }
     if not isinstance(review, dict) or set(review) != required:
         raise ValueError("unknown minimal-evidence review")
+    publisher = (
+        review["review_basis"] == "published_three_vote_chain"
+        and review["claim"] == "published_two_fact_support_not_minimality"
+    )
+    minimal = (
+        review["review_basis"] in ("external_review", "authored_fixture")
+        and review["claim"] == "jointly_sufficient_and_each_requirement_necessary"
+    )
     if (
         review["query_digest"] != digest(asdict(q))
         or review["source_frontier"] != case["frontier"]
-        or review["claim"] != "jointly_sufficient_and_each_requirement_necessary"
-        or review["review_basis"] not in ("external_review", "authored_fixture")
+        or not (minimal or publisher)
         or not isinstance(review["reviewer_id"], str)
         or not 1 <= len(review["reviewer_id"].encode()) <= 1024
     ):
         raise ValueError("review query/frontier/basis mismatch")
-    observed_time(review["reviewed_at"])
+    if publisher:
+        # The original publication contains three anonymous votes but no
+        # reviewer identities or individual review timestamps. Never mint them.
+        if (
+            review["reviewed_at"] is not None
+            or review["reviewer_id"] != "eobqa:three-anonymous-published-votes"
+            or review["requirements"] != ["fact1", "fact2"]
+        ):
+            raise ValueError("unverifiable publisher review identity/time")
+    else:
+        observed_time(review["reviewed_at"])
     requirements = review["requirements"]
     if (
         not isinstance(requirements, list)
@@ -142,10 +159,16 @@ def conditions(case, review, *, revoked):
             digest(asdict(q)),
             case["frontier"],
             selected,
-            "reviewed_minimal" if omitted is None else "reviewed_omission",
+            ("publisher_claim_pair" if omitted is None else "publisher_claim_omission")
+            if publisher
+            else ("reviewed_minimal" if omitted is None else "reviewed_omission"),
         )
         bundle.validate(q, originals, frontier=case["frontier"], revoked=revoked)
-        name = "reviewed_minimal" if omitted is None else "reviewed_without_" + omitted
+        name = (
+            "publisher_claim_pair" if omitted is None else "publisher_claim_without_" + omitted
+        ) if publisher else (
+            "reviewed_minimal" if omitted is None else "reviewed_without_" + omitted
+        )
         result[name] = dict(
             bundle=asdict(bundle),
             bundle_digest=bundle.seal(),
@@ -153,7 +176,10 @@ def conditions(case, review, *, revoked):
             token_limit=4096,
             review_digest=digest(review),
             omitted_requirement=omitted,
-            oracle_kind="external_claim_not_authenticated_here",
+            oracle_kind=(
+                "published_three_votes_not_necessity_or_sufficiency_certification"
+                if publisher else "external_claim_not_authenticated_here"
+            ),
             independent_review=False,
             sufficient_context_certified=False,
             world_answerability_unchanged=True,
@@ -183,7 +209,9 @@ def augment(plan, package, *, revoked):
         production_accepted=False,
     )
     for case in result["cases"]:
-        if any(k.startswith("reviewed_") for k in case["conditions"]):
+        if "review_projection" in plan or any(
+            k.startswith(("reviewed_", "publisher_claim_")) for k in case["conditions"]
+        ):
             raise ValueError("cannot overwrite a previous review projection")
         review = package["reviews"].get(case["question"]["identity"])
         additions = (
