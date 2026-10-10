@@ -74,10 +74,11 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         &mut self,
         _cns_id: &str,
         _scope_digest: &str,
+        challenge_nonce: &str,
     ) -> Result<CellSplitCnsLiveRouteV1, Self::Error> {
         let observed = self.route();
         let signed = self.signer.sign(
-            &canonical_json(&observed).map_err(|e| e.to_string())?
+            &canonical_json(&(&observed, challenge_nonce)).map_err(|e| e.to_string())?
         );
         Ok(CellSplitCnsLiveRouteV1 {
             cns_id: observed.cns,
@@ -89,6 +90,7 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
             authority_epoch: observed.epoch,
             old_writer_fenced: observed.old_writer_fenced,
             unknown_effect_count: observed.unknown_effects,
+            challenge_nonce: challenge_nonce.to_owned(),
             live_runtime_proof_bytes: signed.to_bytes().to_vec(),
         })
     }
@@ -112,7 +114,7 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         let signature = Signature::from_slice(&state.live_runtime_proof_bytes)
             .map_err(|e| e.to_string())?;
         self.signer.verifying_key().verify_strict(
-            &canonical_json(&actual).map_err(|e| e.to_string())?,
+            &canonical_json(&(&actual, &state.challenge_nonce)).map_err(|e| e.to_string())?,
             &signature,
         ).map_err(|e| e.to_string())
     }
