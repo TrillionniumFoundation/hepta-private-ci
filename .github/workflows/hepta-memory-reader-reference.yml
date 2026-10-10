@@ -1,0 +1,110 @@
+name: MemoryCell fixed reader reference experiment
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reader_reference.py"
+      - "scripts/memory_cell/test_reader_reference.py"
+      - ".github/workflows/hepta-memory-reader-reference.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-reader-reference-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  format:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Keep repository formatting gate and concrete repair diagnostics
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          set +e
+          just fmt --check --base "$BASE" > /tmp/reference-format.log 2>&1
+          code=$?
+          set -e
+          cat /tmp/reference-format.log
+          if [ "$code" -ne 0 ]; then
+            just fmt --base "$BASE"
+            git diff -- scripts/memory_cell/reader_reference.py scripts/memory_cell/test_reader_reference.py .github/workflows/hepta-memory-reader-reference.yml | tee /tmp/reference-format.diff
+          fi
+          exit "$code"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-reference-format-diagnostics
+          path: /tmp/reference-format.*
+          if-no-files-found: warn
+  reader:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: [smol-1.7b, qwen-3b]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-audited-source-inputs
+          run-id: 38043602289
+          github-token: ${{ github.token }}
+          path: /tmp/reference-inputs
+      - name: Execute complete regression census in the frozen package environment
+        run: |
+          set -euo pipefail
+          mkdir /tmp/reference-result
+          python3 -m venv /tmp/reference-python
+          /tmp/reference-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/reference-python/bin/pip install -r /tmp/reference-inputs/environment.txt
+          /tmp/reference-python/bin/pip freeze > /tmp/reference-result/environment.txt
+          diff -u /tmp/reference-inputs/environment.txt /tmp/reference-result/environment.txt
+          /tmp/reference-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/reference-result/tests.log
+      - name: Stage exact public research model and validate publisher file identities
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/reference-result/staging-resources.txt /tmp/reference-python/bin/python scripts/memory_cell/reader_reference.py stage '${{ matrix.tier }}' /tmp/reference-model
+          cp /tmp/reference-model/inventory.json /tmp/reference-model/publisher.json /tmp/reference-model/stage.json /tmp/reference-result/
+          sha256sum /tmp/reference-model/stage.json > /tmp/reference-result/stage-pin.txt
+      - name: Run every frozen evidence condition offline without any optimizer
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/reference-result/inference-resources.txt /tmp/reference-python/bin/python scripts/memory_cell/reader_reference.py run /tmp/reference-inputs /tmp/reference-model /tmp/reference-result/run --stage-sha "$(cut -d ' ' -f1 /tmp/reference-result/stage-pin.txt)" 2>&1 | tee /tmp/reference-result/run.log
+          cat /tmp/reference-result/run/reference-report.json
+      - name: Preserve exact code, raw answers, costs and any failure
+        if: always()
+        run: |
+          mkdir -p /tmp/reference-result/source
+          cp scripts/memory_cell/reader_reference.py scripts/memory_cell/test_reader_reference.py scripts/memory_cell/reviewed*.py scripts/memory_cell/bundle_reader.py scripts/memory_cell/bundle_trial.py /tmp/reference-result/source/
+          git rev-parse HEAD > /tmp/reference-result/tested-commit.txt
+          (cd /tmp/reference-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-reader-reference-${{ matrix.tier }}
+          path: /tmp/reference-result
+          if-no-files-found: error
