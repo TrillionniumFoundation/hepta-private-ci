@@ -10,8 +10,16 @@
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt;
+use std::fs;
 use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::TryLockError;
 use std::io::Write;
+#[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+#[cfg(unix)]
+use std::os::unix::fs::OpenOptionsExt;
+use std::path::{Path, PathBuf};
 
 use codex_hepta_types::CellCachePolicyV1;
 use codex_hepta_types::CellInFlightPolicyV1;
@@ -143,6 +151,8 @@ pub enum CellStateMigrationErrorV1 {
     BatchCommitMismatch,
     UnsupportedPolicy(&'static str),
     Io(std::io::ErrorKind),
+    CasWriterBusy,
+    CasCorruption(&'static str),
 }
 
 impl fmt::Display for CellStateMigrationErrorV1 {
@@ -499,6 +509,218 @@ impl CellStateMigrationV1 {
     }
 }
 
+/// Exclusive local-disk owner for the actual child state CAS and batch commit.
+///
+/// The caller opens a trusted, existing private directory. Each child is
+/// written with create_new, file sync and parent-directory sync. Content hashes
+/// are verified on every retry, and a second independent writer cannot hold
+/// the same OS file lock. The commit marker is persisted after all child
+/// objects and is checked byte-for-byte on restart before acknowledgement.
+///
+/// This owner proves only local filesystem operations. It does not publish CNS
+/// routes, advance a Supervisor generation, sign independent host evidence,
+/// or certify a power-loss test.
+#[derive(Debug)]
+pub struct DurableCellStateCasDirectoryOwnerV1 {
+    root: PathBuf,
+    writer_lock: File,
+}
+
+impl DurableCellStateCasDirectoryOwnerV1 {
+    pub fn open(root: impl AsRef<Path>) -> Result<Self, CellStateMigrationErrorV1> {
+        let root = root.as_ref().canonicalize().map_err(cas_io)?;
+        if !root.is_dir() {
+            return Err(CellStateMigrationErrorV1::CasCorruption(
+                "CAS root is not a directory",
+            ));
+        }
+        #[cfg(unix)]
+        if fs::metadata(&root).map_err(cas_io)?.mode() & 0o077 != 0 {
+            return Err(CellStateMigrationErrorV1::CasCorruption(
+                "CAS root must be private",
+            ));
+        }
+        let lock_path = root.join(".hepta-cell-state-cas-owner.lock");
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true);
+        #[cfg(unix)]
+        options.mode(0o600);
+        let writer_lock = options.open(&lock_path).map_err(cas_io)?;
+        validate_private_cas_file(&lock_path)?;
+        match writer_lock.try_lock() {
+            Ok(()) => (),
+            Err(TryLockError::WouldBlock) => {
+                return Err(CellStateMigrationErrorV1::CasWriterBusy);
+            }
+            Err(TryLockError::Error(error)) => return Err(cas_io(error)),
+        }
+        // Persist any newly created lock entry before accepting operations.
+        File::open(&root)
+            .and_then(|directory| directory.sync_all())
+            .map_err(cas_io)?;
+        Ok(Self { root, writer_lock })
+    }
+
+    /// Publish only after each exact child payload and the batch marker has
+    /// been read, checked, synced, and parent-directory synced. A failed or
+    /// torn existing object is never overwritten, repaired or acknowledged.
+    /// A restarted caller reconstructs its migration from the original,
+    /// authenticated parent checkpoint and then safely calls this again.
+    pub fn persist_commit_and_acknowledge(
+        &mut self,
+        migration: &mut CellStateMigrationV1,
+    ) -> Result<CellStateMigrationReceiptV1, CellStateMigrationErrorV1> {
+        if migration.phase != CellStateMigrationPhaseV1::Prepared {
+            return Err(CellStateMigrationErrorV1::InvalidState);
+        }
+        let mut receipts = Vec::with_capacity(migration.children.len());
+        for child in &migration.children {
+            if !child.verify_digest()
+                || child.parent_checkpoint_digest != migration.parent_anchor.checkpoint_digest
+                || child.parent_cell_id != migration.parent_cell_id
+            {
+                return Err(CellStateMigrationErrorV1::ParentAnchorMismatch);
+            }
+            let bytes = encode_child_state(child);
+            let digest = Digest32::of_bytes(&bytes);
+            let path = self.root.join(format!("object-{digest}.q24"));
+            let mut options = OpenOptions::new();
+            options.read(true).write(true).create_new(true);
+            #[cfg(unix)]
+            options.mode(0o600);
+            let new_file = options.open(&path);
+            let receipt = match new_file {
+                Ok(file) => {
+                    // This performs a real write and file.sync_all.
+                    migration.persist_child_state(&child.child_cell_id, file)?
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                    // An earlier crashed writer may have committed the same CAS
+                    // object, but only independently checked bytes count.
+                    validate_private_cas_file(&path)?;
+                    let file = OpenOptions::new().read(true).open(&path).map_err(cas_io)?;
+                    file.sync_all().map_err(cas_io)?;
+                    let mut receipt = CellStateCasReceiptV1 {
+                        operation_id: migration.operation_id.clone(),
+                        child_cell_id: child.child_cell_id.clone(),
+                        parent_anchor: migration.parent_anchor,
+                        payload_digest: digest,
+                        encoded_size_bytes: bytes.len() as u64,
+                        fence_digest: migration.fence_digest,
+                        receipt_digest: Digest32::ZERO,
+                    };
+                    receipt.receipt_digest = receipt.content_digest();
+                    receipt
+                }
+                Err(error) => return Err(cas_io(error)),
+            };
+            validate_private_cas_file(&path)?;
+            if fs::read(&path).map_err(cas_io)? != bytes
+                || receipt.payload_digest != digest
+                || receipt.encoded_size_bytes != bytes.len() as u64
+                || receipt.receipt_digest != receipt.content_digest()
+            {
+                return Err(CellStateMigrationErrorV1::CasCorruption(
+                    "CAS object bytes or operation receipt do not match",
+                ));
+            }
+            self.sync_directory()?;
+            receipts.push(receipt);
+        }
+
+        let mut sorted = receipts
+            .iter()
+            .map(|receipt| receipt.receipt_digest)
+            .collect::<Vec<_>>();
+        sorted.sort_unstable();
+        let mut marker_bytes = b"hepta.neuron.cell-state-cas-durable-batch.v1\0".to_vec();
+        push_id(&mut marker_bytes, &migration.operation_id);
+        marker_bytes.extend_from_slice(migration.split_digest.as_array());
+        marker_bytes.extend_from_slice(&migration.parent_anchor.sequence.to_be_bytes());
+        marker_bytes.extend_from_slice(migration.parent_anchor.checkpoint_digest.as_array());
+        marker_bytes.extend_from_slice(migration.fence_digest.as_array());
+        marker_bytes.extend_from_slice(&(sorted.len() as u64).to_be_bytes());
+        for digest in &sorted {
+            marker_bytes.extend_from_slice(digest.as_array());
+        }
+
+        let commit_path = self
+            .root
+            .join(format!("commit-{}.ack", migration.fence_digest));
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create_new(true);
+        #[cfg(unix)]
+        options.mode(0o600);
+        match options.open(&commit_path) {
+            Ok(mut file) => {
+                file.write_all(&marker_bytes).map_err(cas_io)?;
+                file.sync_all().map_err(cas_io)?;
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+                validate_private_cas_file(&commit_path)?;
+                let file = OpenOptions::new()
+                    .read(true)
+                    .open(&commit_path)
+                    .map_err(cas_io)?;
+                file.sync_all().map_err(cas_io)?;
+            }
+            Err(error) => return Err(cas_io(error)),
+        };
+        validate_private_cas_file(&commit_path)?;
+        let observed_marker = fs::read(&commit_path).map_err(cas_io)?;
+        if observed_marker != marker_bytes {
+            return Err(CellStateMigrationErrorV1::CasCorruption(
+                "batch commit marker does not match source migration",
+            ));
+        }
+        self.sync_directory()?;
+        // The witness digest now names the on-disk, directory-synced batch
+        // marker, not an asserted or caller-provided hash.
+        let witness = Digest32::of_bytes(&observed_marker);
+        migration.record_payloads_durable(receipts)?;
+        migration.commit_children(CellStateBatchReceiptV1::new(
+            migration.operation_id.clone(),
+            migration.parent_anchor,
+            migration.fence_digest,
+            sorted,
+            witness,
+        ))?;
+        migration.acknowledge()
+    }
+
+    fn sync_directory(&self) -> Result<(), CellStateMigrationErrorV1> {
+        File::open(&self.root)
+            .and_then(|directory| directory.sync_all())
+            .map_err(cas_io)
+    }
+}
+
+impl Drop for DurableCellStateCasDirectoryOwnerV1 {
+    fn drop(&mut self) {
+        let _ = self.writer_lock.unlock();
+    }
+}
+
+fn validate_private_cas_file(path: &Path) -> Result<(), CellStateMigrationErrorV1> {
+    let metadata = fs::symlink_metadata(path).map_err(cas_io)?;
+    if !metadata.file_type().is_file() {
+        return Err(CellStateMigrationErrorV1::CasCorruption(
+            "CAS file is not a regular file",
+        ));
+    }
+    #[cfg(unix)]
+    if metadata.mode() & 0o077 != 0 || metadata.nlink() != 1 {
+        return Err(CellStateMigrationErrorV1::CasCorruption(
+            "CAS file permissions or link count are unsafe",
+        ));
+    }
+    Ok(())
+}
+
+fn cas_io(error: std::io::Error) -> CellStateMigrationErrorV1 {
+    CellStateMigrationErrorV1::Io(error.kind())
+}
+
 #[must_use]
 pub fn encode_cell_state_v1(child: &CellStateSplitChildV1) -> Vec<u8> {
     encode_child_state(child)
@@ -608,4 +830,180 @@ fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
     let raw = id.as_str().as_bytes();
     bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
     bytes.extend_from_slice(raw);
+}
+
+#[cfg(test)]
+mod durable_cas_tests {
+    use super::*;
+    use crate::SparseConfig;
+    use crate::SparseTick;
+    use crate::sparse_tick;
+    use codex_hepta_types::Generation;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    static SERIAL: AtomicU64 = AtomicU64::new(0);
+    const Q: i64 = 1 << 24;
+
+    struct TempRoot(PathBuf);
+
+    impl TempRoot {
+        fn new() -> Self {
+            let id = SERIAL.fetch_add(1, Ordering::Relaxed);
+            let root = std::env::temp_dir()
+                .join(format!("hepta-child-state-cas-{}-{id}", std::process::id()));
+            fs::create_dir(&root).expect("create private fixture root");
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                fs::set_permissions(&root, fs::Permissions::from_mode(0o700))
+                    .expect("private fixture root");
+            }
+            Self(root)
+        }
+    }
+
+    impl Drop for TempRoot {
+        fn drop(&mut self) {
+            let _ = fs::remove_dir_all(&self.0);
+        }
+    }
+
+    fn id(name: &str) -> StableId {
+        StableId::new(name).expect("valid identity")
+    }
+
+    fn migration() -> CellStateMigrationV1 {
+        let model = Digest32::of_bytes(b"model");
+        let config = SparseConfig {
+            model_digest: model,
+            normalization_digest: Digest32::of_bytes(b"normalization"),
+            generation: Generation::new(1).unwrap(),
+            width: 2,
+            top_k: 1,
+            temporal_decay_q24: Q / 2,
+            inhibition_gain_q24: Q,
+            inhibition: Vec::new(),
+            activity_decay_q24: Q / 2,
+            target_activity_q24: Q / 4,
+            threshold_rate_q24: Q / 8,
+            threshold_min_q24: -Q,
+            threshold_max_q24: Q,
+            eligibility_decay_q24: Q / 2,
+        };
+        let tick = SparseTick {
+            scope_digest: Digest32::of_bytes(b"parent-scope"),
+            objective_digest: Digest32::of_bytes(b"objective"),
+            ndu_digest: Digest32::of_bytes(b"ndu"),
+            body_digest: Digest32::of_bytes(b"body"),
+            input_digest: Digest32::of_bytes(b"input"),
+            sequence: 1,
+            monotonic_micros: 10,
+            drive_q24: vec![Q, Q / 2],
+            prediction_q24: vec![0, 0],
+        };
+        let checkpoint = sparse_tick(&config, &tick, None).unwrap().0;
+        let plan = CellStateSplitPlanV1::new(
+            id("cell.parent"),
+            vec![id("cell.child.a"), id("cell.child.b")],
+            vec![
+                Digest32::of_bytes(b"child-scope-a"),
+                Digest32::of_bytes(b"child-scope-b"),
+            ],
+            Generation::new(1).unwrap(),
+            Generation::new(2).unwrap(),
+            vec![vec![0], vec![1]],
+            vec![vec![0], vec![1]],
+        )
+        .unwrap();
+        let children = checkpoint.split_state_v1(&plan).unwrap();
+        assert!(children.iter().all(CellStateSplitChildV1::verify_digest));
+        let parent_anchor = JournalAnchor {
+            sequence: checkpoint.sequence(),
+            checkpoint_digest: checkpoint.digest(),
+        };
+        let operation_id = id("migration.operation");
+        let split_digest = Digest32::of_bytes(b"frozen-split");
+        CellStateMigrationV1 {
+            fence_digest: digest_fence(&operation_id, split_digest, parent_anchor),
+            operation_id,
+            split_digest,
+            parent_anchor,
+            parent_cell_id: id("cell.parent"),
+            optimizer_policy: CellStateTransformKindV1::Reset,
+            cache_policy: CellCachePolicyV1::Revalidate,
+            in_flight_policy: CellInFlightPolicyV1::Drain,
+            children,
+            payload_receipts: BTreeMap::new(),
+            batch_receipt: None,
+            phase: CellStateMigrationPhaseV1::Prepared,
+        }
+    }
+
+    #[test]
+    fn actual_child_cas_and_batch_marker_survive_owner_reopen() {
+        let root = TempRoot::new();
+        let mut first = migration();
+        let receipt = {
+            let mut owner = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+            let observed = owner.persist_commit_and_acknowledge(&mut first).unwrap();
+            assert!(first.parent_retirement_is_fenced());
+            assert_eq!(observed.phase, CellStateMigrationPhaseV1::Acknowledged);
+            observed
+        };
+        let mut replay = migration();
+        let mut reopened = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+        assert_eq!(
+            reopened
+                .persist_commit_and_acknowledge(&mut replay)
+                .unwrap(),
+            receipt
+        );
+        assert_eq!(replay.phase(), CellStateMigrationPhaseV1::Acknowledged);
+    }
+
+    #[test]
+    fn concurrent_writer_and_changed_cas_payload_are_rejected() {
+        let root = TempRoot::new();
+        let mut first = migration();
+        let owner = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+        assert!(matches!(
+            DurableCellStateCasDirectoryOwnerV1::open(&root.0),
+            Err(CellStateMigrationErrorV1::CasWriterBusy)
+        ));
+        let mut owner = owner;
+        owner.persist_commit_and_acknowledge(&mut first).unwrap();
+        drop(owner);
+        let child = &first.children[0];
+        let object = root.0.join(format!(
+            "object-{}.q24",
+            CellStateMigrationV1::child_payload_digest(child)
+        ));
+        fs::write(object, b"forged payload after commit").unwrap();
+        let mut next = migration();
+        let mut reopened = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+        assert!(matches!(
+            reopened.persist_commit_and_acknowledge(&mut next),
+            Err(CellStateMigrationErrorV1::CasCorruption(_))
+        ));
+        assert_eq!(next.phase(), CellStateMigrationPhaseV1::Prepared);
+    }
+
+    #[test]
+    fn torn_batch_marker_is_not_repaired_or_acknowledged() {
+        let root = TempRoot::new();
+        let mut first = migration();
+        {
+            let mut owner = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+            owner.persist_commit_and_acknowledge(&mut first).unwrap();
+        }
+        let marker = root.0.join(format!("commit-{}.ack", first.fence_digest()));
+        fs::write(marker, b"torn batch").unwrap();
+        let mut replay = migration();
+        let mut owner = DurableCellStateCasDirectoryOwnerV1::open(&root.0).unwrap();
+        assert!(matches!(
+            owner.persist_commit_and_acknowledge(&mut replay),
+            Err(CellStateMigrationErrorV1::CasCorruption(_))
+        ));
+        assert_eq!(replay.phase(), CellStateMigrationPhaseV1::Prepared);
+    }
 }

@@ -1335,6 +1335,17 @@ pub trait CellSplitAutomationExecutorV1 {
 
     fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error>;
 
+    /// Read-only lookup of the terminal receipt of a previously dispatched
+    /// canary. A journal in CanaryRunning never dispatches its canary again:
+    /// the provider might have finished immediately before a process crash.
+    /// None leaves the durable frontier unchanged for external reconciliation.
+    fn observe_canary(
+        &mut self,
+        _split: &CellSplitV1,
+    ) -> Result<Option<CellSplitCanaryReceiptV1>, Self::Error> {
+        Ok(None)
+    }
+
     /// Read-only reconciliation with the authoritative durable tombstone
     /// owner. This must not dispatch, retry or infer a successful effect.
     /// None means the last known Retained state cannot advance safely.
@@ -1418,28 +1429,60 @@ where
         return Ok(outcome(&journal, proposal));
     }
 
-    let evaluation = match executor.evaluate(split) {
-        Ok(receipt) => receipt,
-        Err(error) => {
-            journal.quarantine(error_digest("evaluation", &error))?;
-            owner.commit(&journal)?;
-            return Ok(outcome(&journal, proposal));
+    // The durable frontier is authoritative. An accepted evaluation must not
+    // be evaluated again, and an in-flight canary must never be re-dispatched
+    // after a crash: it could already have executed on the target host.
+    let canary = if journal.current_state == CellSplitLifecycleStateV1::CanaryRunning {
+        match executor
+            .observe_canary(split)
+            .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?
+        {
+            Some(receipt) => receipt,
+            None => return Ok(outcome(&journal, proposal)),
         }
-    };
-    journal.apply_evaluation(split, &evaluation)?;
-    owner.commit(&journal)?;
-    if !crate::cell_split_evaluation::disposition_allows_canary(&evaluation) {
-        return Ok(outcome(&journal, proposal));
-    }
-
-    journal.begin_canary(evaluation.binding().evaluation_receipt_digest)?;
-    owner.commit(&journal)?;
-    let canary = match executor.canary(split) {
-        Ok(receipt) => receipt,
-        Err(error) => {
-            journal.quarantine(error_digest("canary", &error))?;
+    } else {
+        if journal.current_state == CellSplitLifecycleStateV1::EvaluationPending {
+            let evaluation = match executor.evaluate(split) {
+                Ok(receipt) => receipt,
+                Err(error) => {
+                    journal.quarantine(error_digest("evaluation", &error))?;
+                    owner.commit(&journal)?;
+                    return Ok(outcome(&journal, proposal));
+                }
+            };
+            journal.apply_evaluation(split, &evaluation)?;
             owner.commit(&journal)?;
-            return Ok(outcome(&journal, proposal));
+            if !crate::cell_split_evaluation::disposition_allows_canary(&evaluation) {
+                return Ok(outcome(&journal, proposal));
+            }
+        }
+        if journal.current_state != CellSplitLifecycleStateV1::EvaluationAccepted {
+            return Err(CellSplitAutomationErrorV1::Binding(
+                "unexpected durable evaluation frontier",
+            ));
+        }
+        // This digest was checked against the independently evaluated split
+        // before EvaluationAccepted was durably published.
+        let accepted_event = journal.events.last().ok_or(
+            CellSplitAutomationErrorV1::Binding("missing evaluation event"),
+        )?;
+        if accepted_event.to != CellSplitLifecycleStateV1::EvaluationAccepted {
+            return Err(CellSplitAutomationErrorV1::Binding(
+                "evaluation frontier event",
+            ));
+        }
+        journal.begin_canary(accepted_event.evidence_digest)?;
+        owner.commit(&journal)?;
+        match executor.canary(split) {
+            Ok(receipt) => receipt,
+            Err(error) => {
+                // A failing RPC can still have committed the remote effect.
+                // Preserve CanaryRunning, requiring observe_canary on restart;
+                // do not invent a rollback or quarantine receipt.
+                return Err(CellSplitAutomationErrorV1::Executor(format!(
+                    "canary outcome requires reconciliation: {error}"
+                )));
+            }
         }
     };
     journal.finish_canary(&canary)?;
@@ -2088,6 +2131,149 @@ mod tests {
             .expect("automation");
         assert_eq!(outcome.state, CellSplitLifecycleStateV1::Quarantined);
         assert!(!executor.retired);
+    }
+
+    struct RecoveringCanaryExecutor {
+        observed: Option<CellSplitCanaryReceiptV1>,
+        allow_dispatch: bool,
+        dispatch_fails: bool,
+        canary_calls: usize,
+    }
+
+    impl CellSplitAutomationExecutorV1 for RecoveringCanaryExecutor {
+        type Error = &'static str;
+
+        fn evaluate(
+            &mut self,
+            _split: &CellSplitV1,
+        ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+            panic!("recovery must not re-evaluate an accepted proposal")
+        }
+
+        fn canary(&mut self, split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            assert!(self.allow_dispatch, "in-flight canary must not be dispatched twice");
+            self.canary_calls += 1;
+            if self.dispatch_fails {
+                return Err("remote result unknown");
+            }
+            self.receipt(split).ok_or("missing canary receipt")
+        }
+
+        fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+            Ok(split.retirement.tombstone_digest)
+        }
+
+        fn observe_canary(
+            &mut self,
+            _split: &CellSplitV1,
+        ) -> Result<Option<CellSplitCanaryReceiptV1>, Self::Error> {
+            Ok(self.observed.clone())
+        }
+    }
+
+    impl RecoveringCanaryExecutor {
+        fn receipt(&self, split: &CellSplitV1) -> Option<CellSplitCanaryReceiptV1> {
+            CellSplitCanaryReceiptV1::new(
+                split.split_id.clone(),
+                split.successor_generation,
+                digest(31),
+                digest(32),
+                digest(33),
+                10,
+                0,
+                true,
+            )
+            .ok()
+        }
+    }
+
+    fn accepted_journal(
+        split: &CellSplitV1,
+        proposal: &CellSplitProposalReceiptV1,
+    ) -> CellSplitLifecycleJournalV1 {
+        let mut journal = CellSplitLifecycleJournalV1::proposed(split).unwrap();
+        journal.record_proposal(proposal.proposal_digest).unwrap();
+        let evaluation = crate::cell_split_evaluation::test_receipt_for_lifecycle(
+            split,
+            CellSplitEvaluationDispositionV1::EligibleForCanary,
+        );
+        journal.apply_evaluation(split, &evaluation).unwrap();
+        journal
+    }
+
+    #[test]
+    fn accepted_evaluation_resumes_at_canary_without_evaluator_reentry() {
+        let split = split();
+        let proposal = proposal(&split);
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        owner.commit(&accepted_journal(&split, &proposal)).unwrap();
+        let mut executor = RecoveringCanaryExecutor {
+            observed: None,
+            allow_dispatch: true,
+            dispatch_fails: false,
+            canary_calls: 0,
+        };
+        let outcome =
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor).unwrap();
+        assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
+        assert_eq!(executor.canary_calls, 1);
+    }
+
+    #[test]
+    fn reopened_running_canary_is_observation_only_and_fail_closed() {
+        let split = split();
+        let proposal = proposal(&split);
+        let mut journal = accepted_journal(&split, &proposal);
+        journal
+            .begin_canary(journal.events.last().unwrap().evidence_digest)
+            .unwrap();
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        owner.commit(&journal).unwrap();
+        let mut executor = RecoveringCanaryExecutor {
+            observed: None,
+            allow_dispatch: false,
+            dispatch_fails: false,
+            canary_calls: 0,
+        };
+        let pending =
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor).unwrap();
+        assert_eq!(pending.state, CellSplitLifecycleStateV1::CanaryRunning);
+        assert_eq!(owner.load(&split.split_id).unwrap().unwrap(), journal);
+        executor.observed = executor.receipt(&split);
+        let recovered =
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor).unwrap();
+        assert_eq!(recovered.state, CellSplitLifecycleStateV1::Retired);
+        assert_eq!(executor.canary_calls, 0);
+    }
+
+    #[test]
+    fn ambiguous_canary_failure_does_not_fabricate_quarantine_or_retry() {
+        let split = split();
+        let proposal = proposal(&split);
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        owner.commit(&accepted_journal(&split, &proposal)).unwrap();
+        let mut executor = RecoveringCanaryExecutor {
+            observed: None,
+            allow_dispatch: true,
+            dispatch_fails: true,
+            canary_calls: 0,
+        };
+        assert!(matches!(
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor),
+            Err(CellSplitAutomationErrorV1::Executor(message))
+                if message.contains("requires reconciliation")
+        ));
+        let frontier = owner.load(&split.split_id).unwrap().unwrap();
+        assert_eq!(frontier.current_state, CellSplitLifecycleStateV1::CanaryRunning);
+        executor.allow_dispatch = false;
+        executor.observed = executor.receipt(&split);
+        assert_eq!(
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor)
+                .unwrap()
+                .state,
+            CellSplitLifecycleStateV1::Retired
+        );
+        assert_eq!(executor.canary_calls, 1);
     }
 
     #[test]

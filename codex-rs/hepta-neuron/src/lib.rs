@@ -46,6 +46,7 @@ pub use cell_state_migration::CellStateMigrationErrorV1;
 pub use cell_state_migration::CellStateMigrationPhaseV1;
 pub use cell_state_migration::CellStateMigrationReceiptV1;
 pub use cell_state_migration::CellStateMigrationV1;
+pub use cell_state_migration::DurableCellStateCasDirectoryOwnerV1;
 pub use cell_state_migration::encode_cell_state_v1;
 pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;

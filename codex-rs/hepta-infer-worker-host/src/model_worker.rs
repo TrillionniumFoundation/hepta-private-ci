@@ -174,6 +174,9 @@ pub struct InferenceWorker<D: ModelDriver> {
     grant: ResourceGrant,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
+    // Validated digest -> exact handle identity. O(log n) admission lookup;
+    // no digest alias may reference another model handle.
+    model_digests: BTreeMap<Digest32, String>,
     active_requests: BTreeMap<String, String>,
 }
 
@@ -196,6 +199,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             grant,
             driver,
             models: BTreeMap::new(),
+            model_digests: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
     }
@@ -214,9 +218,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     /// Admit only the currently loaded, exact model identity for this digest.
     pub(crate) fn model_matches_digest(&self, model_id: &str, digest: Digest32) -> bool {
-        self.models.get(model_id).is_some_and(|model| {
-            Digest32::from_str(&model.manifest.model_digest).ok() == Some(digest)
-        })
+        self.model_digests
+            .get(&digest)
+            .is_some_and(|loaded_id| loaded_id == model_id)
+            && self.models.contains_key(model_id)
     }
 
     pub fn load_model(
@@ -226,14 +231,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
+        let digest =
+            Digest32::from_str(&manifest.model_digest).map_err(|_| Error::InvalidManifest)?;
         // One model digest maps to exactly one live handle per worker.
         // Physical batching relies on this invariant and cannot safely
         // coalesce distinct model handles merely because digests match.
-        if self.models.contains_key(&manifest.model_id)
-            || self
-                .models
-                .values()
-                .any(|loaded| loaded.manifest.model_digest == manifest.model_digest)
+        if self.models.contains_key(&manifest.model_id) || self.model_digests.contains_key(&digest)
         {
             return Err(Error::ModelAlreadyLoaded);
         }
@@ -254,6 +257,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             observed_memory_bytes: handle.observed_memory_bytes,
             terminal_observed: true,
         };
+        self.model_digests.insert(digest, manifest.model_id.clone());
         self.models.insert(
             manifest.model_id.clone(),
             LoadedModel {
@@ -370,8 +374,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        // The driver may fail (or report an ambiguous external outcome).
+        // Keep the old handle and secondary index reserved until unload is
+        // confirmed; otherwise an alias could load while the old handle lives.
+        let handle = loaded.handle.clone();
+        let digest = Digest32::from_str(&loaded.manifest.model_digest)
+            .map_err(|_| Error::InvalidManifest)?;
+        self.driver.unload(handle)?;
+        self.models.remove(model_id);
+        self.model_digests.remove(&digest);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -544,11 +555,24 @@ pub trait NeuronFeatureDriver: ModelDriver {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    #[cfg(test)]
     pub(crate) fn run_neuron_features(
         &mut self,
         now_ms: u64,
         model_id: &str,
         request: NeuronFeatureRequest,
+    ) -> Result<NeuronFeatureExecutionObservation, Error> {
+        self.run_neuron_features_borrowed(now_ms, model_id, &request)
+    }
+
+    /// Retain only a borrowed view of the source feature vector during
+    /// physical execution. The final typed receipt consumes the original Vec
+    /// without cloning/re-materializing its Q24 payload.
+    fn run_neuron_features_borrowed(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: &NeuronFeatureRequest,
     ) -> Result<NeuronFeatureExecutionObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
@@ -579,13 +603,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         }
         if request.authorization.cancelled {
             return Ok(NeuronFeatureExecutionObservation {
-                request_id: request.authorization.request_id,
-                reservation_id: request.authorization.reservation_id,
+                request_id: request.authorization.request_id.clone(),
+                reservation_id: request.authorization.reservation_id.clone(),
                 worker_generation: self.generation,
                 manifest: loaded.manifest.clone(),
-                encoder_digest: request.encoder_digest,
-                head_digest: request.head_digest,
-                input_digest: request.input_digest,
+                encoder_digest: request.encoder_digest.clone(),
+                head_digest: request.head_digest.clone(),
+                input_digest: request.input_digest.clone(),
                 status: ExecutionStatus::Cancelled,
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
@@ -622,13 +646,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             ExecutionStatus::Failed
         };
         Ok(NeuronFeatureExecutionObservation {
-            request_id: request.authorization.request_id,
-            reservation_id: request.authorization.reservation_id,
+            request_id: request.authorization.request_id.clone(),
+            reservation_id: request.authorization.reservation_id.clone(),
             worker_generation: self.generation,
             manifest: loaded.manifest.clone(),
             encoder_digest: observed.encoder_digest,
             head_digest: observed.head_digest,
-            input_digest: request.input_digest,
+            input_digest: request.input_digest.clone(),
             status,
             drive_q24: observed.drive_q24,
             prediction_q24: observed.prediction_q24,
@@ -650,9 +674,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
-        let request_copy = request.clone();
-        let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        feature_receipt_from_observation(request_copy, observed)
+        let observed = self.run_neuron_features_borrowed(now_ms, model_id, &request)?;
+        feature_receipt_from_observation(request, observed)
     }
 
     /// No sequential fallback: a multi-request group must be handled by a

@@ -5,6 +5,7 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    fail_unload: bool,
     loaded: usize,
 }
 
@@ -41,6 +42,9 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unload completion unknown".into()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -148,6 +152,44 @@ fn duplicate_model_digest_cannot_create_alias_to_another_live_handle() {
         "another-model-id",
         Digest32::from_str(&manifest().model_digest).unwrap()
     ));
+}
+
+#[test]
+fn rejected_unload_keeps_exact_digest_reserved_for_recovery() {
+    let driver = Driver {
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut worker = InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    assert!(matches!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::DriverFailure(_))
+    ));
+    assert!(worker.model_matches_digest(
+        "model.1",
+        Digest32::from_str(&manifest().model_digest).unwrap()
+    ));
+    let mut alias = manifest();
+    alias.model_id = "alias.after.unknown.unload".into();
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
+}
+
+#[test]
+fn completed_unload_frees_secondary_index_for_same_digest_new_identity() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default()).unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    worker.unload_model(100, "model.1").unwrap();
+    let mut replacement = manifest();
+    replacement.model_id = "successor.model".into();
+    worker.load_model(100, replacement).unwrap();
+    let digest = Digest32::from_str(&manifest().model_digest).unwrap();
+    assert!(!worker.model_matches_digest("model.1", digest));
+    assert!(worker.model_matches_digest("successor.model", digest));
 }
 
 #[test]
