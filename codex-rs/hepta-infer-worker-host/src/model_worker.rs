@@ -830,14 +830,27 @@ fn parse_digest32(value: &str) -> Result<Digest32, Error> {
 }
 
 pub fn canonical_neuron_feature_payload_digest(request: &NeuronFeatureRequest) -> String {
+    canonical_neuron_feature_payload_digest_with_features(
+        request,
+        &request.feature_vector_q24,
+    )
+}
+
+/// Hash the exact feature bytes through a borrowed immutable slice. This is
+/// identical to the public wire digest without materializing a second Vec
+/// when the scheduler owns an Arc-backed shared feature buffer.
+pub(crate) fn canonical_neuron_feature_payload_digest_with_features(
+    request: &NeuronFeatureRequest,
+    features: &[i64],
+) -> String {
     let mut bytes = b"hepta.infer-worker.neuron-feature-request.v1".to_vec();
     bytes.extend_from_slice(request.authorization.model_digest.as_bytes());
     bytes.extend_from_slice(request.encoder_digest.as_bytes());
     bytes.extend_from_slice(request.head_digest.as_bytes());
     bytes.extend_from_slice(request.weights_digest.as_bytes());
     bytes.extend_from_slice(request.input_digest.as_bytes());
-    bytes.extend_from_slice(&(request.feature_vector_q24.len() as u64).to_be_bytes());
-    for value in &request.feature_vector_q24 {
+    bytes.extend_from_slice(&(features.len() as u64).to_be_bytes());
+    for value in features {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
     bytes.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());

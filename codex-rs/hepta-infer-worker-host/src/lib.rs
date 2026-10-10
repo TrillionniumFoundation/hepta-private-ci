@@ -13,7 +13,9 @@ pub mod cpu_neuron_backend;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+#[cfg(feature = "native-app-server")]
 pub mod final_use_authorizer;
+#[cfg(feature = "native-app-server")]
 pub mod native_app_server;
 
 use std::error::Error as StdError;

@@ -110,7 +110,7 @@ pub enum CellSplitLifecycleStateV1 {
 }
 
 impl CellSplitLifecycleStateV1 {
-    const fn tag(self) -> u8 {
+    pub(crate) const fn tag(self) -> u8 {
         match self {
             Self::Proposed => 0,
             Self::EvaluationPending => 1,
@@ -121,6 +121,20 @@ impl CellSplitLifecycleStateV1 {
             Self::Retired => 6,
             Self::RolledBack => 7,
         }
+    }
+
+    pub(crate) const fn from_tag(tag: u8) -> Option<Self> {
+        Some(match tag {
+            0 => Self::Proposed,
+            1 => Self::EvaluationPending,
+            2 => Self::EvaluationAccepted,
+            3 => Self::CanaryRunning,
+            4 => Self::Retained,
+            5 => Self::Quarantined,
+            6 => Self::Retired,
+            7 => Self::RolledBack,
+            _ => return None,
+        })
     }
 }
 
@@ -284,6 +298,81 @@ impl CellSplitLifecycleJournalV1 {
         )
     }
 
+    /// Durable write-ahead evidence before invoking an external retirement
+    /// effect. This is a non-terminal Retained -> Retained event and preserves
+    /// V1 TaskFlow wire tags. Reopening a pending journal requires independent
+    /// reconciliation rather than another invocation of the retirement effect.
+    pub fn prepare_retirement(
+        &mut self,
+        split: &CellSplitV1,
+    ) -> Result<(), CellSplitLifecycleErrorV1> {
+        if split.split_id != self.split_id
+            || split.retirement.disposition != CellParentDispositionV1::Retire
+            || self.current_state != CellSplitLifecycleStateV1::Retained
+            || self.retirement_pending()
+        {
+            return Err(CellSplitLifecycleErrorV1::InvalidTransition);
+        }
+        let mut bytes = b"hepta.learning.cell-split.retirement-intent.v1".to_vec();
+        push_id(&mut bytes, &split.split_id);
+        bytes.extend_from_slice(&split.successor_generation.get().to_be_bytes());
+        for digest in [
+            split.retirement.tombstone_digest,
+            split.retirement.drain_watermark_digest,
+            split.retirement.deletion_lineage_digest,
+            split.retirement.rollback_digest,
+        ] {
+            if digest.is_zero() {
+                return Err(CellSplitLifecycleErrorV1::InvalidEvidence);
+            }
+            bytes.extend_from_slice(digest.as_array());
+        }
+        self.transition(CellSplitLifecycleStateV1::Retained, Digest32::of_bytes(&bytes))
+    }
+
+    pub fn retirement_pending(&self) -> bool {
+        self.current_state == CellSplitLifecycleStateV1::Retained
+            && self.events.last().is_some_and(|event| {
+                event.from == CellSplitLifecycleStateV1::Retained
+                    && event.to == CellSplitLifecycleStateV1::Retained
+            })
+    }
+
+    /// Record a *separately observed* retirement receipt, not merely the
+    /// planned tombstone digest. The lifecycle event commits the split identity,
+    /// successor generation, drain/deletion/rollback plan and actual receipt.
+    /// The external owner must verify the receipt's signer and the live CNS
+    /// old-route fence before invoking this pure state transition.
+    pub fn retire_with_execution_receipt(
+        &mut self,
+        split: &CellSplitV1,
+        execution_receipt_digest: Digest32,
+    ) -> Result<(), CellSplitLifecycleErrorV1> {
+        if split.split_id != self.split_id
+            || split.retirement.disposition != CellParentDispositionV1::Retire
+            || execution_receipt_digest.is_zero()
+            || !self.retirement_pending()
+        {
+            return Err(CellSplitLifecycleErrorV1::InvalidEvidence);
+        }
+        let mut bytes = b"hepta.learning.cell-split.retirement-execution.v1".to_vec();
+        push_id(&mut bytes, &split.split_id);
+        bytes.extend_from_slice(&split.successor_generation.get().to_be_bytes());
+        for digest in [
+            split.retirement.tombstone_digest,
+            split.retirement.drain_watermark_digest,
+            split.retirement.deletion_lineage_digest,
+            split.retirement.rollback_digest,
+            execution_receipt_digest,
+        ] {
+            if digest.is_zero() {
+                return Err(CellSplitLifecycleErrorV1::InvalidEvidence);
+            }
+            bytes.extend_from_slice(digest.as_array());
+        }
+        self.transition(CellSplitLifecycleStateV1::Retired, Digest32::of_bytes(&bytes))
+    }
+
     pub fn rollback(
         &mut self,
         split: &CellSplitV1,
@@ -410,6 +499,9 @@ fn valid_transition(from: CellSplitLifecycleStateV1, to: CellSplitLifecycleState
         ) | (
             CellSplitLifecycleStateV1::CanaryRunning,
             CellSplitLifecycleStateV1::RolledBack
+        ) | (
+            CellSplitLifecycleStateV1::Retained,
+            CellSplitLifecycleStateV1::Retained
         ) | (
             CellSplitLifecycleStateV1::Retained,
             CellSplitLifecycleStateV1::Retired

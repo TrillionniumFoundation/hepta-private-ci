@@ -18,6 +18,14 @@ pub const MAX_SCHEDULER_PENDING: usize = 16_384;
 pub const MAX_MICROBATCH_SIZE: usize = 256;
 pub const MAX_LANES_SCANNED_PER_POLL: usize = 64;
 
+/// Physical compatibility is an indexing hint, never an authorization key.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct PhysicalBatchKeyV1 {
+    model_digest: Digest32,
+    generation: Generation,
+    authority_epoch: u64,
+}
+
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct MicrobatchKeyV1 {
     pub scope_id: StableId,
@@ -28,6 +36,14 @@ pub struct MicrobatchKeyV1 {
 }
 
 impl MicrobatchKeyV1 {
+    fn physical_key(&self) -> PhysicalBatchKeyV1 {
+        PhysicalBatchKeyV1 {
+            model_digest: self.model_digest,
+            generation: self.generation,
+            authority_epoch: self.authority_epoch,
+        }
+    }
+
     /// Physical batch compatibility is weaker than authorization identity.
     /// Full scope/fence binding stays with each intent and is verified again
     /// by the final-use owner; only the model, worker generation and epoch
@@ -117,7 +133,14 @@ struct QueuedIntent {
 pub struct BoundedMicrobatchSchedulerV1 {
     limits: MicrobatchLimitsV1,
     lanes: BTreeMap<MicrobatchKeyV1, VecDeque<QueuedIntent>>,
-    round_robin: VecDeque<MicrobatchKeyV1>,
+    /// Monotonic insertion tickets implement fair round-robin without linear
+    /// deletion or leftover tombstones when a physical batch drains a lane.
+    round_robin: BTreeMap<u128, MicrobatchKeyV1>,
+    lane_tickets: BTreeMap<MicrobatchKeyV1, u128>,
+    next_ticket: u128,
+    /// Group only genuinely compatible physical batches, without scanning
+    /// unrelated scope lanes on every poll.
+    physical_lanes: BTreeMap<PhysicalBatchKeyV1, BTreeSet<MicrobatchKeyV1>>,
     queued_ids: BTreeSet<StableId>,
     last_now_ms: Option<u64>,
 }
@@ -127,7 +150,10 @@ impl BoundedMicrobatchSchedulerV1 {
         Ok(Self {
             limits: limits.validate()?,
             lanes: BTreeMap::new(),
-            round_robin: VecDeque::new(),
+            round_robin: BTreeMap::new(),
+            lane_tickets: BTreeMap::new(),
+            next_ticket: 0,
+            physical_lanes: BTreeMap::new(),
             queued_ids: BTreeSet::new(),
             last_now_ms: None,
         })
@@ -139,6 +165,49 @@ impl BoundedMicrobatchSchedulerV1 {
 
     pub fn active_lanes(&self) -> usize {
         self.lanes.len()
+    }
+
+    fn remove_physical_lane(&mut self, key: &MicrobatchKeyV1) {
+        let group_key = key.physical_key();
+        let remove_group = if let Some(group) = self.physical_lanes.get_mut(&group_key) {
+            group.remove(key);
+            group.is_empty()
+        } else {
+            false
+        };
+        if remove_group {
+            self.physical_lanes.remove(&group_key);
+        }
+    }
+
+    fn schedule_lane(&mut self, key: MicrobatchKeyV1) {
+        if self.lane_tickets.contains_key(&key) {
+            return;
+        }
+        if self.next_ticket == u128::MAX {
+            // Extremely rare counter rollover: retain FIFO order, without
+            // reintroducing a hot-path O(n) removal on physical coalescing.
+            let mut reordered = BTreeMap::new();
+            let mut indexes = BTreeMap::new();
+            for (order, (_, existing)) in self.round_robin.iter().enumerate() {
+                let ticket = order as u128;
+                reordered.insert(ticket, existing.clone());
+                indexes.insert(existing.clone(), ticket);
+            }
+            self.next_ticket = reordered.len() as u128;
+            self.round_robin = reordered;
+            self.lane_tickets = indexes;
+        }
+        let ticket = self.next_ticket;
+        self.next_ticket += 1;
+        self.lane_tickets.insert(key.clone(), ticket);
+        self.round_robin.insert(ticket, key);
+    }
+
+    fn deschedule_lane(&mut self, key: &MicrobatchKeyV1) {
+        if let Some(ticket) = self.lane_tickets.remove(key) {
+            self.round_robin.remove(&ticket);
+        }
     }
 
     fn clock(&mut self, now_ms: u64) -> Result<(), SchedulerErrorV1> {
@@ -187,7 +256,11 @@ impl BoundedMicrobatchSchedulerV1 {
         let key = intent.key.clone();
         let id = intent.request_id.clone();
         if !self.lanes.contains_key(&key) {
-            self.round_robin.push_back(key.clone());
+            self.physical_lanes
+                .entry(key.physical_key())
+                .or_default()
+                .insert(key.clone());
+            self.schedule_lane(key.clone());
         }
         self.lanes.entry(key).or_default().push_back(QueuedIntent {
             intent,
@@ -207,9 +280,10 @@ impl BoundedMicrobatchSchedulerV1 {
         let scans = self.round_robin.len().min(self.limits.max_lanes_per_poll);
         let mut scanned = 0;
         for _ in 0..scans {
-            let Some(key) = self.round_robin.pop_front() else {
+            let Some((_, key)) = self.round_robin.pop_first() else {
                 break;
             };
+            self.lane_tickets.remove(&key);
             scanned += 1;
             let Some(mut lane) = self.lanes.remove(&key) else {
                 continue;
@@ -226,6 +300,7 @@ impl BoundedMicrobatchSchedulerV1 {
                 }
             });
             if lane.is_empty() {
+                self.remove_physical_lane(&key);
                 continue;
             }
             let oldest = lane.front().map_or(now_ms, |entry| entry.enqueued_at_ms);
@@ -241,6 +316,7 @@ impl BoundedMicrobatchSchedulerV1 {
                     self.queued_ids.remove(&entry.intent.request_id);
                     requests.push(entry.intent);
                 }
+                self.remove_physical_lane(&key);
                 selected = Some(MicrobatchPlanV1 {
                     key,
                     requests,
@@ -249,7 +325,7 @@ impl BoundedMicrobatchSchedulerV1 {
                 });
                 break;
             }
-            self.round_robin.push_back(key.clone());
+            self.schedule_lane(key.clone());
             self.lanes.insert(key, lane);
         }
         Ok(MicrobatchPollV1 {
@@ -279,13 +355,17 @@ impl BoundedMicrobatchSchedulerV1 {
             .limits
             .max_lanes_per_poll
             .saturating_sub(observed.scanned_lanes);
-        let scans = self.round_robin.len().min(remaining_scans);
-        for _ in 0..scans {
-            let Some(key) = self.round_robin.pop_front() else {
-                break;
-            };
+        // This secondary index visits only lanes sharing the actual backend
+        // tuple, leaving every intent's scope/route-fence intact for final use.
+        let candidates: Vec<_> = self
+            .physical_lanes
+            .get(&batch.key.physical_key())
+            .map(|group| group.iter().take(remaining_scans).cloned().collect())
+            .unwrap_or_default();
+        for key in candidates {
             observed.scanned_lanes += 1;
             let Some(mut lane) = self.lanes.remove(&key) else {
+                self.remove_physical_lane(&key);
                 continue;
             };
             lane.retain(|queued| {
@@ -299,22 +379,22 @@ impl BoundedMicrobatchSchedulerV1 {
                     true
                 }
             });
-            if key.physical_compatible_with(&batch.key) {
-                let oldest = lane.front().map(|entry| entry.enqueued_at_ms);
-                let slots = self.limits.max_batch_size - batch.requests.len();
-                for _ in 0..slots.min(lane.len()) {
-                    if let Some(entry) = lane.pop_front() {
-                        self.queued_ids.remove(&entry.intent.request_id);
-                        batch.requests.push(entry.intent);
-                    }
-                }
-                if let Some(oldest) = oldest {
-                    batch.oldest_queue_age_ms =
-                        batch.oldest_queue_age_ms.max(now_ms.saturating_sub(oldest));
+            let oldest = lane.front().map(|entry| entry.enqueued_at_ms);
+            let slots = self.limits.max_batch_size - batch.requests.len();
+            for _ in 0..slots.min(lane.len()) {
+                if let Some(entry) = lane.pop_front() {
+                    self.queued_ids.remove(&entry.intent.request_id);
+                    batch.requests.push(entry.intent);
                 }
             }
-            if !lane.is_empty() {
-                self.round_robin.push_back(key.clone());
+            if let Some(oldest) = oldest {
+                batch.oldest_queue_age_ms =
+                    batch.oldest_queue_age_ms.max(now_ms.saturating_sub(oldest));
+            }
+            if lane.is_empty() {
+                self.remove_physical_lane(&key);
+                self.deschedule_lane(&key);
+            } else {
                 self.lanes.insert(key, lane);
             }
             if batch.requests.len() >= self.limits.max_batch_size {
@@ -336,6 +416,7 @@ impl BoundedMicrobatchSchedulerV1 {
         authority_epoch: u64,
     ) -> Vec<StableId> {
         let mut dropped = Vec::new();
+        let mut removed_keys = Vec::new();
         self.lanes.retain(|key, lane| {
             if &key.scope_id == scope
                 && (key.generation != generation
@@ -346,12 +427,16 @@ impl BoundedMicrobatchSchedulerV1 {
                     self.queued_ids.remove(&entry.intent.request_id);
                     dropped.push(entry.intent.request_id.clone());
                 }
+                removed_keys.push(key.clone());
                 false
             } else {
                 true
             }
         });
-        self.round_robin.retain(|key| self.lanes.contains_key(key));
+        for key in &removed_keys {
+            self.remove_physical_lane(key);
+            self.deschedule_lane(key);
+        }
         dropped
     }
 }

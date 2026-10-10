@@ -221,6 +221,36 @@ fn wrong_loaded_model_id_fails_before_consuming_valid_signed_nonce() {
 }
 
 #[test]
+fn borrowed_shared_feature_digest_matches_materialized_final_use_binding() {
+    let (_, request, key) = fixture_request();
+    let features = request.feature_vector_q24.clone();
+    let mut parked = request.clone();
+    parked.feature_vector_q24.clear();
+    assert_eq!(
+        neuron_batch_final_use_binding_with_features_v1(
+            "worker-one",
+            &key,
+            &parked,
+            &features,
+        )
+        .expect("borrowed buffer binding"),
+        neuron_batch_final_use_binding_v1("worker-one", &key, &request)
+            .expect("materialized binding"),
+    );
+    let mut changed = features;
+    changed[0] += 1;
+    assert_eq!(
+        neuron_batch_final_use_binding_with_features_v1(
+            "worker-one",
+            &key,
+            &parked,
+            &changed,
+        ),
+        Err(BatchWorkerErrorV1::InvalidBinding),
+    );
+}
+
+#[test]
 fn signed_batch_executes_driver_once_then_rejects_duplicate() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[17; 32]);
@@ -323,6 +353,48 @@ impl PhaseMetricSinkV1 for CapturedMetrics {
     fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
         Ok(())
     }
+}
+
+#[derive(Debug)]
+struct RefusingMetricSink;
+
+impl PhaseMetricSinkV1 for RefusingMetricSink {
+    fn record(
+        &self,
+        _event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Backpressure)
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
+#[test]
+fn metric_sink_failures_leave_effects_advisory_but_fence_production_readiness() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[41; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut worker = runner(&signer, dir.path(), model)
+        .with_metric_sink(Arc::new(RefusingMetricSink));
+    assert!(worker.production_metrics_ready());
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert_eq!(worker.failed_metric_writes(), 1);
+    assert!(!worker.production_metrics_ready());
+    // The telemetry error cannot trigger a retry of an external model effect.
+    let poll = worker.poll_and_execute(101).unwrap();
+    assert_eq!(poll.outcomes.len(), 1);
+    assert!(poll.outcomes[0].result.is_ok());
+    assert!(worker.failed_metric_writes() >= 3);
+    assert!(!worker.flush_production_metrics());
 }
 
 #[test]

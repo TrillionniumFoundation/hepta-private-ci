@@ -540,34 +540,15 @@ fn lifecycle_record_id(
 }
 
 fn ledger_lifecycle_state_tag(state: CellSplitLifecycleStateV1) -> u8 {
-    match state {
-        CellSplitLifecycleStateV1::Proposed => 0,
-        CellSplitLifecycleStateV1::EvaluationPending => 1,
-        CellSplitLifecycleStateV1::EvaluationAccepted => 2,
-        CellSplitLifecycleStateV1::CanaryRunning => 3,
-        CellSplitLifecycleStateV1::Retained => 4,
-        CellSplitLifecycleStateV1::Quarantined => 5,
-        CellSplitLifecycleStateV1::Retired => 6,
-        CellSplitLifecycleStateV1::RolledBack => 7,
-    }
+    state.tag()
 }
 
 fn ledger_lifecycle_state_from_tag(
     tag: u8,
 ) -> Result<CellSplitLifecycleStateV1, CellSplitAutomationErrorV1> {
-    match tag {
-        0 => Ok(CellSplitLifecycleStateV1::Proposed),
-        1 => Ok(CellSplitLifecycleStateV1::EvaluationPending),
-        2 => Ok(CellSplitLifecycleStateV1::EvaluationAccepted),
-        3 => Ok(CellSplitLifecycleStateV1::CanaryRunning),
-        4 => Ok(CellSplitLifecycleStateV1::Retained),
-        5 => Ok(CellSplitLifecycleStateV1::Quarantined),
-        6 => Ok(CellSplitLifecycleStateV1::Retired),
-        7 => Ok(CellSplitLifecycleStateV1::RolledBack),
-        _ => Err(CellSplitAutomationErrorV1::Store(
-            "learning-ledger lifecycle state tag".to_string(),
-        )),
-    }
+    CellSplitLifecycleStateV1::from_tag(tag).ok_or_else(|| {
+        CellSplitAutomationErrorV1::Store("learning-ledger lifecycle state tag".to_string())
+    })
 }
 
 fn owner_event_digest(split_id: &StableId, event: &CellSplitLifecycleEventV1) -> Digest32 {
@@ -1058,30 +1039,11 @@ fn lifecycle_node(state: CellSplitLifecycleStateV1) -> &'static str {
 }
 
 fn lifecycle_state_tag(state: CellSplitLifecycleStateV1) -> u8 {
-    match state {
-        CellSplitLifecycleStateV1::Proposed => 0,
-        CellSplitLifecycleStateV1::EvaluationPending => 1,
-        CellSplitLifecycleStateV1::EvaluationAccepted => 2,
-        CellSplitLifecycleStateV1::CanaryRunning => 3,
-        CellSplitLifecycleStateV1::Retained => 4,
-        CellSplitLifecycleStateV1::Quarantined => 5,
-        CellSplitLifecycleStateV1::Retired => 6,
-        CellSplitLifecycleStateV1::RolledBack => 7,
-    }
+    state.tag()
 }
 
 fn lifecycle_state_from_tag(tag: u8) -> Option<CellSplitLifecycleStateV1> {
-    Some(match tag {
-        0 => CellSplitLifecycleStateV1::Proposed,
-        1 => CellSplitLifecycleStateV1::EvaluationPending,
-        2 => CellSplitLifecycleStateV1::EvaluationAccepted,
-        3 => CellSplitLifecycleStateV1::CanaryRunning,
-        4 => CellSplitLifecycleStateV1::Retained,
-        5 => CellSplitLifecycleStateV1::Quarantined,
-        6 => CellSplitLifecycleStateV1::Retired,
-        7 => CellSplitLifecycleStateV1::RolledBack,
-        _ => return None,
-    })
+    CellSplitLifecycleStateV1::from_tag(tag)
 }
 
 fn encode_lifecycle_event(event: &CellSplitLifecycleEventV1, payload: Option<&[u8]>) -> String {
@@ -1381,12 +1343,16 @@ where
     }
     if matches!(
         journal.current_state,
-        CellSplitLifecycleStateV1::Retained
-            | CellSplitLifecycleStateV1::Quarantined
+        CellSplitLifecycleStateV1::Quarantined
             | CellSplitLifecycleStateV1::Retired
             | CellSplitLifecycleStateV1::RolledBack
     ) {
         return Ok(outcome(&journal, proposal));
+    }
+    // A crash after canary retention but before retirement must not rerun
+    // evaluation or canary. A pending retirement never reruns its effect.
+    if journal.current_state == CellSplitLifecycleStateV1::Retained {
+        return retire_if_ready(split, proposal, owner, executor, &mut journal);
     }
 
     let evaluation = match executor.evaluate(split) {
@@ -1419,20 +1385,47 @@ where
         return Ok(outcome(&journal, proposal));
     }
 
-    if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
-        match executor.retire(split) {
-            Ok(retirement_digest) => {
-                journal.retire(split)?;
-                let _ = retirement_digest;
-                owner.commit(&journal)?;
-            }
-            Err(error) => {
-                journal.rollback(split, error_digest("retire", &error))?;
-                owner.commit(&journal)?;
-            }
-        }
+    retire_if_ready(split, proposal, owner, executor, &mut journal)
+}
+
+/// One write-ahead owner transition is persisted before the physical
+/// retirement callback. If its result or subsequent commit is unknown, the
+/// persisted intent requires explicit reconciliation. Retrying the automation
+/// must never re-dispatch the same possibly completed route/tombstone effect.
+fn retire_if_ready<Owner, Executor>(
+    split: &CellSplitV1,
+    proposal: &CellSplitProposalReceiptV1,
+    owner: &mut Owner,
+    executor: &mut Executor,
+    journal: &mut CellSplitLifecycleJournalV1,
+) -> Result<CellSplitAutomationOutcomeV1, CellSplitAutomationErrorV1>
+where
+    Owner: CellSplitAutomationJournalOwnerV1,
+    Executor: CellSplitAutomationExecutorV1,
+{
+    if journal.retirement_pending() {
+        return Err(CellSplitAutomationErrorV1::Binding(
+            "retirement pending independent reconciliation",
+        ));
     }
-    Ok(outcome(&journal, proposal))
+    if split.retirement.disposition != codex_hepta_types::CellParentDispositionV1::Retire {
+        return Ok(outcome(journal, proposal));
+    }
+    journal.prepare_retirement(split)?;
+    owner.commit(journal)?;
+    let retirement_digest = executor.retire(split).map_err(|error| {
+        CellSplitAutomationErrorV1::Executor(format!(
+            "retirement outcome requires independent reconciliation: {error}",
+        ))
+    })?;
+    if retirement_digest.is_zero() {
+        return Err(CellSplitAutomationErrorV1::Binding(
+            "missing retirement execution receipt",
+        ));
+    }
+    journal.retire_with_execution_receipt(split, retirement_digest)?;
+    owner.commit(journal)?;
+    Ok(outcome(journal, proposal))
 }
 
 fn outcome(
@@ -1651,6 +1644,7 @@ mod tests {
         evaluate_disposition: CellSplitEvaluationDispositionV1,
         canary_failures: u64,
         retired: bool,
+        retirement_digest: Digest32,
     }
 
     impl Default for Executor {
@@ -1659,6 +1653,7 @@ mod tests {
                 evaluate_disposition: CellSplitEvaluationDispositionV1::InsufficientEvidence,
                 canary_failures: 0,
                 retired: false,
+                retirement_digest: digest(34),
             }
         }
     }
@@ -1692,7 +1687,7 @@ mod tests {
 
         fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
             self.retired = true;
-            Ok(digest(34))
+            Ok(self.retirement_digest)
         }
     }
 
@@ -1879,12 +1874,115 @@ mod tests {
         assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
         assert!(executor.retired);
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
-        assert_eq!(journal.events.len(), 5);
+        assert_eq!(journal.events.len(), 6);
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retired);
+        assert_ne!(
+            journal.events.last().expect("retirement event").evidence_digest,
+            split.retirement.tombstone_digest,
+        );
 
         let replayed = run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut executor)
             .expect("terminal replay");
         assert_eq!(replayed.state, CellSplitLifecycleStateV1::Retired);
+    }
+
+    #[test]
+    fn retirement_execution_receipt_changes_durable_head_and_missing_receipt_fails_closed() {
+        let split = split();
+        let proposal = proposal(&split);
+        let mut first = CellSplitInMemoryJournalOwnerV1::default();
+        let mut first_executor = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            retirement_digest: digest(220),
+            ..Executor::default()
+        };
+        let outcome = run_cell_split_automation_v1(
+            &split,
+            &proposal,
+            &mut first,
+            &mut first_executor,
+        )
+        .expect("first retirement");
+        assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
+        let first_head = outcome.journal_head_digest;
+
+        let mut second = CellSplitInMemoryJournalOwnerV1::default();
+        let mut second_executor = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            retirement_digest: digest(221),
+            ..Executor::default()
+        };
+        let other = run_cell_split_automation_v1(
+            &split,
+            &proposal,
+            &mut second,
+            &mut second_executor,
+        )
+        .expect("second retirement");
+        assert_ne!(first_head, other.journal_head_digest);
+
+        let mut missing = CellSplitInMemoryJournalOwnerV1::default();
+        let mut missing_executor = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            retirement_digest: Digest32::ZERO,
+            ..Executor::default()
+        };
+        assert_eq!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut missing,
+                &mut missing_executor,
+            ),
+            Err(CellSplitAutomationErrorV1::Binding(
+                "missing retirement execution receipt",
+            )),
+        );
+        assert!(missing_executor.retired);
+        let state = missing
+            .load(&split.split_id)
+            .expect("load")
+            .expect("retained state");
+        assert_eq!(state.current_state, CellSplitLifecycleStateV1::Retained);
+        assert!(state.retirement_pending());
+        assert_eq!(state.events.len(), 5);
+        assert_ne!(state.head_digest, first_head);
+
+        // Reopening a recorded intent must never call the physical retirement
+        // effect again. An independently checked receipt can reconcile it.
+        missing_executor.retired = false;
+        assert_eq!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut missing,
+                &mut missing_executor,
+            ),
+            Err(CellSplitAutomationErrorV1::Binding(
+                "retirement pending independent reconciliation",
+            )),
+        );
+        assert!(!missing_executor.retired);
+        let mut reconciled = missing
+            .load(&split.split_id)
+            .expect("reload")
+            .expect("pending journal");
+        reconciled
+            .retire_with_execution_receipt(&split, digest(220))
+            .expect("independent retirement receipt");
+        missing.commit(&reconciled).expect("reconciled commit");
+        assert_eq!(
+            run_cell_split_automation_v1(
+                &split,
+                &proposal,
+                &mut missing,
+                &mut missing_executor,
+            )
+            .expect("terminal replay")
+            .state,
+            CellSplitLifecycleStateV1::Retired,
+        );
+        assert!(!missing_executor.retired);
     }
 
     #[test]
@@ -1926,7 +2024,7 @@ mod tests {
             .expect("durable automation");
         assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
         let committed = owner.load(&split.split_id).expect("load").expect("journal");
-        assert_eq!(committed.events.len(), 5);
+        assert_eq!(committed.events.len(), 6);
         drop(owner);
 
         let reopened = CellSplitLearningLedgerJournalOwnerV1::recover(
