@@ -345,7 +345,7 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     });
     let keys = [1_u8, 2, 3, 4]
         .map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
-    let trust = CellSplitOwnerTrustV1::new(&plan, keys).expect("independent owners");
+    let trust = CellSplitOwnerTrustV1::new(&plan, keys.clone()).expect("independent owners");
     let endpoints = [
         socket, fixture.root.path().join("unavailable-migration.sock"),
         fixture.root.path().join("unavailable-cns.sock"),
@@ -353,7 +353,7 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     ];
     {
         let transport = CellSplitUnixEffectPortV1::new(
-            endpoints.clone(), keys, Duration::from_secs(3)
+            endpoints.clone(), keys.clone(), Duration::from_secs(3)
         ).expect("RPC client");
         let mut owner = CellSplitExecutionOwnerV1::open(
             &ledger, plan.clone(), trust.clone(), transport
