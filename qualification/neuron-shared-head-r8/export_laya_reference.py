@@ -197,7 +197,7 @@ def run(args):
     }
     output=Path(args.output)
     output.parent.mkdir(parents=True,exist_ok=True)
-    output.write_text(json.dumps(value,sort_keys=True,indent=2)+"\\n",encoding="utf-8")
+    output.write_text(json.dumps(value,sort_keys=True,indent=2)+"\n",encoding="utf-8")
 
 
 def main():
