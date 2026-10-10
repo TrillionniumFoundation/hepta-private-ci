@@ -588,9 +588,7 @@ impl FinalUseAuthority {
         let mut distinct_nonces = BTreeSet::new();
         for (signed, expected) in entries.iter().copied() {
             let input = signed.grant.signing_bytes()?;
-            if signed.grant.signer_id != self.0.signer_id
-                || &signed.grant.binding != expected
-            {
+            if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
                 return Err(FinalUseError::BindingMismatch);
             }
             let signature = Signature::from_slice(&signed.signature)
@@ -623,7 +621,10 @@ impl FinalUseAuthority {
                 return Err(FinalUseError::AlreadyClaimed);
             }
         }
-        if state.used_nonces.len().checked_add(distinct_nonces.len())
+        if state
+            .used_nonces
+            .len()
+            .checked_add(distinct_nonces.len())
             .is_none_or(|count| count > MAX_CLAIMS)
         {
             return Err(FinalUseError::CapacityExceeded);
@@ -639,11 +640,8 @@ impl FinalUseAuthority {
             state.used_nonces.insert(*nonce);
         }
         if let (Some(frontier), Some(before)) = (&self.0.frontier_store, before)
-            && let Err(error) = frontier.compare_and_set(
-                &self.0.signer_id,
-                &before,
-                &frontier_for_state(&state),
-            )
+            && let Err(error) =
+                frontier.compare_and_set(&self.0.signer_id, &before, &frontier_for_state(&state))
         {
             state.failed = true;
             return Err(map_trust_error(error));

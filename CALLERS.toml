@@ -21,6 +21,7 @@ required_boundary_ids = [
   "final_use_open_state",
   "final_use_claim",
   "final_use_claim_raw",
+  "final_use_claim_batch_raw",
   "final_use_delivery",
   "final_use_delivery_witness",
   "final_use_delivery_raw",
@@ -523,10 +524,19 @@ product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-
 caller_markers = ["with_verified_effect"]
 
 [[boundary]]
+id = "final_use_claim_batch_raw"
+symbol = "FinalUseAuthority::claim_batch"
+call_pattern = '(?:\bauthority\s*\.\s*|\bFinalUseAuthority\s*::\s*)claim_batch\s*\('
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn claim_batch(", "distinct_nonces", "verify_strict"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"]
+caller_markers = ["claim_batch"]
+
+[[boundary]]
 id = "final_use_guarded_batch_effect"
 symbol = "FinalUseAuthority::with_verified_effect_batch"
 call_pattern = '(?:\bauthority\s*\.\s*|\bFinalUseAuthority\s*::\s*)with_verified_effect_batch\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn with_verified_effect_batch(", "self.enter_verified_effect(", "fences"]
+definition_markers = ["pub fn with_verified_effect_batch<T>(", "self.enter_verified_effect(", "fences"]
 product_callers = ["codex-rs/hepta-infer-worker-host/src/batched_neuron.rs"]
 caller_markers = ["with_verified_effect_batch"]

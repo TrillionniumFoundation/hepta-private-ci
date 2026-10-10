@@ -233,6 +233,7 @@ pub enum ControlOwnerErrorV1 {
     EffectBoundaryMissing,
     AuthorityGranted,
     GenerationRegression,
+    ClockRegressed,
     RouteFenceMismatch,
     IdempotencyConflict,
     MissingDispatch,
@@ -314,9 +315,14 @@ impl DurableControlRoleOwnerV1 {
         reject_durable_path(&path)?;
         let _writer_lock = lock_durable_control_writer(&path)?;
         if !path.exists() {
-            let mut file = fs::OpenOptions::new()
-                .write(true)
-                .create_new(true)
+            let mut options = fs::OpenOptions::new();
+            options.write(true).create_new(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                options.mode(0o600);
+            }
+            let mut file = options
                 .open(&path)
                 .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             let mut initial = Vec::new();
@@ -332,6 +338,11 @@ impl DurableControlRoleOwnerV1 {
                 .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             file.sync_all()
                 .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+            // A synced file without its directory entry is not a durable
+            // genesis. Never acknowledge an owner opened from an unlinked
+            // or uncommitted first snapshot after abrupt power loss.
+            #[cfg(unix)]
+            sync_control_directory(&path)?;
         }
         let bytes = fs::read(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         let inner = decode_durable_control(&bytes)?;
@@ -391,6 +402,11 @@ impl DurableControlRoleOwnerV1 {
 
     pub fn set_now_ms(&mut self, now_ms: u64) -> Result<(), ControlOwnerErrorV1> {
         self.apply_mutation(|owner| {
+            // The durable clock is an admission frontier. Allowing it to move
+            // backwards after restart can re-admit expired dispatch intents.
+            if now_ms < owner.now_ms {
+                return Err(ControlOwnerErrorV1::ClockRegressed);
+            }
             owner.set_now_ms(now_ms);
             Ok(())
         })
@@ -402,7 +418,9 @@ impl DurableControlRoleOwnerV1 {
         generation: Generation,
         route_fence_digest: Digest32,
     ) -> Result<Digest32, ControlOwnerErrorV1> {
-        self.apply_mutation(|owner| owner.activate_generation(cell_id, generation, route_fence_digest))
+        self.apply_mutation(|owner| {
+            owner.activate_generation(cell_id, generation, route_fence_digest)
+        })
     }
 }
 
@@ -737,16 +755,21 @@ fn lock_durable_control_writer(path: &Path) -> Result<File, ControlOwnerErrorV1>
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600);
     }
-    let lock = options.open(&lock_path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+    let lock = options
+        .open(&lock_path)
+        .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::MetadataExt;
-        let meta = lock.metadata().map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+        let meta = lock
+            .metadata()
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         if !meta.is_file() || meta.nlink() != 1 || meta.mode() & 0o077 != 0 {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
         }
     }
-    lock.try_lock().map_err(|_| ControlOwnerErrorV1::WriterUnavailable)?;
+    lock.try_lock()
+        .map_err(|_| ControlOwnerErrorV1::WriterUnavailable)?;
     Ok(lock)
 }
 
@@ -789,16 +812,18 @@ fn encode_durable_control(
     Ok(bytes)
 }
 
-fn persist_durable_control(
-    path: &Path,
-    bytes: &[u8],
-) -> Result<(), ControlOwnerErrorV1> {
+fn persist_durable_control(path: &Path, bytes: &[u8]) -> Result<(), ControlOwnerErrorV1> {
     reject_durable_path(path)?;
     let temp = path.with_extension("control.snapshot.tmp");
     reject_durable_path(&temp)?;
-    let mut file = fs::OpenOptions::new()
-        .create_new(true)
-        .write(true)
+    let mut options = fs::OpenOptions::new();
+    options.create_new(true).write(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options
         .open(&temp)
         .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     file.write_all(&bytes)
@@ -807,24 +832,33 @@ fn persist_durable_control(
     drop(file);
     fs::rename(&temp, path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     #[cfg(unix)]
-    {
-        let parent = path.parent()
-            .filter(|parent| !parent.as_os_str().is_empty())
-            .unwrap_or_else(|| Path::new("."));
-        File::open(parent)
-            .and_then(|directory| directory.sync_all())
-            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
-    }
+    sync_control_directory(path)?;
     #[cfg(not(unix))]
     {
         // std has no portable parent-directory fsync on Windows. Flush the
         // replaced file, and leave power-loss qualification to the actual
         // platform-specific host rather than inventing a durability witness.
-        File::open(path)
+        // FlushFileBuffers on Windows requires a write-capable handle.
+        // File::open is read-only and fails with AccessDenied on this path.
+        fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path)
             .and_then(|file| file.sync_all())
             .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     }
     Ok(())
+}
+
+#[cfg(unix)]
+fn sync_control_directory(path: &Path) -> Result<(), ControlOwnerErrorV1> {
+    let parent = path
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    File::open(parent)
+        .and_then(|directory| directory.sync_all())
+        .map_err(|_| ControlOwnerErrorV1::DurableIo)
 }
 
 fn decode_durable_control(bytes: &[u8]) -> Result<InMemoryControlRoleOwnerV1, ControlOwnerErrorV1> {
@@ -1130,6 +1164,10 @@ impl<'a> ControlCursor<'a> {
     }
 }
 
+#[path = "control_owner_wal.rs"]
+mod wal;
+pub use wal::IncrementalControlRoleWalV2;
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1363,6 +1401,32 @@ mod tests {
     }
 
     #[test]
+    fn durable_control_clock_frontier_survives_restart_and_rejects_regression() {
+        let root = DurableTestDirectory::new();
+        let path = root.file();
+        {
+            let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open owner");
+            owner.set_now_ms(200).expect("advance clock");
+            assert_eq!(
+                owner.set_now_ms(199),
+                Err(ControlOwnerErrorV1::ClockRegressed)
+            );
+            assert_eq!(owner.inner().now_ms, 200);
+        }
+        let mut reopened = DurableControlRoleOwnerV1::open(&path).expect("recover owner");
+        assert_eq!(reopened.inner().now_ms, 200);
+        assert_eq!(
+            reopened.set_now_ms(100),
+            Err(ControlOwnerErrorV1::ClockRegressed)
+        );
+        reopened.set_now_ms(200).expect("idempotent clock");
+        reopened.set_now_ms(201).expect("forward clock");
+        drop(reopened);
+        let replay = DurableControlRoleOwnerV1::open(&path).expect("replay");
+        assert_eq!(replay.inner().now_ms, 201);
+    }
+
+    #[test]
     fn durable_control_stale_open_owner_cannot_overwrite_newer_state() {
         let root = DurableTestDirectory::new();
         let path = root.file();
@@ -1423,6 +1487,57 @@ mod tests {
             .prepare(intent(ControlOperationKindV1::Planner))
             .expect("repeat");
         assert_eq!(std::fs::read(&path).expect("read"), before);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn durable_control_initial_and_replaced_snapshots_are_owner_private() {
+        use std::os::unix::fs::PermissionsExt;
+        let directory = std::env::temp_dir().join(format!(
+            "hepta-control-private-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("clock")
+                .as_nanos()
+        ));
+        std::fs::create_dir(&directory).expect("private test directory");
+        let path = directory.join("state.bin");
+        {
+            let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open genesis");
+            assert_eq!(
+                std::fs::metadata(&path)
+                    .expect("genesis metadata")
+                    .permissions()
+                    .mode()
+                    & 0o777,
+                0o600
+            );
+            owner
+                .activate_generation(
+                    StableId::new("cell.control").expect("id"),
+                    Generation::new(3).expect("generation"),
+                    digest("fence"),
+                )
+                .expect("durable replacement");
+            assert_eq!(
+                std::fs::metadata(&path)
+                    .expect("replacement metadata")
+                    .permissions()
+                    .mode()
+                    & 0o777,
+                0o600
+            );
+        }
+        let reopened = DurableControlRoleOwnerV1::open(&path).expect("reopen");
+        assert!(
+            reopened
+                .inner()
+                .active_generations
+                .contains_key(&StableId::new("cell.control").expect("id"))
+        );
+        drop(reopened);
+        std::fs::remove_dir_all(directory).expect("cleanup");
     }
 
     #[test]

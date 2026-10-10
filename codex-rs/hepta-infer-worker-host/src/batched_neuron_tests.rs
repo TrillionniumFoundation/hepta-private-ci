@@ -210,8 +210,14 @@ fn wrong_loaded_model_id_fails_before_consuming_valid_signed_nonce() {
         Err(BatchWorkerErrorV1::InvalidBinding)
     );
     assert_eq!(worker.pending(), 0);
-    worker.enqueue(100, "model".into(), request, key, grant).unwrap();
-    assert!(worker.poll_and_execute(101).unwrap().outcomes[0].result.is_ok());
+    worker
+        .enqueue(100, "model".into(), request, key, grant)
+        .unwrap();
+    assert!(
+        worker.poll_and_execute(101).unwrap().outcomes[0]
+            .result
+            .is_ok()
+    );
 }
 
 #[test]
@@ -513,6 +519,91 @@ fn signed_member(
     signed
 }
 
+#[test]
+fn signed_cpu_matrix_batch_executes_across_two_scopes() {
+    use crate::cpu_neuron_backend::CpuNeuronFeatureDriverV1;
+    use crate::cpu_neuron_backend::CpuNeuronWeightBundleV1;
+
+    let directory = tempfile::tempdir().expect("state dir");
+    let signer = SigningKey::from_bytes(&[83; 32]);
+    let q = 1_i64 << 24;
+    let weights = CpuNeuronWeightBundleV1::new(
+        2,
+        2,
+        vec![q, 0, 0, q],
+        vec![0, q, q, 0],
+        digest(b"encoder"),
+        digest(b"head"),
+    )
+    .expect("pinned matrix");
+    let (mut model, mut first, first_scope) = fixture_request();
+    model.weights_digest = weights.weight_digest().to_string();
+    model.quantization_digest = digest(b"quant.q24").to_string();
+    model.runtime_digest = digest(b"runtime.cpu.matrix").to_string();
+    model.device_digest = digest(b"device.cpu").to_string();
+    first.weights_digest = model.weights_digest.clone();
+    first.feature_vector_q24 = vec![q, q / 2];
+    first.expected_output_width = 2;
+    let first_payload = canonical_neuron_feature_payload_digest(&first);
+    first.authorization.payload_digest = first_payload.clone();
+    first.authorization.lease_payload_digest = first_payload;
+
+    let mut second = second_request(&first);
+    second.feature_vector_q24 = vec![-q / 2, q];
+    second.input_digest = digest(b"second.native.input").to_string();
+    let second_payload = canonical_neuron_feature_payload_digest(&second);
+    second.authorization.payload_digest = second_payload.clone();
+    second.authorization.lease_payload_digest = second_payload;
+    let mut second_scope = first_scope.clone();
+    second_scope.scope_id = StableId::new("scope.second").expect("scope ID");
+    second_scope.route_fence = 3;
+
+    let driver = CpuNeuronFeatureDriverV1::new(
+        weights,
+        digest(b"model"),
+        digest(b"runtime.cpu.matrix"),
+        digest(b"quant.q24"),
+        digest(b"device.cpu"),
+    )
+    .expect("CPU native driver");
+    let mut worker = runner_with_driver(&signer, directory.path(), model, driver, 2);
+    let first_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &first_scope, &first).expect("binding");
+    let second_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &second_scope, &second).expect("binding");
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            first_scope,
+            signed_member(&signer, first_binding, "native-cpu-first", 91),
+        )
+        .expect("first authorized intent");
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            second_scope,
+            signed_member(&signer, second_binding, "native-cpu-second", 92),
+        )
+        .expect("second authorized intent");
+    // The two lanes are individually half-full and coalesce only at the
+    // physical batch deadline; authorization scopes remain distinct.
+    let observed = worker.poll_and_execute(105).expect("poll");
+    assert_eq!(observed.outcomes.len(), 2);
+    assert_eq!(worker.pending(), 0);
+    assert!(observed.outcomes.iter().all(|item| {
+        matches!(
+            &item.result,
+            Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        )
+    }));
+    assert_eq!(observed.outcomes[0].request_id.as_str(), "req-one");
+    assert_eq!(observed.outcomes[1].request_id.as_str(), "req-two");
+}
+
 fn second_request(first: &NeuronFeatureRequest) -> NeuronFeatureRequest {
     let mut next = first.clone();
     next.authorization.request_id = "req-two".into();
@@ -574,7 +665,6 @@ fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_met
     }
 }
 
-
 #[test]
 fn completed_request_history_does_not_consume_concurrent_queue_capacity() {
     let dir = tempfile::tempdir().unwrap();
@@ -586,9 +676,19 @@ fn completed_request_history_does_not_consume_concurrent_queue_capacity() {
         request.authorization.request_id = format!("lifetime-{index}");
         request.authorization.reservation_id = format!("reservation-{index}");
         let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
-        let grant = signed_member(&signer, binding, &format!("grant-{index}"), (index + 80) as u8);
-        worker.enqueue(100 + index, "model".into(), request, key.clone(), grant).unwrap();
-        assert_eq!(worker.poll_and_execute(101 + index).unwrap().outcomes.len(), 1);
+        let grant = signed_member(
+            &signer,
+            binding,
+            &format!("grant-{index}"),
+            (index + 80) as u8,
+        );
+        worker
+            .enqueue(100 + index, "model".into(), request, key.clone(), grant)
+            .unwrap();
+        assert_eq!(
+            worker.poll_and_execute(101 + index).unwrap().outcomes.len(),
+            1
+        );
         assert_eq!(worker.pending(), 0);
     }
     let mut old_request = first.clone();
@@ -625,10 +725,24 @@ fn native_batch_coalesces_distinct_scopes_without_crossing_authority() {
     let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2);
     let binding_a = neuron_batch_final_use_binding_v1("worker-one", &first_key, &first).unwrap();
     let binding_b = neuron_batch_final_use_binding_v1("worker-one", &other_key, &second).unwrap();
-    worker.enqueue(100, "model".into(), first, first_key,
-        signed_member(&signer, binding_a, "grant-a", 62)).unwrap();
-    worker.enqueue(100, "model".into(), second, other_key,
-        signed_member(&signer, binding_b, "grant-b", 63)).unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            first_key,
+            signed_member(&signer, binding_a, "grant-a", 62),
+        )
+        .unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            other_key,
+            signed_member(&signer, binding_b, "grant-b", 63),
+        )
+        .unwrap();
     let result = worker.poll_and_execute(106).unwrap();
     assert_eq!(result.outcomes.len(), 2);
     assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
