@@ -19,7 +19,7 @@ from evidence_bundle import MAX_INDEX_BYTES, observed_time
 from native import Document, digest
 from reviewed_bundle import strict_read
 
-SCHEMA = "hepta.frozen-experience-session.v1"
+SCHEMA = "hepta.frozen-experience-session.v2"
 MAX_RECEIPT = 16 * 1024 * 1024
 
 
@@ -181,7 +181,8 @@ class FrozenMemorySession:
             raise ValueError("shared reader identity changed")
         with exclusive(self.directory):
             policy, revoked = self._current(withdrawals)
-            key = digest(asdict(query))
+            # Identity reserves one attempt even when a retry changes its payload.
+            key = digest((query.scope, query.identity))
             started = self.directory / (key + ".started.json")
             completed = self.directory / (key + ".result.json")
             if started.exists():
@@ -246,6 +247,7 @@ class FrozenMemorySession:
                 result = dict(
                     status="succeeded",
                     query_id=query.identity,
+                    query_digest=digest(asdict(query)),
                     answer=answer,
                     receipt=receipt,
                     snapshot_sha256=self.expected_snapshot,
@@ -260,6 +262,7 @@ class FrozenMemorySession:
                     dict(
                         status="failed",
                         query_id=query.identity,
+                        query_digest=digest(asdict(query)),
                         snapshot_sha256=self.expected_snapshot,
                         error_type=type(error).__name__,
                         error=str(error)[:1024],
@@ -273,7 +276,7 @@ class FrozenMemorySession:
     def replay(self, query, *, withdrawals, expected_result_sha256):
         with exclusive(self.directory):
             self._current(withdrawals)
-            key = digest(asdict(query))
+            key = digest((query.scope, query.identity))
             result = self.directory / (key + ".result.json")
             if (
                 not result.is_file()
@@ -287,6 +290,7 @@ class FrozenMemorySession:
             if (
                 value.get("snapshot_sha256") != self.expected_snapshot
                 or value.get("query_id") != query.identity
+                or value.get("query_digest") != digest(asdict(query))
             ):
                 raise ValueError("result identity mismatch")
             # Replay is a local diagnostic record read, not authenticated user delivery.

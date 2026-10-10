@@ -137,7 +137,7 @@ class FrozenSessionTests(unittest.TestCase):
         self.assertEqual(self.reader.calls, 1)
 
     def test_interrupted_attempt_is_indeterminate_not_automatic_regeneration(self):
-        path = self.root / (digest(asdict(self.q)) + ".started.json")
+        path = self.root / (digest((self.q.scope, self.q.identity)) + ".started.json")
         path.write_text("{}")
         with self.assertRaises(ValueError):
             self.answer()
@@ -191,6 +191,32 @@ class FrozenSessionTests(unittest.TestCase):
                 expected_result_sha256=result["result_sha256"],
             )
         self.assertEqual(self.reader.calls, 1)
+
+    def test_reused_task_identity_cannot_change_payload_or_replay_binding(self):
+        result = self.answer()
+        for changed in (
+            replace(self.q, content="Different question?"),
+            replace(self.q, observed_at="2024-03-01"),
+        ):
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                self.session.answer(
+                    changed, select, self.reader, withdrawals=lambda: set()
+                )
+            with self.assertRaises(ValueError):
+                self.session.replay(
+                    changed,
+                    withdrawals=lambda: set(),
+                    expected_result_sha256=result["result_sha256"],
+                )
+        self.assertEqual(self.reader.calls, 1)
+        self.assertEqual(
+            self.session.replay(
+                self.q,
+                withdrawals=lambda: set(),
+                expected_result_sha256=result["result_sha256"],
+            ),
+            result,
+        )
 
     def test_snapshot_digest_and_missing_ready_fail_closed(self):
         with self.assertRaises(ValueError):
