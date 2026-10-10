@@ -184,7 +184,14 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-microbatch-4096.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core workload_64_256_1024_4096_scope_cells -- --ignored --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-durable-4096.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core durable_writer_reopen_64_256_1024_4096_scope_history -- --ignored --nocapture --test-threads=1
       - name: Four-mode CellSplit comparative performance analyzer
-        run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_perf_gate.py' -v
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_perf_gate.py' -v
+          python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_matrix_capture.py' -v
+          python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_observer_gate.py' -v
+      - name: CellSplit signed effect recovery
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-external-owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_execution_owner -- --nocapture
       - name: Signed serving owners and durable metrics regression
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |

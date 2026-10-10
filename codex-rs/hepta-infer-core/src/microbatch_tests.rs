@@ -226,6 +226,67 @@ fn physical_affinity_index_cleans_up_after_expiry_and_cutover() {
     assert!(q.physical_lanes.is_empty());
 }
 
+#[test]
+fn scope_index_tracks_cutover_expiry_and_full_drain_without_stale_keys() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    for index in 0..128 {
+        q.enqueue(
+            1,
+            intent(
+                &format!("other-{index}"),
+                &format!("other-scope-{index}"),
+                1,
+                1,
+                100,
+            ),
+        )
+        .unwrap();
+    }
+    q.enqueue(1, intent("old", "target-scope", 1, 1, 100))
+        .unwrap();
+    q.enqueue(1, intent("current", "target-scope", 2, 2, 100))
+        .unwrap();
+    assert_eq!(
+        q.scope_lanes.get(&id("target-scope")).map(BTreeSet::len),
+        Some(2)
+    );
+    assert_eq!(
+        q.retain_scope_binding(&id("target-scope"), Generation::new(2).unwrap(), 2, 1),
+        vec![id("old")]
+    );
+    assert_eq!(
+        q.scope_lanes.get(&id("target-scope")).map(BTreeSet::len),
+        Some(1)
+    );
+    assert_eq!(q.pending(), 129);
+    let mut observed = BTreeSet::new();
+    while q.pending() > 0 {
+        let result = q.poll_physically_compatible(11).unwrap();
+        for intent in result.batch.expect("each lane ready").requests {
+            assert_ne!(intent.request_id, id("old"));
+            observed.insert(intent.request_id);
+        }
+    }
+    assert_eq!(observed.len(), 129);
+    assert!(q.scope_lanes.is_empty());
+    assert!(q.physical_lanes.is_empty());
+    assert!(q.lanes.is_empty());
+}
+
+#[test]
+fn scope_index_removes_expired_lane_and_does_not_reuse_fenced_generation() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(1, intent("expired", "expired-scope", 1, 1, 3))
+        .unwrap();
+    assert_eq!(q.poll(10).unwrap().expired_request_ids, vec![id("expired")]);
+    assert!(q.scope_lanes.is_empty());
+    assert!(q.physical_lanes.is_empty());
+    assert!(
+        q.retain_scope_binding(&id("expired-scope"), Generation::new(2).unwrap(), 2, 2)
+            .is_empty()
+    );
+}
+
 // Opt-in source benchmark: not hardware acceptance, report raw durations.
 #[test]
 #[ignore = "run with --ignored --nocapture on deployment hardware"]

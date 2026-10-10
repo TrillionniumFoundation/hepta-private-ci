@@ -345,3 +345,76 @@ fn post_open_ledger_tampering_cannot_dispatch_a_successor() {
     ));
     assert_eq!(state.borrow().executions, 1);
 }
+
+#[test]
+fn live_completion_requires_all_real_owner_receipts() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    assert!(matches!(
+        owner.verify_live_completion(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    for _ in 0..4 {
+        owner.advance().expect("committed owner effect");
+    }
+    let witness = owner
+        .verify_live_completion()
+        .expect("live external owner readback");
+    let expected = plan().digest().expect("plan digest");
+    assert_eq!(witness.plan_digest(), expected.as_str());
+    assert_eq!(witness.final_receipt_digest().len(), 64);
+    let verified_before = state.borrow().verifications;
+    owner
+        .verify_live_completion()
+        .expect("read back owners on every use");
+    assert_eq!(state.borrow().verifications, verified_before + 4);
+}
+
+#[test]
+fn completed_ledger_cannot_override_external_owner_revocation() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    for _ in 0..4 {
+        owner.advance().expect("committed owner effect");
+    }
+    assert!(owner.verify_live_completion().is_ok());
+    state.borrow_mut().commits.clear();
+    assert!(matches!(
+        owner.verify_live_completion(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+}
+
+#[test]
+fn tampered_frozen_plan_after_open_blocks_first_effect_and_live_completion() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    fs::write(root.path().join("cell-split-frozen-plan.json"), b"{}")
+        .expect("tamper frozen plan after lock acquired");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(state.borrow().executions, 0);
+}
