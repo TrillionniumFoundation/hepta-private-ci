@@ -240,12 +240,19 @@ def main():
     parser.add_argument("--train-steps", type=int, default=100)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--allow-audited-custom-code", action="store_true")
+    parser.add_argument("--export-q24", action="store_true",
+                        help="export calibration-checked unsigned Q24 affine Head candidate")
     parser.add_argument("--output", required=True)
     args = parser.parse_args()
     if args.train_steps <= 0 or args.shots_per_class < 0:
         parser.error("invalid train steps or shot count")
     if args.allow_audited_custom_code and args.model_key != "jina_zh":
         parser.error("custom code exception is reserved for separately audited Jina snapshot")
+    destinations = [Path(args.output), Path(args.output + ".run.json")]
+    if args.export_q24:
+        destinations.append(Path(args.output + ".q24.json"))
+    if any(target.exists() for target in destinations):
+        raise FileExistsError("append-only experiment output exists; refusing overwrite")
     require_digest = lambda d: len(d) == 64 and all(c in "0123456789abcdef" for c in d)
     if not require_digest(args.expected_snapshot_digest):
         parser.error("expected snapshot digest must be sha256 hex")
@@ -307,6 +314,16 @@ def main():
         cal_conf = torch.softmax(cal_logits / temperature, -1).max(-1).values.tolist()
         threshold = quantile(cal_conf, 1 - protocol["experiment_2"]["calibration_in_domain_coverage"])
     arm = f"{args.model_key}:{args.representation}:{args.head}:{args.budget}:{args.shots_per_class}"
+    q24_candidate = None
+    if args.export_q24:
+        from native_bridge import build_q24_head_candidate
+        q24_candidate = build_q24_head_candidate(
+            torch, head, args.head, verified,
+            [sample_features[r["sample_id"]] for r in cals],
+            max_abs_error=protocol["experiment_2"]["native_cpu_bridge"]["max_calibration_abs_logit_error"],
+        )
+        if q24_candidate["native_stored_coefficients"] > args.budget:
+            raise ValueError("Q24 deployed tensor profile exceeds per-Cell parameter budget")
     import transformers
     source_digest = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     protocol_digest = hashlib.sha256(Path(__file__).with_name("protocol.json").read_bytes()).hexdigest()
@@ -337,7 +354,7 @@ def main():
                             "cache_evictions": encoder.cache_evictions,
                             "truncations": encoder.truncations,
                             "source_scope": row["scope"], "backend_kind": "offline_hf_shadow"})
-    with Path(args.output).open("w", encoding="utf-8") as handle:
+    with Path(args.output).open("x", encoding="utf-8") as handle:
         for row in emitted:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
     prediction_digest = hashlib.sha256(Path(args.output).read_bytes()).hexdigest()
@@ -376,8 +393,17 @@ def main():
                        "cpu_measurement_scope": "whole_process_since_first_encoder_load_not_hardware_total",
                        "cuda_peak_allocated_bytes": (torch.cuda.max_memory_allocated() if args.device.startswith("cuda") else None),
                        "measurement_warning": "HF standalone no native Hepta batch or independent NDU outcome receipt"}
-    Path(args.output + ".run.json").write_text(json.dumps(result_manifest, sort_keys=True,
-                                                        indent=2) + "\n", encoding="utf-8")
+    if q24_candidate is not None:
+        from native_bridge import write_q24_head_candidate
+        q24_candidate.update({"arm": arm, "dataset_digest": dataset_digest,
+                              "source_run_digest": run_digest,
+                              "calibration_source": "calibration_fold_only"})
+        q24_digest = write_q24_head_candidate(args.output + ".q24.json", q24_candidate)
+        result_manifest["native_q24_shadow_artifact_sha256"] = q24_digest
+        result_manifest["native_q24_width"] = q24_candidate["input_width"]
+        result_manifest["native_q24_stored_coefficients"] = q24_candidate["native_stored_coefficients"]
+    with Path(args.output + ".run.json").open("x", encoding="utf-8") as manifest_handle:
+        manifest_handle.write(json.dumps(result_manifest, sort_keys=True, indent=2) + "\n")
     print(json.dumps({"arm": arm, "rows": len(emitted), "head_parameters": count,
                       "encoder_forward_calls": encoder.encoder_invocations,
                       "cache_hits": encoder.cache_hits, "cache_evictions": encoder.cache_evictions,
