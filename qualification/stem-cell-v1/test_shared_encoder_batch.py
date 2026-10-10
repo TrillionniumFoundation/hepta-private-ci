@@ -127,6 +127,21 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(result.receipts[0].feature_width, 768)
         self.assertFalse(result.receipts[0].native_q24_compatible_width)
 
+    def test_4096_logical_cells_are_bounded_batches_not_4096_encoder_invocations(self):
+        backend = FakeBackend(width=8)
+        engine = SharedStemEngine(backend, max_cache_bytes=128)
+        all_receipts = []
+        counts = []
+        for base in range(0, 4096, 32):
+            observation = engine.run([req(base + i + 1) for i in range(32)])
+            all_receipts.extend(observation.receipts)
+            counts.append(observation.backend_calls)
+        self.assertEqual(len(all_receipts), 4096)
+        self.assertEqual(sum(counts), 1)
+        self.assertEqual(len(backend.calls), 1)
+        self.assertEqual(len({r.feature_digest for r in all_receipts}), 1)
+        self.assertTrue(all(r.status == "shadow_only_not_authorized" for r in all_receipts))
+
     def test_frozen_feature_digest_is_float32_canonical(self):
         f = FrozenFeature.from_values([0.1, 0.2], 4, "mean")
         self.assertEqual(len(f.feature_digest), 64)
