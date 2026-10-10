@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - 'qualification/neuron-stem/**'
+      - 'codex-rs/hepta-infer-core/**'
       - '.github/workflows/hepta-neuron-stem-qualification.yml'
 
 permissions:
@@ -62,3 +63,22 @@ jobs:
             jina-v5-shadow-matrix.json
           if-no-files-found: ignore
           retention-days: 14
+
+  rust-stem-binding:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust 1.95.0 and formatting/clippy tools
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Require exact Rust source formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Compile and execute shared Stem/Neuron contracts
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib
+      - name: Require scoped Rust Clippy
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
