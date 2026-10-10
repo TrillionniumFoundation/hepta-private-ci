@@ -1,0 +1,61 @@
+name: Hepta Cell Split execution ledger
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-operator-acceptance/**'
+      - '.github/workflows/hepta-cell-split-execution-ledger.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cell-split-execution-ledger-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  signed-ledger-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin exact tested SHA
+        env:
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          git diff --check
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify Rust toolchain and locked dependency resolution
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rustc --version
+          cargo --version
+          cargo metadata --locked --format-version=1 > /dev/null
+      - name: Compile and exercise durable Cell Split source owner
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-operator-acceptance --lib
+      - name: Ensure scoped Rust formatting is canonical
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt --package codex-hepta-operator-acceptance -- --check
+      - name: Ensure exact source was not modified by tests
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
