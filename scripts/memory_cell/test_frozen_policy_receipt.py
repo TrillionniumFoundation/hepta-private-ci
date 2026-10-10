@@ -7,10 +7,23 @@ from frozen_policy_receipt import ARMS, align, replay, strict_json
 
 
 def fixture(kind="new_fact"):
-    case = dict(query=dict(identity="q", content="unchanged"), kind=kind, candidate_digest="pool")
-    rows = [dict(question_id="q", query=copy.deepcopy(case["query"]), arm=arm,
-                 kind=kind, candidate_digest="pool", status="succeeded", answer="original")
-            for arm in ARMS]
+    case = dict(
+        query=dict(identity="q", content="unchanged"),
+        kind=kind,
+        candidate_digest="pool",
+    )
+    rows = [
+        dict(
+            question_id="q",
+            query=copy.deepcopy(case["query"]),
+            arm=arm,
+            kind=kind,
+            candidate_digest="pool",
+            status="succeeded",
+            answer="original",
+        )
+        for arm in ARMS
+    ]
     scored = [r | {"strict_task_success": True} for r in copy.deepcopy(rows)]
     if kind == "procedure":
         for row in scored:
@@ -26,9 +39,13 @@ class FrozenPolicyReceiptTests(unittest.TestCase):
             self.assertNotIn("strict_task_success", rows[0])
 
     def test_answer_or_query_cannot_be_repaired_in_the_scored_view(self):
-        for field, value in (("answer", "repaired [E1]"), ("candidate_digest", "different"),
-                             ("query", dict(identity="q", content="substituted")),
-                             ("kind", "procedure"), ("added", "hidden")):
+        for field, value in (
+            ("answer", "repaired [E1]"),
+            ("candidate_digest", "different"),
+            ("query", dict(identity="q", content="substituted")),
+            ("kind", "procedure"),
+            ("added", "hidden"),
+        ):
             rows, scored, cases = fixture()
             scored[0][field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
@@ -36,8 +53,11 @@ class FrozenPolicyReceiptTests(unittest.TestCase):
 
     def test_partial_or_duplicate_census_rejects(self):
         rows, scored, cases = fixture()
-        for a, b in ((rows[:-1], scored[:-1]), (rows + rows[:1], scored + scored[:1]),
-                     (rows[:-1] + rows[:1], scored)):
+        for a, b in (
+            (rows[:-1], scored[:-1]),
+            (rows + rows[:1], scored + scored[:1]),
+            (rows[:-1] + rows[:1], scored),
+        ):
             with self.assertRaises(ValueError):
                 align(a, b, cases)
 
@@ -62,7 +82,7 @@ class FrozenPolicyReceiptTests(unittest.TestCase):
 
     def test_sequence_json_is_not_the_tensor_object_only_parser(self):
         self.assertEqual(strict_json('[{"result": 1}]'), [{"result": 1}])
-        for payload in ('{"a": 1, "a": 2}', '[NaN]', '[Infinity]'):
+        for payload in ('{"a": 1, "a": 2}', "[NaN]", "[Infinity]"):
             with self.assertRaises(ValueError):
                 strict_json(payload)
 

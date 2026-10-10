@@ -9,7 +9,9 @@ from dataclasses import asdict, dataclass
 import math
 import re
 
-PHASES = frozenset({"extract", "index", "train", "write", "read", "maintain", "recover"})
+PHASES = frozenset(
+    {"extract", "index", "train", "write", "read", "maintain", "recover"}
+)
 
 
 def nonnegative(value):
@@ -66,7 +68,9 @@ def summarize_envelopes(items):
         if item.parent is not None:
             children[item.parent].append(item)
     for parent in items:
-        known_children = sum(c.seconds for c in children[parent.identity] if c.seconds is not None)
+        known_children = sum(
+            c.seconds for c in children[parent.identity] if c.seconds is not None
+        )
         if parent.seconds is not None and known_children > parent.seconds + 1e-6:
             raise ValueError("disjoint child envelopes exceed inclusive parent")
     roots = [item for item in items if item.parent is None]
@@ -87,8 +91,14 @@ def summarize_envelopes(items):
     )
 
 
-def reuse_projection(*, fixed_seconds, read_seconds_per_query, maintenance_seconds_per_query,
-                     recovery_seconds_per_query, queries):
+def reuse_projection(
+    *,
+    fixed_seconds,
+    read_seconds_per_query,
+    maintenance_seconds_per_query,
+    recovery_seconds_per_query,
+    queries,
+):
     """Apply F + N(R + M + D); a caller must explicitly supply every term.
 
     Zero is accepted only when explicitly supplied. Unknown terms are not silently
@@ -100,37 +110,59 @@ def reuse_projection(*, fixed_seconds, read_seconds_per_query, maintenance_secon
         raise ValueError("unique bounded reuse horizon required")
     if any(type(n) is not int or not 1 <= n <= 10_000_000 for n in queries):
         raise ValueError("invalid reuse count")
-    inputs = dict(fixed=fixed_seconds, read=read_seconds_per_query,
-                  maintenance=maintenance_seconds_per_query, recovery=recovery_seconds_per_query)
+    inputs = dict(
+        fixed=fixed_seconds,
+        read=read_seconds_per_query,
+        maintenance=maintenance_seconds_per_query,
+        recovery=recovery_seconds_per_query,
+    )
     for value in inputs.values():
         if value is not None:
             nonnegative(value)
     unknown = [name for name, value in inputs.items() if value is None]
-    per_read = sum(value for name, value in inputs.items() if name != "fixed" and value is not None)
+    per_read = sum(
+        value for name, value in inputs.items() if name != "fixed" and value is not None
+    )
     rows = []
     for n in queries:
         known = (fixed_seconds if fixed_seconds is not None else 0) + n * per_read
-        rows.append(dict(queries=n, measured_terms_projection_seconds=known,
-                         complete_projection_seconds=known if not unknown else None,
-                         complete_amortized_seconds=known / n if not unknown else None))
-    return dict(assumptions=inputs, unknown_terms=unknown, horizons=rows,
-                observed_future_queries=0, economic_or_quality_advantage_established=False)
+        rows.append(
+            dict(
+                queries=n,
+                measured_terms_projection_seconds=known,
+                complete_projection_seconds=known if not unknown else None,
+                complete_amortized_seconds=known / n if not unknown else None,
+            )
+        )
+    return dict(
+        assumptions=inputs,
+        unknown_terms=unknown,
+        horizons=rows,
+        observed_future_queries=0,
+        economic_or_quality_advantage_established=False,
+    )
 
 
 def paired_task_contrasts(rows, questions, arms, candidate):
     """Task correctness, not source-ID coverage, decides the observed comparison."""
     if (
-        not questions or len(set(questions)) != len(questions)
-        or len(set(arms)) != len(arms) or candidate not in arms
+        not questions
+        or len(set(questions)) != len(questions)
+        or len(set(arms)) != len(arms)
+        or candidate not in arms
         or len(rows) != len(questions) * len(arms)
-        or {(r["question_id"], r["arm"]) for r in rows} != {(q, a) for q in questions for a in arms}
+        or {(r["question_id"], r["arm"]) for r in rows}
+        != {(q, a) for q in questions for a in arms}
     ):
         raise ValueError("exact paired task census required")
     grouped = {q: {} for q in questions}
     for row in rows:
         if row["status"] not in ("succeeded", "failed"):
             raise ValueError("unknown execution status")
-        if row["status"] == "succeeded" and type(row.get("strict_task_success")) is not bool:
+        if (
+            row["status"] == "succeeded"
+            and type(row.get("strict_task_success")) is not bool
+        ):
             raise ValueError("missing actual task outcome")
         if row["status"] == "failed" and row.get("strict_task_success") is not None:
             raise ValueError("failure cannot carry a success score")
@@ -152,10 +184,14 @@ def paired_task_contrasts(rows, questions, arms, candidate):
             losses += a["strict_task_success"] and not b["strict_task_success"]
             changed_without_win += a["selected"] != b["selected"] and not win
         output[baseline] = dict(
-            wins=wins, losses=losses, missing_pairs=missing,
+            wins=wins,
+            losses=losses,
+            missing_pairs=missing,
             changed_selection_without_task_win=changed_without_win,
-            all_planned_effect_bounds=[(wins-losses-missing)/len(questions),
-                                       (wins-losses+missing)/len(questions)],
+            all_planned_effect_bounds=[
+                (wins - losses - missing) / len(questions),
+                (wins - losses + missing) / len(questions),
+            ],
             observed_positive_difference=missing == 0 and wins > losses,
             significance_established=False,
         )
