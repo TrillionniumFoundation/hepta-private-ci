@@ -11,15 +11,28 @@ def records():
     for q in ("q1", "q2"):
         for arm, (condition, mode) in ARMS.items():
             selection = [] if condition == "empty" else [condition]
-            rows.append(dict(
-                question_id=q, arm=arm, kind="fixture", status="succeeded",
-                candidate_digest="fixed", selected=selection, answer="site_12345678",
-                strict_task_success=arm != "empty",
-                receipt=dict(reader_identity="base", reader_profile="same-prompt",
-                             input_ids_digest=condition, delivered_evidence=selection,
-                             input_tokens=10, generated_tokens=3, seconds=0.1,
-                             knowledge_module_enabled=mode == "memory"),
-            ))
+            rows.append(
+                dict(
+                    question_id=q,
+                    arm=arm,
+                    kind="fixture",
+                    status="succeeded",
+                    candidate_digest="fixed",
+                    selected=selection,
+                    answer="site_12345678",
+                    strict_task_success=arm != "empty",
+                    receipt=dict(
+                        reader_identity="base",
+                        reader_profile="same-prompt",
+                        input_ids_digest=condition,
+                        delivered_evidence=selection,
+                        input_tokens=10,
+                        generated_tokens=3,
+                        seconds=0.1,
+                        knowledge_module_enabled=mode == "memory",
+                    ),
+                )
+            )
     return rows
 
 
@@ -30,7 +43,9 @@ class WriteTrialTests(unittest.TestCase):
         self.assertEqual(report["knowledge_minus_organized"], 0)
         self.assertEqual(report["arms"]["knowledge"]["input_tokens"], 20)
         self.assertFalse(report["production_accepted"])
-        self.assertIsNone(report["arms"]["parameter_only"]["semantic_citation_precision"])
+        self.assertIsNone(
+            report["arms"]["parameter_only"]["semantic_citation_precision"]
+        )
 
     def test_no_missing_duplicate_or_resized_test_census(self):
         rows = records()
@@ -39,8 +54,12 @@ class WriteTrialTests(unittest.TestCase):
                 summarize(bad, ["q1", "q2"])
 
     def test_parameter_effect_cannot_change_source_prompt_or_model(self):
-        for field in ("input_ids_digest", "delivered_evidence", "reader_identity",
-                      "reader_profile"):
+        for field in (
+            "input_ids_digest",
+            "delivered_evidence",
+            "reader_identity",
+            "reader_profile",
+        ):
             rows = records()
             next(r for r in rows if r["arm"] == "knowledge")["receipt"][field] = "drift"
             with self.assertRaises(ValueError):

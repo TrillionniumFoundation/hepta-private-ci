@@ -41,8 +41,10 @@ def render(tokenizer, query, evidence, derived):
         controlled_schema_expansions=derived,
     )
     ids = tokenizer.apply_chat_template(
-        [dict(role="system", content=SYSTEM),
-         dict(role="user", content=json.dumps(body, ensure_ascii=False))],
+        [
+            dict(role="system", content=SYSTEM),
+            dict(role="user", content=json.dumps(body, ensure_ascii=False)),
+        ],
         tokenize=True,
         add_generation_prompt=True,
     )
@@ -53,7 +55,8 @@ def render(tokenizer, query, evidence, derived):
 
 def source_examples(documents, *, revision, allowed_roots, revoked):
     if (
-        type(revision) is not int or not 0 <= revision <= 10000
+        type(revision) is not int
+        or not 0 <= revision <= 10000
         or not 1 <= len(documents) <= 2048
         or len({d.identity for d in documents}) != len(documents)
         or {d.root for d in documents} != set(allowed_roots)
@@ -68,33 +71,52 @@ def source_examples(documents, *, revision, allowed_roots, revoked):
         if any(d.tzinfo is None for d in dates):
             raise ValueError("source observation needs an explicit timezone")
         observed = max(dates).isoformat()
-        keys = sorted({(r["entity"], r["attribute"])
-                       for r in projection.facts.values()
-                       if r["revision"] <= revision})
+        keys = sorted(
+            {
+                (r["entity"], r["attribute"])
+                for r in projection.facts.values()
+                if r["revision"] <= revision
+            }
+        )
         candidates = tuple(projection.facts)
         for entity, attribute in keys:
             selected, receipt = select_current(
-                projection, Lookup(entity, (attribute,), revision), candidates,
-                revoked=revoked, limit=8,
+                projection,
+                Lookup(entity, (attribute,), revision),
+                candidates,
+                revoked=revoked,
+                limit=8,
             )
             values = {projection.facts[k]["value"] for k in selected}
             if receipt["incomplete"] or receipt["conflicts"] or len(values) != 1:
-                dispositions.append(dict(scope=scope, entity=entity,
-                                         attribute=attribute, status="unknown"))
+                dispositions.append(
+                    dict(
+                        scope=scope,
+                        entity=entity,
+                        attribute=attribute,
+                        status="unknown",
+                    )
+                )
                 continue
             value = next(iter(values))
             q = Question(
                 "write_" + digest((scope, entity, attribute, revision)),
-                scope, scope,
+                scope,
+                scope,
                 f"At logical revision {revision}, what is the recorded "
                 f"{attribute} identifier of {entity}? Return only its value.",
                 observed,
             )
-            examples.append(dict(
-                query=asdict(q), target=value, sources=list(selected),
-                source_digest=digest([asdict(projection.originals[k])
-                                      for k in selected]),
-            ))
+            examples.append(
+                dict(
+                    query=asdict(q),
+                    target=value,
+                    sources=list(selected),
+                    source_digest=digest(
+                        [asdict(projection.originals[k]) for k in selected]
+                    ),
+                )
+            )
     if not examples:
         raise ValueError("no unambiguous source facts; never fabricate supervision")
     return tuple(examples), dispositions
@@ -113,15 +135,23 @@ class ExperienceReader(ReferenceReader):
             torch.manual_seed(2718)
             self.model = get_peft_model(
                 self.model,
-                LoraConfig(r=4, lora_alpha=8, lora_dropout=0.0,
-                           target_modules=["q_proj", "v_proj"], bias="none",
-                           task_type="CAUSAL_LM"),
+                LoraConfig(
+                    r=4,
+                    lora_alpha=8,
+                    lora_dropout=0.0,
+                    target_modules=["q_proj", "v_proj"],
+                    bias="none",
+                    task_type="CAUSAL_LM",
+                ),
             )
-        self.initial = {k: v.detach().clone()
-                        for k, v in get_peft_model_state_dict(self.model).items()}
+        self.initial = {
+            k: v.detach().clone()
+            for k, v in get_peft_model_state_dict(self.model).items()
+        }
         self.base_digest = frozen_digest(self.model)
-        self.trainable_parameters = sum(p.numel() for p in self.model.parameters()
-                                        if p.requires_grad)
+        self.trainable_parameters = sum(
+            p.numel() for p in self.model.parameters() if p.requires_grad
+        )
         self.profile = digest((self.profile, PROFILE, SYSTEM))
         self.scope = "controlled-source-memory-development"
         self.scopes, self.roots = set(), set()
@@ -134,7 +164,9 @@ class ExperienceReader(ReferenceReader):
         from pretrained import frozen_digest
 
         examples, dispositions = source_examples(
-            documents, revision=revision, allowed_roots=allowed_roots,
+            documents,
+            revision=revision,
+            allowed_roots=allowed_roots,
             revoked=revoked,
         )
         if self.quarantined or self.roots:
@@ -145,13 +177,17 @@ class ExperienceReader(ReferenceReader):
             q = Question(**ex["query"])
             prompt = render(self.tokenizer, q, [], [])
             ids, labels = completion_ids(
-                self.tokenizer, prompt, ex["target"], maximum=2112,
+                self.tokenizer,
+                prompt,
+                ex["target"],
+                maximum=2112,
             )
             prepared.append((ids, labels))
             groups.setdefault(q.scope, []).append(len(prepared) - 1)
         params = [p for p in self.model.parameters() if p.requires_grad]
-        before = {k: v.clone() for k, v in
-                  get_peft_model_state_dict(self.model).items()}
+        before = {
+            k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()
+        }
         optimizer = torch.optim.AdamW(params, lr=0.0002)
         started, tokens, supervised, losses = time.perf_counter(), 0, 0, []
         scopes = sorted(groups)
@@ -166,8 +202,10 @@ class ExperienceReader(ReferenceReader):
                 x = torch.tensor([ids], dtype=torch.long)
                 optimizer.zero_grad(set_to_none=True)
                 loss = self.model(
-                    input_ids=x, attention_mask=torch.ones_like(x),
-                    labels=torch.tensor([labels], dtype=torch.long), use_cache=False,
+                    input_ids=x,
+                    attention_mask=torch.ones_like(x),
+                    labels=torch.tensor([labels], dtype=torch.long),
+                    use_cache=False,
                 ).loss
                 if not torch.isfinite(loss):
                     raise ValueError("nonfinite source-writing loss")
@@ -179,23 +217,39 @@ class ExperienceReader(ReferenceReader):
                 tokens += len(ids)
                 supervised += sum(i != -100 for i in labels)
                 losses.append(float(loss.detach()))
-            delta = sum(float((v - before[k]).square().sum()) for k, v in
-                        get_peft_model_state_dict(self.model).items())
-            if (not losses or not math.isfinite(delta) or delta <= 0
-                    or frozen_digest(self.model) != self.base_digest):
+            delta = sum(
+                float((v - before[k]).square().sum())
+                for k, v in get_peft_model_state_dict(self.model).items()
+            )
+            if (
+                not losses
+                or not math.isfinite(delta)
+                or delta <= 0
+                or frozen_digest(self.model) != self.base_digest
+            ):
                 raise ValueError("no finite write or frozen base changed")
             self.roots = set(allowed_roots)
             return dict(
-                objective=PROFILE, revision=revision, examples=len(examples),
-                source_supervision=examples, dispositions=dispositions,
-                training_digest=digest((examples, prepared)), roots=sorted(self.roots),
-                scopes=scopes, steps=len(losses), maximum_steps=STEPS,
-                input_tokens=tokens, supervised_tokens=supervised,
-                token_ceiling=TOKEN_CEILING, losses=losses,
+                objective=PROFILE,
+                revision=revision,
+                examples=len(examples),
+                source_supervision=examples,
+                dispositions=dispositions,
+                training_digest=digest((examples, prepared)),
+                roots=sorted(self.roots),
+                scopes=scopes,
+                steps=len(losses),
+                maximum_steps=STEPS,
+                input_tokens=tokens,
+                supervised_tokens=supervised,
+                token_ceiling=TOKEN_CEILING,
+                losses=losses,
                 adapter_delta_squared_norm=delta,
                 trainable_parameters=self.trainable_parameters,
-                training_seconds=time.perf_counter() - started, base_unchanged=True,
-                future_questions_consumed=False, independent_review=False,
+                training_seconds=time.perf_counter() - started,
+                base_unchanged=True,
+                future_questions_consumed=False,
+                independent_review=False,
                 production_accepted=False,
             )
         except Exception:
@@ -211,22 +265,34 @@ class ExperienceReader(ReferenceReader):
         if query.scope not in self.scopes:
             raise ValueError("query outside written/admitted scopes")
         _, receipt = event_prompt(
-            self.tokenizer, query, bundle, originals, **kwargs,
+            self.tokenizer,
+            query,
+            bundle,
+            originals,
+            **kwargs,
         )
         ids = render(
-            self.tokenizer, query,
-            [dict(label=s["label"], observed_at=s["observed_at"], text=s["excerpt"])
-             for s in receipt["delivered_evidence"]],
+            self.tokenizer,
+            query,
+            [
+                dict(label=s["label"], observed_at=s["observed_at"], text=s["excerpt"])
+                for s in receipt["delivered_evidence"]
+            ],
             receipt["derived_evidence"],
         )
         return ids, receipt | dict(
-            input_tokens=len(ids), input_ids_digest=digest(ids),
+            input_tokens=len(ids),
+            input_ids_digest=digest(ids),
             knowledge_prompt_profile=PROFILE,
         )
 
     def answer_with_memory(self, query, bundle, originals, *, mode, **kwargs):
-        if (mode not in ("base", "memory") or self.quarantined or not self.roots
-                or self.roots.intersection(kwargs["revoked"])):
+        if (
+            mode not in ("base", "memory")
+            or self.quarantined
+            or not self.roots
+            or self.roots.intersection(kwargs["revoked"])
+        ):
             raise ValueError("unavailable or withdrawn knowledge module")
         with nullcontext() if mode == "memory" else self.model.disable_adapter():
             answer, receipt = super().answer(query, bundle, originals, **kwargs)
