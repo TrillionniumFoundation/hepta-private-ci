@@ -421,7 +421,7 @@ mod tests {
         hb.gate_q24 = vec![Q24 * 2, Q24];
         let hb = driver.register_head(hb).expect("head b");
         assert_ne!(ha, hb);
-        assert_eq!(driver.parameter_bytes(), 12 * 8);
+        assert_eq!(driver.parameter_bytes(), 16 * 8);
         let grant = ResourceGrant {
             grant_id: "grant.1".into(),
             authority_epoch: 2,
