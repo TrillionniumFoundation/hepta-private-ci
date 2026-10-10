@@ -379,6 +379,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// rollback, stale route or post-open sidecar tamper must fence execution,
     /// even when the coordinator previously opened successfully.
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
+        // A live coordinator must also re-validate its immutable plan before
+        // every effect; validating it only at open leaves a post-open window.
+        let frozen = read_frame(&self.root.join("cell-split-frozen-plan.json"))?
+            .ok_or(CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"))?;
+        if frozen != canonical_json(&self.plan)? {
+            return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
+        }
         let mut predecessor = self.plan_digest.clone();
         for index in 0..self.cursor {
             let step = CellSplitExecutionStepV1::at(index)
@@ -423,7 +430,15 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             &self.previous_receipt_digest,
         );
         let pending = self.pending;
-        if !pending {
+        if pending {
+            // A lost acknowledgement cannot permit replacing or deleting the
+            // prepared intent while this owner remains alive.
+            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
+                .ok_or(CellSplitExecutionErrorV1::Invalid("pending intent disappeared"))?;
+            if prepared != canonical_json(&intent)? {
+                return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
+            }
+        } else {
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,

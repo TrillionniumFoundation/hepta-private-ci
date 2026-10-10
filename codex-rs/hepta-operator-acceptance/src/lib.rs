@@ -1,4 +1,6 @@
 mod cell_split_execution_owner;
+#[cfg(unix)]
+mod cell_split_effect_rpc;
 mod cell_split_target_host;
 mod cell_split_target_host_evidence;
 mod cell_split_target_host_runtime;
@@ -57,6 +59,24 @@ pub use cell_split_execution_owner::CellSplitExecutionReceiptV1;
 pub use cell_split_execution_owner::CellSplitExecutionStepV1;
 pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
 pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_RPC_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectReadbackV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcActionV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcErrorV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcRequestV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcResponseV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitUnixEffectPortV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::cell_split_effect_readback_signing_payload_v1;
 pub use cell_split_target_host::CellSplitQualificationOriginV1;
 pub use cell_split_target_host::CellSplitQualificationStateV1;
 pub use cell_split_target_host::CellSplitTargetHostErrorV1;
