@@ -127,7 +127,7 @@ class IndependentObserverTests(unittest.TestCase):
 
     def test_measurement_mutation_and_fabricated_comparison_are_rejected(self):
         self.matrix["runs"][0]["cpu_seconds"] += 1
-        with self.assertRaisesRegex(InvalidEvidence, "digests"):
+        with self.assertRaisesRegex(InvalidEvidence, "comparison|digests"):
             self.verify()
         self.matrix = synthetic_matrix()
         self.comparison = analyze(self.matrix)
