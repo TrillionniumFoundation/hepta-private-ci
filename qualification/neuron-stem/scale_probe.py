@@ -30,6 +30,8 @@ def run(args):
         raise ValueError("invalid fractions")
     if args.db.exists() or args.output.exists():
         raise ValueError("refusing to overwrite old WAL/measurements")
+    args.db.parent.mkdir(parents=True, exist_ok=True)
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     rows = read_jsonl(args.dataset)
     audit = audit_dataset(rows)
     test_rows = [r for r in rows if r["split"] == "test"]
@@ -82,6 +84,10 @@ def run(args):
                               stem.max_tokens, text])
                 unique_inputs.add(key)
                 prepared.append((row, cell_id, condition, text, key))
+            # Protect previously admitted features from eviction while this
+            # batch is materialized; never look up a foreign-scope cache key.
+            cached_before = {key: stem.cache[key] for _, _, _, _, key in prepared
+                             if key in stem.cache}
             # Deduplicate within batch; do not reuse across different scopes.
             new_keys, pending = {}, []
             for row, cell_id, condition, text, key in prepared:
@@ -108,9 +114,11 @@ def run(args):
                 total_encoder_examples += len(pending)
             for row, cell_id, condition, text, key in prepared:
                 began = time.perf_counter_ns()
-                states = stem.cache.get(key)
+                states = cached_before.get(key)
                 if states is None:
-                    raise ValueError("cache entries evicted inside a batch: increase --cache-entries")
+                    states = stem.cache.get(key)
+                if states is None:
+                    raise ValueError("missing feature during admitted batch")
                 if args.mode in ("joint", "sentence"):
                     representation = states.mean(dim=0)
                 else:
@@ -178,6 +186,7 @@ def run(args):
             "clean_reopen_ms": recovery_ms,
             "clean_reopen_integrity": quick_check,
             "unclean_crash_recovery_verified": False,
+            "throughput_is_sequential_driver_not_worker_queue": True,
             "production_worker_microbatch_verified": False,
             "target_host_perf_qualified": False,
             "trace_digest": digest(observations),
