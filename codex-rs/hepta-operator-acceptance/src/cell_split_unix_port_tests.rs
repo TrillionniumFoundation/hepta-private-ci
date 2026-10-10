@@ -11,12 +11,7 @@ fn private_root() -> tempfile::TempDir {
     dir
 }
 
-fn bound_sockets(
-    root: &Path,
-) -> (
-    [CellSplitUnixEndpointV1; OWNER_COUNT],
-    Vec<UnixListener>,
-) {
+fn bound_sockets(root: &Path) -> ([CellSplitUnixEndpointV1; OWNER_COUNT], Vec<UnixListener>) {
     let endpoints = [0, 1, 2, 3].map(|index| CellSplitUnixEndpointV1 {
         owner_id: format!("external-owner-{index}"),
         socket_path: root.join(format!("effect-{index}.sock")),
@@ -84,8 +79,14 @@ fn exchange(
     stream.read_exact(&mut body).expect("read request");
     let request: RpcRequestV1 = serde_json::from_slice(&body).expect("decode request");
     assert_eq!(request.schema, RPC_SCHEMA);
-    assert_eq!(sha256(&canonical_json(&request.plan).expect("plan")), request.intent.plan_digest);
-    assert_eq!(request.plan.owner_ids[request.intent.step.index()], request.intent.owner_id);
+    assert_eq!(
+        sha256(&canonical_json(&request.plan).expect("plan")),
+        request.intent.plan_digest
+    );
+    assert_eq!(
+        request.plan.owner_ids[request.intent.step.index()],
+        request.intent.owner_id
+    );
     assert_eq!(request.operation, expected);
     assert_eq!(body, canonical_json(&request).expect("canonical"));
     let response = RpcResponseV1 {
@@ -107,7 +108,8 @@ fn exchange(
 fn unix_port_executes_once_then_verifies_with_fresh_read_only_rpc() {
     let root = private_root();
     let (endpoints, mut listeners) = bound_sockets(root.path());
-    let mut port = CellSplitUnixPortV1::new(root.path(), plan(), endpoints).expect("admitted sockets");
+    let mut port =
+        CellSplitUnixPortV1::new(root.path(), plan(), endpoints).expect("admitted sockets");
     let listener = listeners.remove(0);
     let request = intent();
     let proof = receipt(&request);
@@ -143,7 +145,8 @@ fn unix_port_executes_once_then_verifies_with_fresh_read_only_rpc() {
 fn unix_port_rejects_owner_substitution_and_missing_committed_effect() {
     let root = private_root();
     let (endpoints, mut listeners) = bound_sockets(root.path());
-    let mut port = CellSplitUnixPortV1::new(root.path(), plan(), endpoints).expect("admitted sockets");
+    let mut port =
+        CellSplitUnixPortV1::new(root.path(), plan(), endpoints).expect("admitted sockets");
     let listener = listeners.remove(0);
     let request = intent();
     let proof = receipt(&request);
