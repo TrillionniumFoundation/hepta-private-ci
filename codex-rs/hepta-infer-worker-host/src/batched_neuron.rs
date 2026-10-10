@@ -34,6 +34,14 @@ use crate::model_worker::canonical_neuron_feature_payload_digest;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 
+// This is a generation-lifetime deduplication bound, not the concurrent
+// scheduler max_pending. Exhaustion requires an externally fenced rollover.
+const MAX_WORKER_RETIRED_IDS: usize = 1_048_576;
+
+fn retired_identity(id: &StableId) -> Digest32 {
+    Digest32::of_parts(&[b"hepta.worker.retired-request.v1", id.as_str().as_bytes()])
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BatchWorkerErrorV1 {
     InvalidRequest,
@@ -76,7 +84,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     worker: InferenceWorker<D>,
     authority: FinalUseAuthority,
     pending: BTreeMap<StableId, PendingV1>,
-    retired: BTreeSet<StableId>,
+    retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     maximum_ids: usize,
 }
@@ -148,7 +156,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
-            maximum_ids: limits.max_pending,
+            maximum_ids: MAX_WORKER_RETIRED_IDS,
         })
     }
 
@@ -198,7 +206,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     ) -> Result<(), BatchWorkerErrorV1> {
         let id = StableId::new(request.authorization.request_id.clone())
             .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
-        if self.retired.contains(&id) || self.pending.contains_key(&id) {
+        if self.retired.contains(&retired_identity(&id)) || self.pending.contains_key(&id) {
             return Err(BatchWorkerErrorV1::Duplicate);
         }
         if self.retired.len() + self.pending.len() >= self.maximum_ids {
@@ -271,7 +279,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         for id in &poll.expired_request_ids {
             self.pending.remove(id);
-            self.retired.insert(id.clone());
+            self.retired.insert(retired_identity(&id));
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
@@ -280,7 +288,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             } else {
                 for intent in batch.requests {
                     let id = intent.request_id;
-                    self.retired.insert(id.clone());
+                    self.retired.insert(retired_identity(&id));
                     let outcome = match self.pending.remove(&id) {
                         None => Err(BatchWorkerErrorV1::NoAdmission),
                         Some(mut pending) => {
@@ -364,7 +372,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let started = Instant::now();
         let mut items = Vec::with_capacity(intents.len());
         for intent in intents {
-            self.retired.insert(intent.request_id.clone());
+            self.retired.insert(retired_identity(&intent.request_id));
             let pending = self.pending.remove(&intent.request_id);
             items.push((intent, pending));
         }
@@ -473,7 +481,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 .retain_scope_binding(scope, generation, fence, authority_epoch);
         for id in &removed {
             self.pending.remove(id);
-            self.retired.insert(id.clone());
+            self.retired.insert(retired_identity(&id));
         }
         removed
     }
