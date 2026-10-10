@@ -1,8 +1,9 @@
 """Pinned publisher sentence compositions, not self-issued minimality reviews.
 
-QASC fact1/fact2 annotations provide short supporting candidates. Answers and
-combined facts never enter prompts. Removing a fact does not make the real-world
-question unanswerable. Actual external reviews still use reviewed_bundle.
+Original questions include ALL answer options, never the key or combined fact.
+QASC facts supply short candidates, not a truth or minimality certificate.
+Removing a fact does not change real-world answerability. Independently reviewed
+requirements continue to use the existing reviewed_bundle interface.
 """
 
 import argparse
@@ -171,13 +172,22 @@ def split_rows(rows):
 
 
 def make_case(row, noise, acquired_at, phase):
-    """Return labels separately; never insert the combined fact into evidence."""
+    """Return labels separately; preserve options without exposing their answer key."""
     validate_row(row)
     texts = [row["fact1"], row["fact2"], *noise]
     if len(texts) > 8 or len({fact_root(t) for t in texts}) != len(texts):
         raise ValueError("bounded distinct evidence candidates required")
     scope = "qasc:" + row["id"]
-    query = Question(scope, scope, scope, row["question"]["stem"], acquired_at)
+    options_text = "\n".join(
+        f"({choice['label']}) {choice['text']}" for choice in row["question"]["choices"]
+    )
+    question_text = (
+        row["question"]["stem"]
+        + "\nOriginal answer options:\n"
+        + options_text
+        + "\nGive the answer text, not just its option letter."
+    )
+    query = Question(scope, scope, scope, question_text, acquired_at)
     documents = tuple(
         Document(
             "qasc-sentence:" + sha(t.encode()),
@@ -245,6 +255,7 @@ def make_case(row, noise, acquired_at, phase):
         originals=[asdict(d) for d in documents],
         frontier=frontier,
         conditions=conditions,
+        question_context_profile="original_stem_and_all_options_v2",
         source_time_kind="actual_download_observation_not_fact_valid_time",
         sampling_unit_independence_certified=False,
     )
@@ -295,8 +306,9 @@ def prepare(root, *, source_commit):
         cases=cases,
         dataset_sha256=ARCHIVE_SHA,
         acquisition_time=acquired,
-        profile="qasc-publisher-sentence-composition-v1",
-        free_answer_not_official_mcq=True,
+        profile="qasc-publisher-sentence-composition-v2",
+        original_question_options_preserved=True,
+        generated_answer_text_not_official_mcq_score=True,
         publisher_split_counts=EXPECTED_ROWS,
         frozen_counts=LIMITS,
         reader_training=False,
