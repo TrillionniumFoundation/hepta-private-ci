@@ -297,16 +297,31 @@ def scale_summary(rows):
             "scales": output, "production_promotion_permitted": False}
 
 
-def matrix(models):
-    entries = []
+def matrix(models, shots=(8, 32, 128), active=(.05, .25, 1.),
+           repeated=(0., .5, .9), similarities=("low", "medium", "high")):
+    """Factorial qualification envelope; planning does not imply execution."""
+    entries, scale_arms = [], []
     for model in models:
         for mode in MODES:
             for head in HEADS:
                 for budget in BUDGETS:
-                    entries.append({"model": model["id"], "mode": mode, "head": head,
-                                    "max_head_parameters": budget, "activation": "shadow"})
-    return {"schema": "hepta.neuron-stem-experiment-matrix.v1",
-            "arms": entries, "production_promotion_permitted": False}
+                    for n in shots:
+                        entries.append({"model": model["id"], "mode": mode, "head": head,
+                                        "max_head_parameters": budget,
+                                        "fewshot_independent_groups": n,
+                                        "activation": "shadow"})
+        for scale in sorted(SCALES):
+            for fraction in active:
+                for duplicate_rate in repeated:
+                    for similarity in similarities:
+                        scale_arms.append({"model": model["id"], "logical_cells": scale,
+                                           "active_fraction": fraction,
+                                           "input_repeat_fraction": duplicate_rate,
+                                           "task_similarity": similarity,
+                                           "activation": "shadow"})
+    return {"schema": "hepta.neuron-stem-experiment-matrix.v2",
+            "arms": entries, "scale_arms": scale_arms,
+            "production_promotion_permitted": False}
 
 
 def main():
@@ -333,7 +348,12 @@ def main():
     elif args.command == "scale":
         result = scale_summary(read_jsonl(args.trace))
     else:
-        result = matrix(json.loads(Path(args.models).read_text(encoding="utf-8"))["models"])
+        registry = json.loads(Path(args.models).read_text(encoding="utf-8"))
+        profile = registry["scaling_factors"]
+        result = matrix(registry["models"], shots=registry["few_shot_sizes"],
+                        active=profile["active_fraction"],
+                        repeated=profile["input_repeat_fraction"],
+                        similarities=profile["task_similarity"])
     write_json(args.out, result)
     print(canonical({"status": result.get("status", "audited"),
                      "sha256": digest(result), "out": args.out}))
