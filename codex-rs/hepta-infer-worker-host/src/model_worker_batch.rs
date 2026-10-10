@@ -206,7 +206,10 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
 
 #[cfg(test)]
 mod tests {
-    use super::super::{DriverRunObservation, ModelManifest, ResourceGrant, WorkerRequest};
+    use super::super::DriverRunObservation;
+    use super::super::ModelManifest;
+    use super::super::ResourceGrant;
+    use super::super::WorkerRequest;
     use super::*;
 
     #[derive(Default)]

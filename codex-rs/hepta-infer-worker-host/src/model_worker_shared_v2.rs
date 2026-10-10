@@ -8,16 +8,25 @@
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
-use codex_hepta_infer_core::shared_feature_v2::{
-    ImmutableFeatureSnapshotV2, feature_content_digest_v2,
-};
-use codex_hepta_types::{Digest32, NonAuthorizingPosture, StableId};
+use codex_hepta_infer_core::shared_feature_v2::ImmutableFeatureSnapshotV2;
+use codex_hepta_infer_core::shared_feature_v2::feature_content_digest_v2;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::NonAuthorizingPosture;
+use codex_hepta_types::StableId;
 
-use super::{
-    DriverModelHandle, DriverNeuronFeatureObservation, Error, ExecutionStatus, InferenceWorker,
-    MAX_ACTIVE_REQUESTS, MAX_NEURON_FEATURES, ModelDriver, NeuronFeatureBatchItemObservationV2,
-    WorkerRequest, validate_digest, validate_identity, validate_request,
-};
+use super::DriverModelHandle;
+use super::DriverNeuronFeatureObservation;
+use super::Error;
+use super::ExecutionStatus;
+use super::InferenceWorker;
+use super::MAX_ACTIVE_REQUESTS;
+use super::MAX_NEURON_FEATURES;
+use super::ModelDriver;
+use super::NeuronFeatureBatchItemObservationV2;
+use super::WorkerRequest;
+use super::validate_digest;
+use super::validate_identity;
+use super::validate_request;
 
 const MAX_BATCH_ITEMS_V2: usize = 32;
 const MAX_FEATURE_ABS_Q24: i64 = 8 * (1_i64 << 24);

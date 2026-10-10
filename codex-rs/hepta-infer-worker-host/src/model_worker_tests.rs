@@ -5,6 +5,8 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    invalid_handle: bool,
+    fail_unload: bool,
     loaded: usize,
 }
 
@@ -12,7 +14,11 @@ impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
+            opaque_id: if self.invalid_handle {
+                "invalid handle".to_string()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
             observed_memory_bytes: 1_024,
         })
     }
@@ -41,6 +47,9 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unload indeterminate".to_string()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -126,6 +135,82 @@ fn request() -> WorkerRequest {
         reservation_maximum_tokens: 64,
         cancelled: false,
     }
+}
+
+#[test]
+fn invalid_loaded_handle_is_cleaned_up_without_leaking_model_owner() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.invalid-handle".into(),
+        3,
+        grant(),
+        Driver {
+            invalid_handle: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::InvalidIdentity("model handle"))
+    );
+    assert_eq!(worker.driver.loaded, 0);
+    assert!(worker.models.is_empty());
+    assert!(!worker.poisoned);
+}
+
+#[test]
+fn failed_unload_poison_worker_until_owner_reconciliation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.unload-failure".into(),
+        3,
+        grant(),
+        Driver {
+            fail_unload: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+}
+
+#[test]
+fn failed_post_load_cleanup_poison_worker_instead_of_leaking_authority() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.cleanup-failure".into(),
+        3,
+        grant(),
+        Driver {
+            invalid_handle: true,
+            fail_unload: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
 }
 
 #[test]

@@ -501,9 +501,10 @@ fn dense_q24(input: &[i64], weights: &[i64], bias: &[i64]) -> Result<Vec<i64>, E
 
 #[cfg(test)]
 mod tests {
-    use super::super::{
-        InferenceWorker, ResourceGrant, WorkerRequest, canonical_neuron_feature_payload_digest,
-    };
+    use super::super::InferenceWorker;
+    use super::super::ResourceGrant;
+    use super::super::WorkerRequest;
+    use super::super::canonical_neuron_feature_payload_digest;
     use super::*;
 
     fn manifest() -> ModelManifest {
@@ -657,10 +658,10 @@ mod tests {
 
     #[test]
     fn shared_feature_arc_executes_two_distinct_cells_without_vec_materialization() {
-        use codex_hepta_infer_core::shared_feature_v2::{
-            SharedFeatureCacheV2, SharedFeatureIdentityV2,
-        };
-        use codex_hepta_types::{Generation, StableId};
+        use codex_hepta_infer_core::shared_feature_v2::SharedFeatureCacheV2;
+        use codex_hepta_infer_core::shared_feature_v2::SharedFeatureIdentityV2;
+        use codex_hepta_types::Generation;
+        use codex_hepta_types::StableId;
 
         let id = |value: &str| StableId::new(value.to_string()).expect("stable id");
         let mut first = head("cell.a");

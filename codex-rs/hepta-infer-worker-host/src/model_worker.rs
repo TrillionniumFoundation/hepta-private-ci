@@ -126,6 +126,7 @@ pub enum Error {
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
+    IndeterminateLifecycle,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -170,6 +171,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     generation: u64,
     grant: ResourceGrant,
     driver: D,
+    poisoned: bool,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
 }
@@ -192,6 +194,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             generation,
             grant,
             driver,
+            poisoned: false,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
@@ -216,7 +219,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::ModelCapacity);
         }
         let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
+        if let Err(error) = validate_identity(&handle.opaque_id, "model handle") {
+            if self.driver.unload(handle).is_err() {
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+            return Err(error);
+        }
         // Account for all resident model handles, not merely the new model.
         let total_after_load = self
             .models
@@ -226,7 +235,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
             })
             .and_then(|total| total.checked_add(handle.observed_memory_bytes));
         if !matches!(total_after_load, Some(total) if total <= self.grant.maximum_memory_bytes) {
-            self.driver.unload(handle)?;
+            if self.driver.unload(handle).is_err() {
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
@@ -351,7 +363,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::ActiveRequests);
         }
         let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if self.driver.unload(loaded.handle).is_err() {
+            // Physical unload may have occurred despite the error. Forbid any
+            // further use of this worker until its owner reconciles/restarts.
+            self.poisoned = true;
+            return Err(Error::IndeterminateLifecycle);
+        }
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -360,6 +377,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::IndeterminateLifecycle);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
@@ -743,19 +763,20 @@ fn validate_neuron_feature_output(
 
 #[path = "model_worker_batch.rs"]
 mod batch;
-pub use batch::{NeuronFeatureBatchDriver, NeuronFeatureBatchItemObservationV2};
+pub use batch::NeuronFeatureBatchDriver;
+pub use batch::NeuronFeatureBatchItemObservationV2;
 
 #[path = "model_worker_gated.rs"]
 mod gated_cpu;
-pub use gated_cpu::{GatedHeadCandidateV2, GatedHeadCpuDriverV2};
+pub use gated_cpu::GatedHeadCandidateV2;
+pub use gated_cpu::GatedHeadCpuDriverV2;
 
 #[path = "model_worker_shared_v2.rs"]
 mod shared_v2;
 pub(crate) use shared_v2::NeuronSharedFeatureBatchDriverV2;
-pub use shared_v2::{
-    SharedNeuronFeatureRequestV2, SharedNeuronFeatureResultV2,
-    canonical_shared_neuron_payload_digest_v2,
-};
+pub use shared_v2::SharedNeuronFeatureRequestV2;
+pub use shared_v2::SharedNeuronFeatureResultV2;
+pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
