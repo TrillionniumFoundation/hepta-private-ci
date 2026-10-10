@@ -282,6 +282,10 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1 for CellSpli
         }
         let size = self.publish_object()?;
         self.verify_parent()?;
+        // Recheck independently owned selection/NDU authority at the final
+        // durable publication boundary, after the potentially long file copy.
+        self.authority.verify_current_authority(&self.plan, intent)
+            .map_err(|e| CellSplitArtifactCasErrorV1::Denied(e.to_string()))?;
         let record = ArtifactCasCommitV1 {
             schema: SCHEMA.into(), intent: intent.clone(),
             parent_digest: self.plan.parent_artifact_digest.clone(),
