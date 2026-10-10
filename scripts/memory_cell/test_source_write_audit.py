@@ -26,9 +26,11 @@ class SourceWriteAuditTests(unittest.TestCase):
             value = json.loads(doc.content)
             if value["attribute"] == "location":
                 value["attribute"] = "successful_mode"
-                value["value"] = value["value"].replace(
-                    "site_new", "mode_11112222"
-                ).replace("site_", "mode_")
+                value["value"] = (
+                    value["value"]
+                    .replace("site_new", "mode_11112222")
+                    .replace("site_", "mode_")
+                )
             rows.append(replace(doc, content=json.dumps(value)))
         cls.documents = sources("calibration") + tuple(rows)
         cls.identity = digest("fixture-reader-not-a-model")
