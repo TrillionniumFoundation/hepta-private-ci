@@ -103,5 +103,56 @@ class Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"probabilities"):
             convert_predictions(rows,response,"q",keys)
 
+    def test_pinned_checkpoint_manifest_rejects_any_extra_file(self):
+        import hashlib
+        from export_laya_reference import check_pinned_checkpoint
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            contents={"model.safetensors":b"synthetic-not-a-real-model",
+                      "rl_agent_config.json":b"{}"}
+            for path,raw in contents.items():
+                (root/path).write_bytes(raw)
+            manifest=root.parent/"r8-test-do-not-reuse.json"
+            manifest=root/"hashes-outside-checkpoint.json"
+            # Keep manifest outside the model root so it is not counted as a model asset.
+            model=root/"checkpoint"
+            model.mkdir()
+            for name,raw in contents.items():
+                (model/name).write_bytes(raw)
+                (root/name).unlink()
+            expected={k:hashlib.sha256(v).hexdigest() for k,v in contents.items()}
+            manifest.write_text(json.dumps(expected))
+            self.assertEqual(check_pinned_checkpoint(model,manifest),expected)
+            (model/"extra.txt").write_text("untracked")
+            with self.assertRaisesRegex(ValueError,"no extras"):
+                check_pinned_checkpoint(model,manifest)
+
+    def test_pinned_laya_preflight_refuses_state_truncation(self):
+        import sys
+        import types
+        from unittest.mock import patch
+        from export_laya_reference import preflight_full_context
+        pkg=types.ModuleType("laya")
+        pkg.__path__=[]
+        common=types.ModuleType("laya.common")
+        common.render_options=lambda q:list(q["crit"].values())
+        common.serialize_state=lambda state:str(state)
+        class FakeTokenizer:
+            mask_token="<mask>"
+            mask_token_id=42
+            def __call__(self,text,add_special_tokens=False):
+                return {"input_ids":str(text).split()}
+        class FakeAgent:
+            tok=FakeTokenizer()
+            cfg={"head_max_len":48,"max_len":64}
+            def _to_internal(self,q):
+                return {"t":"choice","ins":q["instructions"],"crit":q["criteria"]}
+        question={"type":"choice","instructions":"Pick a route",
+                  "criteria":{"left":"left option","right":"right option"}}
+        with patch.dict(sys.modules,{"laya":pkg,"laya.common":common}):
+            preflight_full_context(FakeAgent(),"short state",question)
+            with self.assertRaisesRegex(ValueError,"state input would be truncated"):
+                preflight_full_context(FakeAgent()," ".join(["large"]*256),question)
+
 if __name__=="__main__":
     unittest.main()
