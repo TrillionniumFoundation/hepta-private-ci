@@ -15,11 +15,11 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::TryLockError;
 use std::io::Write;
-use std::path::{Path, PathBuf};
 #[cfg(unix)]
 use std::os::unix::fs::MetadataExt;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
+use std::path::{Path, PathBuf};
 
 use codex_hepta_types::CellCachePolicyV1;
 use codex_hepta_types::CellInFlightPolicyV1;
