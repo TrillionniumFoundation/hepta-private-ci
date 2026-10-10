@@ -17,6 +17,10 @@ from pathlib import Path
 SCHEMA = "hepta.neuron.model-trial.v1"
 SPLITS = ("train", "calibration", "holdout", "future_1", "future_2")
 EVAL_SPLITS = SPLITS[2:]
+# Preregistered, deterministic temperature candidates; fit only by the evaluator
+# using labeled in-domain CALIBRATION rows. Holdout/future labels are never fitted.
+TEMPERATURE_GRID_V1 = (0.5, 0.65, 0.8, 1.0, 1.25, 1.5, 2.0, 3.0)
+TEMPERATURE_EPSILON_V1 = 1e-6
 ARMS = {
     "decisions": ("laya", "typed"),
     "multilingual": ("laya", "multilingual"),
@@ -305,7 +309,7 @@ def run_laya(manifest, rows, arm, artifact_dir, weights_file, device, sdk_digest
     agent.cfg["head_max_len"] = 192
     observations = []
     for row in rows:
-        if row["split"] not in EVAL_SPLITS:
+        if row["split"] not in ("calibration", *EVAL_SPLITS):
             continue
         start = time.perf_counter_ns()
         # Explicit order is immutable across canonical JSON and independent
@@ -362,7 +366,7 @@ def run_head(manifest, rows, arm, device, artifact_out):
         # PyTorch requires this to reproduce CUDA matmul reductions.
         os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     import torch
-    from safetensors.torch import save_file
+    from safetensors.torch import load_file, save_file
     h = manifest["head"]
     d, w = h["input_dimension"], h["state_width"]
     expected, hidden = parameter_budget(d, w)
@@ -404,6 +408,18 @@ def run_head(manifest, rows, arm, device, artifact_out):
             "new absolute safetensors path required")
     save_file({k: v.detach().cpu().contiguous() for k, v in network.state_dict().items()}, str(save_path))
     weight_sha = sha_file(save_path)
+    # Evaluate the exact persisted bytes, not the mutable in-memory trainer.
+    loaded = make_head(torch, arm, d, 2 * w, hidden).to(device)
+    state = load_file(str(save_path), device="cpu")
+    loaded.load_state_dict(state, strict=True)
+    loaded.eval()
+    require(sum(p.numel() for p in loaded.parameters()) == nparams,
+            "reloaded head parameter count mismatch")
+    with torch.no_grad():
+        probe = x[0:1]
+        require(torch.equal(network(probe), loaded(probe)),
+                "reloaded head does not reproduce the trained tensor output")
+    del network, opt, state
     observations = []
     with torch.no_grad():
         for row in rows:
@@ -411,18 +427,87 @@ def run_head(manifest, rows, arm, device, artifact_out):
                 continue
             start = time.perf_counter_ns()
             values = torch.tensor(row["features_q24"], dtype=torch.float32, device=device).unsqueeze(0) / Q24
-            result = network(values).clamp(-8, 8)
+            result = loaded(values).clamp(-8, 8)
             if device.startswith("cuda"):
                 torch.cuda.synchronize()
             elapsed = (time.perf_counter_ns() - start) / 1e6
             pred = torch.round(result.cpu()[0] * Q24).to(torch.int64).tolist()
             observations.append({"id": row["id"], "split": row["split"],
-                                 "prediction_q24": pred, "latency_ms": elapsed})
+                                 "drive_q24": pred[:w], "prediction_q24": pred[w:],
+                                 "latency_ms": elapsed})
+    require(sha_file(save_path) == weight_sha, "head checkpoint changed after inference")
     return nparams, weight_sha, observations, {"torch": torch.__version__,
                                                 "training_seconds": training_seconds,
                                                 "optimizer": "AdamW", "weight_decay": .01,
+                                                "reloaded_checkpoint_sha256": weight_sha,
+                                                "checkpoint_reload_verified": True,
+                                                "forward_executed_from_reloaded_checkpoint": True,
+                                                "artifact_size_bytes": save_path.stat().st_size,
                                                 "head_profile_sha256": hashlib.sha256(
                                                     json.dumps(h, sort_keys=True).encode()).hexdigest()}
+
+
+def checked_probabilities(values, expected_len):
+    require(isinstance(values, list) and len(values) == expected_len and
+            all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 1
+                for v in values) and abs(sum(values) - 1) <= .001 and sum(values) > 0,
+            "invalid probabilities")
+    return [v / sum(values) for v in values]
+
+
+def temperature_probabilities(probabilities, temperature):
+    """Stable post-hoc scaling of shipped (already rounded) Laya probabilities."""
+    p = checked_probabilities(probabilities, len(probabilities))
+    require(len(p) >= 2 and type(temperature) in (float, int) and
+            math.isfinite(temperature) and temperature > 0, "invalid temperature")
+    logp = [math.log(max(v, TEMPERATURE_EPSILON_V1)) / temperature for v in p]
+    offset = max(logp)
+    exp = [math.exp(v - offset) for v in logp]
+    scale = sum(exp)
+    return [v / scale for v in exp]
+
+
+def fit_temperature_calibration(rows, predictions):
+    """Independent evaluator only: never exposes gold to model runners.
+
+    Inference receipts contain the CALIBRATION predictions but NO labels; the
+    evaluator joins its own sealed CALIBRATION cases and fits a global T using
+    a declared fixed NLL grid. This function MUST NOT be run in a model worker.
+    """
+    calibration = {r["id"]: r for r in rows if r["split"] == "calibration"}
+    observed = {x["id"]: x for x in predictions if x["split"] == "calibration"}
+    require(len(observed) == len(calibration) and set(observed) == set(calibration),
+            "calibration receipt omitted or duplicated cases")
+    eligible = []
+    for cid, source in calibration.items():
+        # Avoid teaching the confidence calibrator that true OOD observations are
+        # in-distribution; reserve OOD samples for independent evaluation.
+        if source["is_ood"]:
+            continue
+        keys = source["option_order"]
+        probs = checked_probabilities(observed[cid]["probabilities"], len(keys))
+        require(observed[cid]["split"] == "calibration", "calibration split drift")
+        eligible.append((cid, keys.index(source["gold"]), probs))
+    require(eligible, "no in-domain calibration observations")
+
+    def mean_nll(t):
+        return statistics.mean(-math.log(max(temperature_probabilities(p, t)[gold],
+                                             TEMPERATURE_EPSILON_V1))
+                               for _, gold, p in eligible)
+
+    scored = [(mean_nll(t), abs(math.log(t)), t) for t in TEMPERATURE_GRID_V1]
+    loss, _, chosen = min(scored)
+    raw = mean_nll(1.0)
+    require(math.isfinite(loss) and math.isfinite(raw), "nonfinite calibration result")
+    ids = sorted(cid for cid, _, _ in eligible)
+    return {"temperature": chosen, "fit_metric": "categorical_nll",
+            "fit_grid_v1": list(TEMPERATURE_GRID_V1),
+            "epsilon": TEMPERATURE_EPSILON_V1,
+            "in_domain_calibration_count": len(eligible),
+            "in_domain_ids_digest": hashlib.sha256(canonical_jsonl([{"id": i} for i in ids])).hexdigest(),
+            "raw_calibration_nll": raw, "fitted_calibration_nll": loss,
+            "fitted_from": "calibration_only",
+            "holdout_or_future_labels_used_for_fit": False}
 
 
 def percentile(values, fraction):
@@ -463,11 +548,7 @@ def metrics(rows, observations, family):
             bs, correct, bins, accepted, ood_count = [], [], [[] for _ in range(10)], 0, 0
             for source, pred in batch:
                 keys = source["option_order"]
-                p = pred["probabilities"]
-                require(isinstance(p, list) and len(p) == len(keys) and
-                        all(type(v) in (int, float) and math.isfinite(v) and 0 <= v <= 1 for v in p)
-                        and abs(sum(p) - 1) <= .001, "invalid probabilities")
-                p = [v / sum(p) for v in p]
+                p = checked_probabilities(pred["probabilities"], len(keys))
                 label = keys.index(source["gold"])
                 bs.append(sum((v - (i == label)) ** 2 for i, v in enumerate(p)))
                 choice = max(range(len(p)), key=p.__getitem__)
@@ -498,15 +579,26 @@ def metrics(rows, observations, family):
                            "ood_false_accept_at_0_8": accepted / ood_count if ood_count else None})
         else:
             squares, absolute = [], []
+            drive_sq, prediction_sq = [], []
             for source, pred in batch:
-                p = pred["prediction_q24"]
-                require(isinstance(p, list) and len(p) == len(source["target_q24"]) and
-                        all(type(v) is int and abs(v) <= 8 * Q24 for v in p), "invalid q24 output")
-                for a, b in zip(p, source["target_q24"]):
-                    delta = (a - b) / Q24
-                    squares.append(delta * delta)
-                    absolute.append(abs(delta))
-            result.update({"mse": statistics.mean(squares), "mae": statistics.mean(absolute)})
+                width = len(source["target_q24"]) // 2
+                require(len(source["target_q24"]) == 2 * width and width > 0,
+                        "invalid paired drive/prediction target")
+                for part, gold, errors in (
+                    (pred.get("drive_q24"), source["target_q24"][:width], drive_sq),
+                    (pred.get("prediction_q24"), source["target_q24"][width:], prediction_sq),
+                ):
+                    require(isinstance(part, list) and len(part) == width and
+                            all(type(v) is int and abs(v) <= 8 * Q24 for v in part),
+                            "invalid q24 drive/prediction output")
+                    for a, b in zip(part, gold):
+                        delta = (a - b) / Q24
+                        squares.append(delta * delta)
+                        absolute.append(abs(delta))
+                        errors.append(delta * delta)
+            result.update({"mse": statistics.mean(squares), "mae": statistics.mean(absolute),
+                           "drive_mse": statistics.mean(drive_sq),
+                           "prediction_mse": statistics.mean(prediction_sq)})
         summary[split] = result
     return summary
 
@@ -517,8 +609,9 @@ def compare(manifest, rows, packets, baseline_sha):
     baseline_arm = ARMS[family][0]
     require(sha_file(packets[baseline_arm]) == baseline_sha, "no-change baseline receipt changed")
     receipts = {arm: read_json(file) for arm, file in packets.items()}
-    ids = {r["id"] for r in rows if r["split"] in EVAL_SPLITS}
-    results = {}
+    ids = {r["id"] for r in rows if r["split"] in
+           (EVAL_SPLITS if family == "heads" else ("calibration", *EVAL_SPLITS))}
+    results, calibrations, calibrated_results = {}, {}, {}
     for arm, receipt in receipts.items():
         require(receipt.get("schema") == SCHEMA and receipt.get("family") == family and
                 receipt.get("arm") == arm and receipt.get("source_sha") == manifest["source_sha"] and
@@ -539,8 +632,13 @@ def compare(manifest, rows, packets, baseline_sha):
                     "model identity, bytes or revision drift")
         if family == "heads":
             expected_profile = hashlib.sha256(json.dumps(manifest["head"], sort_keys=True).encode()).hexdigest()
-            require(receipt.get("runtime", {}).get("head_profile_sha256") == expected_profile,
-                    "head encoder/training profile drift")
+            runtime = receipt.get("runtime", {})
+            require(runtime.get("head_profile_sha256") == expected_profile and
+                    runtime.get("checkpoint_reload_verified") is True and
+                    runtime.get("forward_executed_from_reloaded_checkpoint") is True and
+                    runtime.get("reloaded_checkpoint_sha256") == receipt.get("weights_sha256") and
+                    is_sha(receipt.get("weights_sha256")),
+                    "head encoder/training/reloaded-artifact binding drift")
         require(type(receipt.get("parameters")) is int and 0 < receipt["parameters"] <= manifest["parameter_cap"],
                 "model violates parameter cap")
         if family != "heads":
@@ -548,9 +646,18 @@ def compare(manifest, rows, packets, baseline_sha):
             require(minimum <= receipt["parameters"] <= maximum,
                     "actual checkpoint size is outside its preregistered approximate family")
         seen = receipt.get("observations")
-        require(isinstance(seen, list) and {x.get("id") for x in seen} == ids,
+        require(isinstance(seen, list) and len(seen) == len(ids) and
+                all(isinstance(x, dict) and x.get("id") in ids for x in seen) and
+                {x["id"] for x in seen} == ids,
                 "different attempted cases across models")
-        results[arm] = metrics(rows, seen, family)
+        evaluation = [x for x in seen if x["split"] in EVAL_SPLITS]
+        results[arm] = metrics(rows, evaluation, family)
+        if family != "heads":
+            calibration = fit_temperature_calibration(rows, seen)
+            calibrations[arm] = calibration
+            scaled = [{**x, "probabilities": temperature_probabilities(
+                        x["probabilities"], calibration["temperature"])} for x in evaluation]
+            calibrated_results[arm] = metrics(rows, scaled, family)
     require(len({receipts[a].get("device") for a in ARMS[family]}) == 1,
             "arms used different compute devices")
     if family == "heads":
@@ -575,9 +682,10 @@ def compare(manifest, rows, packets, baseline_sha):
                 old, fresh = base[case["id"]], new[case["id"]]
                 if family == "heads":
                     def error(p):
-                        return sum((a - b) ** 2 for a, b in zip(p, case["target_q24"]))
+                        both = p["drive_q24"] + p["prediction_q24"]
+                        return sum((a - b) ** 2 for a, b in zip(both, case["target_q24"]))
                     eligible += 1
-                    harmed += int(error(fresh["prediction_q24"]) > error(old["prediction_q24"]))
+                    harmed += int(error(fresh) > error(old))
                 else:
                     options = case["option_order"]
                     if options[max(range(len(options)), key=lambda i: old["probabilities"][i])] == case["gold"]:
@@ -588,7 +696,9 @@ def compare(manifest, rows, packets, baseline_sha):
             transitions[candidate][split] = {key: harmed / eligible if eligible else None,
                                              "at_risk_cases": eligible}
     return {"schema": SCHEMA, "family": family, "diagnostic_comparison": True,
-            "results": results, "negative_transfer": transitions,
+            "results": results, "calibration": calibrations,
+            "calibrated_results": calibrated_results,
+            "negative_transfer": transitions,
             "baseline_sha256": baseline_sha,
             "receipt_sha256": {arm: sha_file(path) for arm, path in packets.items()},
             "production_evidence_verified": False, "ndu_selection_authorized": False,
@@ -674,12 +784,14 @@ def main():
                     "end_to_end_wall_seconds": time.perf_counter() - started_wall,
                     "cpu_seconds": time.process_time() - started_cpu,
                     "peak_rss_bytes": peak_rss_bytes(), "peak_cuda_memory": gpu_memory,
-                    "steady_state_throughput_per_s": len(observations) * 1000 /
+                    # Sequential per-request forward rate, not true backend batch throughput.
+                    "serial_forward_rate_per_s": len(observations) * 1000 /
                         sum(obs["latency_ms"] for obs in observations)
                         if sum(obs["latency_ms"] for obs in observations) > 0 else None,
+                    "true_backend_batch_throughput_per_s": None,
                     "production_evidence_verified": False, "promotion_authorized": False}
         write_new(args.output, data)
-    except (InvalidTrial, KeyError, TypeError, ValueError, OSError) as error:
+    except (InvalidTrial, KeyError, TypeError, ValueError, OSError, ImportError) as error:
         parser.exit(2, f"blocked: {error}\n")
 
 

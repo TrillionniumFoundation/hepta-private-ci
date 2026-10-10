@@ -10,7 +10,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 from hepta_neuron_model_trials import (ARMS, InvalidTrial, blind_rows, canonical_jsonl,
                                       compare, load_inputs, metrics, parameter_budget,
-                                      run_head, sha_file, write_new)
+                                      run_head, sha_file, write_new,
+                                      fit_temperature_calibration, temperature_probabilities,
+                                      TEMPERATURE_GRID_V1)
 
 
 def fixture(root, family="decisions"):
@@ -54,11 +56,13 @@ def packet(manifest, rows, arm, damaged=False):
     family = manifest["family"]
     records = []
     for row in rows:
-        if row["split"] not in ("holdout", "future_1", "future_2"):
+        if row["split"] not in (("holdout", "future_1", "future_2") if family == "heads"
+                                else ("calibration", "holdout", "future_1", "future_2")):
             continue
         r = {"id": row["id"], "split": row["split"], "latency_ms": 2.0}
         if family == "heads":
-            r["prediction_q24"] = [1 if damaged and row["split"] == "future_2" else 0] * 512
+            r["drive_q24"] = [1 if damaged and row["split"] == "future_2" else 0] * 256
+            r["prediction_q24"] = [1 if damaged and row["split"] == "future_2" else 0] * 256
         else:
             r["probabilities"] = ([.2, .8] if damaged and row["split"] == "future_2" else [.9, .1])
         records.append(r)
@@ -70,8 +74,14 @@ def packet(manifest, rows, arm, damaged=False):
                              else 322000000 if arm == "multilingual" else 421000000),
               "observations": records}
     if family == "heads":
-        result["runtime"] = {"head_profile_sha256": hashlib.sha256(
-            json.dumps(manifest["head"], sort_keys=True).encode()).hexdigest()}
+        result["weights_sha256"] = "6" * 64
+        result["runtime"] = {
+            "head_profile_sha256": hashlib.sha256(
+                json.dumps(manifest["head"], sort_keys=True).encode()).hexdigest(),
+            "checkpoint_reload_verified": True,
+            "forward_executed_from_reloaded_checkpoint": True,
+            "reloaded_checkpoint_sha256": result["weights_sha256"],
+        }
     if family != "heads":
         model = manifest["models"][arm]
         result.update({"model_id": model["model_id"], "model_revision": model["revision"],
@@ -112,6 +122,89 @@ class TrialTests(unittest.TestCase):
                 manifest, rows, dataset, mpath = fixture(root, family)
                 actual, actual_rows = load_inputs(mpath, dataset)
                 self.assertEqual((actual, actual_rows), (manifest, rows))
+
+    def test_sealed_calibration_is_independent_of_holdout_and_future_labels(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest, rows, _, _ = fixture(root, "decisions")
+            baseline = packet(manifest, rows, "laya")
+            typed = packet(manifest, rows, "typed")
+            # Make the typed calibration underconfident on the true label.
+            for obs in typed["observations"]:
+                if obs["split"] == "calibration":
+                    obs["probabilities"] = [.55, .45]
+            baseline_path, typed_path = root / "laya.json", root / "typed.json"
+            write_new(baseline_path, baseline)
+            write_new(typed_path, typed)
+            packets = {"laya": baseline_path, "typed": typed_path}
+            report = compare(manifest, rows, packets, sha_file(baseline_path))
+            fit = report["calibration"]["typed"]
+            self.assertIn(fit["temperature"], TEMPERATURE_GRID_V1)
+            self.assertEqual(fit["fitted_from"], "calibration_only")
+            self.assertFalse(fit["holdout_or_future_labels_used_for_fit"])
+            self.assertLessEqual(fit["fitted_calibration_nll"], fit["raw_calibration_nll"] + 1e-12)
+            self.assertIn("ece10", report["calibrated_results"]["typed"]["future_1"])
+            # Changing ONLY held-out labels changes reported metrics, not fitted T.
+            altered = [{**r, "gold": "no"} if r["split"] in ("holdout", "future_1", "future_2")
+                       else r for r in rows]
+            rerun = compare(manifest, altered, packets, sha_file(baseline_path))
+            self.assertEqual(rerun["calibration"]["typed"], fit)
+            self.assertNotEqual(rerun["results"]["typed"]["holdout"]["accuracy"],
+                                report["results"]["typed"]["holdout"]["accuracy"])
+
+    def test_missing_calibration_predictions_or_labels_fail_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest, rows, _, _ = fixture(root, "decisions")
+            packets = {a: packet(manifest, rows, a) for a in ARMS["decisions"]}
+            packets["typed"]["observations"] = [v for v in packets["typed"]["observations"]
+                                                   if v["split"] != "calibration"]
+            b, t = root / "baseline.json", root / "typed.json"
+            write_new(b, packets["laya"])
+            write_new(t, packets["typed"])
+            with self.assertRaisesRegex(InvalidTrial, "attempted cases"):
+                compare(manifest, rows, {"laya": b, "typed": t}, sha_file(b))
+            both = packet(manifest, rows, "typed")["observations"]
+            no_id = [{**r, "is_ood": True} if r["split"] == "calibration" else r for r in rows]
+            with self.assertRaisesRegex(InvalidTrial, "no in-domain calibration"):
+                fit_temperature_calibration(no_id, both)
+            both[0]["probabilities"][0] = float("nan")
+            with self.assertRaisesRegex(InvalidTrial, "invalid probabilities"):
+                fit_temperature_calibration(rows, both)
+
+    def test_temperature_scaling_handles_rounding_and_rejects_invalid_inputs(self):
+        p = temperature_probabilities([1.0, 0.0], 0.5)
+        self.assertEqual(len(p), 2)
+        self.assertAlmostEqual(sum(p), 1.0)
+        self.assertGreater(p[0], p[1])
+        for bad in [float("nan"), float("inf"), 0, -1, True]:
+            with self.assertRaisesRegex(InvalidTrial, "invalid temperature"):
+                temperature_probabilities([0.4, 0.6], bad)
+        with self.assertRaisesRegex(InvalidTrial, "invalid probabilities"):
+            temperature_probabilities([0, 0], 1)
+
+    def test_neuron_head_receipt_requires_both_q24_vectors_at_exact_width(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest, rows, _, _ = fixture(root, "heads")
+            packets = {a: packet(manifest, rows, a) for a in ARMS["heads"]}
+            baseline = root / "laya-baseline.json"
+            write_new(baseline, packets["linear"])
+            files = {"linear": baseline}
+            for arm in ("mlp", "swiglu"):
+                out = root / (arm + ".json")
+                write_new(out, packets[arm])
+                files[arm] = out
+            report = compare(manifest, rows, files, sha_file(baseline))
+            self.assertIn("drive_mse", report["results"]["mlp"]["holdout"])
+            self.assertIn("prediction_mse", report["results"]["mlp"]["holdout"])
+            self.assertEqual(report["calibration"], {})
+            damaged = packet(manifest, rows, "mlp")
+            damaged["observations"][0]["prediction_q24"] = [0] * 512
+            bad = root / "bad.json"
+            write_new(bad, damaged)
+            with self.assertRaisesRegex(InvalidTrial, "invalid q24 drive/prediction"):
+                compare(manifest, rows, {**files, "mlp": bad}, sha_file(baseline))
 
     def test_paired_windows_and_negative_transfer_remain_untrusted(self):
         with tempfile.TemporaryDirectory() as path:
@@ -169,9 +262,9 @@ class TrialTests(unittest.TestCase):
             with self.assertRaisesRegex(InvalidTrial, "OOD cases"):
                 load_inputs(mpath, dataset)
             p = packet(manifest, rows, "laya")
-            p["observations"][0]["probabilities"][0] = float("nan")
+            next(x for x in p["observations"] if x["split"] == "holdout")["probabilities"][0] = float("nan")
             with self.assertRaisesRegex(InvalidTrial, "invalid probabilities"):
-                metrics(rows, p["observations"], "decisions")
+                metrics(rows, [x for x in p["observations"] if x["split"] in ("holdout", "future_1", "future_2")], "decisions")
 
     def test_order_survives_canonical_blinding_and_malformed_order_fails_closed(self):
         with tempfile.TemporaryDirectory() as path:
@@ -246,7 +339,12 @@ class TrialTests(unittest.TestCase):
                 self.assertEqual(count, parameter_budget(512, 256)[0][arm])
                 self.assertEqual(digest, sha_file(artifact))
                 self.assertEqual(len(observations), 3)
+                self.assertTrue(all(len(x["drive_q24"]) == len(x["prediction_q24"]) == 256
+                                    for x in observations))
                 self.assertEqual(runtime["optimizer"], "AdamW")
+                self.assertTrue(runtime["checkpoint_reload_verified"])
+                self.assertTrue(runtime["forward_executed_from_reloaded_checkpoint"])
+                self.assertEqual(runtime["reloaded_checkpoint_sha256"], digest)
                 with self.assertRaisesRegex(InvalidTrial, "new absolute safetensors path"):
                     run_head(manifest, run_rows, arm, "cpu", artifact)
 

@@ -14,7 +14,8 @@ import json
 import os
 from pathlib import Path
 
-from hepta_neuron_model_trials import ARMS, SCHEMA, is_sha, read_json, require, sha_file, write_new
+from hepta_neuron_model_trials import (ARMS, EVAL_SPLITS, SCHEMA, TEMPERATURE_GRID_V1,
+                                      is_sha, read_json, require, sha_file, write_new)
 
 EVIDENCE_SCHEMA = "hepta.neuron.trial-external-evidence.v1"
 ROLES = ("shadow", "evaluator", "ndu", "recovery")
@@ -95,6 +96,31 @@ def verify_report(manifest_path, comparison_path, trusted_sha, trust_path, envel
             comparison.get("ndu_selection_authorized") is False and
             comparison.get("production_evidence_verified") is False,
             "comparison claims an inappropriate authority")
+    # Type-check the new evaluator-only calibration separation even when the
+    # claimed signers are valid; a signature over an old or partial schema is
+    # not sufficient evidence that raw/corrected Brier/ECE were both retained.
+    calibrations = comparison.get("calibration")
+    calibrated_results = comparison.get("calibrated_results")
+    if family != "heads":
+        require(isinstance(calibrations, dict) and set(calibrations) == set(ARMS[family]) and
+                isinstance(calibrated_results, dict) and set(calibrated_results) == set(ARMS[family]),
+                "independently calibrated model arms absent")
+        for arm in ARMS[family]:
+            fit = calibrations[arm]
+            require(isinstance(fit, dict) and fit.get("temperature") in TEMPERATURE_GRID_V1 and
+                    fit.get("fit_grid_v1") == list(TEMPERATURE_GRID_V1) and
+                    fit.get("fitted_from") == "calibration_only" and
+                    fit.get("holdout_or_future_labels_used_for_fit") is False and
+                    type(fit.get("in_domain_calibration_count")) is int and
+                    fit["in_domain_calibration_count"] > 0 and
+                    isinstance(calibrated_results[arm], dict) and
+                    set(calibrated_results[arm]) == set(EVAL_SPLITS) and
+                    all("brier_multiclass" in calibrated_results[arm][split] and
+                        "ece10" in calibrated_results[arm][split] for split in EVAL_SPLITS),
+                    "incomplete calibration provenance or metrics")
+    else:
+        require(calibrations == {} and calibrated_results == {},
+                "Q24 regression head trials cannot claim probability calibration")
     baseline = comparison.get("baseline_sha256")
     require(is_sha(baseline), "baseline was not frozen")
     receipt_hashes = comparison.get("receipt_sha256")

@@ -18,9 +18,27 @@ model. Synthetic CI cases prove only protocol and negative-path behavior.
 Full-model experiments are **inference-only**. They inherit incompatible upstream
 pretraining/finetuning budgets. Never claim matched training compute or superior
 Hepta performance from a vendor model card. Full-model typed probabilities are
-rounded by Laya's SDK; ECE10 is diagnostic, not a calibrated grant. `is_ood` is
+rounded by Laya's SDK. The independent evaluator reports BOTH shipped/raw
+probabilities and a post-hoc temperature-scaled view (fixed grid, categorical
+NLL on **in-domain calibration only**, separate temperature per model). Neither
+ECE10 nor fitted temperature is a permission, policy propensity or calibrated
+production grant. No holdout/future labels may tune the calibrator. `is_ood` is
 external ground truth; the 0.8 confidence rejection is a **proxy**, not an
-independent OOD head. The head trial is Q24 regression, not a decision-policy test.
+independent OOD head. The head trial is Q24 regression, not a decision-policy test. A frozen head
+produces **two distinct state-width Q24 vectors**, `drive_q24` and
+`prediction_q24`, not a fused `prediction_q24` of twice that width. Report
+Drive MSE and Prediction MSE separately, plus combined MSE/MAE. Head evaluation
+must run after a physical safetensors save -> strict reload -> matched tensor
+forward check; the saved weight SHA must still match after inference.
+
+Full-model runner receipts must cover every *calibration*, holdout and future
+case ID, without labels. The evaluator fits its temperature on sealed in-domain
+`calibration` labels using the immutable grid `(0.5, 0.65, 0.8, 1.0, 1.25,
+1.5, 2.0, 3.0)`, then reports raw and calibrated Brier/ECE by window. A single
+calibration case is acceptable ONLY for diagnostic unit fixtures, never
+qualified efficacy. Do not mislabel the serial per-request forward rate as
+true backend-batch throughput; that field remains `null` until a real batch
+execution path is independently measured.
 
 ## Pinned upstream family: metadata first, local bytes second
 
@@ -254,6 +272,37 @@ Even if positive signed NDU gains are present, this validator explicitly keeps
 `production_evidence_verified=false`, `ndu_selection_authorized=false` and
 `promotion_authorized=false`. A real evaluator and host must separately replay
 and attest effects, seals, recovery and NDU utility before operator review.
+
+
+### Optional public-weight physical smoke (still NO Hepta evidence)
+
+A separate manual/label-triggered GitHub Actions workflow
+`.github/workflows/hepta-neuron-physical-smoke.yml` attempts the **root Laya
+baseline only**, with the exact SDK Git SHA, CPU-only dependencies, explicit
+Hugging Face downloads from the pinned revision, full safetensors digest and
+one no-label synthetic inference. It uploads ONLY non-sensitive JSON diagnostics,
+never weights, prompts or private data. It has zero authority to promote a Cell.
+
+For a draft PR, an authorized repository maintainer may add the label
+`hepta-neuron-physical-smoke` to trigger this workflow once; ordinary PR
+synchronizations do not trigger downloads. A `workflow_dispatch` button only
+becomes available when its workflow is installed on the repository default
+branch; its boolean acknowledgement is required there. Neither successful CI
+nor a synthetic forward is a real Hepta decision benchmark or attested host.
+
+On a separately authorized network-enabled target host, the same operation
+can be run after `hepta_neuron_materialize_weights.py` stages real bytes:
+
+```sh
+python scripts/hepta_neuron_physical_smoke.py \
+  --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+  --arm laya --artifact-dir /absolute/pinned/laya \
+  --sdk-python-sha256 EXACT_SOURCE_PIN_OF_INSTALLED_LAYA_PYTHON \
+  --device cpu --output /absolute/fresh/laya-physical-smoke.json
+```
+
+The default trial protocol CI continues to use only synthetic tests, not HF
+network calls, and never implies that a real weight forward succeeded.
 
 ## Nonnegotiable promotion boundaries
 
