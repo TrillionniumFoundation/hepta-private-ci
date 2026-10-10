@@ -150,6 +150,21 @@ def verify_signature(
         raise InvalidEvidence("independent observer signature verification failed")
 
 
+def verify_raw_measurements(root: Path, matrix: dict[str, Any]) -> None:
+    """Re-read the 16 original target-host rows, not only a folder digest."""
+    from hepta_cell_split_matrix_capture import validate_measurement
+
+    frozen = {(row["scopes"], row["mode"]): row for row in matrix["runs"]}
+    for scope in SCOPES:
+        for mode in MODES:
+            path = root / f"{scope}-{mode}.json"
+            if path.is_symlink() or not path.is_file():
+                raise InvalidEvidence(f"{scope}/{mode}: missing real raw measurement file")
+            measured = validate_measurement(read_json(path), matrix, scope, mode)
+            if measured != frozen[(scope, mode)]:
+                raise InvalidEvidence(f"{scope}/{mode}: raw measurement differs from matrix")
+
+
 def verify_observer_packet(
     matrix: dict[str, Any],
     comparison: dict[str, Any],
@@ -219,8 +234,12 @@ def verify_observer_packet(
         pinned_key_sha256,
     )
     retained = raw_evidence_root is not None
-    if retained and raw_evidence_root_digest(raw_evidence_root) != claim["raw_evidence_root_sha256"]:
-        raise InvalidEvidence("signed raw evidence root differs from independently retained bytes")
+    if retained:
+        verify_raw_measurements(raw_evidence_root, matrix)
+        if raw_evidence_root_digest(raw_evidence_root) != claim["raw_evidence_root_sha256"]:
+            raise InvalidEvidence(
+                "signed raw evidence root differs from independently retained bytes"
+            )
     return {
         "schema": "hepta.cell-split.observer-verification.v1",
         "source_sha": matrix["source_sha"],
