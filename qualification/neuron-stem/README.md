@@ -249,3 +249,30 @@ python3 qualification/neuron-stem/resource_gate.py \
 No 'same physical host' cryptographic attestation is manufactured from
 environment equality, and research batch latency cannot prove production
 Rust scheduler microbatch, NDU or crash-recovery qualification.
+
+
+### Additive Rust inference contract: Scoped Stem feature binding
+
+`codex-rs/hepta-infer-core/src/stem_feature_binding.rs` provides
+`StemFeatureRefV1`, `StemAccessContextV1`, `StemHeadBindingV1`,
+`stem_feature_vector_digest_v1`, and `bind_stem_feature_request_v1`.
+This pure function binds the exact ≤512-width, bounded, signed-Q24 feature
+vector into the existing `NeuronFeatureRequestV1` only after checking
+Scope, Principal, Generation, Authority Epoch, nonexpired lease, revocation
+flag, exact vector digest, and Head compatibility with the *selected*
+Stem model/generation/feature projection. Reuse across Cell Heads is possible
+only under the same checked source identity.
+
+Python `q24_bridge.rust_stem_feature_vector_digest_v1` follows the same
+digest domain and byte order as Rust. Both embed the golden vector:
+`[0.5, -0.25] -> 148ae0b91ab97729f72d745e989ac7b03614438cc6030edb2f79748049c70b59`.
+
+**Security boundary:** the Rust access input is still a caller-supplied
+claim. This module does not authenticate it, issue a grant, sign a result,
+open an artifact, dispatch inference, checkpoint CAS, or change a selected
+generation. The production inference.control owner MUST independently
+authenticate the Scope/Principal, selected bundle, current grant, revocation
+and final-use authority before dispatch. All constructed requests have
+`DENY_ALL` authority until independent product gates complete. Rust unit
+tests require a toolchain and CI; neither has been independently confirmed
+green for this new source.
