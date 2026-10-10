@@ -31,6 +31,11 @@ use codex_hepta_neuron::CellStateMigrationPhaseV1;
 use codex_hepta_neuron::CellStateMigrationReceiptV1;
 use codex_hepta_neuron::CellStateMigrationV1;
 use codex_hepta_neuron::DurableCellStateCasDirectoryOwnerV1;
+use codex_hepta_ndu::ContributionSet;
+use codex_hepta_ndu::EvaluationDisposition;
+use codex_hepta_ndu::NduAuthenticatedOwnerV1;
+use codex_hepta_ndu::NduEvaluationReceiptV2;
+use codex_hepta_ndu::NduOwnerError;
 use codex_hepta_supervisor::DurableWriterHandoffJournalV1;
 use codex_hepta_supervisor::WriterHandoffAdvanceV1;
 use codex_hepta_supervisor::WriterHandoffCheckpointV1;
@@ -49,6 +54,7 @@ pub enum CellSplitExecutionErrorV1 {
     Phase(WriterHandoffPhaseV1),
     Artifact(ProductionOwnerError),
     Migration(CellStateMigrationErrorV1),
+    Ndu(NduOwnerError),
     Cns(CellSplitRouteErrorV1),
     Handoff(WriterHandoffErrorV1),
     Lifecycle(CellSplitAutomationErrorV1),
@@ -72,6 +78,11 @@ impl From<ProductionOwnerError> for CellSplitExecutionErrorV1 {
 impl From<CellStateMigrationErrorV1> for CellSplitExecutionErrorV1 {
     fn from(error: CellStateMigrationErrorV1) -> Self {
         Self::Migration(error)
+    }
+}
+impl From<NduOwnerError> for CellSplitExecutionErrorV1 {
+    fn from(error: NduOwnerError) -> Self {
+        Self::Ndu(error)
     }
 }
 impl From<CellSplitRouteErrorV1> for CellSplitExecutionErrorV1 {
@@ -111,6 +122,12 @@ pub struct CellSplitMigrationExecutionReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellSplitRouteExecutionReceiptV1 {
     pub route: CellSplitRouteFenceReceiptV1,
+    pub handoff: WriterHandoffCheckpointV1,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CellSplitSelectionExecutionReceiptV1 {
+    pub ndu: NduEvaluationReceiptV2,
     pub handoff: WriterHandoffCheckpointV1,
 }
 
@@ -415,12 +432,61 @@ impl CellSplitExecutionOwnerV1 {
         })
     }
 
-    /// Independent selector token and witnessed evaluation ledger are re-read
-    /// at the final decision boundary, not accepted as arbitrary digest text.
+    /// No-change comparison is evaluated by the live, policy-frozen NDU
+    /// owner. Arbitrary NDU advice cannot replace the independently signed
+    /// Selector/evaluator/observer chain: it can only veto the already
+    /// retained candidate. Only a unique/scalarized recommendation may pass.
+    /// Candidate and baseline source digests must be explicitly pinned to
+    /// authenticated independent evidence, not newly asserted utility data.
     pub fn validate_selection(
         &mut self,
-    ) -> Result<WriterHandoffCheckpointV1, CellSplitExecutionErrorV1> {
+        ndu: &NduAuthenticatedOwnerV1,
+        contributions: ContributionSet,
+    ) -> Result<CellSplitSelectionExecutionReceiptV1, CellSplitExecutionErrorV1> {
         self.require_phase(WriterHandoffPhaseV1::Migrated)?;
+        let selected = self.selection.receipt();
+        let baseline_id = &selected.no_change_baseline_id;
+        if contributions.objective_digest != selected.objective_digest
+            || contributions.generation != self.split.successor_generation
+            || selected.candidate_id == *baseline_id
+            || !contributions.contributions.iter().any(|row| {
+                row.candidate_id == selected.candidate_id
+                    && row.support_digest == selected.evaluation_evidence_digest
+            })
+            || !contributions.contributions.iter().any(|row| {
+                row.candidate_id == *baseline_id
+                    && row.support_digest == selected.no_change_baseline_digest
+            })
+        {
+            return Err(CellSplitExecutionErrorV1::Binding(
+                "NDU candidate/no-change baseline source",
+            ));
+        }
+        let ndu_receipt = ndu.evaluate(contributions)?;
+        if ndu_receipt.base.objective_digest != selected.objective_digest
+            || ndu_receipt.base.generation != self.split.successor_generation
+            || ndu_receipt.base.advisory_recommendation.as_ref() != Some(&selected.candidate_id)
+            || !matches!(
+                ndu_receipt.base.disposition,
+                EvaluationDisposition::UniqueParetoRecommendation
+                    | EvaluationDisposition::ScalarizedRecommendation
+            )
+            || !ndu_receipt
+                .base
+                .evaluated_candidates
+                .iter()
+                .any(|row| row.candidate_id == *baseline_id)
+            || !ndu_receipt
+                .base
+                .evaluated_candidates
+                .iter()
+                .any(|row| row.candidate_id == selected.candidate_id)
+            || ndu_receipt.evaluation_digest_v2.is_zero()
+        {
+            return Err(CellSplitExecutionErrorV1::Binding(
+                "NDU did not select independently evaluated candidate",
+            ));
+        }
         let lifecycle = self.lifecycle.load(&self.split.split_id)?.ok_or(
             CellSplitExecutionErrorV1::Binding("missing lifecycle after migration"),
         )?;
@@ -428,16 +494,21 @@ impl CellSplitExecutionOwnerV1 {
             return Err(CellSplitExecutionErrorV1::Binding("retention revoked"));
         }
         let evidence = Digest32::of_parts(&[
-            b"hepta.cell-split.verified-independent-selection.v1",
+            b"hepta.cell-split.actual-ndu-and-independent-selection.v1",
             self.selection.selection_digest().as_array(),
             lifecycle.head_digest.as_array(),
+            ndu_receipt.evaluation_digest_v2.as_array(),
         ]);
-        Ok(self.handoff.advance(WriterHandoffAdvanceV1 {
+        let handoff = self.handoff.advance(WriterHandoffAdvanceV1 {
             phase: WriterHandoffPhaseV1::Validated,
             evidence_digest: evidence,
             outbox_watermark: None,
             unknown_effect_count: 0,
-        })?)
+        })?;
+        Ok(CellSplitSelectionExecutionReceiptV1 {
+            ndu: ndu_receipt,
+            handoff,
+        })
     }
 
     /// Invokes the real CNS replacement and observes its route fence before
