@@ -9,7 +9,7 @@ from jina_v5 import FrozenJinaV5, MODELS, validate_identity, verify_vector_matri
 from jina_v5_multimodal import audit_multimodal, paired_ranking, safe_media
 from jina_v5_trial import choose_train_rows, render_case
 from statistical_gate import qualify
-from q24_bridge import Q24, quantize_q24, shadow_feature_digest
+from q24_bridge import Q24, quantize_q24, shadow_feature_digest, rust_stem_feature_vector_digest_v1
 
 
 REV = "a" * 40
@@ -46,6 +46,11 @@ class Q24Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             quantize_q24([9.0])
         self.assertFalse(shadow_feature_digest([.5])["production_receipt_verified"])
+        self.assertEqual(
+            rust_stem_feature_vector_digest_v1([.5, -.25]),
+            "148ae0b91ab97729f72d745e989ac7b03614438cc6030edb2f79748049c70b59",
+        )
+        self.assertFalse(shadow_feature_digest([.5])["rust_owner_authenticated"])
 
 
 class StemTests(unittest.TestCase):
