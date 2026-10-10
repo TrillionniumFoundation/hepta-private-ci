@@ -176,6 +176,17 @@ impl WriterHandoffCheckpointV1 {
     pub fn rollback_predecessor(&self) -> Digest32 {
         self.plan.rollback_predecessor_digest
     }
+
+    /// The exact canonical serialized checkpoint record used by the fsynced
+    /// handoff journal, suitable for an independent Supervisor signing owner.
+    /// A caller cannot substitute a structurally plausible but uncommitted
+    /// digest: content integrity is checked before exposing receipt bytes.
+    pub fn canonical_receipt_bytes_v1(&self) -> Result<Vec<u8>, WriterHandoffErrorV1> {
+        if self.receipt_digest != checkpoint_digest(self) {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        encode_checkpoint(self)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
