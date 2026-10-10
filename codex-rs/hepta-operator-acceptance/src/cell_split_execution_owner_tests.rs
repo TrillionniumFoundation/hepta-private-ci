@@ -11,8 +11,10 @@ use super::CellSplitExecutionOwnerV1;
 use super::CellSplitExecutionPlanV1;
 use super::CellSplitExecutionPortV1;
 use super::CellSplitExecutionReceiptV1;
+use super::CellSplitExecutionStepV1;
 use super::CellSplitOwnerTrustV1;
 use super::cell_split_execution_signing_payload_v1;
+use super::make_intent;
 use super::receipt_digest;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
@@ -344,4 +346,144 @@ fn post_open_ledger_tampering_cannot_dispatch_a_successor() {
         Err(CellSplitExecutionErrorV1::Invalid(_))
     ));
     assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
+fn frozen_plan_modified_after_open_cannot_dispatch_any_external_effect() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(observed.clone()),
+    )
+    .expect("open");
+    fs::write(root.path().join("cell-split-frozen-plan.json"), b"{}")
+        .expect("mutate already opened plan");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(observed.borrow().executions, 0);
+}
+
+#[test]
+fn pending_intent_modified_after_lost_ack_cannot_be_reconciled() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(observed.clone());
+    port.drop_ack = true;
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert_eq!(observed.borrow().executions, 1);
+    let path = root.path().join("cell-split-00-prepared.json");
+    let mut intent: CellSplitExecutionIntentV1 =
+        serde_json::from_slice(&fs::read(&path).expect("read")).expect("intent");
+    intent.idempotency_key = "ee".repeat(32);
+    fs::write(&path, canonical_json(&intent).expect("encode")).expect("tamper");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(observed.borrow().executions, 1);
+}
+
+#[test]
+fn post_open_phantom_successor_is_rejected_before_external_cas() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(observed.clone()),
+    )
+    .expect("open");
+    fs::write(
+        root.path().join("cell-split-02-prepared.json"),
+        b"not an admitted successor",
+    )
+    .expect("insert phantom future frame");
+    assert!(owner.advance().is_err());
+    assert_eq!(observed.borrow().executions, 0);
+}
+
+#[test]
+fn forged_commit_after_lost_ack_never_permits_reexecution() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(observed.clone());
+    port.drop_ack = true;
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+    assert!(owner.advance().is_err());
+    let injected = FixturePort::receipt(&make_intent(
+        &plan(),
+        &plan().digest().expect("digest"),
+        CellSplitExecutionStepV1::ArtifactCas,
+        &plan().digest().expect("digest"),
+    ));
+    fs::write(
+        root.path().join("cell-split-00-committed.json"),
+        canonical_json(&injected).expect("receipt"),
+    )
+    .expect("unverified commit injection");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(observed.borrow().executions, 1);
+}
+
+#[test]
+fn oversized_encoded_receipt_is_denied_before_an_unreadable_commit_is_written() {
+    let request = make_intent(
+        &plan(),
+        &plan().digest().expect("plan digest"),
+        CellSplitExecutionStepV1::ArtifactCas,
+        &plan().digest().expect("plan digest"),
+    );
+    let mut proof = FixturePort::receipt(&request);
+    // 20 KiB of raw bytes serializes as >64 KiB of JSON integer tokens.
+    // The old raw-byte bound accepted it but replay could never read it.
+    proof.owner_receipt_bytes = vec![255; 20 * 1024];
+    proof.output_digest = sha256(&proof.owner_receipt_bytes);
+    proof.owner_signature_bytes = signing_key(0)
+        .sign(&cell_split_execution_signing_payload_v1(&proof).expect("payload"))
+        .to_bytes()
+        .to_vec();
+    proof.receipt_digest = receipt_digest(&proof).expect("digest");
+    assert!(matches!(
+        super::validate_receipt(&request, &proof),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+}
+
+#[test]
+fn noncanonical_but_semantically_equal_committed_frame_cannot_be_replayed() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("open");
+        owner.advance().expect("durably committed");
+    }
+    let path = root.path().join("cell-split-00-committed.json");
+    let mut bytes = fs::read(&path).expect("read");
+    bytes.push(b'\n');
+    fs::write(&path, bytes).expect("change JSON framing only");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state),),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
 }

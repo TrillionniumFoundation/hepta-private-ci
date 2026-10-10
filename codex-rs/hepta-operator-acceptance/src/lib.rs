@@ -2,6 +2,8 @@ mod cell_split_execution_owner;
 mod cell_split_target_host;
 mod cell_split_target_host_evidence;
 mod cell_split_target_host_runtime;
+#[cfg(unix)]
+mod cell_split_unix_port;
 mod ceremony;
 mod durable;
 mod evidence;
@@ -93,6 +95,12 @@ pub use cell_split_target_host_runtime::CellSplitTargetHostOperationReceiptV1;
 pub use cell_split_target_host_runtime::CellSplitTargetHostRuntimeV1;
 pub use cell_split_target_host_runtime::LocalCellSplitTargetHostRuntimeErrorV1;
 pub use cell_split_target_host_runtime::LocalCellSplitTargetHostRuntimeV1;
+#[cfg(unix)]
+pub use cell_split_unix_port::CellSplitUnixEndpointV1;
+#[cfg(unix)]
+pub use cell_split_unix_port::CellSplitUnixPortErrorV1;
+#[cfg(unix)]
+pub use cell_split_unix_port::CellSplitUnixPortV1;
 pub use g5_trust::G5_ASSESSMENT_SCHEMA;
 pub use g5_trust::G5_CHALLENGE_SCHEMA;
 pub use g5_trust::G5_CHALLENGE_SCOPE;

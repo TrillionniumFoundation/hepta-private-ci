@@ -79,7 +79,7 @@ pub struct CellSplitExecutionPlanV1 {
 }
 
 impl CellSplitExecutionPlanV1 {
-    fn validate(&self) -> Result<(), CellSplitExecutionErrorV1> {
+    pub(crate) fn validate(&self) -> Result<(), CellSplitExecutionErrorV1> {
         let mut distinct_owners = BTreeSet::new();
         if self.split_id.is_empty()
             || self.split_id.len() > 256
@@ -329,6 +329,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                     }
                     if let Some(bytes) = outcome {
                         let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
+                        if canonical_json(&receipt)? != bytes {
+                            return Err(CellSplitExecutionErrorV1::Invalid(
+                                "noncanonical committed receipt",
+                            ));
+                        }
                         validate_receipt(&intent, &receipt)?;
                         trust.verify(&intent, &receipt)?;
                         port.verify_committed(&intent, &receipt).map_err(|error| {
@@ -379,6 +384,48 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// rollback, stale route or post-open sidecar tamper must fence execution,
     /// even when the coordinator previously opened successfully.
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
+        // The in-memory plan and cursor are not authority over sidecar files.
+        // A post-open edit to the frozen plan or a pending/future frame must
+        // fence all external effects before the next RPC is dispatched.
+        let plan_path = self.root.join("cell-split-frozen-plan.json");
+        if read_frame(&plan_path)? != Some(canonical_json(&self.plan)?) {
+            return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
+        }
+        if self.cursor < STEP_COUNT {
+            let current_prepared = frame_path(&self.root, self.cursor, "prepared");
+            let current_committed = frame_path(&self.root, self.cursor, "committed");
+            if read_frame(&current_committed)?.is_some() {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "unreconciled committed frame",
+                ));
+            }
+            let expected = if self.pending {
+                let step = CellSplitExecutionStepV1::at(self.cursor)
+                    .ok_or(CellSplitExecutionErrorV1::Invalid("step index"))?;
+                Some(canonical_json(&make_intent(
+                    &self.plan,
+                    &self.plan_digest,
+                    step,
+                    &self.previous_receipt_digest,
+                ))?)
+            } else {
+                None
+            };
+            if read_frame(&current_prepared)? != expected {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "pending intent changed after open",
+                ));
+            }
+            for index in self.cursor + 1..STEP_COUNT {
+                if read_frame(&frame_path(&self.root, index, "prepared"))?.is_some()
+                    || read_frame(&frame_path(&self.root, index, "committed"))?.is_some()
+                {
+                    return Err(CellSplitExecutionErrorV1::Invalid(
+                        "uncommitted successor frame",
+                    ));
+                }
+            }
+        }
         let mut predecessor = self.plan_digest.clone();
         for index in 0..self.cursor {
             let step = CellSplitExecutionStepV1::at(index)
@@ -394,6 +441,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 CellSplitExecutionErrorV1::Invalid("missing committed receipt"),
             )?;
             let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
+            if canonical_json(&receipt)? != bytes {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "noncanonical committed receipt",
+                ));
+            }
             validate_receipt(&intent, &receipt)?;
             self.trust.verify(&intent, &receipt)?;
             self.port
@@ -429,6 +481,16 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 &canonical_json(&intent)?,
             )?;
             self.pending = true;
+        }
+        // Re-read the actual prepared frame before crossing the owner
+        // boundary. A forged "committed" sidecar never authorizes a retry.
+        if read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
+            != Some(canonical_json(&intent)?)
+            || read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "effect intent changed before dispatch",
+            ));
         }
         let receipt = if pending {
             self.port
@@ -486,6 +548,7 @@ fn validate_receipt(
         || receipt.owner_signature_bytes.len() != 64
         || receipt.output_digest != sha256(&receipt.owner_receipt_bytes)
         || receipt.owner_receipt_bytes.len() > MAX_RECORD_BYTES / 2
+        || canonical_json(receipt)?.len() > MAX_RECORD_BYTES
         || receipt.owner_signature_bytes.len() > 4096
         || receipt.receipt_digest != receipt_digest(receipt)?
     {
