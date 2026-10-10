@@ -5,7 +5,6 @@ execution plan, test question or answer file. Targets are deterministic projecti
 of the controlled event schema, not independent natural-language annotations.
 """
 
-from contextlib import nullcontext
 from dataclasses import asdict
 from datetime import datetime
 import json
@@ -16,6 +15,7 @@ from bundle_reader import GENERATION, PromptBudgetError
 from event_projection import EventProjection, Lookup
 from event_reader_view import event_prompt
 from event_revision_closure import select_current
+from experience_inference import frozen_adapter_mode
 from native import Question, digest
 from reader_reference import ReferenceReader
 
@@ -294,10 +294,14 @@ class ExperienceReader(ReferenceReader):
             or self.roots.intersection(kwargs["revoked"])
         ):
             raise ValueError("unavailable or withdrawn knowledge module")
-        with nullcontext() if mode == "memory" else self.model.disable_adapter():
-            answer, receipt = super().answer(query, bundle, originals, **kwargs)
-        if self.roots.intersection(kwargs["revoked"]):
-            raise ValueError("source withdrawn during read")
+        try:
+            with frozen_adapter_mode(self.model, enabled=mode == "memory"):
+                answer, receipt = super().answer(query, bundle, originals, **kwargs)
+            if self.roots.intersection(kwargs["revoked"]):
+                raise ValueError("source withdrawn during read")
+        except Exception:
+            self.quarantined, self.scope = True, None
+            raise
         return answer, receipt | dict(
             knowledge_module_enabled=mode == "memory",
             parameter_lineage_is_not_citation=True,
