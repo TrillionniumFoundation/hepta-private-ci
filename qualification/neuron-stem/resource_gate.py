@@ -64,7 +64,7 @@ def verify_summary(summary):
         raise ValueError("missing reproducible target environment")
     if not finite_positive(summary.get("observed_total_physical_ram_bytes")):
         raise ValueError("missing physical host RAM observation")
-    groups = summary.get("scales", {}).get("scales", [])
+    groups = summary.get("scales", [])
     if not groups or len(groups) != 1:
         raise ValueError("exactly one scale/workload cohort per output required")
     entry = groups[0]
@@ -110,7 +110,7 @@ def paired_resource_gate(reference, candidate, budget):
     if reference["observed_total_physical_ram_bytes"] != candidate["observed_total_physical_ram_bytes"]:
         raise ValueError("different host physical RAM")
     for field in ("input_repeat_fraction", "active_fraction", "task_similarity"):
-        if reference["scales"]["scales"][0][field] != candidate["scales"]["scales"][0][field]:
+        if reference["scales"][0][field] != candidate["scales"][0][field]:
             raise ValueError("scale cohort mismatch: " + field)
     if reference["model"] == candidate["model"] and reference["revision"] == candidate["revision"]:
         raise ValueError("reference and candidate should test distinct registered Stems")
