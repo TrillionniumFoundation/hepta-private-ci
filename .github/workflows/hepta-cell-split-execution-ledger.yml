@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'codex-rs/hepta-operator-acceptance/**'
+      - 'codex-rs/hepta-intelligence-eval/**'
+      - 'CALLERS.toml'
       - '.github/workflows/hepta-cell-split-execution-ledger.yml'
   workflow_dispatch:
 
@@ -49,11 +51,16 @@ jobs:
         run: |
           set -euo pipefail
           just test --locked -p codex-hepta-operator-acceptance --lib
+      - name: Regress independent Cell Split lifecycle and crash replay
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-intelligence-eval --lib -E 'test(cell_split_automation::tests)'
       - name: Ensure scoped Rust formatting is canonical
         working-directory: codex-rs
         run: |
           set -euo pipefail
-          cargo fmt --package codex-hepta-operator-acceptance -- --check
+          cargo fmt --package codex-hepta-operator-acceptance --package codex-hepta-intelligence-eval -- --check
       - name: Ensure exact source was not modified by tests
         if: always()
         run: |
