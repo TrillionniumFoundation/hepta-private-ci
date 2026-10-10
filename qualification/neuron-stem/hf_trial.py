@@ -28,11 +28,12 @@ def make_head(torch, nn, kind, width, classes, budget):
     class Film(nn.Module):
         def __init__(self):
             super().__init__()
-            self.gate = nn.Linear(width, width)
+            self.scale = nn.Parameter(torch.zeros(width))
+            self.shift = nn.Parameter(torch.zeros(width))
             self.output = nn.Linear(width, classes)
 
         def forward(self, x):
-            return self.output(x * torch.sigmoid(self.gate(x)))
+            return self.output(x * torch.sigmoid(x * self.scale + self.shift))
 
     class SwiGLU(nn.Module):
         def __init__(self, inner):
@@ -53,17 +54,15 @@ def make_head(torch, nn, kind, width, classes, budget):
         module = nn.Sequential(nn.Linear(width, rank), nn.SiLU(), nn.Linear(rank, classes))
     elif kind in ("mlp", "swiglu"):
         # Largest hidden dimension under the exact head parameter ceiling.
-        best = None
-        for inner in range(1, 4097):
-            candidate = (nn.Sequential(nn.Linear(width, inner), nn.GELU(),
-                                       nn.Linear(inner, classes)) if kind == "mlp"
-                         else SwiGLU(inner))
-            if sum(p.numel() for p in candidate.parameters()) > budget:
-                break
-            best = candidate
-        if best is None:
+        # Parameter arithmetic avoids allocating thousands of throwaway layers.
+        per_hidden = (width + classes + 1 if kind == "mlp"
+                      else 2 * width + classes + 2)
+        inner = min(4096, (budget - classes) // per_hidden)
+        if inner < 1:
             raise ValueError("budget too small for this head")
-        module = best
+        module = (nn.Sequential(nn.Linear(width, inner), nn.GELU(),
+                                nn.Linear(inner, classes)) if kind == "mlp"
+                  else SwiGLU(inner))
     else:
         raise ValueError(f"unknown head: {kind}")
     parameters = sum(p.numel() for p in module.parameters())
@@ -243,6 +242,13 @@ def trial(args):
         temperatures = (.5, .75, 1., 1.25, 1.5, 2., 3., 4., 6.)
         temperature = min(temperatures,
                           key=lambda t: nn.functional.cross_entropy(logit_stack / t, y).item())
+    # Bind output identity to actual trained bytes, not hyperparameters alone.
+    effective_hash = hashlib.sha256()
+    for name, layer in (("organ_projection", projection), ("cell_head", head)):
+        for key, value in sorted(layer.state_dict().items()):
+            effective_hash.update(f"{name}:{key}".encode("utf-8"))
+            effective_hash.update(value.detach().cpu().contiguous().numpy().tobytes())
+    trained_head_digest = effective_hash.hexdigest()
     records = []
     process = psutil.Process()
     for row in dataset:
@@ -258,8 +264,7 @@ def trial(args):
             "case_id": row["case_id"], "model_id": args.model,
             "model_revision": args.revision,
             "encoder_digest": digest([STEMS[args.model], args.revision, args.mode]),
-            "head_digest": digest([args.head, args.budget, args.steps, args.seed,
-                                   args.shots, args.task_id]),
+            "head_digest": trained_head_digest,
             "runtime_generation": 1, "scope_id": row["scope_id"],
             "status": "Succeeded", "probabilities": probs,
             "execution_path": path, "latency_ms": encoder_ms + head_ms,
@@ -281,6 +286,7 @@ def trial(args):
         "model_revision": args.revision,
         "mode": args.mode, "head": args.head, "max_head_parameters": args.budget,
         "actual_head_parameters": head_params,
+        "trained_head_sha256": trained_head_digest,
         "organ_projection_parameters": sum(p.numel() for p in projection.parameters()),
         "steps": args.steps, "shots": args.shots, "batch_size": args.batch_size,
         "seed": args.seed, "device": args.device, "threads": args.threads,
