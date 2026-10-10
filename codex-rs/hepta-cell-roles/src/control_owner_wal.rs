@@ -24,6 +24,51 @@ enum Event {
 }
 
 impl Event {
+    /// Construct only the records/fences needed to evaluate this event.
+    /// The canonical in-memory state machine remains the validation oracle,
+    /// but validation no longer clones up to 65,536 unrelated dispatches.
+    fn local_preview(&self, owner: &InMemoryControlRoleOwnerV1) -> InMemoryControlRoleOwnerV1 {
+        let mut preview = InMemoryControlRoleOwnerV1 {
+            next_sequence: owner.next_sequence,
+            now_ms: owner.now_ms,
+            ..InMemoryControlRoleOwnerV1::default()
+        };
+        match self {
+            Self::Clock(_) => {}
+            Self::Generation(cell_id, _, _) => {
+                if let Some(binding) = owner.active_generations.get(cell_id) {
+                    preview.active_generations.insert(cell_id.clone(), *binding);
+                }
+            }
+            Self::Prepare(intent) => {
+                if let Some(record) = owner.records.get(&intent.dispatch_id) {
+                    preview.records.insert(intent.dispatch_id.clone(), record.clone());
+                }
+                if let Some(id) = owner.idempotency_index.get(&intent.idempotency_key_digest) {
+                    preview
+                        .idempotency_index
+                        .insert(intent.idempotency_key_digest, id.clone());
+                }
+                if let Some(binding) = owner.active_generations.get(&intent.cell_id) {
+                    preview.active_generations.insert(intent.cell_id.clone(), *binding);
+                }
+            }
+            Self::Forward(dispatch_id)
+            | Self::Terminal(dispatch_id, _)
+            | Self::Reconcile(dispatch_id) => {
+                if let Some(record) = owner.records.get(dispatch_id) {
+                    if let Some(binding) = owner.active_generations.get(&record.intent.cell_id) {
+                        preview
+                            .active_generations
+                            .insert(record.intent.cell_id.clone(), *binding);
+                    }
+                    preview.records.insert(dispatch_id.clone(), record.clone());
+                }
+            }
+        }
+        preview
+    }
+
     fn encode(&self) -> Result<Vec<u8>, ControlOwnerErrorV1> {
         let mut bytes = Vec::new();
         match self {
@@ -236,11 +281,16 @@ impl IncrementalControlRoleWalV2 {
         }
         // Successor validation and operation encoding happen outside the OS
         // writer lock; only the bounded append/fsync owns that lock.
-        let mut successor = self.inner.clone();
+        let baseline = operation.local_preview(&self.inner);
+        let mut successor = baseline.clone();
         let result = operation.apply(&mut successor)?;
-        if successor.records.len() > DURABLE_CONTROL_MAX_RECORDS_V1 {
+        if self.inner.records.len() > DURABLE_CONTROL_MAX_RECORDS_V1
+            || (successor.records.len() > baseline.records.len()
+                && self.inner.records.len() >= DURABLE_CONTROL_MAX_RECORDS_V1)
+        {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
         }
+        let changed = successor != baseline;
         let payload = operation.encode()?;
         let _lock = lock_durable_control_writer(&self.path)?;
         reject_durable_path(&self.path)?;
@@ -269,7 +319,7 @@ impl IncrementalControlRoleWalV2 {
                 return Err(ControlOwnerErrorV1::StaleWriter);
             }
         }
-        if successor == self.inner {
+        if !changed {
             return Ok(result);
         }
         let next_sequence = self
@@ -304,7 +354,16 @@ impl IncrementalControlRoleWalV2 {
             self.poisoned = true;
             return Err(ControlOwnerErrorV1::DurableIo);
         }
-        self.inner = successor;
+        // The full owner is mutated only after the WAL fsync succeeds.
+        // Preview and committed application use the same checked state machine.
+        // If this replay can no longer agree, fence the writer for inspection.
+        match operation.apply(&mut self.inner) {
+            Ok(committed) if committed == result => {}
+            _ => {
+                self.poisoned = true;
+                return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+            }
+        }
         self.sequence = next_sequence;
         self.head = next_head;
         self.size = next_size;
