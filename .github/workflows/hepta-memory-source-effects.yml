@@ -1,0 +1,79 @@
+name: MemoryCell source-write effect contracts
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_write_effects.py"
+      - "scripts/memory_cell/test_source_write_effects.py"
+      - ".github/workflows/hepta-memory-source-effects.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  exact-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Execute focused contracts before installing model dependencies
+        run: |
+          set -euo pipefail
+          mkdir /tmp/source-effect-validation
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_effects.py' -v 2>&1 | tee /tmp/source-effect-validation/focused.log
+      - name: Pin the original full regression environment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/source-effect-input.zip
+          python3 - <<'PY'
+          import hashlib, zipfile
+          from pathlib import Path
+          raw = Path('/tmp/source-effect-input.zip').read_bytes()
+          assert len(raw) < 64 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/source-effect-input.zip') as z:
+              env = z.read('environment.txt')
+              assert len(env) < 64 * 1024
+              Path('/tmp/source-effect-validation/expected-environment.txt').write_bytes(env)
+          PY
+          python3 -m venv /tmp/source-effect-python
+          /tmp/source-effect-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/source-effect-python/bin/pip install -r /tmp/source-effect-validation/expected-environment.txt
+          /tmp/source-effect-python/bin/pip freeze > /tmp/source-effect-validation/environment.txt
+          diff -u /tmp/source-effect-validation/expected-environment.txt /tmp/source-effect-validation/environment.txt
+      - name: Run the complete inherited regression census
+        run: |
+          set -euo pipefail
+          /tmp/source-effect-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/source-effect-validation/tests.log
+      - name: Require unchanged repository formatting gates
+        if: always()
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/source-effect-validation/format.log
+      - name: Preserve exact tested source and all observed failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-effect-validation/source
+          cp scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py /tmp/source-effect-validation/source/
+          git rev-parse HEAD > /tmp/source-effect-validation/tested-commit.txt
+          (cd /tmp/source-effect-validation && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-effect-validation
+          path: /tmp/source-effect-validation
+          if-no-files-found: error

@@ -40,7 +40,7 @@ jobs:
           cat /tmp/source-write-format.log
           if [ "$status" -ne 0 ]; then
             just fmt --base "$BASE"
-            git diff -- scripts/memory_cell/experience_policy.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/test_experience_policy.py > /tmp/source-write-format.diff
+            git diff -- scripts/memory_cell/experience_policy.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/test_experience_policy.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py > /tmp/source-write-format.diff
           fi
           exit "$status"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -132,7 +132,6 @@ jobs:
           from pathlib import Path
           from event_experience import SEED
           from native import digest
-          # The original generator used i=0..7 for calibration; no task is opened.
           Path('/tmp/experience-result/policy-scopes.json').write_text(json.dumps([
               'controlled_' + digest((SEED, i))[:8] for i in range(8)
           ]))
@@ -146,12 +145,16 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/read-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py read /tmp/experience-input/plan /tmp/experience-input/observations /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/tasks --plan-sha "$PLAN_SHA" --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --policy /tmp/experience-result/read-policy.json --policy-sha "$(sha256sum /tmp/experience-result/read-policy.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/read.log
+      - name: Recompute seven-arm knowledge and policy effects from original answers
+        run: |
+          set -euo pipefail
+          /tmp/experience-python/bin/python scripts/memory_cell/source_write_effects.py /tmp/experience-input/plan /tmp/experience-input/observations /tmp/experience-result --plan-sha "$PLAN_SHA" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee /tmp/experience-result/effects.log
       - name: Preserve original responses, exact source, costs and failed runs
         if: always()
         run: |
           set -euo pipefail
           mkdir -p /tmp/experience-result/source
-          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py /tmp/experience-result/source/
+          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py /tmp/experience-result/source/
           git rev-parse HEAD > /tmp/experience-result/tested-commit.txt
           # Base and research-derived model weights are not redistributed.
           find /tmp/experience-result -name '*.safetensors' -delete
