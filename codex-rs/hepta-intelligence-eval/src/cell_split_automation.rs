@@ -1451,11 +1451,30 @@ where
     if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
         match executor.retire(split) {
             Ok(retirement_digest) if retirement_digest == split.retirement.tombstone_digest => {
-                // A successful callback alone cannot prove the committed
-                // tombstone matches the frozen retirement plan. Fail closed
-                // rather than recording Retired under an unrelated digest.
-                journal.retire(split)?;
-                owner.commit(&journal)?;
+                // A callback's digest cannot attest to a durable physical
+                // tombstone. Before crossing Retained -> Retired, require a
+                // separate *read-only* observation from the authoritative
+                // tombstone owner. Uncertain outcomes remain Retained, and a
+                // restart may only reconcile; it must never repeat retire().
+                let observed = executor
+                    .observe_retirement(split)
+                    .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?;
+                match observed {
+                    Some(digest) if digest == split.retirement.tombstone_digest => {
+                        journal.retire(split)?;
+                        owner.commit(&journal)?;
+                    }
+                    Some(_) => {
+                        return Err(CellSplitAutomationErrorV1::Binding(
+                            "retirement readback receipt",
+                        ));
+                    }
+                    None => {
+                        return Err(CellSplitAutomationErrorV1::Binding(
+                            "retirement readback missing",
+                        ));
+                    }
+                }
             }
             Ok(_) => {
                 // A mismatched receipt does not prove that rollback ran.
@@ -1738,6 +1757,13 @@ mod tests {
             self.retired = true;
             Ok(split.retirement.tombstone_digest)
         }
+
+        fn observe_retirement(
+            &mut self,
+            split: &CellSplitV1,
+        ) -> Result<Option<Digest32>, Self::Error> {
+            Ok(self.retired.then_some(split.retirement.tombstone_digest))
+        }
     }
 
     fn proposal(split: &CellSplitV1) -> CellSplitProposalReceiptV1 {
@@ -1933,6 +1959,62 @@ mod tests {
         ));
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
+    }
+
+    #[test]
+    fn retirement_callback_without_durable_readback_stays_retained_and_is_not_replayed() {
+        struct UnobservedRetirement {
+            retire_calls: u32,
+        }
+        impl CellSplitAutomationExecutorV1 for UnobservedRetirement {
+            type Error = &'static str;
+
+            fn evaluate(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                Ok(crate::cell_split_evaluation::test_receipt_for_lifecycle(
+                    split,
+                    CellSplitEvaluationDispositionV1::EligibleForCanary,
+                ))
+            }
+
+            fn canary(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                Executor::default().canary(split)
+            }
+
+            fn retire(&mut self, split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                self.retire_calls += 1;
+                Ok(split.retirement.tombstone_digest)
+            }
+            // No durable owner readback: the default is intentionally None.
+        }
+
+        let split = split();
+        let proposal = proposal(&split);
+        let mut owner = CellSplitInMemoryJournalOwnerV1::default();
+        let mut executor = UnobservedRetirement { retire_calls: 0 };
+        assert!(matches!(
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor),
+            Err(CellSplitAutomationErrorV1::Binding("retirement readback missing"))
+        ));
+        assert_eq!(executor.retire_calls, 1);
+        assert_eq!(
+            owner.load(&split.split_id).unwrap().unwrap().current_state,
+            CellSplitLifecycleStateV1::Retained
+        );
+        // Read-only recovery cannot silently issue a second tombstone effect.
+        let retried = run_cell_split_automation_v1(
+            &split,
+            &proposal,
+            &mut owner,
+            &mut executor,
+        ).expect("read-only uncertain result");
+        assert_eq!(retried.state, CellSplitLifecycleStateV1::Retained);
+        assert_eq!(executor.retire_calls, 1);
     }
 
     #[test]
