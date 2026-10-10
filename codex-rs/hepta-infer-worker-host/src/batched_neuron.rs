@@ -87,6 +87,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metric_writes: u64,
     maximum_ids: usize,
 }
 
@@ -171,6 +172,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            failed_metric_writes: 0,
             maximum_ids: MAX_WORKER_RETIRED_IDS,
         })
     }
@@ -182,6 +184,25 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
     pub fn pending(&self) -> usize {
         self.pending.len()
+    }
+
+    /// Telemetry is advisory for effects but mandatory for production
+    /// readiness. A previous backpressure/record error remains observable
+    /// even if a custom sink incorrectly keeps reporting healthy.
+    pub fn production_metrics_ready(&self) -> bool {
+        self.failed_metric_writes == 0
+            && self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
+    }
+
+    pub fn failed_metric_writes(&self) -> u64 {
+        self.failed_metric_writes
+    }
+
+    pub fn flush_production_metrics(&mut self) -> bool {
+        if !self.metric_sink.as_ref().is_some_and(|sink| sink.flush().is_ok()) {
+            self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
+        }
+        self.production_metrics_ready()
     }
 
     /// Admission copies no feature vector; queued payloads share Arc<[i64]>.
@@ -200,13 +221,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
         let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
         if let Some(sink) = &self.metric_sink {
-            let _ = sink.record(PhaseMetricEventV1 {
+            if sink.record(PhaseMetricEventV1 {
                 scope_digest,
                 operation_digest,
                 phase: PhaseMetricKindV1::Admission,
                 latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
                 succeeded: result.is_ok(),
-            });
+            }).is_err() {
+                    self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
+                }
         }
         result
     }
@@ -284,14 +307,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             // One phase sample per admitted request, not just the first
             // member of a batch (which would silently undercount throughput).
             for intent in &batch.requests {
-                let _ = sink.record(PhaseMetricEventV1 {
+                if sink.record(PhaseMetricEventV1 {
                     scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                     operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
                     phase: PhaseMetricKindV1::Microbatch,
                     latency_micros: u64::try_from(started.elapsed().as_micros())
                         .unwrap_or(u64::MAX),
                     succeeded: true,
-                });
+                }).is_err() {
+                    self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
+                }
             }
         }
         for id in &poll.expired_request_ids {
@@ -340,7 +365,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
                                 });
                                 if let Some(sink) = &self.metric_sink {
-                                    let _ = sink.record(PhaseMetricEventV1 {
+                                    if sink.record(PhaseMetricEventV1 {
                                         scope_digest: Digest32::of_bytes(
                                             batch.key.scope_id.as_str().as_bytes(),
                                         ),
@@ -355,7 +380,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                             Ok(receipt) if receipt.status
                                                 == NeuronFeatureTerminalStatusV1::Succeeded
                                         ),
-                                    });
+                                    }).is_err() {
+                    self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
+                }
                                 }
                                 result
                             }
@@ -481,7 +508,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .zip(results.drain(..))
             .map(|((intent, _), result)| {
                 if let Some(sink) = &self.metric_sink {
-                    let _ = sink.record(PhaseMetricEventV1 {
+                    if sink.record(PhaseMetricEventV1 {
                         scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                         operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
                         phase: PhaseMetricKindV1::NeuronFeature,
@@ -492,7 +519,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                             Ok(receipt) if receipt.status
                                 == NeuronFeatureTerminalStatusV1::Succeeded
                         ),
-                    });
+                    }).is_err() {
+                    self.failed_metric_writes = self.failed_metric_writes.saturating_add(1);
+                }
                 }
                 BatchWorkerItemOutcomeV1 {
                     request_id: intent.request_id,
