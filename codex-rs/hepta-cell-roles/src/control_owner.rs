@@ -1305,10 +1305,37 @@ mod tests {
         );
     }
 
+    struct DurableTestDirectory(std::path::PathBuf);
+
+    impl DurableTestDirectory {
+        fn new() -> Self {
+            let root = std::env::temp_dir().join(format!(
+                "hepta-control-exclusive-{}-{}",
+                std::process::id(),
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .expect("clock")
+                    .as_nanos()
+            ));
+            std::fs::create_dir(&root).expect("test directory");
+            Self(root)
+        }
+
+        fn file(&self) -> std::path::PathBuf {
+            self.0.join("control")
+        }
+    }
+
+    impl Drop for DurableTestDirectory {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+
     #[test]
     fn durable_control_stale_open_owner_cannot_overwrite_newer_state() {
-        let root = tempfile::tempdir().expect("tempdir");
-        let path = root.path().join("control");
+        let root = DurableTestDirectory::new();
+        let path = root.file();
         let mut first = DurableControlRoleOwnerV1::open(&path).expect("first");
         let mut second = DurableControlRoleOwnerV1::open(&path).expect("second");
         first
@@ -1335,8 +1362,8 @@ mod tests {
 
     #[test]
     fn durable_control_rejects_os_writer_lock_contention() {
-        let root = tempfile::tempdir().expect("tempdir");
-        let path = root.path().join("control");
+        let root = DurableTestDirectory::new();
+        let path = root.file();
         let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open");
         let guard = lock_durable_control_writer(&path).expect("hold lock");
         assert_eq!(
@@ -1355,8 +1382,8 @@ mod tests {
 
     #[test]
     fn idempotent_durable_control_retry_does_not_rewrite_snapshot() {
-        let root = tempfile::tempdir().expect("tempdir");
-        let path = root.path().join("control");
+        let root = DurableTestDirectory::new();
+        let path = root.file();
         let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open");
         owner
             .prepare(intent(ControlOperationKindV1::Planner))
