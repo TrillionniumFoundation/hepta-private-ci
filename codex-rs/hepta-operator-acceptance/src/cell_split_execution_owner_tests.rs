@@ -12,9 +12,9 @@ use super::CellSplitExecutionPlanV1;
 use super::CellSplitExecutionPortV1;
 use super::CellSplitExecutionReceiptV1;
 use super::CellSplitExecutionStepV1;
-use super::make_intent;
 use super::CellSplitOwnerTrustV1;
 use super::cell_split_execution_signing_payload_v1;
+use super::make_intent;
 use super::receipt_digest;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
@@ -348,7 +348,6 @@ fn post_open_ledger_tampering_cannot_dispatch_a_successor() {
     assert_eq!(state.borrow().executions, 1);
 }
 
-
 #[test]
 fn frozen_plan_modified_after_open_cannot_dispatch_any_external_effect() {
     let root = private_tempdir();
@@ -441,7 +440,6 @@ fn forged_commit_after_lost_ack_never_permits_reexecution() {
     assert_eq!(observed.borrow().executions, 1);
 }
 
-
 #[test]
 fn oversized_encoded_receipt_is_denied_before_an_unreadable_commit_is_written() {
     let request = make_intent(
@@ -485,12 +483,7 @@ fn noncanonical_but_semantically_equal_committed_frame_cannot_be_replayed() {
     bytes.push(b'\n');
     fs::write(&path, bytes).expect("change JSON framing only");
     assert!(matches!(
-        CellSplitExecutionOwnerV1::open(
-            root.path(),
-            plan(),
-            trust(),
-            FixturePort::new(state),
-        ),
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state),),
         Err(CellSplitExecutionErrorV1::Invalid(_))
     ));
 }
