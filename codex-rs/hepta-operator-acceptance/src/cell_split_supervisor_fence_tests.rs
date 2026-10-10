@@ -80,10 +80,11 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
         &mut self,
         _supervisor_id: &str,
         _domain_id: &str,
+        challenge_nonce: &str,
     ) -> Result<CellSplitSupervisorLiveFenceV1, Self::Error> {
         let state = self.snapshot();
         let signature = self.signer.sign(
-            &canonical_json(&state).map_err(|e| e.to_string())?
+            &canonical_json(&(&state, challenge_nonce)).map_err(|e| e.to_string())?
         );
         Ok(CellSplitSupervisorLiveFenceV1 {
             supervisor_id: state.supervisor_id,
@@ -99,6 +100,7 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
             new_writer_admission_open: state.new_admission_open,
             unknown_effect_count: state.unknown_effects,
             current_revision: state.revision,
+            challenge_nonce: challenge_nonce.to_owned(),
             signed_live_checkpoint_bytes: signature.to_bytes().to_vec(),
         })
     }
@@ -127,7 +129,7 @@ impl CellSplitSupervisorRuntimePortV1 for DiskSupervisor {
         let signature = Signature::from_slice(&observed.signed_live_checkpoint_bytes)
             .map_err(|e| e.to_string())?;
         self.signer.verifying_key().verify_strict(
-            &canonical_json(&current).map_err(|e| e.to_string())?,
+            &canonical_json(&(&current, &observed.challenge_nonce)).map_err(|e| e.to_string())?,
             &signature,
         ).map_err(|e| e.to_string())
     }
