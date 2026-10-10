@@ -381,8 +381,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
         // A live coordinator must also re-validate its immutable plan before
         // every effect; validating it only at open leaves a post-open window.
-        let frozen = read_frame(&self.root.join("cell-split-frozen-plan.json"))?
-            .ok_or(CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"))?;
+        let frozen = read_frame(&self.root.join("cell-split-frozen-plan.json"))?.ok_or(
+            CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"),
+        )?;
         if frozen != canonical_json(&self.plan)? {
             return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
         }
@@ -433,8 +434,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if pending {
             // A lost acknowledgement cannot permit replacing or deleting the
             // prepared intent while this owner remains alive.
-            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
-                .ok_or(CellSplitExecutionErrorV1::Invalid("pending intent disappeared"))?;
+            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("pending intent disappeared"),
+            )?;
             if prepared != canonical_json(&intent)? {
                 return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
             }

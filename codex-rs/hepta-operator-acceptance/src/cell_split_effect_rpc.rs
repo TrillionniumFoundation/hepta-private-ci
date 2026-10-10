@@ -29,8 +29,7 @@ use crate::CellSplitExecutionPortV1;
 use crate::CellSplitExecutionReceiptV1;
 use crate::durable::canonical_json;
 
-pub const CELL_SPLIT_EFFECT_RPC_SCHEMA_V1: &str =
-    "hepta.learning.cell-split.effect-rpc.v1";
+pub const CELL_SPLIT_EFFECT_RPC_SCHEMA_V1: &str = "hepta.learning.cell-split.effect-rpc.v1";
 pub const CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1: &str =
     "hepta.learning.cell-split.effect-readback.v1";
 const MAX_FRAME_BYTES: usize = 256 * 1024;
@@ -131,7 +130,9 @@ impl CellSplitUnixEffectPortV1 {
         }
         for (path, key) in endpoints.iter().zip(verifying_keys.iter()) {
             if !path.is_absolute()
-                || path.components().any(|part| matches!(part, Component::ParentDir))
+                || path
+                    .components()
+                    .any(|part| matches!(part, Component::ParentDir))
                 || !paths.insert(path)
                 || !keys.insert(key.to_bytes())
             {
@@ -206,9 +207,9 @@ impl CellSplitUnixEffectPortV1 {
             CellSplitEffectRpcActionV1::ReadBack,
             Some(nonce.clone()),
         )?;
-        let readback = response.readback.ok_or(
-            CellSplitEffectRpcErrorV1::Invalid("missing current-owner readback"),
-        )?;
+        let readback = response.readback.ok_or(CellSplitEffectRpcErrorV1::Invalid(
+            "missing current-owner readback",
+        ))?;
         if readback.schema != CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1
             || &readback.intent != intent
             || readback.challenge_nonce != nonce
@@ -253,9 +254,9 @@ impl CellSplitExecutionPortV1 for CellSplitUnixEffectPortV1 {
                 "mutation response cannot substitute for state readback",
             ));
         }
-        let receipt = response.receipt.ok_or(
-            CellSplitEffectRpcErrorV1::Invalid("missing owner effect receipt"),
-        )?;
+        let receipt = response.receipt.ok_or(CellSplitEffectRpcErrorV1::Invalid(
+            "missing owner effect receipt",
+        ))?;
         if receipt.intent != *intent {
             return Err(CellSplitEffectRpcErrorV1::Invalid(
                 "owner committed a different intent",
@@ -291,7 +292,9 @@ fn send_frame<T: Serialize>(
 ) -> Result<(), CellSplitEffectRpcErrorV1> {
     let body = serde_json::to_vec(value)?;
     if body.is_empty() || body.len() > MAX_FRAME_BYTES {
-        return Err(CellSplitEffectRpcErrorV1::Invalid("outbound RPC frame too large"));
+        return Err(CellSplitEffectRpcErrorV1::Invalid(
+            "outbound RPC frame too large",
+        ));
     }
     stream.write_all(&(body.len() as u32).to_be_bytes())?;
     stream.write_all(&body)?;
@@ -306,7 +309,9 @@ fn receive_frame<T: DeserializeOwned>(
     stream.read_exact(&mut length)?;
     let length = u32::from_be_bytes(length) as usize;
     if length == 0 || length > MAX_FRAME_BYTES {
-        return Err(CellSplitEffectRpcErrorV1::Invalid("inbound RPC frame too large"));
+        return Err(CellSplitEffectRpcErrorV1::Invalid(
+            "inbound RPC frame too large",
+        ));
     }
     let mut body = vec![0u8; length];
     stream.read_exact(&mut body)?;
@@ -334,7 +339,10 @@ mod tests {
         }
     }
 
-    fn committed(intent: &CellSplitExecutionIntentV1, key: &SigningKey) -> CellSplitExecutionReceiptV1 {
+    fn committed(
+        intent: &CellSplitExecutionIntentV1,
+        key: &SigningKey,
+    ) -> CellSplitExecutionReceiptV1 {
         let bytes = serde_json::to_vec(intent).expect("receipt bytes");
         let mut receipt = CellSplitExecutionReceiptV1 {
             intent: intent.clone(),
@@ -360,8 +368,7 @@ mod tests {
         let cas_socket = root.path().join("cas.sock");
         let listener = UnixListener::bind(&cas_socket).expect("owner socket");
         let signer = SigningKey::from_bytes(&[1u8; 32]);
-        let keys = [1u8, 2, 3, 4]
-            .map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let keys = [1u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
         let thread = thread::spawn(move || {
             let mut committed_receipt = None;
             for _ in 0..3 {
@@ -386,7 +393,10 @@ mod tests {
                             owner_signature_bytes: Vec::new(),
                         };
                         proof.owner_signature_bytes = signer
-                            .sign(&cell_split_effect_readback_signing_payload_v1(&proof).expect("payload"))
+                            .sign(
+                                &cell_split_effect_readback_signing_payload_v1(&proof)
+                                    .expect("payload"),
+                            )
                             .to_bytes()
                             .to_vec();
                         (Some(receipt), Some(proof))
@@ -418,16 +428,20 @@ mod tests {
         .expect("trusted distinct endpoints");
         let intent = intent();
         let receipt = client.execute(&intent).expect("real socket execute");
-        client.verify_committed(&intent, &receipt).expect("first readback");
-        assert_eq!(client.reconcile(&intent).expect("recovery readback"), Some(receipt));
+        client
+            .verify_committed(&intent, &receipt)
+            .expect("first readback");
+        assert_eq!(
+            client.reconcile(&intent).expect("recovery readback"),
+            Some(receipt)
+        );
         thread.join().expect("owner done");
     }
 
     #[test]
     fn refuse_missing_owner_without_synthesizing_an_effect() {
         let root = tempfile::tempdir().expect("root");
-        let keys = [1u8, 2, 3, 4]
-            .map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let keys = [1u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
         let mut client = CellSplitUnixEffectPortV1::new(
             [
                 root.path().join("cas.sock"),

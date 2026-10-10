@@ -357,9 +357,11 @@ fn post_open_frozen_plan_tampering_fences_first_effect() {
         FixturePort::new(state.clone()),
     )
     .expect("open");
-    fs::write(root.path().join("cell-split-frozen-plan.json"), b"{}")
-        .expect("tamper plan");
-    assert!(matches!(owner.advance(), Err(CellSplitExecutionErrorV1::Invalid(_))));
+    fs::write(root.path().join("cell-split-frozen-plan.json"), b"{}").expect("tamper plan");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
     assert_eq!(state.borrow().executions, 0);
 }
 
@@ -369,11 +371,13 @@ fn post_open_pending_intent_tampering_cannot_reconcile_or_dispatch() {
     let state = Rc::new(RefCell::new(Observed::default()));
     let mut port = FixturePort::new(state.clone());
     port.drop_ack = true;
-    let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
-        .expect("open");
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
     assert!(owner.advance().is_err());
-    fs::write(root.path().join("cell-split-00-prepared.json"), b"{}")
-        .expect("tamper pending");
-    assert!(matches!(owner.advance(), Err(CellSplitExecutionErrorV1::Invalid(_))));
+    fs::write(root.path().join("cell-split-00-prepared.json"), b"{}").expect("tamper pending");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
     assert_eq!(state.borrow().executions, 1);
 }
