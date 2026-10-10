@@ -38,12 +38,27 @@ def shadow_feature_bytes(q24):
     return raw
 
 
+def rust_stem_feature_vector_digest_v1(features):
+    """Exact cross-language digest of Rust StemFeatureRefV1's Q24 vector.
+
+    This is only a content-binding digest, NOT a Rust or NDU signature.
+    """
+    q24 = quantize_q24(features)
+    raw = b"hepta.inference.stem-feature-vector.v1"
+    raw += len(q24).to_bytes(4, "big")
+    for value in q24:
+        raw += value.to_bytes(8, "big", signed=True)
+    return hashlib.sha256(raw).hexdigest()
+
+
 def shadow_feature_digest(features):
     q24 = quantize_q24(features)
     return {
         "feature_width": len(q24),
         "feature_vector_q24": q24,
         "research_only_feature_sha256": hashlib.sha256(shadow_feature_bytes(q24)).hexdigest(),
+        "rust_stem_feature_vector_digest_v1": rust_stem_feature_vector_digest_v1(features),
+        "rust_owner_authenticated": False,
         "production_receipt_verified": False,
         "authority": "DENY_ALL",
     }
