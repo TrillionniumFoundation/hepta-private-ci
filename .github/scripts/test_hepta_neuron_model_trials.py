@@ -8,8 +8,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-from hepta_neuron_model_trials import (ARMS, InvalidTrial, compare, load_inputs,
-                                      metrics, parameter_budget, sha_file, write_new)
+from hepta_neuron_model_trials import (ARMS, InvalidTrial, blind_rows, canonical_jsonl,
+                                      compare, load_inputs, metrics, parameter_budget,
+                                      run_head, sha_file, write_new)
 
 
 def fixture(root, family="decisions"):
@@ -29,6 +30,7 @@ def fixture(root, family="decisions"):
     dataset.write_text("".join(json.dumps(x) + "\n" for x in rows), encoding="utf-8")
     manifest = {"schema": "hepta.neuron.model-trial.v1", "family": family,
                 "source_sha": "a" * 40, "dataset_sha256": sha_file(dataset),
+                "blind_dataset_sha256": hashlib.sha256(canonical_jsonl(blind_rows(rows, family))).hexdigest(),
                 "host_profile_digest": "1" * 64,
                 "parameter_cap": 262656 if family == "heads" else 425000000,
                 "max_len": 512, "head": {"input_dimension": 512, "state_width": 256, "encoder_digest": "d" * 64}}
@@ -60,6 +62,7 @@ def packet(manifest, rows, arm, damaged=False):
         records.append(r)
     result = {"schema": manifest["schema"], "family": family, "arm": arm,
               "source_sha": manifest["source_sha"], "dataset_sha256": manifest["dataset_sha256"],
+              "blind_dataset_sha256": manifest["blind_dataset_sha256"],
               "host_profile_digest": manifest["host_profile_digest"], "device": "cpu",
               "parameters": (parameter_budget(512, 256)[0][arm] if family == "heads" else 420000000),
               "observations": records}
@@ -146,6 +149,57 @@ class TrialTests(unittest.TestCase):
             p["observations"][0]["probabilities"][0] = float("nan")
             with self.assertRaisesRegex(InvalidTrial, "invalid probabilities"):
                 metrics(rows, p["observations"], "decisions")
+
+    def test_evaluator_seals_labels_and_runner_rejects_exposure(self):
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            for family in ARMS:
+                manifest, rows, dataset, mpath = fixture(root, family)
+                blind = root / f"{family}.blind.jsonl"
+                blind.write_bytes(canonical_jsonl(blind_rows(rows, family)))
+                parsed, run_rows = load_inputs(mpath, blind, role="runner")
+                self.assertEqual(parsed, manifest)
+                for row in run_rows:
+                    if family == "heads":
+                        if row["split"] != "train":
+                            self.assertNotIn("target_q24", row)
+                    else:
+                        self.assertNotIn("gold", row)
+                        self.assertNotIn("is_ood", row)
+                with self.assertRaisesRegex(InvalidTrial, "dataset changed"):
+                    load_inputs(mpath, dataset, role="runner")
+                with self.assertRaisesRegex(InvalidTrial, "dataset changed"):
+                    load_inputs(mpath, blind, role="evaluator")
+                changed = dict(manifest)
+                changed["blind_dataset_sha256"] = "e" * 64
+                mpath.write_text(json.dumps(changed))
+                with self.assertRaisesRegex(InvalidTrial, "blinded dataset is not derived"):
+                    load_inputs(mpath, dataset, role="evaluator")
+
+    def test_actual_torch_head_execution_on_synthetic_data_only(self):
+        try:
+            import torch  # noqa: F401
+            import safetensors  # noqa: F401
+        except ImportError:
+            self.skipTest("optional tensor smoke dependencies unavailable")
+        with tempfile.TemporaryDirectory() as path:
+            root = Path(path)
+            manifest, rows, _, mpath = fixture(root, "heads")
+            manifest["head"].update({"seed": 17, "epochs": 1, "batch_size": 2,
+                                     "learning_rate": .0003})
+            mpath.write_text(json.dumps(manifest))
+            run_rows = blind_rows(rows, "heads")
+            for arm in ARMS["heads"]:
+                artifact = root / f"{arm}.safetensors"
+                count, digest, observations, runtime = run_head(
+                    manifest, run_rows, arm, "cpu", artifact)
+                self.assertTrue(artifact.exists())
+                self.assertEqual(count, parameter_budget(512, 256)[0][arm])
+                self.assertEqual(digest, sha_file(artifact))
+                self.assertEqual(len(observations), 3)
+                self.assertEqual(runtime["optimizer"], "AdamW")
+                with self.assertRaisesRegex(InvalidTrial, "new absolute safetensors path"):
+                    run_head(manifest, run_rows, arm, "cpu", artifact)
 
     def test_no_overwrite_existing_diagnostic_receipt(self):
         with tempfile.TemporaryDirectory() as path:

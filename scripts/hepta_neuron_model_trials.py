@@ -88,12 +88,40 @@ def verify_checkout(expected_sha):
             "source checkout differs from frozen manifest")
 
 
-def load_inputs(manifest_file, dataset_file):
+def canonical_jsonl(rows):
+    return b"".join((json.dumps(row, sort_keys=True, ensure_ascii=False,
+                                 separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
+                    for row in rows)
+
+
+def blind_rows(rows, family):
+    """Evaluator-only deterministic export: no holdout gold/OOD or future targets.
+
+    This removes labels before the model runner receives the input file. The
+    evaluator must retain the complete source file under separate permissions.
+    """
+    allow = {"id", "split", "source_group", "observed_at_ms", "language",
+             "domain", "state", "question", "features_q24", "target_q24"}
+    result = []
+    for original in rows:
+        row = {key: value for key, value in original.items() if key in allow}
+        if family == "heads" and row["split"] != "train":
+            row.pop("target_q24", None)
+        if family != "heads":
+            row.pop("target_q24", None)
+        result.append(row)
+    return result
+
+
+def load_inputs(manifest_file, dataset_file, role="evaluator"):
+    require(role in ("evaluator", "runner"), "invalid dataset access role")
     manifest = read_json(manifest_file)
     require(manifest.get("schema") == SCHEMA and manifest.get("family") in ARMS, "invalid manifest")
     require(is_sha(manifest.get("source_sha"), 40), "source SHA must be a pinned Git commit")
-    require(is_sha(manifest.get("dataset_sha256")), "dataset SHA missing")
-    require(sha_file(dataset_file) == manifest["dataset_sha256"], "dataset changed after freezing")
+    require(is_sha(manifest.get("dataset_sha256")) and
+            is_sha(manifest.get("blind_dataset_sha256")), "sealed/blinded dataset SHA missing")
+    expected = manifest["dataset_sha256" if role == "evaluator" else "blind_dataset_sha256"]
+    require(sha_file(dataset_file) == expected, "dataset changed after freezing")
     require(is_sha(manifest.get("host_profile_digest")), "host profile missing")
     require(type(manifest.get("parameter_cap")) is int and manifest["parameter_cap"] > 0, "parameter cap missing")
     rows = []
@@ -119,7 +147,12 @@ def load_inputs(manifest_file, dataset_file):
                 require(type(d) is int and 1 <= d <= 512 and type(w) is int and 5 <= w <= 256 and
                         is_sha(h.get("encoder_digest")),
                         "invalid head dimensions")
-                for field, size in (("features_q24", d), ("target_q24", 2 * w)):
+                fields = [("features_q24", d)]
+                if role == "evaluator" or split == "train":
+                    fields.append(("target_q24", 2 * w))
+                else:
+                    require("target_q24" not in row, "sealed evaluation targets leaked to runner")
+                for field, size in fields:
                     values = row.get(field)
                     require(isinstance(values, list) and len(values) == size and
                             all(type(v) is int and abs(v) <= 8 * Q24 for v in values),
@@ -132,17 +165,19 @@ def load_inputs(manifest_file, dataset_file):
                         isinstance(q.get("criteria"), dict) and
                         2 <= len(q["criteria"]) <= 20 and
                         all(isinstance(v, str) for v in q["criteria"].values()) and
-                        row.get("gold") in q["criteria"], "invalid choice task")
+                        (row.get("gold") in q["criteria"] if role == "evaluator" else
+                         "gold" not in row), "invalid or exposed choice label")
                 require(isinstance(row.get("language"), str) and row["language"] and
                         isinstance(row.get("domain"), str) and row["domain"] and
-                        type(row.get("is_ood")) is bool, "missing cohort/OOD facts")
+                        (type(row.get("is_ood")) is bool if role == "evaluator" else
+                         "is_ood" not in row), "missing cohort/OOD facts or exposed OOD label")
             rows.append(row)
     require(bool(rows) and all(any(r["split"] == s for r in rows) for s in SPLITS),
             "train/calibration/holdout/two future windows are required")
     if manifest["family"] == "multilingual":
         require(all({"en", "zh", "cross"} <= {r["language"] for r in rows if r["split"] == split}
                     for split in EVAL_SPLITS), "each window needs English, Chinese and cross-lingual tasks")
-    if manifest["family"] != "heads":
+    if manifest["family"] != "heads" and role == "evaluator":
         require(all(any(r["is_ood"] for r in rows if r["split"] == split) for split in EVAL_SPLITS),
                 "each evaluation window needs real held-out OOD cases")
     # A future window must be observed after the earlier window, not merely relabeled.
@@ -150,6 +185,14 @@ def load_inputs(manifest_file, dataset_file):
     minima = {s: min(r["observed_at_ms"] for r in rows if r["split"] == s) for s in SPLITS}
     require(all(maxima[a] < minima[b] for a, b in zip(SPLITS, SPLITS[1:])),
             "time windows overlap or are out of order")
+    if role == "evaluator":
+        require(hashlib.sha256(canonical_jsonl(blind_rows(rows, manifest["family"]))).hexdigest()
+                == manifest["blind_dataset_sha256"],
+                "blinded dataset is not derived from the sealed evaluator labels")
+    else:
+        require(all(set(row) <= {"id", "split", "source_group", "observed_at_ms", "language",
+                                      "domain", "state", "question", "features_q24", "target_q24"}
+                    for row in rows), "unexpected field in blinded model inputs")
     return manifest, rows
 
 
@@ -412,6 +455,7 @@ def compare(manifest, rows, packets, baseline_sha):
         require(receipt.get("schema") == SCHEMA and receipt.get("family") == family and
                 receipt.get("arm") == arm and receipt.get("source_sha") == manifest["source_sha"] and
                 receipt.get("dataset_sha256") == manifest["dataset_sha256"] and
+                receipt.get("blind_dataset_sha256") == manifest["blind_dataset_sha256"] and
                 receipt.get("host_profile_digest") == manifest["host_profile_digest"],
                 "model/dataset/host identity drift")
         if family != "heads":
@@ -463,6 +507,7 @@ def compare(manifest, rows, packets, baseline_sha):
     return {"schema": SCHEMA, "family": family, "diagnostic_comparison": True,
             "results": results, "negative_transfer": transitions,
             "baseline_sha256": baseline_sha,
+            "receipt_sha256": {arm: sha_file(path) for arm, path in packets.items()},
             "production_evidence_verified": False, "ndu_selection_authorized": False,
             "promotion_authorized": False,
             "blockers": ["independent evaluator/holdout signature absent",
@@ -472,7 +517,7 @@ def compare(manifest, rows, packets, baseline_sha):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=("run", "compare"))
+    parser.add_argument("mode", choices=("run", "compare", "blind"))
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--dataset", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
@@ -486,8 +531,18 @@ def main():
     parser.add_argument("--baseline-sha256")
     args = parser.parse_args()
     try:
-        manifest, rows = load_inputs(args.manifest, args.dataset)
+        manifest, rows = load_inputs(args.manifest, args.dataset,
+                                     role="runner" if args.mode == "run" else "evaluator")
         verify_checkout(manifest["source_sha"])
+        if args.mode == "blind":
+            data = canonical_jsonl(blind_rows(rows, manifest["family"]))
+            require(hashlib.sha256(data).hexdigest() == manifest["blind_dataset_sha256"],
+                    "blinded dataset digest changed")
+            with open(args.output, "xb") as target:
+                target.write(data)
+                target.flush()
+                os.fsync(target.fileno())
+            return
         if args.mode == "compare":
             require(args.baseline_sha256 is not None, "baseline sha required")
             pairs = [a.split("=", 1) for a in args.receipt]
@@ -512,6 +567,7 @@ def main():
                     "model_revision": manifest.get("models", {}).get(args.arm, {}).get("revision"),
                     "device": args.device,
                     "source_sha": manifest["source_sha"], "dataset_sha256": manifest["dataset_sha256"],
+                    "blind_dataset_sha256": manifest["blind_dataset_sha256"],
                     "host_profile_digest": manifest["host_profile_digest"],
                     "parameters": parameters, "weights_sha256": weights,
                     "runtime": runtime, "hardware": hardware(), "observations": observations,
