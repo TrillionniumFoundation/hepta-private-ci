@@ -732,6 +732,13 @@ pub use batch::NeuronBackendBatchDriver;
 pub use batch::NeuronBackendBatchReceipt;
 pub use batch::canonical_neuron_batch_digest;
 
+#[path = "model_worker_cpu_head.rs"]
+mod cpu_head;
+
+pub use cpu_head::CpuGatedHead;
+pub use cpu_head::CpuGatedHeadDriver;
+pub use cpu_head::cpu_gated_bundle_weights_digest;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
