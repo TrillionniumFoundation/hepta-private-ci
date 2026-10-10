@@ -11,6 +11,8 @@ use super::CellSplitExecutionOwnerV1;
 use super::CellSplitExecutionPlanV1;
 use super::CellSplitExecutionPortV1;
 use super::CellSplitExecutionReceiptV1;
+use super::CellSplitExecutionStepV1;
+use super::make_intent;
 use super::CellSplitOwnerTrustV1;
 use super::cell_split_execution_signing_payload_v1;
 use super::receipt_digest;
