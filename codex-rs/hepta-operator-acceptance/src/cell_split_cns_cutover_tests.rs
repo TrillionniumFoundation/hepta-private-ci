@@ -385,3 +385,24 @@ impl CellSplitDurableEffectBackendV1 for DiskCnsOwner {
         self.0.current_sequence()
     }
 }
+
+
+#[test]
+fn corrupted_runtime_signature_cannot_become_a_signed_cns_readback() {
+    let root = private_root();
+    let ready = Arc::new(AtomicBool::new(true));
+    let mut cns = owner(root.path(), ready);
+    let request = intent();
+    cns.commit_once(&request).expect("committed original");
+    let signed = cns.read_committed(&request).unwrap().expect("signed original");
+    let path = root.path().join(format!(
+        "runtime-cutover-{}.json", request.idempotency_key
+    ));
+    let mut tampered: CellSplitCnsRuntimeCommitV1 =
+        serde_json::from_slice(&fs::read(&path).expect("original")).expect("receipt");
+    tampered.original_runtime_signature_bytes[0] ^= 0x80;
+    fs::write(&path, canonical_json(&tampered).expect("mutated receipt"))
+        .expect("external modification");
+    assert!(cns.verify_current(&request, &signed).is_err());
+    assert!(cns.read_committed(&request).is_err());
+}
