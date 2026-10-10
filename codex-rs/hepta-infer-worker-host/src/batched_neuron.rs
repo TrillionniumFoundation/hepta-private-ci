@@ -51,6 +51,7 @@ pub enum BatchWorkerErrorV1 {
     Scheduler(SchedulerErrorV1),
     Authority,
     Worker,
+    BatchUnsupported,
     Capacity,
 }
 
@@ -432,7 +433,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     .run_neuron_features_batch_receipts(now_ms, &model_id, requests)
             })
             .map_err(|_| BatchWorkerErrorV1::Authority)?
-            .map_err(|_| BatchWorkerErrorV1::Worker)
+            .map_err(|error| match error {
+                crate::model_worker::Error::BatchUnsupported => {
+                    BatchWorkerErrorV1::BatchUnsupported
+                }
+                _ => BatchWorkerErrorV1::Worker,
+            })
         })();
 
         let mut results = match executed {
