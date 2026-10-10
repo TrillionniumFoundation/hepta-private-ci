@@ -261,43 +261,103 @@ impl CellSplitExecutionOwnerV1 {
             Some(host_evidence),
             Some(observer_evidence),
         )?;
-        // Candidate data is already file-fsynced by the CAS owner; a created
-        // directory entry must also survive a host crash before acknowledgement.
-        let path = root.join(relative);
-        let parent = path
-            .parent()
-            .ok_or(CellSplitExecutionErrorV1::Binding("CAS parent"))?;
-        File::open(parent)
-            .and_then(|file| file.sync_all())
-            .map_err(|error| CellSplitExecutionErrorV1::Io(error.kind()))?;
+        // Reopen and authenticate actual bytes before entering the durable
+        // frontier. If this call fails after CAS create, never call write again:
+        // reconcile with the exact signed write receipt and original registry.
+        self.reconcile_artifact_snapshot(
+            root,
+            relative,
+            registry,
+            &write,
+            host_evidence,
+            observer_evidence,
+            verifying_key,
+        )
+    }
+
+    /// Recovery only: verify an independently retained signed write receipt,
+    /// current registry head and actual existing CAS file. This cannot invent
+    /// the lost original write receipt; without it a create-only orphan stays
+    /// quarantined for operator reconciliation. No create or overwrite occurs.
+    #[allow(clippy::too_many_arguments)]
+    pub fn reconcile_artifact_snapshot(
+        &mut self,
+        root: &Path,
+        relative: &Path,
+        registry: &ArtifactRegistry,
+        write: &ArtifactWriteReceiptV1,
+        host_evidence: Digest32,
+        observer_evidence: Digest32,
+        verifying_key: &VerifyingKey,
+    ) -> Result<CellSplitArtifactExecutionReceiptV1, CellSplitExecutionErrorV1> {
+        let phase = self.handoff.checkpoint().phase;
+        if !matches!(
+            phase,
+            WriterHandoffPhaseV1::OldWriterFenced | WriterHandoffPhaseV1::Snapshotted
+        ) {
+            return Err(CellSplitExecutionErrorV1::Phase(phase));
+        }
+        if write.operation_id != self.split.split_id
+            || write.artifact_id != self.selection.receipt().candidate_id
+            || write.artifact_digest != self.selection.receipt().candidate_artifact_digest
+            || write.registry_head_digest != registry.snapshot().head_digest
+            || host_evidence.is_zero()
+            || observer_evidence.is_zero()
+            || write.host_evidence_digest != Some(host_evidence)
+            || write.observer_evidence_digest != Some(observer_evidence)
+        {
+            return Err(CellSplitExecutionErrorV1::Binding("recovered CAS write receipt"));
+        }
         write.verify_production(verifying_key)?;
+        let path = root.join(relative);
         let (read_bytes, load) = self.artifacts.load_candidate(
             self.split.split_id.clone(),
             File::open(&path).map_err(|error| CellSplitExecutionErrorV1::Io(error.kind()))?,
             registry,
-            candidate,
-            &write,
+            &write.artifact_id,
+            write,
             relative,
             Some(host_evidence),
             Some(observer_evidence),
         )?;
         load.verify_production(verifying_key)?;
-        if read_bytes != bytes || load.payload_digest != write.artifact_digest {
+        if Digest32::of_bytes(&read_bytes) != write.artifact_digest
+            || load.payload_digest != write.artifact_digest
+            || load.operation_id != write.operation_id
+        {
             return Err(CellSplitExecutionErrorV1::Binding("CAS readback mismatch"));
         }
+        // The CAS owner fsyncs the file; preserve directory-entry durability
+        // before publishing a recovered or first-attempt handoff checkpoint.
+        File::open(
+            path.parent()
+                .ok_or(CellSplitExecutionErrorV1::Binding("CAS parent"))?,
+        )
+        .and_then(|file| file.sync_all())
+        .map_err(|error| CellSplitExecutionErrorV1::Io(error.kind()))?;
         let observed = Digest32::of_parts(&[
             b"hepta.cell-split.actual-artifact-cas.v1",
             write.receipt_digest.as_array(),
             load.receipt_digest.as_array(),
         ]);
-        let handoff = self.handoff.advance(WriterHandoffAdvanceV1 {
-            phase: WriterHandoffPhaseV1::Snapshotted,
-            evidence_digest: observed,
-            outbox_watermark: None,
-            unknown_effect_count: 0,
-        })?;
+        let handoff = if phase == WriterHandoffPhaseV1::Snapshotted {
+            let saved = self.handoff.checkpoint();
+            if saved.evidence_digest != observed {
+                return Err(CellSplitExecutionErrorV1::Binding(
+                    "reopened CAS handoff differs",
+                ));
+            }
+            saved.clone()
+        } else {
+            self.handoff.advance(WriterHandoffAdvanceV1 {
+                phase: WriterHandoffPhaseV1::Snapshotted,
+                evidence_digest: observed,
+                outbox_watermark: None,
+                unknown_effect_count: 0,
+            })?
+        };
         Ok(CellSplitArtifactExecutionReceiptV1 {
-            write,
+            write: write.clone(),
             load,
             handoff,
         })
@@ -310,7 +370,13 @@ impl CellSplitExecutionOwnerV1 {
         &mut self,
         migration: &mut CellStateMigrationV1,
     ) -> Result<CellSplitMigrationExecutionReceiptV1, CellSplitExecutionErrorV1> {
-        self.require_phase(WriterHandoffPhaseV1::Snapshotted)?;
+        let phase = self.handoff.checkpoint().phase;
+        if !matches!(
+            phase,
+            WriterHandoffPhaseV1::Snapshotted | WriterHandoffPhaseV1::Migrated
+        ) {
+            return Err(CellSplitExecutionErrorV1::Phase(phase));
+        }
         if migration.phase() != CellStateMigrationPhaseV1::Prepared {
             return Err(CellSplitExecutionErrorV1::Binding("migration not prepared"));
         }
@@ -327,12 +393,22 @@ impl CellSplitExecutionOwnerV1 {
         {
             return Err(CellSplitExecutionErrorV1::Binding("migration receipt"));
         }
-        let handoff = self.handoff.advance(WriterHandoffAdvanceV1 {
-            phase: WriterHandoffPhaseV1::Migrated,
-            evidence_digest: receipt.receipt_digest,
-            outbox_watermark: None,
-            unknown_effect_count: 0,
-        })?;
+        let handoff = if phase == WriterHandoffPhaseV1::Migrated {
+            let saved = self.handoff.checkpoint();
+            if saved.evidence_digest != receipt.receipt_digest {
+                return Err(CellSplitExecutionErrorV1::Binding(
+                    "reopened child migration differs",
+                ));
+            }
+            saved.clone()
+        } else {
+            self.handoff.advance(WriterHandoffAdvanceV1 {
+                phase: WriterHandoffPhaseV1::Migrated,
+                evidence_digest: receipt.receipt_digest,
+                outbox_watermark: None,
+                unknown_effect_count: 0,
+            })?
+        };
         Ok(CellSplitMigrationExecutionReceiptV1 {
             migration: receipt,
             handoff,
@@ -389,7 +465,13 @@ impl CellSplitExecutionOwnerV1 {
     pub fn observe_cutover(
         &mut self,
     ) -> Result<CellSplitRouteExecutionReceiptV1, CellSplitExecutionErrorV1> {
-        self.require_phase(WriterHandoffPhaseV1::NewWriterFenced)?;
+        let phase = self.handoff.checkpoint().phase;
+        if !matches!(
+            phase,
+            WriterHandoffPhaseV1::NewWriterFenced | WriterHandoffPhaseV1::RoutePublished
+        ) {
+            return Err(CellSplitExecutionErrorV1::Phase(phase));
+        }
         if self.routes.phase() != CellSplitRoutePhaseV1::ChildrenActive
             || self.routes.generation() != self.split.successor_generation
         {
@@ -403,12 +485,22 @@ impl CellSplitExecutionOwnerV1 {
             .ok_or(CellSplitExecutionErrorV1::Binding("CNS fence receipt"))?
             .clone();
         fence.verify(&self.split, self.routes.parent_route())?;
-        let handoff = self.handoff.advance(WriterHandoffAdvanceV1 {
-            phase: WriterHandoffPhaseV1::RoutePublished,
-            evidence_digest: fence.fence_digest,
-            outbox_watermark: None,
-            unknown_effect_count: 0,
-        })?;
+        let handoff = if phase == WriterHandoffPhaseV1::RoutePublished {
+            let saved = self.handoff.checkpoint();
+            if saved.evidence_digest != fence.fence_digest {
+                return Err(CellSplitExecutionErrorV1::Binding(
+                    "reopened CNS handoff differs",
+                ));
+            }
+            saved.clone()
+        } else {
+            self.handoff.advance(WriterHandoffAdvanceV1 {
+                phase: WriterHandoffPhaseV1::RoutePublished,
+                evidence_digest: fence.fence_digest,
+                outbox_watermark: None,
+                unknown_effect_count: 0,
+            })?
+        };
         Ok(CellSplitRouteExecutionReceiptV1 {
             route: fence,
             handoff,
