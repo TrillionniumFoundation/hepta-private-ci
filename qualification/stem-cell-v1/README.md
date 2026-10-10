@@ -79,3 +79,63 @@ Bootstrap is clustered by source group, uses fixed 2,000 replicates and Bonferro
 | L5 | No privileged paths | Existing release gate, shadow/canary, rollback, authority/revocation/lineage proof |
 
 **Never promote because `study.py` says `statistical_precheck_passed`.** It is not a signed NDU decision.
+
+## Next phase: immutable multi-arm execution plan
+
+`matrix.py` can now construct a **finite, immutable local experiment plan**
+from all four approved *local* encoder snapshots. An operator-supplied JSON
+maps each of the four model keys to `source`, an immutable 40-hex
+`upstream_revision`, `snapshot_path`, an independently reviewed tree `sha256`,
+`license_approved: true`, and, for Jina's custom-code profile only,
+`custom_code_reviewed: true`. Remote names and remote commit IDs are operator
+claims, **not** independently authenticated by this planner. Compare
+artifact/source contents with the upstream release separately before approving
+training.
+
+```sh
+python3 qualification/stem-cell-v1/matrix.py plan \
+  --dataset /approved/episodes.jsonl \
+  --snapshots /approved/frozen-snapshot-descriptors.json \
+  --train-steps 100 --device cpu \
+  --output /scratch/hepta-stem-frozen-plan.json
+python3 qualification/stem-cell-v1/matrix.py run \
+  --plan /scratch/hepta-stem-frozen-plan.json \
+  --arm mmbert_small:joint:linear:2048:32 \
+  --output /scratch/mmbert-joint-linear-2048-32.jsonl
+```
+
+The full preregistered nonzero-shot Cartesian grid is **1,536 arms** (4
+encoders × 4 representations × 6 Heads × 4 budgets × 4 positive shot counts),
+not 1,536 demonstrated successful trainings. Unsupported Head/budget combinations
+are intentionally rejected by `model_runner.py`. The 0-shot/no-change and two
+Laya teacher baselines remain external, separately observed baselines. Plan
+and per-arm output artifacts are **append-only / no overwrite**; plan, dataset,
+local weights, protocol, runner source and generated predictions are SHA-256-bound.
+The planner never creates NDU success labels or production capabilities.
+
+The standalone runner now reports process CPU seconds and process-lifetime peak
+RSS when available; the peak is **not** a per-arm incremental memory delta.
+Sampling requires distinct source groups **across** labels, not merely within
+each class. Equal hardware, precision, runtime and evaluator configuration must
+still be checked by the external qualification owner.
+
+## Native Worker batching: bounded contract, not yet L3 acceptance
+
+`codex-rs/hepta-infer-worker-host/src/model_worker_batch.rs` adds a native
+`NeuronBackendBatchDriver` trait with **no sequential fallback**. The worker
+preflights all 2–32 requests against current grants, loaded manifest, distinct
+request IDs, payload digests, encoder identity, compatible feature/output widths
+and available active slots before invoking the backend exactly once.
+
+Backend replies must contain one exact ordered request/input echo per member and
+return model-specific typed receipts without granted authority. Driver failure,
+forged batch/member identity, count mismatch and memory-budget overflow fail
+closed and release in-flight slots. The batch digest is **not** a cryptographic
+backend attestation: unit tests use a loop-based mock solely to prove these
+worker-level properties. A real tensor-capable driver, generation/scope validation
+at the upstream owner, native timestamps, signed provenance, WAL fsync and crash
+recovery remain separately required for L3 and cannot be inferred from this
+trait or its unit tests.
+
+The dedicated CI lane runs Rust formatting/compile/test and Python L1 tests.
+None of these tests load mmBERT weights or issue production selection authority.
