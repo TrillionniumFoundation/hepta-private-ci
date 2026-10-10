@@ -1,0 +1,178 @@
+name: MemoryCell observed compiler evidence and shared readers
+on:
+  push:
+    branches: ['codex/memory-procedural-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-procedure-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  plan:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-external-span-e2e
+          run-id: 37919555733
+          github-token: ${{ github.token }}
+          path: /tmp/environment
+      - name: Validate exact-source tests and repository formatting
+        env:
+          BASE: 9c1dcf37e7798cfd23b40a6098b4905c2c1aa16e
+        run: |
+          set -euo pipefail
+          mkdir /tmp/bundle-validation
+          python3 -m venv /tmp/bundle-python
+          /tmp/bundle-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/bundle-python/bin/pip install -r /tmp/environment/environment.txt
+          /tmp/bundle-python/bin/pip freeze > /tmp/bundle-validation/environment.txt
+          diff -u /tmp/environment/environment.txt /tmp/bundle-validation/environment.txt
+          /tmp/bundle-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/bundle-validation/tests.log
+          git fetch --no-tags --depth=1 origin "$BASE"
+          set +e
+          PATH="/tmp/bundle-python/bin:$PATH" just fmt --check --base "$BASE" > /tmp/bundle-validation/format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/bundle-validation/format.log
+          if [ "$status" -ne 0 ]; then
+            PATH="/tmp/bundle-python/bin:$PATH" just fmt --base "$BASE"
+            git diff --binary > /tmp/bundle-validation/format.patch
+            exit "$status"
+          fi
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Observe compiler outcomes before constructing any task or reader condition
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+        run: |
+          set -euo pipefail
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          /usr/bin/time -v -o /tmp/bundle-validation/compilation-resources.txt /tmp/bundle-python/bin/python scripts/memory_cell/procedural_bundle_trial.py capture /tmp/procedure-observations --count 4
+          CORPUS_SHA=$(/tmp/bundle-python/bin/python -c 'import json; print(json.load(open("/tmp/procedure-observations/READY.json"))["corpus_sha256"])')
+          /usr/bin/time -v -o /tmp/bundle-validation/planning-resources.txt /tmp/bundle-python/bin/python scripts/memory_cell/procedural_bundle_trial.py plan /tmp/procedure-observations /tmp/memory-inputs /tmp/bundle-plan --corpus-sha "$CORPUS_SHA"
+          cp -r /tmp/procedure-observations /tmp/bundle-plan/observations
+          cp /tmp/bundle-validation/environment.txt /tmp/bundle-plan/environment.txt
+          (cd /tmp/bundle-plan && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-procedure-plan
+          path: /tmp/bundle-plan
+          if-no-files-found: error
+      - name: Retain tested source identity
+        if: always()
+        run: |
+          mkdir -p /tmp/bundle-validation
+          git rev-parse HEAD > /tmp/bundle-validation/tested-commit.txt
+          git diff --stat > /tmp/bundle-validation/worktree-diff.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-procedure-validation
+          path: /tmp/bundle-validation
+  reader:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: ['135M', '360M', '1.7B']
+    env:
+      PYTHONPATH: scripts/memory_cell
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-procedure-plan
+          path: /tmp/bundle-plan
+      - name: Lock packages and stage the immutable reader revision
+        run: |
+          set -euo pipefail
+          (cd /tmp/bundle-plan && sha256sum -c SHA256SUMS)
+          mkdir /tmp/bundle-result
+          python3 -m venv /tmp/bundle-python
+          /tmp/bundle-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/bundle-python/bin/pip install -r /tmp/bundle-plan/environment.txt
+          /tmp/bundle-python/bin/pip freeze > /tmp/bundle-result/environment.txt
+          diff -u /tmp/bundle-plan/environment.txt /tmp/bundle-result/environment.txt
+          /tmp/bundle-python/bin/python scripts/memory_cell/bundle_assets.py stage '${{ matrix.tier }}' /tmp/bundle-model
+          cp /tmp/bundle-model/inventory.json /tmp/bundle-result/
+      - name: Actual offline frozen generation with the same evidence conditions
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'
+        run: |
+          set -euo pipefail
+          PLAN_SHA=$(/tmp/bundle-python/bin/python -c 'import json; print(json.load(open("/tmp/bundle-plan/READY.json"))["plan_sha256"])')
+          LABELS_SHA=$(/tmp/bundle-python/bin/python -c 'import json; print(json.load(open("/tmp/bundle-plan/READY.json"))["labels_sha256"])')
+          /usr/bin/time -v -o /tmp/bundle-result/resources.txt /tmp/bundle-python/bin/python scripts/memory_cell/bundle_trial.py run /tmp/bundle-plan/plan.json /tmp/bundle-plan/labels.json /tmp/bundle-model/reader /tmp/bundle-model/inventory.json /tmp/bundle-result/execution --plan-sha "$PLAN_SHA" --labels-sha "$LABELS_SHA" 2>&1 | tee /tmp/bundle-result/run.log
+          /tmp/bundle-python/bin/python scripts/memory_cell/procedural_bundle_trial.py audit /tmp/bundle-plan/plan.json /tmp/bundle-plan/labels.json /tmp/bundle-result/execution /tmp/bundle-result/observed-audit.json --plan-sha "$PLAN_SHA" --labels-sha "$LABELS_SHA"
+      - name: Retain raw failures and exact source hashes too
+        if: always()
+        run: |
+          mkdir -p /tmp/bundle-result/source
+          cp scripts/memory_cell/bundle_*.py scripts/memory_cell/evidence_bundle.py scripts/memory_cell/procedural_*.py /tmp/bundle-result/source/
+          git rev-parse HEAD > /tmp/bundle-result/tested-commit.txt
+          (cd /tmp/bundle-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-procedure-reader-${{ matrix.tier }}
+          path: /tmp/bundle-result
+          if-no-files-found: error
+  compare:
+    needs: reader
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-procedure-reader-*
+          path: /tmp/readers
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-procedure-plan
+          path: /tmp/bundle-plan
+      - name: Compare only complete plans, never claim size increases as memory gains
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/compare-python
+          /tmp/compare-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          for directory in /tmp/readers/*; do (cd "$directory" && sha256sum -c SHA256SUMS); done
+          /tmp/compare-python/bin/python scripts/memory_cell/bundle_assets.py collect /tmp/readers /tmp/bundle-plan/plan.json /tmp/bundle-matrix.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-procedure-reader-matrix
+          path: |
+            /tmp/bundle-matrix.json
+            /tmp/readers/*/observed-audit.json
