@@ -260,7 +260,13 @@ This pure function binds the exact ≤512-width, bounded, signed-Q24 feature
 vector into the existing `NeuronFeatureRequestV1` only after checking
 Scope, Principal, Generation, Authority Epoch, nonexpired lease, revocation
 flag, exact vector digest, and Head compatibility with the *selected*
-Stem model/generation/feature projection. Reuse across Cell Heads is possible
+Stem model/generation/feature projection. The Neuron request's encoder digest
+is an exact versioned **pipeline digest**, derived from Stem model ID and
+generation, weights, tokenizer, preprocessor, Matryoshka projection, and
+feature width — it is not merely a hash of backbone weights. Rust and Python
+pin the 2-dimensional golden fixture pipeline digest
+`67d4c68e2092bcde7fdccca0386fb39442deac2a0ecb8ff8d98a5510067f5504`.
+Reuse across Cell Heads is possible
 only under the same checked source identity.
 
 Python `q24_bridge.rust_stem_feature_vector_digest_v1` follows the same
@@ -276,3 +282,14 @@ and final-use authority before dispatch. All constructed requests have
 `DENY_ALL` authority until independent product gates complete. Rust unit
 tests require a toolchain and CI; neither has been independently confirmed
 green for this new source.
+
+### Durable pre-label learning evidence
+
+The prequential shadow runner additionally writes an *exclusive-create*
+`output.prediction-journal.jsonl` before reading each future label.
+Each label-free record includes event order, input/Head digests, probabilities
+and exact SHA256; it is flushed and `fsync`ed before the corresponding
+head update. The result manifest binds the journal digest and count. This
+is only write-ahead **research evidence** (not a signed independent evaluator
+or atomic production checkpoint). A partial journal from a failed run cannot
+be overwritten by retry under the same output path.
