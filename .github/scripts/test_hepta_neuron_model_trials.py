@@ -250,6 +250,13 @@ class TrialTests(unittest.TestCase):
                 with self.assertRaisesRegex(InvalidTrial, "new absolute safetensors path"):
                     run_head(manifest, run_rows, arm, "cpu", artifact)
 
+    def test_exponential_overflow_in_json_is_rejected_before_model_use(self):
+        from hepta_neuron_model_trials import strict_json_loads
+        with self.assertRaisesRegex(InvalidTrial, "nonfinite JSON number"):
+            strict_json_loads('{"nested":{"metric":1e999}}')
+        self.assertEqual(strict_json_loads('{"nested":{"metric":1e-5}}'),
+                         {"nested": {"metric": 1e-5}})
+
     def test_duplicate_json_keys_and_nonfinite_manifest_are_rejected(self):
         from hepta_neuron_model_trials import read_json, strict_json_loads
         with tempfile.TemporaryDirectory() as path:

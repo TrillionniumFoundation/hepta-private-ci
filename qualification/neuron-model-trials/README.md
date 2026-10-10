@@ -63,6 +63,53 @@ full local artifact-tree SHA. `local_weight_bytes_verified=true` only proves
 that those physical local bytes match the public metadata lock; neither that
 lock nor its receipt is independently authenticated production evidence.
 
+### Operator-controlled weight acquisition and evaluator-owned dataset freeze
+
+The artifact materializer is **offline-cache-only by default**. It copies the
+five preregistered files into a **new** model directory on the actual target
+host, checks the complete weight-file SHA-256 during copying, runs the tensor
+inventory and encoder/tokenizer preflight, fsyncs each file and emits a
+create-only diagnostic receipt. A failed acquisition leaves its partial
+output directory in place for operator quarantine; never treat that directory
+as a runnable model.
+
+```sh
+# Use this by default after approved weights have already entered the HF cache.
+python scripts/hepta_neuron_materialize_weights.py \
+  --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+  --arm typed --destination /absolute/new/model-typed \
+  --output /absolute/new/typed-acquisition.json
+
+# Only on an explicitly authorized network-enabled target host:
+# add --allow-network and optionally --cache-dir /absolute/trusted/hf-cache
+```
+
+**No network download was executed in CI**. The local model path is never
+included in Git, and checksum validation against upstream metadata does not
+establish independent publisher/host attestation. Use a distinct fresh
+output directory for each arm and compare the observed `artifact_tree_sha256`
+to the independently frozen experiment manifest before running.
+
+The evaluator can seal already-collected local Hepta data (with approved data
+rights and chronological source grouping) without exporting labels to the
+inference worker. The original sealed file is **never copied** to the model
+runner directory:
+
+```sh
+python scripts/hepta_neuron_freeze_dataset.py \
+  --manifest-template /evaluator/controlled/manifest-input.json \
+  --sealed-dataset /evaluator/controlled/sealed.jsonl \
+  --output-dir /evaluator/controlled/new-frozen-bundle
+# Share ONLY new-frozen-bundle/manifest.json and blinded.jsonl with the runner.
+# Retain sealed.jsonl under the independent evaluator, then use compare with
+# actual inference receipts and the original sealed file.
+```
+
+`freeze-diagnostic.json` records row counts and byte commitments, not
+real-data provenance or elapsed future-window certification. All producer,
+source, consent, license, principal, evaluator-independence, and NDU-causality
+gates remain external and fail closed.
+
 **Full-model manifests must bind** `upstream_lock_sha256` and use the locked
 common source revision and expected weight hash for each model. Pass
 `--upstream-lock qualification/neuron-model-trials/upstream-weights.lock.json`

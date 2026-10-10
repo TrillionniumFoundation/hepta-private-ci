@@ -91,8 +91,13 @@ def strict_json_loads(data):
     def invalid_constant(value):
         raise InvalidTrial(f"nonfinite JSON literal: {value}")
 
+    def finite_float(value):
+        parsed = float(value)
+        require(math.isfinite(parsed), "nonfinite JSON number")
+        return parsed
+
     return json.loads(data, object_pairs_hook=no_duplicates,
-                      parse_constant=invalid_constant)
+                      parse_constant=invalid_constant, parse_float=finite_float)
 
 
 def read_json(path):
