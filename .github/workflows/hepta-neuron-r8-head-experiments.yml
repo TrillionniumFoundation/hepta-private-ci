@@ -63,19 +63,22 @@ jobs:
           py="$RUNNER_TEMP/r8-venv/bin/python"
           script="$BASE/r8_experiments.py"
           "$py" "$script" synthetic-fixture --dir "$RUNNER_TEMP/r8-results"
+          # Realized counts are reported; parameter caps never imply forced padding.
           for kind in linear film lowrank8 lowrank16 mlp swiglu; do
-            "$py" "$script" train --train "$RUNNER_TEMP/r8-results/train.npz" \
-              --valid "$RUNNER_TEMP/r8-results/valid.npz" \
-              --kind "$kind" --budget 2048 --steps 70 --seed 13 \
-              --output "$RUNNER_TEMP/r8-results/$kind.npz" \
-              --report "$RUNNER_TEMP/r8-results/$kind.metrics.json"
+            for cap in 2048 16384 65536 262144; do
+              "$py" "$script" train --train "$RUNNER_TEMP/r8-results/train.npz" \
+                --valid "$RUNNER_TEMP/r8-results/valid.npz" \
+                --kind "$kind" --budget "$cap" --steps 70 --seed 13 \
+                --output "$RUNNER_TEMP/r8-results/$kind-$cap.npz" \
+                --report "$RUNNER_TEMP/r8-results/$kind-$cap.metrics.json"
+            done
           done
           "$py" "$script" predict \
-            --model "$RUNNER_TEMP/r8-results/film.npz" \
+            --model "$RUNNER_TEMP/r8-results/film-2048.npz" \
             --input "$RUNNER_TEMP/r8-results/future_unlabelled.npz" \
             --output "$RUNNER_TEMP/r8-results/candidate.json"
           "$py" "$script" predict \
-            --model "$RUNNER_TEMP/r8-results/film.npz" \
+            --model "$RUNNER_TEMP/r8-results/film-2048.npz" \
             --input "$RUNNER_TEMP/r8-results/ood_unlabelled.npz" \
             --output "$RUNNER_TEMP/r8-results/candidate-ood.json"
           "$py" "$script" evaluate \
@@ -88,17 +91,23 @@ jobs:
             --output "$RUNNER_TEMP/r8-results/evaluator.json"
           "$py" -c 'import json,os; p=json.load(open(os.environ["RUNNER_TEMP"]+"/r8-results/evaluator.json")); assert p["promotion"]=="BLOCKED" and p["synthetic_outcome"] and 0 <= p["ood_auroc"]["candidate"] <= 1'
 
-      - name: Run four synthetic scale points
+      - name: Run twelve input-reuse synthetic scale points and active-training variation
         shell: bash
         run: |
           set -euo pipefail
           py="$RUNNER_TEMP/r8-venv/bin/python"
           script="$BASE/r8_experiments.py"
           for cells in 64 256 1024 4096; do
-            "$py" "$script" scale --cells "$cells" --pattern partial \
-              --requests 128 --kind film --budget 2048 --seed 13 \
-              --output "$RUNNER_TEMP/r8-results/scale-$cells.json"
+            for pattern in same partial distinct; do
+              "$py" "$script" scale --cells "$cells" --pattern "$pattern" \
+                --requests 512 --kind film --budget 2048 --seed 13 \
+                --output "$RUNNER_TEMP/r8-results/scale-$cells-$pattern.json"
+            done
           done
+          "$py" "$script" scale --cells 4096 --pattern partial \
+            --active 0.25 --train-frequency 0.05 --cache-entries 32 \
+            --requests 512 --kind film --budget 2048 --seed 13 \
+            --output "$RUNNER_TEMP/r8-results/scale-4096-active-quarter-train.json"
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
