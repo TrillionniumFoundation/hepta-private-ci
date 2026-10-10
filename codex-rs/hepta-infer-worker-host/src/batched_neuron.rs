@@ -207,6 +207,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         if key.generation.get() != self.worker.worker_generation()
             || key.authority_epoch != self.worker.authority_epoch()
             || signed.grant.authority_epoch != key.authority_epoch
+            || !self.worker.model_matches_digest(&model_id, key.model_digest)
             || request.authorization.cancelled
         {
             return Err(BatchWorkerErrorV1::InvalidBinding);
