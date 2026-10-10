@@ -171,6 +171,27 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         }
         Ok(result)
     }
+
+    /// Project the entire physical batch through the same exact V1 typed
+    /// receipt verifier used by the single-request production boundary.
+    /// V1 owns a Vec per request; this compatibility bridge intentionally
+    /// still clones those vectors. A true zero-copy V2 transport is separate.
+    pub fn run_neuron_features_batch_receipts(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        requests: Vec<NeuronFeatureRequest>,
+    ) -> Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, Error> {
+        let copies = requests.clone();
+        let outcomes = self.run_neuron_features_batch(now_ms, model_id, requests)?;
+        copies
+            .into_iter()
+            .zip(outcomes)
+            .map(|(request, outcome)| {
+                super::project_neuron_feature_receipt_v1(request, outcome)
+            })
+            .collect()
+    }
 }
 
 #[cfg(test)]
@@ -327,6 +348,24 @@ mod tests {
         assert_eq!(worker.driver.single_calls, 0);
         assert!(worker.active_requests.is_empty());
         assert_eq!(worker.models["model.v2"].active_requests, 0);
+    }
+
+    #[test]
+    fn batch_v1_receipts_are_individually_verified_without_single_backend_calls() {
+        let mut worker = worker(BatchMock::default());
+        let receipts = worker
+            .run_neuron_features_batch_receipts(
+                100,
+                "model.v2",
+                vec![feature("request.1", 'b'), feature("request.2", 'c')],
+            )
+            .expect("batch receipts");
+        assert_eq!(receipts.len(), 2);
+        assert_eq!(receipts[0].drive_q24, vec![1 << 24; 3]);
+        assert_ne!(receipts[0].head_digest, receipts[1].head_digest);
+        assert_eq!(worker.driver.batches, 1);
+        assert_eq!(worker.driver.single_calls, 0);
+        assert!(!receipts[0].authority.grants_any());
     }
 
     #[test]
