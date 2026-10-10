@@ -159,6 +159,17 @@ class FailureAttributionTests(unittest.TestCase):
         self.assertEqual(result["records"][0]["failure_stages"], [])
         self.assertEqual(result["stage_counts"]["generation"]["eligible"], 0)
 
+    def test_empty_candidate_pool_is_retrieval_failure(self):
+        row = base(candidate_source_ids=[], selected=None, answer="wrong", f1=0.0)
+        result = attribute([row], {"q": target()})
+        self.assertEqual(
+            result["records"][0]["failure_stages"], ["retrieval_or_window"]
+        )
+        self.assertEqual(
+            result["stage_counts"]["retrieval_or_window"],
+            {"eligible": 1, "failures": 1, "semantic_citation_precision": None},
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
