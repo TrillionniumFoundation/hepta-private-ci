@@ -104,23 +104,26 @@ def run(args):
                     features[i] = feature
                 traces.append(trace)
             encoder_done = time.perf_counter_ns()
+            checkpoint_events = []
             for (cid, row), vector in zip(prepared, features):
                 with torch.inference_mode():
                     _ = heads[cid](torch.tensor(vector, dtype=torch.float32,
                                                 device=args.device))
-                ticks[cid] = ticks.get(cid, 0) + 1
+                tick = ticks.get(cid, 0) + 1
+                ticks[cid] = tick
+                checkpoint_events.append((cid, tick, row["case_id"]))
             heads_done = time.perf_counter_ns()
             with db:
-                for cid, row in prepared:
+                for cid, tick, case_id in checkpoint_events:
                     db.execute(
                         "INSERT INTO checkpoints(cell,tick,digest) VALUES(?,?,?) "
                         "ON CONFLICT(cell) DO UPDATE SET tick=excluded.tick,digest=excluded.digest",
-                        (cid, ticks[cid], sha256_record([cid, ticks[cid], row["case_id"]])))
+                        (cid, tick, sha256_record([cid, tick, case_id])))
             committed = time.perf_counter_ns()
             duration_ms = (committed - started) / 1e6
             example_count = sum(t["encoder_examples"] for t in traces)
             backend_calls = sum(t["encoder_batch_calls"] for t in traces)
-            for cid, row in prepared:
+            for (cid, row), (_, tick, _) in zip(prepared, checkpoint_events):
                 observations.append({
                     "measurement_origin": "real_backend",
                     "logical_cells": args.cells, "active_fraction": args.active_fraction,
@@ -139,7 +142,7 @@ def run(args):
                     "observed_encoder_calls_in_batch": backend_calls,
                     "backend_batch_size": example_count,
                     "rss_bytes": process.memory_info().rss,
-                    "checkpoint_tick": ticks[cid],
+                    "checkpoint_tick": tick,
                 })
     finally:
         db.close()
