@@ -146,6 +146,17 @@ def quantile(data, fraction):
     return ordered[low] * (high - rank) + ordered[high] * (rank - low) if high != low else ordered[low]
 
 
+def wilson_upper(successes, total, confidence=0.95):
+    if total <= 0 or not 0 <= successes <= total:
+        return None
+    # Conservative two-sided Wilson score upper bound.
+    z = statistics.NormalDist().inv_cdf((1 + confidence) / 2)
+    p = successes / total
+    denom = 1 + z * z / total
+    return min(1.0, (p + z * z / (2 * total) +
+                      z * math.sqrt(p * (1 - p) / total + z * z / (4 * total * total))) / denom)
+
+
 def classifier_metrics(rows):
     if not rows:
         return {"count": 0}
@@ -160,9 +171,11 @@ def classifier_metrics(rows):
         bins[min(EVAL_BINS - 1, int(conf * EVAL_BINS))].append((conf, correct))
     ece = sum(len(b) / n * abs(statistics.fmean(x[0] for x in b) - statistics.fmean(x[1] for x in b)) for b in bins if b)
     ood = [x for x in rows if x["split"] == "ood"]
-    rate = (sum(max(x["probabilities"]) >= x["ood_threshold"] for x in ood) / len(ood)) if ood else None
+    ood_accepts = sum(max(x["probabilities"]) >= x["ood_threshold"] for x in ood)
+    rate = ood_accepts / len(ood) if ood else None
     return {"count": n, "accuracy": accuracy, "multiclass_brier": brier, "ece_15": ece,
             "ood_false_acceptance": rate, "ood_count": len(ood),
+            "ood_false_acceptance_upper_95": wilson_upper(ood_accepts, len(ood)),
             "external_ndu_utility": statistics.fmean(x["external_ndu_utility"] for x in rows),
             "total_cost": sum(x["total_cost"] for x in rows)}
 
@@ -222,8 +235,12 @@ def admission(protocol, dataset, predictions, *, backend_evidence=None):
     result = {}
     for candidate in candidates:
         deltas = paired_group_deltas(dataset, predictions, baseline, candidate)
-        alpha = (1 - cfg["confidence_level"]) / max(1, len(candidates))
+        alpha = (1 - cfg["confidence_level"]) / (max(1, len(candidates)) * 3)
         lcb = bootstrap_lcb(deltas, alpha, cfg["bootstrap_replicates"], seed=7347)
+        future_deltas = {window: paired_group_deltas(dataset, predictions, baseline, candidate, window)
+                         for window in ("future_1", "future_2")}
+        future_lcbs = {window: bootstrap_lcb(values, alpha, cfg["bootstrap_replicates"], 7347 + i)
+                       for i, (window, values) in enumerate(future_deltas.items())}
         rows = [dict(dataset[sid], **r) for sid, r in predictions[candidate].items()]
         base_rows = list(predictions[baseline].values())
         cost_c = sum(r["total_cost"] for r in predictions[candidate].values())
@@ -231,7 +248,9 @@ def admission(protocol, dataset, predictions, *, backend_evidence=None):
         ratio = cost_c / cost_b if cost_b > 0 else math.inf
         future = sum(bool([r for r in rows if r["split"] == w]) for w in ("future_1", "future_2"))
         snapshots = len({r.get("snapshot_digest") for r in rows if r.get("snapshot_digest")})
-        ood = classifier_metrics([r for r in rows if r["split"] == "ood"])["ood_false_acceptance"]
+        ood_metrics = classifier_metrics([r for r in rows if r["split"] == "ood"])
+        ood = ood_metrics["ood_false_acceptance"]
+        ood_ucb = ood_metrics["ood_false_acceptance_upper_95"]
         old = [r for r in rows if r["split"] == "held_out"]
         old_base = [dict(dataset[sid], **r) for sid, r in predictions[baseline].items() if dataset[sid]["split"] == "held_out"]
         old_u = statistics.fmean(r["external_ndu_utility"] for r in old) if old else None
@@ -244,14 +263,32 @@ def admission(protocol, dataset, predictions, *, backend_evidence=None):
             rejection.append("ndu_gain_lcb")
         if future < cfg["future_windows_minimum"]:
             rejection.append("future_windows")
+        if any(len(values) < cfg.get("future_window_minimum_groups", 50)
+               or future_lcbs[window] is None or future_lcbs[window] <= 0
+               for window, values in future_deltas.items()):
+            rejection.append("future_window_independent_uplift")
         if snapshots < cfg["independent_snapshots_minimum"]:
             rejection.append("independent_snapshots")
-        if ood is None or ood > cfg["max_ood_false_acceptance"]:
-            rejection.append("ood_false_acceptance")
+        if ood_ucb is None or ood_ucb > cfg["max_ood_false_acceptance"]:
+            rejection.append("ood_false_acceptance_confidence_bound")
         if degradation is None or degradation > cfg["max_old_task_degradation"]:
             rejection.append("old_task_retention")
         if ratio > cfg["maximum_cost_ratio"]:
             rejection.append("total_cost")
+        subgroup = {}
+        for language in sorted(LANGUAGES):
+            selected_ids = [sid for sid in predictions[baseline]
+                            if dataset[sid]["language"] == language and dataset[sid]["split"] != "ood"]
+            groups = {dataset[sid]["source_group"] for sid in selected_ids}
+            if selected_ids:
+                base_u = statistics.fmean(predictions[baseline][sid]["external_ndu_utility"] for sid in selected_ids)
+                candidate_u = statistics.fmean(predictions[candidate][sid]["external_ndu_utility"] for sid in selected_ids)
+                loss = max(0.0, (base_u - candidate_u) / max(abs(base_u), 1e-9))
+            else:
+                loss = None
+            subgroup[language] = {"independent_groups": len(groups), "relative_utility_degradation": loss}
+            if len(groups) < cfg.get("minimum_independent_groups_per_language", 30) or loss is None or loss > cfg.get("maximum_language_utility_degradation", 0.02):
+                rejection.append(f"language_floor_{language}")
         if backend_evidence is None or backend_evidence.get("hepta_native_worker") is not True:
             rejection.append("native_worker_evidence_missing")
         if backend_evidence is None or backend_evidence.get("artifact_and_revocation_verified") is not True:
@@ -265,6 +302,8 @@ def admission(protocol, dataset, predictions, *, backend_evidence=None):
                              "group_count": len(deltas),
                              "ndu_gain_lcb": lcb, "cost_ratio": ratio,
                              "old_task_degradation": degradation, "ood_false_acceptance": ood,
+                             "ood_false_acceptance_upper_95": ood_ucb,
+                             "future_window_ndu_gain_lcbs": future_lcbs, "language_subgroups": subgroup,
                              "future_windows": future, "independent_snapshots": snapshots}
     return result
 
