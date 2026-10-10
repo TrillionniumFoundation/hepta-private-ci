@@ -2,10 +2,10 @@ name: MemoryCell learned policy actual task comparison
 on:
   pull_request:
     paths:
-      - 'scripts/memory_cell/policy_read_audit.py'
-      - 'scripts/memory_cell/test_policy_read_audit.py'
-      - 'scripts/memory_cell/event_reader_experiment.py'
-      - '.github/workflows/hepta-memory-policy-task.yml'
+      - "scripts/memory_cell/policy_read_audit.py"
+      - "scripts/memory_cell/test_policy_read_audit.py"
+      - "scripts/memory_cell/event_reader_experiment.py"
+      - ".github/workflows/hepta-memory-policy-task.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -39,10 +39,10 @@ jobs:
     timeout-minutes: 45
     env:
       PYTHONPATH: scripts/memory_cell
-      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
-      TOKENIZERS_PARALLELISM: 'false'
-      OMP_NUM_THREADS: '2'
-      MKL_NUM_THREADS: '2'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
       HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -116,8 +116,8 @@ jobs:
           sha256sum /tmp/policy-result/policy.json > /tmp/policy-result/policy-pin.txt
       - name: A new process generates all eight conditions and executes procedures
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/policy-result/read-resource.txt /tmp/policy-python/bin/python scripts/memory_cell/event_reader_experiment.py /tmp/policy-input/plan /tmp/policy-input/observations /tmp/policy-model /tmp/policy-result/experiment --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --stage-sha "$(sha256sum /tmp/policy-model/stage.json | cut -d ' ' -f1)" --policy /tmp/policy-result/policy.json --policy-sha "$(cut -d ' ' -f1 /tmp/policy-result/policy-pin.txt)" 2>&1 | tee /tmp/policy-result/reader.log
