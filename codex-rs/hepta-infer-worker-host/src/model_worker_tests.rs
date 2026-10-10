@@ -183,7 +183,9 @@ fn unloaded_model_digest_can_be_reloaded_but_failed_unload_remains_fenced() {
     assert!(!worker.model_matches_digest("model.1", digest));
     let mut replacement = manifest();
     replacement.model_id = "model.2".to_owned();
-    worker.load_model(100, replacement).expect("new live handle");
+    worker
+        .load_model(100, replacement)
+        .expect("new live handle");
     assert!(worker.model_matches_digest("model.2", digest));
 
     let driver = Driver {
@@ -191,8 +193,7 @@ fn unloaded_model_digest_can_be_reloaded_but_failed_unload_remains_fenced() {
         ..Driver::default()
     };
     let mut failed =
-        InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver)
-            .expect("worker");
+        InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver).expect("worker");
     failed.load_model(100, manifest()).expect("load");
     assert!(matches!(
         failed.unload_model(100, "model.1"),
@@ -209,7 +210,10 @@ fn unloaded_model_digest_can_be_reloaded_but_failed_unload_remains_fenced() {
     );
     let mut alias = manifest();
     alias.model_id = "alias".to_owned();
-    assert_eq!(failed.load_model(100, alias), Err(Error::ModelAlreadyLoaded));
+    assert_eq!(
+        failed.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
 }
 
 #[test]
