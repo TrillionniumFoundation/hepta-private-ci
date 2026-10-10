@@ -27,6 +27,33 @@ pub struct MicrobatchKeyV1 {
     pub authority_epoch: u64,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct PhysicalBatchKeyV1 {
+    model_digest: Digest32,
+    generation: Generation,
+    authority_epoch: u64,
+}
+
+impl MicrobatchKeyV1 {
+    fn physical_key(&self) -> PhysicalBatchKeyV1 {
+        PhysicalBatchKeyV1 {
+            model_digest: self.model_digest,
+            generation: self.generation,
+            authority_epoch: self.authority_epoch,
+        }
+    }
+
+    /// Physical batch compatibility is weaker than authorization identity.
+    /// Full scope/fence binding stays with each intent and is verified again
+    /// by the final-use owner; only the model, worker generation and epoch
+    /// may be shared by the native backend.
+    pub fn physical_compatible_with(&self, other: &Self) -> bool {
+        self.model_digest == other.model_digest
+            && self.generation == other.generation
+            && self.authority_epoch == other.authority_epoch
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct InferenceIntentV1 {
     pub request_id: StableId,
@@ -77,6 +104,8 @@ pub enum SchedulerErrorV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MicrobatchPlanV1 {
+    /// Representative lane key. A physical batch may contain different
+    /// scope IDs and route fences: check requests[i].key at final use.
     pub key: MicrobatchKeyV1,
     pub requests: Vec<InferenceIntentV1>,
     pub oldest_queue_age_ms: u64,
@@ -103,6 +132,9 @@ struct QueuedIntent {
 pub struct BoundedMicrobatchSchedulerV1 {
     limits: MicrobatchLimitsV1,
     lanes: BTreeMap<MicrobatchKeyV1, VecDeque<QueuedIntent>>,
+    // Secondary affinity index; never conflates per-scope authorization.
+    physical_lanes: BTreeMap<PhysicalBatchKeyV1, BTreeSet<MicrobatchKeyV1>>,
+    physical_cursor: BTreeMap<PhysicalBatchKeyV1, MicrobatchKeyV1>,
     round_robin: VecDeque<MicrobatchKeyV1>,
     queued_ids: BTreeSet<StableId>,
     last_now_ms: Option<u64>,
@@ -113,6 +145,8 @@ impl BoundedMicrobatchSchedulerV1 {
         Ok(Self {
             limits: limits.validate()?,
             lanes: BTreeMap::new(),
+            physical_lanes: BTreeMap::new(),
+            physical_cursor: BTreeMap::new(),
             round_robin: VecDeque::new(),
             queued_ids: BTreeSet::new(),
             last_now_ms: None,
@@ -125,6 +159,31 @@ impl BoundedMicrobatchSchedulerV1 {
 
     pub fn active_lanes(&self) -> usize {
         self.lanes.len()
+    }
+
+    fn remove_physical_lane(&mut self, key: &MicrobatchKeyV1) {
+        let group = key.physical_key();
+        if let Some(members) = self.physical_lanes.get_mut(&group) {
+            members.remove(key);
+            if members.is_empty() {
+                self.physical_lanes.remove(&group);
+                self.physical_cursor.remove(&group);
+            }
+        }
+    }
+
+    // Cross-scope coalescing deliberately leaves stale round-robin slots.
+    // Rebuild infrequently and outside any global control lock rather than
+    // scanning all scopes for every physical model batch.
+    fn compact_round_robin_if_needed(&mut self) {
+        let limit = self
+            .lanes
+            .len()
+            .saturating_mul(2)
+            .saturating_add(self.limits.max_batch_size);
+        if self.round_robin.len() > limit {
+            self.round_robin.retain(|key| self.lanes.contains_key(key));
+        }
     }
 
     fn clock(&mut self, now_ms: u64) -> Result<(), SchedulerErrorV1> {
@@ -174,6 +233,10 @@ impl BoundedMicrobatchSchedulerV1 {
         let id = intent.request_id.clone();
         if !self.lanes.contains_key(&key) {
             self.round_robin.push_back(key.clone());
+            self.physical_lanes
+                .entry(key.physical_key())
+                .or_default()
+                .insert(key.clone());
         }
         self.lanes.entry(key).or_default().push_back(QueuedIntent {
             intent,
@@ -196,10 +259,12 @@ impl BoundedMicrobatchSchedulerV1 {
             let Some(key) = self.round_robin.pop_front() else {
                 break;
             };
-            scanned += 1;
             let Some(mut lane) = self.lanes.remove(&key) else {
+                // Coalescing may leave a retired round-robin slot. It must not
+                // consume the active-lane scan budget of the next poll.
                 continue;
             };
+            scanned += 1;
             // A lane cannot exceed one batch: expiry is bounded without a
             // global queue scan, including out-of-order deadlines.
             lane.retain(|queued| {
@@ -212,6 +277,7 @@ impl BoundedMicrobatchSchedulerV1 {
                 }
             });
             if lane.is_empty() {
+                self.remove_physical_lane(&key);
                 continue;
             }
             let oldest = lane.front().map_or(now_ms, |entry| entry.enqueued_at_ms);
@@ -227,6 +293,7 @@ impl BoundedMicrobatchSchedulerV1 {
                     self.queued_ids.remove(&entry.intent.request_id);
                     requests.push(entry.intent);
                 }
+                self.remove_physical_lane(&key);
                 selected = Some(MicrobatchPlanV1 {
                     key,
                     requests,
@@ -246,6 +313,107 @@ impl BoundedMicrobatchSchedulerV1 {
         })
     }
 
+    /// Drain a ready batch and coalesce compatible work from other scope lanes
+    /// without changing any per-request authorization/fence key. The scan is
+    /// bounded by max_lanes_per_poll, and the native batch by max_batch_size.
+    /// The worker must separately verify each original scope binding.
+    pub fn poll_physically_compatible(
+        &mut self,
+        now_ms: u64,
+    ) -> Result<MicrobatchPollV1, SchedulerErrorV1> {
+        let mut observed = self.poll(now_ms)?;
+        let Some(batch) = observed.batch.as_mut() else {
+            self.compact_round_robin_if_needed();
+            return Ok(observed);
+        };
+        if batch.requests.len() >= self.limits.max_batch_size {
+            self.compact_round_robin_if_needed();
+            return Ok(observed);
+        }
+        let group_key = batch.key.physical_key();
+        let remaining_scans = self
+            .limits
+            .max_lanes_per_poll
+            .saturating_sub(observed.scanned_lanes);
+        // Scan only physically compatible lanes, with a rotating cursor so
+        // cold scopes are not starved by frequently replenished low IDs.
+        let mut candidates = Vec::new();
+        if let Some(group) = self.physical_lanes.get(&group_key) {
+            if let Some(cursor) = self.physical_cursor.get(&group_key) {
+                candidates.extend(
+                    group
+                        .range((
+                            std::ops::Bound::Excluded(cursor.clone()),
+                            std::ops::Bound::Unbounded,
+                        ))
+                        .take(remaining_scans)
+                        .cloned(),
+                );
+                if candidates.len() < remaining_scans {
+                    candidates.extend(
+                        group
+                            .range(..=cursor.clone())
+                            .take(remaining_scans - candidates.len())
+                            .cloned(),
+                    );
+                }
+            } else {
+                candidates.extend(group.iter().take(remaining_scans).cloned());
+            }
+        }
+        let mut last_scanned = None;
+        for key in candidates {
+            observed.scanned_lanes += 1;
+            last_scanned = Some(key.clone());
+            let Some(mut lane) = self.lanes.remove(&key) else {
+                self.remove_physical_lane(&key);
+                continue;
+            };
+            lane.retain(|queued| {
+                if queued.intent.deadline_ms <= now_ms {
+                    observed
+                        .expired_request_ids
+                        .push(queued.intent.request_id.clone());
+                    self.queued_ids.remove(&queued.intent.request_id);
+                    false
+                } else {
+                    true
+                }
+            });
+            // The group index is a planning optimization, never authority.
+            if key.physical_compatible_with(&batch.key) {
+                let oldest = lane.front().map(|entry| entry.enqueued_at_ms);
+                let slots = self.limits.max_batch_size - batch.requests.len();
+                for _ in 0..slots.min(lane.len()) {
+                    if let Some(entry) = lane.pop_front() {
+                        self.queued_ids.remove(&entry.intent.request_id);
+                        batch.requests.push(entry.intent);
+                    }
+                }
+                if let Some(oldest) = oldest {
+                    batch.oldest_queue_age_ms =
+                        batch.oldest_queue_age_ms.max(now_ms.saturating_sub(oldest));
+                }
+            }
+            if lane.is_empty() {
+                self.remove_physical_lane(&key);
+            } else {
+                self.lanes.insert(key, lane);
+            }
+            if batch.requests.len() >= self.limits.max_batch_size {
+                break;
+            }
+        }
+        if let Some(key) = last_scanned {
+            if self.physical_lanes.contains_key(&group_key) {
+                self.physical_cursor.insert(group_key, key);
+            }
+        }
+        observed.pending = self.pending();
+        self.compact_round_robin_if_needed();
+        Ok(observed)
+    }
+
     /// Explicit fence cutover: drop queued work for a scope whose binding no
     /// longer matches the independently admitted generation/fence/epoch.
     /// Call outside global control locks. No stale work is requeued.
@@ -257,6 +425,7 @@ impl BoundedMicrobatchSchedulerV1 {
         authority_epoch: u64,
     ) -> Vec<StableId> {
         let mut dropped = Vec::new();
+        let mut retired_lanes = Vec::new();
         self.lanes.retain(|key, lane| {
             if &key.scope_id == scope
                 && (key.generation != generation
@@ -267,11 +436,15 @@ impl BoundedMicrobatchSchedulerV1 {
                     self.queued_ids.remove(&entry.intent.request_id);
                     dropped.push(entry.intent.request_id.clone());
                 }
+                retired_lanes.push(key.clone());
                 false
             } else {
                 true
             }
         });
+        for key in &retired_lanes {
+            self.remove_physical_lane(key);
+        }
         self.round_robin.retain(|key| self.lanes.contains_key(key));
         dropped
     }

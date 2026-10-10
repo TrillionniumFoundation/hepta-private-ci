@@ -1,3 +1,10 @@
+#[cfg(unix)]
+mod cell_split_artifact_cas;
+#[cfg(unix)]
+mod cell_split_effect_rpc;
+#[cfg(unix)]
+mod cell_split_effect_service;
+mod cell_split_execution_owner;
 mod cell_split_target_host;
 mod cell_split_target_host_evidence;
 mod cell_split_target_host_runtime;
@@ -47,6 +54,45 @@ use trust::TRUST_POLICY_SCOPE;
 use trust::TrustAnchor;
 use trust::TrustInputs;
 
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitArtifactCasErrorV1;
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitArtifactCasOwnerV1;
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitCasFinalUsePortV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_RPC_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectReadbackV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcActionV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcErrorV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcRequestV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcResponseV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitUnixEffectPortV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::cell_split_effect_readback_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_effect_service::CellSplitDurableEffectBackendV1;
+#[cfg(unix)]
+pub use cell_split_effect_service::CellSplitEffectServiceV1;
+#[cfg(unix)]
+pub use cell_split_effect_service::CellSplitOwnedEffectV1;
+pub use cell_split_execution_owner::CellSplitExecutionErrorV1;
+pub use cell_split_execution_owner::CellSplitExecutionIntentV1;
+pub use cell_split_execution_owner::CellSplitExecutionOwnerV1;
+pub use cell_split_execution_owner::CellSplitExecutionPlanV1;
+pub use cell_split_execution_owner::CellSplitExecutionPortV1;
+pub use cell_split_execution_owner::CellSplitExecutionReceiptV1;
+pub use cell_split_execution_owner::CellSplitExecutionStepV1;
+pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
+pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
 pub use cell_split_target_host::CellSplitQualificationOriginV1;
 pub use cell_split_target_host::CellSplitQualificationStateV1;
 pub use cell_split_target_host::CellSplitTargetHostErrorV1;

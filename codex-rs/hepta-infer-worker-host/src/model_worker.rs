@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
@@ -127,6 +128,7 @@ pub enum Error {
     ModelAlreadyLoaded,
     ModelNotLoaded,
     ModelMismatch,
+    ModelUnloadIndeterminate,
     PayloadMismatch,
     TokenLimit,
     DeadlineExpired,
@@ -137,6 +139,8 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    /// Native batch execution is not available in the selected driver.
+    BatchUnsupported,
 }
 
 impl fmt::Display for Error {
@@ -162,6 +166,9 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    // A driver may have applied an unload before returning an error. Keep
+    // the old identity fenced until a new worker-generation reconciliation.
+    unload_indeterminate: bool,
 }
 
 #[derive(Debug)]
@@ -171,6 +178,9 @@ pub struct InferenceWorker<D: ModelDriver> {
     grant: ResourceGrant,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
+    // Secondary lookup avoids O(models) scans on each admission/load and
+    // prevents digest aliases to distinct physical driver handles.
+    model_digest_index: BTreeMap<Digest32, String>,
     active_requests: BTreeMap<String, String>,
 }
 
@@ -193,6 +203,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             grant,
             driver,
             models: BTreeMap::new(),
+            model_digest_index: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
     }
@@ -209,6 +220,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.grant.authority_epoch
     }
 
+    /// Admit only the currently loaded, exact model identity for this digest.
+    pub(crate) fn model_matches_digest(&self, model_id: &str, digest: Digest32) -> bool {
+        self.model_digest_index
+            .get(&digest)
+            .is_some_and(|id| id == model_id)
+            && self
+                .models
+                .get(model_id)
+                .is_some_and(|model| !model.unload_indeterminate)
+    }
+
     pub fn load_model(
         &mut self,
         now_ms: u64,
@@ -216,17 +238,30 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
-        if self.models.contains_key(&manifest.model_id) {
+        let model_digest = Digest32::from_str(&manifest.model_digest)
+            .map_err(|_| Error::InvalidDigest("model"))?;
+        // One digest maps to one live or indeterminate physical handle.
+        if self.models.contains_key(&manifest.model_id)
+            || self.model_digest_index.contains_key(&model_digest)
+        {
             return Err(Error::ModelAlreadyLoaded);
         }
         let model_limit = self.grant.maximum_models.min(MAX_MODELS);
-        if self.models.len() >= model_limit {
+        if self.model_digest_index.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
+        // Reserve before the external call. A lost ACK from driver.load may
+        // mean that a real model handle exists. Such an indeterminate digest
+        // must remain reserved until an independently fenced worker rollover.
+        self.model_digest_index
+            .insert(model_digest, manifest.model_id.clone());
         let handle = self.driver.load(&manifest)?;
         validate_identity(&handle.opaque_id, "model handle")?;
         if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            // A confirmed unload permits reuse; a failed unload leaves the
+            // reservation in place and stops physical aliasing after restart.
             self.driver.unload(handle)?;
+            self.model_digest_index.remove(&model_digest);
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
@@ -242,12 +277,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                unload_indeterminate: false,
             },
         );
         Ok(observation)
     }
 
-    pub fn run(
+    /// Internal mechanism only: public production calls require a signed
+    /// AuthenticatedNeuronMicrobatchWorkerV1 final-use gate.
+    pub(crate) fn run(
         &mut self,
         now_ms: u64,
         model_id: &str,
@@ -264,6 +302,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -346,12 +387,22 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelUnloadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
+        // Fence *before* the uncertain external call. On failure we keep the
+        // model and digest reserved, but disallow any reuse or re-unload.
+        loaded.unload_indeterminate = true;
+        let handle = loaded.handle.clone();
+        self.driver.unload(handle)?;
         let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        let digest = Digest32::from_str(&loaded.manifest.model_digest)
+            .map_err(|_| Error::InvalidDigest("model"))?;
+        self.model_digest_index.remove(&digest);
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -472,6 +523,15 @@ pub struct DriverNeuronFeatureObservation {
     pub latency_micros: u64,
 }
 
+/// Exact request correlation returned by a native batch backend. Positional
+/// results alone would allow two valid output shapes to be swapped silently.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DriverNeuronFeatureBatchObservationV1 {
+    pub request_id: String,
+    pub input_digest: String,
+    pub observation: DriverNeuronFeatureObservation,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronFeatureExecutionObservation {
     pub request_id: String,
@@ -500,6 +560,18 @@ pub trait NeuronFeatureDriver: ModelDriver {
         handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error>;
+
+    /// A genuine single backend invocation for an ordered batch. The default
+    /// rejects batching instead of disguising N sequential driver calls as a
+    /// performance improvement. Implementations must return exactly one result
+    /// per request, in the same order, or fail the entire non-retryable batch.
+    fn run_neuron_features_batch(
+        &mut self,
+        _handle: &DriverModelHandle,
+        _requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<DriverNeuronFeatureBatchObservationV1>, Error> {
+        Err(Error::BatchUnsupported)
+    }
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
@@ -524,6 +596,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
@@ -611,54 +686,180 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
-                .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
-        };
-        let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
-            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
-            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
-            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
-            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
-            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
-            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
-            device_digest: parse_digest32(&observed.manifest.device_digest)?,
-        };
-        let status = match observed.status {
-            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
-            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
-            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
-            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
-        };
-        build_neuron_feature_receipt_v1(
-            &control_request,
-            runtime_tuple,
-            NeuronFeatureObservationV1 {
-                encoder_digest: parse_digest32(&observed.encoder_digest)?,
-                head_digest: parse_digest32(&observed.head_digest)?,
+        feature_receipt_from_observation(request_copy, observed)
+    }
+
+    /// No sequential fallback: a multi-request group must be handled by a
+    /// genuinely native feature-batch backend or fail without replay.
+    pub(crate) fn run_neuron_features_batch_receipts(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        requests: Vec<NeuronFeatureRequest>,
+    ) -> Result<Vec<NeuronFeatureReceiptV1>, Error> {
+        self.validate_current_grant(now_ms)?;
+        validate_identity(model_id, "model")?;
+        if requests.len() < 2 || requests.len() > MAX_ACTIVE_REQUESTS {
+            return Err(Error::RequestCapacity);
+        }
+        let total = self
+            .active_requests
+            .len()
+            .checked_add(requests.len())
+            .ok_or(Error::RequestCapacity)?;
+        if total > self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS) {
+            return Err(Error::RequestCapacity);
+        }
+        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
+        let manifest = loaded.manifest.clone();
+        let handle = loaded.handle.clone();
+        let mut distinct = BTreeSet::new();
+        for request in &requests {
+            validate_request(now_ms, &request.authorization)?;
+            validate_neuron_feature_request(request)?;
+            let auth = &request.authorization;
+            if auth.cancelled || !distinct.insert(auth.request_id.clone()) {
+                return Err(Error::FeatureContract);
+            }
+            if self.active_requests.contains_key(&auth.request_id) {
+                return Err(Error::RequestCapacity);
+            }
+            if auth.model_digest != manifest.model_digest
+                || auth.reservation_model_digest != manifest.model_digest
+                || request.weights_digest != manifest.weights_digest
+            {
+                return Err(Error::ModelMismatch);
+            }
+            if auth.maximum_tokens > manifest.maximum_tokens
+                || auth.maximum_tokens > auth.reservation_maximum_tokens
+            {
+                return Err(Error::TokenLimit);
+            }
+            let digest = canonical_neuron_feature_payload_digest(request);
+            if auth.payload_digest != digest || auth.lease_payload_digest != digest {
+                return Err(Error::PayloadMismatch);
+            }
+        }
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        loaded.active_requests = loaded
+            .active_requests
+            .checked_add(requests.len())
+            .ok_or(Error::ArithmeticOverflow)?;
+        for request in &requests {
+            self.active_requests.insert(
+                request.authorization.request_id.clone(),
+                model_id.to_owned(),
+            );
+        }
+        // One physical driver call, no per-request fallback and no retry after
+        // unknown/partial backend effects. All active markers are retired.
+        let results = self.driver.run_neuron_features_batch(&handle, &requests);
+        for request in &requests {
+            self.active_requests
+                .remove(&request.authorization.request_id);
+        }
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
+        let results = results?;
+        if results.len() != requests.len() {
+            return Err(Error::FeatureOutputMismatch);
+        }
+        let mut receipts = Vec::with_capacity(requests.len());
+        for (request, batch) in requests.into_iter().zip(results) {
+            if batch.request_id != request.authorization.request_id
+                || batch.input_digest != request.input_digest
+            {
+                return Err(Error::FeatureContract);
+            }
+            let observed = batch.observation;
+            if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+                return Err(Error::ModelCapacity);
+            }
+            let status = if !observed.terminal_observed {
+                ExecutionStatus::Indeterminate
+            } else if observed.succeeded {
+                validate_neuron_feature_output(&request, &observed)?;
+                ExecutionStatus::Succeeded
+            } else {
+                ExecutionStatus::Failed
+            };
+            let execution = NeuronFeatureExecutionObservation {
+                request_id: request.authorization.request_id.clone(),
+                reservation_id: request.authorization.reservation_id.clone(),
+                worker_generation: self.generation,
+                manifest: manifest.clone(),
+                encoder_digest: observed.encoder_digest,
+                head_digest: observed.head_digest,
+                input_digest: request.input_digest.clone(),
+                status,
                 drive_q24: observed.drive_q24,
                 prediction_q24: observed.prediction_q24,
                 observed_memory_bytes: observed.observed_memory_bytes,
                 transient_allocation_bytes: observed.transient_allocation_bytes,
                 queue_age_micros: observed.queue_age_micros,
                 latency_micros: observed.latency_micros,
-                status,
-            },
-        )
-        .map_err(|_| Error::FeatureContract)
+                terminal_observed: observed.terminal_observed,
+            };
+            receipts.push(feature_receipt_from_observation(request, execution)?);
+        }
+        Ok(receipts)
     }
+}
+
+fn feature_receipt_from_observation(
+    request_copy: NeuronFeatureRequest,
+    observed: NeuronFeatureExecutionObservation,
+) -> Result<NeuronFeatureReceiptV1, Error> {
+    let generation =
+        Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
+    let control_request = NeuronFeatureRequestV1 {
+        request_id: StableId::new(request_copy.authorization.request_id)
+            .map_err(|_| Error::FeatureContract)?,
+        generation,
+        model_id: StableId::new(observed.manifest.model_id.clone())
+            .map_err(|_| Error::FeatureContract)?,
+        encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
+        head_digest: parse_digest32(&request_copy.head_digest)?,
+        weights_digest: parse_digest32(&request_copy.weights_digest)?,
+        input_digest: parse_digest32(&request_copy.input_digest)?,
+        feature_vector_q24: request_copy.feature_vector_q24,
+        expected_output_width: request_copy.expected_output_width,
+    };
+    let runtime_tuple = NeuronModelRuntimeTupleV1 {
+        model_id: control_request.model_id.clone(),
+        model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
+        weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
+        tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
+        preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
+        quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
+        runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
+        device_digest: parse_digest32(&observed.manifest.device_digest)?,
+    };
+    let status = match observed.status {
+        ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
+        ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
+        ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
+        ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
+    };
+    build_neuron_feature_receipt_v1(
+        &control_request,
+        runtime_tuple,
+        NeuronFeatureObservationV1 {
+            encoder_digest: parse_digest32(&observed.encoder_digest)?,
+            head_digest: parse_digest32(&observed.head_digest)?,
+            drive_q24: observed.drive_q24,
+            prediction_q24: observed.prediction_q24,
+            observed_memory_bytes: observed.observed_memory_bytes,
+            transient_allocation_bytes: observed.transient_allocation_bytes,
+            queue_age_micros: observed.queue_age_micros,
+            latency_micros: observed.latency_micros,
+            status,
+        },
+    )
+    .map_err(|_| Error::FeatureContract)
 }
 
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {

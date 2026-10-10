@@ -5,15 +5,21 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    fail_unload: bool,
+    fail_load: bool,
+    load_memory_bytes: Option<u64>,
     loaded: usize,
 }
 
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        if self.fail_load {
+            return Err(Error::DriverFailure("load ACK lost after effect".into()));
+        }
         Ok(DriverModelHandle {
             opaque_id: format!("handle.{}", manifest.model_id),
-            observed_memory_bytes: 1_024,
+            observed_memory_bytes: self.load_memory_bytes.unwrap_or(1_024),
         })
     }
 
@@ -41,6 +47,9 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unload acknowledgment lost".into()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -129,6 +138,28 @@ fn request() -> WorkerRequest {
 }
 
 #[test]
+fn duplicate_model_digest_cannot_create_alias_to_another_live_handle() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut alias = manifest();
+    alias.model_id = "another-model-id".to_string();
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
+    assert!(worker.model_matches_digest(
+        "model.1",
+        Digest32::from_str(&manifest().model_digest).unwrap()
+    ));
+    assert!(!worker.model_matches_digest(
+        "another-model-id",
+        Digest32::from_str(&manifest().model_digest).unwrap()
+    ));
+}
+
+#[test]
 fn loads_runs_and_unloads_exact_model_tuple() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
@@ -144,6 +175,123 @@ fn loads_runs_and_unloads_exact_model_tuple() {
             .expect("unload")
             .terminal_observed
     );
+}
+
+#[test]
+fn unloaded_model_digest_can_be_reloaded_but_failed_unload_remains_fenced() {
+    let digest = Digest32::from_str(&manifest().model_digest).expect("digest");
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    worker.unload_model(100, "model.1").expect("unload");
+    assert!(!worker.model_matches_digest("model.1", digest));
+    let mut replacement = manifest();
+    replacement.model_id = "model.2".to_owned();
+    worker
+        .load_model(100, replacement)
+        .expect("new live handle");
+    assert!(worker.model_matches_digest("model.2", digest));
+
+    let driver = Driver {
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut failed =
+        InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver).expect("worker");
+    failed.load_model(100, manifest()).expect("load");
+    assert!(matches!(
+        failed.unload_model(100, "model.1"),
+        Err(Error::DriverFailure(_))
+    ));
+    assert!(!failed.model_matches_digest("model.1", digest));
+    assert_eq!(
+        failed.run(100, "model.1", request()),
+        Err(Error::ModelUnloadIndeterminate)
+    );
+    assert_eq!(
+        failed.unload_model(100, "model.1"),
+        Err(Error::ModelUnloadIndeterminate)
+    );
+    let mut alias = manifest();
+    alias.model_id = "alias".to_owned();
+    assert_eq!(
+        failed.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
+}
+
+#[test]
+fn uncertain_model_load_fences_digest_and_respects_capacity_bound() {
+    let driver = Driver {
+        fail_load: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.3".to_string(), 3, grant(), driver).expect("worker");
+    assert!(matches!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure(_))
+    ));
+    let digest = Digest32::from_str(&manifest().model_digest).unwrap();
+    assert!(!worker.model_matches_digest("model.1", digest));
+    let mut alias = manifest();
+    alias.model_id = "alias".to_owned();
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
+    // Reservations for uncertain effects consume the same real model limit.
+    let mut second = manifest();
+    second.model_id = "model.2".to_owned();
+    second.model_digest = "a".repeat(64);
+    assert!(matches!(
+        worker.load_model(100, second),
+        Err(Error::DriverFailure(_))
+    ));
+    let mut third = manifest();
+    third.model_id = "model.3".to_owned();
+    third.model_digest = "b".repeat(64);
+    assert_eq!(worker.load_model(100, third), Err(Error::ModelCapacity));
+}
+
+#[test]
+fn oversized_load_with_failed_unload_never_frees_unknown_physical_handle() {
+    let driver = Driver {
+        load_memory_bytes: Some(8_192),
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.4".to_string(), 3, grant(), driver).expect("worker");
+    assert!(matches!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure(_))
+    ));
+    let mut alias = manifest();
+    alias.model_id = "another".to_owned();
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
+
+    // A *confirmed* backend cleanup, unlike an unknown ACK, frees the slot.
+    let driver = Driver {
+        load_memory_bytes: Some(8_192),
+        ..Driver::default()
+    };
+    let mut cleaned =
+        InferenceWorker::new(100, "worker.5".to_string(), 3, grant(), driver).expect("worker");
+    assert_eq!(
+        cleaned.load_model(100, manifest()),
+        Err(Error::ModelCapacity)
+    );
+    cleaned.driver.load_memory_bytes = Some(1_024);
+    let mut alias = manifest();
+    alias.model_id = "reloaded".to_owned();
+    cleaned
+        .load_model(100, alias)
+        .expect("confirmed cleanup permits retry");
 }
 
 #[test]

@@ -3,8 +3,13 @@
 use std::fs::File;
 use std::time::Instant;
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::NduSnapshotRefV1;
+use codex_hepta_types::StableId;
 
 use crate::JournalAnchor;
 use crate::JournalError;
@@ -16,6 +21,41 @@ use crate::SparseJournal;
 use crate::SparseTick;
 use crate::runtime_types::*;
 use crate::validate_deletion_rebuild;
+
+/// Canonical issuer binding shared by the Agentd verifier and the physical
+/// neuron runtime. A caller-supplied binding is never accepted in place of
+/// recomputing it from the exact request and selected NDU snapshot.
+pub fn neuron_tick_final_use_binding_v1(
+    neuron_owner_id: &StableId,
+    input: &NeuronTickInputV1,
+    snapshot: &NduSnapshotRefV1,
+    authenticated_read_receipt_digest: Digest32,
+) -> Result<FinalUseBinding, NeuronRuntimeError> {
+    if snapshot.scope_id != input.subject_id
+        || snapshot.snapshot_digest != input.ndu_snapshot_digest
+        || authenticated_read_receipt_digest.is_zero()
+    {
+        return Err(NeuronRuntimeError::InvalidInput);
+    }
+    let tick_digest = input.semantic_digest()?;
+    let snapshot_ref_digest = snapshot
+        .semantic_digest()
+        .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+    let mut payload = b"hepta.agentd.neuron-final-use.v1".to_vec();
+    payload.extend_from_slice(tick_digest.as_array());
+    payload.extend_from_slice(snapshot_ref_digest.as_array());
+    payload.extend_from_slice(authenticated_read_receipt_digest.as_array());
+    let owner = neuron_owner_id.as_str().as_bytes();
+    payload.extend_from_slice(&(owner.len() as u64).to_be_bytes());
+    payload.extend_from_slice(owner);
+    Ok(FinalUseBinding {
+        subject_id: input.subject_id.to_string(),
+        destination_id: neuron_owner_id.to_string(),
+        request_sha256: *tick_digest.as_array(),
+        scope_sha256: *snapshot_ref_digest.as_array(),
+        payload_sha256: *Digest32::of_bytes(&payload).as_array(),
+    })
+}
 
 #[derive(Clone)]
 struct PendingWitness {
@@ -236,15 +276,18 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(())
     }
 
-    /// Strict additive path: check an independently admitted NDU read
-    /// receipt's digest binding before running the deterministic tick.
-    /// Legacy tick callers remain available for source compatibility.
+    /// The public production entry requires an independently signed final-use
+    /// grant, bound to the exact NDU read and neuron owner. Low-level ticks are
+    /// crate-private; callers cannot bypass this authority with a bare digest.
     pub fn tick_with_ndu_snapshot(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
-        snapshot: &codex_hepta_types::NduSnapshotRefV1,
+        snapshot: &NduSnapshotRefV1,
         admitted_read_receipt_digest: Digest32,
+        neuron_owner_id: &StableId,
+        authority: &FinalUseAuthority,
+        signed_grant: &SignedFinalUseGrant,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let tick_digest = input.semantic_digest()?;
         crate::bind_ndu_snapshot_stage_v1(
@@ -256,10 +299,23 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             admitted_read_receipt_digest,
         )
         .map_err(|_| NeuronRuntimeError::InvalidInput)?;
-        self.tick(model, input)
+        let binding = neuron_tick_final_use_binding_v1(
+            neuron_owner_id,
+            &input,
+            snapshot,
+            admitted_read_receipt_digest,
+        )?;
+        let token = FinalUseAuthority::claim(authority, signed_grant, &binding)
+            .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
+            self.tick(model, input)
+        })
+        .map_err(|_| NeuronRuntimeError::InvalidInput)?
     }
 
-    pub fn tick(
+    /// Internal deterministic mechanism, never an externally callable serving
+    /// entry. This preserves local recovery and qualification fixtures.
+    pub(crate) fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,

@@ -77,6 +77,7 @@ pub struct MetricsGroupCommitV1 {
     staged: Vec<MetricSampleV1>,
     sequence: u64,
     head: Digest32,
+    committed_rows: u64,
     bytes: u64,
     poisoned: bool,
 }
@@ -101,6 +102,7 @@ impl MetricsGroupCommitV1 {
         let mut line = Vec::new();
         let mut total = 0_u64;
         let mut sequence = 0_u64;
+        let mut committed_rows = 0_u64;
         let mut head = Digest32::ZERO;
         loop {
             line.clear();
@@ -119,8 +121,11 @@ impl MetricsGroupCommitV1 {
             }
             let contents =
                 std::str::from_utf8(&line).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
-            let (next_sequence, next_head) = parse_group(contents, sequence, head)?;
+            let (next_sequence, next_head, rows) = parse_group(contents, sequence, head)?;
             sequence = next_sequence;
+            committed_rows = committed_rows
+                .checked_add(rows as u64)
+                .ok_or(MetricsJournalErrorV1::Capacity)?;
             head = next_head;
         }
         Ok(Self {
@@ -128,6 +133,7 @@ impl MetricsGroupCommitV1 {
             staged: Vec::new(),
             sequence,
             head,
+            committed_rows,
             bytes: total,
             poisoned: false,
         })
@@ -149,6 +155,21 @@ impl MetricsGroupCommitV1 {
 
     pub fn pending(&self) -> usize {
         self.staged.len()
+    }
+
+    /// Committed rows recovered from the complete hash-checked journal, plus
+    /// groups durably synchronized by this owner. Unflushed staged rows are
+    /// intentionally excluded: an abrupt process exit can lose those rows.
+    pub fn committed_rows(&self) -> u64 {
+        self.committed_rows
+    }
+
+    pub fn committed_groups(&self) -> u64 {
+        self.sequence
+    }
+
+    pub fn committed_head(&self) -> Digest32 {
+        self.head
     }
 
     pub fn flush(&mut self) -> Result<Option<MetricsCommitReceiptV1>, MetricsJournalErrorV1> {
@@ -181,6 +202,10 @@ impl MetricsGroupCommitV1 {
             .bytes
             .checked_add(encoded.len() as u64)
             .ok_or(MetricsJournalErrorV1::Capacity)?;
+        let next_rows = self
+            .committed_rows
+            .checked_add(self.staged.len() as u64)
+            .ok_or(MetricsJournalErrorV1::Capacity)?;
         if encoded.len() > MAX_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
             return Err(MetricsJournalErrorV1::Capacity);
         }
@@ -195,6 +220,7 @@ impl MetricsGroupCommitV1 {
         }
         self.bytes = next_bytes;
         self.sequence = sequence;
+        self.committed_rows = next_rows;
         self.head = next_head;
         let receipt = MetricsCommitReceiptV1 {
             sequence,
@@ -251,7 +277,7 @@ fn parse_group(
     line: &str,
     previous_sequence: u64,
     previous_head: Digest32,
-) -> Result<(u64, Digest32), MetricsJournalErrorV1> {
+) -> Result<(u64, Digest32, usize), MetricsJournalErrorV1> {
     let mut fields = line.split('|');
     if fields.next() != Some("M1") {
         return Err(MetricsJournalErrorV1::Corrupt);
@@ -300,7 +326,7 @@ fn parse_group(
     if head != expected.to_string() {
         return Err(MetricsJournalErrorV1::Corrupt);
     }
-    Ok((sequence, expected))
+    Ok((sequence, expected, count))
 }
 
 fn digest_hex(s: &str) -> bool {

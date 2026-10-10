@@ -41,30 +41,12 @@ pub fn neuron_ndu_final_use_binding_v1(
     snapshot: &NduSnapshotRefV1,
     authenticated_read_receipt_digest: Digest32,
 ) -> Result<FinalUseBinding, NeuronRuntimeError> {
-    if snapshot.scope_id != input.subject_id
-        || snapshot.snapshot_digest != input.ndu_snapshot_digest
-        || authenticated_read_receipt_digest.is_zero()
-    {
-        return Err(NeuronRuntimeError::InvalidInput);
-    }
-    let tick_digest = input.semantic_digest()?;
-    let snapshot_ref_digest = snapshot
-        .semantic_digest()
-        .map_err(|_| NeuronRuntimeError::InvalidInput)?;
-    let mut payload = b"hepta.agentd.neuron-final-use.v1".to_vec();
-    payload.extend_from_slice(tick_digest.as_array());
-    payload.extend_from_slice(snapshot_ref_digest.as_array());
-    payload.extend_from_slice(authenticated_read_receipt_digest.as_array());
-    let owner = neuron_owner_id.as_str().as_bytes();
-    payload.extend_from_slice(&(owner.len() as u64).to_be_bytes());
-    payload.extend_from_slice(owner);
-    Ok(FinalUseBinding {
-        subject_id: input.subject_id.to_string(),
-        destination_id: neuron_owner_id.to_string(),
-        request_sha256: *tick_digest.as_array(),
-        scope_sha256: *snapshot_ref_digest.as_array(),
-        payload_sha256: *Digest32::of_bytes(&payload).as_array(),
-    })
+    codex_hepta_neuron::neuron_tick_final_use_binding_v1(
+        neuron_owner_id,
+        input,
+        snapshot,
+        authenticated_read_receipt_digest,
+    )
 }
 
 impl<W, P> AgentdNeuronOwner<W, P>
@@ -144,18 +126,19 @@ where
             snapshot,
             authenticated_read_receipt_digest,
         )?;
-        let token = FinalUseAuthority::claim(authority, signed_grant, &binding)
-            .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        if signed_grant.grant.binding != binding {
+            return Err(NeuronRuntimeError::InvalidInput);
+        }
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
-        FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
-            self.runtime.tick_with_ndu_snapshot(
-                &mut model,
-                input,
-                snapshot,
-                authenticated_read_receipt_digest,
-            )
-        })
-        .map_err(|_| NeuronRuntimeError::InvalidInput)?
+        self.runtime.tick_with_ndu_snapshot(
+            &mut model,
+            input,
+            snapshot,
+            authenticated_read_receipt_digest,
+            owner_id,
+            authority,
+            signed_grant,
+        )
     }
 
     /// Read-only diagnostics. Mutable runtime/worker access is intentionally

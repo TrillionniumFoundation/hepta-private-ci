@@ -183,6 +183,21 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_curve -- --ignored --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-microbatch-4096.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core workload_64_256_1024_4096_scope_cells -- --ignored --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-durable-4096.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core durable_writer_reopen_64_256_1024_4096_scope_history -- --ignored --nocapture --test-threads=1
+      - name: Four-mode CellSplit comparative performance analyzer
+        run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_perf_gate.py' -v
+      - name: Signed serving owners and durable metrics regression
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts -p codex-hepta-neuron -p codex-hepta-agentd -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-cell-roles -p codex-hepta-evidence -p codex-hepta-operator-acceptance -- --check
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-neuron-mechanism.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib runtime::tests -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/role-control-durable-cas.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-cell-roles --lib control_owner -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-final-use-library.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --lib final_use::tests -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-batch-worker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib batched_neuron -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/model-worker-index.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib model_worker -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-ndu-reader.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_ndu_read -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-agentd-neuron.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_runtime -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/metrics-group-commit.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --lib metrics_ -- --nocapture
       - name: Durable operation and external-effect recovery
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
@@ -223,6 +238,10 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-execution-owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_execution_owner -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-effect-service.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_effect_service -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-artifact-cas.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_artifact_cas -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-automation.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval --lib cell_split_automation -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- just test --locked -p codex-hepta-intelligence-eval -E 'test(selector_and_rollback_are_opaque_independent_admissions)'
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
       - name: Compiled service lifecycle and actual process restart

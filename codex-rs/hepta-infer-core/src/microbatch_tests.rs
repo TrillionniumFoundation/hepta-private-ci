@@ -113,6 +113,119 @@ fn cutover_drops_only_stale_scope() {
     assert_eq!(q.active_lanes(), 2);
 }
 
+#[test]
+fn compatible_scope_lanes_coalesce_without_erasing_original_authority() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(1, intent("a", "scopeA", 1, 1, 100)).unwrap();
+    q.enqueue(1, intent("b", "scopeB", 1, 8, 100)).unwrap();
+    q.enqueue(1, intent("c", "scopeC", 1, 19, 100)).unwrap();
+    let batch = q.poll_physically_compatible(11).unwrap().batch.unwrap();
+    assert_eq!(batch.requests.len(), 3);
+    assert_eq!(batch.requests[0].key.scope_id, id("scopeA"));
+    assert_eq!(batch.requests[1].key.scope_id, id("scopeB"));
+    assert_eq!(batch.requests[2].key.scope_id, id("scopeC"));
+    assert_eq!(batch.requests[1].key.route_fence, 8);
+    assert_eq!(batch.requests[2].key.route_fence, 19);
+    assert_eq!(batch.authority, AuthorityPosture::DENY_ALL);
+    assert_eq!(q.pending(), 0);
+}
+
+#[test]
+fn coalescing_cannot_mix_backend_generation_or_epoch() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(1, intent("a", "scopeA", 1, 1, 100)).unwrap();
+    q.enqueue(1, intent("generation", "scopeB", 2, 1, 100))
+        .unwrap();
+    let mut changed_epoch = intent("epoch", "scopeC", 1, 1, 100);
+    changed_epoch.key.authority_epoch = 2;
+    q.enqueue(1, changed_epoch).unwrap();
+    let mut changed_model = intent("model", "scopeD", 1, 1, 100);
+    changed_model.key.model_digest = digest("different-model");
+    q.enqueue(1, changed_model).unwrap();
+    let batch = q.poll_physically_compatible(11).unwrap().batch.unwrap();
+    assert_eq!(batch.requests.len(), 1);
+    assert_eq!(q.pending(), 3);
+    for _ in 0..3 {
+        let next = q.poll_physically_compatible(11).unwrap().batch.unwrap();
+        assert_eq!(next.requests.len(), 1);
+    }
+    assert_eq!(q.pending(), 0);
+}
+
+#[test]
+fn compatible_coalescing_respects_global_scan_and_batch_limits() {
+    let mut config = limits();
+    config.max_lanes_per_poll = 2;
+    config.max_batch_size = 2;
+    let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
+    for number in 0..4 {
+        q.enqueue(
+            1,
+            intent(
+                &format!("request-{number}"),
+                &format!("scope-{number}"),
+                1,
+                1,
+                100,
+            ),
+        )
+        .unwrap();
+    }
+    let first = q.poll_physically_compatible(11).unwrap();
+    assert_eq!(first.scanned_lanes, 2);
+    assert_eq!(first.batch.unwrap().requests.len(), 2);
+    assert_eq!(first.pending, 2);
+    let second = q.poll_physically_compatible(11).unwrap();
+    assert_eq!(second.batch.unwrap().requests.len(), 2);
+    assert_eq!(second.pending, 0);
+}
+
+#[test]
+fn affinity_index_fills_batch_without_scanning_unrelated_scopes() {
+    let mut config = limits();
+    config.max_lanes_per_poll = 2;
+    config.max_batch_size = 2;
+    let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
+    q.enqueue(1, intent("first", "a-first", 1, 1, 100)).unwrap();
+    let mut unrelated = intent("other", "b-unrelated", 1, 1, 100);
+    unrelated.key.model_digest = digest("different-model");
+    q.enqueue(1, unrelated).unwrap();
+    q.enqueue(1, intent("compatible", "z-compatible", 1, 99, 100))
+        .unwrap();
+
+    let result = q.poll_physically_compatible(11).unwrap();
+    assert_eq!(result.scanned_lanes, 2);
+    assert_eq!(result.pending, 1);
+    let batch = result.batch.unwrap();
+    assert_eq!(batch.requests.len(), 2);
+    assert_eq!(batch.requests[0].request_id, id("first"));
+    assert_eq!(batch.requests[1].request_id, id("compatible"));
+    assert_eq!(batch.requests[1].key.route_fence, 99);
+    let other = q.poll_physically_compatible(11).unwrap().batch.unwrap();
+    assert_eq!(other.requests[0].request_id, id("other"));
+    assert_eq!(q.pending(), 0);
+    assert_eq!(q.active_lanes(), 0);
+    assert!(q.physical_lanes.is_empty());
+}
+
+#[test]
+fn physical_affinity_index_cleans_up_after_expiry_and_cutover() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(1, intent("expired", "scope-a", 1, 1, 5)).unwrap();
+    q.enqueue(1, intent("fenced", "scope-b", 1, 1, 100))
+        .unwrap();
+    q.enqueue(1, intent("live", "scope-c", 1, 1, 100)).unwrap();
+    assert_eq!(
+        q.retain_scope_binding(&id("scope-b"), Generation::new(2).unwrap(), 1, 1),
+        vec![id("fenced")]
+    );
+    let result = q.poll_physically_compatible(11).unwrap();
+    assert_eq!(result.expired_request_ids, vec![id("expired")]);
+    assert_eq!(result.batch.unwrap().requests[0].request_id, id("live"));
+    assert_eq!(q.pending(), 0);
+    assert!(q.physical_lanes.is_empty());
+}
+
 // Opt-in source benchmark: not hardware acceptance, report raw durations.
 #[test]
 #[ignore = "run with --ignored --nocapture on deployment hardware"]

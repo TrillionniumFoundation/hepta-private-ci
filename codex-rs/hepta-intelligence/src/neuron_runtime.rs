@@ -2,7 +2,7 @@
 //!
 //! The caller accepts a model port that is already bound to inference.control.
 //! It does not depend on worker-private APIs, mint grants or bypass the runtime's
-//! journal/witness/calibration checks.
+//! journal/witness/calibration checks. Legacy unsigned dispatch is denied.
 
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::NeuronModelPort;
@@ -20,7 +20,10 @@ where
     W: AnchorWitnessStore,
     M: NeuronModelPort,
 {
-    runtime.tick(model, tick)
+    // This legacy entry has no independently verified NDU read or signed
+    // one-shot final-use grant. Never execute a model through this path.
+    let _ = (runtime, model, tick);
+    Err(NeuronRuntimeError::InvalidInput)
 }
 
 #[cfg(test)]
