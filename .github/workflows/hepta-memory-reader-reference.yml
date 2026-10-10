@@ -4,6 +4,7 @@ on:
     paths:
       - "scripts/memory_cell/reader_reference.py"
       - "scripts/memory_cell/test_reader_reference.py"
+      - "scripts/memory_cell/runtime_preflight.py"
       - ".github/workflows/hepta-memory-reader-reference.yml"
 permissions:
   contents: read
@@ -99,7 +100,7 @@ jobs:
         if: always()
         run: |
           mkdir -p /tmp/reference-result/source
-          cp scripts/memory_cell/reader_reference.py scripts/memory_cell/test_reader_reference.py scripts/memory_cell/reviewed*.py scripts/memory_cell/bundle_reader.py scripts/memory_cell/bundle_trial.py /tmp/reference-result/source/
+          cp scripts/memory_cell/reader_reference.py scripts/memory_cell/runtime_preflight.py scripts/memory_cell/test_reader_reference.py scripts/memory_cell/reviewed*.py scripts/memory_cell/bundle_reader.py scripts/memory_cell/bundle_trial.py /tmp/reference-result/source/
           git rev-parse HEAD > /tmp/reference-result/tested-commit.txt
           (cd /tmp/reference-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

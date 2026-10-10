@@ -276,10 +276,20 @@ def summarize(records):
 
 
 def run(inputs_dir, model_dir, output, stage_sha):
+    from runtime_preflight import (
+        apply_bounded_thread_environment,
+        bounded_threads_requested,
+        capture_runtime,
+        configure_torch,
+    )
+
+    bounded = bounded_threads_requested()
+    if bounded:
+        apply_bounded_thread_environment()
     import torch
     from reviewed_bundle import strict_read
 
-    torch.set_num_threads(2)
+    thread_control = configure_torch(torch, bounded=bounded)
     commit = os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", "")
     if not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise ValueError("exact experiment source required")
@@ -297,6 +307,10 @@ def run(inputs_dir, model_dir, output, stage_sha):
     pins = PINS | dict(inventory=staged["inventory_sha256"])
     inputs = DiagnosticInputs(paths, pins)
     output.mkdir()
+    write(
+        output / "runtime-preflight.json",
+        capture_runtime(torch, bounded=bounded, thread_control=thread_control),
+    )
     write(
         output / "preregistered.json",
         dict(

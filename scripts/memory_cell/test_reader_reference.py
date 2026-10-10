@@ -7,8 +7,15 @@ from pathlib import Path
 import tempfile
 from types import SimpleNamespace as Obj
 import unittest
+from unittest.mock import patch
 
 from reader_reference import catalogue, summarize, verify_files
+from runtime_preflight import (
+    apply_bounded_thread_environment,
+    bounded_threads_requested,
+    capture_runtime,
+    configure_torch,
+)
 
 
 def item(name, raw=b"ok", lfs=False):
@@ -51,6 +58,92 @@ def record(q="q", arm="empty"):
 
 
 class ReferenceTests(unittest.TestCase):
+    def test_default_thread_control_keeps_existing_reader_bound(self):
+        torch = Obj(
+            calls=[],
+            get_num_threads=lambda: 2,
+            get_num_interop_threads=lambda: 4,
+            set_num_threads=lambda value: torch.calls.append(("intra", value)),
+            set_num_interop_threads=lambda value: torch.calls.append(("inter", value)),
+        )
+        environ = {"OMP_NUM_THREADS": "2", "MKL_NUM_THREADS": "2"}
+        self.assertFalse(bounded_threads_requested(environ))
+        control = configure_torch(torch, bounded=False)
+        self.assertEqual(control["target_intra_op"], 2)
+        self.assertIsNone(control["target_inter_op"])
+        self.assertEqual(torch.calls, [("intra", 2)])
+        self.assertEqual(environ, {"OMP_NUM_THREADS": "2", "MKL_NUM_THREADS": "2"})
+
+    def test_bounded_thread_control_requires_explicit_opt_in(self):
+        torch = Obj(
+            calls=[],
+            get_num_threads=lambda: 1,
+            get_num_interop_threads=lambda: 1,
+            set_num_threads=lambda value: torch.calls.append(("intra", value)),
+            set_num_interop_threads=lambda value: torch.calls.append(("inter", value)),
+        )
+        environ = {
+            "HEPTA_MEMORY_BOUNDED_THREADS": "1",
+            "OMP_NUM_THREADS": "2",
+            "MKL_NUM_THREADS": "2",
+            "OPENBLAS_NUM_THREADS": "2",
+        }
+        self.assertTrue(bounded_threads_requested(environ))
+        self.assertEqual(
+            apply_bounded_thread_environment(environ),
+            {
+                "OMP_NUM_THREADS": "1",
+                "MKL_NUM_THREADS": "1",
+                "OPENBLAS_NUM_THREADS": "1",
+            },
+        )
+        control = configure_torch(torch, bounded=True)
+        self.assertEqual(control["target_inter_op"], 1)
+        self.assertEqual(torch.calls, [("intra", 1), ("inter", 1)])
+
+    def test_preflight_captures_host_torch_and_runner_metadata(self):
+        torch = Obj(
+            __version__="test-torch",
+            get_num_threads=lambda: 2,
+            get_num_interop_threads=lambda: 4,
+        )
+        environ = {
+            "OMP_NUM_THREADS": "2",
+            "MKL_NUM_THREADS": "2",
+            "RUNNER_REGION": "west",
+            "ImageOS": "ubuntu24",
+            "ImageVersion": "20260901.1",
+            "SECRET_TOKEN": "must-not-be-copied",
+        }
+        with (
+            patch("runtime_preflight._run", return_value={"returncode": 0}),
+            patch("runtime_preflight._affinity", return_value={"count": 2}),
+            patch("runtime_preflight._read_meminfo", return_value={"bytes": 12}),
+        ):
+            report = capture_runtime(torch, bounded=False, environ=environ)
+        self.assertEqual(
+            report["torch"],
+            {
+                "version": "test-torch",
+                "intra_op_threads": 2,
+                "inter_op_threads": 4,
+            },
+        )
+        self.assertEqual(
+            report["thread_environment"],
+            {
+                "OMP_NUM_THREADS": "2",
+                "MKL_NUM_THREADS": "2",
+                "OPENBLAS_NUM_THREADS": None,
+            },
+        )
+        self.assertEqual(report["runner"]["region"], {"RUNNER_REGION": "west"})
+        self.assertEqual(
+            report["runner"]["image"],
+            {"ImageOS": "ubuntu24", "ImageVersion": "20260901.1"},
+        )
+        self.assertNotIn("SECRET_TOKEN", report["runner"]["all"])
+
     def test_revision_and_required_files_are_checked(self):
         with self.assertRaises(ValueError):
             catalogue(info(), "b" * 40)
