@@ -73,11 +73,7 @@ impl CpuFeatureWeightsV1 {
     pub fn content_digest(&self) -> Result<Digest32, Error> {
         self.validate()?;
         let mut bytes = b"hepta.infer-worker.cpu-q24-feature-weights.v1\0".to_vec();
-        for name in [
-            &self.model_id,
-            &self.encoder_digest,
-            &self.head_digest,
-        ] {
+        for name in [&self.model_id, &self.encoder_digest, &self.head_digest] {
             bytes.extend_from_slice(&(name.len() as u64).to_be_bytes());
             bytes.extend_from_slice(name.as_bytes());
         }
@@ -100,7 +96,8 @@ impl CpuFeatureWeightsV1 {
             .checked_add(self.prediction_weights_q24.len())
             .ok_or(Error::ArithmeticOverflow)?;
         u64::try_from(
-            elements.checked_mul(std::mem::size_of::<i64>())
+            elements
+                .checked_mul(std::mem::size_of::<i64>())
                 .ok_or(Error::ArithmeticOverflow)?,
         )
         .map_err(|_| Error::ArithmeticOverflow)
@@ -350,11 +347,13 @@ impl NeuronFeatureDriver for CpuBatchFeatureDriverV1 {
         Ok(requests
             .iter()
             .zip(results)
-            .map(|(request, observation)| DriverNeuronFeatureBatchObservationV1 {
-                request_id: request.authorization.request_id.clone(),
-                input_digest: request.input_digest.clone(),
-                observation,
-            })
+            .map(
+                |(request, observation)| DriverNeuronFeatureBatchObservationV1 {
+                    request_id: request.authorization.request_id.clone(),
+                    input_digest: request.input_digest.clone(),
+                    observation,
+                },
+            )
             .collect())
     }
 }
