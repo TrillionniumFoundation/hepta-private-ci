@@ -132,7 +132,9 @@ def write_memory(sources, model_dir, output, *, source_sha, stage_sha):
 def summarize(rows, expected, *, policy_enabled=False):
     arms = dict(ARMS)
     if policy_enabled:
-        arms.update(policy_initial=("policy_initial", "base"), policy=("policy", "base"))
+        arms.update(
+            policy_initial=("policy_initial", "base"), policy=("policy", "base")
+        )
     if (
         not expected
         or len(set(expected)) != len(expected)
@@ -149,7 +151,9 @@ def summarize(rows, expected, *, policy_enabled=False):
         if row["status"] == "succeeded":
             receipt = row["receipt"]
             profiles.add((receipt["reader_identity"], receipt["reader_profile"]))
-            if type(receipt.get("knowledge_module_enabled")) is not bool or receipt["knowledge_module_enabled"] != (arms[row["arm"]][1] == "memory"):
+            if type(receipt.get("knowledge_module_enabled")) is not bool or receipt[
+                "knowledge_module_enabled"
+            ] != (arms[row["arm"]][1] == "memory"):
                 raise ValueError("wrong adapter mode for declared arm")
             if type(row["strict_task_success"]) is not bool:
                 raise ValueError("unscored successful task")
@@ -200,16 +204,33 @@ def summarize(rows, expected, *, policy_enabled=False):
             - result["hybrid"]["strict_task_successes"]
         )
         / len(expected),
-        learned_policy_control="source-supervised" if policy_enabled else "not implemented in this experiment",
+        learned_policy_control="source-supervised"
+        if policy_enabled
+        else "not implemented in this experiment",
         learned_policy_minus_initial=(
-            (result["policy"]["strict_task_successes"] - result["policy_initial"]["strict_task_successes"]) / len(expected)
-        ) if policy_enabled else None,
+            (
+                result["policy"]["strict_task_successes"]
+                - result["policy_initial"]["strict_task_successes"]
+            )
+            / len(expected)
+        )
+        if policy_enabled
+        else None,
     )
 
 
 def read_memory(
-    plan_dir, inputs, model_dir, snapshot, output, *, plan_sha, stage_sha, ready_sha,
-    policy_path=None, policy_sha=None
+    plan_dir,
+    inputs,
+    model_dir,
+    snapshot,
+    output,
+    *,
+    plan_sha,
+    stage_sha,
+    ready_sha,
+    policy_path=None,
+    policy_sha=None,
 ):
     from event_reader_experiment import preflight
     from native_citation import capture_native
@@ -261,12 +282,24 @@ def read_memory(
         raise ValueError("retrieval and module learned different source views")
     arms = dict(ARMS)
     if policy is not None:
-        from experience_policy import INITIAL, choose, lookup_from_question, validate_policy
+        from experience_policy import (
+            INITIAL,
+            choose,
+            lookup_from_question,
+            validate_policy,
+        )
         from event_projection import EventProjection
 
-        weights = validate_policy(policy, documents, reader_identity=reader.identity,
-            test_scopes={c["query"]["scope"] for c in locked["cases"]}, revoked=set())
-        arms.update(policy_initial=("policy_initial", "base"), policy=("policy", "base"))
+        weights = validate_policy(
+            policy,
+            documents,
+            reader_identity=reader.identity,
+            test_scopes={c["query"]["scope"] for c in locked["cases"]},
+            revoked=set(),
+        )
+        arms.update(
+            policy_initial=("policy_initial", "base"), policy=("policy", "base")
+        )
     write(
         output / "execution.json",
         dict(
@@ -291,11 +324,22 @@ def read_memory(
             query = Question(**case["query"])
             controls = dict(case["controls"])
             if policy is not None:
-                projection = EventProjection(tuple(d for d in documents if d.scope == query.scope))
+                projection = EventProjection(
+                    tuple(d for d in documents if d.scope == query.scope)
+                )
                 lookup = lookup_from_question(query)
-                for condition, parameters in (("policy_initial", INITIAL), ("policy", weights)):
+                for condition, parameters in (
+                    ("policy_initial", INITIAL),
+                    ("policy", weights),
+                ):
                     selection_start = time.perf_counter()
-                    selected, detail = choose(projection, lookup, case["candidate_ids"], parameters, revoked=set())
+                    selected, detail = choose(
+                        projection,
+                        lookup,
+                        case["candidate_ids"],
+                        parameters,
+                        revoked=set(),
+                    )
                     detail["seconds"] = time.perf_counter() - selection_start
                     controls[condition] = dict(selected=selected, selection=detail)
             for arm, (condition, mode) in arms.items():
@@ -405,8 +449,11 @@ def read_memory(
     if frozen_digest(reader.model) != reader.base_digest:
         raise ValueError("evaluation changed the base")
     write(output / "scored-answers.json", rows)
-    result = summarize(rows, [c["query"]["identity"] for c in locked["cases"]],
-                       policy_enabled=policy is not None)
+    result = summarize(
+        rows,
+        [c["query"]["identity"] for c in locked["cases"]],
+        policy_enabled=policy is not None,
+    )
     result.update(
         source_commit=commit,
         writer_source=ready["writer_source"],

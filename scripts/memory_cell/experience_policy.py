@@ -36,7 +36,8 @@ def lookup_from_question(query):
         "the location": ("location",),
         "the location of the assigned component": ("component", "location"),
         "the mode that actually succeeded for the assigned component": (
-            "component", "successful_mode"
+            "component",
+            "successful_mode",
         ),
     }[match[3]]
     lookup = Lookup(match[1], path, int(match[2]))
@@ -51,7 +52,9 @@ def candidate_features(projection, lookup, candidates, selected, *, revoked):
     depth = len(selected)
     entity = projection.facts[selected[-1]]["value"] if selected else lookup.entity
     retired = {
-        old for row in projection.facts.values() if row["revision"] <= lookup.revision
+        old
+        for row in projection.facts.values()
+        if row["revision"] <= lookup.revision
         for old in row["supersedes"]
     }
     ids, features = [], []
@@ -63,13 +66,20 @@ def candidate_features(projection, lookup, candidates, selected, *, revoked):
         attribute_match = row["attribute"] == lookup.path[depth]
         visible = row["revision"] <= lookup.revision
         current = visible and key not in retired
-        features.append((
-            float(entity_match), float(attribute_match),
-            float(entity_match and attribute_match), float(current),
-            float(not visible), float(key in retired),
-            float(entity_match and attribute_match and current),
-            1.0 / (rank + 1), float(depth > 0), 1.0,
-        ))
+        features.append(
+            (
+                float(entity_match),
+                float(attribute_match),
+                float(entity_match and attribute_match),
+                float(current),
+                float(not visible),
+                float(key in retired),
+                float(entity_match and attribute_match and current),
+                1.0 / (rank + 1),
+                float(depth > 0),
+                1.0,
+            )
+        )
         ids.append(key)
     return tuple(ids), tuple(features)
 
@@ -91,15 +101,22 @@ def choose(projection, lookup, candidates, weights=INITIAL, *, revoked):
         scores = [sum(a * b for a, b in zip(weights, x, strict=True)) for x in vectors]
         winner = min(range(len(ids)), key=lambda i: (-scores[i], ids[i]))
         selected.append(ids[winner])
-        decisions.append(dict(
-            candidates=ids, feature_digest=digest(vectors),
-            scores=scores, selected=ids[winner],
-        ))
+        decisions.append(
+            dict(
+                candidates=ids,
+                feature_digest=digest(vectors),
+                scores=scores,
+                selected=ids[winner],
+            )
+        )
     return tuple(selected), dict(
-        profile=PROFILE, decisions=decisions, weights_digest=digest(weights),
+        profile=PROFILE,
+        decisions=decisions,
+        weights_digest=digest(weights),
         source_event_reads=len(projection.facts) * len(decisions),
         scored_candidates=sum(len(d["candidates"]) for d in decisions),
-        injected_out_of_pool_sources=0, independent_semantic_review=False,
+        injected_out_of_pool_sources=0,
+        independent_semantic_review=False,
     )
 
 
@@ -110,10 +127,12 @@ def fit_policy(documents, training_scopes, *, revision, reader_identity, revoked
     write_started = time.perf_counter()
     scopes = tuple(sorted(training_scopes))
     if (
-        not 1 <= len(scopes) <= 64 or len(scopes) != len(set(scopes))
+        not 1 <= len(scopes) <= 64
+        or len(scopes) != len(set(scopes))
         or not 1 <= len(documents) <= 2048
         or len({d.identity for d in documents}) != len(documents)
-        or type(revision) is not int or not 0 <= revision <= 10000
+        or type(revision) is not int
+        or not 0 <= revision <= 10000
         or not re.fullmatch(r"[a-f0-9]{64}", reader_identity)
         or not set(scopes).issubset({d.scope for d in documents})
     ):
@@ -125,29 +144,50 @@ def fit_policy(documents, training_scopes, *, revision, reader_identity, revoked
     for scope in scopes:
         projection = EventProjection(tuple(d for d in train if d.scope == scope))
         pool = tuple(sorted(projection.facts))
-        keys = sorted({(r["entity"], r["attribute"]) for r in projection.facts.values()})
+        keys = sorted(
+            {(r["entity"], r["attribute"]) for r in projection.facts.values()}
+        )
         examples = []
         for entity, attribute in keys:
             paths = {(attribute,)}
             for row in projection.facts.values():
                 if row["entity"] == entity and row["attribute"] == attribute:
-                    paths.update((attribute, r["attribute"]) for r in projection.facts.values()
-                                 if r["entity"] == row["value"])
+                    paths.update(
+                        (attribute, r["attribute"])
+                        for r in projection.facts.values()
+                        if r["entity"] == row["value"]
+                    )
             for path in sorted(paths):
                 lookup = Lookup(entity, path, revision)
                 selected, info = select_current(
                     projection, lookup, pool, revoked=revoked, limit=8
                 )
-                if info["incomplete"] or info["conflicts"] or len(selected) != len(path):
-                    dispositions.append(dict(scope=scope, entity=entity, path=path,
-                                             disposition="unknown_not_a_negative"))
+                if (
+                    info["incomplete"]
+                    or info["conflicts"]
+                    or len(selected) != len(path)
+                ):
+                    dispositions.append(
+                        dict(
+                            scope=scope,
+                            entity=entity,
+                            path=path,
+                            disposition="unknown_not_a_negative",
+                        )
+                    )
                     continue
                 # Traverse the source-defined path; source sorting is not path order.
                 cursor, ordered = entity, []
                 for attr in path:
-                    matching = [k for k in selected
-                                if (projection.facts[k]["entity"], projection.facts[k]["attribute"])
-                                == (cursor, attr)]
+                    matching = [
+                        k
+                        for k in selected
+                        if (
+                            projection.facts[k]["entity"],
+                            projection.facts[k]["attribute"],
+                        )
+                        == (cursor, attr)
+                    ]
                     if len(matching) != 1:
                         break
                     ordered.append(matching[0])
@@ -172,7 +212,9 @@ def fit_policy(documents, training_scopes, *, revision, reader_identity, revoked
         pool = tuple(sorted(original_pool, key=lambda key: digest((step, key))))
         prefix, loss = [], weight.sum() * 0
         for target in targets:
-            ids, x = candidate_features(projection, lookup, pool, prefix, revoked=revoked)
+            ids, x = candidate_features(
+                projection, lookup, pool, prefix, revoked=revoked
+            )
             features = torch.tensor(x, dtype=torch.float64)
             logits = features @ weight
             loss = loss + torch.logsumexp(logits, 0) - logits[ids.index(target)]
@@ -192,22 +234,35 @@ def fit_policy(documents, training_scopes, *, revision, reader_identity, revoked
     if not delta > 0:
         raise ValueError("no actual learned policy update")
     return dict(
-        schema=PROFILE, weights=weight.detach().tolist(), initial=INITIAL,
-        training_scopes=scopes, roots=sorted({d.root for d in train}), revision=revision,
-        source_digest=digest([asdict(d) for d in train]), reader_identity=reader_identity,
-        steps=STEPS, parameters=len(INITIAL), examples=count, losses=losses,
-        dispositions=dispositions, delta_squared_norm=delta, operation_estimate=operations,
+        schema=PROFILE,
+        weights=weight.detach().tolist(),
+        initial=INITIAL,
+        training_scopes=scopes,
+        roots=sorted({d.root for d in train}),
+        revision=revision,
+        source_digest=digest([asdict(d) for d in train]),
+        reader_identity=reader_identity,
+        steps=STEPS,
+        parameters=len(INITIAL),
+        examples=count,
+        losses=losses,
+        dispositions=dispositions,
+        delta_squared_norm=delta,
+        operation_estimate=operations,
         training_seconds=time.perf_counter() - started,
         write_seconds=time.perf_counter() - write_started,
         retained_training_source_bytes=sum(len(d.content.encode()) for d in train),
-        test_queries_consumed=False, supervision="controlled-source-relations-not-human-review",
-        independent_review=False, production_accepted=False,
+        test_queries_consumed=False,
+        supervision="controlled-source-relations-not-human-review",
+        independent_review=False,
+        production_accepted=False,
     )
 
 
 def validate_policy(value, documents, *, reader_identity, test_scopes, revoked):
     if (
-        value["schema"] != PROFILE or value["reader_identity"] != reader_identity
+        value["schema"] != PROFILE
+        or value["reader_identity"] != reader_identity
         or value["test_queries_consumed"] is not False
         or value["production_accepted"] is not False
         or type(value["revision"]) is not int
@@ -217,15 +272,18 @@ def validate_policy(value, documents, *, reader_identity, test_scopes, revoked):
         or not value["training_scopes"]
         or len(set(value["training_scopes"])) != len(value["training_scopes"])
         or set(value["training_scopes"]) & set(test_scopes)
-        or any(type(w) not in (int, float) or not math.isfinite(w) or abs(w) > 100
-               for w in value["weights"])
+        or any(
+            type(w) not in (int, float) or not math.isfinite(w) or abs(w) > 100
+            for w in value["weights"]
+        )
     ):
         raise ValueError("incompatible or test-overlapping learned policy")
     train = tuple(d for d in documents if d.scope in value["training_scopes"])
     test = tuple(d for d in documents if d.scope in test_scopes)
     roots = {d.root for d in train}
     if (
-        roots != set(value["roots"]) or roots.intersection(revoked)
+        roots != set(value["roots"])
+        or roots.intersection(revoked)
         or roots.intersection(d.root for d in test)
         or set(value["training_scopes"]) != {d.scope for d in train}
         or digest([asdict(d) for d in train]) != value["source_digest"]
@@ -249,8 +307,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
     source_documents = original_documents(args.sources, args.source_sha)
     train_scopes = read(args.scopes, args.scopes_sha)
-    if not isinstance(train_scopes, list) or any(not isinstance(s, str) for s in train_scopes):
+    if not isinstance(train_scopes, list) or any(
+        not isinstance(s, str) for s in train_scopes
+    ):
         raise ValueError("explicit list of calibration scopes required")
-    policy = fit_policy(source_documents, train_scopes, revision=2,
-                        reader_identity=args.reader_identity, revoked=set())
+    policy = fit_policy(
+        source_documents,
+        train_scopes,
+        revision=2,
+        reader_identity=args.reader_identity,
+        revoked=set(),
+    )
     write(args.output, policy)
