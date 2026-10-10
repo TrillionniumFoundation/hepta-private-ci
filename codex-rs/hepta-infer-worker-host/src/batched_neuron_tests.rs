@@ -192,6 +192,29 @@ fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseG
 }
 
 #[test]
+fn wrong_loaded_model_id_fails_before_consuming_valid_signed_nonce() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[69; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let grant = signed(&signer, binding);
+    let mut worker = runner(&signer, dir.path(), model);
+    assert_eq!(
+        worker.enqueue(
+            100,
+            "wrong-model-id".into(),
+            request.clone(),
+            key.clone(),
+            grant.clone(),
+        ),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    assert_eq!(worker.pending(), 0);
+    worker.enqueue(100, "model".into(), request, key, grant).unwrap();
+    assert!(worker.poll_and_execute(101).unwrap().outcomes[0].result.is_ok());
+}
+
+#[test]
 fn signed_batch_executes_driver_once_then_rejects_duplicate() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[17; 32]);
