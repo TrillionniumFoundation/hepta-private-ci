@@ -1,7 +1,7 @@
 use std::fs;
 use std::os::unix::net::UnixListener;
-use std::sync::{Arc, Mutex};
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
@@ -10,20 +10,16 @@ use codex_hepta_neuron::{
     canonical_partition_digest_v1, sparse_tick,
 };
 use codex_hepta_types::{
-    CellBundleBindingV1, CellBundleInheritanceV1, CellBundleModeV1,
-    CellCachePolicyV1, CellChildPortBindingV1, CellChildV1,
-    CellInFlightPolicyV1, CellParentDispositionV1, CellParentRetirementPlanV1,
-    CellPortCompatibilityV1, CellResourceDeltaV1, CellRouteModeV1,
-    CellSplitEvaluationBindingV1, CellSplitV1,
-    CellStateSplitPlanV1 as SemanticStatePlan, CellStateTransformKindV1,
-    CellStateTransformV1, Generation, StableId,
+    CellBundleBindingV1, CellBundleInheritanceV1, CellBundleModeV1, CellCachePolicyV1,
+    CellChildPortBindingV1, CellChildV1, CellInFlightPolicyV1, CellParentDispositionV1,
+    CellParentRetirementPlanV1, CellPortCompatibilityV1, CellResourceDeltaV1, CellRouteModeV1,
+    CellSplitEvaluationBindingV1, CellSplitV1, CellStateSplitPlanV1 as SemanticStatePlan,
+    CellStateTransformKindV1, CellStateTransformV1, Generation, StableId,
 };
 use ed25519_dalek::SigningKey;
 
 use super::*;
-use crate::{
-    CellSplitEffectServiceV1, CellSplitExecutionPortV1, CellSplitUnixEffectPortV1,
-};
+use crate::{CellSplitEffectServiceV1, CellSplitExecutionPortV1, CellSplitUnixEffectPortV1};
 
 const Q: i64 = 1 << 24;
 fn id(value: &str) -> StableId {
@@ -37,14 +33,18 @@ fn g(value: u64) -> Generation {
 }
 fn transform(kind: CellStateTransformKindV1, mapping: Digest32) -> CellStateTransformV1 {
     CellStateTransformV1 {
-        kind, source_schema_digest: digest("source-schema"),
-        target_schema_digest: digest("target-schema"), mapping_digest: mapping,
+        kind,
+        source_schema_digest: digest("source-schema"),
+        target_schema_digest: digest("target-schema"),
+        mapping_digest: mapping,
     }
 }
 
 fn contract() -> CellSplitV1 {
-    let children = vec!["a", "b"].into_iter().enumerate().map(|(_index, suffix)| {
-        CellChildV1 {
+    let children = vec!["a", "b"]
+        .into_iter()
+        .enumerate()
+        .map(|(_index, suffix)| CellChildV1 {
             child_cell_id: id(&format!("cell.{suffix}")),
             child_generation: g(8),
             child_scope_digest: digest(&format!("scope-{suffix}")),
@@ -56,23 +56,31 @@ fn contract() -> CellSplitV1 {
             route_predicate_digest: digest(&format!("predicate-{suffix}")),
             fallback_route_digest: digest(&format!("fallback-{suffix}")),
             route_mode: CellRouteModeV1::Exclusive,
-        }
-    }).collect::<Vec<_>>();
-    let bundles = children.iter().enumerate().map(|(index, child)| CellBundleBindingV1 {
-        child_cell_id: child.child_cell_id.clone(),
-        base_digest: digest("base"),
-        organ_adapter_digest: digest("organ-adapter"),
-        cell_adapter_digest: digest(&format!("cell-adapter-{index}")),
-        head_digest: digest(&format!("head-{index}")),
-        compatibility_digest: digest(&format!("compat-{index}")),
-    }).collect();
-    let ports = children.iter().enumerate().map(|(index, child)| CellChildPortBindingV1 {
-        child_cell_id: child.child_cell_id.clone(),
-        input_port_digest: digest(&format!("input-{index}")),
-        output_port_digest: digest(&format!("output-{index}")),
-        termination_port_digest: digest(&format!("terminal-{index}")),
-        compatibility_digest: digest(&format!("port-compat-{index}")),
-    }).collect();
+        })
+        .collect::<Vec<_>>();
+    let bundles = children
+        .iter()
+        .enumerate()
+        .map(|(index, child)| CellBundleBindingV1 {
+            child_cell_id: child.child_cell_id.clone(),
+            base_digest: digest("base"),
+            organ_adapter_digest: digest("organ-adapter"),
+            cell_adapter_digest: digest(&format!("cell-adapter-{index}")),
+            head_digest: digest(&format!("head-{index}")),
+            compatibility_digest: digest(&format!("compat-{index}")),
+        })
+        .collect();
+    let ports = children
+        .iter()
+        .enumerate()
+        .map(|(index, child)| CellChildPortBindingV1 {
+            child_cell_id: child.child_cell_id.clone(),
+            input_port_digest: digest(&format!("input-{index}")),
+            output_port_digest: digest(&format!("output-{index}")),
+            termination_port_digest: digest(&format!("terminal-{index}")),
+            compatibility_digest: digest(&format!("port-compat-{index}")),
+        })
+        .collect();
     let partitions = vec![vec![0, 2], vec![1, 3]];
     let value = CellSplitV1 {
         split_id: id("split.integration"),
@@ -97,11 +105,11 @@ fn contract() -> CellSplitV1 {
         state: SemanticStatePlan {
             recurrent: transform(
                 CellStateTransformKindV1::Partition,
-                canonical_partition_digest_v1(b"temporal", &partitions)
+                canonical_partition_digest_v1(b"temporal", &partitions),
             ),
             eligibility: transform(
                 CellStateTransformKindV1::Partition,
-                canonical_partition_digest_v1(b"activation", &partitions)
+                canonical_partition_digest_v1(b"activation", &partitions),
             ),
             optimizer: transform(CellStateTransformKindV1::Reset, Digest32::ZERO),
             cache_policy: CellCachePolicyV1::Revalidate,
@@ -175,7 +183,9 @@ fn parent_checkpoint() -> codex_hepta_neuron::SparseCheckpoint {
         drive_q24: vec![Q, Q / 2, Q / 4, 0],
         prediction_q24: vec![0; 4],
     };
-    sparse_tick(&configuration, &input, None).expect("parent state").0
+    sparse_tick(&configuration, &input, None)
+        .expect("parent state")
+        .0
 }
 
 fn prepared() -> (CellStateMigrationV1, JournalAnchor) {
@@ -189,10 +199,16 @@ fn prepared() -> (CellStateMigrationV1, JournalAnchor) {
         &contract,
         vec![vec![0, 2], vec![1, 3]],
         vec![vec![0, 2], vec![1, 3]],
-    ).expect("typed projection plan");
+    )
+    .expect("typed projection plan");
     let migration = CellStateMigrationV1::begin(
-        id("split.integration"), &contract, anchor, &checkpoint, &plan,
-    ).expect("verified migration from parent");
+        id("split.integration"),
+        &contract,
+        anchor,
+        &checkpoint,
+        &plan,
+    )
+    .expect("verified migration from parent");
     (migration, anchor)
 }
 
@@ -218,10 +234,13 @@ fn execution_plan() -> CellSplitExecutionPlanV1 {
 fn operation(plan: &CellSplitExecutionPlanV1) -> CellSplitExecutionIntentV1 {
     let plan_digest = sha256(&canonical_json(plan).expect("plan"));
     let predecessor = "55".repeat(32);
-    let key = sha256(format!(
-        "hepta.learning.cell-split.execution-owner.v1\0{plan_digest}\0{}\0{predecessor}",
-        CellSplitExecutionStepV1::ChildStateMigration.index(),
-    ).as_bytes());
+    let key = sha256(
+        format!(
+            "hepta.learning.cell-split.execution-owner.v1\0{plan_digest}\0{}\0{predecessor}",
+            CellSplitExecutionStepV1::ChildStateMigration.index(),
+        )
+        .as_bytes(),
+    );
     CellSplitExecutionIntentV1 {
         schema: "hepta.learning.cell-split.execution-owner.v1".into(),
         plan_digest,
@@ -255,12 +274,15 @@ impl ObservedAuthority {
 impl CellSplitMigrationAuthorityPortV1 for ObservedAuthority {
     type Error = &'static str;
     fn current_parent_anchor(
-        &mut self, _plan: &CellSplitExecutionPlanV1,
+        &mut self,
+        _plan: &CellSplitExecutionPlanV1,
     ) -> Result<JournalAnchor, Self::Error> {
         Ok(*self.live.lock().expect("anchor"))
     }
     fn verify_committed_artifact(
-        &mut self, _plan: &CellSplitExecutionPlanV1, previous: &str,
+        &mut self,
+        _plan: &CellSplitExecutionPlanV1,
+        previous: &str,
     ) -> Result<(), Self::Error> {
         let pinned = self.exact_cas_receipt.lock().expect("pinned CAS receipt");
         if self.cas_good.load(Ordering::Acquire) && previous == pinned.as_str() {
@@ -270,7 +292,8 @@ impl CellSplitMigrationAuthorityPortV1 for ObservedAuthority {
         }
     }
     fn verify_final_use(
-        &mut self, _plan: &CellSplitExecutionPlanV1,
+        &mut self,
+        _plan: &CellSplitExecutionPlanV1,
         _intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
         if self.final_use_good.load(Ordering::Acquire) {
@@ -284,18 +307,17 @@ impl CellSplitMigrationAuthorityPortV1 for ObservedAuthority {
 fn private_root() -> tempfile::TempDir {
     let root = tempfile::tempdir().expect("root");
     use std::os::unix::fs::PermissionsExt as _;
-    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
-        .expect("private root");
+    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700)).expect("private root");
     root
 }
 
 fn owner(
-    root: &std::path::Path, migration: CellStateMigrationV1,
+    root: &std::path::Path,
+    migration: CellStateMigrationV1,
     auth: ObservedAuthority,
 ) -> CellSplitChildStateCasOwnerV1<ObservedAuthority> {
-    CellSplitChildStateCasOwnerV1::open(
-        root, execution_plan(), migration, auth,
-    ).expect("durable owner")
+    CellSplitChildStateCasOwnerV1::open(root, execution_plan(), migration, auth)
+        .expect("durable owner")
 }
 
 #[test]
@@ -308,22 +330,41 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
         let mut batch = owner(root.path(), migration.clone(), auth.clone());
         assert!(batch.read_committed(&intent).expect("empty").is_none());
         batch.commit_once(&intent).expect("real typed child CAS");
-        let committed = batch.read_committed(&intent).expect("readback").expect("marker");
-        assert!(batch.verify_current(&intent, &committed).expect("live readback"));
+        let committed = batch
+            .read_committed(&intent)
+            .expect("readback")
+            .expect("marker");
+        assert!(
+            batch
+                .verify_current(&intent, &committed)
+                .expect("live readback")
+        );
         for (index, child) in migration.children().iter().enumerate() {
             let path = batch.child_path(
-                index, &intent, CellStateMigrationV1::child_payload_digest(child),
+                index,
+                &intent,
+                CellStateMigrationV1::child_payload_digest(child),
             );
-            assert_eq!(fs::read(path).expect("Q24 payload"), encode_cell_state_v1(child));
+            assert_eq!(
+                fs::read(path).expect("Q24 payload"),
+                encode_cell_state_v1(child)
+            );
         }
         assert!(owner_try_reopen(root.path(), migration.clone(), auth.clone()).is_err());
     }
     let mut reopened = owner(root.path(), migration.clone(), auth.clone());
-    let signed = reopened.read_committed(&intent).unwrap().expect("reopened marker");
+    let signed = reopened
+        .read_committed(&intent)
+        .unwrap()
+        .expect("reopened marker");
     assert!(reopened.verify_current(&intent, &signed).unwrap());
-    reopened.commit_once(&intent).expect("verified duplicate is idempotent");
+    reopened
+        .commit_once(&intent)
+        .expect("verified duplicate is idempotent");
     let path = reopened.child_path(
-        0, &intent, CellStateMigrationV1::child_payload_digest(&migration.children()[0]),
+        0,
+        &intent,
+        CellStateMigrationV1::child_payload_digest(&migration.children()[0]),
     );
     fs::write(path, b"tampered child Q24").expect("external corruption");
     assert!(reopened.verify_current(&intent, &signed).is_err());
@@ -350,15 +391,21 @@ fn abandoned_partial_child_and_stale_authority_never_publish_a_batch_marker() {
     auth.final_use_good.store(true, Ordering::Release);
     let child = &migration.children()[0];
     let path = batch.child_path(
-        0, &intent, CellStateMigrationV1::child_payload_digest(child),
+        0,
+        &intent,
+        CellStateMigrationV1::child_payload_digest(child),
     );
     fs::write(&path, b"partial first child").expect("simulate power loss");
-    assert!(matches!(batch.commit_once(&intent), Err(CellSplitChildStateCasErrorV1::Ambiguous)));
+    assert!(matches!(
+        batch.commit_once(&intent),
+        Err(CellSplitChildStateCasErrorV1::Ambiguous)
+    ));
     assert!(batch.read_committed(&intent).unwrap().is_none());
     drop(batch);
     let mut recovered = owner(root.path(), migration, auth);
     assert!(matches!(
-        recovered.commit_once(&intent), Err(CellSplitChildStateCasErrorV1::Ambiguous)
+        recovered.commit_once(&intent),
+        Err(CellSplitChildStateCasErrorV1::Ambiguous)
     ));
     assert!(recovered.read_committed(&intent).unwrap().is_none());
 }
@@ -397,62 +444,82 @@ fn signed_migration_rpc_requires_reopening_real_child_bytes() {
     let server_root = root.path().to_path_buf();
     let server = thread::spawn(move || {
         let backend = CellSplitChildStateCasOwnerV1::open(
-            &server_root, plan.clone(), migration.clone(), auth.clone(),
-        ).expect("real state CAS backend");
+            &server_root,
+            plan.clone(),
+            migration.clone(),
+            auth.clone(),
+        )
+        .expect("real state CAS backend");
         let signer = SigningKey::from_bytes(&[2; 32]);
         let mut service = CellSplitEffectServiceV1::new(
             CellSplitExecutionStepV1::ChildStateMigration,
             plan.owner_ids[1].clone(),
             sha256(&canonical_json(&plan).expect("plan")),
-            signer.clone(), backend,
-        ).expect("signed service");
+            signer.clone(),
+            backend,
+        )
+        .expect("signed service");
         for _ in 0..3 {
             let (mut stream, _) = listener.accept().expect("RPC");
-            service.serve_connection(&mut stream).expect("serving actual state");
+            service
+                .serve_connection(&mut stream)
+                .expect("serving actual state");
         }
         drop(service);
-        let reopened = CellSplitChildStateCasOwnerV1::open(
-            &server_root, plan.clone(), migration, auth,
-        ).expect("disk reopen");
+        let reopened =
+            CellSplitChildStateCasOwnerV1::open(&server_root, plan.clone(), migration, auth)
+                .expect("disk reopen");
         let mut service = CellSplitEffectServiceV1::new(
             CellSplitExecutionStepV1::ChildStateMigration,
             plan.owner_ids[1].clone(),
             sha256(&canonical_json(&plan).expect("plan")),
-            signer, reopened,
-        ).expect("reopened service");
+            signer,
+            reopened,
+        )
+        .expect("reopened service");
         let (mut stream, _) = listener.accept().expect("restart RPC");
-        service.serve_connection(&mut stream).expect("recovered readback");
+        service
+            .serve_connection(&mut stream)
+            .expect("recovered readback");
     });
-    let keys = [1_u8, 2, 3, 4]
-        .map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
+    let keys = [1_u8, 2, 3, 4].map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
     let mut client = CellSplitUnixEffectPortV1::new(
         [
-            root.path().join("cas.sock"), socket,
+            root.path().join("cas.sock"),
+            socket,
             root.path().join("cns.sock"),
             root.path().join("supervisor.sock"),
         ],
         keys,
         Duration::from_secs(3),
-    ).expect("RPC client");
+    )
+    .expect("RPC client");
     let signed = client.execute(&request).expect("real backend");
-    client.verify_committed(&request, &signed).expect("fresh readback");
-    assert_eq!(client.reconcile(&request).expect("readback"), Some(signed.clone()));
-    assert_eq!(client.reconcile(&request).expect("reopened readback"), Some(signed));
+    client
+        .verify_committed(&request, &signed)
+        .expect("fresh readback");
+    assert_eq!(
+        client.reconcile(&request).expect("readback"),
+        Some(signed.clone())
+    );
+    assert_eq!(
+        client.reconcile(&request).expect("reopened readback"),
+        Some(signed)
+    );
     server.join().expect("server completed");
 }
-
 
 /// Two physical durable operations, two independent signed RPC owners, one
 /// coordinator ledger. CNS and Supervisor deliberately have no service:
 /// neither can be inferred from the earlier Artifact + migration commits.
 #[test]
 fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
+    use crate::{
+        CellSplitArtifactCasOwnerV1, CellSplitCasFinalUsePortV1, CellSplitExecutionOwnerV1,
+        CellSplitOwnerTrustV1,
+    };
     use std::io::ErrorKind;
     use std::os::unix::fs::PermissionsExt as _;
-    use crate::{
-        CellSplitArtifactCasOwnerV1, CellSplitCasFinalUsePortV1,
-        CellSplitExecutionOwnerV1, CellSplitOwnerTrustV1,
-    };
 
     #[derive(Clone)]
     struct CasFinalUse(Arc<AtomicBool>);
@@ -463,9 +530,7 @@ fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
             plan: &CellSplitExecutionPlanV1,
             intent: &CellSplitExecutionIntentV1,
         ) -> Result<(), Self::Error> {
-            if self.0.load(Ordering::Acquire)
-                && plan.owner_ids[0] == intent.owner_id
-            {
+            if self.0.load(Ordering::Acquire) && plan.owner_ids[0] == intent.owner_id {
                 Ok(())
             } else {
                 Err("CAS owner final use denied")
@@ -500,7 +565,9 @@ fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
     let cas_listener = UnixListener::bind(&cas_socket).expect("CAS socket");
     let state_listener = UnixListener::bind(&migration_socket).expect("migration socket");
     cas_listener.set_nonblocking(true).expect("CAS listener");
-    state_listener.set_nonblocking(true).expect("state listener");
+    state_listener
+        .set_nonblocking(true)
+        .expect("state listener");
     let plan_digest = sha256(&canonical_json(&plan).expect("frozen plan"));
 
     let cas_stop = stop.clone();
@@ -509,16 +576,21 @@ fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
     let cas_root_copy = cas_root.clone();
     let cas_thread = thread::spawn(move || {
         let backend = CellSplitArtifactCasOwnerV1::open(
-            &cas_root_copy, &parent, &child, cas_plan.clone(),
-            CasFinalUse(Arc::new(AtomicBool::new(true)))
-        ).expect("actual Artifact CAS");
+            &cas_root_copy,
+            &parent,
+            &child,
+            cas_plan.clone(),
+            CasFinalUse(Arc::new(AtomicBool::new(true))),
+        )
+        .expect("actual Artifact CAS");
         let mut service = CellSplitEffectServiceV1::new(
             CellSplitExecutionStepV1::ArtifactCas,
             cas_plan.owner_ids[0].clone(),
             cas_plan_digest,
             SigningKey::from_bytes(&[1; 32]),
             backend,
-        ).expect("CAS signer");
+        )
+        .expect("CAS signer");
         while !cas_stop.load(Ordering::Acquire) {
             match cas_listener.accept() {
                 Ok((mut stream, _)) => {
@@ -538,15 +610,20 @@ fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
     let state_root_copy = state_root.clone();
     let state_thread = thread::spawn(move || {
         let backend = CellSplitChildStateCasOwnerV1::open(
-            &state_root_copy, state_plan.clone(), state_migration, state_auth
-        ).expect("typed migration owner");
+            &state_root_copy,
+            state_plan.clone(),
+            state_migration,
+            state_auth,
+        )
+        .expect("typed migration owner");
         let mut service = CellSplitEffectServiceV1::new(
             CellSplitExecutionStepV1::ChildStateMigration,
             state_plan.owner_ids[1].clone(),
             sha256(&canonical_json(&state_plan).expect("frozen state plan")),
             SigningKey::from_bytes(&[2; 32]),
             backend,
-        ).expect("independent migration signer");
+        )
+        .expect("independent migration signer");
         while !state_stop.load(Ordering::Acquire) {
             match state_listener.accept() {
                 Ok((mut stream, _)) => {
@@ -559,10 +636,10 @@ fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
             }
         }
     });
-    let keys = [1_u8, 2, 3, 4]
-        .map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
+    let keys = [1_u8, 2, 3, 4].map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
     let endpoints = [
-        cas_socket, migration_socket,
+        cas_socket,
+        migration_socket,
         root.path().join("missing-cns.sock"),
         root.path().join("missing-supervisor.sock"),
     ];
@@ -570,66 +647,83 @@ fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
         .expect("four distinct pinned owner identities");
     let migration_receipt;
     {
-        let client = CellSplitUnixEffectPortV1::new(
-            endpoints.clone(), keys.clone(), Duration::from_secs(3)
-        ).expect("four owner connections");
-        let mut coordinator = CellSplitExecutionOwnerV1::open(
-            &ledger, plan.clone(), trust.clone(), client
-        ).expect("frozen coordinator");
+        let client =
+            CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+                .expect("four owner connections");
+        let mut coordinator =
+            CellSplitExecutionOwnerV1::open(&ledger, plan.clone(), trust.clone(), client)
+                .expect("frozen coordinator");
         let artifact = coordinator.advance().expect("real CAS").expect("step zero");
         assert_eq!(artifact.intent.step, CellSplitExecutionStepV1::ArtifactCas);
         assert_eq!(coordinator.completed_steps(), 1);
-        *migration_auth.exact_cas_receipt.lock().expect("CAS witness") =
-            artifact.receipt_digest.clone();
-        let state = coordinator.advance()
-            .expect("durable child migration").expect("step one");
-        assert_eq!(state.intent.step, CellSplitExecutionStepV1::ChildStateMigration);
+        *migration_auth
+            .exact_cas_receipt
+            .lock()
+            .expect("CAS witness") = artifact.receipt_digest.clone();
+        let state = coordinator
+            .advance()
+            .expect("durable child migration")
+            .expect("step one");
+        assert_eq!(
+            state.intent.step,
+            CellSplitExecutionStepV1::ChildStateMigration
+        );
         migration_receipt = state.clone();
-        assert_eq!(state.intent.previous_receipt_digest, artifact.receipt_digest);
+        assert_eq!(
+            state.intent.previous_receipt_digest,
+            artifact.receipt_digest
+        );
         assert_eq!(coordinator.completed_steps(), 2);
-        assert!(coordinator.advance().is_err(), "no CNS owner, no route cutover");
+        assert!(
+            coordinator.advance().is_err(),
+            "no CNS owner, no route cutover"
+        );
         assert!(!coordinator.is_complete());
     }
-    assert!(cas_root.join(format!(
-        "sha256-{}", plan.child_artifact_digest
-    )).exists(), "actual immutable artifact was published");
+    assert!(
+        cas_root
+            .join(format!("sha256-{}", plan.child_artifact_digest))
+            .exists(),
+        "actual immutable artifact was published"
+    );
     for (index, state) in migration.children().iter().enumerate() {
         let path = state_root.join(format!(
             "child-{}-{index:02}-{}.q24",
             migration_receipt.intent.idempotency_key,
             CellStateMigrationV1::child_payload_digest(state),
         ));
-        assert_eq!(fs::read(path).expect("physically committed state"),
-            encode_cell_state_v1(state));
+        assert_eq!(
+            fs::read(path).expect("physically committed state"),
+            encode_cell_state_v1(state)
+        );
     }
     {
-        let client = CellSplitUnixEffectPortV1::new(
-            endpoints.clone(), keys.clone(), Duration::from_secs(3)
-        ).expect("reopened transport");
-        let mut coordinator = CellSplitExecutionOwnerV1::open(
-            &ledger, plan.clone(), trust.clone(), client
-        ).expect("read two real current owner receipts");
+        let client =
+            CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+                .expect("reopened transport");
+        let mut coordinator =
+            CellSplitExecutionOwnerV1::open(&ledger, plan.clone(), trust.clone(), client)
+                .expect("read two real current owner receipts");
         assert_eq!(coordinator.completed_steps(), 2);
         assert!(coordinator.advance().is_err(), "missing CNS is ambiguous");
     }
     let corrupt = state_root.join(format!(
         "child-{}-{:02}-{}.q24",
-        migration_receipt.intent.idempotency_key, 0,
+        migration_receipt.intent.idempotency_key,
+        0,
         CellStateMigrationV1::child_payload_digest(&migration.children()[0]),
     ));
-    fs::write(corrupt, b"tampered after committed batch")
-        .expect("external corruption");
-    let client = CellSplitUnixEffectPortV1::new(
-        endpoints, keys, Duration::from_secs(3)
-    ).expect("readback client");
-    assert!(CellSplitExecutionOwnerV1::open(
-        &ledger, plan, trust, client
-    ).is_err(), "a stale migration readback must fail closed");
+    fs::write(corrupt, b"tampered after committed batch").expect("external corruption");
+    let client = CellSplitUnixEffectPortV1::new(endpoints, keys, Duration::from_secs(3))
+        .expect("readback client");
+    assert!(
+        CellSplitExecutionOwnerV1::open(&ledger, plan, trust, client).is_err(),
+        "a stale migration readback must fail closed"
+    );
     stop.store(true, Ordering::Release);
     cas_thread.join().expect("CAS server");
     state_thread.join().expect("migration server");
 }
-
 
 #[test]
 fn frozen_projected_input_tamper_is_denied_without_publishing_children() {
