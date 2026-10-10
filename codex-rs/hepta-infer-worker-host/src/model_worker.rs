@@ -250,7 +250,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
         Ok(observation)
     }
 
-    pub fn run(
+    /// Internal mechanism only: public production calls require a signed
+    /// AuthenticatedNeuronMicrobatchWorkerV1 final-use gate.
+    pub(crate) fn run(
         &mut self,
         now_ms: u64,
         model_id: &str,
