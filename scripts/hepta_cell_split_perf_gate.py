@@ -15,6 +15,7 @@ from typing import Any
 
 SCOPES = (64, 256, 1024, 4096)
 MODES = ("no_split", "logical_split", "optimized_logical_split", "physical_split")
+TRACE_FIELD = "attempted_request_trace_sha256"
 FIELDS = (
     "attempted", "completed", "elapsed_seconds", "p50_ms", "p95_ms", "p99_ms",
     "cpu_seconds", "rss_peak_bytes", "communication_bytes",
@@ -50,7 +51,7 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
     if not isinstance(raw, list) or len(raw) != len(SCOPES) * len(MODES):
         raise InvalidEvidence("requires exactly four modes at each of four scope counts")
 
-    measurements: dict[tuple[int, str], dict[str, float]] = {}
+    measurements: dict[tuple[int, str], dict[str, Any]] = {}
     for entry in raw:
         if not isinstance(entry, dict):
             raise InvalidEvidence("each run must be an object")
@@ -61,11 +62,15 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         key = (scope, mode)
         if key in measurements:
             raise InvalidEvidence(f"duplicate run {key}")
+        trace = entry.get(TRACE_FIELD)
+        if not isinstance(trace, str) or not re.fullmatch(r"[0-9a-f]{64}", trace):
+            raise InvalidEvidence(f"{scope}/{mode}: missing canonical attempted request trace SHA-256")
         vals = {
             field: positive_number(entry.get(field), f"{scope}/{mode}/{field}",
                                    allow_zero=field not in ("attempted", "completed", "elapsed_seconds"))
             for field in FIELDS
         }
+        vals[TRACE_FIELD] = trace
         for field in ("attempted", "completed", "communication_bytes",
                       "native_backend_calls", "native_batch_requests",
                       "fsync_count", "failed_requests"):
@@ -94,6 +99,13 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         measurements[key] = vals
     if len(measurements) != 16:
         raise InvalidEvidence("missing mode/scope combination")
+    # Equal request counts alone do not demonstrate a frozen workload. The
+    # target-host runner must report the digest of the actual ordered input
+    # request identities; the independent observer must separately attest it.
+    if len({row[TRACE_FIELD] for row in measurements.values()}) != 1:
+        raise InvalidEvidence("all sixteen runs must use the same frozen request trace")
+    if len({row["attempted"] for row in measurements.values()}) != 1:
+        raise InvalidEvidence("all sixteen runs must attempt the same frozen workload size")
 
     comparisons = []
     violations = []
@@ -156,6 +168,7 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         "hardware_id": packet["hardware_id"],
         "workload_digest": packet["workload_digest"],
         "model_digest": packet["model_digest"],
+        TRACE_FIELD: next(iter(measurements.values()))[TRACE_FIELD],
         "comparative_gate_passed": not violations,
         "violations": violations,
         "comparisons": comparisons,
