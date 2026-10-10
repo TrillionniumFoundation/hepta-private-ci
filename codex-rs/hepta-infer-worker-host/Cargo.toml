@@ -13,12 +13,28 @@ doctest = false
 [lints]
 workspace = true
 
+# The backend-neutral neuron worker can be built independently of Agentd and
+# Codex App Server. The existing native CLI remains enabled by default.
+[features]
+default = ["native-app-server"]
+native-app-server = [
+    "dep:codex-app-server-client",
+    "dep:codex-app-server-protocol",
+    "dep:codex-hepta-agentd",
+    "dep:codex-hepta-codex-adapter",
+]
+
+[[bin]]
+name = "hepta-infer-worker"
+path = "src/bin/hepta-infer-worker.rs"
+required-features = ["native-app-server"]
+
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
-codex-app-server-client = { workspace = true }
-codex-app-server-protocol = { workspace = true }
-codex-hepta-agentd = { workspace = true }
-codex-hepta-codex-adapter = { path = "../hepta-codex-adapter" }
+codex-app-server-client = { workspace = true, optional = true }
+codex-app-server-protocol = { workspace = true, optional = true }
+codex-hepta-agentd = { workspace = true, optional = true }
+codex-hepta-codex-adapter = { path = "../hepta-codex-adapter", optional = true }
 codex-hepta-contracts = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 libc = { workspace = true }
