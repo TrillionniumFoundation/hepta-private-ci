@@ -720,6 +720,53 @@ mod tests {
     }
 
     #[test]
+    fn scope_wal_failed_mutations_restore_only_the_local_delta() {
+        let directory = root();
+        let scope = digest("scope-one");
+        let mut owner =
+            ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope).expect("open");
+        owner
+            .activate_generation(Generation::new(3).expect("generation"), digest("fence"))
+            .expect("activate");
+        owner.set_now_ms(10).expect("clock");
+        let old = owner.inner.clone();
+        let head = owner.head();
+        let sequence = owner.committed_events();
+
+        let mut expired = intent(scope);
+        expired.expiry_ms = 10;
+        assert!(matches!(
+            owner.prepare(expired),
+            Err(ControlOwnerErrorV1::Expired)
+        ));
+        assert!(matches!(
+            owner.forward(&id("not-present")),
+            Err(ControlOwnerErrorV1::MissingDispatch)
+        ));
+        assert_eq!(owner.inner, old);
+        assert_eq!(owner.head(), head);
+        assert_eq!(owner.committed_events(), sequence);
+
+        let receipt = owner.prepare(intent(scope)).expect("prepare");
+        let prepared_sequence = owner.committed_events();
+        assert_eq!(owner.prepare(intent(scope)).expect("idempotent"), receipt);
+        assert_eq!(owner.committed_events(), prepared_sequence);
+        assert_eq!(owner.forward(&receipt.dispatch_id).expect("forward").sequence, 1);
+        drop(owner);
+
+        let recovered =
+            ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope).expect("replay");
+        assert_eq!(recovered.committed_events(), prepared_sequence + 1);
+        assert_eq!(
+            recovered.dispatch_receipt(&receipt.dispatch_id)
+                .expect("forwarded").status,
+            ControlDispatchStatusV1::Forwarded
+        );
+        drop(recovered);
+        fs::remove_dir_all(directory).expect("remove");
+    }
+
+    #[test]
     fn scope_wal_isolates_lanes_and_rejects_truncated_tail() {
         let directory = root();
         let first = digest("scope-one");
