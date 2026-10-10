@@ -9,6 +9,7 @@
 
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
+pub mod batched_neuron;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;

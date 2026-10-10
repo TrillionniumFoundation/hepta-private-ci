@@ -23,7 +23,7 @@ use codex_hepta_types::{
 };
 
 use crate::model_worker::{
-    canonical_neuron_feature_payload_digest, Error as WorkerError, InferenceWorker,
+    canonical_neuron_feature_payload_digest, InferenceWorker,
     ModelDriver, NeuronFeatureDriver, NeuronFeatureRequest,
 };
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
