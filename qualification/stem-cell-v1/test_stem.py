@@ -164,8 +164,9 @@ class ScaleTraceTests(unittest.TestCase):
             cold = i < 3
             self.events.append(dict(kind="request", request_id=j["request_id"],
                                     generation=j["generation"], model_digest=j["model_digest"],
-                                    scope=j["scope"], start_us=j["submitted_at_us"] + 100,
-                                    end_us=j["submitted_at_us"] + 250 + i,
+                                    scope=j["scope"], enqueued_us=9000 + j["submitted_at_us"],
+                                    start_us=9100 + j["submitted_at_us"],
+                                    end_us=9250 + j["submitted_at_us"] + i,
                                     status="ok", path="cold_encoder" if cold else "cache_hit_head",
                                     batch_id="batch1" if cold else None,
                                     cpu_us=50, rss_bytes=1000000))
@@ -188,6 +189,8 @@ class ScaleTraceTests(unittest.TestCase):
         self.assertEqual(result["backend_batches"], 1)
         self.assertEqual(result["actual_backend_multi_request_batches"], 1)
         self.assertEqual(result["completed"], 7)
+        self.assertGreater(result["cold_and_cached_latency"]["cold_encoder"]["p99_ms"],
+                           result["cold_and_cached_latency"]["cold_encoder"]["execution_p99_ms"])
         self.assertAlmostEqual(result["wal_fsync_p99_ms"], 0.8)
         self.assertTrue(result["all_recoveries_checksums_verified"])
         self.assertFalse(result["production_authorized"])
@@ -201,6 +204,11 @@ class ScaleTraceTests(unittest.TestCase):
     def test_wrong_scope_rejected(self):
         self.events[0]["scope"] = "other tenant"
         with self.assertRaisesRegex(ValueError, "cross-scope"):
+            trace_report(self.jobs, self.events)
+
+    def test_bad_native_clock_domain_rejected(self):
+        self.events[0]["enqueued_us"] = self.events[0]["end_us"] + 1
+        with self.assertRaisesRegex(ValueError, "non-monotone native"):
             trace_report(self.jobs, self.events)
 
     def test_missing_request_rejected(self):
