@@ -13,7 +13,6 @@ use ed25519_dalek::SigningKey;
 use crate::CellSplitExecutionIntentV1;
 use crate::CellSplitExecutionReceiptV1;
 use crate::CellSplitExecutionStepV1;
-use crate::cell_split_execution_signing_payload_v1;
 use crate::cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
 use crate::cell_split_effect_rpc::CELL_SPLIT_EFFECT_RPC_SCHEMA_V1;
 use crate::cell_split_effect_rpc::CellSplitEffectReadbackV1;
@@ -24,6 +23,7 @@ use crate::cell_split_effect_rpc::CellSplitEffectRpcResponseV1;
 use crate::cell_split_effect_rpc::cell_split_effect_readback_signing_payload_v1;
 use crate::cell_split_effect_rpc::receive_frame;
 use crate::cell_split_effect_rpc::send_frame;
+use crate::cell_split_execution_signing_payload_v1;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 
@@ -44,11 +44,12 @@ pub trait CellSplitDurableEffectBackendV1 {
     type Error: std::fmt::Display;
 
     fn authorize_execute(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<(), Self::Error>;
-    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<(), Self::Error>;
-    fn read_committed(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<Option<CellSplitOwnedEffectV1>, Self::Error>;
+    -> Result<(), Self::Error>;
+    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error>;
+    fn read_committed(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<Option<CellSplitOwnedEffectV1>, Self::Error>;
     fn verify_current(
         &mut self,
         intent: &CellSplitExecutionIntentV1,
@@ -78,9 +79,17 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
         backend: B,
     ) -> Result<Self, CellSplitEffectRpcErrorV1> {
         if owner_id.is_empty() || owner_id.len() > 256 || !digest_shape(&plan_digest) {
-            return Err(CellSplitEffectRpcErrorV1::Invalid("effect service trust binding"));
+            return Err(CellSplitEffectRpcErrorV1::Invalid(
+                "effect service trust binding",
+            ));
         }
-        Ok(Self { step, owner_id, plan_digest, signing_key, backend })
+        Ok(Self {
+            step,
+            owner_id,
+            plan_digest,
+            signing_key,
+            backend,
+        })
     }
 
     pub fn backend(&self) -> &B {
@@ -99,10 +108,12 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
         let action = request.action;
         let (receipt, readback) = match action {
             CellSplitEffectRpcActionV1::Execute => {
-                self.backend.authorize_execute(&request.intent)
+                self.backend
+                    .authorize_execute(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 if self.read_verified(&request.intent)?.is_none() {
-                    self.backend.commit_once(&request.intent)
+                    self.backend
+                        .commit_once(&request.intent)
                         .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 }
                 let committed = self.read_verified(&request.intent)?.ok_or(
@@ -112,13 +123,22 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
             }
             CellSplitEffectRpcActionV1::ReadBack => {
                 let committed = self.read_verified(&request.intent)?;
-                let receipt = committed.as_ref()
+                let receipt = committed
+                    .as_ref()
                     .map(|effect| self.sign_receipt(&request.intent, effect))
                     .transpose()?;
-                let sequence = self.backend.current_sequence()
+                let sequence = self
+                    .backend
+                    .current_sequence()
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
-                if sequence == 0 || committed.as_ref().is_some_and(|r| r.owner_sequence > sequence) {
-                    return Err(CellSplitEffectRpcErrorV1::Invalid("owner sequence regressed"));
+                if sequence == 0
+                    || committed
+                        .as_ref()
+                        .is_some_and(|r| r.owner_sequence > sequence)
+                {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "owner sequence regressed",
+                    ));
                 }
                 let mut readback = CellSplitEffectReadbackV1 {
                     schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
@@ -131,30 +151,39 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                     read_sequence: sequence,
                     owner_signature_bytes: Vec::new(),
                 };
-                readback.owner_signature_bytes = self.signing_key.sign(
-                    &cell_split_effect_readback_signing_payload_v1(&readback)?
-                ).to_bytes().to_vec();
+                readback.owner_signature_bytes = self
+                    .signing_key
+                    .sign(&cell_split_effect_readback_signing_payload_v1(&readback)?)
+                    .to_bytes()
+                    .to_vec();
                 (receipt, Some(readback))
             }
         };
-        send_frame(stream, &CellSplitEffectRpcResponseV1 {
-            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
-            action,
-            receipt,
-            readback,
-            error: None,
-        })
+        send_frame(
+            stream,
+            &CellSplitEffectRpcResponseV1 {
+                schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+                action,
+                receipt,
+                readback,
+                error: None,
+            },
+        )
     }
 
-    fn validate(&self, request: &CellSplitEffectRpcRequestV1)
-        -> Result<(), CellSplitEffectRpcErrorV1>
-    {
+    fn validate(
+        &self,
+        request: &CellSplitEffectRpcRequestV1,
+    ) -> Result<(), CellSplitEffectRpcErrorV1> {
         let intent = &request.intent;
         let expected = sha256(
             format!(
                 "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
-                intent.plan_digest, intent.step.index(), intent.previous_receipt_digest
-            ).as_bytes(),
+                intent.plan_digest,
+                intent.step.index(),
+                intent.previous_receipt_digest
+            )
+            .as_bytes(),
         );
         if request.schema != CELL_SPLIT_EFFECT_RPC_SCHEMA_V1
             || intent.schema != "hepta.learning.cell-split.execution-owner.v1"
@@ -165,29 +194,42 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
             || !digest_shape(&intent.idempotency_key)
             || intent.idempotency_key != expected
         {
-            return Err(CellSplitEffectRpcErrorV1::Invalid("unbound execution intent"));
+            return Err(CellSplitEffectRpcErrorV1::Invalid(
+                "unbound execution intent",
+            ));
         }
         match (request.action, request.challenge_nonce.as_deref()) {
             (CellSplitEffectRpcActionV1::Execute, None) => {}
             (CellSplitEffectRpcActionV1::ReadBack, Some(nonce)) if digest_shape(nonce) => {}
-            _ => return Err(CellSplitEffectRpcErrorV1::Invalid("challenge/action mismatch")),
+            _ => {
+                return Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "challenge/action mismatch",
+                ));
+            }
         }
         Ok(())
     }
 
-    fn read_verified(&mut self, intent: &CellSplitExecutionIntentV1)
-        -> Result<Option<CellSplitOwnedEffectV1>, CellSplitEffectRpcErrorV1>
-    {
-        let effect = self.backend.read_committed(intent)
+    fn read_verified(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<Option<CellSplitOwnedEffectV1>, CellSplitEffectRpcErrorV1> {
+        let effect = self
+            .backend
+            .read_committed(intent)
             .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
         if let Some(ref committed) = effect {
             if committed.owner_sequence == 0
                 || committed.owner_receipt_bytes.is_empty()
                 || committed.owner_receipt_bytes.len() > 32 * 1024
-                || !self.backend.verify_current(intent, committed)
+                || !self
+                    .backend
+                    .verify_current(intent, committed)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?
             {
-                return Err(CellSplitEffectRpcErrorV1::Invalid("effect no longer current"));
+                return Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "effect no longer current",
+                ));
             }
         }
         Ok(effect)
@@ -206,10 +248,14 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
             owner_signature_bytes: Vec::new(),
             receipt_digest: String::new(),
         };
-        receipt.owner_signature_bytes = self.signing_key.sign(
-            &cell_split_execution_signing_payload_v1(&receipt)
-                .map_err(|_| CellSplitEffectRpcErrorV1::Invalid("receipt signing payload"))?
-        ).to_bytes().to_vec();
+        receipt.owner_signature_bytes = self
+            .signing_key
+            .sign(
+                &cell_split_execution_signing_payload_v1(&receipt)
+                    .map_err(|_| CellSplitEffectRpcErrorV1::Invalid("receipt signing payload"))?,
+            )
+            .to_bytes()
+            .to_vec();
         let mut unsealed = receipt.clone();
         unsealed.receipt_digest.clear();
         receipt.receipt_digest = sha256(&canonical_json(&unsealed)?);
@@ -219,7 +265,9 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
 
 fn digest_shape(value: &str) -> bool {
     value.len() == 64
-        && value.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
         && value.bytes().any(|byte| byte != b'0')
 }
 
