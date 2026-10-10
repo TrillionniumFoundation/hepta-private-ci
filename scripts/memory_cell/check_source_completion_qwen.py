@@ -80,63 +80,112 @@ def run(output):
                     value.retain_grad()
                     captured[module] = value
 
-                modules = [m.get_base_model().model.layers[0].self_attn.v_proj for m in models]
+                modules = [
+                    m.get_base_model().model.layers[0].self_attn.v_proj for m in models
+                ]
                 hooks = [m.register_forward_hook(capture) for m in modules]
                 try:
-                    for step, (length, targets) in enumerate(zip(
-                        plan["sequence_lengths"], plan["supervised_lengths"], strict=True
-                    )):
+                    for step, (length, targets) in enumerate(
+                        zip(
+                            plan["sequence_lengths"],
+                            plan["supervised_lengths"],
+                            strict=True,
+                        )
+                    ):
                         ids = [(i * 7 + step) % 97 for i in range(length)]
                         prefix = length - targets
                         labels = [-100] * prefix + ids[prefix:]
                         losses, receipts, prompt_grads = [], [], []
                         for backend, model, optimizer, module in zip(
-                            ("full", "supervised_positions"), models, optimizers, modules, strict=True
+                            ("full", "supervised_positions"),
+                            models,
+                            optimizers,
+                            modules,
+                            strict=True,
                         ):
                             optimizer.zero_grad(set_to_none=True)
-                            loss, receipt = completion_loss(model, ids, labels, backend=backend)
+                            loss, receipt = completion_loss(
+                                model, ids, labels, backend=backend
+                            )
                             loss.backward()
                             losses.append(loss.detach())
                             receipts.append(receipt)
-                            prompt_grad = float(captured[module].grad[:, :prefix].float().abs().sum())
+                            prompt_grad = float(
+                                captured[module].grad[:, :prefix].float().abs().sum()
+                            )
                             if not prompt_grad > 0:
-                                raise ValueError("prompt attention path lost its gradient")
+                                raise ValueError(
+                                    "prompt attention path lost its gradient"
+                                )
                             prompt_grads.append(prompt_grad)
-                        torch.testing.assert_close(losses[0], losses[1], rtol=0, atol=tolerance)
+                        torch.testing.assert_close(
+                            losses[0], losses[1], rtol=0, atol=tolerance
+                        )
                         grad_max = 0.0
                         for (name, a), (other_name, b) in zip(
-                            full.named_parameters(), sliced.named_parameters(), strict=True
+                            full.named_parameters(),
+                            sliced.named_parameters(),
+                            strict=True,
                         ):
                             if name != other_name:
                                 raise ValueError("parameter identity drift")
                             if a.requires_grad:
-                                torch.testing.assert_close(a.grad, b.grad, rtol=tolerance, atol=tolerance)
-                                grad_max = max(grad_max, float((a.grad.float() - b.grad.float()).abs().max()))
+                                torch.testing.assert_close(
+                                    a.grad, b.grad, rtol=tolerance, atol=tolerance
+                                )
+                                grad_max = max(
+                                    grad_max,
+                                    float(
+                                        (a.grad.float() - b.grad.float()).abs().max()
+                                    ),
+                                )
                             elif a.grad is not None or b.grad is not None:
                                 raise ValueError("frozen parameter acquired a gradient")
                         for model, optimizer in zip(models, optimizers, strict=True):
                             torch.nn.utils.clip_grad_norm_(
-                                [p for p in model.parameters() if p.requires_grad], 1.0,
+                                [p for p in model.parameters() if p.requires_grad],
+                                1.0,
                                 error_if_nonfinite=True,
                             )
                             optimizer.step()
                         update_max = delta = 0.0
                         for (name, a), (_, b) in zip(
-                            full.named_parameters(), sliced.named_parameters(), strict=True
+                            full.named_parameters(),
+                            sliced.named_parameters(),
+                            strict=True,
                         ):
                             if a.requires_grad:
                                 torch.testing.assert_close(a, b, rtol=0, atol=tolerance)
-                                update_max = max(update_max, float((a.detach().float() - b.detach().float()).abs().max()))
-                                delta += float((a.detach().float() - initial[name].float()).square().sum())
-                            elif not torch.equal(a, initial[name]) or not torch.equal(b, initial[name]):
+                                update_max = max(
+                                    update_max,
+                                    float(
+                                        (a.detach().float() - b.detach().float())
+                                        .abs()
+                                        .max()
+                                    ),
+                                )
+                                delta += float(
+                                    (a.detach().float() - initial[name].float())
+                                    .square()
+                                    .sum()
+                                )
+                            elif not torch.equal(a, initial[name]) or not torch.equal(
+                                b, initial[name]
+                            ):
                                 raise ValueError("frozen base changed")
                         if delta <= 0:
-                            raise ValueError("optimizer performed no finite parameter update")
+                            raise ValueError(
+                                "optimizer performed no finite parameter update"
+                            )
                         row = dict(
-                            dtype=str(dtype), attention=attention, step=step,
+                            dtype=str(dtype),
+                            attention=attention,
+                            step=step,
                             loss_max_abs=float((losses[0] - losses[1]).abs()),
-                            gradient_max_abs=grad_max, parameter_max_abs=update_max,
-                            update_squared_norm=delta, prompt_gradient_l1=prompt_grads,
+                            gradient_max_abs=grad_max,
+                            parameter_max_abs=update_max,
+                            update_squared_norm=delta,
+                            prompt_gradient_l1=prompt_grads,
                             receipts=receipts,
                         )
                         records.append(row)
@@ -146,12 +195,22 @@ def run(output):
                     for hook in hooks:
                         hook.remove()
     result = dict(
-        plan=plan, actual_paired_updates=len(records), records=records,
-        torch=torch.__version__, transformers=transformers.__version__, peft=peft.__version__,
-        helper_sha256=hashlib.sha256(Path(__file__).with_name("source_completion_loss.py").read_bytes()).hexdigest(),
-        task_quality_evaluated=False, pretrained_equivalence=False, production_accepted=False,
+        plan=plan,
+        actual_paired_updates=len(records),
+        records=records,
+        torch=torch.__version__,
+        transformers=transformers.__version__,
+        peft=peft.__version__,
+        helper_sha256=hashlib.sha256(
+            Path(__file__).with_name("source_completion_loss.py").read_bytes()
+        ).hexdigest(),
+        task_quality_evaluated=False,
+        pretrained_equivalence=False,
+        production_accepted=False,
     )
-    (output / "report.json").write_text(json.dumps(result, indent=2, allow_nan=False) + "\n")
+    (output / "report.json").write_text(
+        json.dumps(result, indent=2, allow_nan=False) + "\n"
+    )
     print(json.dumps(result, allow_nan=False))
     return result
 

@@ -27,7 +27,8 @@ def writer_loop():
     )
     ns = dict(
         source_examples=lambda *a, **kw: (
-            [dict(query=dict(scope="s"), target="fixture")], []
+            [dict(query=dict(scope="s"), target="fixture")],
+            [],
         ),
         Question=lambda **kw: SimpleNamespace(**kw),
         render=lambda *a: [1, 2, 3],
@@ -50,8 +51,11 @@ def writer_loop():
 
 def planned(*args, **kwargs):
     return [([1, 2, 3, 4, 5], [-100, -100, -100, 4, 5])], dict(
-        entries=[0] * 7, planned_steps=7, planned_input_tokens=35,
-        planned_supervised_tokens=14, scopes=["s"],
+        entries=[0] * 7,
+        planned_steps=7,
+        planned_input_tokens=35,
+        planned_supervised_tokens=14,
+        scopes=["s"],
     )
 
 
@@ -121,8 +125,12 @@ class SourceWriterLoopTests(unittest.TestCase):
         self.assertEqual(
             results[0][0]["training_digest"], results[1][0]["training_digest"]
         )
-        self.assertEqual(results[0][0]["write_schedule"], results[1][0]["write_schedule"])
-        self.assertEqual(results[0][0]["schedule_sha256"], results[1][0]["schedule_sha256"])
+        self.assertEqual(
+            results[0][0]["write_schedule"], results[1][0]["write_schedule"]
+        )
+        self.assertEqual(
+            results[0][0]["schedule_sha256"], results[1][0]["schedule_sha256"]
+        )
         self.assertEqual(results[0][0]["actual_projection_positions"], 35)
         self.assertEqual(results[1][0]["actual_projection_positions"], 14)
         for name in results[0][1]:

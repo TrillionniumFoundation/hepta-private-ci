@@ -67,9 +67,7 @@ class CompletionLossTests(unittest.TestCase):
                     models = [CausalFixture(dtype), CausalFixture(dtype)]
                     ids = [i % 251 for i in range(prefix + tail)]
                     labels = [-100] * prefix + ids[prefix:]
-                    before = {
-                        k: v.clone() for k, v in models[0].state_dict().items()
-                    }
+                    before = {k: v.clone() for k, v in models[0].state_dict().items()}
                     losses, gradients, receipts = [], [], []
                     for backend, model in zip(("full", "supervised_positions"), models):
                         opt = torch.optim.AdamW(
@@ -110,19 +108,25 @@ class CompletionLossTests(unittest.TestCase):
                     )
                     for name in gradients[0]:
                         torch.testing.assert_close(
-                            gradients[0][name], gradients[1][name],
-                            rtol=tolerance, atol=tolerance,
+                            gradients[0][name],
+                            gradients[1][name],
+                            rtol=tolerance,
+                            atol=tolerance,
                         )
                         torch.testing.assert_close(
-                            models[0].state_dict()[name], models[1].state_dict()[name],
-                            rtol=0, atol=tolerance,
+                            models[0].state_dict()[name],
+                            models[1].state_dict()[name],
+                            rtol=0,
+                            atol=tolerance,
                         )
                     self.assertEqual(
                         models[1].last_positions.tolist(),
                         list(range(prefix - 1, len(ids) - 1)),
                     )
                     self.assertEqual(receipts[1]["actual_projection_positions"], tail)
-                    self.assertEqual(receipts[0]["input_tokens"], receipts[1]["input_tokens"])
+                    self.assertEqual(
+                        receipts[0]["input_tokens"], receipts[1]["input_tokens"]
+                    )
 
     def test_malformed_supervision_rejects_before_forward(self):
         model = CausalFixture()

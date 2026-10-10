@@ -512,8 +512,12 @@ if __name__ == "__main__":
     a = parser.parse_args()
     if a.mode == "write":
         write_memory(
-            a.sources, a.model, a.output, source_sha=a.source_sha,
-            stage_sha=a.stage_sha, loss_backend=a.loss_backend,
+            a.sources,
+            a.model,
+            a.output,
+            source_sha=a.source_sha,
+            stage_sha=a.stage_sha,
+            loss_backend=a.loss_backend,
         )
     else:
         read_memory(
