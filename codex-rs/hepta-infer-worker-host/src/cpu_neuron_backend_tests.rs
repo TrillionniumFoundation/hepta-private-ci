@@ -91,6 +91,43 @@ fn native_cpu_batch_uses_one_matrix_pass_and_preserves_request_order() {
 }
 
 #[test]
+fn contiguous_native_batch_matches_single_results_for_odd_and_large_cohorts() {
+    let (mut driver, manifest) = fixture();
+    let handle = driver.load(&manifest).expect("load pinned model");
+    let q = 1_i64 << 24;
+    for cohort in [3_usize, 127, 256] {
+        let requests = (0..cohort)
+            .map(|i| {
+                let i = i as i64;
+                request(
+                    &manifest,
+                    &format!("cohort-{cohort}-{i}"),
+                    [((i % 17) - 8) * (q / 8), ((i % 11) - 5) * (q / 8)],
+                )
+            })
+            .collect::<Vec<_>>();
+        let batched = driver
+            .run_neuron_features_batch(&handle, &requests)
+            .expect("single physical native batch");
+        assert_eq!(batched.len(), cohort);
+        for (request, observed) in requests.iter().zip(&batched) {
+            assert_eq!(observed.request_id, request.authorization.request_id);
+            assert_eq!(observed.input_digest, request.input_digest);
+            let single = driver
+                .run_neuron_features(&handle, request)
+                .expect("same pinned backend for scalar oracle");
+            assert_eq!(observed.observation.drive_q24, single.drive_q24);
+            assert_eq!(observed.observation.prediction_q24, single.prediction_q24);
+            assert_eq!(
+                observed.observation.transient_allocation_bytes,
+                (cohort * 2 * 2 * std::mem::size_of::<i128>()) as u64
+            );
+        }
+    }
+    assert_eq!(driver.native_batch_counters(), (3, 3 + 127 + 256));
+}
+
+#[test]
 fn backend_rejects_unpinned_model_and_incompatible_batch_before_any_call() {
     let (mut driver, mut manifest) = fixture();
     let correct = manifest.clone();
