@@ -8,6 +8,8 @@ mod cell_split_cns_cutover;
 mod cell_split_effect_rpc;
 #[cfg(unix)]
 mod cell_split_effect_service;
+#[cfg(unix)]
+mod cell_split_supervisor_fence;
 mod cell_split_execution_owner;
 mod cell_split_target_host;
 mod cell_split_target_host_evidence;
@@ -82,6 +84,20 @@ pub use cell_split_cns_cutover::CellSplitCnsRouteBindingV1;
 pub use cell_split_cns_cutover::CellSplitCnsRuntimeCommitV1;
 #[cfg(unix)]
 pub use cell_split_cns_cutover::CellSplitCnsRuntimePortV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorCommitV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceBindingV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceErrorV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceOwnerV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorLiveFenceV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorPhaseV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorRuntimePortV1;
 #[cfg(unix)]
 pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
 #[cfg(unix)]
