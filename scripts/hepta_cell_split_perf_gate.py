@@ -15,6 +15,10 @@ from typing import Any
 
 SCOPES = (64, 256, 1024, 4096)
 MODES = ("no_split", "logical_split", "optimized_logical_split", "physical_split")
+INTEGER_FIELDS = frozenset((
+    "attempted", "completed", "communication_bytes", "native_backend_calls",
+    "native_batch_requests", "fsync_count", "failed_requests",
+))
 FIELDS = (
     "attempted", "completed", "elapsed_seconds", "p50_ms", "p95_ms", "p99_ms",
     "cpu_seconds", "rss_peak_bytes", "communication_bytes",
@@ -33,6 +37,16 @@ def positive_number(value: Any, field: str, *, allow_zero: bool = True) -> float
     value = float(value)
     if not math.isfinite(value) or value < 0 or (not allow_zero and value == 0):
         raise InvalidEvidence(f"{field}: non-finite or invalid measurement")
+    return value
+
+
+def exact_counter(value: Any, field: str, *, allow_zero: bool = True) -> int:
+    # Float conversion loses integer precision above 2**53 and can falsely
+    # qualify two different request/byte/fsync counts as an equal workload.
+    if type(value) is not int or value < 0 or value > (2**63 - 1):
+        raise InvalidEvidence(f"{field}: expected exact bounded integer")
+    if not allow_zero and value == 0:
+        raise InvalidEvidence(f"{field}: expected positive integer")
     return value
 
 
@@ -62,15 +76,15 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         if key in measurements:
             raise InvalidEvidence(f"duplicate run {key}")
         vals = {
-            field: positive_number(entry.get(field), f"{scope}/{mode}/{field}",
-                                   allow_zero=field not in ("attempted", "completed", "elapsed_seconds"))
+            field: (
+                exact_counter(entry.get(field), f"{scope}/{mode}/{field}",
+                              allow_zero=field not in ("attempted", "completed"))
+                if field in INTEGER_FIELDS
+                else positive_number(entry.get(field), f"{scope}/{mode}/{field}",
+                                     allow_zero=field != "elapsed_seconds")
+            )
             for field in FIELDS
         }
-        for field in ("attempted", "completed", "communication_bytes",
-                      "native_backend_calls", "native_batch_requests",
-                      "fsync_count", "failed_requests"):
-            if not vals[field].is_integer():
-                raise InvalidEvidence(f"{scope}/{mode}/{field}: expected integer")
         if vals["completed"] + vals["failed_requests"] != vals["attempted"]:
             raise InvalidEvidence(f"{key}: inconsistent terminal request accounting")
         if not vals["p50_ms"] <= vals["p95_ms"] <= vals["p99_ms"]:
@@ -79,6 +93,10 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
             raise InvalidEvidence(f"{key}: impossible native batch accounting")
         if vals["native_batch_requests"] and not vals["native_backend_calls"]:
             raise InvalidEvidence(f"{key}: native batch requests without a backend call")
+        if vals["native_batch_requests"] and (
+            vals["native_batch_requests"] < 2 * vals["native_backend_calls"]
+        ):
+            raise InvalidEvidence(f"{key}: native batch density below two requests per call")
         if vals["rss_peak_bytes"] == 0:
             raise InvalidEvidence(f"{key}: missing peak resident memory measurement")
         if vals["negative_transfer_rate"] > 1:
