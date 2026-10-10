@@ -38,7 +38,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.96.0 fmt --manifest-path codex-rs/Cargo.toml -- --config imports_granularity=Item 2>&1 | tee "$OUT/format-apply.log"
+          (cd codex-rs && cargo +1.96.0 fmt -- --config imports_granularity=Item) 2>&1 | tee "$OUT/format-apply.log"
           git diff --name-only | tee "$OUT/changed-files.txt"
           git diff > "$OUT/formatted.patch"
           cp codex-rs/hepta-fleet/src/release.rs "$OUT/formatted-release.rs"
@@ -64,7 +64,7 @@ jobs:
           git rev-parse HEAD^{tree} > "$OUT/tree.txt"
           git hash-object codex-rs/hepta-fleet/src/release.rs > "$OUT/release-blob.txt"
           git diff HEAD^ HEAD > "$OUT/candidate.patch"
-          cargo +1.96.0 fmt --manifest-path codex-rs/Cargo.toml -- --config imports_granularity=Item --check 2>&1 | tee "$OUT/format-check.log"
+          (cd codex-rs && cargo +1.96.0 fmt -- --config imports_granularity=Item --check) 2>&1 | tee "$OUT/format-check.log"
       - name: Execute the unchanged complete native Fleet test command
         shell: bash
         run: |
