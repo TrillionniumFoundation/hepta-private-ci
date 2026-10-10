@@ -355,6 +355,48 @@ impl PhaseMetricSinkV1 for CapturedMetrics {
     }
 }
 
+#[derive(Debug)]
+struct RefusingMetricSink;
+
+impl PhaseMetricSinkV1 for RefusingMetricSink {
+    fn record(
+        &self,
+        _event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Backpressure)
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
+#[test]
+fn metric_sink_failures_leave_effects_advisory_but_fence_production_readiness() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[41; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut worker = runner(&signer, dir.path(), model)
+        .with_metric_sink(Arc::new(RefusingMetricSink));
+    assert!(worker.production_metrics_ready());
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert_eq!(worker.failed_metric_writes(), 1);
+    assert!(!worker.production_metrics_ready());
+    // The telemetry error cannot trigger a retry of an external model effect.
+    let poll = worker.poll_and_execute(101).unwrap();
+    assert_eq!(poll.outcomes.len(), 1);
+    assert!(poll.outcomes[0].result.is_ok());
+    assert!(worker.failed_metric_writes() >= 3);
+    assert!(!worker.flush_production_metrics());
+}
+
 #[test]
 fn signed_worker_emits_admission_batch_and_terminal_metrics() {
     let dir = tempfile::tempdir().unwrap();
