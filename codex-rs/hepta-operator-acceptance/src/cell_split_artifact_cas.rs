@@ -277,8 +277,15 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1 for CellSpli
 
     fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
         self.authorize_execute(intent)?;
-        if self.committed_record(intent)?.is_some() {
-            return Ok(());
+        if let Some((record, bytes)) = self.committed_record(intent)? {
+            let existing = CellSplitOwnedEffectV1 {
+                owner_sequence: record.sequence,
+                owner_receipt_bytes: bytes,
+            };
+            if self.verify_current(intent, &existing)? {
+                return Ok(());
+            }
+            return Err(CellSplitArtifactCasErrorV1::Invalid);
         }
         let size = self.publish_object()?;
         self.verify_parent()?;
