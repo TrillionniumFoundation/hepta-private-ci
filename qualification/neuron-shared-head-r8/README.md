@@ -83,13 +83,19 @@ numerically equivalent to Laya's question-and-options-conditioned encoder.
 
 The optional `export_laya_reference.py` provides a **local-only,
 explicitly SHA-256-pinned** Original-Laya inference entry for Experiment 02
-when a qualified host has independently installed the original Laya SDK and
-model weights. It refuses implicit Hub downloads, incomplete choice sets,
+when a qualified host has independently installed the original Laya SDK at
+commit `c7527708f9f5220c669d8aa385077cd28d04708a`, and pinned all checkpoint,
+tokenizer and encoder assets. It refuses implicit Hub downloads, incomplete choice sets,
 missing/truncated responses, source-group overlap, or nonfuture timestamps.
-Required offline inputs are `--checkpoint`, `--digests`, `--input`,
-`--output`; `--device` and `--batch-size` are bounded options. The choice
+Required offline inputs are `--checkpoint`, `--digests`, `--sdk-digests`,
+`--input`, `--output`; `--device` selects the execution device. The pinned
+SDK uses `Agent.system_one` per request, **not** `predict_batch`; no batching
+speedups are claimed. `--digests` is an exact mapping of **all** local
+checkpoint files to their SHA-256 hashes, and `--sdk-digests` maps the exact
+`source_commit`, `agent_py_sha256` and `common_py_sha256`. The exporter
+checks the complete artifacts before and after loading/execution. The choice
 input JSON uses `schema=hepta.neuron.laya-choice-input.v1`,
-`question_id`, `question={type:"choice",criteria:{...}}`, frozen
+`question_id`, `question={type:"choice",instructions:"...",criteria:{...}}`, frozen
 `train_groups`/`valid_groups`, `valid_time_max`, and future
 `rows:[{id,group,time,state}]`. For example:
 
@@ -97,9 +103,10 @@ input JSON uses `schema=hepta.neuron.laya-choice-input.v1`,
 python export_laya_reference.py \
   --checkpoint /pinned/Laya \
   --digests /pinned/checkpoint-sha256.json \
+  --sdk-digests /pinned/laya-sdk-sha256.json \
   --input /evaluation/laya_future_choice.json \
   --output /evaluation/laya_original.json \
-  --device cuda:0 --batch-size 8
+  --device cuda:0
 ```
 
 The exporter is **not run in repository CI** because the real SDK, weights
