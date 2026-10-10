@@ -65,7 +65,10 @@ class EventProjection:
                 set(row) != FIELDS
                 or row["schema"] != PROFILE
                 or row["id"] != doc.identity
-                or any(not identifier(row[k]) for k in ("id", "entity", "attribute", "value"))
+                or any(
+                    not identifier(row[k])
+                    for k in ("id", "entity", "attribute", "value")
+                )
                 or type(row["revision"]) is not int
                 or not 0 <= row["revision"] <= 10000
                 or not isinstance(row["supersedes"], list)
@@ -80,7 +83,8 @@ class EventProjection:
                 old = self.facts.get(old_id)
                 if (
                     old is None
-                    or (old["entity"], old["attribute"]) != (row["entity"], row["attribute"])
+                    or (old["entity"], old["attribute"])
+                    != (row["entity"], row["attribute"])
                     or old["revision"] >= row["revision"]
                 ):
                     raise ValueError("unresolved or cross-key correction")
@@ -106,14 +110,25 @@ class EventProjection:
         ):
             raise ValueError("invalid or withdrawn event selection")
         if mode == "hybrid":
-            return tuple(candidates[:limit]), dict(inspected=0, conflicts=0, incomplete=False)
-        visible = {k: self.facts[k] for k in candidates if self.facts[k]["revision"] <= lookup.revision}
+            return tuple(candidates[:limit]), dict(
+                inspected=0, conflicts=0, incomplete=False
+            )
+        visible = {
+            k: self.facts[k]
+            for k in candidates
+            if self.facts[k]["revision"] <= lookup.revision
+        }
         entities, selected, conflicts, incomplete = {lookup.entity}, [], 0, False
         for attribute in lookup.path:
             next_entities = set()
             for entity in sorted(entities):
-                matches = [k for k in candidates if k in visible and
-                           (visible[k]["entity"], visible[k]["attribute"]) == (entity, attribute)]
+                matches = [
+                    k
+                    for k in candidates
+                    if k in visible
+                    and (visible[k]["entity"], visible[k]["attribute"])
+                    == (entity, attribute)
+                ]
                 if mode == "organized":
                     replaced = {p for k in matches for p in visible[k]["supersedes"]}
                     matches = [k for k in matches if k not in replaced]
@@ -126,4 +141,6 @@ class EventProjection:
                         selected.append(key)
                     next_entities.add(visible[key]["value"])
             entities = next_entities
-        return tuple(selected), dict(inspected=len(candidates), conflicts=conflicts, incomplete=incomplete)
+        return tuple(selected), dict(
+            inspected=len(candidates), conflicts=conflicts, incomplete=incomplete
+        )
