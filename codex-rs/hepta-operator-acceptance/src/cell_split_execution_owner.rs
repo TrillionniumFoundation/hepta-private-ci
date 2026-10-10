@@ -384,13 +384,15 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             let step = CellSplitExecutionStepV1::at(index)
                 .ok_or(CellSplitExecutionErrorV1::Invalid("step index"))?;
             let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
-            let prepared = read_frame(&frame_path(&self.root, index, "prepared"))?
-                .ok_or(CellSplitExecutionErrorV1::Invalid("missing committed intent"))?;
+            let prepared = read_frame(&frame_path(&self.root, index, "prepared"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("missing committed intent"),
+            )?;
             if prepared != canonical_json(&intent)? {
                 return Err(CellSplitExecutionErrorV1::Invalid("committed intent drift"));
             }
-            let bytes = read_frame(&frame_path(&self.root, index, "committed"))?
-                .ok_or(CellSplitExecutionErrorV1::Invalid("missing committed receipt"))?;
+            let bytes = read_frame(&frame_path(&self.root, index, "committed"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("missing committed receipt"),
+            )?;
             let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
             validate_receipt(&intent, &receipt)?;
             self.trust.verify(&intent, &receipt)?;
