@@ -43,7 +43,7 @@ fn transform(kind: CellStateTransformKindV1, mapping: Digest32) -> CellStateTran
 }
 
 fn contract() -> CellSplitV1 {
-    let children = vec!["a", "b"].into_iter().enumerate().map(|(index, suffix)| {
+    let children = vec!["a", "b"].into_iter().enumerate().map(|(_index, suffix)| {
         CellChildV1 {
             child_cell_id: id(&format!("cell.{suffix}")),
             child_generation: g(8),
@@ -286,7 +286,7 @@ fn private_root() -> tempfile::TempDir {
     root
 }
 
-fn owner<'a>(
+fn owner(
     root: &std::path::Path, migration: CellStateMigrationV1,
     auth: ObservedAuthority,
 ) -> CellSplitChildStateCasOwnerV1<ObservedAuthority> {
