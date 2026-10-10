@@ -91,11 +91,22 @@ class FrozenBundleReader:
         self.base_digest = frozen_digest(self.model)
         self.profile = digest((SYSTEM, GENERATION, self.tokenizer.chat_template))
 
+    def compile_input(self, query, bundle, originals, *, frontier, revoked, token_limit):
+        """Keep the default view exact; controlled subclasses may extend it."""
+        return compile_prompt(
+            self.tokenizer,
+            query,
+            bundle,
+            originals,
+            frontier=frontier,
+            revoked=revoked,
+            token_limit=token_limit,
+        )
+
     def answer(self, query, bundle, originals, *, frontier, revoked, token_limit):
         import torch
 
-        ids, receipt = compile_prompt(
-            self.tokenizer,
+        ids, receipt = self.compile_input(
             query,
             bundle,
             originals,
