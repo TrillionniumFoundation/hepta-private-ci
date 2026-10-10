@@ -121,6 +121,32 @@ jobs:
           CARGO_HTTP_MULTIPLEXING: "false"
         run: just test --locked -p codex-hepta-paths
 
+      - name: Test complete native Fleet publication and revocation
+        shell: bash
+        env:
+          CARGO_HTTP_MULTIPLEXING: "false"
+          FLEET_EVIDENCE_DIR: ${{ runner.temp }}/hepta-fleet-native
+        run: |
+          set -euo pipefail
+          mkdir -p "$FLEET_EVIDENCE_DIR"
+          git diff --exit-code
+          git diff --cached --exit-code
+          git rev-parse HEAD HEAD^{tree} > "$FLEET_EVIDENCE_DIR/source.txt"
+          just test --locked -p codex-hepta-fleet --no-capture 2>&1 | tee "$FLEET_EVIDENCE_DIR/tests.log"
+          git diff --exit-code
+          git diff --cached --exit-code
+          git rev-parse HEAD HEAD^{tree} > "$FLEET_EVIDENCE_DIR/source-after.txt"
+          cmp "$FLEET_EVIDENCE_DIR/source.txt" "$FLEET_EVIDENCE_DIR/source-after.txt"
+
+      - name: Retain original native Fleet results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-fleet-native-${{ matrix.os }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-fleet-native
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Check for a clean worktree
         if: always() && !cancelled()
         uses: ./.github/actions/check-clean-worktree
