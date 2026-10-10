@@ -26,16 +26,16 @@ use codex_hepta_learning_artifacts::ArtifactLoadReceiptV1;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_artifacts::ArtifactWriteReceiptV1;
 use codex_hepta_learning_artifacts::ProductionOwnerError;
-use codex_hepta_neuron::CellStateMigrationErrorV1;
-use codex_hepta_neuron::CellStateMigrationPhaseV1;
-use codex_hepta_neuron::CellStateMigrationReceiptV1;
-use codex_hepta_neuron::CellStateMigrationV1;
-use codex_hepta_neuron::DurableCellStateCasDirectoryOwnerV1;
 use codex_hepta_ndu::ContributionSet;
 use codex_hepta_ndu::EvaluationDisposition;
 use codex_hepta_ndu::NduAuthenticatedOwnerV1;
 use codex_hepta_ndu::NduEvaluationReceiptV2;
 use codex_hepta_ndu::NduOwnerError;
+use codex_hepta_neuron::CellStateMigrationErrorV1;
+use codex_hepta_neuron::CellStateMigrationPhaseV1;
+use codex_hepta_neuron::CellStateMigrationReceiptV1;
+use codex_hepta_neuron::CellStateMigrationV1;
+use codex_hepta_neuron::DurableCellStateCasDirectoryOwnerV1;
 use codex_hepta_supervisor::DurableWriterHandoffJournalV1;
 use codex_hepta_supervisor::WriterHandoffAdvanceV1;
 use codex_hepta_supervisor::WriterHandoffCheckpointV1;
@@ -323,7 +323,9 @@ impl CellSplitExecutionOwnerV1 {
             || write.host_evidence_digest != Some(host_evidence)
             || write.observer_evidence_digest != Some(observer_evidence)
         {
-            return Err(CellSplitExecutionErrorV1::Binding("recovered CAS write receipt"));
+            return Err(CellSplitExecutionErrorV1::Binding(
+                "recovered CAS write receipt",
+            ));
         }
         write.verify_production(verifying_key)?;
         let path = root.join(relative);
