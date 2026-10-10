@@ -30,11 +30,16 @@ struct DiskCns {
     root: PathBuf,
     signer: SigningKey,
     migration_ready: Arc<AtomicBool>,
+    replay_old_readback: bool,
 }
 
 impl DiskCns {
     fn open(root: PathBuf, signer: SigningKey, ready: Arc<AtomicBool>) -> Self {
-        Self { root, signer, migration_ready: ready }
+        Self { root, signer, migration_ready: ready, replay_old_readback: false }
+    }
+    fn with_stale_readback(mut self) -> Self {
+        self.replay_old_readback = true;
+        self
     }
     fn route_path(&self) -> PathBuf {
         self.root.join("actual-runtime-route.json")
@@ -77,8 +82,13 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         challenge_nonce: &str,
     ) -> Result<CellSplitCnsLiveRouteV1, Self::Error> {
         let observed = self.route();
+        let actual_nonce = if self.replay_old_readback {
+            "00".repeat(32)
+        } else {
+            challenge_nonce.to_owned()
+        };
         let signed = self.signer.sign(
-            &canonical_json(&(&observed, challenge_nonce)).map_err(|e| e.to_string())?
+            &canonical_json(&(&observed, &actual_nonce)).map_err(|e| e.to_string())?
         );
         Ok(CellSplitCnsLiveRouteV1 {
             cns_id: observed.cns,
@@ -90,7 +100,7 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
             authority_epoch: observed.epoch,
             old_writer_fenced: observed.old_writer_fenced,
             unknown_effect_count: observed.unknown_effects,
-            challenge_nonce: challenge_nonce.to_owned(),
+            challenge_nonce: actual_nonce,
             live_runtime_proof_bytes: signed.to_bytes().to_vec(),
         })
     }
@@ -407,4 +417,22 @@ fn corrupted_runtime_signature_cannot_become_a_signed_cns_readback() {
         .expect("external modification");
     assert!(cns.verify_current(&request, &signed).is_err());
     assert!(cns.read_committed(&request).is_err());
+}
+
+
+#[test]
+fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
+    let root = private_root();
+    let port = DiskCns::open(
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
+        Arc::new(AtomicBool::new(true)),
+    ).with_stale_readback();
+    let mut owner = CellSplitCnsCutoverOwnerV1::open(
+        root.path(), plan(), binding(), port,
+    ).expect("frozen CNS");
+    assert!(matches!(
+        owner.read_committed(&intent()),
+        Err(CellSplitCnsCutoverErrorV1::Invalid)
+    ));
 }
