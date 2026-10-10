@@ -14,7 +14,7 @@ import time
 from pathlib import Path
 
 from hf_trial import make_head
-from jina_v5 import FrozenJinaV5, MODELS, sha256_record, validate_identity
+from jina_v5 import FrozenJinaV5, MODELS, research_environment, sha256_record, validate_identity
 from qualified_eval import audit_dataset, read_jsonl, write_json
 from q24_bridge import Q24, quantize_q24
 
@@ -213,6 +213,8 @@ def execute(args):
         "seed": args.seed, "shots": args.shots, "steps": args.steps,
         "max_tokens": args.max_tokens, "batch_size": args.batch_size,
         "device": args.device, "threads": args.threads,
+        "environment": research_environment(),
+        "observed_total_physical_ram_bytes": psutil.virtual_memory().total,
         "generation": args.generation, "authority_epoch": args.authority_epoch,
         "model_load_ms": stem.load_ms, "cell_head_training_ms": train_ms,
         "encoder_calls": stem.encoder_calls, "encoder_examples": stem.encoder_examples,
