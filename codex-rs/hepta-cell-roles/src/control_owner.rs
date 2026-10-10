@@ -8,6 +8,10 @@
 //! checks, terminal receipts and restart reconciliation without pretending to
 //! be a live TaskFlow/CNS/transport/effect deployment.
 
+#[path = "control_wal.rs"]
+mod control_wal;
+pub use control_wal::ScopedControlWalOwnerV1;
+
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
