@@ -34,9 +34,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 8f17e2a777df8ddee8d1645457a75b8da8cc2a61
+      CHAIN_SOURCE_SHA: 06c18387da1e3a23e9dd7eaf7b690cb9bb93e093
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '8f17e2a777df8ddee8d1645457a75b8da8cc2a61' || 'aa0c88102dee36d08d2b15e1a0ebe486271dd34c' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '06c18387da1e3a23e9dd7eaf7b690cb9bb93e093' || 'aa363176ba384170a57166d3fd5c17a3a43260a1' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -119,7 +119,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-sql.json" --minimum-tests 32 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated:: -- --include-ignored --show-output --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-query-bound.json" --minimum-tests 14 -- python3 ../chain/formal/pon-nakamoto-v1/test_work_query_bound.py -v
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cache-receipt.json" --minimum-tests 18 -- python3 -m unittest discover -s ../chain/scripts/ci -p test_read_native_cache_observation.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cache-receipt.json" --minimum-tests 34 -- python3 -m unittest discover -s ../chain/scripts/ci -p test_read_native_cache_observation.py -v
       - name: Require every cached-owner integrity and cold-reopen selector
         run: |
           set -euo pipefail
