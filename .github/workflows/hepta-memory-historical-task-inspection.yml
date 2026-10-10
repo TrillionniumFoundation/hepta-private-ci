@@ -7,6 +7,8 @@ on:
       - ".github/workflows/hepta-memory-historical-task-inspection.yml"
       - "scripts/memory_cell/lifecycle_accounting.py"
       - "scripts/memory_cell/frozen_policy_receipt.py"
+      - "scripts/memory_cell/research_disposition.py"
+      - "scripts/memory_cell/test_research_disposition.py"
       - "scripts/memory_cell/test_lifecycle_accounting.py"
       - "scripts/memory_cell/test_frozen_policy_receipt.py"
   workflow_dispatch:
@@ -71,17 +73,26 @@ jobs:
           /tmp/inspection-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/historical-inspection/tests.log
           export PATH="/tmp/inspection-python/bin:$PATH"
           git fetch --no-tags --depth=1 origin "$BASE"
-          just fmt --check --base "$BASE" 2>&1 | tee /tmp/historical-inspection/format.log
-      - name: Recompute original tasks and costs without any new model calls
+          set +e
+          just fmt --check --base "$BASE" > /tmp/historical-inspection/format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/historical-inspection/format.log
+          if [ "$status" -ne 0 ]; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/research_disposition.py scripts/memory_cell/test_research_disposition.py > /tmp/historical-inspection/format.diff || true
+            cat /tmp/historical-inspection/format.diff
+          fi
+          exit "$status"
+      - name: Recompute original tasks and reject candidates without incremental benefit
         run: |
           set -euo pipefail
-          /tmp/inspection-python/bin/python scripts/memory_cell/frozen_policy_receipt.py /tmp/historical-inspection/original.zip /tmp/historical-inspection/receipt.json --archive-sha "$ARCHIVE_SHA" --generating-source "$GENERATING_SOURCE" 2>&1 | tee /tmp/historical-inspection/inspection.log
+          /tmp/inspection-python/bin/python scripts/memory_cell/research_disposition.py /tmp/historical-inspection/original.zip /tmp/historical-inspection/disposition.json --archive-sha "$ARCHIVE_SHA" --generating-source "$GENERATING_SOURCE" --auditor-source "$GITHUB_SHA" 2>&1 | tee /tmp/historical-inspection/inspection.log
       - name: Retain exact inspection source and all failure records
         if: always()
         run: |
           set -euo pipefail
           mkdir -p /tmp/historical-inspection/source
-          cp scripts/memory_cell/lifecycle_accounting.py scripts/memory_cell/frozen_policy_receipt.py scripts/memory_cell/test_lifecycle_accounting.py scripts/memory_cell/test_frozen_policy_receipt.py /tmp/historical-inspection/source/
+          cp scripts/memory_cell/lifecycle_accounting.py scripts/memory_cell/frozen_policy_receipt.py scripts/memory_cell/research_disposition.py scripts/memory_cell/test_research_disposition.py scripts/memory_cell/test_lifecycle_accounting.py scripts/memory_cell/test_frozen_policy_receipt.py /tmp/historical-inspection/source/
           git rev-parse HEAD > /tmp/historical-inspection/auditor-commit.txt
           printf '%s\n' "$GENERATING_SOURCE" > /tmp/historical-inspection/generating-source.txt
           (cd /tmp/historical-inspection && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
