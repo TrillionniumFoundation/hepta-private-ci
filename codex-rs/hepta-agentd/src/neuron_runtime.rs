@@ -5,7 +5,8 @@
 //! one durable nonce for every model invocation. Low-level neuron.tick remains
 //! a mechanism for independent qualification, never an Agentd serving port.
 
-use crate::neuron_ndu_read::{NduReadVerifierV1, SignedNduSnapshotReadV1};
+use crate::neuron_ndu_read::NduReadVerifierV1;
+use crate::neuron_ndu_read::SignedNduSnapshotReadV1;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
