@@ -163,7 +163,7 @@ def replay(files, expected_source):
             replay_all(root / "sessions", root / "experiment/REPLAY.json", output,
                 catalog_sha=execution["catalog_sha"], receipt_sha=sha(files["experiment/REPLAY.json"]),
                 withdrawal_path=root / ("current-" + phase + ".json"),
-                withdrawal_sha=sha(files["current-" + phase + ".json"))
+                withdrawal_sha=sha(files["current-" + phase + ".json"]))
             replayed = strict_json(output.read_text())
             saved = obj("replay-" + phase + ".json")
             if replayed["results"] != saved["results"] or replayed["model_calls"] != 0 or any(r["status"] != expected_status for r in replayed["results"]):
