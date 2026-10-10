@@ -160,8 +160,7 @@ fn rejected_unload_keeps_exact_digest_reserved_for_recovery() {
         fail_unload: true,
         ..Driver::default()
     };
-    let mut worker =
-        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).unwrap();
+    let mut worker = InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), driver).unwrap();
     worker.load_model(100, manifest()).unwrap();
     assert!(matches!(
         worker.unload_model(100, "model.1"),
