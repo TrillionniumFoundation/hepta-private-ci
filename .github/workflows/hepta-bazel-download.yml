@@ -1,0 +1,92 @@
+name: Hepta pinned downloader
+on:
+  pull_request:
+    paths:
+      - .bazelrc
+      - .bazelversion
+      - .bazel_downloader_config
+      - scripts/hepta_bazel_download_probe.py
+      - .github/workflows/hepta-bazel-download.yml
+permissions:
+  contents: read
+jobs:
+  download:
+    name: pinned download (${{ matrix.runner }}, ${{ matrix.source }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        source: [head, prospective-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_TESTED: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.EXPECTED_TESTED }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check exact source and actual ordered main merge
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TESTED"
+          if test "$EXPECTED_TESTED" != "$EXPECTED_HEAD"; then
+            test "$(git show -s --format=%P HEAD)" = "$EXPECTED_BASE $EXPECTED_HEAD"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$EXPECTED_BASE" "$EXPECTED_HEAD")"
+          fi
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        with:
+          bazelisk-version: 1.28.1
+          bazelisk-cache: false
+          repository-cache: false
+      - name: Run real cold-cache download, extraction and bad-checksum rejection
+        env:
+          USE_BAZEL_VERSION: 9.3.0
+        run: |
+          set -euo pipefail
+          test "$(cat .bazelversion)" = "$USE_BAZEL_VERSION"
+          bazel --version | tee "$RUNNER_TEMP/pinned-bazel-version.txt"
+          grep -Fx "bazel $USE_BAZEL_VERSION" "$RUNNER_TEMP/pinned-bazel-version.txt"
+          python3 scripts/hepta_bazel_download_probe.py --out "$RUNNER_TEMP/zlib-probe"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: 0.11.3
+          enable-cache: false
+      - name: Verify the locked formatter without rewriting tested source
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/zlib-probe"
+          mkdir -p "$root"
+          sha256sum scripts/hepta_bazel_download_probe.py scripts/pyproject.toml scripts/uv.lock > "$root/format-inputs.sha256"
+          uv run --frozen --project scripts ruff --version > "$root/formatter-version.txt"
+          uv run --frozen --project scripts ruff format --stdin-filename scripts/hepta_bazel_download_probe.py < scripts/hepta_bazel_download_probe.py > "$root/formatter-candidate.py"
+          diff -u scripts/hepta_bazel_download_probe.py "$root/formatter-candidate.py" > "$root/formatter.diff"
+      - name: Preserve source, results and every diagnostic
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/zlib-probe"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/zlib-probe/source.txt"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_TESTED"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: zlib-probe-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/pinned-bazel-version.txt
+            ${{ runner.temp }}/zlib-probe/report.json
+            ${{ runner.temp }}/zlib-probe/source.txt
+            ${{ runner.temp }}/zlib-probe/format-inputs.sha256
+            ${{ runner.temp }}/zlib-probe/formatter-version.txt
+            ${{ runner.temp }}/zlib-probe/formatter-candidate.py
+            ${{ runner.temp }}/zlib-probe/formatter.diff
+            ${{ runner.temp }}/zlib-probe/*/bazel.log
+            ${{ runner.temp }}/zlib-probe/*/downloader.config
+          if-no-files-found: error
+          retention-days: 30
