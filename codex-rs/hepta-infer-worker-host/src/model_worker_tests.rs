@@ -5,6 +5,7 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    fail_unload: bool,
     loaded: usize,
 }
 
@@ -41,6 +42,9 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unload acknowledgment lost".into()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -166,6 +170,46 @@ fn loads_runs_and_unloads_exact_model_tuple() {
             .expect("unload")
             .terminal_observed
     );
+}
+
+#[test]
+fn unloaded_model_digest_can_be_reloaded_but_failed_unload_remains_fenced() {
+    let digest = Digest32::from_str(&manifest().model_digest).expect("digest");
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    worker.unload_model(100, "model.1").expect("unload");
+    assert!(!worker.model_matches_digest("model.1", digest));
+    let mut replacement = manifest();
+    replacement.model_id = "model.2".to_owned();
+    worker.load_model(100, replacement).expect("new live handle");
+    assert!(worker.model_matches_digest("model.2", digest));
+
+    let driver = Driver {
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut failed =
+        InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver)
+            .expect("worker");
+    failed.load_model(100, manifest()).expect("load");
+    assert!(matches!(
+        failed.unload_model(100, "model.1"),
+        Err(Error::DriverFailure(_))
+    ));
+    assert!(!failed.model_matches_digest("model.1", digest));
+    assert_eq!(
+        failed.run(100, "model.1", request()),
+        Err(Error::ModelUnloadIndeterminate)
+    );
+    assert_eq!(
+        failed.unload_model(100, "model.1"),
+        Err(Error::ModelUnloadIndeterminate)
+    );
+    let mut alias = manifest();
+    alias.model_id = "alias".to_owned();
+    assert_eq!(failed.load_model(100, alias), Err(Error::ModelAlreadyLoaded));
 }
 
 #[test]
