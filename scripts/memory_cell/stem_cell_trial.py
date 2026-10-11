@@ -35,6 +35,7 @@ from stem_cell_temporal import build_as_of_index
 from stem_cell_adapter_opportunity import eligible_pairs_by_stage
 from stem_cell_source_ceiling import retrospective_pool_ceiling
 from stem_train_heldout_bridge import train_to_heldout_gap
+from stem_native_null_ablation import observe_null_choice, review_null_counterfactual
 from stem_reader_zero_evidence import (
     generate_empty_evidence_controls,
     evaluate_empty_evidence_controls,
@@ -170,6 +171,10 @@ def run(staged, ranker_dir, output):
         generator_config=GENERATION,
         generator_template_digest=digest(SYSTEM),
         primary_policy="same-forced-top1-except-empty-for-all-six-arms",
+        null_diagnostic=(
+            "native zero-offset null logit against forced top1; observation only; "
+            "no Reader rerun or posthoc threshold search"
+        ),
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
         no_evidence_reader_diagnostic=(
             "32 post-policy/post-oracle fixed-Reader requests; "
@@ -644,6 +649,9 @@ def run(staged, ranker_dir, output):
                                 head_sha256=sha256(head.export()),
                                 encoder_identity=f.encoder_identity,
                             )
+                            item["null_counterfactual"] = observe_null_choice(
+                                values, f.candidate_ids, selected,
+                            )
                             raw, receipt = generate(
                                 q, evidence, f"{stage}/{phase}/{q.identity}/{arm}"
                             )
@@ -838,6 +846,15 @@ def run(staged, ranker_dir, output):
              for phase in PHASES for q in qs[phase]},
         )
         write(output / "train-heldout-gap.json", train_heldout_diagnostic)
+        # Native target labels enter only after every original Reader answer;
+        # the zero-offset null decision has never been used to choose evidence.
+        null_choice_diagnostic = review_null_counterfactual(
+            plan, scored,
+            {q.identity: source_for[q.identity].targets[q.identity]
+             for phase in PHASES for q in qs[phase]},
+        )
+        write(output / "zero-offset-null-counterfactual.json",
+              null_choice_diagnostic)
         no_evidence_reader_after = control_session.summary()
         # The diagnostic is nonqualifying if its isolated Reader quarantined.
         if not control_generator.quarantined:
@@ -868,6 +885,7 @@ def run(staged, ranker_dir, output):
             matched_frozen_vs_no_evidence=paired_reader_controls,
             retrospective_weak_source_ceiling=retrospective_source_ceiling,
             train_to_heldout_diagnostic=train_heldout_diagnostic,
+            zero_offset_null_counterfactual=null_choice_diagnostic,
             no_evidence_reader_call_accounting=dict(
                 same_pinned_reader_identity=generator.identity,
                 same_pinned_reader_profile=generator.profile,

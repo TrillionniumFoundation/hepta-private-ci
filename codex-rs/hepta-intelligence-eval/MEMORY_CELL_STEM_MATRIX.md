@@ -660,3 +660,35 @@ remain a separate diagnostic, not implied source sufficiency. The new v3
 report rejects targets outside the registered evaluation cut, duplicate
 questions and invalid metadata and explicitly marks absent true semantic
 entailment judgment and no production acceptance.
+
+## No-tuned, label-free native null-vs-forced-top1 counterfactual
+
+The original six-arm protocol is **strict forced-top1** whenever any
+candidate exists. A byte-pinned native input plus original ZIP audit
+confirmed that of the 32 registered evaluation questions, **25 are
+answerable and 7 are benchmark-unanswerable** (2 select, 2 retention,
+2 test, 1 transfer). All seven unanswerable questions still contain
+native *source-reference metadata*: these are not positive answer
+evidence labels. At original checkpoint 48, all seven selected a
+non-null source. Original frozen correct native-document source
+selections on answerable questions were **13/25**, and original Reader
+executions succeeded on 22/32; these numbers are historical source-level
+diagnostics, not current-source performance or citation entailment.
+
+The new `stem_native_null_ablation.py` records, on every arm/phase/stage,
+the original *unmodified* Head null-vs-best-candidate logit and what the
+**same native zero-offset null decision** would do. No answer label is
+used to choose the threshold, no selective policy is deployed, no
+original forced-top1 decision is modified, and no Reader is rerun.
+Only **after all original six-arm answers have been saved** does the
+read-only `review_null_counterfactual` compare the zero-offset source
+choices against native answerability. The result separately counts
+correctly recovered benchmark abstentions versus harmful abstentions
+on answerable cases, preserving all 576 policy rows and original
+8-question phase denominators, including failed and unscorable rows.
+
+The hypothetical null choice is **not** a real counterfactual Reader
+answer, independently verified sufficiency evidence, semantic citation
+precision or independent model-selection gate. It is exploratory and
+cannot be promoted to a production winner without a separate,
+predeclared model/Reader evaluation.
