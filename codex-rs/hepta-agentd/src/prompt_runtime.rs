@@ -844,7 +844,9 @@ impl PromptRuntimeStore {
         prepare_state_directory(directory)?;
         #[cfg(windows)]
         let lock = codex_utils_path::open_private_state_child(
-            &secure_root, LOCK_FILE, codex_utils_path::PrivateFileAccess::Create,
+            &secure_root,
+            LOCK_FILE,
+            codex_utils_path::PrivateFileAccess::Create,
         )
         .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
         #[cfg(not(windows))]
@@ -880,7 +882,9 @@ impl PromptRuntimeStore {
         }
         #[cfg(windows)]
         let state_file = codex_utils_path::open_private_state_child(
-            &store.secure_root, STATE_FILE, codex_utils_path::PrivateFileAccess::Read,
+            &store.secure_root,
+            STATE_FILE,
+            codex_utils_path::PrivateFileAccess::Read,
         )
         .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
         #[cfg(not(windows))]
@@ -910,10 +914,13 @@ impl PromptRuntimeStore {
         #[cfg(windows)]
         let mut next = {
             let file = codex_utils_path::open_private_state_child(
-                &self.secure_root, NEXT_FILE, codex_utils_path::PrivateFileAccess::Create,
+                &self.secure_root,
+                NEXT_FILE,
+                codex_utils_path::PrivateFileAccess::Create,
             )
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-            file.set_len(0).map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+            file.set_len(0)
+                .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
             file
         };
         #[cfg(not(windows))]
@@ -935,10 +942,8 @@ impl PromptRuntimeStore {
         // of a still-open file even when its contents were fully fsynced.
         drop(next);
         #[cfg(windows)]
-        codex_utils_path::replace_private_state_child(
-            &self.secure_root, NEXT_FILE, STATE_FILE,
-        )
-        .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
+        codex_utils_path::replace_private_state_child(&self.secure_root, NEXT_FILE, STATE_FILE)
+            .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
         #[cfg(not(windows))]
         std::fs::rename(self.root.join(NEXT_FILE), self.root.join(STATE_FILE))
             .map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
