@@ -514,18 +514,29 @@ pub(crate) async fn revalidate(
     .await
 }
 
+pub(crate) struct CognitiveRevalidationInput<'a> {
+    pub snapshot_digest: &'a str,
+    pub read_digest: &'a str,
+    pub omitted_records: u64,
+    pub items: &'a [CognitiveContextItem],
+    pub plan: Option<&'a CognitiveContextPlan>,
+}
+
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    input: CognitiveRevalidationInput<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     body_generation: u64,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let CognitiveRevalidationInput {
+        snapshot_digest,
+        read_digest,
+        omitted_records,
+        items,
+        plan,
+    } = input;
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),
