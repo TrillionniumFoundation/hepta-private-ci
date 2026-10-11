@@ -159,6 +159,28 @@ pub struct StemCpuHeadUseV1<'a> {
     pub model_id: &'a str,
 }
 
+/// One already-admitted Cell request whose output must be recomputed from
+/// the selected immutable projection inside a fresh signed CURRENT guard.
+#[derive(Debug)]
+pub struct StemCpuHeadBatchItemV1<'a> {
+    pub binding: &'a StemProjectionBindingV1,
+    pub source_features: &'a [f32],
+    pub token_count: u64,
+    pub request: super::NeuronFeatureRequest,
+}
+
+/// A single same-scope/generation batch admitted by the owning inference
+/// control. The artifact reader cannot manufacture a lease or production grant.
+pub struct StemCpuHeadBatchUseV1<'a> {
+    pub selector: &'a ArtifactSelectionVerifierV1,
+    pub signed_selection: &'a SignedArtifactSelectionV1,
+    pub current: VerifiedCurrentRegistryViewV1,
+    pub selection_now: u64,
+    pub items: Vec<StemCpuHeadBatchItemV1<'a>>,
+    pub worker_now_ms: u64,
+    pub model_id: &'a str,
+}
+
 #[derive(Debug)]
 pub struct SelectedStemProjectionReaderV1 {
     candidate: RevalidatingCandidate,
@@ -456,6 +478,86 @@ impl SelectedStemProjectionReaderV1 {
                     .map_err(StemProjectionArtifactError::Numeric)?;
                 worker
                     .run_neuron_features_receipt(worker_now_ms, model_id, request)
+                    .map_err(StemProjectionArtifactError::Numeric)
+            })
+            .map_err(|error| StemProjectionArtifactError::Storage(error.to_string()))?
+    }
+
+    /// A single backend batch over exact Q24 projections derived *inside*
+    /// the selected immutable CAS candidate's CURRENT guard. The shared text
+    /// Encoder is NOT executed here and no production authority is granted.
+    pub(crate) fn run_selected_cpu_head_backend_batch(
+        &mut self,
+        worker: &mut super::InferenceWorker<super::CpuGatedHeadDriver>,
+        use_request: StemCpuHeadBatchUseV1<'_>,
+    ) -> Result<super::NeuronBackendBatchReceipt, StemProjectionArtifactError> {
+        if self.sealed {
+            return Err(StemProjectionArtifactError::ConsumerSealed);
+        }
+        let result = self.run_selected_cpu_head_backend_batch_checked(worker, use_request);
+        if result.is_err() {
+            self.sealed = true;
+        }
+        result
+    }
+
+    fn run_selected_cpu_head_backend_batch_checked(
+        &mut self,
+        worker: &mut super::InferenceWorker<super::CpuGatedHeadDriver>,
+        use_request: StemCpuHeadBatchUseV1<'_>,
+    ) -> Result<super::NeuronBackendBatchReceipt, StemProjectionArtifactError> {
+        let StemCpuHeadBatchUseV1 {
+            selector,
+            signed_selection,
+            current,
+            selection_now,
+            items,
+            worker_now_ms,
+            model_id,
+        } = use_request;
+        if !(2..=32).contains(&items.len())
+            || worker.generation != self.fence.worker_generation
+        {
+            return Err(StemProjectionArtifactError::InvalidBinding);
+        }
+        for member in &items {
+            self.verify_source_binding(member.binding)?;
+        }
+        let verified = selector
+            .verify(signed_selection, &current, selection_now)
+            .map_err(|error| StemProjectionArtifactError::Selection(error.to_string()))?;
+        if verified.selection_digest() != self.selected_digest
+            || verified.artifact_id() != &self.artifact_id
+        {
+            return Err(StemProjectionArtifactError::StaleOrUnselected);
+        }
+        let generation = self.fence.worker_generation;
+        let projection = &self.projection;
+        self.candidate
+            .with_current(current, |_payload| {
+                // If ANY member fails source verification, no Head backend
+                // invocation occurs. No Q24 vectors supplied by callers are
+                // accepted in place of the selected projection computation.
+                let mut requests = Vec::with_capacity(items.len());
+                for member in items {
+                    let projected = project_bound_f32(
+                        projection,
+                        member.binding,
+                        member.source_features,
+                        member.token_count,
+                    )
+                    .map_err(StemProjectionArtifactError::Numeric)?;
+                    verify_neuron_projected_request(
+                        member.binding,
+                        &projected,
+                        &member.request,
+                        generation,
+                    )
+                    .map_err(StemProjectionArtifactError::Numeric)?;
+                    requests.push(member.request);
+                }
+                worker
+                    .run_neuron_features_backend_batch(worker_now_ms, model_id, requests)
                     .map_err(StemProjectionArtifactError::Numeric)
             })
             .map_err(|error| StemProjectionArtifactError::Storage(error.to_string()))?
