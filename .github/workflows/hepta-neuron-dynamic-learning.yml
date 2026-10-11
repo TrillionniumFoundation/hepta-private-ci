@@ -67,10 +67,18 @@ jobs:
           cargo --version
       - name: Run all-target build
         run: cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets
-      - name: Unit tests for native shared cache and Q24 gate only
+      - name: Install project test harness
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Native shared cache and Worker tests via project just defaults
+        working-directory: codex-rs
         run: |
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
-          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib model_worker:: -- --nocapture
+          set -euo pipefail
+          just test --locked -p codex-hepta-infer-core --lib
+          just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(model_worker::)'
+      - name: Native safety lint on changed owners
+        run: cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D clippy::correctness
       - name: Strict native format
         if: always()
         run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
