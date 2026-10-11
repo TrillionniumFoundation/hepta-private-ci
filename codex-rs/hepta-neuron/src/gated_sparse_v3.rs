@@ -7,12 +7,14 @@
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::{AuthorityPosture, Digest32};
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
 
-use crate::population_v2::{
-    PopulationSparseCheckpointV2, PopulationSparseConfigV2, PopulationSparseError,
-    PopulationSparseTickV2, population_sparse_tick_v2,
-};
+use crate::population_v2::PopulationSparseCheckpointV2;
+use crate::population_v2::PopulationSparseConfigV2;
+use crate::population_v2::PopulationSparseError;
+use crate::population_v2::PopulationSparseTickV2;
+use crate::population_v2::population_sparse_tick_v2;
 
 const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
