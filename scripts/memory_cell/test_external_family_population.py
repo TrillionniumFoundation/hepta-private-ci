@@ -206,6 +206,8 @@ class FamilyCutTests(unittest.TestCase):
         self.assertEqual(refused["corpora"]["locomo"]["shortfall_from_ten"], 5)
         self.assertTrue(refused["insufficient_source_families_block_promotion"])
         self.assertFalse(refused["independent_source_authenticity_verified"])
+        self.assertIsNone(refused["actual_future_observations"])
+        self.assertFalse(refused["actual_prospective_window_measured"])
 
     def test_failed_population_still_seals_source_only_capacity_receipt(self):
         self.corpora["locomo"] = fixture("locomo", families=5)[0]
