@@ -262,6 +262,30 @@ pub fn project_bound_f32(
     })
 }
 
+/// Checks that an already admitted Neuron request consumes exactly this
+/// projected feature and its generation-bound identity. No grant or
+/// authorization payload is constructed here; the inference owner still
+/// verifies a pre-existing reservation and lease independently.
+pub fn verify_neuron_projected_request(
+    binding: &StemProjectionBindingV1,
+    projected: &ProjectedStemFeatureV1,
+    request: &super::NeuronFeatureRequest,
+    worker_generation: u64,
+) -> Result<(), Error> {
+    if worker_generation == 0
+        || worker_generation != binding.generation
+        || request.encoder_digest != binding.encoder_digest
+        || request.input_digest != projected.projected_input_digest.to_string()
+        || request.feature_vector_q24 != projected.values_q24
+        || request.authorization.payload_digest
+            != super::canonical_neuron_feature_payload_digest(request)
+        || request.authorization.payload_digest != request.authorization.lease_payload_digest
+    {
+        return Err(Error::FeatureContract);
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 #[path = "model_worker_stem_projection_tests.rs"]
 mod tests;
