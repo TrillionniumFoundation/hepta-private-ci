@@ -412,3 +412,40 @@ unknown. A fresh random HF classification/decision Head is NEVER a
 qualifying checkpoint-stage comparator. These fields are offline operator
 attestations, NOT cryptographically verified independent receipts. They
 prevent accidental leaderboard promotion from invalid model semantics.
+
+
+### A-stage partial comparison when pretrained HF Decision Heads do not exist
+
+The offline decision_421m.py now has two *different* registered review
+scopes. The default --comparison-scope full remains strict: **eight real
+arms**, including four genuinely pretrained typed-decision checkpoint
+comparators, are required. Raw DeBERTa-v3-large and ModernBERT-large
+Encoder-only checkpoints may legitimately have no such Head. Do not
+manufacture one and call its random logits "zero-shot".
+
+To get a useful actual four-model learned-Head comparison first,
+independently execute four :equal_budget arms (original Laya, Typed Laya,
+DeBERTa-v3-large, ModernBERT-large) on the same pinned task data, optimizer
+steps, trainable parameter budget and inference hardware; then invoke:
+
+    python3 qualification/stem-cell-v1/decision_421m.py evaluate \
+      --plan /scratch/decision-frozen-plan.json \
+      --runs /scratch/four-real-equal-budget-run-receipts.json \
+      --predictions /scratch/four-real-equal-budget-logits.jsonl \
+      --comparison-scope equal_budget \
+      --output /scratch/four-model-equal-budget-shadow-report.json
+
+It rejects unknown, missing or duplicated arms and checks full paired
+test/calibration/future/OOD coverage and frozen model/weight lineage.
+The report explicitly sets full_comparison_present=false,
+checkpoint_comparison_status=NOT_COMPARABLE..., and
+production_promotion_permitted=false. It **cannot** be used as a
+replacement for missing checkpoint-stage or independent NDU evidence.
+The previously frozen 8-arm complete experiment remains available and
+unchanged as the stricter separate analysis.
+
+Optional PyTorch end-to-end test_hf_joint_end_to_end.py exercises a real
+small learned Head through the complete runner with a synthetic/mocked
+Transformer and source-grouped fixture; no real 435M weights are claimed.
+CI without optional PyTorch skips that test and does not certify model
+inference.
