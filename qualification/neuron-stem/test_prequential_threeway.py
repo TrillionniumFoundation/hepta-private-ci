@@ -199,7 +199,7 @@ class PrequentialThreeWayTests(unittest.TestCase):
         invalid = copy.deepcopy(records)
         next(item for item in invalid if item["split"] == "calibration" and
              item["arm"] == "trained")["probabilities"] = [.99, .01]
-        with self.assertRaisesRegex(ValueError, "same initial state"):
+        with self.assertRaisesRegex(ValueError, "must share initial state"):
             offline_threeway_ood_diagnostic(
                 self.rows, self.trial, ("e" * 40, "f" * 64, 1), invalid)
 
