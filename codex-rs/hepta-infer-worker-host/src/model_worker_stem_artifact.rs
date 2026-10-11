@@ -515,9 +515,7 @@ impl SelectedStemProjectionReaderV1 {
             worker_now_ms,
             model_id,
         } = use_request;
-        if !(2..=32).contains(&items.len())
-            || worker.generation != self.fence.worker_generation
-        {
+        if !(2..=32).contains(&items.len()) || worker.generation != self.fence.worker_generation {
             return Err(StemProjectionArtifactError::InvalidBinding);
         }
         for member in &items {
