@@ -611,10 +611,28 @@ fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
         Arc::new(AtomicBool::new(true)),
     )
     .with_stale_readback();
-    let mut owner =
-        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), port).expect("frozen CNS");
+
+    // On a new owner, the replayed nonce must fail before writing even the
+    // frozen binding. This is part of the bootstrap anti-resurrection check.
+    let denied = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), port);
+    assert!(matches!(denied, Err(CellSplitCnsCutoverErrorV1::Invalid)));
+    assert!(!root.path().join(FROZEN).exists());
+
+    // An independently admitted predecessor may freeze the plan. Every
+    // subsequent readback still needs a fresh, independently signed nonce.
+    let admitted = owner(root.path(), Arc::new(AtomicBool::new(true)));
+    drop(admitted);
+    let stale = DiskCns::open(
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
+        Arc::new(AtomicBool::new(true)),
+    )
+    .with_stale_readback();
+    let mut reopened =
+        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), stale)
+            .expect("preexisting frozen CNS binding");
     assert!(matches!(
-        owner.read_committed(&intent()),
+        reopened.read_committed(&intent()),
         Err(CellSplitCnsCutoverErrorV1::Invalid)
     ));
 }
