@@ -19,7 +19,7 @@ from collections import OrderedDict
 from study import load_jsonl, quantile, validate_dataset
 
 
-MODEL_KEYS = {"mmbert_small", "modernbert_base", "jina_zh", "bge_small_zh"}
+MODEL_KEYS = {"mmbert_small", "mmbert_base", "modernbert_base", "jina_zh", "bge_small_zh"}
 REPRESENTATIONS = {"joint", "sentence_cache", "landmarks", "cross_attention"}
 HEADS = {"linear", "film", "rank8", "rank16", "mlp", "swiglu"}
 BUDGETS = {2048, 16384, 65536, 262144}
