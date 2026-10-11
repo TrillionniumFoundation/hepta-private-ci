@@ -3409,8 +3409,9 @@ mod takeover_regression_tests {
     async fn test_store(temp: &TempDir) -> CognitiveStore {
         let fleet_root = temp.path().join("fleet-takeover");
         std::fs::create_dir_all(&fleet_root).require_fixture("fleet root");
-        let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().require_fixture("canonical fleet"))
-            .require_fixture("fleet");
+        let fleet =
+            HeptaFleetRoot::parse(fleet_root.canonicalize().require_fixture("canonical fleet"))
+                .require_fixture("fleet");
         CognitiveStore::open(&fleet.layout().agent(&test_agent()))
             .await
             .require_fixture("store")
@@ -3932,7 +3933,11 @@ mod final_use_dispatch_tests {
                 .require_fixture("terminal status"),
             LocalOutcomeState::Committed
         );
-        let counts = successor.lease.snapshot_counts().await.require_fixture("counts");
+        let counts = successor
+            .lease
+            .snapshot_counts()
+            .await
+            .require_fixture("counts");
         assert_eq!(
             counts.outbox_rows, 1,
             "handoff reuses one durable outbox identity"
