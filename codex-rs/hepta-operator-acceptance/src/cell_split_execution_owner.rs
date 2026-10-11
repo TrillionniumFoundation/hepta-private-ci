@@ -21,6 +21,7 @@ use thiserror::Error;
 use crate::AcceptanceError;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
+use crate::durable::lock_existing_sidecar;
 use crate::durable::lock_sidecar;
 use crate::durable::secure_read;
 use crate::durable::secure_root;
@@ -290,11 +291,36 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         root: &Path,
         plan: CellSplitExecutionPlanV1,
         trust: CellSplitOwnerTrustV1,
+        port: P,
+    ) -> Result<Self, CellSplitExecutionErrorV1> {
+        Self::open_inner(root, plan, trust, port, false)
+    }
+
+    /// Read-only re-open for transcript inspection. Never creates a lock or
+    /// frozen plan as a side effect of a query against an empty split root.
+    pub fn open_existing(
+        root: &Path,
+        plan: CellSplitExecutionPlanV1,
+        trust: CellSplitOwnerTrustV1,
+        port: P,
+    ) -> Result<Self, CellSplitExecutionErrorV1> {
+        Self::open_inner(root, plan, trust, port, true)
+    }
+
+    fn open_inner(
+        root: &Path,
+        plan: CellSplitExecutionPlanV1,
+        trust: CellSplitOwnerTrustV1,
         mut port: P,
+        existing_only: bool,
     ) -> Result<Self, CellSplitExecutionErrorV1> {
         plan.validate()?;
         let root = secure_root(root, "cell split owner root")?;
-        let lock = lock_sidecar(&root)?;
+        let lock = if existing_only {
+            lock_existing_sidecar(&root)?
+        } else {
+            lock_sidecar(&root)?
+        };
         let plan_digest = plan.digest()?;
         if trust.plan_digest != plan_digest {
             return Err(CellSplitExecutionErrorV1::Invalid("trusted plan mismatch"));
@@ -306,6 +332,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 return Err(CellSplitExecutionErrorV1::Invalid("frozen plan changed"));
             }
             Some(_) => {}
+            None if existing_only => {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "read-only transcript requires an existing frozen plan",
+                ));
+            }
             None => write_private_new(&path, &bytes)?,
         }
 
