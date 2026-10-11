@@ -92,6 +92,18 @@ current original state and verifying each pinned owner; otherwise the
 transcript is absent or the command fails. A pending prepared intent is
 rechecked for drift even when there are no completed receipts.
 
+An independently controlled observer can call
+`verify_cell_split_execution_transcript_signatures_v1` with its own
+externally pinned `CellSplitOwnerTrustV1`. This recomputes the frozen-plan
+digest, exact four-step predecessor/idempotency chain, per-owner Ed25519
+signatures, receipt digests, and the final transcript digest. It rejects
+reordered, missing, forged or modified receipts without invoking an effect.
+This is **offline cryptographic consistency only**: it does not establish
+that an effect is still current, authenticate a target host or witness
+power-loss recovery. Production acceptance separately requires fresh
+nonce-bound readbacks from the four original owners, independent Selector/NDU
+admission, host and observer evidence, and future-window evaluation.
+
 The output always sets `productionActivationAuthorized: false`. Completion
 does not constitute an independent host attestation, real CNS/Agentd
 composition proof, signed deployment authorization, power-loss witness,
