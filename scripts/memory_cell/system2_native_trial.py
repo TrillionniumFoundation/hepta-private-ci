@@ -80,6 +80,14 @@ def run(args):
                 primary_forward_backward_coupling=0.0,
                 random_profile="declared-binomial-latent-model-not-calibrated-environment",
                 production_accepted=False, reasoning_superiority=False)
+    if args.learning_preflight:
+        plan.update(schema="hepta.system2.learning-preflight.v1", arms=[],
+                    inherited_primary_arms=list(ARMS), planned_policy_attempts=0,
+                    mode="single-cell-train-opportunity-after-reader-controls",
+                    cell="general", methods=["legacy", "shape_matched_random", "paired"],
+                    fresh_initialization_each_checkpoint=True, optimizer_updates_per_fit=96,
+                    paired_training_uses_two_forwards_per_update=True,
+                    matched_training_compute=False, full_matrix_completed=False)
     write(args.output / "plan.json", plan)
     encoder, ranker = Encoder(args.staged / "encoder"), FrozenPairEncoder(args.ranker)
     cache = SharedFeatureCache(ranker)
@@ -172,6 +180,42 @@ def run(args):
             record["elapsed_seconds"] = time.perf_counter()-call_started
             controls.append(record); append(args.output / "reader-controls.jsonl", record)
     write(args.output / "reader-control-census.json", diagnostic_census(controls, [q.identity for q in evaluations]))
+    if args.learning_preflight:
+        from system2_learning_probe import run_probe
+        qmap = {q.identity: q for q in qs["train"]}
+        probes = []
+        for checkpoint in (16, 32, 48):
+            admitted = {q.identity for q in qs["train"][:checkpoint]}
+            selected = tuple(r for r in rows if r.features.question_id in admitted
+                             and route_text(qmap[r.features.question_id].content) == "general")
+            try:
+                probe = run_probe(selected, cut, ranker.dimension, steps=96)
+                failed = any(m["status"] == "failed" for m in probe["methods"].values())
+                record = dict(checkpoint=checkpoint, cell="general", status="failed" if failed else "succeeded", probe=probe)
+            except Exception as exc:
+                record = dict(checkpoint=checkpoint, cell="general", status="failed",
+                              error_type=type(exc).__name__, error=str(exc)[:512])
+            probes.append(record)
+            append(args.output / "learning-preflight.jsonl", record)
+        reader.verify_frozen()
+        control_failures = sum(r["status"] == "failed" for r in controls)
+        result = dict(source_commit=commit, schema="hepta.system2.learning-preflight-summary.v1",
+            mode="single-cell-train-opportunity", planned_policy_attempts=0, actual_policy_attempts=0,
+            planned_probe_checkpoints=3, recorded_probe_checkpoints=len(probes),
+            failed_probe_checkpoints=sum(r["status"] == "failed" for r in probes),
+            reader_control_census=diagnostic_census(controls, [q.identity for q in evaluations]),
+            successful_reader_controls=sum(r["status"] == "succeeded" for r in controls),
+            failed_reader_controls=control_failures,
+            unavailable_reader_controls=sum(r["status"] == "unavailable" for r in controls),
+            elapsed_seconds=time.perf_counter()-started,
+            evaluation_target_annotations_used=False, full_matrix_completed=False,
+            reader_adequacy_established=False, native_reasoning_superiority=False,
+            production_accepted=False)
+        write(args.output / "run-summary.json", result)
+        if control_failures or result["failed_probe_checkpoints"]:
+            raise RuntimeError("preflight contains failures; all checkpoints/controls retained")
+        # No policy answers, test-label scoring, or production admission below.
+        return
     # Explicit development continuation: these policy runs cannot bypass adequacy acceptance.
     heads = {route: {kind: StemHead(ranker.dimension, ranker.identity, kind=kind) for kind in ("linear", "gated")}
              for route in ("general", "temporal")}
@@ -245,6 +289,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("staged", type=Path); parser.add_argument("ranker", type=Path)
     parser.add_argument("output", type=Path); parser.add_argument("--development", action="store_true")
+    parser.add_argument("--learning-preflight", action="store_true",
+                        help="single general Cell train-only legacy/random/paired diagnostic; no new full policy matrix")
     parser.add_argument("--reviews", type=Path); parser.add_argument("--reviews-sha")
     parser.add_argument("--trust", type=Path); parser.add_argument("--trust-sha")
     args = parser.parse_args()

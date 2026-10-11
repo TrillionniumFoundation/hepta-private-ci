@@ -4,7 +4,7 @@ on:
     branches: ["codex/system2-fbsde-ablation-20261011"]
     paths:
       - "scripts/memory_cell/system2_*.py"
-      - "scripts/memory_cell/test_system2_ablation.py"
+      - "scripts/memory_cell/test_system2*.py"
       - "codex-rs/hepta-ndu/research/**"
       - ".github/workflows/hepta-system2-fbsde-ablation.yml"
 permissions:
@@ -24,6 +24,7 @@ jobs:
       TOKENIZERS_PARALLELISM: "false"
       HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
       HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-regression.zip
+      HEPTA_SYSTEM2_ORIGINAL_ARCHIVE: /tmp/system2-original.zip
       HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -45,12 +46,20 @@ jobs:
           set -euo pipefail
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_STEM_STRICT_ARCHIVE"
           printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 "$HEPTA_STEM_STRICT_ARCHIVE" | sha256sum -c -
+      - name: Audit original complete native run without new model calls
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11703482865/zip > "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE"
+          printf '%s  %s\n' 80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" | sha256sum -c -
+          /tmp/system2-python/bin/python scripts/memory_cell/system2_native_receipt.py "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" /tmp/system2-research/original-native-audit.json
       - name: New mechanics, full Python regression set, and diagnostics
         run: |
           set -euo pipefail
-          /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_system2_ablation.py' -v 2>&1 | tee /tmp/system2-research/mechanics.log
+          /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_system2*.py' -v 2>&1 | tee /tmp/system2-research/mechanics.log
           /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/system2-research/full-regression.log
-          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2_ablation.py codex-rs/hepta-ndu/research/finite_tree_bsde.py 2>&1 | tee /tmp/system2-research/lint.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2*.py codex-rs/hepta-ndu/research/finite_tree_bsde.py 2>&1 | tee /tmp/system2-research/lint.log
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: memory-native-staged-inputs
@@ -87,13 +96,13 @@ jobs:
           if file_inventory(Path('/tmp/system2-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
               raise ValueError('paired encoder drift')
           PY
-      - name: Full preregistered development matrix, never production qualification
+      - name: Single Cell learning preflight after four Reader conditions, not a new full matrix
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
-          /usr/bin/time -v -o /tmp/system2-research/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_native_trial.py /tmp/memory-inputs /tmp/system2-ranker /tmp/system2-research/native --development 2>&1 | tee /tmp/system2-research/execution.log
+          /usr/bin/time -v -o /tmp/system2-research/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_native_trial.py /tmp/memory-inputs /tmp/system2-ranker /tmp/system2-research/native --development --learning-preflight 2>&1 | tee /tmp/system2-research/execution.log
       - name: Retain source identity, partial rows, failures, and full artifacts
         if: always()
         run: |
@@ -101,7 +110,7 @@ jobs:
           mkdir -p /tmp/system2-research/source
           git rev-parse HEAD > /tmp/system2-research/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/system2-research/tested-tree.txt
-          cp scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2_ablation.py /tmp/system2-research/source/
+          cp scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2*.py /tmp/system2-research/source/
           cp codex-rs/hepta-ndu/research/finite_tree_bsde.py .github/workflows/hepta-system2-fbsde-ablation.yml /tmp/system2-research/source/
           (cd /tmp/system2-research && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
