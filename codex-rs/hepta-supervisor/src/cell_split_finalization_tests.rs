@@ -624,7 +624,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         idempotency_key: cns_key.clone(),
         previous_receipt_digest: cns_previous,
     };
-    let original_cns = CellSplitCnsRuntimeCommitV1 {
+    let mut original_cns = CellSplitCnsRuntimeCommitV1 {
         idempotency_key: cns_key,
         cns_id: "cns.original".into(),
         predecessor_route_digest: digest("parent route").to_string(),
@@ -633,12 +633,20 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         successor_generation: plan.child_generation,
         authority_epoch: fence.authority_epoch,
         committed_sequence: 3,
-        original_runtime_receipt_bytes: b"original signed cns cutover".to_vec(),
-        original_runtime_signature_bytes: cns_runtime_signer
-            .sign(b"original signed cns cutover")
-            .to_bytes()
-            .to_vec(),
+        original_runtime_receipt_bytes: Vec::new(),
+        original_runtime_signature_bytes: Vec::new(),
     };
+    let attested = serde_json::to_vec(
+        &codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1::for_commit(
+            &plan, &original_cns,
+        ),
+    )
+    .expect("typed original CNS runtime attestation");
+    original_cns.original_runtime_signature_bytes = cns_runtime_signer
+        .sign(&attested)
+        .to_bytes()
+        .to_vec();
+    original_cns.original_runtime_receipt_bytes = attested;
     let original_bytes = serde_json::to_vec(&original_cns).expect("CNS original bytes");
     let mut cns_receipt = CellSplitExecutionReceiptV1 {
         intent: cns_intent,
