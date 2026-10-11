@@ -18,6 +18,7 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -35,6 +36,8 @@ pub struct CellSplitPlanV1 {
     pub scope_digest: Digest32,
     pub predecessor_id: StableId,
     pub child_id: StableId,
+    /// Frozen candidate mapping; candidate identity is NOT the child Cell ID.
+    pub selected_candidate_id: StableId,
     pub predecessor_generation: Generation,
     pub child_generation: Generation,
     pub predecessor_artifact_digest: Digest32,
@@ -68,7 +71,12 @@ impl CellSplitPlanV1 {
 
     pub fn binding_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.agentd.cell-split.plan.v1\0".to_vec();
-        for id in [&self.split_id, &self.predecessor_id, &self.child_id] {
+        for id in [
+            &self.split_id,
+            &self.predecessor_id,
+            &self.child_id,
+            &self.selected_candidate_id,
+        ] {
             let raw = id.as_str().as_bytes();
             bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
             bytes.extend_from_slice(raw);
@@ -86,6 +94,31 @@ impl CellSplitPlanV1 {
             bytes.extend_from_slice(value.as_array());
         }
         Digest32::of_bytes(&bytes)
+    }
+
+
+    /// Consume the independently verified, opaque self-evolution selection
+    /// token as a binding check only. Selection remains non-authorizing.
+    /// The real port still has to verify freshness, signed evidence, and
+    /// revocations at final-use/CNS cutover before any production mutation.
+    pub fn verify_selected_candidate(
+        &self,
+        selected: &VerifiedSelfEvolutionSelectionV1,
+    ) -> Result<(), CellSplitErrorV1> {
+        self.validate()?;
+        let receipt = selected.receipt();
+        if selected.selection_digest() != self.selection_digest
+            || receipt.predecessor_id != self.predecessor_id
+            || receipt.predecessor_generation != self.predecessor_generation
+            || receipt.predecessor_artifact_digest != self.predecessor_artifact_digest
+            || receipt.candidate_id != self.selected_candidate_id
+            || receipt.candidate_generation != self.child_generation
+            || receipt.candidate_artifact_digest != self.child_artifact_digest
+            || receipt.authority.grants_any()
+        {
+            return Err(CellSplitErrorV1::Unapproved);
+        }
+        Ok(())
     }
 
     pub fn operation_key(&self, step: CellSplitStepV1) -> Digest32 {

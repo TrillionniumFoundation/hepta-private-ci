@@ -9,7 +9,13 @@ separately reviewed product composer supplies ALL live adapters below.
 
 A CellSplitPlanV1 is immutable and binds split/scope/cell ids, the exact parent
 and successor generations, the two artifacts, migration, independently selected
-evaluation, and an exact Final-use binding. A digest is context, **not**
+evaluation, and an exact Final-use binding. The distinct
+`selected_candidate_id` is bound to the plan and its operation keys; a new
+child Cell ID must never be inferred to be the evaluator's candidate ID.
+`verify_selected_candidate` checks the existing opaque
+`VerifiedSelfEvolutionSelectionV1` (signed evaluator, observer, selector and
+future-window validation) against BOTH identities, generations, artifacts and
+the accepted selection digest. It does not create selection authority. A digest is context, **not**
 authorization. Only the process holding the one locked file may drive a split.
 
 The durable order is:

@@ -23,6 +23,7 @@ fn plan() -> CellSplitPlanV1 {
         scope_digest: digest(b"scope"),
         predecessor_id: id("cell:parent"),
         child_id: id("cell:child"),
+        selected_candidate_id: id("candidate:child-1"),
         predecessor_generation: generation(7),
         child_generation: generation(8),
         predecessor_artifact_digest: digest(b"old artifact"),
@@ -512,4 +513,17 @@ fn terminal_receipt_without_independent_ack_is_not_completed() {
     assert!(owner.drive(&mut actors).expect("revalidate and retain").completed);
     assert_eq!(actors.attempts.len(), 5);
     assert_eq!(actors.anchors.get(&14), Some(&owner.anchor().head_digest));
+}
+
+#[test]
+fn selection_candidate_mapping_changes_operation_keys() {
+    let left = plan();
+    let mut right = left.clone();
+    right.selected_candidate_id = id("candidate:other");
+    assert_eq!(left.child_id, right.child_id);
+    assert_ne!(left.binding_digest(), right.binding_digest());
+    assert_ne!(
+        left.operation_key(CellSplitStepV1::CnsRouteCutover),
+        right.operation_key(CellSplitStepV1::CnsRouteCutover)
+    );
 }
