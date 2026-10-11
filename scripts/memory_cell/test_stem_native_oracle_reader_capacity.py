@@ -65,8 +65,19 @@ def fixture():
                     receipt=dict(
                         receipt,
                         delivered_evidence=([
-                            dict(label="E1", offset_encoding="original-utf8-bytes",
-                                 excerpt="Answer present in exact original bytes")
+                            dict(
+                                label="E1",
+                                id="source-native-id",
+                                root="scope-bound-root",
+                                scope="scope-" + q,
+                                observed_at="2023-12-31",
+                                offset_encoding="original-utf8-bytes",
+                                source_start=0,
+                                source_end=len(
+                                    "Answer present in exact original bytes".encode("utf-8")
+                                ),
+                                excerpt="Answer present in exact original bytes",
+                            )
                         ] if literal else []),
                     ),
                 )
@@ -149,6 +160,25 @@ class OracleCapacityTests(unittest.TestCase):
             else:
                 changed["receipt"][name] = "different"
             with self.subTest(field=name), self.assertRaises(AuditError):
+                reference_reader_capacity(*args)
+
+    def test_utf8_offsets_source_scope_and_future_time_fail_closed(self):
+        for corruption in ("byte-offset", "scope", "future", "invalid-time", "root"):
+            args = fixture()
+            oracle = next(x for x in args[2]
+                          if x["oracle_kind"] == "native-source-literal-span")
+            passage = oracle["receipt"]["delivered_evidence"][0]
+            if corruption == "byte-offset":
+                passage["source_end"] += 1
+            elif corruption == "scope":
+                passage["scope"] = "different-tenant-scope"
+            elif corruption == "future":
+                passage["observed_at"] = "2024-01-02"
+            elif corruption == "invalid-time":
+                passage["observed_at"] = "unknown-timestamp"
+            else:
+                passage["root"] = ""
+            with self.subTest(kind=corruption), self.assertRaises(ValueError):
                 reference_reader_capacity(*args)
 
     def test_unanswerable_cannot_be_promoted_to_positive_oracle(self):

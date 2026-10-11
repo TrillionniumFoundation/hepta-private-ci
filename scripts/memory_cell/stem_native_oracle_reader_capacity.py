@@ -11,6 +11,7 @@ import math
 
 from stem_audit_archive import require
 from stem_native_reader_stratification import BUCKETS, _bucket
+from stem_cell_time import source_not_after_question
 
 PHASES = ("select", "retention", "test", "transfer")
 KINDS = (
@@ -150,6 +151,30 @@ def reference_reader_capacity(
                     == "original-utf8-bytes"
                     and provided[0].get("label") == "E1",
                     "literal-answer privileged reference not source-bound",
+                )
+                source = provided[0]
+                a, z, excerpt = (
+                    source.get("source_start"),
+                    source.get("source_end"),
+                    source.get("excerpt"),
+                )
+                require(
+                    type(a) is int and type(z) is int
+                    and 0 <= a < z <= 100_000_000
+                    and isinstance(excerpt, str)
+                    and 0 < len(excerpt.encode("utf-8", "strict")) <= 4096
+                    and z - a == len(excerpt.encode("utf-8", "strict"))
+                    and isinstance(source.get("root"), str)
+                    and bool(source["root"])
+                    and isinstance(source.get("id"), str)
+                    and bool(source["id"])
+                    and source.get("scope") == f["receipt"]["observable_query"]["scope"]
+                    and isinstance(source.get("observed_at"), str)
+                    and source_not_after_question(
+                        source["observed_at"],
+                        f["receipt"]["observable_query"]["observed_at"],
+                    ),
+                    "reference UTF-8 source offset, scope or as-of time drift",
                 )
             else:
                 require(provided == [], "native abstention Oracle received evidence")
