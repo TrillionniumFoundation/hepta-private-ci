@@ -438,6 +438,18 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     ) -> Result<Self, CellSplitExecutionErrorV1> {
         plan.validate()?;
         let root = secure_root(root, "cell split owner root")?;
+        // The shared sidecar lock is created before the frozen plan on first
+        // initialization. If both immutable owner frames later vanish, the
+        // surviving lock is a local continuity marker: do not silently
+        // initialize a different split from newly supplied plan/key bytes.
+        // An external witness is still required against full root rollback.
+        let previously_opened = match fs::symlink_metadata(
+            root.join(crate::durable::SIDECAR_LOCK_FILE),
+        ) {
+            Ok(_) => true,
+            Err(error) if error.kind() == ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
         let lock = if existing_only {
             lock_existing_sidecar(&root)?
         } else {
@@ -454,8 +466,17 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // caller-supplied bytes, would hide lost or tampered durable evidence.
         let has_effect_history = has_successor_frame(&root, 0)?;
         let persisted_pins = read_frame(&pins_path)?;
-        let bytes = canonical_json(&plan)?;
         let persisted_plan = read_frame(&path)?;
+        if previously_opened
+            && persisted_plan.is_none()
+            && persisted_pins.is_none()
+            && !has_effect_history
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "initialized split owner lost frozen identity",
+            ));
+        }
+        let bytes = canonical_json(&plan)?;
         // Once the plan exists, its independently pinned owner keys may not
         // be regenerated, even if no external effect has started. Otherwise
         // a deleted pins frame could silently rebind a frozen split to
