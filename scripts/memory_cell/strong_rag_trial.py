@@ -665,6 +665,9 @@ def evaluate(
     expected = [case["query"]["identity"] for case in locked["cases"]]
     test_labels = [row for row in labels if row["id"] in set(expected)]
     rows = _score(rows, test_labels, expected=expected, arms=EVAL_ARMS)
+    # Persist original task scores even if subsequent citation-quality audit fails.
+    # The complete report remains unissued until that audit succeeds.
+    dump(output / "scored-answers.json", rows)
     # Citation quality is measured separately after ALL raw model answers
     # have been synced. Neither the scorer nor this audit repairs an answer.
     from historical_event_citation_chain import audit_evaluation
@@ -680,7 +683,6 @@ def evaluate(
         expected_qids=expected,
         arms=EVAL_ARMS,
     )
-    dump(output / "scored-answers.json", rows)
     stats, group = _stats(rows, EVAL_ARMS, expected)
     from strong_rag_repeatability import audit_repeats
 

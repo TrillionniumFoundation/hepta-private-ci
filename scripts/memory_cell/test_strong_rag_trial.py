@@ -352,6 +352,53 @@ class StrongRagPolicyTests(unittest.TestCase):
             self.assertFalse(result["production_accepted"])
             self.assertFalse(result["statistical_superiority"])
 
+            # A bad literal citation must fail the research receipt, but it
+            # cannot erase the original, already-generated task scores.
+            with (
+                patch.object(trial, "read", side_effect=raw_read),
+                patch.object(trial, "_reader", return_value=(model, {}, inventory)),
+                patch.object(trial, "freeze_single_hop", side_effect=frozen_mock_hop),
+                patch.object(trial, "_journal_answers", side_effect=fake_journal),
+                patch(
+                    "event_reader_experiment.preflight",
+                    return_value=(
+                        dict(
+                            cases=cases,
+                            labels_sha=trial.file_sha(root / "inputs/labels.json"),
+                            extraction={
+                                "files": {
+                                    "questions.json": trial.file_sha(
+                                        root / "inputs/questions.json"
+                                    ),
+                                },
+                            },
+                            frozen=dict(costs={}),
+                        ),
+                        docs,
+                    ),
+                ),
+                patch(
+                    "historical_event_citation_chain.audit_evaluation",
+                    side_effect=ValueError("forced citation-integrity rejection"),
+                ),
+                patch.dict("os.environ", {"HEPTA_MEMORY_TESTED_COMMIT": "b" * 40}),
+            ):
+                with self.assertRaisesRegex(ValueError, "citation-integrity rejection"):
+                    trial.evaluate(
+                        root / "plan",
+                        root / "inputs",
+                        root / "model",
+                        root / "calibration",
+                        root / "rejected",
+                        plan_sha=trial.HISTORIC_PLAN_SHA,
+                        stage_sha="a" * 64,
+                        policy_sha=policy_sha,
+                    )
+            persisted = json.loads((root / "rejected/scored-answers.json").read_text())
+            self.assertEqual(len(persisted), 8 * len(trial.EVAL_ARMS))
+            self.assertTrue(all(row["strict_task_success"] for row in persisted))
+            self.assertFalse((root / "rejected/report.json").exists())
+
     def test_readonly_original_archived_frozen_source(self):
         self.assertEqual(len(trial.KS), 5)
         self.assertIn(4, trial.KS)
