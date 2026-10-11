@@ -408,4 +408,220 @@ mod tests {
         value.local_checkpoint_binding_digest = digest("stale-checkpoint");
         assert!(!value.validate_integrity());
     }
+
+    #[test]
+    fn signed_current_model_descriptor_loads_real_pinned_artifact_and_refuses_drift() {
+        use std::fs::File;
+
+        use codex_hepta_learning_artifacts::ArtifactEvent;
+        use codex_hepta_learning_artifacts::ArtifactManifest;
+        use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
+        use codex_hepta_learning_artifacts::ArtifactRegistry;
+        use codex_hepta_learning_artifacts::ArtifactSelectionTrustV1;
+        use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
+        use codex_hepta_learning_artifacts::TrustedArtifactSelectorV1;
+        use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
+        use codex_hepta_learning_artifacts::write_candidate_payload;
+        use codex_hepta_learning_artifacts::write_registry_snapshot;
+        use ed25519_dalek::Signer;
+        use ed25519_dalek::SigningKey;
+
+        use crate::cognitive_ranker::verified_fixture_current_view;
+
+        fn id(text: &str) -> StableId {
+            StableId::new(text).unwrap()
+        }
+        let local = local();
+        let manifest_bytes = serde_json::to_vec(&descriptor(&local)).unwrap();
+        let manifest = ArtifactManifest {
+            artifact_id: id("neuron-selected-model-descriptor"),
+            kind: ArtifactKind::Model,
+            generation: local.config.generation,
+            predecessor_id: None,
+            content_digest: Digest32::of_bytes(&manifest_bytes),
+            objective_digest: local.scope.objective_digest,
+            support_digest: digest("approved-source-set"),
+            producer_id: id("independent-model-publisher"),
+            compatibility_digest: digest("neuron-selected-model-descriptor-v1"),
+            encoded_size_bytes: manifest_bytes.len() as u64,
+        };
+        let mut registry = ArtifactRegistry::new();
+        registry
+            .append(ArtifactEvent::Register {
+                event_id: id("model-descriptor-register"),
+                manifest: manifest.clone(),
+            })
+            .unwrap();
+        let directory = tempfile::tempdir().unwrap();
+        let payload = directory.path().join("selected-model-descriptor");
+        let snapshot = directory.path().join("selected-model-registry");
+        write_candidate_payload(
+            CreateOnlyArtifactFile::create(&payload).unwrap(),
+            &registry,
+            &manifest.artifact_id,
+            &manifest_bytes,
+        )
+        .unwrap();
+        let registry_receipt = write_registry_snapshot(
+            CreateOnlyArtifactFile::create(&snapshot).unwrap(),
+            &registry,
+            digest("fixture-registry-binding"),
+        )
+        .unwrap();
+
+        // Same independent CURRENT root identity as the existing Agentd test
+        // fixture. The returned view is opaque and actually signature-verified.
+        let registry_id = id("agentd-current-fixture-registry");
+        let withdrawal_scope = digest("agentd-current-fixture-scope");
+        let owner_key = SigningKey::from_bytes(&[23; 32]);
+        let owner_signer = TrustedArtifactSignerV1 {
+            signer_id: id("agentd-current-fixture-signer"),
+            verifying_key: owner_key.verifying_key().to_bytes(),
+            minimum_authority_epoch: 1,
+            maximum_authority_epoch: 10,
+            valid_from: 1,
+            expires_at: 1000,
+            revoked_at: None,
+        };
+        let owner_trust = ArtifactOwnerTrustV1 {
+            registry_id: registry_id.clone(),
+            withdrawal_scope_digest: withdrawal_scope,
+            minimum_registry_generation: Generation::new(1).unwrap(),
+            genesis_predecessor_head_digest: Digest32::ZERO,
+            minimum_authority_epoch: 1,
+            writer_signers: vec![owner_signer.clone()],
+            head_signers: vec![owner_signer],
+        };
+        let selector_key = SigningKey::from_bytes(&[41; 32]);
+        let selector = id("independent-selector");
+        let verifier = ArtifactSelectionVerifierV1::new(
+            ArtifactSelectionTrustV1 {
+                registry_id: registry_id.clone(),
+                withdrawal_scope_digest: withdrawal_scope,
+                minimum_authority_epoch: 4,
+                selectors: vec![TrustedArtifactSelectorV1 {
+                    selector_id: selector.clone(),
+                    verifying_key: selector_key.verifying_key().to_bytes(),
+                    minimum_authority_epoch: 4,
+                    maximum_authority_epoch: 9,
+                    valid_from: 10,
+                    expires_at: 100,
+                    revoked_at: None,
+                }],
+            },
+            &owner_trust,
+        )
+        .unwrap();
+        let current = verified_fixture_current_view(
+            File::open(&snapshot).unwrap(),
+            registry_receipt,
+            Digest32::ZERO,
+        )
+        .unwrap();
+        let mut signed = SignedArtifactSelectionV1 {
+            selection_id: id("neuron-descriptor-selection"),
+            artifact_id: manifest.artifact_id.clone(),
+            registry_id,
+            withdrawal_scope_digest: withdrawal_scope,
+            registry_head_digest: current.receipt().head_digest,
+            current_witness_digest: current.witness_digest(),
+            current_trust_digest: current.trust_digest(),
+            artifact_kind: manifest.kind,
+            artifact_generation: manifest.generation,
+            predecessor_id: None,
+            content_digest: manifest.content_digest,
+            objective_digest: manifest.objective_digest,
+            support_digest: manifest.support_digest,
+            compatibility_digest: manifest.compatibility_digest,
+            encoded_size_bytes: manifest.encoded_size_bytes,
+            selector_id: selector,
+            selector_credential_digest: digest("selector-credential"),
+            signing_key_digest: Digest32::of_bytes(
+                &selector_key.verifying_key().to_bytes(),
+            ),
+            authority_epoch: 4,
+            issued_at: 20,
+            expires_at: 80,
+            signature: [0; 64],
+        };
+        signed.signature = selector_key.sign(&signed.signing_bytes()).to_bytes();
+        let receipt = verify_pinned_neuron_model_descriptor_v1(
+            &local,
+            &verifier,
+            &signed,
+            current,
+            File::open(&snapshot).unwrap(),
+            File::open(&payload).unwrap(),
+            30,
+        )
+        .unwrap();
+        assert!(receipt.validate_integrity());
+        assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+        assert_eq!(receipt.artifact_id, manifest.artifact_id);
+        assert_eq!(receipt.local_checkpoint_binding_digest, local.binding_digest);
+
+        // A separately loaded model with the wrong weights cannot inherit the
+        // descriptor's valid signature or registry witness.
+        let mut wrong_local = local.clone();
+        wrong_local.config.weights_digest = digest("different-loaded-model");
+        wrong_local.binding_digest = wrong_local.computed_digest();
+        let current = verified_fixture_current_view(
+            File::open(&snapshot).unwrap(),
+            registry_receipt,
+            Digest32::ZERO,
+        )
+        .unwrap();
+        assert!(verify_pinned_neuron_model_descriptor_v1(
+            &wrong_local,
+            &verifier,
+            &signed,
+            current,
+            File::open(&snapshot).unwrap(),
+            File::open(&payload).unwrap(),
+            30,
+        )
+        .is_err());
+
+        // Signing a different CURRENT head fails the independent registry
+        // witness check even when the selector signature itself is valid.
+        let mut drifted = signed.clone();
+        drifted.registry_head_digest = digest("not-the-current-registry");
+        drifted.signature = selector_key.sign(&drifted.signing_bytes()).to_bytes();
+        let current = verified_fixture_current_view(
+            File::open(&snapshot).unwrap(),
+            registry_receipt,
+            Digest32::ZERO,
+        )
+        .unwrap();
+        assert!(verify_pinned_neuron_model_descriptor_v1(
+            &local,
+            &verifier,
+            &drifted,
+            current,
+            File::open(&snapshot).unwrap(),
+            File::open(&payload).unwrap(),
+            30,
+        )
+        .is_err());
+
+        // The actual pinned file bytes are checked, not only the digest in
+        // the signed selection envelope.
+        std::fs::write(&payload, b"tampered").unwrap();
+        let current = verified_fixture_current_view(
+            File::open(&snapshot).unwrap(),
+            registry_receipt,
+            Digest32::ZERO,
+        )
+        .unwrap();
+        assert!(verify_pinned_neuron_model_descriptor_v1(
+            &local,
+            &verifier,
+            &signed,
+            current,
+            File::open(&snapshot).unwrap(),
+            File::open(&payload).unwrap(),
+            30,
+        )
+        .is_err());
+    }
 }

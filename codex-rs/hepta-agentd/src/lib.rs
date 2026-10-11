@@ -187,6 +187,7 @@ pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use neuron_selected_artifact::NeuronCandidateModelArtifactErrorV1;
 pub use neuron_selected_artifact::NeuronCandidateModelArtifactV1;
+pub use neuron_selected_artifact::NeuronSelectedModelDescriptorV1;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
