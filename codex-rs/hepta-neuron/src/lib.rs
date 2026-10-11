@@ -16,6 +16,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 mod deletion;
+mod gated_journal_v3;
 mod gated_sparse_v3;
 mod inference_control;
 mod journal;
@@ -33,6 +34,8 @@ pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
 pub use deletion::validate_deletion_rebuild;
+pub use gated_journal_v3::GatedJournalErrorV3;
+pub use gated_journal_v3::GatedSparseJournalV3;
 pub use gated_sparse_v3::GatedSparseCheckpointV3;
 pub use gated_sparse_v3::GatedSparseConfigV3;
 pub use gated_sparse_v3::GatedSparseErrorV3;
