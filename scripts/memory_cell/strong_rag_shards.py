@@ -287,7 +287,7 @@ def _merge_shards(
     reader_identity=None,
 ):
     """Fail closed on all 16 immutable per-source shard journals and pins."""
-    result, records, stage_pin = {}, [], None
+    result, records, model_pins = {}, [], None
     for idx, case in enumerate(cases):
         for part, scheduled in enumerate(groups(phase)):
             folder = shard_root / name(phase, idx, part)
@@ -322,6 +322,7 @@ def _merge_shards(
                 or run["reader_identity"] != identity
                 or run["model_stage_sha256"] != manifest["stage.json"]
                 or stage["inventory_sha256"] != manifest["inventory.json"]
+                or stage.get("publisher_sha256") != manifest["publisher.json"]
                 or run["runtime_preflight_sha256"] != manifest["runtime-preflight.json"]
                 or run["raw_answers_sha256"] != manifest["raw-answers.jsonl"]
                 or run["calibration_plan_sha256"]
@@ -344,8 +345,16 @@ def _merge_shards(
                 for row in rows
             ):
                 raise ValueError("missing, moved or failed original model answer")
-            if stage_pin is None:
-                stage_pin = manifest["stage.json"]
+            # Each shard can be internally hash-consistent while a different
+            # model stage, inventory or publisher slips into a paired census.
+            shard_model_pins = tuple(
+                manifest[key]
+                for key in ("stage.json", "inventory.json", "publisher.json")
+            )
+            if model_pins is None:
+                model_pins = shard_model_pins
+            elif shard_model_pins != model_pins:
+                raise ValueError("mixed frozen reader model files across shards")
             result[name(phase, idx, part)] = dict(
                 raw_answers_sha256=manifest["raw-answers.jsonl"],
                 run_sha256=manifest["run.json"],

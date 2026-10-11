@@ -97,7 +97,16 @@ class ShardedReaderContractTests(unittest.TestCase):
                     (folder / "inventory.json").read_bytes()
                 ).hexdigest()
                 (folder / "stage.json").write_text(
-                    json.dumps(dict(tier="qwen-3b", inventory_sha256=inv_sha)) + "\n"
+                    json.dumps(
+                        dict(
+                            tier="qwen-3b",
+                            inventory_sha256=inv_sha,
+                            publisher_sha256=hashlib.sha256(
+                                (folder / "publisher.json").read_bytes()
+                            ).hexdigest(),
+                        )
+                    )
+                    + "\n"
                 )
                 stage_sha = hashlib.sha256(
                     (folder / "stage.json").read_bytes()
@@ -186,6 +195,54 @@ class ShardedReaderContractTests(unittest.TestCase):
                     if phase == "calibration"
                     else list(s.trial.EVAL_ARMS),
                 )
+
+    def test_self_consistent_mixed_model_shards_reject(self):
+        s = self.shards
+        for changed_file in ("stage.json", "inventory.json", "publisher.json"):
+            with self.subTest(file=changed_file), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp)
+                cases = self._fixtures(path)
+                folder = path / s.name("calibration", 6, 1)
+                changed = folder / changed_file
+                changed_json = json.loads(changed.read_text())
+                changed_json["unexpected_model_metadata"] = changed_file
+                changed.write_text(json.dumps(changed_json) + "\n")
+
+                stage_path = folder / "stage.json"
+                stage = json.loads(stage_path.read_text())
+                if changed_file == "inventory.json":
+                    stage["inventory_sha256"] = hashlib.sha256(
+                        changed.read_bytes()
+                    ).hexdigest()
+                elif changed_file == "publisher.json":
+                    stage["publisher_sha256"] = hashlib.sha256(
+                        changed.read_bytes()
+                    ).hexdigest()
+                stage_path.write_text(json.dumps(stage) + "\n")
+
+                run_path = folder / "run.json"
+                run = json.loads(run_path.read_text())
+                run["model_stage_sha256"] = hashlib.sha256(
+                    stage_path.read_bytes()
+                ).hexdigest()
+                run_path.write_text(json.dumps(run) + "\n")
+                pin_path = folder / "sha-pins.json"
+                pins = json.loads(pin_path.read_text())
+                for filename in pins:
+                    pins[filename] = hashlib.sha256(
+                        (folder / filename).read_bytes()
+                    ).hexdigest()
+                pin_path.write_text(json.dumps(pins) + "\n")
+                with self.assertRaisesRegex(
+                    ValueError, "mixed frozen reader model files"
+                ):
+                    s._merge_shards(
+                        "calibration",
+                        path,
+                        cases,
+                        commit="c" * 40,
+                        prep_sha="a" * 64,
+                    )
 
     def test_changes_to_model_answers_and_manifests_reject(self):
         s = self.shards
