@@ -245,10 +245,16 @@ class ScopedProjectionCache:
 
 
 class ProjectedBatch:
-    def __init__(self, encoder_observation, refs, cache_hits):
+    def __init__(self, encoder_observation, refs, cache_hits,
+                 projection_calls, in_batch_reuses, elapsed_ns, cpu_ns, cache_bytes):
         self.encoder_observation = encoder_observation
         self.refs = tuple(refs)
         self.projection_cache_hits = cache_hits
+        self.projection_calls = projection_calls
+        self.projection_reuses_within_batch = in_batch_reuses
+        self.projection_elapsed_ns = elapsed_ns
+        self.projection_cpu_ns = cpu_ns
+        self.projection_cache_bytes = cache_bytes
         self.production_authorized = False
 
 
@@ -274,7 +280,10 @@ class ProjectedStemEngine:
         observation, frozen = self.shared_encoder_engine.run(requests, return_features=True)
         if len(frozen) != len(requests):
             raise ValueError("Encoder feature bundle count mismatch")
-        pending, refs, cache_hits = {}, [], 0
+        import time
+        projection_start = time.perf_counter_ns()
+        cpu_start = time.process_time_ns()
+        pending, refs, cache_hits, projection_calls, in_batch_reuses = {}, [], 0, 0, 0
         for request, feature in zip(requests, frozen):
             key = (request.scope_digest, request.generation,
                    request.revocation_frontier_digest, request.encoder_digest,
@@ -300,6 +309,9 @@ class ProjectedStemEngine:
                 if ref is None:
                     ref = project_ref(request, feature, self.projection)
                     pending[key] = ref
+                    projection_calls += 1
+                else:
+                    in_batch_reuses += 1
                 refs.append(ProjectedFeatureRef(
                     request_id=request.request_id, scope_digest=ref.scope_digest,
                     generation=ref.generation,
@@ -314,7 +326,11 @@ class ProjectedStemEngine:
         # Publish only after all outputs have validated; no partial poisoned cache.
         for key, ref in pending.items():
             self.cache.put(key, ref)
-        return ProjectedBatch(observation, refs, cache_hits)
+        return ProjectedBatch(
+            observation, refs, cache_hits, projection_calls, in_batch_reuses,
+            time.perf_counter_ns() - projection_start,
+            time.process_time_ns() - cpu_start, self.cache.bytes_used,
+        )
 
 PROJECTION_MANIFEST_SCHEMA = "hepta.stem.low-rank-projection.q24.v1"
 
