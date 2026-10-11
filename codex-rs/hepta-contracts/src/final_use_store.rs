@@ -281,7 +281,7 @@ impl Store {
         if authority_epoch == 0
             || nonces.is_empty()
             || nonces.len() > 256
-            || nonces.iter().any(|nonce| *nonce == [0; 32])
+            || nonces.contains(&[0; 32])
         {
             return Err(FinalUseError::InvalidTrust);
         }
