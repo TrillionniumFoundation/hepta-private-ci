@@ -8,6 +8,7 @@ import re
 
 from selector_evaluation import correctness, diagnose
 from sessions import source_id
+from stem_cell_time import source_not_after_question
 
 ARMS = (
     "frozen_rerank",
@@ -69,10 +70,17 @@ def oracle_sources(source, query, target):
         return None, "unresolved-reference"
     supported = {source_id(s) for s in target.evidence}
     for doc in sorted(source.history(query), key=lambda d: d.identity):
-        if (
-            source_id(doc.identity) not in supported
-            or doc.observed_at > query.observed_at
-        ):
+        if source_id(doc.identity) not in supported:
+            continue
+        try:
+            admitted_time = source_not_after_question(
+                doc.observed_at, query.observed_at
+            )
+        except ValueError:
+            # Unknown or mixed-precision chronology is unavailable to this
+            # privileged diagnostic; do not fall back to lexical ordering.
+            continue
+        if not admitted_time:
             continue
         match = re.search(re.escape(target.answer), doc.content, re.IGNORECASE)
         if match is None or match.end() - match.start() > 512:
