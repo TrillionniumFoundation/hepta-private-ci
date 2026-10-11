@@ -21,6 +21,13 @@ use crate::PlasticityRuntimeHandleV1;
 /// writers, anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
+    // The owned handle must survive startup even before the separately
+    // admitted product actor is routed from the control plane. Tests exercise
+    // the actual bounded actor; no new unauthenticated caller is introduced.
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "staged plasticity owner handle, not an ingress permission")
+    )]
     handle: PlasticityRuntimeHandleV1,
 }
 
@@ -29,6 +36,10 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "staged owner-only plasticity call; no public dispatch path")
+    )]
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
@@ -37,6 +48,10 @@ impl AgentdLearningPlasticityProducerV1 {
         self.handle.propose_parameter(request, now).await
     }
 
+    #[cfg_attr(
+        not(test),
+        expect(dead_code, reason = "staged owner-only topology call; no public dispatch path")
+    )]
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
