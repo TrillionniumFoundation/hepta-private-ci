@@ -428,4 +428,3 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
     reader.invalidate();
     assert!(reader.is_sealed());
 }
-
