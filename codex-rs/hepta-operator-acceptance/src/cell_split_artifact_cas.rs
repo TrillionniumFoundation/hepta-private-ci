@@ -112,6 +112,9 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
         plan: CellSplitExecutionPlanV1,
         authority: A,
     ) -> Result<Self, CellSplitArtifactCasErrorV1> {
+        // Require the coordinator's complete frozen-plan contract even when
+        // this effect owner is opened independently of Agentd.
+        let plan_digest = plan.digest().map_err(|_| CellSplitArtifactCasErrorV1::Invalid)?;
         let root = secure_root(root, "artifact CAS owner root")?;
         let lock = lock_sidecar(&root)?;
         let parent = secure_canonical_file_path(parent, "parent artifact")?;
@@ -123,7 +126,7 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
         {
             return Err(CellSplitArtifactCasErrorV1::Invalid);
         }
-        let plan_digest = sha256(&canonical_json(&plan)?);
+
         let frontier = ArtifactCasFrontierV1 {
             schema: FRONTIER_SCHEMA.into(),
             plan_digest: plan_digest.clone(),
