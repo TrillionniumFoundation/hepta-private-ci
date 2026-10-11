@@ -11,8 +11,14 @@ from native import digest
 from stem_blind_review_packet import make_blind_review_packet
 from stem_blind_review_export import export_worklist, SOURCE, TREE, ZIP_SHA
 
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
+)
 PHASES = ("select", "retention", "test", "transfer")
 STAGES = (16, 32, 48)
 PIN = "c" * 40
@@ -21,45 +27,60 @@ PROFILE = "same-prompt"
 
 
 def query(qid):
-    return dict(identity=qid, family="family-" + qid,
-                scope="scope-" + qid, content="What did the source say?",
-                observed_at="2024-01-01")
+    return dict(
+        identity=qid,
+        family="family-" + qid,
+        scope="scope-" + qid,
+        content="What did the source say?",
+        observed_at="2024-01-01",
+    )
 
 
 def receipt(qid, evidence):
     q = query(qid)
-    return dict(generator_identity=ID, generator_profile=PROFILE,
-                observable_query=q, delivered_evidence=evidence,
-                canonical_request_digest=digest((ID, PROFILE, q, evidence)))
+    return dict(
+        generator_identity=ID,
+        generator_profile=PROFILE,
+        observable_query=q,
+        delivered_evidence=evidence,
+        canonical_request_digest=digest((ID, PROFILE, q, evidence)),
+    )
 
 
 def sample():
     question_ids = {"train": [f"train-{i}" for i in range(48)]}
-    question_ids.update({
-        phase: [f"{phase}-{i}" for i in range(8)] for phase in PHASES
-    })
+    question_ids.update({phase: [f"{phase}-{i}" for i in range(8)] for phase in PHASES})
     plan = dict(
         schema="hepta.stem-cell.native-development.v1",
-        source_commit=PIN, questions=question_ids, arms=list(ARMS),
+        source_commit=PIN,
+        questions=question_ids,
+        arms=list(ARMS),
         curriculum_attempted_examples=list(STAGES),
         question_families={
-            qid: "original-" + qid
-            for values in question_ids.values() for qid in values
+            qid: "original-" + qid for values in question_ids.values() for qid in values
         },
     )
     rows, empty = [], []
     for phase in PHASES:
         for qid in question_ids[phase]:
-            source = [dict(
-                label="E1", root="root", scope="scope-" + qid,
-                observed_at="2023-12-31", excerpt="Original source evidence.",
-                id="source-original-id",
-            )]
+            source = [
+                dict(
+                    label="E1",
+                    root="root",
+                    scope="scope-" + qid,
+                    observed_at="2023-12-31",
+                    excerpt="Original source evidence.",
+                    id="source-original-id",
+                )
+            ]
             for stage in STAGES:
                 for arm in ARMS:
                     row = dict(
-                        stage=stage, phase=phase, question_id=qid,
-                        arm=arm, status="succeeded",
+                        stage=stage,
+                        phase=phase,
+                        question_id=qid,
+                        arm=arm,
+                        status="succeeded",
                         family="original-" + qid,
                     )
                     if stage == 48 and arm == "frozen_rerank":
@@ -68,12 +89,17 @@ def sample():
                             receipt=receipt(qid, source),
                         )
                     rows.append(row)
-            empty.append(dict(
-                phase=phase, question_id=qid, evidence_count=0,
-                family="original-" + qid,
-                status="succeeded", answer="Hallucinated citation [E1]",
-                receipt=receipt(qid, []),
-            ))
+            empty.append(
+                dict(
+                    phase=phase,
+                    question_id=qid,
+                    evidence_count=0,
+                    family="original-" + qid,
+                    status="succeeded",
+                    answer="Hallucinated citation [E1]",
+                    receipt=receipt(qid, []),
+                )
+            )
     return plan, rows, empty
 
 
@@ -95,15 +121,18 @@ class BlindReviewPacketTests(unittest.TestCase):
             self.assertNotIn("source_family", case)
             self.assertNotIn("arm", case)
             self.assertTrue(case["source_sufficiency_review_pending"])
-            self.assertTrue(all(x["reviewer_verdict"] is None
-                                for x in case["conditions"]))
+            self.assertTrue(
+                all(x["reviewer_verdict"] is None for x in case["conditions"])
+            )
 
     def test_empty_context_citation_is_structurally_unbound(self):
         packet, mapping = make_blind_review_packet(*sample())
-        for case, meta in zip(packet["reviewer_packets"],
-                              mapping["blinded_case_mapping"], strict=True):
-            no_source_slot = next(k for k,v in meta["opaque_slots"].items()
-                                  if v["role"] == "empty")
+        for case, meta in zip(
+            packet["reviewer_packets"], mapping["blinded_case_mapping"], strict=True
+        ):
+            no_source_slot = next(
+                k for k, v in meta["opaque_slots"].items() if v["role"] == "empty"
+            )
             slot = next(x for x in case["conditions"] if x["slot"] == no_source_slot)
             self.assertEqual(slot["delivered_evidence"], [])
             self.assertEqual(slot["structurally_unbound_markers"], 1)
@@ -111,10 +140,12 @@ class BlindReviewPacketTests(unittest.TestCase):
 
     def test_original_utf8_answer_bytes_are_cryptographically_bound(self):
         import hashlib
+
         packet, meta = make_blind_review_packet(*sample())
         entry = meta["blinded_case_mapping"][0]
-        original = next(v for v in entry["opaque_slots"].values()
-                        if v["role"] == "fixed")
+        original = next(
+            v for v in entry["opaque_slots"].values() if v["role"] == "fixed"
+        )
         expected = hashlib.sha256(
             "Source-backed answer [E1]".encode("utf-8")
         ).hexdigest()
@@ -126,12 +157,13 @@ class BlindReviewPacketTests(unittest.TestCase):
         empty[0]["answer"] = "Unsupported marker [E0] and [E1]"
         packet, mapping = make_blind_review_packet(plan, rows, empty)
         blank_slot = next(
-            slot for slot, info in
-            mapping["blinded_case_mapping"][0]["opaque_slots"].items()
+            slot
+            for slot, info in mapping["blinded_case_mapping"][0]["opaque_slots"].items()
             if info["role"] == "empty"
         )
         condition = next(
-            x for x in packet["reviewer_packets"][0]["conditions"]
+            x
+            for x in packet["reviewer_packets"][0]["conditions"]
             if x["slot"] == blank_slot
         )
         self.assertEqual(condition["structurally_unbound_markers"], 2)
@@ -140,8 +172,9 @@ class BlindReviewPacketTests(unittest.TestCase):
     def test_raw_answer_and_evidence_digest_tampering_rejects(self):
         for mode in ("request", "evidence", "reader-question"):
             plan, rows, empty = sample()
-            target = next(x for x in rows if x["stage"] == 48
-                          and x["arm"] == "frozen_rerank")
+            target = next(
+                x for x in rows if x["stage"] == 48 and x["arm"] == "frozen_rerank"
+            )
             if mode == "request":
                 target["receipt"]["canonical_request_digest"] = "f" * 64
             elif mode == "evidence":
@@ -159,16 +192,21 @@ class BlindReviewPacketTests(unittest.TestCase):
                 make_blind_review_packet(plan, rows, empty)
 
     def test_future_or_cross_scope_evidence_rejected(self):
-        for field, forged in (("observed_at", "2025-01-01"),
-                              ("scope", "other-scope")):
+        for field, forged in (("observed_at", "2025-01-01"), ("scope", "other-scope")):
             plan, rows, empty = sample()
-            item = next(x for x in rows if x["stage"] == 48
-                        and x["arm"] == "frozen_rerank")
+            item = next(
+                x for x in rows if x["stage"] == 48 and x["arm"] == "frozen_rerank"
+            )
             evidence = item["receipt"]["delivered_evidence"]
             evidence[0][field] = forged
-            item["receipt"]["canonical_request_digest"] = digest((
-                ID, PROFILE, item["receipt"]["observable_query"], evidence,
-            ))
+            item["receipt"]["canonical_request_digest"] = digest(
+                (
+                    ID,
+                    PROFILE,
+                    item["receipt"]["observable_query"],
+                    evidence,
+                )
+            )
             with self.subTest(field=field), self.assertRaises(ValueError):
                 make_blind_review_packet(plan, rows, empty)
 
@@ -188,8 +226,9 @@ class BlindReviewPacketTests(unittest.TestCase):
 
     def test_failed_frozen_answer_kept_in_review_denominator(self):
         plan, rows, empty = sample()
-        target = next(x for x in rows if x["stage"] == 48
-                      and x["arm"] == "frozen_rerank")
+        target = next(
+            x for x in rows if x["stage"] == 48 and x["arm"] == "frozen_rerank"
+        )
         target["status"] = "failed"
         target.pop("answer")
         target.pop("receipt")
@@ -201,8 +240,9 @@ class BlindReviewPacketTests(unittest.TestCase):
 
     def test_identical_empty_requests_are_detected_not_double_counted(self):
         plan, rows, empty = sample()
-        target = next(x for x in rows if x["stage"] == 48
-                      and x["arm"] == "frozen_rerank")
+        target = next(
+            x for x in rows if x["stage"] == 48 and x["arm"] == "frozen_rerank"
+        )
         target["receipt"] = receipt(target["question_id"], [])
         target["answer"] = "Different raw answer"
         _, mapping = make_blind_review_packet(plan, rows, empty)
@@ -217,8 +257,9 @@ class BlindReviewPacketTests(unittest.TestCase):
     def test_source_family_and_frozen_selected_window_drift_reject(self):
         for mode in ("family", "selection"):
             plan, rows, empty = sample()
-            target = next(x for x in rows if x["stage"] == 48
-                          and x["arm"] == "frozen_rerank")
+            target = next(
+                x for x in rows if x["stage"] == 48 and x["arm"] == "frozen_rerank"
+            )
             if mode == "family":
                 target["family"] = "independent-incorrect-family"
             else:
@@ -279,24 +320,33 @@ class BlindReviewPacketTests(unittest.TestCase):
                 self.assertEqual(summary["actual_reviewer_verdicts"], 0)
                 self.assertFalse(summary["independently_adjudicated_entailment"])
                 reviewer = [
-                    json.loads(x) for x in
-                    (dst / "blind-question-answer-worklist.jsonl").read_text().splitlines()
+                    json.loads(x)
+                    for x in (dst / "blind-question-answer-worklist.jsonl")
+                    .read_text()
+                    .splitlines()
                 ]
                 template = [
-                    json.loads(x) for x in
-                    (dst / "unsigned-reviewer-return-template.jsonl").read_text().splitlines()
+                    json.loads(x)
+                    for x in (dst / "unsigned-reviewer-return-template.jsonl")
+                    .read_text()
+                    .splitlines()
                 ]
                 self.assertEqual(len(reviewer), 32)
                 self.assertEqual(len(template), 64)
-                self.assertTrue(all(x["reviewer_attestation"] is None for x in template))
+                self.assertTrue(
+                    all(x["reviewer_attestation"] is None for x in template)
+                )
                 with self.assertRaises(FileExistsError):
                     export_worklist(Path("fake-pinned.zip"), dst)
         self.assertEqual(
             set(accesses),
-            {"tested-commit.txt", "tested-tree.txt",
-             "comparison/preregistered.json",
-             "comparison/policy-predictions.jsonl",
-             "comparison/reader-no-evidence.jsonl"},
+            {
+                "tested-commit.txt",
+                "tested-tree.txt",
+                "comparison/preregistered.json",
+                "comparison/policy-predictions.jsonl",
+                "comparison/reader-no-evidence.jsonl",
+            },
         )
 
     def test_generated_packet_drops_injected_gold_labels_and_oracle(self):

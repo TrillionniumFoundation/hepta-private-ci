@@ -9,16 +9,18 @@ import re
 import unittest
 
 WORKFLOW = ".github/workflows/hepta-memory-stem-current-source-gate.yml"
-REQUIRED = frozenset((
-    "scripts/memory_cell/stem_current_strict_readout_audit.py",
-    "scripts/memory_cell/test_stem_current_strict_readout_audit.py",
-    "scripts/memory_cell/stem_native_reader_stratification.py",
-    "scripts/memory_cell/test_stem_native_reader_stratification.py",
-    "scripts/memory_cell/stem_native_oracle_reader_capacity.py",
-    "scripts/memory_cell/test_stem_native_oracle_reader_capacity.py",
-    "scripts/memory_cell/test_stem_current_workflow_path_gates.py",
-    WORKFLOW,
-))
+REQUIRED = frozenset(
+    (
+        "scripts/memory_cell/stem_current_strict_readout_audit.py",
+        "scripts/memory_cell/test_stem_current_strict_readout_audit.py",
+        "scripts/memory_cell/stem_native_reader_stratification.py",
+        "scripts/memory_cell/test_stem_native_reader_stratification.py",
+        "scripts/memory_cell/stem_native_oracle_reader_capacity.py",
+        "scripts/memory_cell/test_stem_native_oracle_reader_capacity.py",
+        "scripts/memory_cell/test_stem_current_workflow_path_gates.py",
+        WORKFLOW,
+    )
+)
 
 
 class StrictSourceWorkflowPathTests(unittest.TestCase):
@@ -42,16 +44,18 @@ class StrictSourceWorkflowPathTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertNotIn(" ", path, "two files combined in one trigger")
                 self.assertTrue(
-                    path.startswith("scripts/memory_cell/")
-                    or path == WORKFLOW,
+                    path.startswith("scripts/memory_cell/") or path == WORKFLOW,
                     "unbounded strict-source audit trigger",
                 )
                 self.assertTrue((self.repo / path).is_file())
 
     def test_source_tests_are_called_in_the_same_hosted_job(self):
         command = next(
-            (line.strip() for line in self.workflow.splitlines()
-             if line.strip().startswith("python3 -m unittest -v ")),
+            (
+                line.strip()
+                for line in self.workflow.splitlines()
+                if line.strip().startswith("python3 -m unittest -v ")
+            ),
             None,
         )
         self.assertIsNotNone(command, "hosted regression check absent")

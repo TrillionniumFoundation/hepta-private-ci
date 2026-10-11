@@ -32,21 +32,31 @@ def fixture():
                 literal = category < 8
             else:
                 available = chosen = literal = False
-            canonical = dict(identity=q, content="What happened?",
-                             scope="scope-" + q, observed_at="2024-01-01")
+            canonical = dict(
+                identity=q,
+                content="What happened?",
+                scope="scope-" + q,
+                observed_at="2024-01-01",
+            )
             receipt = dict(
                 generator_identity="fixed-reader",
                 generator_profile="fixed-prompt",
                 observable_query=canonical,
                 delivered_evidence=[{"label": "E1"}],
             )
-            original.append(dict(
-                stage=48, phase=phase, arm="frozen_rerank",
-                question_id=q, family=families[q],
-                status="succeeded", answer="Fixture",
-                diagnostic_answer_f1=0.1 if answerable else None,
-                receipt=deepcopy(receipt),
-            ))
+            original.append(
+                dict(
+                    stage=48,
+                    phase=phase,
+                    arm="frozen_rerank",
+                    question_id=q,
+                    family=families[q],
+                    status="succeeded",
+                    answer="Fixture",
+                    diagnostic_answer_f1=0.1 if answerable else None,
+                    receipt=deepcopy(receipt),
+                )
+            )
             if not answerable:
                 kind, state = "annotated-unanswerable", "succeeded"
             elif literal:
@@ -54,7 +64,10 @@ def fixture():
             else:
                 kind, state = "no-admitted-literal-reference-span", "unavailable"
             o = dict(
-                phase=phase, question_id=q, oracle_kind=kind, status=state,
+                phase=phase,
+                question_id=q,
+                oracle_kind=kind,
+                status=state,
                 policy_comparator=False,
                 semantic_entailment_independently_verified=False,
             )
@@ -64,63 +77,91 @@ def fixture():
                     diagnostic_f1=0.7 if literal else None,
                     receipt=dict(
                         receipt,
-                        delivered_evidence=([
-                            dict(
-                                label="E1",
-                                id="source-native-id",
-                                root="scope-bound-root",
-                                scope="scope-" + q,
-                                observed_at="2023-12-31",
-                                offset_encoding="original-utf8-bytes",
-                                source_start=0,
-                                source_end=len(
-                                    "Answer present in exact original bytes".encode("utf-8")
-                                ),
-                                excerpt="Answer present in exact original bytes",
-                            )
-                        ] if literal else []),
+                        delivered_evidence=(
+                            [
+                                dict(
+                                    label="E1",
+                                    id="source-native-id",
+                                    root="scope-bound-root",
+                                    scope="scope-" + q,
+                                    observed_at="2023-12-31",
+                                    offset_encoding="original-utf8-bytes",
+                                    source_start=0,
+                                    source_end=len(
+                                        "Answer present in exact original bytes".encode(
+                                            "utf-8"
+                                        )
+                                    ),
+                                    excerpt="Answer present in exact original bytes",
+                                )
+                            ]
+                            if literal
+                            else []
+                        ),
                     ),
                 )
             oracle.append(o)
-            raw_empty.append(dict(
-                phase=phase, question_id=q, family=families[q],
-                status="succeeded", evidence_count=0,
-                receipt=dict(receipt, delivered_evidence=[]),
-            ))
-            scored_empty.append(dict(
-                phase=phase, question_id=q, family=families[q],
-                status="succeeded",
-                diagnostic_answer_f1=0.0 if answerable else None,
-            ))
-            ceiling.append(dict(
-                phase=phase, question_id=q,
-                source_family=families[q],
-                weak_native_support_resolved=answerable,
-                native_source_unanswerable=not answerable,
-                native_support_available_in_pool=available if answerable else None,
-                frozen_selected_native_support=chosen if answerable else None,
-                native_weak_support_not_window_entailment=True,
-            ))
+            raw_empty.append(
+                dict(
+                    phase=phase,
+                    question_id=q,
+                    family=families[q],
+                    status="succeeded",
+                    evidence_count=0,
+                    receipt=dict(receipt, delivered_evidence=[]),
+                )
+            )
+            scored_empty.append(
+                dict(
+                    phase=phase,
+                    question_id=q,
+                    family=families[q],
+                    status="succeeded",
+                    diagnostic_answer_f1=0.0 if answerable else None,
+                )
+            )
+            ceiling.append(
+                dict(
+                    phase=phase,
+                    question_id=q,
+                    source_family=families[q],
+                    weak_native_support_resolved=answerable,
+                    native_source_unanswerable=not answerable,
+                    native_support_available_in_pool=available if answerable else None,
+                    frozen_selected_native_support=chosen if answerable else None,
+                    native_weak_support_not_window_entailment=True,
+                )
+            )
     assert eligible == 25
-    return (plan, original, oracle, raw_empty,
-            dict(results=scored_empty, planned_controls=32,
-                 production_accepted=False),
-            dict(decisions=ceiling))
+    return (
+        plan,
+        original,
+        oracle,
+        raw_empty,
+        dict(results=scored_empty, planned_controls=32, production_accepted=False),
+        dict(decisions=ceiling),
+    )
 
 
 class OracleCapacityTests(unittest.TestCase):
     def test_all_32_classified_and_only_eight_have_literal_reference(self):
         receipt = reference_reader_capacity(*fixture())
         self.assertEqual(receipt["original_fixed_question_count"], 32)
-        self.assertEqual(receipt["actual_oracle_statuses"],
-                         {"succeeded": 15, "unavailable": 17})
         self.assertEqual(
-            receipt["per_original_native_source_coverage"][
-                "native-support-chosen"]["planned"], 13
+            receipt["actual_oracle_statuses"], {"succeeded": 15, "unavailable": 17}
         )
         self.assertEqual(
-            sum(r["oracle_literal_reference_available"]
-                for r in receipt["per_original_native_source_coverage"].values()), 8
+            receipt["per_original_native_source_coverage"]["native-support-chosen"][
+                "planned"
+            ],
+            13,
+        )
+        self.assertEqual(
+            sum(
+                r["oracle_literal_reference_available"]
+                for r in receipt["per_original_native_source_coverage"].values()
+            ),
+            8,
         )
         self.assertFalse(receipt["independently_reviewed_sufficient_context"])
         self.assertFalse(receipt["production_accepted"])
@@ -137,7 +178,8 @@ class OracleCapacityTests(unittest.TestCase):
         span["source_end"] += 7
         report = reference_reader_capacity(*args)
         row = next(
-            item for item in report["rows"]
+            item
+            for item in report["rows"]
             if item["question_id"] == literal["question_id"]
         )
         self.assertEqual(row["no_evidence_token_f1"], 0.0)
@@ -147,8 +189,9 @@ class OracleCapacityTests(unittest.TestCase):
 
     def test_oracle_f1_is_observed_only_where_reference_was_found(self):
         receipt = reference_reader_capacity(*fixture())
-        row = receipt["per_original_native_source_coverage"][
-            "native-support-chosen"]["comparisons"]["oracle_minus_frozen"]
+        row = receipt["per_original_native_source_coverage"]["native-support-chosen"][
+            "comparisons"
+        ]["oracle_minus_frozen"]
         self.assertEqual(row["compared"], 8)
         self.assertEqual(row["omitted"], 5)
         self.assertAlmostEqual(row["compared_mean"], 0.6)
@@ -164,15 +207,17 @@ class OracleCapacityTests(unittest.TestCase):
             elif kind == "duplicate":
                 args[2][-1] = dict(args[2][0])
             else:
-                obj = next(x for x in args[2]
-                           if x["oracle_kind"] == "native-source-literal-span")
+                obj = next(
+                    x
+                    for x in args[2]
+                    if x["oracle_kind"] == "native-source-literal-span"
+                )
                 obj["receipt"]["delivered_evidence"] = []
             with self.subTest(kind=kind), self.assertRaises(AuditError):
                 reference_reader_capacity(*args)
 
     def test_prompt_or_model_or_native_question_drift_reject(self):
-        for name in ("generator_identity", "generator_profile",
-                     "observable_query"):
+        for name in ("generator_identity", "generator_profile", "observable_query"):
             args = fixture()
             changed = next(x for x in args[2] if x["status"] == "succeeded")
             if name == "observable_query":
@@ -185,8 +230,9 @@ class OracleCapacityTests(unittest.TestCase):
     def test_utf8_offsets_source_scope_and_future_time_fail_closed(self):
         for corruption in ("byte-offset", "scope", "future", "invalid-time", "root"):
             args = fixture()
-            oracle = next(x for x in args[2]
-                          if x["oracle_kind"] == "native-source-literal-span")
+            oracle = next(
+                x for x in args[2] if x["oracle_kind"] == "native-source-literal-span"
+            )
             passage = oracle["receipt"]["delivered_evidence"][0]
             if corruption == "byte-offset":
                 passage["source_end"] += 1
@@ -203,8 +249,7 @@ class OracleCapacityTests(unittest.TestCase):
 
     def test_unanswerable_cannot_be_promoted_to_positive_oracle(self):
         args = fixture()
-        obj = next(x for x in args[2]
-                   if x["oracle_kind"] == "annotated-unanswerable")
+        obj = next(x for x in args[2] if x["oracle_kind"] == "annotated-unanswerable")
         obj["oracle_kind"] = "native-source-literal-span"
         with self.assertRaises(AuditError):
             reference_reader_capacity(*args)
@@ -224,8 +269,7 @@ class OracleCapacityTests(unittest.TestCase):
         args[4]["results"][0]["status"] = "failed"
         args[4]["results"][0]["diagnostic_answer_f1"] = None
         receipt = reference_reader_capacity(*args)
-        matched = next(x for x in receipt["rows"]
-                       if x["question_id"] == "select-0")
+        matched = next(x for x in receipt["rows"] if x["question_id"] == "select-0")
         self.assertIsNone(matched["oracle_minus_empty"])
         self.assertIsNone(matched["frozen_minus_empty"])
         self.assertFalse(receipt["production_accepted"])

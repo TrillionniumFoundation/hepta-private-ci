@@ -46,7 +46,9 @@ class FrozenShardedStageTests(unittest.TestCase):
             self.assertNotEqual(a["original_stage_sha256"], b["original_stage_sha256"])
             self.assertNotEqual(a["staging_seconds"], b["staging_seconds"])
             for root in roots:
-                self.assertNotIn("seconds", json.loads((root / "stage.json").read_text()))
+                self.assertNotIn(
+                    "seconds", json.loads((root / "stage.json").read_text())
+                )
                 self.assertTrue((root / "stage-observation.json").is_file())
 
     def test_tampered_inventory_and_nonfinite_time_fail_closed(self):
@@ -81,7 +83,9 @@ class FrozenShardedStageTests(unittest.TestCase):
             for phase in ("calibration", "evaluation"):
                 for case in range(8):
                     for part in range(2):
-                        folder = root / "shards" / phase / f"memory-{phase}-{case}-{part}"
+                        folder = (
+                            root / "shards" / phase / f"memory-{phase}-{case}-{part}"
+                        )
                         folder.mkdir(parents=True)
                         original_stage(folder, 40.0 + case / 10 + part / 100)
                         normalize(folder)
@@ -101,7 +105,9 @@ class FrozenShardedStageTests(unittest.TestCase):
             self.assertEqual(report["phases"]["evaluation"]["hosts"], 16)
             self.assertEqual(len(report["staging_observation_sha256"]), 32)
             self.assertFalse(report["production_accepted"])
-            broken = root / "shards/evaluation/memory-evaluation-0-0/stage-observation.json"
+            broken = (
+                root / "shards/evaluation/memory-evaluation-0-0/stage-observation.json"
+            )
             broken.write_text("{}")
             with self.assertRaises(ValueError):
                 verify(root)

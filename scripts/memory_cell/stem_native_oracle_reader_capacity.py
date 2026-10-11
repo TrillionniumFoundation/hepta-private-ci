@@ -26,8 +26,10 @@ def _index(rows, expected, label):
     found = {}
     for row in rows:
         key = row["phase"], row["question_id"]
-        require(key in expected and key not in found,
-                "duplicate, unknown or unregistered " + label)
+        require(
+            key in expected and key not in found,
+            "duplicate, unknown or unregistered " + label,
+        )
         found[key] = row
     require(set(found) == expected, "incomplete 32-question " + label)
     return found
@@ -41,15 +43,18 @@ def _score(row, name):
     score = row.get(name)
     if score is None:
         return None
-    require(type(score) in (float, int) and math.isfinite(score)
-            and 0 <= score <= 1, "invalid Reader diagnostic F1")
+    require(
+        type(score) in (float, int) and math.isfinite(score) and 0 <= score <= 1,
+        "invalid Reader diagnostic F1",
+    )
     return score
 
 
 def _aligned_reader(frozen, other):
     a, b = frozen["receipt"], other["receipt"]
     require(
-        isinstance(a, dict) and isinstance(b, dict)
+        isinstance(a, dict)
+        and isinstance(b, dict)
         and bool(a.get("generator_identity"))
         and bool(a.get("generator_profile"))
         and a["generator_identity"] == b.get("generator_identity")
@@ -59,8 +64,10 @@ def _aligned_reader(frozen, other):
         and a["observable_query"].get("identity") == frozen["question_id"],
         "different Reader weights, prompt or native question in comparison",
     )
-    require(isinstance(b.get("delivered_evidence"), list),
-            "reader reference receipt lacks actual delivered evidence")
+    require(
+        isinstance(b.get("delivered_evidence"), list),
+        "reader reference receipt lacks actual delivered evidence",
+    )
 
 
 def _difference(a, b):
@@ -68,15 +75,16 @@ def _difference(a, b):
 
 
 def reference_reader_capacity(
-    plan, original_scored, oracle_rows, empty_raw,
-    empty_scored, native_ceiling,
+    plan,
+    original_scored,
+    oracle_rows,
+    empty_raw,
+    empty_scored,
+    native_ceiling,
 ):
     """Compare frozen top-1, empty Reader and answer-literal reference on 32 rows."""
     questions = plan["questions"]
-    expected = {
-        (phase, qid) for phase in PHASES
-        for qid in questions[phase]
-    }
+    expected = {(phase, qid) for phase in PHASES for qid in questions[phase]}
     require(
         len(expected) == 32
         and all(len(questions[p]) == 8 for p in PHASES)
@@ -84,8 +92,7 @@ def reference_reader_capacity(
         "registered fixed Reader comparison cohort changed",
     )
     frozen_rows = [
-        r for r in original_scored
-        if r["stage"] == 48 and r["arm"] == "frozen_rerank"
+        r for r in original_scored if r["stage"] == 48 and r["arm"] == "frozen_rerank"
     ]
     frozen = _index(frozen_rows, expected, "frozen policy")
     oracle = _index(oracle_rows, expected, "privileged oracle")
@@ -101,13 +108,14 @@ def reference_reader_capacity(
     observed_kinds = Counter()
     for key in sorted(expected):
         phase, qid = key
-        f, o, e, z, n = (
-            frozen[key], oracle[key], empty[key], zero[key], coverage[key]
-        )
+        f, o, e, z, n = (frozen[key], oracle[key], empty[key], zero[key], coverage[key])
         require(
             f["status"] == "succeeded"
-            and f["family"] == e["family"] == z["family"]
-            == n["source_family"] == plan["question_families"][qid]
+            and f["family"]
+            == e["family"]
+            == z["family"]
+            == n["source_family"]
+            == plan["question_families"][qid]
             and e["status"] == z["status"]
             and e.get("evidence_count") == 0
             and o.get("oracle_kind") in KINDS
@@ -126,20 +134,23 @@ def reference_reader_capacity(
             or o["oracle_kind"] == "annotated-unanswerable",
             "unanswerable native question provided a literal answer oracle",
         )
-        require(o["status"] in ("succeeded", "failed", "unavailable"),
-                "unknown oracle attempt state")
+        require(
+            o["status"] in ("succeeded", "failed", "unavailable"),
+            "unknown oracle attempt state",
+        )
         if o["status"] == "unavailable":
             require(
-                o["oracle_kind"] in (
-                    "unresolved-reference", "no-admitted-literal-reference-span"
-                ) and not any(k in o for k in ("answer", "receipt", "diagnostic_f1")),
+                o["oracle_kind"]
+                in ("unresolved-reference", "no-admitted-literal-reference-span")
+                and not any(k in o for k in ("answer", "receipt", "diagnostic_f1")),
                 "absent reference attempt manufactured an answer",
             )
         if o["status"] == "succeeded":
             require(
-                o["oracle_kind"] in (
-                    "native-source-literal-span", "annotated-unanswerable"
-                ) and isinstance(o.get("answer"), str) and bool(o["answer"].strip()),
+                o["oracle_kind"]
+                in ("native-source-literal-span", "annotated-unanswerable")
+                and isinstance(o.get("answer"), str)
+                and bool(o["answer"].strip()),
                 "unsupported or missing privileged Oracle answer",
             )
             _aligned_reader(f, o)
@@ -147,8 +158,7 @@ def reference_reader_capacity(
             if o["oracle_kind"] == "native-source-literal-span":
                 require(
                     len(provided) == 1
-                    and provided[0].get("offset_encoding")
-                    == "original-utf8-bytes"
+                    and provided[0].get("offset_encoding") == "original-utf8-bytes"
                     and provided[0].get("label") == "E1",
                     "literal-answer privileged reference not source-bound",
                 )
@@ -159,13 +169,13 @@ def reference_reader_capacity(
                     source.get("excerpt"),
                 )
                 require(
-                    type(source_start) is int and type(source_end) is int
+                    type(source_start) is int
+                    and type(source_end) is int
                     and 0 <= source_start < source_end <= 100_000_000
                     and isinstance(excerpt, str)
                     and 0 < len(excerpt.encode("utf-8", "strict")) <= 4096
-                    and source_end - source_start == len(
-                        excerpt.encode("utf-8", "strict")
-                    )
+                    and source_end - source_start
+                    == len(excerpt.encode("utf-8", "strict"))
                     and isinstance(source.get("root"), str)
                     and bool(source["root"])
                     and isinstance(source.get("id"), str)
@@ -182,8 +192,10 @@ def reference_reader_capacity(
                 require(provided == [], "native abstention Oracle received evidence")
         if e["status"] == "succeeded":
             _aligned_reader(f, e)
-            require(e["receipt"]["delivered_evidence"] == [],
-                    "zero-evidence Reader received a source")
+            require(
+                e["receipt"]["delivered_evidence"] == [],
+                "zero-evidence Reader received a source",
+            )
         require(
             e["status"] in ("succeeded", "failed")
             and o["status"] in ("succeeded", "unavailable", "failed"),
@@ -197,34 +209,42 @@ def reference_reader_capacity(
         if e["status"] != "succeeded":
             require(empty_f1 is None, "failed zero-evidence Reader scored")
         observed_kinds[o["oracle_kind"]] += 1
-        bucketed[_bucket(n)].append(dict(
-            phase=phase, question_id=qid,
-            source_family=plan["question_families"][qid],
-            oracle_kind=o["oracle_kind"], oracle_status=o["status"],
-            no_evidence_status=e["status"],
-            frozen_token_f1=original_f1,
-            oracle_token_f1=oracle_f1,
-            no_evidence_token_f1=empty_f1,
-            oracle_minus_frozen=_difference(oracle_f1, original_f1),
-            oracle_minus_empty=_difference(oracle_f1, empty_f1),
-            frozen_minus_empty=_difference(original_f1, empty_f1),
-            oracle_selected_with_target_answer=True,
-            oracle_sufficient_evidence_independently_certified=False,
-        ))
+        bucketed[_bucket(n)].append(
+            dict(
+                phase=phase,
+                question_id=qid,
+                source_family=plan["question_families"][qid],
+                oracle_kind=o["oracle_kind"],
+                oracle_status=o["status"],
+                no_evidence_status=e["status"],
+                frozen_token_f1=original_f1,
+                oracle_token_f1=oracle_f1,
+                no_evidence_token_f1=empty_f1,
+                oracle_minus_frozen=_difference(oracle_f1, original_f1),
+                oracle_minus_empty=_difference(oracle_f1, empty_f1),
+                frozen_minus_empty=_difference(original_f1, empty_f1),
+                oracle_selected_with_target_answer=True,
+                oracle_sufficient_evidence_independently_certified=False,
+            )
+        )
     outputs = {}
     for kind in BUCKETS:
         rows = bucketed[kind]
         n = len(rows)
         deltas = {}
-        for field in ("oracle_minus_frozen", "oracle_minus_empty",
-                      "frozen_minus_empty"):
+        for field in (
+            "oracle_minus_frozen",
+            "oracle_minus_empty",
+            "frozen_minus_empty",
+        ):
             values = [row[field] for row in rows if row[field] is not None]
             total, missing = math.fsum(values), n - len(values)
             deltas[field] = dict(
-                compared=len(values), omitted=missing,
+                compared=len(values),
+                omitted=missing,
                 compared_mean=(total / len(values) if values else None),
                 all_planned_delta_bounds=(
-                    [(total-missing)/n, (total+missing)/n] if n else None
+                    [(total - missing) / n, (total + missing) / n] if n else None
                 ),
                 positive_pairs=sum(v > 0 for v in values),
                 negative_pairs=sum(v < 0 for v in values),
@@ -239,24 +259,30 @@ def reference_reader_capacity(
             oracle_native_abstention=sum(
                 row["oracle_kind"] == "annotated-unanswerable" for row in rows
             ),
-            oracle_unavailable=sum(row["oracle_status"] == "unavailable"
-                                   for row in rows),
-            oracle_execution_failed=sum(row["oracle_status"] == "failed"
-                                        for row in rows),
+            oracle_unavailable=sum(
+                row["oracle_status"] == "unavailable" for row in rows
+            ),
+            oracle_execution_failed=sum(
+                row["oracle_status"] == "failed" for row in rows
+            ),
             comparisons=deltas,
             evidence_sufficiency_not_adjudicated=True,
         )
     return dict(
         schema="hepta.stem-answer-dependent-oracle-reader-diagnostic.v1",
         original_fixed_question_count=len(expected),
-        actual_oracle_statuses=dict(sorted(
-            Counter(x["oracle_status"] for rows in bucketed.values()
-                    for x in rows).items()
-        )),
+        actual_oracle_statuses=dict(
+            sorted(
+                Counter(
+                    x["oracle_status"] for rows in bucketed.values() for x in rows
+                ).items()
+            )
+        ),
         oracle_kind_census=dict(sorted(observed_kinds.items())),
         per_original_native_source_coverage=outputs,
-        rows=[dict(native_source_bucket=k, **row)
-              for k in BUCKETS for row in bucketed[k]],
+        rows=[
+            dict(native_source_bucket=k, **row) for k in BUCKETS for row in bucketed[k]
+        ],
         independently_reviewed_sufficient_context=False,
         answer_literal_reference_is_privileged=True,
         real_model_calls_added=0,

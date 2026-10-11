@@ -16,8 +16,15 @@ SCHEMA = "hepta.memory-strong-rag.stage-observation.v1"
 IDENTITY = "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
 REVISION = "82f42baa094a9600e39ccd80d34058aeeb3abbc1"
 FIELDS = {
-    "tier", "repository", "revision", "inventory_sha256", "publisher_sha256",
-    "seconds", "model_file_bytes", "research_only", "production_accepted",
+    "tier",
+    "repository",
+    "revision",
+    "inventory_sha256",
+    "publisher_sha256",
+    "seconds",
+    "model_file_bytes",
+    "research_only",
+    "production_accepted",
 }
 
 
@@ -26,7 +33,11 @@ def sha(raw):
 
 
 def plain(path):
-    if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size <= 4 * 1024 * 1024:
+    if (
+        path.is_symlink()
+        or not path.is_file()
+        or not 0 < path.stat().st_size <= 4 * 1024 * 1024
+    ):
         raise ValueError("bounded original model metadata required")
     return path.read_bytes()
 
@@ -43,11 +54,15 @@ def decode(raw):
     def constant(_):
         raise ValueError("nonfinite model metadata")
 
-    return json.loads(raw.decode("utf-8"), object_pairs_hook=unique, parse_constant=constant)
+    return json.loads(
+        raw.decode("utf-8"), object_pairs_hook=unique, parse_constant=constant
+    )
 
 
 def encode(value):
-    return (json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode()
+    return (
+        json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+    ).encode()
 
 
 def save_new(path, raw):
@@ -124,13 +139,23 @@ def verify(archive):
                 observation_bytes = plain(folder / "stage-observation.json")
                 observation = decode(observation_bytes)
                 if set(observation) != {
-                    "schema", "original_stage_sha256", "canonical_stage_sha256",
-                    "staging_seconds", "reader_identity", "inventory_sha256",
-                    "publisher_sha256", "measured", "production_accepted",
+                    "schema",
+                    "original_stage_sha256",
+                    "canonical_stage_sha256",
+                    "staging_seconds",
+                    "reader_identity",
+                    "inventory_sha256",
+                    "publisher_sha256",
+                    "measured",
+                    "production_accepted",
                 }:
                     raise ValueError("incomplete model staging cost census")
                 seconds = observation["staging_seconds"]
-                if type(seconds) not in (float, int) or not math.isfinite(seconds) or seconds < 0:
+                if (
+                    type(seconds) not in (float, int)
+                    or not math.isfinite(seconds)
+                    or seconds < 0
+                ):
                     raise ValueError("invalid original staging time")
                 if (
                     observation["schema"] != SCHEMA
@@ -152,7 +177,9 @@ def verify(archive):
                     sha(encode(timed)) != observation["original_stage_sha256"]
                     or pins.get("stage.json") != current_sha
                 ):
-                    raise ValueError("source stage timing does not reproduce measured bytes")
+                    raise ValueError(
+                        "source stage timing does not reproduce measured bytes"
+                    )
                 if canonical_sha is None:
                     canonical_sha = current_sha
                 elif canonical_sha != current_sha:
@@ -167,7 +194,9 @@ def verify(archive):
         "schema": "hepta.memory-strong-rag.stage-cost-census.v1",
         "canonical_stage_sha256": canonical_sha,
         "phases": totals,
-        "all_staging_seconds_sum": sum(x["staging_seconds_sum"] for x in totals.values()),
+        "all_staging_seconds_sum": sum(
+            x["staging_seconds_sum"] for x in totals.values()
+        ),
         "staging_observation_sha256": receipts,
         "not_concurrent_wall_time": True,
         "independent_semantic_review": False,

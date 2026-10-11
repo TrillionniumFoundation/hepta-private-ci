@@ -24,11 +24,13 @@ def _pick_window(query, pool):
     terms = set(re.findall(r"\w+", query.content.lower()))
     if not pool.windows:
         return None
+
     def key(i):
         window = pool.windows[i]
         tokens = re.findall(r"\w+", window.text.lower())
         overlap = len(terms.intersection(tokens)) / math.sqrt(max(1, len(tokens)))
         return (-overlap, window.start, window.identity())
+
     return min(range(len(pool.windows)), key=key)
 
 
@@ -42,9 +44,14 @@ def make_publisher_source_cases(plan, queries, source_for):
     cohorts = plan["questions"]
     expected = [(phase, qid) for phase in PHASES for qid in cohorts[phase]]
     if (
-        tuple(plan["arms"]) != (
-            "frozen_rerank", "prototype", "linear", "gated",
-            "lineage_lora_gated", "independent_lora_gated",
+        tuple(plan["arms"])
+        != (
+            "frozen_rerank",
+            "prototype",
+            "linear",
+            "gated",
+            "lineage_lora_gated",
+            "independent_lora_gated",
         )
         or set(cohorts) != {"train", *PHASES}
         or any(len(cohorts[p]) != 8 for p in PHASES)
@@ -78,7 +85,8 @@ def make_publisher_source_cases(plan, queries, source_for):
             raise ValueError("invalid published source-only annotation")
         summary = dict(
             schema="hepta.stem-publisher-source-reader-plan.v1",
-            phase=phase, question_id=qid,
+            phase=phase,
+            question_id=qid,
             source_family=benchmark.families[q.family],
             query_sha256=digest(asdict(q)),
             original_dataset_sha256=benchmark.source_sha256,
@@ -96,9 +104,7 @@ def make_publisher_source_cases(plan, queries, source_for):
             summary.update(status="unavailable", reason="unresolved-native-support")
         else:
             history, temporal = admit_history(q, benchmark.history(q), revoked=set())
-            admissible = {
-                source_id(d.identity) for d in history
-            }
+            admissible = {source_id(d.identity) for d in history}
             published = {source_id(s) for s in target.evidence}
             matches = sorted(
                 (doc for doc in history if source_id(doc.identity) in published),
@@ -113,7 +119,10 @@ def make_publisher_source_cases(plan, queries, source_for):
             else:
                 doc = matches[0]
                 pool = candidate_windows(
-                    (doc,), q, revoked=set(), budget=budget,
+                    (doc,),
+                    q,
+                    revoked=set(),
+                    budget=budget,
                     profile="query_windows",
                 )
                 selected = _pick_window(q, pool)
@@ -124,14 +133,20 @@ def make_publisher_source_cases(plan, queries, source_for):
                     )
                 else:
                     window = pool.windows[selected]
-                    evidence = (dict(
-                        label="E1", id=window.identity(),
-                        original_id=window.source_id, root=window.root,
-                        scope=window.scope, excerpt=window.text,
-                        source_start=window.start, source_end=window.end,
-                        observed_at=window.observed_at,
-                        inspected_sha256=window.inspected_sha256,
-                    ),)
+                    evidence = (
+                        dict(
+                            label="E1",
+                            id=window.identity(),
+                            original_id=window.source_id,
+                            root=window.root,
+                            scope=window.scope,
+                            excerpt=window.text,
+                            source_start=window.start,
+                            source_end=window.end,
+                            observed_at=window.observed_at,
+                            inspected_sha256=window.inspected_sha256,
+                        ),
+                    )
                     summary.update(
                         status="planned",
                         matched_published_source_count=len(matches),
@@ -141,12 +156,10 @@ def make_publisher_source_cases(plan, queries, source_for):
                         selected_window_end=window.end,
                         selected_window_bytes=len(window.text.encode("utf-8")),
                         projected_source_prefix_bytes=pool.scanned_bytes,
-                        unscanned_source_characters=len(doc.content) -
-                        len(pool.inspected[0]["excerpt"]),
+                        unscanned_source_characters=len(doc.content)
+                        - len(pool.inspected[0]["excerpt"]),
                         selected_pool_digest=pool.seal(),
-                        published_native_source_ids_sha256=digest(
-                            sorted(published)
-                        ),
+                        published_native_source_ids_sha256=digest(sorted(published)),
                         admitted_history_size=temporal["admitted_count"],
                         excluded_future_history_size=temporal["excluded_future_count"],
                     )

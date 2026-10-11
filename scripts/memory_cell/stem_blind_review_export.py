@@ -20,17 +20,19 @@ ZIP_SHA = "be3393f448993451c7860e8867e28a79f5fb7f95d5773f79ed55b30d12a84776"
 
 def _write(path, value):
     with path.open("x", encoding="utf-8") as stream:
-        json.dump(value, stream, ensure_ascii=False, sort_keys=True,
-                  indent=2, allow_nan=False)
+        json.dump(
+            value, stream, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False
+        )
         stream.write("\n")
 
 
 def _jsonl(path, records):
     with path.open("x", encoding="utf-8") as stream:
         for row in records:
-            stream.write(json.dumps(
-                row, sort_keys=True, ensure_ascii=False, allow_nan=False
-            ) + "\n")
+            stream.write(
+                json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False)
+                + "\n"
+            )
 
 
 def export_worklist(archive_path: Path, dest: Path):
@@ -74,14 +76,16 @@ def export_worklist(archive_path: Path, dest: Path):
                 reviewer_attestation=None,
                 independently_authenticated=False,
             )
-            for case in worklist for condition in case["conditions"]
+            for case in worklist
+            for condition in case["conditions"]
         ]
         _jsonl(dest / "blind-question-answer-worklist.jsonl", worklist)
         _jsonl(dest / "unsigned-reviewer-return-template.jsonl", template)
         _write(dest / "private-owner-case-mapping.json", private)
         summary = dict(
             schema="hepta.stem-blind-review-handoff.v1",
-            source_commit=SOURCE, source_tree=TREE,
+            source_commit=SOURCE,
+            source_tree=TREE,
             source_artifact_zip_sha256=archive.sha256,
             verified_artifact_manifest_entries=archive.manifest_entries,
             original_frozen_question_count=32,

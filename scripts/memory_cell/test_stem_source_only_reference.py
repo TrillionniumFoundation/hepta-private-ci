@@ -12,20 +12,23 @@ def fixture():
     from selector_windows import WindowBudget
 
     phases = ("select", "retention", "test", "transfer")
-    questions = {
-        phase: [f"{phase}-{i}" for i in range(8)]
-        for phase in phases
-    }
+    questions = {phase: [f"{phase}-{i}" for i in range(8)] for phase in phases}
     questions["train"] = [f"train-{i}" for i in range(48)]
     queries, docs, targets = {}, [], {}
     for phase in phases:
         for i, qid in enumerate(questions[phase]):
             q = Question(
-                qid, "native-family", "scope-" + qid,
-                "When did the orchardberry shipment leave?", "2024-01-01",
+                qid,
+                "native-family",
+                "scope-" + qid,
+                "When did the orchardberry shipment leave?",
+                "2024-01-01",
             )
             doc = Document(
-                "source-" + qid, "root-" + qid, q.scope, "session",
+                "source-" + qid,
+                "root-" + qid,
+                q.scope,
+                "session",
                 "2023-01-01",
                 "Unrelated context. " * 40
                 + "The orchardberry shipment left on Tuesday morning.",
@@ -33,19 +36,28 @@ def fixture():
             queries[qid] = q
             docs.append(doc)
             targets[qid] = Target(
-                "Do not read this reference answer", "fixture",
-                (doc.identity,), False,
+                "Do not read this reference answer",
+                "fixture",
+                (doc.identity,),
+                False,
             )
     corpus = Benchmark(
-        "locomo", "a" * 64, tuple(docs),
-        tuple(queries.values()), targets,
+        "locomo",
+        "a" * 64,
+        tuple(docs),
+        tuple(queries.values()),
+        targets,
         {"native-family": "family-pinned"},
     )
     plan = dict(
         questions=questions,
         arms=[
-            "frozen_rerank", "prototype", "linear", "gated",
-            "lineage_lora_gated", "independent_lora_gated",
+            "frozen_rerank",
+            "prototype",
+            "linear",
+            "gated",
+            "lineage_lora_gated",
+            "independent_lora_gated",
         ],
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
         dataset_sha256={"locomo": "a" * 64},
@@ -56,18 +68,21 @@ def fixture():
 
 
 class PublisherSourceOnlyTests(unittest.TestCase):
-    def test_exact_32_question_source_window_can_be_supplied_with_original_offsets(self):
+    def test_exact_32_question_source_window_can_be_supplied_with_original_offsets(
+        self,
+    ):
         plan, queries, source_for = fixture()
         rows = make_publisher_source_cases(plan, queries, source_for)
         self.assertEqual(len(rows), 32)
         self.assertTrue(all(meta["status"] == "planned" for _, _, meta in rows))
         self.assertTrue(all(len(evidence) == 1 for _, evidence, _ in rows))
         for q, evidence, meta in rows:
-            doc = next(d for d in source_for[q.identity].documents
-                       if d.scope == q.scope)
+            doc = next(
+                d for d in source_for[q.identity].documents if d.scope == q.scope
+            )
             x = evidence[0]
             self.assertEqual(
-                doc.content.encode()[x["source_start"]:x["source_end"]].decode(),
+                doc.content.encode()[x["source_start"] : x["source_end"]].decode(),
                 x["excerpt"],
             )
             self.assertEqual(x["scope"], q.scope)
@@ -78,13 +93,16 @@ class PublisherSourceOnlyTests(unittest.TestCase):
     def test_answer_string_cannot_be_read_during_source_selection(self):
         plan, queries, source_for = fixture()
         corpus = source_for["select-0"]
+
         class OpaqueSourceOnlyTarget:
             unanswerable = False
             evidence = ("source-select-0",)
             unresolved_evidence = ()
+
             @property
             def answer(self):
                 raise AssertionError("gold answer inspected during planning")
+
         corpus.targets["select-0"] = OpaqueSourceOnlyTarget()
         rows = make_publisher_source_cases(plan, queries, source_for)
         self.assertEqual(rows[0][2]["status"], "planned")
@@ -137,7 +155,9 @@ class PublisherSourceOnlyTests(unittest.TestCase):
             corpus.targets["select-0"], evidence=("missing-source-id",)
         )
         rows = make_publisher_source_cases(plan, queries, source_for)
-        self.assertEqual(rows[0][2]["reason"], "published-support-source-not-admissible")
+        self.assertEqual(
+            rows[0][2]["reason"], "published-support-source-not-admissible"
+        )
         self.assertEqual(rows[0][1], ())
         self.assertEqual(len(rows), 32)
 

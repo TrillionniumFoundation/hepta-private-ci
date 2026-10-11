@@ -8,8 +8,14 @@ from unittest.mock import patch
 
 from stem_source_only_reference import make_publisher_source_cases
 from stem_source_only_reader_trial import (
-    ARMS, PHASES, SOURCE, TREE, ZIP_SHA256,
-    READER_INVENTORY, evaluate, pinned_original,
+    ARMS,
+    PHASES,
+    SOURCE,
+    TREE,
+    ZIP_SHA256,
+    READER_INVENTORY,
+    evaluate,
+    pinned_original,
 )
 from test_stem_source_only_reference import fixture
 
@@ -30,30 +36,41 @@ class FakeOriginalArchive:
                 for qid in plan["questions"][phase]:
                     q = queries[qid]
                     for arm in ARMS:
-                        self.rows.append(dict(
-                            stage=stage, phase=phase,
-                            question_id=qid, arm=arm, status="succeeded",
-                            family="family-pinned", answer="Frozen answer",
-                            receipt=dict(
-                                generator_identity="model-sha",
-                                generator_profile="prompt-sha",
-                                observable_query=asdict(q),
-                                delivered_evidence=[dict(label="E1")],
-                            ),
-                        ))
+                        self.rows.append(
+                            dict(
+                                stage=stage,
+                                phase=phase,
+                                question_id=qid,
+                                arm=arm,
+                                status="succeeded",
+                                family="family-pinned",
+                                answer="Frozen answer",
+                                receipt=dict(
+                                    generator_identity="model-sha",
+                                    generator_profile="prompt-sha",
+                                    observable_query=asdict(q),
+                                    delivered_evidence=[dict(label="E1")],
+                                ),
+                            )
+                        )
         for phase in PHASES:
             for qid in plan["questions"][phase]:
                 q = queries[qid]
-                self.empty.append(dict(
-                    phase=phase, question_id=qid, status="succeeded",
-                    evidence_count=0, answer="No evidence",
-                    receipt=dict(
-                        generator_identity="model-sha",
-                        generator_profile="prompt-sha",
-                        observable_query=asdict(q),
-                        delivered_evidence=[],
-                    ),
-                ))
+                self.empty.append(
+                    dict(
+                        phase=phase,
+                        question_id=qid,
+                        status="succeeded",
+                        evidence_count=0,
+                        answer="No evidence",
+                        receipt=dict(
+                            generator_identity="model-sha",
+                            generator_profile="prompt-sha",
+                            observable_query=asdict(q),
+                            delivered_evidence=[],
+                        ),
+                    )
+                )
 
     def read(self, name):
         return {
@@ -77,38 +94,45 @@ def fake_capacity_data():
     archive = FakeOriginalArchive()
     plan, frozen, zero = pinned_original(archive)
     planned = make_publisher_source_cases(
-        plan, archive.queries, archive.sources,
+        plan,
+        archive.queries,
+        archive.sources,
     )
     results = []
     coverage = []
     for q, evidence, meta in planned:
-        results.append(dict(
-            phase=meta["phase"], question_id=q.identity,
-            source_family=meta["source_family"],
-            status="succeeded",
-            answer="Reader evidence source",
-            receipt=dict(
-                generator_identity="model-sha",
-                generator_profile="prompt-sha",
-                observable_query=asdict(q),
-                delivered_evidence=list(evidence),
-            ),
-        ))
-        coverage.append(dict(
-            phase=meta["phase"], question_id=q.identity,
-            source_family=meta["source_family"],
-            native_source_unanswerable=False,
-            weak_native_support_resolved=True,
-            native_support_available_in_pool=True,
-            frozen_selected_native_support=True,
-        ))
+        results.append(
+            dict(
+                phase=meta["phase"],
+                question_id=q.identity,
+                source_family=meta["source_family"],
+                status="succeeded",
+                answer="Reader evidence source",
+                receipt=dict(
+                    generator_identity="model-sha",
+                    generator_profile="prompt-sha",
+                    observable_query=asdict(q),
+                    delivered_evidence=list(evidence),
+                ),
+            )
+        )
+        coverage.append(
+            dict(
+                phase=meta["phase"],
+                question_id=q.identity,
+                source_family=meta["source_family"],
+                native_source_unanswerable=False,
+                weak_native_support_resolved=True,
+                native_support_available_in_pool=True,
+                frozen_selected_native_support=True,
+            )
+        )
     ceiling = dict(
         schema="hepta.stem-post-policy-native-source-ceiling.v1",
-        production_accepted=False, decisions=coverage,
+        production_accepted=False,
+        decisions=coverage,
     )
-    targets = {
-        qid: corpus.targets[qid] for qid, corpus in archive.sources.items()
-    }
+    targets = {qid: corpus.targets[qid] for qid, corpus in archive.sources.items()}
     return archive, [plan, planned, frozen, zero, results, targets, ceiling]
 
 
@@ -128,10 +152,13 @@ class SourceOnlyReaderTrialTests(unittest.TestCase):
         receipt = self.evaluate(inputs)
         self.assertEqual(receipt["matched_original_questions"], 32)
         self.assertEqual(receipt["phase_counts"]["test"]["model_answers"], 8)
-        self.assertEqual(receipt["phase_counts"]["transfer"]["matched_answer_f1_pairs"], 8)
         self.assertEqual(
-            receipt["by_original_weak_native_source_coverage"]
-            ["native-support-chosen"]["conditional_token_f1_gain_mean"],
+            receipt["phase_counts"]["transfer"]["matched_answer_f1_pairs"], 8
+        )
+        self.assertEqual(
+            receipt["by_original_weak_native_source_coverage"]["native-support-chosen"][
+                "conditional_token_f1_gain_mean"
+            ],
             1.0,
         )
         self.assertFalse(receipt["production_accepted"])
@@ -151,8 +178,9 @@ class SourceOnlyReaderTrialTests(unittest.TestCase):
         ):
             _, entries = fake_capacity_data()
             entries[4][0]["receipt"][field] = replacement
-            with self.subTest(field=field), self.assertRaisesRegex(
-                ValueError, "model/prompt/source drift"
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(ValueError, "model/prompt/source drift"),
             ):
                 self.evaluate(entries)
 
@@ -192,15 +220,19 @@ class SourceOnlyReaderTrialTests(unittest.TestCase):
             corpus.targets[q.identity], unanswerable=True
         )
         fresh = make_publisher_source_cases(
-            archive.plan, archive.queries, archive.sources,
+            archive.plan,
+            archive.queries,
+            archive.sources,
         )
         self.assertEqual(fresh[0][2]["reason"], "native-unanswerable")
         self.assertEqual(fresh[0][1], ())
         entries[1] = fresh
         entries[4][0] = dict(
-            phase=fresh[0][2]["phase"], question_id=q.identity,
+            phase=fresh[0][2]["phase"],
+            question_id=q.identity,
             source_family=fresh[0][2]["source_family"],
-            status="unavailable", reason="native-unanswerable",
+            status="unavailable",
+            reason="native-unanswerable",
         )
         entries[5][q.identity] = corpus.targets[q.identity]
         entries[-1]["decisions"][0].update(
@@ -212,16 +244,22 @@ class SourceOnlyReaderTrialTests(unittest.TestCase):
         receipt = self.evaluate(entries)
         self.assertEqual(receipt["phase_counts"]["select"]["unavailable"], 1)
         self.assertEqual(
-            receipt["by_original_weak_native_source_coverage"]
-            ["native-unanswerable"]["planned"], 1,
+            receipt["by_original_weak_native_source_coverage"]["native-unanswerable"][
+                "planned"
+            ],
+            1,
         )
-        self.assertTrue(receipt["source_window_selected_from_question_not_target_answer"])
+        self.assertTrue(
+            receipt["source_window_selected_from_question_not_target_answer"]
+        )
 
     def test_fake_success_for_unavailable_source_is_a_hard_error(self):
         _, entries = fake_capacity_data()
         q, ev, summary = entries[1][0]
         entries[1][0] = (
-            q, (), dict(summary, status="unavailable", reason="native-unanswerable")
+            q,
+            (),
+            dict(summary, status="unavailable", reason="native-unanswerable"),
         )
         with self.assertRaisesRegex(ValueError, "cohort identity"):
             self.evaluate(entries)

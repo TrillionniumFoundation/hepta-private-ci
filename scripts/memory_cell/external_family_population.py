@@ -26,7 +26,13 @@ MAX_PER_FAMILY = 8
 
 
 def canonical(value):
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode()
 
 
 def digest(value):
@@ -48,13 +54,20 @@ class PublicCorpus:
     @classmethod
     def from_native(cls, benchmark):
         # Explicitly project AWAY targets/QA labels before building the plan.
-        return cls(benchmark.name, benchmark.source_sha256,
-                   tuple(benchmark.documents), tuple(benchmark.questions),
-                   dict(benchmark.families))
+        return cls(
+            benchmark.name,
+            benchmark.source_sha256,
+            tuple(benchmark.documents),
+            tuple(benchmark.questions),
+            dict(benchmark.families),
+        )
 
 
 def _corpus_rows(corpus):
-    if corpus.name not in SOURCE_PINS or corpus.source_sha256 != SOURCE_PINS[corpus.name]:
+    if (
+        corpus.name not in SOURCE_PINS
+        or corpus.source_sha256 != SOURCE_PINS[corpus.name]
+    ):
         raise ValueError("published native dataset bytes are not pinned")
     if len(corpus.questions) < 10 or len(corpus.documents) < 10:
         raise ValueError("insufficient published questions or history")
@@ -67,15 +80,26 @@ def _corpus_rows(corpus):
         if q.family not in corpus.families:
             raise ValueError("unregistered native source-family proxy")
         family_for[q.identity] = corpus.families[q.family]
-    groups = sorted(set(family_for.values()), key=lambda f: (_rank(corpus.name, corpus.source_sha256, f), f))
+    groups = sorted(
+        set(family_for.values()),
+        key=lambda f: (_rank(corpus.name, corpus.source_sha256, f), f),
+    )
     if len(groups) < 10:
         raise ValueError("fewer than ten family-disjoint published groups")
     n_train = max(1, math.floor(len(groups) * 0.6))
     n_select = max(1, math.floor(len(groups) * 0.2))
     if len(groups) - n_train - n_select < 2:
         raise ValueError("insufficient held-out family groups")
-    assignment = {g: ("train" if i < n_train else "selection" if i < n_train + n_select else "evaluation")
-                  for i, g in enumerate(groups)}
+    assignment = {
+        g: (
+            "train"
+            if i < n_train
+            else "selection"
+            if i < n_train + n_select
+            else "evaluation"
+        )
+        for i, g in enumerate(groups)
+    }
     # Reject a document root crossing any split. Native families already union
     # reused LongMemEval sessions; this is an additional defensive check.
     scope_family = {}
@@ -102,24 +126,36 @@ def _corpus_rows(corpus):
     for q in questions.values():
         by_group[family_for[q.identity]].append(q)
     for group in groups:
-        members = sorted(by_group[group], key=lambda q: (_rank(corpus.name, q.identity), q.identity))
+        members = sorted(
+            by_group[group], key=lambda q: (_rank(corpus.name, q.identity), q.identity)
+        )
         for q in members[:MAX_PER_FAMILY]:
             documents = sorted(scope_docs[q.scope], key=lambda d: d.identity)
-            document_census = [(d.identity, d.root, d.observed_at, sha256(d.content.encode()).hexdigest()) for d in documents]
+            document_census = [
+                (
+                    d.identity,
+                    d.root,
+                    d.observed_at,
+                    sha256(d.content.encode()).hexdigest(),
+                )
+                for d in documents
+            ]
             if any(d.scope != q.scope for d in documents):
                 raise ValueError("cross-scope native document")
-            buckets[assignment[group]].append(dict(
-                dataset=corpus.name,
-                question_id=q.identity,
-                native_family=q.family,
-                family_proxy_digest=digest([corpus.name, group]),
-                question=q.content,
-                observation_time=q.observed_at,
-                scope=q.scope,
-                source_ids=[d.identity for d in documents],
-                source_roots_digest=digest(sorted({d.root for d in documents})),
-                source_census_sha256=digest(document_census),
-            ))
+            buckets[assignment[group]].append(
+                dict(
+                    dataset=corpus.name,
+                    question_id=q.identity,
+                    native_family=q.family,
+                    family_proxy_digest=digest([corpus.name, group]),
+                    question=q.content,
+                    observation_time=q.observed_at,
+                    scope=q.scope,
+                    source_ids=[d.identity for d in documents],
+                    source_roots_digest=digest(sorted({d.root for d in documents})),
+                    source_census_sha256=digest(document_census),
+                )
+            )
     return buckets, {
         "source_sha256": corpus.source_sha256,
         "total_questions": len(questions),
@@ -130,7 +166,6 @@ def _corpus_rows(corpus):
         "complete_history_sources": len(docs),
         "source_root_proxies": len(root_split),
     }
-
 
 
 def source_only_family_capacity(corpora, *, source_commit):
@@ -158,9 +193,7 @@ def source_only_family_capacity(corpora, *, source_commit):
             raise ValueError("duplicated native source or question identity")
         if any(q.family not in corpus.families for q in corpus.questions):
             raise ValueError("missing original native source-family proxy")
-        groups = {
-            corpus.families[q.family] for q in corpus.questions
-        }
+        groups = {corpus.families[q.family] for q in corpus.questions}
         n = len(groups)
         train_n = math.floor(n * 0.6)
         selection_n = math.floor(n * 0.2)
@@ -180,7 +213,9 @@ def source_only_family_capacity(corpora, *, source_commit):
             actual_native_family_proxy_count=n,
             minimum_required_family_proxies=10,
             split_family_capacity=dict(
-                train=train_n, selection=selection_n, evaluation=evaluation_n,
+                train=train_n,
+                selection=selection_n,
+                evaluation=evaluation_n,
             ),
             family_capacity_sufficient=capacity,
             shortfall_from_ten=max(0, 10 - n),
@@ -213,7 +248,9 @@ def prepare_population(corpora, *, source_commit, limits=None):
     if set(corpora) != set(SOURCE_PINS) or any(corpora[k].name != k for k in corpora):
         raise ValueError("both pinned external benchmarks required")
     limits = dict(LIMITS if limits is None else limits)
-    if set(limits) != set(SPLITS) or any(type(v) is not int or v < 1 or v > 1000 for v in limits.values()):
+    if set(limits) != set(SPLITS) or any(
+        type(v) is not int or v < 1 or v > 1000 for v in limits.values()
+    ):
         raise ValueError("unregistered split budget")
     # A shared native root across two purportedly distinct benchmarks is not
     # independently sourced, even if the provider's names differ.
@@ -236,10 +273,14 @@ def prepare_population(corpora, *, source_commit, limits=None):
     for split in SPLITS:
         buckets = {}
         for row in all_rows[split]:
-            buckets.setdefault((row["dataset"], row["family_proxy_digest"]), []).append(row)
+            buckets.setdefault((row["dataset"], row["family_proxy_digest"]), []).append(
+                row
+            )
         order = sorted(buckets, key=lambda x: (_rank(split, *x), x))
         for key in order:
-            buckets[key].sort(key=lambda row: (_rank(row["question_id"]), row["question_id"]))
+            buckets[key].sort(
+                key=lambda row: (_rank(row["question_id"]), row["question_id"])
+            )
         selected = []
         for index in range(MAX_PER_FAMILY):
             for key in order:
@@ -249,12 +290,17 @@ def prepare_population(corpora, *, source_commit, limits=None):
             raise ValueError("missing either dataset in a family split")
         final[split] = selected
     qids = [row["question_id"] for rows in final.values() for row in rows]
-    family_pairs = [(row["dataset"], row["family_proxy_digest"], split)
-                    for split, rows in final.items() for row in rows]
+    family_pairs = [
+        (row["dataset"], row["family_proxy_digest"], split)
+        for split, rows in final.items()
+        for row in rows
+    ]
     if len(qids) != len(set(qids)):
         raise ValueError("question ID crosses published corpora or partitions")
     for dataset, family, split in family_pairs:
-        if any(ds == dataset and f == family and s != split for ds, f, s in family_pairs):
+        if any(
+            ds == dataset and f == family and s != split for ds, f, s in family_pairs
+        ):
             raise ValueError("near-family assignment crosses split")
     return dict(
         schema=PROFILE,
@@ -274,7 +320,6 @@ def prepare_population(corpora, *, source_commit, limits=None):
     )
 
 
-
 def preflight_and_prepare(corpora, *, source_commit, output):
     """Emit a tamper-evident source-only failure receipt before opening labels.
 
@@ -284,7 +329,8 @@ def preflight_and_prepare(corpora, *, source_commit, output):
     if not isinstance(output, Path) or output.exists():
         raise ValueError("fresh immutable output location required")
     capacity = source_only_family_capacity(
-        corpora, source_commit=source_commit,
+        corpora,
+        source_commit=source_commit,
     )
     path = output.with_name(output.name + "-capacity.json")
     with path.open("xb") as stream:
@@ -354,15 +400,24 @@ def main():
     parser.add_argument("--source-commit", required=True)
     args = parser.parse_args()
     from native import load
+
     corpora = {}
     benchmarks = {}
     for kind, path in (("locomo", args.locomo), ("longmemeval", args.longmemeval)):
-        loaded = load(path, kind, SOURCE_PINS[kind], allow_unresolved_evidence=True,
-                      session_conflicts="retain-versioned", invalid_history="quarantine-question")
+        loaded = load(
+            path,
+            kind,
+            SOURCE_PINS[kind],
+            allow_unresolved_evidence=True,
+            session_conflicts="retain-versioned",
+            invalid_history="quarantine-question",
+        )
         benchmarks[kind] = loaded
         corpora[kind] = PublicCorpus.from_native(loaded)
     public = preflight_and_prepare(
-        corpora, source_commit=args.source_commit, output=args.output,
+        corpora,
+        source_commit=args.source_commit,
+        output=args.output,
     )
     selected = {
         row["question_id"] for rows in public["splits"].values() for row in rows
@@ -375,6 +430,7 @@ def main():
             for qid, target in benchmark.targets.items()
             if qid in selected
         }
+
     print(json.dumps(publish_and_seal(public, labels, args.output), sort_keys=True))
 
 

@@ -36,13 +36,13 @@ def _bucket(row):
 
 
 def stratify_original_reader(
-    plan, original_policies, native_ceiling, original_empty_reader,
+    plan,
+    original_policies,
+    native_ceiling,
+    original_empty_reader,
     paired_reader_report,
 ):
-    expected = {
-        (phase, qid) for phase in PHASES
-        for qid in plan["questions"][phase]
-    }
+    expected = {(phase, qid) for phase in PHASES for qid in plan["questions"][phase]}
     require(
         len(expected) == 32
         and paired_reader_report["matched_pairs"] == 32
@@ -56,28 +56,38 @@ def stratify_original_reader(
         if row["stage"] != 48 or row["arm"] != "frozen_rerank":
             continue
         key = row["phase"], row["question_id"]
-        require(key in expected and key not in frozen, "missing/duplicate frozen Reader")
+        require(
+            key in expected and key not in frozen, "missing/duplicate frozen Reader"
+        )
         frozen[key] = row
     ceiling = {}
     for row in native_ceiling["decisions"]:
         key = row["phase"], row["question_id"]
-        require(key in expected and key not in ceiling,
-                "missing/duplicate native source ceiling")
+        require(
+            key in expected and key not in ceiling,
+            "missing/duplicate native source ceiling",
+        )
         ceiling[key] = row
     empty = {}
     for row in original_empty_reader:
         key = row["phase"], row["question_id"]
-        require(key in expected and key not in empty,
-                "missing/duplicate actual empty-evidence Reader call")
+        require(
+            key in expected and key not in empty,
+            "missing/duplicate actual empty-evidence Reader call",
+        )
         empty[key] = row
     paired = {}
     for row in paired_reader_report["pairs"]:
         key = row["phase"], row["question_id"]
-        require(key in expected and key not in paired,
-                "missing/duplicate frozen-vs-empty matched pair")
+        require(
+            key in expected and key not in paired,
+            "missing/duplicate frozen-vs-empty matched pair",
+        )
         paired[key] = row
-    require(all(set(x) == expected for x in (frozen, ceiling, empty, paired)),
-            "complete original 32-question matched Reader audit required")
+    require(
+        all(set(x) == expected for x in (frozen, ceiling, empty, paired)),
+        "complete original 32-question matched Reader audit required",
+    )
     out = defaultdict(list)
     for key in sorted(expected):
         f, n, e, p = frozen[key], ceiling[key], empty[key], paired[key]
@@ -100,12 +110,9 @@ def stratify_original_reader(
         if empty_ok:
             require(
                 isinstance(er, dict)
-                and receipt.get("generator_identity")
-                == er.get("generator_identity")
-                and receipt.get("generator_profile")
-                == er.get("generator_profile")
-                and receipt.get("observable_query")
-                == er.get("observable_query")
+                and receipt.get("generator_identity") == er.get("generator_identity")
+                and receipt.get("generator_profile") == er.get("generator_profile")
+                and receipt.get("observable_query") == er.get("observable_query")
                 and bool(receipt.get("generator_identity"))
                 and bool(receipt.get("generator_profile"))
                 and er["delivered_evidence"] == [],
@@ -153,13 +160,16 @@ def stratify_original_reader(
                 "unscored Reader control falsely marked complete",
             )
             values = (None, None, None)
-        out[_bucket(n)].append(dict(
-            phase=key[0], question_id=key[1],
-            source_family=n["source_family"],
-            paired_f1_delta=values[2],
-            original_frozen_f1=values[0],
-            zero_evidence_f1=values[1],
-        ))
+        out[_bucket(n)].append(
+            dict(
+                phase=key[0],
+                question_id=key[1],
+                source_family=n["source_family"],
+                paired_f1_delta=values[2],
+                original_frozen_f1=values[0],
+                zero_evidence_f1=values[1],
+            )
+        )
     summaries = {}
     for bucket in BUCKETS:
         rows = out[bucket]
@@ -174,11 +184,13 @@ def stratify_original_reader(
             failed_or_unscorable_reader_pairs=missing,
             original_reader_f1_mean_on_scored=(
                 math.fsum(x["original_frozen_f1"] for x in scored) / observed
-                if observed else None
+                if observed
+                else None
             ),
             empty_reader_f1_mean_on_scored=(
                 math.fsum(x["zero_evidence_f1"] for x in scored) / observed
-                if observed else None
+                if observed
+                else None
             ),
             source_exposure_vs_empty_f1_delta_mean_on_scored=(
                 total / observed if observed else None

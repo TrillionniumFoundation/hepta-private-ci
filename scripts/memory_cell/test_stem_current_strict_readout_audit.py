@@ -5,7 +5,10 @@ import unittest
 
 from stem_audit_archive import AuditError
 from stem_current_strict_readout_audit import (
-    ARMS, PHASES, STAGES, evaluate_strict_run,
+    ARMS,
+    PHASES,
+    STAGES,
+    evaluate_strict_run,
 )
 
 
@@ -13,8 +16,11 @@ def fixtures():
     cohort = {"train": [f"train-{n}" for n in range(48)]}
     cohort.update({phase: [f"{phase}-{n}" for n in range(8)] for phase in PHASES})
     all_qids = [q for ids in cohort.values() for q in ids]
-    routes = {q: ("general" if n % 2 == 0 else "temporal")
-              for ids in cohort.values() for n, q in enumerate(ids)}
+    routes = {
+        q: ("general" if n % 2 == 0 else "temporal")
+        for ids in cohort.values()
+        for n, q in enumerate(ids)
+    }
     families = {q: "train-source" for q in cohort["train"]}
     for phase in ("select", "retention", "test"):
         for n, q in enumerate(cohort[phase]):
@@ -22,8 +28,11 @@ def fixtures():
     for q in cohort["transfer"]:
         families[q] = "longmemeval-C"
     plan = dict(
-        arms=list(ARMS), curriculum_attempted_examples=list(STAGES),
-        questions=cohort, routes=routes, question_families=families,
+        arms=list(ARMS),
+        curriculum_attempted_examples=list(STAGES),
+        questions=cohort,
+        routes=routes,
+        question_families=families,
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
     )
     scored, raw = [], []
@@ -40,7 +49,9 @@ def fixtures():
             else:
                 available = frozen_correct = False
             availability[phase, q] = dict(
-                phase=phase, question_id=q, source_family=families[q],
+                phase=phase,
+                question_id=q,
+                source_family=families[q],
                 weak_native_support_resolved=is_answerable,
                 native_source_unanswerable=not is_answerable,
                 native_support_available_in_pool=available if is_answerable else None,
@@ -57,26 +68,43 @@ def fixtures():
                 good = availability[phase, q]
                 for arm in ARMS:
                     row = dict(
-                        stage=stage, phase=phase, question_id=q, arm=arm,
-                        status="succeeded", family=families[q], cell=routes[q],
-                        pool_digest="fixed-pool-" + q, selected=0,
+                        stage=stage,
+                        phase=phase,
+                        question_id=q,
+                        arm=arm,
+                        status="succeeded",
+                        family=families[q],
+                        cell=routes[q],
+                        pool_digest="fixed-pool-" + q,
+                        selected=0,
                         answer="Same pinned Reader answer",
-                        receipt=dict(generator_identity="frozen-reader",
-                                     generator_profile="unchanged-prompt"),
+                        receipt=dict(
+                            generator_identity="frozen-reader",
+                            generator_profile="unchanged-prompt",
+                        ),
                     )
                     raw.append(row)
-                    scored.append(dict(
-                        row,
-                        source_choice_correct=(
-                            int(good["frozen_selected_native_support"])
-                            if good["weak_native_support_resolved"] else 0
-                        ),
-                    ))
+                    scored.append(
+                        dict(
+                            row,
+                            source_choice_correct=(
+                                int(good["frozen_selected_native_support"])
+                                if good["weak_native_support_resolved"]
+                                else 0
+                            ),
+                        )
+                    )
     report = dict(
-        plan=plan, logical_policy_attempts=576,
-        production_accepted=False, semantic_citation_precision=None,
-        reader=dict(actual_attempts=48, actual_successes=48,
-                    actual_failed_attempts=0, cache_hits=543),
+        plan=plan,
+        logical_policy_attempts=576,
+        production_accepted=False,
+        semantic_citation_precision=None,
+        reader=dict(
+            actual_attempts=48,
+            actual_successes=48,
+            actual_failed_attempts=0,
+            cache_hits=543,
+        ),
         no_evidence_reader_report=dict(planned_controls=32),
         no_evidence_reader_call_accounting=dict(
             policy_and_oracle_reader=dict(actual_attempts=48),
@@ -102,18 +130,31 @@ class StrictSourceGateTests(unittest.TestCase):
     def test_one_test_gain_is_not_transfer_gain(self):
         plan, raw, scored, report, ceiling = fixtures()
         target = next(
-            a for a in raw if a["stage"] == 48 and a["phase"] == "test"
-            and a["question_id"] == "test-5" and a["arm"] == "gated"
+            a
+            for a in raw
+            if a["stage"] == 48
+            and a["phase"] == "test"
+            and a["question_id"] == "test-5"
+            and a["arm"] == "gated"
         )
         target["selected"] = 1
         target["answer"] = "New fixed Reader output"
-        changed = next(a for a in scored if a["stage"] == 48
-                       and a["phase"] == "test" and a["question_id"] == "test-5"
-                       and a["arm"] == "gated")
+        changed = next(
+            a
+            for a in scored
+            if a["stage"] == 48
+            and a["phase"] == "test"
+            and a["question_id"] == "test-5"
+            and a["arm"] == "gated"
+        )
         changed.update(deepcopy(target), source_choice_correct=1)
         data = evaluate_strict_run(plan, raw, scored, report, ceiling)
-        self.assertEqual(data["final_test_transfer_comparison"]["gated"]["test"][
-            "native_document_support_gains"], 1)
+        self.assertEqual(
+            data["final_test_transfer_comparison"]["gated"]["test"][
+                "native_document_support_gains"
+            ],
+            1,
+        )
         self.assertFalse(data["any_arm_positive_on_both_test_and_transfer"])
         self.assertFalse(data["production_accepted"])
 
@@ -121,9 +162,14 @@ class StrictSourceGateTests(unittest.TestCase):
         cases = ("answer", "selected", "source_choice_correct", "same-choice-fake-gain")
         for mode in cases:
             plan, raw, scored, report, ceiling = fixtures()
-            q = next(x for x in scored if x["stage"] == 48
-                     and x["phase"] == "test" and x["question_id"] == "test-5"
-                     and x["arm"] == "gated")
+            q = next(
+                x
+                for x in scored
+                if x["stage"] == 48
+                and x["phase"] == "test"
+                and x["question_id"] == "test-5"
+                and x["arm"] == "gated"
+            )
             if mode == "same-choice-fake-gain":
                 q["source_choice_correct"] = 1
             elif mode == "source_choice_correct":
@@ -142,8 +188,11 @@ class StrictSourceGateTests(unittest.TestCase):
             ("generator_profile", "different-prompt"),
         ):
             plan, raw, scored, report, ceiling = fixtures()
-            target = next(x for x in raw if x["stage"] == 48
-                          and x["phase"] == "test" and x["arm"] == "linear")
+            target = next(
+                x
+                for x in raw
+                if x["stage"] == 48 and x["phase"] == "test" and x["arm"] == "linear"
+            )
             if field == "pool_digest":
                 target[field] = new
             else:
@@ -182,9 +231,9 @@ class StrictSourceGateTests(unittest.TestCase):
             evaluate_strict_run(p, raw, scored, report, ceiling)
 
         p, raw, scored, report, ceiling = fixtures()
-        report["no_evidence_reader_call_accounting"][
-            "policy_and_oracle_reader"
-        ]["actual_attempts"] = 33
+        report["no_evidence_reader_call_accounting"]["policy_and_oracle_reader"][
+            "actual_attempts"
+        ] = 33
         with self.assertRaisesRegex(AuditError, "Oracle"):
             evaluate_strict_run(p, raw, scored, report, ceiling)
 

@@ -18,7 +18,10 @@ class SmolPilotTests(unittest.TestCase):
     def test_model_pin_is_the_historical_135m_not_the_qwen_reader(self):
         self.assertEqual(
             MODELS["smol-135m"],
-            ("HuggingFaceTB/SmolLM2-135M-Instruct", "12fd25f77366fa6b3b4b768ec3050bf629380bac"),
+            (
+                "HuggingFaceTB/SmolLM2-135M-Instruct",
+                "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+            ),
         )
         self.assertNotEqual(MODELS["smol-135m"], MODELS["qwen-3b"])
 
@@ -61,15 +64,27 @@ class SmolPilotTests(unittest.TestCase):
         steps = flow["jobs"]["write-and-read"]["steps"]
         names = [step.get("name", "") for step in steps]
         self.assertFalse(any("Prove source-only Qwen2.5-3B" in x for x in names))
-        write = next(x["run"] for x in steps if x.get("name", "").startswith("Write observed"))
+        write = next(
+            x["run"] for x in steps if x.get("name", "").startswith("Write observed")
+        )
         self.assertNotIn("--loss-backend supervised_positions", write)
         self.assertNotIn("--parity-receipt", write)
-        no_score = next(x["run"] for x in steps if "inapplicable Qwen-only" in x.get("name", ""))
-        for literal in ("'available': False", "'unknown_not_zero': True", "'production_accepted': False"):
+        no_score = next(
+            x["run"] for x in steps if "inapplicable Qwen-only" in x.get("name", "")
+        )
+        for literal in (
+            "'available': False",
+            "'unknown_not_zero': True",
+            "'production_accepted': False",
+        ):
             self.assertIn(literal, no_score)
         self.assertLess(
-            names.index("New process reloads both committed modules before task exposure"),
-            names.index("Recompute seven-arm knowledge and policy effects from original answers"),
+            names.index(
+                "New process reloads both committed modules before task exposure"
+            ),
+            names.index(
+                "Recompute seven-arm knowledge and policy effects from original answers"
+            ),
         )
 
 

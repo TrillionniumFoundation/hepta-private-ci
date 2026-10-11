@@ -161,9 +161,7 @@ def _arm_stats(rows, arms):
             strict_success=sum(r["strict_task_success"] for r in arm_rows),
             support_covered=sum(r["required_sources_covered"] for r in arm_rows),
             input_tokens=sum(r["receipt"]["input_tokens"] for r in arm_rows),
-            generated_tokens=sum(
-                r["receipt"]["generated_tokens"] for r in arm_rows
-            ),
+            generated_tokens=sum(r["receipt"]["generated_tokens"] for r in arm_rows),
         )
     return grouped
 
@@ -176,9 +174,7 @@ def _check_stats(stats, report, *, field):
         for name, value in observed.items():
             key = "output_tokens" if name == "generated_tokens" else name
             if published[arm].get(key) != value:
-                raise ValueError(
-                    f"{arm} recorded {key} contradicts original results"
-                )
+                raise ValueError(f"{arm} recorded {key} contradicts original results")
 
 
 def _pairs(rows, left, right):
@@ -273,16 +269,12 @@ def assess_reproduced(
             c_graph["correct_with_full_program_declared_citations"]
             - c_simple["correct_with_full_program_declared_citations"]
         ),
-        organized_input_tokens_saved=(
-            simple["input_tokens"] - graph["input_tokens"]
-        ),
+        organized_input_tokens_saved=(simple["input_tokens"] - graph["input_tokens"]),
         organized_input_tokens_saved_per_question=(
             simple["input_tokens"] - graph["input_tokens"]
         )
         / 8,
-        calibration_leave_one_out_stable=loo[
-            "stable_to_one_calibration_case_removal"
-        ],
+        calibration_leave_one_out_stable=loo["stable_to_one_calibration_case_removal"],
         distinct_calibration_loo_choices=loo.get("distinct_choices"),
         mechanical_citation_coverage_not_semantic_entailment=True,
         independent_semantic_citation_precision=None,
@@ -336,9 +328,10 @@ def audit(original: Path, reader: Path, replay: Path):
         or policy["original_test_plan_sha256"] != PLAN_SHA
     ):
         raise ValueError("wrong original frozen policy")
-    if policy["raw_answers_sha256"] != hashlib.sha256(
-        generated["calibration/raw-answers.jsonl"]
-    ).hexdigest():
+    if (
+        policy["raw_answers_sha256"]
+        != hashlib.sha256(generated["calibration/raw-answers.jsonl"]).hexdigest()
+    ):
         raise ValueError("calibration answer pin changed")
     if (
         separate["calibration"]["attempts"] != 40
@@ -366,10 +359,7 @@ def audit(original: Path, reader: Path, replay: Path):
             raise ValueError("paired effect cannot be replayed from original answers")
     if test_report["formal_citation_chain"] != separate["formal_citation_chain"]:
         raise ValueError("independent formal citation replay mismatch")
-    if (
-        test_report["same_prompt_consistency"]
-        != separate["same_prompt_consistency"]
-    ):
+    if test_report["same_prompt_consistency"] != separate["same_prompt_consistency"]:
         raise ValueError("independent same-input repeatability replay mismatch")
     decision = assess_reproduced(
         _arm_stats(c_rows, CAL_ARMS),

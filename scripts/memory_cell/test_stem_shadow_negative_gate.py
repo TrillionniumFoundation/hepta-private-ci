@@ -4,7 +4,12 @@ from copy import deepcopy
 import unittest
 
 from stem_shadow_negative_gate import (
-    ARMS, CELLS, PHASES, STAGES, SHADOW_GRID, audit_shadow,
+    ARMS,
+    CELLS,
+    PHASES,
+    STAGES,
+    SHADOW_GRID,
+    audit_shadow,
 )
 from stem_audit_archive import AuditError
 
@@ -12,9 +17,12 @@ from stem_audit_archive import AuditError
 def fixture():
     questions = {"train": [f"train-{n}" for n in range(48)]}
     questions.update({p: [f"{p}-{n}" for n in range(8)] for p in PHASES})
-    routes = {qid: CELLS[n % 2] for p in questions for n, qid in enumerate(questions[p])}
+    routes = {
+        qid: CELLS[n % 2] for p in questions for n, qid in enumerate(questions[p])
+    }
     plan = dict(
-        questions=questions, routes=routes,
+        questions=questions,
+        routes=routes,
         curriculum_attempted_examples=list(STAGES),
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
     )
@@ -22,20 +30,27 @@ def fixture():
     for st in STAGES:
         for arm in ARMS:
             for cell in CELLS:
-                calibrations.append(dict(
-                    stage=st, arm=arm, cell=cell,
-                    status="succeeded",
-                    role="nonqualifying-train-only-shadow-scale",
-                    checkpoint_head_sha256="a" * 64,
-                    receipt=dict(
-                        stage=st, arm=arm, cell=cell, scale_grid=list(SHADOW_GRID),
-                        chosen_scale=8.0 if arm != "prototype" else 0.0,
-                        winner_chosen_from_train_only=True,
-                        all_test_and_transfer_answers_and_labels_unseen=True,
-                        no_new_reader_call=True,
-                        production_accepted=False,
-                    ),
-                ))
+                calibrations.append(
+                    dict(
+                        stage=st,
+                        arm=arm,
+                        cell=cell,
+                        status="succeeded",
+                        role="nonqualifying-train-only-shadow-scale",
+                        checkpoint_head_sha256="a" * 64,
+                        receipt=dict(
+                            stage=st,
+                            arm=arm,
+                            cell=cell,
+                            scale_grid=list(SHADOW_GRID),
+                            chosen_scale=8.0 if arm != "prototype" else 0.0,
+                            winner_chosen_from_train_only=True,
+                            all_test_and_transfer_answers_and_labels_unseen=True,
+                            no_new_reader_call=True,
+                            production_accepted=False,
+                        ),
+                    )
+                )
     decision = []
     report = {}
     for st in STAGES:
@@ -46,23 +61,32 @@ def fixture():
                     for qid in questions[phase]:
                         if routes[qid] != cell:
                             continue
-                        decision.append(dict(
-                            stage=st, arm=arm, cell=cell,
-                            phase=phase, question_id=qid,
-                            role="shadow-source-only-no-Reader-execution",
-                            status="succeeded",
-                            chosen_scale=8.0 if arm != "prototype" else 0.0,
-                            head_sha256="a" * 64,
-                            actual_reader_executions=0,
-                            native_targets_unread=True,
-                            selected_index=0, frozen_index=0,
-                            selected_source_id=qid + ":source",
-                            original_pool_digest="b" * 64,
-                        ))
+                        decision.append(
+                            dict(
+                                stage=st,
+                                arm=arm,
+                                cell=cell,
+                                phase=phase,
+                                question_id=qid,
+                                role="shadow-source-only-no-Reader-execution",
+                                status="succeeded",
+                                chosen_scale=8.0 if arm != "prototype" else 0.0,
+                                head_sha256="a" * 64,
+                                actual_reader_executions=0,
+                                native_targets_unread=True,
+                                selected_index=0,
+                                frozen_index=0,
+                                selected_source_id=qid + ":source",
+                                original_pool_digest="b" * 64,
+                            )
+                        )
                         count += 1
                     report[f"{st}/{arm}/{cell}/{phase}"] = dict(
-                        planned=count, successful_choices=count, failed_choices=0,
-                        source_scored=count, changed_source_top1=0,
+                        planned=count,
+                        successful_choices=count,
+                        failed_choices=0,
+                        source_scored=count,
+                        changed_source_top1=0,
                         shadow_weak_source_gains=0,
                         shadow_weak_source_regressions=0,
                         semantic_entailment_judged=False,
@@ -77,7 +101,8 @@ def fixture():
         production_accepted=False,
     )
     post = dict(
-        planned_shadow_choices=480, results=report,
+        planned_shadow_choices=480,
+        results=report,
         labels_opened_only_after_all_model_decisions=True,
         production_accepted=False,
     )
@@ -96,21 +121,32 @@ class NegativeGateTests(unittest.TestCase):
 
     def test_one_better_test_without_better_transfer_does_not_pass(self):
         plan, cal, decisions, provenance, report = fixture()
-        row = next(x for x in decisions if
-                   (x["stage"], x["arm"], x["phase"]) == (48, "gated", "test"))
+        row = next(
+            x
+            for x in decisions
+            if (x["stage"], x["arm"], x["phase"]) == (48, "gated", "test")
+        )
         row["selected_index"] = 1
         label = report["results"][f"48/gated/{row['cell']}/test"]
         label["changed_source_top1"] = 1
         label["shadow_weak_source_gains"] = 1
         data = audit_shadow(plan, cal, decisions, provenance, report)
         self.assertTrue(data["by_stage_arm"]["48/gated"]["source_only_rejection"])
-        self.assertEqual(data["by_stage_arm"]["48/gated"]["heldout_test"]["shadow_weak_source_gains"], 1)
+        self.assertEqual(
+            data["by_stage_arm"]["48/gated"]["heldout_test"][
+                "shadow_weak_source_gains"
+            ],
+            1,
+        )
 
     def test_hypothetical_two_phase_improvement_is_still_not_semantic_approval(self):
         plan, cal, decisions, provenance, report = fixture()
         for phase in ("test", "transfer"):
-            row = next(x for x in decisions if
-                       (x["stage"], x["arm"], x["phase"]) == (48, "gated", phase))
+            row = next(
+                x
+                for x in decisions
+                if (x["stage"], x["arm"], x["phase"]) == (48, "gated", phase)
+            )
             row["selected_index"] = 1
             label = report["results"][f"48/gated/{row['cell']}/{phase}"]
             label["changed_source_top1"] = 1

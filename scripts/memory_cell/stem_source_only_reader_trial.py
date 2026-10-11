@@ -26,23 +26,29 @@ TREE = "d280ba53070fb6457c04ff0d97fbb14ebbdbc3fb"
 ZIP_SHA256 = "1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8"
 READER_INVENTORY = "afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c"
 ARMS = (
-    "frozen_rerank", "prototype", "linear", "gated",
-    "lineage_lora_gated", "independent_lora_gated",
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
 )
 STAGES = (16, 32, 48)
 
 
 def write(path, record):
     with path.open("x", encoding="utf-8") as out:
-        json.dump(record, out, sort_keys=True, ensure_ascii=False,
-                  indent=2, allow_nan=False)
+        json.dump(
+            record, out, sort_keys=True, ensure_ascii=False, indent=2, allow_nan=False
+        )
         out.write("\n")
 
 
 def append(path, row):
     with path.open("a", encoding="utf-8") as out:
-        out.write(json.dumps(row, sort_keys=True, ensure_ascii=False,
-                             allow_nan=False) + "\n")
+        out.write(
+            json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n"
+        )
 
 
 def pinned_original(archive):
@@ -62,8 +68,11 @@ def pinned_original(archive):
         "frozen Reader or registered native protocol drift",
     )
     expected = {
-        (stage, phase, qid, arm) for stage in STAGES for phase in PHASES
-        for qid in plan["questions"][phase] for arm in ARMS
+        (stage, phase, qid, arm)
+        for stage in STAGES
+        for phase in PHASES
+        for qid in plan["questions"][phase]
+        for arm in ARMS
     }
     observed = {}
     for row in archive.jsonl("comparison/policy-predictions.jsonl"):
@@ -92,7 +101,8 @@ def pinned_original(archive):
     for row in archive.jsonl("comparison/reader-no-evidence.jsonl"):
         key = (row["phase"], row["question_id"])
         require(
-            key in frozen and key not in no_evidence
+            key in frozen
+            and key not in no_evidence
             and row["status"] in ("succeeded", "failed")
             and row["evidence_count"] == 0,
             "zero-context original Reader control corrupted",
@@ -108,14 +118,16 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
 
     expected = {(p, qid) for p in PHASES for qid in plan["questions"][p]}
     if (
-        len(planned) != 32 or len(observed) != 32
+        len(planned) != 32
+        or len(observed) != 32
         or not isinstance(targets, dict)
         or set(targets) != {qid for _, qid in expected}
     ):
         raise ValueError("incomplete original 32-case capacity comparison")
     cover = {}
     if (
-        native_ceiling.get("schema") != "hepta.stem-post-policy-native-source-ceiling.v1"
+        native_ceiling.get("schema")
+        != "hepta.stem-post-policy-native-source-ceiling.v1"
         or native_ceiling.get("production_accepted") is not False
     ):
         raise ValueError("not the original post-policy weak-source ceiling")
@@ -131,8 +143,11 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
     for (q, evidence, meta), row in zip(planned, observed, strict=True):
         key = (meta["phase"], q.identity)
         if (
-            key not in expected or key not in original or key not in empty
-            or row["question_id"] != q.identity or row["phase"] != meta["phase"]
+            key not in expected
+            or key not in original
+            or key not in empty
+            or row["question_id"] != q.identity
+            or row["phase"] != meta["phase"]
             or row["status"] not in ("succeeded", "failed", "unavailable")
             or (meta["status"] == "unavailable" and row["status"] != "unavailable")
             or (meta["status"] == "planned" and row["status"] == "unavailable")
@@ -143,11 +158,9 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
             raise ValueError("source-only Reader cohort identity mismatch")
         b, z = original[key], empty[key]
         c = cover[key]
-        if (
-            c["source_family"] != row["source_family"]
-            or bool(c["native_source_unanswerable"])
-               != bool(targets[q.identity].unanswerable)
-        ):
+        if c["source_family"] != row["source_family"] or bool(
+            c["native_source_unanswerable"]
+        ) != bool(targets[q.identity].unanswerable):
             raise ValueError("original weak-source support category drift")
         if c["native_source_unanswerable"]:
             bucket = "native-unanswerable"
@@ -191,16 +204,17 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
                 ):
                     raise ValueError("original no-evidence Reader condition drift")
                 zero_f1 = diagnose(z["answer"], targets[q.identity])
+
         def validated(value):
             if value is not None and (
                 type(value) not in (float, int)
-                or not math.isfinite(value) or not 0 <= value <= 1
+                or not math.isfinite(value)
+                or not 0 <= value <= 1
             ):
                 raise ValueError("nonfinite or invalid Reader answer-F1")
             return value
-        f1, original_f1, zero_f1 = (
-            validated(x) for x in (f1, original_f1, zero_f1)
-        )
+
+        f1, original_f1, zero_f1 = (validated(x) for x in (f1, original_f1, zero_f1))
         answer = row.get("answer", "")
         emitted_markers = len(re.findall(r"\[E[0-9]+\]", answer))
         comparison = dict(
@@ -208,19 +222,16 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
             original_frozen_source_bucket=bucket,
             source_family=meta["source_family"],
             outcome=row["status"],
-            published_support_window_was_delivered=(
-                row["status"] == "succeeded"
-            ),
+            published_support_window_was_delivered=(row["status"] == "succeeded"),
             result_answerable=not targets[q.identity].unanswerable,
             frozen_answer_token_f1=original_f1,
             source_only_reader_token_f1=f1,
             zero_evidence_token_f1=zero_f1,
             source_only_minus_frozen_f1=(
-                f1-original_f1 if f1 is not None and original_f1 is not None
-                else None
+                f1 - original_f1 if f1 is not None and original_f1 is not None else None
             ),
             source_only_minus_empty_f1=(
-                f1-zero_f1 if f1 is not None and zero_f1 is not None else None
+                f1 - zero_f1 if f1 is not None and zero_f1 is not None else None
             ),
             structural_citation_marker_count=emitted_markers,
             citation_entailment_independently_verified=False,
@@ -232,10 +243,13 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
         rows = report[phase]
         if len(rows) != 8:
             raise ValueError("missing preregistered Reader comparison phase")
-        diffs = [v["source_only_minus_frozen_f1"] for v in rows
-                 if v["source_only_minus_frozen_f1"] is not None]
+        diffs = [
+            v["source_only_minus_frozen_f1"]
+            for v in rows
+            if v["source_only_minus_frozen_f1"] is not None
+        ]
         n = len(rows)
-        missing = n-len(diffs)
+        missing = n - len(diffs)
         total = math.fsum(diffs)
         per_phase[phase] = dict(
             planned=n,
@@ -244,9 +258,10 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
             model_or_admission_failed=sum(v["outcome"] == "failed" for v in rows),
             matched_answer_f1_pairs=len(diffs),
             unscored_or_unavailable_pairs=missing,
-            source_only_minus_frozen_f1_mean=(total/len(diffs) if diffs else None),
+            source_only_minus_frozen_f1_mean=(total / len(diffs) if diffs else None),
             original_planned_f1_delta_bounds=[
-                (total-missing)/n, (total+missing)/n,
+                (total - missing) / n,
+                (total + missing) / n,
             ],
             structural_marker_count=sum(
                 v["structural_citation_marker_count"] for v in rows
@@ -255,10 +270,13 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
         )
     by_bucket = {}
     for bucket, rows in sorted(buckets.items()):
-        matched = [x["source_only_minus_frozen_f1"] for x in rows
-                   if x["source_only_minus_frozen_f1"] is not None]
+        matched = [
+            x["source_only_minus_frozen_f1"]
+            for x in rows
+            if x["source_only_minus_frozen_f1"] is not None
+        ]
         count = len(rows)
-        missing = count-len(matched)
+        missing = count - len(matched)
         total = math.fsum(matched)
         by_bucket[bucket] = dict(
             planned=count,
@@ -267,17 +285,17 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
             ),
             paired_answer_scored=len(matched),
             unsupported_or_unscored=missing,
-            conditional_token_f1_gain_mean=(
-                total/len(matched) if matched else None
-            ),
+            conditional_token_f1_gain_mean=(total / len(matched) if matched else None),
             all_planned_token_f1_gain_bounds=[
-                (total-missing)/count, (total+missing)/count,
+                (total - missing) / count,
+                (total + missing) / count,
             ],
             independently_certified_sufficient_evidence=False,
         )
     return dict(
         schema="hepta.stem-publisher-source-only-reader-evaluation.v2",
-        original_source=SOURCE, original_artifact_sha256=ZIP_SHA256,
+        original_source=SOURCE,
+        original_artifact_sha256=ZIP_SHA256,
         matched_original_questions=32,
         phase_counts=per_phase,
         by_original_weak_native_source_coverage=by_bucket,
@@ -297,8 +315,11 @@ def evaluate(plan, planned, original, empty, observed, targets, native_ceiling):
 def run(staged, original_artifact, output):
     from selector_answering import FrozenAnswerGenerator, GENERATION, SYSTEM
     from stem_cell_runtime import ExactReaderCache
+
     staged, original_artifact, output = (
-        Path(staged), Path(original_artifact), Path(output)
+        Path(staged),
+        Path(original_artifact),
+        Path(output),
     )
     archive = PinnedArchive(original_artifact, ZIP_SHA256)
     try:
@@ -310,7 +331,8 @@ def run(staged, original_artifact, output):
         )
         benchmarks = {
             name: load(
-                staged / (name + ".json"), name,
+                staged / (name + ".json"),
+                name,
                 plan["dataset_sha256"][name],
                 allow_unresolved_evidence=True,
                 session_conflicts="retain-versioned",
@@ -320,43 +342,52 @@ def run(staged, original_artifact, output):
             for name in ("locomo", "longmemeval")
         }
         queries, source_for = {}, {}
-        registered = {qid for phase in PHASES
-                      for qid in plan["questions"][phase]}
+        registered = {qid for phase in PHASES for qid in plan["questions"][phase]}
         for source in benchmarks.values():
             for q in source.questions:
                 if q.identity in registered:
-                    require(q.identity not in queries,
-                            "duplicate native question in publisher source run")
+                    require(
+                        q.identity not in queries,
+                        "duplicate native question in publisher source run",
+                    )
                     queries[q.identity], source_for[q.identity] = q, source
         require(set(queries) == registered, "unknown native original question")
         planned = make_publisher_source_cases(plan, queries, source_for)
         for q, _, _ in planned:
             original_query = frozen[
-                next(phase for phase in PHASES if q.identity in plan["questions"][phase]),
+                next(
+                    phase for phase in PHASES if q.identity in plan["questions"][phase]
+                ),
                 q.identity,
             ]["receipt"]["observable_query"]
-            require(original_query == asdict(q),
-                    "Reader native question bytes differ from original run")
+            require(
+                original_query == asdict(q),
+                "Reader native question bytes differ from original run",
+            )
         output.mkdir(parents=True, exist_ok=False)
-        write(output / "precommitted-plan.json", dict(
-            original_source=SOURCE, original_tree=TREE,
-            original_zip_sha256=archive.sha256,
-            original_manifest_entries=archive.manifest_entries,
-            frozen_reader_inventory=READER_INVENTORY,
-            original_question_count=32,
-            actual_source_only_model_calls_not_yet_known=True,
-            original_policy_answer_bytes_unchanged=True,
-            published_support_source_ids_privileged=True,
-            standard_answer_text_entered_window_selector=False,
-            production_accepted=False,
-        ))
+        write(
+            output / "precommitted-plan.json",
+            dict(
+                original_source=SOURCE,
+                original_tree=TREE,
+                original_zip_sha256=archive.sha256,
+                original_manifest_entries=archive.manifest_entries,
+                frozen_reader_inventory=READER_INVENTORY,
+                original_question_count=32,
+                actual_source_only_model_calls_not_yet_known=True,
+                original_policy_answer_bytes_unchanged=True,
+                published_support_source_ids_privileged=True,
+                standard_answer_text_entered_window_selector=False,
+                production_accepted=False,
+            ),
+        )
         for _, _, metadata in planned:
             append(output / "source-guided-plans.jsonl", metadata)
         start = time.perf_counter()
         generator = FrozenAnswerGenerator(
             staged / "reader", expected_inventory=READER_INVENTORY
         )
-        cold = time.perf_counter()-start
+        cold = time.perf_counter() - start
         reference = next(iter(frozen.values()))["receipt"]
         require(
             generator.identity == reference["generator_identity"]
@@ -368,7 +399,8 @@ def run(staged, original_artifact, output):
         for q, evidence, meta in planned:
             row = dict(
                 schema="hepta.stem-publisher-source-reader-output.v1",
-                phase=meta["phase"], question_id=q.identity,
+                phase=meta["phase"],
+                question_id=q.identity,
                 source_family=meta["source_family"],
                 source_plan_sha256=digest(meta),
                 role="privileged-source-only-no-answer-span-control",
@@ -378,11 +410,12 @@ def run(staged, original_artifact, output):
             else:
                 try:
                     answer, receipt = session.answer(
-                        q, evidence, "publisher-source/" + q.identity,
+                        q,
+                        evidence,
+                        "publisher-source/" + q.identity,
                         revoked=set(),
                     )
-                    row.update(status="succeeded", answer=answer,
-                               receipt=receipt)
+                    row.update(status="succeeded", answer=answer, receipt=receipt)
                 except Exception as error:
                     row.update(
                         status="failed",
@@ -393,16 +426,19 @@ def run(staged, original_artifact, output):
             observed.append(row)
         if not generator.quarantined:
             generator.verify_frozen()
-        target_view = {
-            qid: source_for[qid].targets[qid] for qid in registered
-        }
+        target_view = {qid: source_for[qid].targets[qid] for qid in registered}
         # Gold answer strings read ONLY here, after full original and source
         # Reader outcome journals were persisted.
         original_weak_source_ceiling = archive.json(
             "comparison/post-policy-native-source-ceiling.json"
         )
         scored = evaluate(
-            plan, planned, frozen, empty, observed, target_view,
+            plan,
+            planned,
+            frozen,
+            empty,
+            observed,
+            target_view,
             original_weak_source_ceiling,
         )
         scored.update(
@@ -433,13 +469,21 @@ def main():
     args.add_argument("--output", required=True, type=Path)
     parsed = args.parse_args()
     report = run(parsed.staged, parsed.original, parsed.output)
-    print(json.dumps(dict(
-        schema=report["schema"],
-        questions=report["matched_original_questions"],
-        phases=report["phase_counts"],
-        native_source_coverage=report["by_original_weak_native_source_coverage"],
-        production_accepted=report["production_accepted"],
-    ), ensure_ascii=False, allow_nan=False))
+    print(
+        json.dumps(
+            dict(
+                schema=report["schema"],
+                questions=report["matched_original_questions"],
+                phases=report["phase_counts"],
+                native_source_coverage=report[
+                    "by_original_weak_native_source_coverage"
+                ],
+                production_accepted=report["production_accepted"],
+            ),
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+    )
 
 
 if __name__ == "__main__":
