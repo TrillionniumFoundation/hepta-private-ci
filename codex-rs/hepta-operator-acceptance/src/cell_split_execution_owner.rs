@@ -229,6 +229,43 @@ fn receipt_digest(
     Ok(sha256(&canonical_json(&unsealed)?))
 }
 
+/// Verify the four original signatures and exact predecessor chain without
+/// trusting the coordinator's transcript digest alone.
+///
+/// This is deliberately an OFFLINE proof of byte/identity consistency, not a
+/// live readback, host attestation, NDU selection, or production authorization.
+/// The caller must supply keys pinned independently of this transcript and
+/// obtain fresh current-owner observations before using these records as
+/// deployment evidence.
+pub fn verify_cell_split_execution_transcript_signatures_v1(
+    transcript: &CellSplitExecutionTranscriptV1,
+    trust: &CellSplitOwnerTrustV1,
+) -> Result<(), CellSplitExecutionErrorV1> {
+    transcript.plan.validate()?;
+    let plan_digest = transcript.plan.digest()?;
+    if trust.plan_digest != plan_digest || transcript.receipts.len() != STEP_COUNT {
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "transcript plan, trust, or step count mismatch",
+        ));
+    }
+    let mut predecessor = plan_digest.clone();
+    for (index, receipt) in transcript.receipts.iter().enumerate() {
+        let step = CellSplitExecutionStepV1::at(index)
+            .ok_or(CellSplitExecutionErrorV1::Invalid("transcript step index"))?;
+        let intent = make_intent(&transcript.plan, &plan_digest, step, &predecessor);
+        validate_receipt(&intent, receipt)?;
+        trust.verify(&intent, receipt)?;
+        predecessor = receipt.receipt_digest.clone();
+    }
+    let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
+    payload.extend_from_slice(&canonical_json(&transcript.plan)?);
+    payload.extend_from_slice(&canonical_json(&transcript.receipts)?);
+    if transcript.transcript_digest != sha256(&payload) {
+        return Err(CellSplitExecutionErrorV1::Invalid("transcript digest mismatch"));
+    }
+    Ok(())
+}
+
 /// The deployment's *real* CAS, child migration, CNS and Supervisor owners.
 /// execute must use intent.idempotency_key as its durable effect key. reconcile
 /// must read back an already committed result, not re-execute an uncertain
