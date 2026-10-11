@@ -141,6 +141,11 @@ The verification-only verify_cell_split_observer_join_v1 therefore:
 4. Refuses shared signing keys across the host, Observer and all four
    effect owners, and refuses any mutated lineage before contacting owners.
 5. Revalidates each original operation against its current external owner.
+   The public verification entry accepts only the actual Unix signed RPC port,
+   and rejects any readback key set that differs from the frozen original
+   four-owner trust pins. The generic injected-port validator is crate-private
+   for fault-injection tests only. No user-supplied allow-all readback can
+   produce a public joined result.
    There is no execution, prepared intent, recovery mutation or promotion
    API in the join verifier.
 
