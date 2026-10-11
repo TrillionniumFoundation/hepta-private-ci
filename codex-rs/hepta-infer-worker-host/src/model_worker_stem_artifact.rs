@@ -134,7 +134,11 @@ pub struct StemCpuHeadUseV1<'a> {
     pub current: VerifiedCurrentRegistryViewV1,
     pub selection_now: u64,
     pub binding: &'a StemProjectionBindingV1,
-    pub projected: &'a ProjectedStemFeatureV1,
+    /// The actual full-width frozen Encoder feature, NOT a caller-supplied
+    /// projected feature reference. The source Encoder receipt remains an
+    /// independent, still-required production authority boundary.
+    pub source_features: &'a [f32],
+    pub token_count: u64,
     pub request: super::NeuronFeatureRequest,
     pub worker_now_ms: u64,
     pub model_id: &'a str,
@@ -403,7 +407,8 @@ impl SelectedStemProjectionReaderV1 {
             current,
             selection_now,
             binding,
-            projected,
+            source_features,
+            token_count,
             request,
             worker_now_ms,
             model_id,
@@ -411,7 +416,7 @@ impl SelectedStemProjectionReaderV1 {
         if worker.generation != self.fence.worker_generation {
             return Err(StemProjectionArtifactError::InvalidBinding);
         }
-        self.verify_worker_static_binding(binding, projected)?;
+        self.verify_source_binding(binding)?;
         let verified = selector
             .verify(signed_selection, &current, selection_now)
             .map_err(|error| StemProjectionArtifactError::Selection(error.to_string()))?;
@@ -421,9 +426,20 @@ impl SelectedStemProjectionReaderV1 {
             return Err(StemProjectionArtifactError::StaleOrUnselected);
         }
         let generation = self.fence.worker_generation;
+        let projection = &self.projection;
         self.candidate
             .with_current(current, |_payload| {
-                verify_neuron_projected_request(binding, projected, &request, generation)
+                // Never admit a caller-constructed Q24 feature vector under a
+                // trusted projection ID. Recompute the selected CAS matrix
+                // inside CURRENT and compare its exact input/output binding.
+                let projected = project_bound_f32(
+                    projection,
+                    binding,
+                    source_features,
+                    token_count,
+                )
+                .map_err(StemProjectionArtifactError::Numeric)?;
+                verify_neuron_projected_request(binding, &projected, &request, generation)
                     .map_err(StemProjectionArtifactError::Numeric)?;
                 worker
                     .run_neuron_features_receipt(worker_now_ms, model_id, request)
@@ -437,8 +453,18 @@ impl SelectedStemProjectionReaderV1 {
         binding: &StemProjectionBindingV1,
         projected: &ProjectedStemFeatureV1,
     ) -> Result<(), StemProjectionArtifactError> {
-        if projected.projection_digest != self.projection_digest
-            || binding.scope_digest != self.fence.scope_digest.to_string()
+        self.verify_source_binding(binding)?;
+        if projected.projection_digest != self.projection_digest {
+            return Err(StemProjectionArtifactError::InvalidBinding);
+        }
+        Ok(())
+    }
+
+    fn verify_source_binding(
+        &self,
+        binding: &StemProjectionBindingV1,
+    ) -> Result<(), StemProjectionArtifactError> {
+        if binding.scope_digest != self.fence.scope_digest.to_string()
             || binding.generation != self.fence.worker_generation
             || binding.revocation_frontier_digest
                 != self.fence.revocation_frontier_digest.to_string()
