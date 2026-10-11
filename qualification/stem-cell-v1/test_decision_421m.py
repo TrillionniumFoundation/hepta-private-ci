@@ -10,7 +10,8 @@ import unittest
 from pathlib import Path
 
 from decision_421m import (SOURCES, PHASES, audit_dataset, build_plan,
-                           evaluate, input_fingerprint, load_plan, write_frozen)
+                           evaluate, input_fingerprint, load_plan,
+                           read_strict_jsonl, write_frozen)
 from model_runner import snapshot_digest
 
 
@@ -218,6 +219,18 @@ class FourWayDecisionTests(unittest.TestCase):
         next(r for r in tampered if r["split"] == "future_1")["source_group"] = "train-0"
         with self.assertRaisesRegex(ValueError, "source-group leakage"):
             audit_dataset(tampered)
+
+    def test_duplicate_json_keys_and_blank_evidence_rows_fail_closed(self):
+        duplicate = self.root / "duplicate-case.jsonl"
+        duplicate.write_text('{"sample_id":"x","label":0,"label":1}\n')
+        with self.assertRaisesRegex(ValueError, "invalid/duplicate"):
+            list(read_strict_jsonl(duplicate))
+        duplicate.write_text('{"sample_id":"x"}\n\n')
+        with self.assertRaisesRegex(ValueError, "empty Decision JSONL"):
+            list(read_strict_jsonl(duplicate))
+        duplicate.write_text('["not", "a", "case"]\n')
+        with self.assertRaisesRegex(ValueError, "must be objects"):
+            list(read_strict_jsonl(duplicate))
 
     def test_frozen_plans_reject_tamper_and_overwrite(self):
         path = self.root / "plan.json"
