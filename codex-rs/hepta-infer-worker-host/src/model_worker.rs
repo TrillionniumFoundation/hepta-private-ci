@@ -520,7 +520,7 @@ pub trait NeuronFeatureDriver: ModelDriver {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
-    pub fn run_neuron_features(
+    pub(crate) fn run_neuron_features(
         &mut self,
         now_ms: u64,
         model_id: &str,
@@ -922,7 +922,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// Execute the worker path and project the observed result into the
     /// inference-control-owned typed receipt.
-    pub fn run_neuron_features_receipt(
+    pub(crate) fn run_neuron_features_receipt(
         &mut self,
         now_ms: u64,
         model_id: &str,
