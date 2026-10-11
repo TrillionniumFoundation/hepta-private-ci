@@ -739,6 +739,9 @@ pub use cpu_head::CpuGatedHead;
 pub use cpu_head::CpuGatedHeadDriver;
 pub use cpu_head::cpu_gated_bundle_weights_digest;
 
+#[path = "model_worker_stem_projection.rs"]
+pub mod stem_projection;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
