@@ -266,7 +266,7 @@ mod tests {
                     "artifact-owner", "migration-owner", "cns-owner", "supervisor-owner"
                 ]
             },
-            "executionRoot": execution_root,
+            "executionRoot": execution_root.clone(),
             "ownerSocketPaths": sockets,
             "ownerVerifyingKeysHex": keys,
             "timeoutMillis": 1000
