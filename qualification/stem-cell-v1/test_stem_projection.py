@@ -206,6 +206,17 @@ class ProjectionTests(unittest.TestCase):
             runner.run([replace(Request(),encoder_digest=d('f'))])
         self.assertEqual(fake.calls,0)
 
+    def test_projection_preflights_scope_before_untrusted_engine(self):
+        from dataclasses import replace
+        fake=Engine((feature((.5,-.25,.125)),)*2)
+        runner=ProjectedStemEngine(fake,spec())
+        with self.assertRaisesRegex(ValueError, 'mixed scope'):
+            runner.run([Request('req.1'), replace(Request('req.2'),scope_digest=d('8'))])
+        self.assertEqual(fake.calls,0)
+        with self.assertRaisesRegex(ValueError, 'mixed scope'):
+            runner.run([Request('req.1'), replace(Request('req.2'),generation=8)])
+        self.assertEqual(fake.calls,0)
+
     def test_fail_atomic_cache_on_one_bad_backend_feature(self):
         fake=Engine((feature((.5,-.25,.125)), feature((.5,))))
         runner=ProjectedStemEngine(fake,spec())
