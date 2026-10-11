@@ -147,6 +147,106 @@ def write_candidate(path, artifact):
         handle.write(content)
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
+
+# Research-only bytes for the existing signed Artifact CAS. A candidate is not
+# a selection, proof of owner freshness, independent NDU or production grant.
+HEAD_BANK_SCHEMA = "hepta.stem.q24-cpu-head-bank-candidate.v1"
+HEAD_BANK_MAX_BYTES = 16 * 1024 * 1024
+HEAD_BANK_MAX_CELLS = 32
+HEAD_TENSOR_NAMES = (
+    "drive_weights_q24", "prediction_weights_q24", "gate_weights_q24",
+    "drive_bias_q24", "prediction_bias_q24", "gate_bias_q24",
+)
+HEAD_FIELDS = ("input_width", "output_width") + HEAD_TENSOR_NAMES
+
+
+def bundle_digest_many(encoder_digest, head_digests):
+    """Same sorted Q24 Head-bank digest as CpuGatedHeadDriver in Rust."""
+    if (type(encoder_digest) is not str or len(encoder_digest) != 64 or
+            any(c not in "0123456789abcdef" for c in encoder_digest)):
+        raise ValueError("invalid fixed Encoder digest")
+    if (type(head_digests) not in (tuple, list)
+            or not 1 <= len(head_digests) <= HEAD_BANK_MAX_CELLS):
+        raise ValueError("Head-bank size out of bounds")
+    hashes = sorted(head_digests)
+    if any(type(h) is not str or len(h) != 64 or
+           any(c not in "0123456789abcdef" for c in h) for h in hashes):
+        raise ValueError("invalid Head digest")
+    if any(a == b for a, b in zip(hashes, hashes[1:])):
+        raise ValueError("duplicate Cell Head is not a distinct bank member")
+    content = (b"hepta.cpu-gated-bundle.v1" + encoder_digest.encode("ascii")
+               + len(hashes).to_bytes(8, "big")
+               + b"".join(h.encode("ascii") for h in hashes))
+    return hashlib.sha256(content).hexdigest()
+
+
+def encode_cpu_head_bank_candidate(artifacts):
+    """Convert audited compact Q24 training candidates to canonical CAS bytes.
+
+    Head content, member ordering and bundle weights are verified before
+    serialization. This is shadow-only and supplies no producer, selector or
+    final-use signature.
+    """
+    if type(artifacts) not in (list, tuple) or not 1 <= len(artifacts) <= HEAD_BANK_MAX_CELLS:
+        raise ValueError("Head bank must contain 1..32 bounded members")
+    heads = []
+    encoder = None
+    for candidate in artifacts:
+        if (type(candidate) is not dict or
+                candidate.get("schema") != "hepta.stem.q24-cpu-head-candidate.v1"
+                or candidate.get("shadow_only") is not True
+                or candidate.get("production_authorized") is not False):
+            raise ValueError("non-shadow or unknown Head candidate")
+        if encoder is None:
+            encoder = candidate.get("encoder_digest")
+        if candidate.get("encoder_digest") != encoder:
+            raise ValueError("mixed Encoder bank")
+        head = {k: candidate.get(k) for k in HEAD_FIELDS}
+        width, classes = head["input_width"], head["output_width"]
+        if (type(width) is not int or type(classes) is not int
+                or not 1 <= width <= 512 or not 1 <= classes <= 512):
+            raise ValueError("unsupported Q24 Head dimensions")
+        n = width * classes
+        for name, expected in (
+            ("drive_weights_q24", (n,)),
+            ("prediction_weights_q24", (0, n)),
+            ("gate_weights_q24", (0, n)),
+            ("drive_bias_q24", (classes,)),
+            ("prediction_bias_q24", (classes,)),
+            ("gate_bias_q24", (classes,)),
+        ):
+            values = head[name]
+            if (type(values) is not list or len(values) not in expected
+                    or any(type(v) is not int or not -LIMIT <= v <= LIMIT for v in values)):
+                raise ValueError("invalid Head matrix or Q24 scalar")
+        digest = tensor_digest(width, classes, [head[n] for n in HEAD_TENSOR_NAMES])
+        if candidate.get("head_digest") != digest or (
+                candidate.get("weights_digest") != bundle_digest(encoder, digest)):
+            raise ValueError("Head digest does not match actual Q24 weights")
+        heads.append((digest, head))
+    heads.sort(key=lambda pair: pair[0])
+    digests = [d for d, _ in heads]
+    weight_digest = bundle_digest_many(encoder, digests)
+    raw = (json.dumps({
+        "encoder_digest": encoder,
+        "heads": [item for _, item in heads],
+        "schema": HEAD_BANK_SCHEMA,
+        "weights_digest": weight_digest,
+    }, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
+           + "\n").encode("ascii")
+    if len(raw) > HEAD_BANK_MAX_BYTES:
+        raise ValueError("Head bank exceeds exact CAS size bound")
+    return raw
+
+
+def write_cpu_head_bank_candidate(path, artifacts):
+    """Create-only candidate payload. Real CAS publication is a separate owner."""
+    raw = encode_cpu_head_bank_candidate(artifacts)
+    with Path(path).open("xb") as handle:
+        handle.write(raw)
+    return hashlib.sha256(raw).hexdigest()
+
+
 # Stable research names for the optional model-runner hook.
 build_q24_head_candidate = build_candidate
 write_q24_head_candidate = write_candidate
