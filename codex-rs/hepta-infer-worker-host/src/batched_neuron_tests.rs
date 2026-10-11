@@ -344,7 +344,13 @@ impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
                     latency_micros: 13,
                 },
             })
-            .collect())
+            .collect();
+        Ok(crate::model_worker::PhysicalBatchRunObservationV1 {
+            batch_execution_digest: digest(b"mock-batch-call").to_string(),
+            claimed_encoder_forward_count: 1,
+            observed_peak_memory_bytes: 3072,
+            items,
+        })
     }
 }
 
