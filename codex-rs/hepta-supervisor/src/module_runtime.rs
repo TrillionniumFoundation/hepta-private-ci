@@ -1158,7 +1158,7 @@ mod tests {
     }
     #[test]
     fn read_neuron_active_candidate_v1_requires_live_selection_and_binds_topology() {
-        let generation = generation(1);
+        let selected_generation = generation(1);
         let expected_artifact = digest("neuron-pinned-module");
         let mut abi = abi(1, "neuron-module", None);
         abi.module_id = id("neuron.runtime");
@@ -1168,14 +1168,14 @@ mod tests {
 
         let empty = RuntimeModuleSupervisorV1::new();
         assert!(matches!(
-            empty.read_neuron_active_candidate_v1(generation, expected_artifact),
+            empty.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
             Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
         ));
 
         let mut bootstrap = RuntimeModuleSupervisorV1::new();
         bootstrap.register_bootstrap(abi.clone()).expect("bootstrap");
         assert!(matches!(
-            bootstrap.read_neuron_active_candidate_v1(generation, expected_artifact),
+            bootstrap.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
             Err(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection)
         ));
 
@@ -1186,20 +1186,20 @@ mod tests {
             .register_shadow_for_test(abi, digest("independent-lifecycle-selection"))
             .expect("synthetic selection fixture");
         assert!(matches!(
-            supervisor.read_neuron_active_candidate_v1(generation, expected_artifact),
+            supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
             Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
         ));
         supervisor
-            .enter_canary(&id("neuron.runtime"), generation)
+            .enter_canary(&id("neuron.runtime"), selected_generation)
             .expect("canary");
         assert!(matches!(
-            supervisor.read_neuron_active_candidate_v1(generation, expected_artifact),
+            supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
             Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
         ));
         supervisor
             .promote_new_initialized_module(
                 &id("neuron.runtime"),
-                generation,
+                selected_generation,
                 digest("synthetic-canary"),
                 RuntimeModuleInitializationWitnessV1 {
                     initial_state_digest: digest("initialized-state"),
@@ -1208,7 +1208,7 @@ mod tests {
             )
             .expect("supervisor lifecycle");
         let observation = supervisor
-            .read_neuron_active_candidate_v1(generation, expected_artifact)
+            .read_neuron_active_candidate_v1(selected_generation, expected_artifact)
             .expect("actual in-memory Active module");
         assert!(observation.validate_integrity());
         assert_eq!(observation.topology_digest, supervisor.topology().digest);
@@ -1221,11 +1221,11 @@ mod tests {
             Err(RuntimeModuleSupervisorErrorV1::GenerationMismatch)
         ));
         assert!(matches!(
-            supervisor.read_neuron_active_candidate_v1(generation, digest("other-artifact")),
+            supervisor.read_neuron_active_candidate_v1(selected_generation, digest("other-artifact")),
             Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch)
         ));
         assert!(matches!(
-            supervisor.read_neuron_active_candidate_v1(generation, Digest32::ZERO),
+            supervisor.read_neuron_active_candidate_v1(selected_generation, Digest32::ZERO),
             Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch)
         ));
 
