@@ -46,8 +46,17 @@ def object_json(data: bytes, label: str) -> dict[str, Any]:
     def reject_constant(value: str) -> None:
         raise EvidenceError(f"{label}: non-finite JSON value {value}")
 
+    def unique_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in pairs:
+            need(key not in result, f"{label}: duplicate JSON key {key!r}")
+            result[key] = value
+        return result
+
     try:
-        value = json.loads(data, parse_constant=reject_constant)
+        value = json.loads(
+            data, parse_constant=reject_constant, object_pairs_hook=unique_keys
+        )
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise EvidenceError(f"{label}: invalid JSON") from exc
     need(isinstance(value, dict), f"{label}: expected JSON object")
@@ -99,9 +108,19 @@ def positive_int(value: Any, label: str, *, allow_zero: bool = False) -> None:
 
 def local_path(root: Path, relative: Any, label: str) -> Path:
     need(isinstance(relative, str) and relative != "", f"{label}: missing path")
-    need(not Path(relative).is_absolute(), f"{label}: absolute path rejected")
-    resolved = (root / relative).resolve(strict=True)
-    need(resolved.is_relative_to(root) and resolved.is_file(), f"{label}: path leaves evidence root")
+    untrusted = Path(relative)
+    need(not untrusted.is_absolute(), f"{label}: absolute path rejected")
+    need(all(part not in (".", "..") for part in untrusted.parts),
+         f"{label}: traversal components rejected")
+    # The trusted owner must mount a frozen read-only snapshot: the checks below
+    # reject ordinary symlinks but cannot defeat a malicious concurrent rename.
+    candidate = root
+    for part in untrusted.parts:
+        candidate /= part
+        need(not candidate.is_symlink(), f"{label}: symlinks are not evidence")
+    resolved = candidate.resolve(strict=True)
+    need(resolved.is_relative_to(root) and resolved.is_file(),
+         f"{label}: path leaves evidence root")
     return resolved
 
 
@@ -177,7 +196,8 @@ def evaluate(root: Path, trusted_key: Path) -> dict[str, Any]:
         need(isinstance(item, dict), "registry Cell entry not an object")
         exact_keys(item, {"cell_id", "generation", "mechanism"}, "registry Cell")
         cell_id, generation, mechanism = item["cell_id"], item["generation"], item["mechanism"]
-        need(isinstance(cell_id, str) and CELL_ID.fullmatch(cell_id) is not None,
+        need(isinstance(cell_id, str) and CELL_ID.fullmatch(cell_id) is not None
+             and cell_id not in (".", ".."),
              "invalid Cell identifier")
         need(cell_id not in seen, "duplicate deployed Cell")
         seen.add(cell_id)
