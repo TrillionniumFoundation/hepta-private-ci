@@ -83,7 +83,9 @@ def validate_measurement(
     observed: Any, manifest: dict[str, Any], scope: int, mode: str
 ) -> dict[str, Any]:
     if not isinstance(observed, dict) or observed.get("schema") != MEASUREMENT_SCHEMA:
-        raise InvalidEvidence(f"{scope}/{mode}: workload did not return a measured packet")
+        raise InvalidEvidence(
+            f"{scope}/{mode}: workload did not return a measured packet"
+        )
     for field in ("source_sha", "hardware_id", "model_digest", "workload_digest"):
         if observed.get(field) != manifest[field]:
             raise InvalidEvidence(f"{scope}/{mode}: {field} mismatch")
@@ -93,7 +95,10 @@ def validate_measurement(
     if (
         not isinstance(provenance, str)
         or not provenance
-        or any(label in provenance.lower() for label in ("simulation", "fixture", "synthetic"))
+        or any(
+            label in provenance.lower()
+            for label in ("simulation", "fixture", "synthetic")
+        )
     ):
         raise InvalidEvidence(f"{scope}/{mode}: real measurement source required")
     # Keep measurements exactly as emitted by the workload. In particular no
@@ -103,9 +108,13 @@ def validate_measurement(
         raise InvalidEvidence(f"{scope}/{mode}: missing {missing}")
     trace = observed.get(TRACE_FIELD)
     if not isinstance(trace, str) or re.fullmatch(r"[0-9a-f]{64}", trace) is None:
-        raise InvalidEvidence(f"{scope}/{mode}: canonical attempted request trace is required")
+        raise InvalidEvidence(
+            f"{scope}/{mode}: canonical attempted request trace is required"
+        )
     return {
-        "scopes": scope, "mode": mode, TRACE_FIELD: trace,
+        "scopes": scope,
+        "mode": mode,
+        TRACE_FIELD: trace,
         **{field: observed[field] for field in FIELDS},
     }
 
@@ -152,11 +161,15 @@ def execute_matrix(
                             f"{scope}/{mode}: workload unavailable or timed out: {error}"
                         ) from error
             if result.returncode != 0:
-                raise InvalidEvidence(f"{scope}/{mode}: workload exited {result.returncode}")
+                raise InvalidEvidence(
+                    f"{scope}/{mode}: workload exited {result.returncode}"
+                )
             try:
                 observed = json.loads(result_path.read_text(encoding="utf-8"))
             except (OSError, ValueError) as error:
-                raise InvalidEvidence(f"{scope}/{mode}: result missing or invalid: {error}") from error
+                raise InvalidEvidence(
+                    f"{scope}/{mode}: result missing or invalid: {error}"
+                ) from error
             measurements.append(validate_measurement(observed, manifest, scope, mode))
     packet = {
         "schema": "hepta.cell-split.performance.v1",
@@ -187,16 +200,24 @@ def main() -> int:
     try:
         manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
         comparison = execute_matrix(
-            manifest, args.repository.resolve(), args.output.resolve(), args.timeout_seconds
+            manifest,
+            args.repository.resolve(),
+            args.output.resolve(),
+            args.timeout_seconds,
         )
     except (OSError, ValueError, TypeError, InvalidEvidence) as error:
         parser.error(str(error))
-    print(json.dumps({
-        "comparative_gate_passed": comparison["comparative_gate_passed"],
-        "production_evidence_verified": False,
-        "production_activation_authorized": False,
-        "violations": comparison["violations"],
-    }, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "comparative_gate_passed": comparison["comparative_gate_passed"],
+                "production_evidence_verified": False,
+                "production_activation_authorized": False,
+                "violations": comparison["violations"],
+            },
+            sort_keys=True,
+        )
+    )
     return 0 if comparison["comparative_gate_passed"] else 1
 
 
