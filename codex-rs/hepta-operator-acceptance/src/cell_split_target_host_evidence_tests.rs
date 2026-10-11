@@ -669,3 +669,85 @@ fn observer_public_gate_refuses_independently_rekeyed_rpc_transport() {
         ))
     ));
 }
+
+
+#[cfg(unix)]
+#[test]
+fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
+    use ed25519_dalek::Signer as _;
+    use std::os::unix::net::UnixListener;
+    use std::thread;
+    use std::time::Duration;
+
+    use crate::cell_split_effect_rpc::receive_frame;
+    use crate::cell_split_effect_rpc::send_frame;
+
+    let host = key(3);
+    let observer = key(7);
+    let envelope = complete_recorder().sign(
+        "host-signer", &host,
+        [("observer-signer".to_string(), observer.clone())],
+    ).expect("separate signed host lifecycle");
+    let (transcript, frozen_keys) = signed_owner_transcript_for_host(&envelope.payload);
+    let join = signed_observer_join_fixture(
+        &envelope, &transcript, &host, &observer,
+    );
+
+    // Protocol-only test fixtures: these are four actual Unix owner sockets
+    // producing independently signed nonce challenges, NOT deployed owners.
+    let root = tempfile::tempdir().expect("socket root");
+    let mut endpoints = Vec::new();
+    let mut handles = Vec::new();
+    for (index, receipt) in transcript.receipts.iter().cloned().enumerate() {
+        let endpoint = root.path().join(format!("owner-{index}.sock"));
+        let listener = UnixListener::bind(&endpoint).expect("effect owner socket");
+        endpoints.push(endpoint);
+        handles.push(thread::spawn(move || {
+            let (mut stream, _) = listener.accept().expect("independent observer read");
+            let request: crate::CellSplitEffectRpcRequestV1 =
+                receive_frame(&mut stream).expect("readback request");
+            assert_eq!(request.action, crate::CellSplitEffectRpcActionV1::ReadBack);
+            assert_eq!(request.intent, receipt.intent);
+            let mut proof = crate::CellSplitEffectReadbackV1 {
+                schema: crate::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
+                intent: receipt.intent.clone(),
+                challenge_nonce: request.challenge_nonce.expect("fresh challenge"),
+                committed_receipt_digest: Some(receipt.receipt_digest.clone()),
+                state_digest: Some(receipt.output_digest.clone()),
+                read_sequence: receipt.owner_sequence,
+                owner_signature_bytes: Vec::new(),
+            };
+            proof.owner_signature_bytes = key(51 + index as u8)
+                .sign(&crate::cell_split_effect_readback_signing_payload_v1(&proof)
+                    .expect("readback signing payload"))
+                .to_bytes()
+                .to_vec();
+            let response = crate::CellSplitEffectRpcResponseV1 {
+                schema: crate::CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+                action: crate::CellSplitEffectRpcActionV1::ReadBack,
+                receipt: Some(receipt),
+                readback: Some(proof),
+                error: None,
+            };
+            send_frame(&mut stream, &response).expect("original signed receipt response");
+        }));
+    }
+    let pinned = [51_u8, 52, 53, 54].map(|seed| key(seed).verifying_key());
+    let endpoints: [std::path::PathBuf; 4] = endpoints.try_into().expect("four sockets");
+    let mut actual_port = crate::CellSplitUnixEffectPortV1::new(
+        endpoints, pinned, Duration::from_secs(3),
+    ).expect("four independent pinned socket readers");
+    let result = crate::verify_cell_split_observer_join_v1(
+        &join,
+        &transcript,
+        &frozen_keys,
+        &envelope,
+        &policy(&host, &observer),
+        &mut actual_port,
+    ).expect("public verifier uses all four real nonce-bound transports");
+    assert!(result.four_current_owner_readbacks);
+    assert!(!result.production_activation_authorized);
+    for handle in handles {
+        handle.join().expect("effect reader thread");
+    }
+}
