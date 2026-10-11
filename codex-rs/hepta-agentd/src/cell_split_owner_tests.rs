@@ -381,3 +381,47 @@ fn observer_ack_is_required_before_first_external_mutation() {
     assert!(owners.anchors.contains_key(&ledger.anchor().sequence));
 }
 
+
+#[test]
+fn canonical_plan_binding_separates_identity_boundaries() {
+    let mut left = plan();
+    left.split_id = id("s");
+    left.predecessor_id = id("abc");
+    left.child_id = id("d");
+    let mut right = left.clone();
+    right.split_id = id("sa");
+    right.predecessor_id = id("bc");
+
+    // Both ID triplets concatenate to "sabcd" without length tags.
+    assert_eq!(
+        format!(
+            "{}{}{}",
+            left.split_id, left.predecessor_id, left.child_id
+        ),
+        format!(
+            "{}{}{}",
+            right.split_id, right.predecessor_id, right.child_id
+        )
+    );
+    assert_ne!(left.binding_digest(), right.binding_digest());
+    for step in STEPS {
+        assert_ne!(left.operation_key(step), right.operation_key(step));
+    }
+}
+
+#[test]
+fn bootstrap_repositions_nonzero_cursor_on_an_empty_file() {
+    let file = NamedTempFile::new().expect("temp ledger");
+    let mut handle = reopen(&file);
+    handle.seek(SeekFrom::Start(4096)).expect("seek empty handle");
+    assert_eq!(handle.metadata().expect("metadata").len(), 0);
+    let p = plan();
+    let owner = CellSplitExecutionOwnerV1::bootstrap(handle, p.clone())
+        .expect("bootstrap normalized header");
+    let initial = owner.anchor();
+    assert_eq!(reopen(&file).metadata().expect("metadata").len(), HEADER_SIZE as u64);
+    drop(owner);
+    let recovered = CellSplitExecutionOwnerV1::recover(reopen(&file), p, initial)
+        .expect("recovery from normalized header");
+    assert_eq!(recovered.anchor(), initial);
+}
