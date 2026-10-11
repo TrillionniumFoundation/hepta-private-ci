@@ -224,17 +224,14 @@ impl CellSplitTargetHostEvidenceTrustPolicyV1 {
         if self.host_keys.is_empty() || self.observer_keys.is_empty() {
             return Err(invalid("target-host trust policy is empty"));
         }
+        let mut unique_keys = BTreeSet::new();
         if self
             .host_keys
             .values()
             .chain(self.observer_keys.values())
-            .any(VerifyingKey::is_weak)
-            || self
-                .host_keys
-                .values()
-                .any(|host| self.observer_keys.values().any(|observer| host == observer))
+            .any(|key| key.is_weak() || !unique_keys.insert(key.to_bytes()))
         {
-            return Err(invalid("weak or shared host/observer trust key"));
+            return Err(invalid("weak, duplicate or shared host/observer trust key"));
         }
         let file = CellSplitTargetHostEvidenceTrustPolicyFileV1 {
             schema: CELL_SPLIT_TARGET_HOST_TRUST_POLICY_SCHEMA_V1.to_string(),
