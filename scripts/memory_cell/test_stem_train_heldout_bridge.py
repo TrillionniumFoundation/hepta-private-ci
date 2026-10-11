@@ -2,6 +2,7 @@
 
 import unittest
 
+from native import Target
 from stem_train_heldout_bridge import train_to_heldout_gap
 
 ARMS = ("frozen_rerank", "prototype", "linear", "gated",
@@ -68,13 +69,17 @@ def fixture():
                         mean_positive_over_negative_candidate_margin_delta=2.0,
                     )
                 learning.append(h)
-    return plan, learning, scored
+    targets = {
+        q: Target("fixture answer", "fixture", ("native-source-" + q,), False)
+        for phase in PHASES for q in questions[phase]
+    }
+    return plan, learning, scored, targets
 
 
 class GeneralizationBridgeTests(unittest.TestCase):
     def test_complete_census_preserves_training_vs_test_distinction(self):
-        plan, learning, scored = fixture()
-        result = train_to_heldout_gap(plan, learning, scored)
+        plan, learning, scored, targets = fixture()
+        result = train_to_heldout_gap(plan, learning, scored, targets)
         self.assertEqual(result["planned_source_policy_rows"], 576)
         self.assertEqual(len(result["by_checkpoint_cell_arm"]), 30)
         arm = result["by_checkpoint_cell_arm"]["48/gated/general"]
@@ -86,7 +91,7 @@ class GeneralizationBridgeTests(unittest.TestCase):
         self.assertFalse(result["production_accepted"])
 
     def test_one_heldout_supported_selection_gain_is_not_fabricated_for_other_arms(self):
-        plan, learning, scored = fixture()
+        plan, learning, scored, targets = fixture()
         changed = next(
             row for row in scored if row["stage"] == 48
             and row["phase"] == "test" and row["question_id"] == "test-0"
@@ -95,7 +100,7 @@ class GeneralizationBridgeTests(unittest.TestCase):
         changed["selected"] = 1
         changed["source_choice_correct"] = 1
         changed["diagnostic_answer_f1"] = 0.75
-        result = train_to_heldout_gap(plan, learning, scored)
+        result = train_to_heldout_gap(plan, learning, scored, targets)
         gated = result["by_checkpoint_cell_arm"]["48/gated/general"]
         self.assertEqual(gated["phases"]["test"]["native_support_gains"], 1)
         self.assertEqual(gated["phases"]["test"]["source_decision_changes"], 1)
@@ -108,7 +113,7 @@ class GeneralizationBridgeTests(unittest.TestCase):
         self.assertFalse(gated["authentic_independent_generalization"])
 
     def test_reader_failure_does_not_erase_observed_selector_choice(self):
-        plan, learning, scored = fixture()
+        plan, learning, scored, targets = fixture()
         x = next(row for row in scored if row["stage"] == 48
                  and row["phase"] == "test" and row["question_id"] == "test-0"
                  and row["arm"] == "gated")
@@ -116,7 +121,7 @@ class GeneralizationBridgeTests(unittest.TestCase):
         x.pop("diagnostic_answer_f1")
         x["source_choice_correct"] = 1
         x["selected"] = 1
-        result = train_to_heldout_gap(plan, learning, scored)
+        result = train_to_heldout_gap(plan, learning, scored, targets)
         summary = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"]["test"]
         self.assertEqual(summary["source_compared"], 4)
         self.assertEqual(summary["native_support_gains"], 1)
@@ -125,13 +130,13 @@ class GeneralizationBridgeTests(unittest.TestCase):
         self.assertEqual(summary["all_planned_reader_f1_delta_bounds"], [-0.25, 0.25])
 
     def test_unresolved_native_support_keeps_original_question_in_denominator(self):
-        plan, learning, scored = fixture()
+        plan, learning, scored, targets = fixture()
         for row in scored:
             if (row["stage"], row["phase"], row["question_id"]) == (
                 48, "transfer", "transfer-0"
             ):
                 row["source_choice_correct"] = None
-        result = train_to_heldout_gap(plan, learning, scored)
+        result = train_to_heldout_gap(plan, learning, scored, targets)
         summary = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"]["transfer"]
         self.assertEqual(summary["planned"], 4)
         self.assertEqual(summary["source_compared"], 3)
@@ -143,7 +148,7 @@ class GeneralizationBridgeTests(unittest.TestCase):
             ("family", "wrong-family"),
             ("cell", "opposite-cell"),
         ):
-            plan, learning, scored = fixture()
+            plan, learning, scored, targets = fixture()
             candidate = next(
                 x for x in scored if x["stage"] == 16
                 and x["phase"] == "test" and x["question_id"] == "test-0"
@@ -151,11 +156,11 @@ class GeneralizationBridgeTests(unittest.TestCase):
             )
             candidate[field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
-                train_to_heldout_gap(plan, learning, scored)
+                train_to_heldout_gap(plan, learning, scored, targets)
 
     def test_missing_or_duplicate_policy_or_head_fails_closed(self):
         for corruption in ("missing-policy", "duplicate-policy", "missing-head"):
-            plan, learning, scored = fixture()
+            plan, learning, scored, targets = fixture()
             if corruption == "missing-policy":
                 scored.pop()
             elif corruption == "duplicate-policy":
@@ -163,7 +168,52 @@ class GeneralizationBridgeTests(unittest.TestCase):
             else:
                 learning.pop()
             with self.subTest(corruption=corruption), self.assertRaises(ValueError):
-                train_to_heldout_gap(plan, learning, scored)
+                train_to_heldout_gap(plan, learning, scored, targets)
+
+    def test_native_unanswerable_does_not_count_as_source_gain(self):
+        plan, learning, scored, targets = fixture()
+        targets["test-0"] = Target(None, "native-abs", (), True)
+        result = train_to_heldout_gap(plan, learning, scored, targets)
+        test = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"]["test"]
+        self.assertEqual(test["planned"], 4)
+        self.assertEqual(test["native_unanswerable_rows"], 1)
+        self.assertEqual(test["answerable_native_document_support_rows"], 3)
+        self.assertEqual(test["source_compared"], 3)
+        self.assertEqual(test["observed_native_abstention_pairs"], 1)
+        self.assertEqual(test["native_support_gains"], 0)
+        self.assertEqual(test["native_abstention_gains"], 0)
+        self.assertTrue(result["native_document_support_vs_abstention_separate"])
+
+    def test_forged_abstention_correctness_is_rejected(self):
+        plan, learning, scored, targets = fixture()
+        targets["test-0"] = Target(None, "native-abs", (), True)
+        learned = next(x for x in scored if x["stage"] == 48
+                       and x["phase"] == "test" and x["question_id"] == "test-0"
+                       and x["arm"] == "gated")
+        learned["source_choice_correct"] = 1
+        with self.assertRaisesRegex(ValueError, "abstention label"):
+            train_to_heldout_gap(plan, learning, scored, targets)
+
+    def test_unresolved_support_remains_in_original_planned_denominator(self):
+        plan, learning, scored, targets = fixture()
+        targets["transfer-0"] = Target(
+            "answer", "fixture", (), False, ("unresolved-source",)
+        )
+        result = train_to_heldout_gap(plan, learning, scored, targets)
+        transfer = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"]["transfer"]
+        self.assertEqual(transfer["planned"], 4)
+        self.assertEqual(transfer["native_support_unresolved_rows"], 1)
+        self.assertEqual(transfer["source_compared"], 3)
+        self.assertEqual(transfer["source_unresolved_or_unselected"], 1)
+
+    def test_missing_or_invalid_target_metadata_is_not_admitted(self):
+        plan, learning, scored, targets = fixture()
+        targets.pop("test-0")
+        with self.assertRaisesRegex(ValueError, "32 post-policy"):
+            train_to_heldout_gap(plan, learning, scored, targets)
+        targets["test-0"] = object()
+        with self.assertRaises((ValueError, AttributeError)):
+            train_to_heldout_gap(plan, learning, scored, targets)
 
     def test_reader_model_prompt_and_observable_question_must_match(self):
         for drift, key in (
@@ -171,7 +221,7 @@ class GeneralizationBridgeTests(unittest.TestCase):
             ("changed-prompt", "generator_profile"),
             ("wrong-question", "observable_query"),
         ):
-            plan, learning, scored = fixture()
+            plan, learning, scored, targets = fixture()
             learned = next(
                 x for x in scored if x["stage"] == 48
                 and x["phase"] == "test" and x["question_id"] == "test-0"
@@ -184,11 +234,11 @@ class GeneralizationBridgeTests(unittest.TestCase):
             with self.subTest(drift=drift), self.assertRaisesRegex(
                 ValueError, "Reader model/prompt/query"
             ):
-                train_to_heldout_gap(plan, learning, scored)
+                train_to_heldout_gap(plan, learning, scored, targets)
 
     def test_head_sha_or_hidden_heldout_annotation_claim_is_rejected(self):
         for corruption in ("sha", "label"):
-            plan, learning, scored = fixture()
+            plan, learning, scored, targets = fixture()
             head = next(x for x in learning if x["arm"] == "gated")
             probe = head["within_train_fit_dynamics"]
             if corruption == "sha":
@@ -198,7 +248,7 @@ class GeneralizationBridgeTests(unittest.TestCase):
             with self.subTest(corruption=corruption), self.assertRaisesRegex(
                 ValueError, "TRAIN-only"
             ):
-                train_to_heldout_gap(plan, learning, scored)
+                train_to_heldout_gap(plan, learning, scored, targets)
 
 
 if __name__ == "__main__":

@@ -640,3 +640,23 @@ score geometry is required for that attribution. No gold source enters any
 actual training or policy decision, and native document-level source
 support is not independently verified window entailment, citation
 precision, or a production acceptance gate.
+
+## Separate native no-answer success from retrieved-source evidence gain
+
+The post-policy TRAIN-to-test/transfer bridge now accepts the **exact 32
+registered evaluation targets only after all 576 policy attempts have been
+saved and scored**. It classifies each native target as one of:
+answerable with document-level support; benchmark-unanswerable; or
+unresolved/missing document-level support. Source-selection improvements
+are counted **only for answerable, resolved native source-support cases**.
+Unanswerable cases can contribute to a separately named abstention metric,
+but never to a retrieved-source gain. The reported null/refusal choice must
+match the original observed selected index; forged abstention correctness
+fails closed.
+
+Each originally registered phase retains its 8-question denominator
+(including failed Reader calls and unresolved support). Reader F1 deltas
+remain a separate diagnostic, not implied source sufficiency. The new v3
+report rejects targets outside the registered evaluation cut, duplicate
+questions and invalid metadata and explicitly marks absent true semantic
+entailment judgment and no production acceptance.

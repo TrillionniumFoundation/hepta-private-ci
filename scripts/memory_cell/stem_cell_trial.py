@@ -832,7 +832,11 @@ def run(staged, ranker_dir, output):
             retrospective_source_ceiling,
         )
         # Only after all policy calls and scoring; targets never enter fitting.
-        train_heldout_diagnostic = train_to_heldout_gap(plan, learning, scored)
+        train_heldout_diagnostic = train_to_heldout_gap(
+            plan, learning, scored,
+            {q.identity: source_for[q.identity].targets[q.identity]
+             for phase in PHASES for q in qs[phase]},
+        )
         write(output / "train-heldout-gap.json", train_heldout_diagnostic)
         no_evidence_reader_after = control_session.summary()
         # The diagnostic is nonqualifying if its isolated Reader quarantined.

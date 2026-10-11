@@ -15,7 +15,7 @@ PHASES = ("select", "retention", "test", "transfer")
 CELLS = ("general", "temporal")
 
 
-def train_to_heldout_gap(plan, learning, scored):
+def train_to_heldout_gap(plan, learning, scored, targets):
     questions = plan["questions"]
     routes = plan["routes"]
     if (
@@ -30,6 +30,25 @@ def train_to_heldout_gap(plan, learning, scored):
         or any(cell not in CELLS for cell in routes.values())
     ):
         raise ValueError("incomplete originally registered Stem curriculum")
+    heldout_ids = {
+        qid for phase in PHASES for qid in questions[phase]
+    }
+    if not isinstance(targets, dict) or set(targets) != heldout_ids:
+        raise ValueError("only original 32 post-policy target bindings allowed")
+    target_class = {}
+    for qid, target in targets.items():
+        if (
+            type(target.unanswerable) is not bool
+            or not isinstance(target.evidence, (tuple, list))
+            or not isinstance(target.unresolved_evidence, (tuple, list))
+        ):
+            raise ValueError("invalid native answerability/support metadata")
+        if target.unanswerable:
+            target_class[qid] = "native-unanswerable"
+        elif not target.evidence or target.unresolved_evidence:
+            target_class[qid] = "native-support-unresolved"
+        else:
+            target_class[qid] = "answerable-native-document-support"
     expected = {
         (stage, phase, qid, arm)
         for stage in STAGES for phase in PHASES
@@ -92,11 +111,27 @@ def train_to_heldout_gap(plan, learning, scored):
                         raise ValueError("paired source candidate pool changed")
                     base_valid = baseline.get("source_choice_correct")
                     learned_valid = learned.get("source_choice_correct")
+                    category = target_class[qid]
+                    weak_native_source_support = (
+                        category == "answerable-native-document-support"
+                    )
                     native_scored = (
-                        b_selection and l_selection
+                        weak_native_source_support
+                        and b_selection and l_selection
                         and type(base_valid) is int and base_valid in (0, 1)
                         and type(learned_valid) is int and learned_valid in (0, 1)
                     )
+                    abstention_scored = (
+                        category == "native-unanswerable"
+                        and b_selection and l_selection
+                        and type(base_valid) is int and base_valid in (0, 1)
+                        and type(learned_valid) is int and learned_valid in (0, 1)
+                    )
+                    if abstention_scored and (
+                        base_valid != int(baseline["selected"] is None)
+                        or learned_valid != int(learned["selected"] is None)
+                    ):
+                        raise ValueError("native abstention label/selection mismatch")
                     good_pair = (
                         baseline["status"] == "succeeded"
                         and learned["status"] == "succeeded"
@@ -136,7 +171,13 @@ def train_to_heldout_gap(plan, learning, scored):
                         stage=stage, phase=phase, arm=arm, cell=routes[qid],
                         question_id=qid, source_family=baseline["family"],
                         both_source_choices_observed=b_selection and l_selection,
+                        native_source_label_category=category,
+                        native_answerable_source_support=weak_native_source_support,
                         weak_native_source_labels_scored=native_scored,
+                        native_abstention_scored=abstention_scored,
+                        native_abstention_gain=(
+                            learned_valid - base_valid if abstention_scored else None
+                        ),
                         changed_top1=(
                             baseline["selected"] != learned["selected"]
                             if b_selection and l_selection else None
@@ -162,6 +203,8 @@ def train_to_heldout_gap(plan, learning, scored):
                     rows = groups[(stage, arm, cell, phase)]
                     known = [r["weak_support_gain"] for r in rows
                              if r["weak_support_gain"] is not None]
+                    abstentions = [r["native_abstention_gain"] for r in rows
+                                   if r["native_abstention_gain"] is not None]
                     f1 = [r["diagnostic_answer_f1_delta"] for r in rows
                           if r["diagnostic_answer_f1_delta"] is not None]
                     n = len(rows)
@@ -169,6 +212,20 @@ def train_to_heldout_gap(plan, learning, scored):
                         planned=n,
                         source_compared=len(known),
                         source_unresolved_or_unselected=n-len(known),
+                        answerable_native_document_support_rows=sum(
+                            r["native_answerable_source_support"] for r in rows
+                        ),
+                        native_unanswerable_rows=sum(
+                            r["native_source_label_category"] == "native-unanswerable"
+                            for r in rows
+                        ),
+                        native_support_unresolved_rows=sum(
+                            r["native_source_label_category"] == "native-support-unresolved"
+                            for r in rows
+                        ),
+                        observed_native_abstention_pairs=len(abstentions),
+                        native_abstention_gains=sum(d == 1 for d in abstentions),
+                        native_abstention_regressions=sum(d == -1 for d in abstentions),
                         native_support_gains=sum(delta == 1 for delta in known),
                         native_support_regressions=sum(delta == -1 for delta in known),
                         source_decision_changes=sum(r["changed_top1"] is True for r in rows),
@@ -227,11 +284,13 @@ def train_to_heldout_gap(plan, learning, scored):
                     production_accepted=False,
                 )
     return dict(
-        schema="hepta.stem-train-heldout-diagnostic-gap.v2",
+        schema="hepta.stem-train-heldout-diagnostic-gap.v3",
         planned_source_policy_rows=len(scored),
         planned_stages=STAGES,
         learned_arms=ARMS[1:],
         posthoc_source_annotations_only=True,
+        native_document_support_vs_abstention_separate=True,
+        actual_training_predictions_unmodified=True,
         metrics_not_for_hyperparameter_search=True,
         matched_reader_weights_prompt_and_question_required=True,
         train_fit_not_proof_of_generalization=True,
