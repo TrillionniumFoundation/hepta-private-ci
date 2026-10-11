@@ -536,9 +536,7 @@ mod tests {
             encoded_size_bytes: manifest.encoded_size_bytes,
             selector_id: selector,
             selector_credential_digest: digest("selector-credential"),
-            signing_key_digest: Digest32::of_bytes(
-                &selector_key.verifying_key().to_bytes(),
-            ),
+            signing_key_digest: Digest32::of_bytes(&selector_key.verifying_key().to_bytes()),
             authority_epoch: 4,
             issued_at: 20,
             expires_at: 80,
@@ -558,7 +556,10 @@ mod tests {
         assert!(receipt.validate_integrity());
         assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
         assert_eq!(receipt.artifact_id, manifest.artifact_id);
-        assert_eq!(receipt.local_checkpoint_binding_digest, local.binding_digest);
+        assert_eq!(
+            receipt.local_checkpoint_binding_digest,
+            local.binding_digest
+        );
 
         // A separately loaded model with the wrong weights cannot inherit the
         // descriptor's valid signature or registry witness.
@@ -571,16 +572,18 @@ mod tests {
             Digest32::ZERO,
         )
         .unwrap();
-        assert!(verify_pinned_neuron_model_descriptor_v1(
-            &wrong_local,
-            &verifier,
-            &signed,
-            current,
-            File::open(&snapshot).unwrap(),
-            File::open(&payload).unwrap(),
-            30,
-        )
-        .is_err());
+        assert!(
+            verify_pinned_neuron_model_descriptor_v1(
+                &wrong_local,
+                &verifier,
+                &signed,
+                current,
+                File::open(&snapshot).unwrap(),
+                File::open(&payload).unwrap(),
+                30,
+            )
+            .is_err()
+        );
 
         // Signing a different CURRENT head fails the independent registry
         // witness check even when the selector signature itself is valid.
@@ -593,16 +596,18 @@ mod tests {
             Digest32::ZERO,
         )
         .unwrap();
-        assert!(verify_pinned_neuron_model_descriptor_v1(
-            &local,
-            &verifier,
-            &drifted,
-            current,
-            File::open(&snapshot).unwrap(),
-            File::open(&payload).unwrap(),
-            30,
-        )
-        .is_err());
+        assert!(
+            verify_pinned_neuron_model_descriptor_v1(
+                &local,
+                &verifier,
+                &drifted,
+                current,
+                File::open(&snapshot).unwrap(),
+                File::open(&payload).unwrap(),
+                30,
+            )
+            .is_err()
+        );
 
         // The actual pinned file bytes are checked, not only the digest in
         // the signed selection envelope.
@@ -613,15 +618,17 @@ mod tests {
             Digest32::ZERO,
         )
         .unwrap();
-        assert!(verify_pinned_neuron_model_descriptor_v1(
-            &local,
-            &verifier,
-            &signed,
-            current,
-            File::open(&snapshot).unwrap(),
-            File::open(&payload).unwrap(),
-            30,
-        )
-        .is_err());
+        assert!(
+            verify_pinned_neuron_model_descriptor_v1(
+                &local,
+                &verifier,
+                &signed,
+                current,
+                File::open(&snapshot).unwrap(),
+                File::open(&payload).unwrap(),
+                30,
+            )
+            .is_err()
+        );
     }
 }
