@@ -81,7 +81,8 @@ class StemHead(nn.Module):
     def forward(self, batch: Features):
         batch.validate(self.dimension)
         if (
-            self.quarantined
+            torch.is_inference_mode_enabled()
+            or self.quarantined
             or batch.encoder_identity != self.encoder_identity
             or not batch.pool_digest
             or not batch.encoder_identity
@@ -125,6 +126,7 @@ class StemHead(nn.Module):
         selected = None if mode != "forced" and scores[-1] >= scores[best] else best
         return selected, scores.tolist()
 
+    @torch.enable_grad()
     def fit(self, rows, cut, *, revoked, steps=192, pair_ceiling=1000000, lr=0.03):
         """Continue this head; validate all rows before any mutation.
 
@@ -145,7 +147,7 @@ class StemHead(nn.Module):
             or not cut.admission_digest
             or self.roots.intersection(revoked | cut.forbidden_roots)
         ):
-            raise ValueError("unavailable session or invalid cumulative budget")
+            raise ValueError("unavailable session, inference-mode training or invalid cumulative budget")
         seen, admitted_roots = set(), set(self.roots)
         for row in rows:
             f = row.features

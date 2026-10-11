@@ -61,6 +61,24 @@ class HeadTests(unittest.TestCase):
             head.decide(features("unseen", "held-out"), revoked=set())[0], 0
         )
 
+    def test_train_with_local_gradients_from_no_grad_caller(self):
+        head = StemHead(4, "encoder-v1", kind="gated")
+        with torch.no_grad():
+            self.assertFalse(torch.is_grad_enabled())
+            receipt = head.fit((self.row,), training_cut(), revoked=set(), steps=16)
+            self.assertFalse(torch.is_grad_enabled())
+        self.assertGreater(receipt["tensor_delta_squared_norm"], 0)
+        self.assertTrue(receipt["state_changed"])
+
+    def test_train_rejects_inference_mode_before_state_mutation(self):
+        head = StemHead(4, "encoder-v1", kind="linear")
+        before = head.export()
+        with torch.inference_mode():
+            with self.assertRaisesRegex(ValueError, "inference-mode"):
+                head.fit((self.row,), training_cut(), revoked=set(), steps=16)
+        self.assertEqual(head.export(), before)
+        self.assertFalse(head.quarantined)
+
     def test_gated_reduces_actual_loss(self):
         head = StemHead(4, "encoder-v1", kind="gated")
         receipt = head.fit((self.row,), training_cut(), revoked=set(), steps=64)
