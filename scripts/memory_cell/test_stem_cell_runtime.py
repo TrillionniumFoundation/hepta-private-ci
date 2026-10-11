@@ -13,8 +13,16 @@ def query():
 
 
 def evidence():
-    return (dict(root="root", scope="scope", observed_at="2023", label="E1",
-                 id="source", excerpt="Original evidence."),)
+    return (
+        dict(
+            root="root",
+            scope="scope",
+            observed_at="2023",
+            label="E1",
+            id="source",
+            excerpt="Original evidence.",
+        ),
+    )
 
 
 class Reader:
@@ -32,7 +40,8 @@ class Reader:
             raise ValueError("fixture generation failure")
         return "Fixture answer. [E1]", dict(
             generator_identity="wrong" if self.corrupt else self.identity,
-            generator_profile=self.profile, delivered_evidence=list(sources),
+            generator_profile=self.profile,
+            delivered_evidence=list(sources),
             generation_seconds=0.001,
         )
 

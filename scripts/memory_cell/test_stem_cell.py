@@ -16,21 +16,37 @@ from stem_cell_cache import SharedFeatureCache
 
 
 def features(q="train", root="root", identity="encoder-v1"):
-    return Features(q, "family", identity, "pool", ("a", "b"), frozenset({root}),
-                    torch.tensor([[1.0, 0.5, 0.0, 0.0], [-1.0, -0.5, 0.0, 0.0]]),
-                    torch.tensor([0.2, 0.5]))
+    return Features(
+        q,
+        "family",
+        identity,
+        "pool",
+        ("a", "b"),
+        frozenset({root}),
+        torch.tensor([[1.0, 0.5, 0.0, 0.0], [-1.0, -0.5, 0.0, 0.0]]),
+        torch.tensor([0.2, 0.5]),
+    )
 
 
 def training_cut():
-    return TrainingCut(frozenset({"train", "second"}), frozenset({"family"}),
-                       frozenset({"root"}), frozenset({"held-out"}), "admission")
+    return TrainingCut(
+        frozenset({"train", "second"}),
+        frozenset({"family"}),
+        frozenset({"root"}),
+        frozenset({"held-out"}),
+        "admission",
+    )
 
 
 def restore(head):
     payload = head.export()
-    return StemHead.restore(payload, expected_sha256=sha256(payload),
-                            encoder_identity=head.encoder_identity,
-                            allowed_roots={"root"}, revoked=set())
+    return StemHead.restore(
+        payload,
+        expected_sha256=sha256(payload),
+        encoder_identity=head.encoder_identity,
+        allowed_roots={"root"},
+        revoked=set(),
+    )
 
 
 class HeadTests(unittest.TestCase):
@@ -41,13 +57,17 @@ class HeadTests(unittest.TestCase):
         head = StemHead(4, "encoder-v1", kind="linear")
         receipt = head.fit((self.row,), training_cut(), revoked=set(), steps=64)
         self.assertLess(receipt["loss_last"], receipt["loss_first"])
-        self.assertEqual(head.decide(features("unseen", "held-out"), revoked=set())[0], 0)
+        self.assertEqual(
+            head.decide(features("unseen", "held-out"), revoked=set())[0], 0
+        )
 
     def test_gated_reduces_actual_loss(self):
         head = StemHead(4, "encoder-v1", kind="gated")
         receipt = head.fit((self.row,), training_cut(), revoked=set(), steps=64)
         self.assertLess(receipt["loss_last"], receipt["loss_first"])
-        self.assertEqual(head.decide(features("unseen", "held-out"), revoked=set())[0], 0)
+        self.assertEqual(
+            head.decide(features("unseen", "held-out"), revoked=set())[0], 0
+        )
 
     def test_prototype_accumulates_without_recounting_replay(self):
         head = StemHead(4, "encoder-v1", kind="prototype")
@@ -64,8 +84,10 @@ class HeadTests(unittest.TestCase):
                 head.fit((self.row,), training_cut(), revoked=set(), steps=16)
                 loaded = restore(head)
                 self.assertEqual(head.export(), loaded.export())
-                self.assertEqual(head.decide(features(), revoked=set()),
-                                 loaded.decide(features(), revoked=set()))
+                self.assertEqual(
+                    head.decide(features(), revoked=set()),
+                    loaded.decide(features(), revoked=set()),
+                )
 
     def test_resume_is_exact_not_reinitialization(self):
         uninterrupted = StemHead(4, "encoder-v1")
@@ -88,13 +110,17 @@ class HeadTests(unittest.TestCase):
         head.fit((self.row,), training_cut(), revoked=set(), steps=4, pair_ceiling=8)
         head = restore(head)
         with self.assertRaises(ValueError):
-            head.fit((self.row,), training_cut(), revoked=set(), steps=4, pair_ceiling=8)
+            head.fit(
+                (self.row,), training_cut(), revoked=set(), steps=4, pair_ceiling=8
+            )
         self.assertTrue(head.quarantined)
 
     def test_validate_entire_training_set_before_mutation(self):
-        for bad in (replace(self.row, features=features("test", "held-out")),
-                    replace(self.row, positive_indices=(5,)),
-                    replace(self.row, positive_indices=(True,))):
+        for bad in (
+            replace(self.row, features=features("test", "held-out")),
+            replace(self.row, positive_indices=(5,)),
+            replace(self.row, positive_indices=(True,)),
+        ):
             head = StemHead(4, "encoder-v1")
             before = head.export()
             with self.assertRaises(ValueError):
@@ -108,10 +134,12 @@ class HeadTests(unittest.TestCase):
 
     def test_feature_identity_and_finiteness(self):
         head = StemHead(4, "encoder-v1")
-        for batch in (features(identity="encoder-v2"),
-                      replace(features(), paired=torch.full((2, 4), float("nan"))),
-                      replace(features(), paired=torch.zeros(2, 3)),
-                      replace(features(), pool_digest="")):
+        for batch in (
+            features(identity="encoder-v2"),
+            replace(features(), paired=torch.full((2, 4), float("nan"))),
+            replace(features(), paired=torch.zeros(2, 3)),
+            replace(features(), pool_digest=""),
+        ):
             with self.assertRaises(ValueError):
                 head.decide(batch, revoked=set())
 
@@ -120,40 +148,69 @@ class HeadTests(unittest.TestCase):
         head.fit((self.row,), training_cut(), revoked=set(), steps=4)
         blob = head.export()
         with self.assertRaises(ValueError):
-            StemHead.restore(blob, expected_sha256=sha256(blob),
-                             encoder_identity="encoder-v1", allowed_roots={"root"},
-                             revoked={"root"})
+            StemHead.restore(
+                blob,
+                expected_sha256=sha256(blob),
+                encoder_identity="encoder-v1",
+                allowed_roots={"root"},
+                revoked={"root"},
+            )
         with self.assertRaises(ValueError):
             head.decide(features("new", "other"), revoked={"root"})
 
     def test_no_cross_encoder_artifact_reuse(self):
         blob = StemHead(4, "encoder-v1").export()
         with self.assertRaises(ValueError):
-            StemHead.restore(blob, expected_sha256=sha256(blob),
-                             encoder_identity="encoder-v2", allowed_roots=set(), revoked=set())
+            StemHead.restore(
+                blob,
+                expected_sha256=sha256(blob),
+                encoder_identity="encoder-v2",
+                allowed_roots=set(),
+                revoked=set(),
+            )
 
     def test_hash_shape_and_false_acceptance_are_enforced(self):
         head = StemHead(4, "encoder-v1")
         original = json.loads(head.export())
-        for field, value in (("production_accepted", True), ("steps", -1),
-                             ("state", {}), ("roots", ["unauthorized"])):
+        for field, value in (
+            ("production_accepted", True),
+            ("steps", -1),
+            ("state", {}),
+            ("roots", ["unauthorized"]),
+        ):
             obj = dict(original)
             obj[field] = value
             blob = json.dumps(obj).encode()
             with self.assertRaises(ValueError):
-                StemHead.restore(blob, expected_sha256=sha256(blob),
-                                 encoder_identity="encoder-v1", allowed_roots=set(), revoked=set())
+                StemHead.restore(
+                    blob,
+                    expected_sha256=sha256(blob),
+                    encoder_identity="encoder-v1",
+                    allowed_roots=set(),
+                    revoked=set(),
+                )
 
     def test_duplicate_json_key_rejected(self):
         blob = b'{"schema":1,"schema":2}'
         with self.assertRaises(ValueError):
-            StemHead.restore(blob, expected_sha256=sha256(blob),
-                             encoder_identity="encoder-v1", allowed_roots=set(), revoked=set())
+            StemHead.restore(
+                blob,
+                expected_sha256=sha256(blob),
+                encoder_identity="encoder-v1",
+                allowed_roots=set(),
+                revoked=set(),
+            )
 
     def test_empty_pool_abstains(self):
-        batch = replace(features(), candidate_ids=(), paired=torch.empty(0, 4),
-                        frozen_scores=torch.empty(0))
-        self.assertEqual(StemHead(4, "encoder-v1").decide(batch, revoked=set()), (None, [0.0]))
+        batch = replace(
+            features(),
+            candidate_ids=(),
+            paired=torch.empty(0, 4),
+            frozen_scores=torch.empty(0),
+        )
+        self.assertEqual(
+            StemHead(4, "encoder-v1").decide(batch, revoked=set()), (None, [0.0])
+        )
 
     def test_feature_copy_does_not_mutate_source(self):
         original = features()
@@ -170,8 +227,14 @@ class HeadTests(unittest.TestCase):
             "allowed_roots={'root'},revoked=set()); print(sha256(h.export()))"
         )
         env = dict(os.environ, PYTHONPATH=str(Path(__file__).parent))
-        result = subprocess.run([sys.executable, "-c", code], input=head.export(),
-                                capture_output=True, check=True, timeout=45, env=env)
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            input=head.export(),
+            capture_output=True,
+            check=True,
+            timeout=45,
+            env=env,
+        )
         self.assertEqual(result.stdout.decode().strip(), sha256(head.export()))
 
     def test_route_uses_only_observable_text(self):
@@ -214,7 +277,9 @@ class Encoder:
 
     def encode(self, query, family, pool, *, revoked):
         self.calls += 1
-        return replace(features(query.identity, identity=self.identity), family=family), {"seconds": 0.01}
+        return replace(
+            features(query.identity, identity=self.identity), family=family
+        ), {"seconds": 0.01}
 
 
 class CacheTests(unittest.TestCase):

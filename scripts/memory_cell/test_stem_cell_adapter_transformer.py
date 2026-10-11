@@ -57,17 +57,30 @@ def tiny_encoder():
     encoder = object.__new__(DifferentiatedEncoder)
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(987)
-        base = BertForSequenceClassification(BertConfig(
-            vocab_size=16, hidden_size=8, intermediate_size=16,
-            num_hidden_layers=1, num_attention_heads=2, num_labels=1,
-            hidden_dropout_prob=0.0, attention_probs_dropout_prob=0.0,
-            max_position_embeddings=32,
-        ))
+        base = BertForSequenceClassification(
+            BertConfig(
+                vocab_size=16,
+                hidden_size=8,
+                intermediate_size=16,
+                num_hidden_layers=1,
+                num_attention_heads=2,
+                num_labels=1,
+                hidden_dropout_prob=0.0,
+                attention_probs_dropout_prob=0.0,
+                max_position_embeddings=32,
+            )
+        )
         base.requires_grad_(False)
-        encoder.model = get_peft_model(base, LoraConfig(
-            r=4, lora_alpha=8, lora_dropout=0.0,
-            target_modules=["query", "value"], bias="none",
-        )).eval()
+        encoder.model = get_peft_model(
+            base,
+            LoraConfig(
+                r=4,
+                lora_alpha=8,
+                lora_dropout=0.0,
+                target_modules=["query", "value"],
+                bias="none",
+            ),
+        ).eval()
     encoder.dimension = 8
     encoder.tokenizer = Tokenizer()
     encoder.parent_identity = encoder.identity = "test-parent"
@@ -79,21 +92,35 @@ def tiny_encoder():
 
 
 def row(identity="train"):
-    return Supervision(Features(
-        identity, "family", "test-parent", "pool", ("a", "b"),
-        frozenset({"root"}), torch.zeros(2, 8), torch.zeros(2),
-    ), (0,))
+    return Supervision(
+        Features(
+            identity,
+            "family",
+            "test-parent",
+            "pool",
+            ("a", "b"),
+            frozenset({"root"}),
+            torch.zeros(2, 8),
+            torch.zeros(2),
+        ),
+        (0,),
+    )
 
 
 def cut():
     return TrainingCut(
-        frozenset({"train", "second"}), frozenset({"family"}),
-        frozenset({"root"}), frozenset({"held-out"}), "fixture-admission",
+        frozenset({"train", "second"}),
+        frozenset({"family"}),
+        frozenset({"root"}),
+        frozenset({"held-out"}),
+        "fixture-admission",
     )
 
 
 def fit(encoder, rows=(row(),), steps=4):
-    queries = {r.features.question_id: Query(identity=r.features.question_id) for r in rows}
+    queries = {
+        r.features.question_id: Query(identity=r.features.question_id) for r in rows
+    }
     pools = {identity: Pool() for identity in queries}
     return encoder.fit(rows, queries, pools, cut(), revoked=set(), steps=steps)
 
@@ -144,7 +171,10 @@ class AdapterTests(unittest.TestCase):
             metadata = encoder.export(directory)
             restored = tiny_encoder()
             restored.restore_into(
-                directory, expected_metadata=metadata, allowed_roots={"root"}, revoked=set()
+                directory,
+                expected_metadata=metadata,
+                allowed_roots={"root"},
+                revoked=set(),
             )
             before, _ = encoder.encode(Query(), "family", Pool(), revoked=set())
             after, _ = restored.encode(Query(), "family", Pool(), revoked=set())
@@ -162,8 +192,10 @@ class AdapterTests(unittest.TestCase):
             metadata = encoder.export(directory)
             with self.assertRaises(ValueError):
                 tiny_encoder().restore_into(
-                    directory, expected_metadata=metadata,
-                    allowed_roots={"root"}, revoked={"root"},
+                    directory,
+                    expected_metadata=metadata,
+                    allowed_roots={"root"},
+                    revoked={"root"},
                 )
 
     def test_corrupted_adapter_is_not_loaded(self):
@@ -175,8 +207,10 @@ class AdapterTests(unittest.TestCase):
             (directory / "adapter.safetensors").write_bytes(b"corrupted")
             with self.assertRaises(ValueError):
                 tiny_encoder().restore_into(
-                    directory, expected_metadata=metadata,
-                    allowed_roots={"root"}, revoked=set(),
+                    directory,
+                    expected_metadata=metadata,
+                    allowed_roots={"root"},
+                    revoked=set(),
                 )
 
     def test_mutation_after_freeze_is_detected(self):

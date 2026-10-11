@@ -134,7 +134,8 @@ class DifferentiatedEncoder(FrozenPairEncoder):
                 for i in (pos, neg)
             ]
             if any(
-                len(self.tokenizer.encode(question, text, add_special_tokens=True)) > 512
+                len(self.tokenizer.encode(question, text, add_special_tokens=True))
+                > 512
                 for text in texts
             ):
                 raise ValueError("encoder training token overflow; no truncation")
@@ -152,7 +153,9 @@ class DifferentiatedEncoder(FrozenPairEncoder):
         if not parameters:
             raise ValueError("no trainable adapter parameters")
         optimizer = torch.optim.AdamW(parameters, lr=5e-5)
-        before = {k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()}
+        before = {
+            k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()
+        }
         tokens, losses, started, used = 0, [], time.perf_counter(), []
         self.receipt = dict(
             status="running",
@@ -182,7 +185,9 @@ class DifferentiatedEncoder(FrozenPairEncoder):
                 logits = self.model(**x).logits.flatten()
                 loss = torch.nn.functional.softplus(logits[1] - logits[0])
                 if not torch.isfinite(loss) or not loss.requires_grad:
-                    raise ValueError("nonfinite or detached encoder differentiation loss")
+                    raise ValueError(
+                        "nonfinite or detached encoder differentiation loss"
+                    )
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(parameters, 1.0, error_if_nonfinite=True)
                 optimizer.step()
@@ -304,9 +309,15 @@ class DifferentiatedEncoder(FrozenPairEncoder):
         if not self.frozen or self.quarantined:
             raise ValueError("differentiated encoder unavailable")
         if any(p.requires_grad for p in self.model.parameters()):
-            raise ValueError("differentiated encoder has trainable parameters after freeze")
+            raise ValueError(
+                "differentiated encoder has trainable parameters after freeze"
+            )
         if frozen_digest(self.model) != self.base_digest:
-            raise ValueError("differentiated encoder base-weight digest changed after freeze")
+            raise ValueError(
+                "differentiated encoder base-weight digest changed after freeze"
+            )
         current = tensor_state_digest(get_peft_model_state_dict(self.model))
         if current != self.adapter_digest:
-            raise ValueError("differentiated encoder canonical adapter-state digest changed")
+            raise ValueError(
+                "differentiated encoder canonical adapter-state digest changed"
+            )
