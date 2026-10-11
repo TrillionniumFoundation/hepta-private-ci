@@ -440,3 +440,21 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     }
     server.join().expect("four-step owner test server");
 }
+
+#[test]
+fn independent_cas_owner_rejects_invalid_split_before_creating_state() {
+    let fixture = Fixture::new();
+    let mut invalid = plan();
+    invalid.owner_ids[1] = invalid.owner_ids[0].clone();
+
+    let opened = CellSplitArtifactCasOwnerV1::open(
+        &fixture.store,
+        &fixture.parent,
+        &fixture.child,
+        invalid,
+        ExternalFinalUse(Arc::new(AtomicBool::new(true))),
+    );
+    assert!(matches!(opened, Err(CellSplitArtifactCasErrorV1::Invalid)));
+    assert!(!fixture.store.join("cas-frontier.json").exists());
+    assert!(!fixture.store.join(".operator-acceptance.lock").exists());
+}
