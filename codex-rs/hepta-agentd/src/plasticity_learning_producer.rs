@@ -7,11 +7,16 @@
 //! Generator/Observer/Evaluator evidence and withholds success until the
 //! rollback-domain anchor commit succeeds.
 
+#[cfg(test)]
 use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
+#[cfg(test)]
 use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
+#[cfg(test)]
 use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
+#[cfg(test)]
 use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
 
+#[cfg(test)]
 use crate::PlasticityRuntimeCallErrorV1;
 use crate::PlasticityRuntimeHandleV1;
 
