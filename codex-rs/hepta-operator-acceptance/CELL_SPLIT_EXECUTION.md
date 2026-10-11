@@ -148,6 +148,33 @@ independently verified; the execution coordinator never resends a prepared
 intent. Recovery needs an independently approved reconciliation procedure,
 not an opportunistic adoption of orphan bytes.
 
+### Signed CNS → Supervisor predecessor bridge
+
+The third coordinator step and the original CNS runtime retain **different**
+commitments. The coordinator's signed `CellSplitExecutionReceiptV1.receipt_digest`
+is the *outer* digest consumed as step four's
+`previous_receipt_digest`. The Supervisor writer-handoff journal's
+`cns_cutover_receipt_digest` binds the exact *inner* original runtime
+receipt bytes. Treating these two hashes as interchangeable cannot establish
+a production predecessor.
+
+The opt-in Supervisor adapter exposes
+`CellSplitSupervisorJournalRuntimePortV1::new_with_signed_cns_predecessor`.
+It verifies the original step-three CNS effect-owner signature under an
+independently pinned key, reconstructs the exact coordinator predecessor,
+parses the signed typed CNS commit, checks its generation, epoch, idempotency
+key, durable sequence and successor route, and binds its original runtime
+bytes to the existing Supervisor journal commitment. The underlying
+`CellSplitFinalizationAuthorityV1` must independently reread the live CNS
+route, NDU/Selector frontier and final-use authorization. A signed outer
+envelope alone does not prove the cutover is still serving.
+
+The old identical-digest `new` constructor is **test-only**. Production
+builds must use the signed two-layer bridge and still require a real CNS
+runtime owner, independent signer custody, durable ledger and target-host
+recovery witnesses. This source adapter is not a production activation
+grant.
+
 ### CNS frozen-binding loss and recovery
 
 The CNS cutover owner now treats the persistent sidecar-lock identity as an
