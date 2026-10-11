@@ -245,7 +245,14 @@ def trial(args):
         # Prediction evidence is calculated BEFORE any access to this event's
         # label is used for an update. The label is only read below this fence.
         before_digest = effective_weights_digest(head)
+        frozen_digest = effective_weights_digest(frozen)
+        if frozen_digest != initial_digests[str(key)]:
+            raise ValueError("frozen same-initialization Head mutated during future replay")
         precommit = prediction_precommit(row, learned_prob, before_digest, index)
+        # Seal both controls BEFORE future labels are revealed. A prediction
+        # alone cannot prove that a frozen control kept its actual weights.
+        precommit["frozen_control_head_digest"] = frozen_digest
+        precommit["frozen_control_probabilities"] = frozen_prob
         precommit["record_digest"] = sha256_record(precommit)
         line = (json.dumps(precommit, ensure_ascii=False, sort_keys=True,
                            separators=(",", ":")) + "\n").encode("utf-8")
@@ -285,6 +292,7 @@ def trial(args):
             "prediction_seal_before_label_update": sealed,
             "preupdate_head_digest": before_digest,
             "postupdate_head_digest": after_digest,
+            "frozen_control_head_digest": frozen_digest,
             "trained_probabilities": learned_prob,
             "frozen_same_initialization_probabilities": frozen_prob,
             "outcome_label_revealed_after_prediction": True,
@@ -296,6 +304,10 @@ def trial(args):
     # update weights, and controls remain at their post-pretrain parameters.
     final_digests = {
         str(key): effective_weights_digest(cell_heads[key]) for key in keys}
+    frozen_final_digests = {
+        str(key): effective_weights_digest(control_heads[key]) for key in keys}
+    if frozen_final_digests != initial_digests:
+        raise ValueError("frozen historical-control Head tensor changed during future events")
     retention_after = retention_by_cell()
     retention_regressions = {
         key: retention_after[key]["multiclass_brier"]
@@ -333,6 +345,7 @@ def trial(args):
         "pretrain_wall_ms": train_ms, "future_update_wall_ms": update_ms,
         "initial_head_digests": initial_digests,
         "final_head_digests": final_digests,
+        "frozen_final_head_digests": frozen_final_digests,
         "frozen_future_metrics": accuracy_brier(frozen_outcomes),
         "learned_future_metrics": accuracy_brier(outcomes),
         "held_out_test_retention_before": retention_before,
