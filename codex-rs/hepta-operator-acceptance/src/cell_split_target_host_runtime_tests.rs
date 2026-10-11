@@ -48,7 +48,9 @@ impl FakeRuntime {
             artifact_digest: CHILD.to_string(),
             route_digest: match name {
                 "route" | "restart" | "power-loss" => crate::durable::sha256(b"route-child"),
-                "rollback" | "tombstone" | "resurrection" => crate::durable::sha256(b"route-parent"),
+                "rollback" | "tombstone" | "resurrection" => {
+                    crate::durable::sha256(b"route-parent")
+                }
                 _ => String::new(),
             },
             predecessor_digest: match name {
