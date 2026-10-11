@@ -134,6 +134,7 @@ impl CellSplitUnixEffectPortV1 {
                     .components()
                     .any(|part| matches!(part, Component::ParentDir))
                 || !paths.insert(path)
+                || key.is_weak()
                 || !keys.insert(key.to_bytes())
             {
                 return Err(CellSplitEffectRpcErrorV1::Invalid(
@@ -192,6 +193,28 @@ impl CellSplitUnixEffectPortV1 {
         Ok(response)
     }
 
+    // This public port must validate the original effect receipt even when
+    // called without the coordinator. Reuse its canonical validation and
+    // verify the step's own pinned signature; no parallel receipt grammar.
+    fn verify_original_receipt(
+        &self,
+        intent: &CellSplitExecutionIntentV1,
+        receipt: &CellSplitExecutionReceiptV1,
+    ) -> Result<(), CellSplitEffectRpcErrorV1> {
+        crate::cell_split_execution_owner::validate_receipt(intent, receipt).map_err(|_| {
+            CellSplitEffectRpcErrorV1::Invalid("malformed original owner effect receipt")
+        })?;
+        let signature = Signature::from_slice(&receipt.owner_signature_bytes).map_err(|_| {
+            CellSplitEffectRpcErrorV1::Invalid("malformed owner effect signature")
+        })?;
+        let payload = crate::cell_split_execution_signing_payload_v1(receipt).map_err(|_| {
+            CellSplitEffectRpcErrorV1::Invalid("invalid owner effect signing payload")
+        })?;
+        self.verifying_keys[intent.step.index()]
+            .verify_strict(&payload, &signature)
+            .map_err(|_| CellSplitEffectRpcErrorV1::Invalid("untrusted owner effect receipt"))
+    }
+
     /// A lookup is a fresh, nonce-bound, separately signed read from the
     /// authority currently owning the durable artifact/state/route/generation.
     fn lookup(
@@ -237,6 +260,9 @@ impl CellSplitUnixEffectPortV1 {
                 &signature,
             )
             .map_err(|_| CellSplitEffectRpcErrorV1::UntrustedReadback)?;
+        if let Some(receipt) = response.receipt.as_ref() {
+            self.verify_original_receipt(intent, receipt)?;
+        }
         Ok(response.receipt)
     }
 }
@@ -257,11 +283,7 @@ impl CellSplitExecutionPortV1 for CellSplitUnixEffectPortV1 {
         let receipt = response.receipt.ok_or(CellSplitEffectRpcErrorV1::Invalid(
             "missing owner effect receipt",
         ))?;
-        if receipt.intent != *intent {
-            return Err(CellSplitEffectRpcErrorV1::Invalid(
-                "owner committed a different intent",
-            ));
-        }
+        self.verify_original_receipt(intent, &receipt)?;
         Ok(receipt)
     }
 
@@ -455,6 +477,55 @@ mod tests {
         .expect("configuration");
         assert!(client.execute(&intent()).is_err());
         assert!(client.reconcile(&intent()).is_err());
+    }
+
+    #[test]
+    fn public_rpc_port_rejects_forged_original_receipt_before_returning_it() {
+        let root = tempfile::tempdir().expect("root");
+        let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let port = CellSplitUnixEffectPortV1::new(
+            [0, 1, 2, 3].map(|i| root.path().join(format!("{i}.sock"))),
+            keys,
+            Duration::from_secs(1),
+        )
+        .expect("four pinned owners");
+        let intent = intent();
+        let forged = committed(&intent, &SigningKey::from_bytes(&[9_u8; 32]));
+        assert!(matches!(
+            port.verify_original_receipt(&intent, &forged),
+            Err(CellSplitEffectRpcErrorV1::Invalid(
+                "untrusted owner effect receipt"
+            ))
+        ));
+        let genuine = committed(&intent, &SigningKey::from_bytes(&[1_u8; 32]));
+        port.verify_original_receipt(&intent, &genuine)
+            .expect("correct signer and canonical receipt");
+        let mut tampered = genuine;
+        tampered.owner_receipt_bytes.push(0);
+        assert!(matches!(
+            port.verify_original_receipt(&intent, &tampered),
+            Err(CellSplitEffectRpcErrorV1::Invalid(
+                "malformed original owner effect receipt"
+            ))
+        ));
+    }
+
+    #[test]
+    fn rpc_port_rejects_weak_pinned_owner_key() {
+        let root = tempfile::tempdir().expect("root");
+        let mut keys =
+            [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let mut identity = [0_u8; 32];
+        identity[0] = 1;
+        let weak = VerifyingKey::from_bytes(&identity).expect("valid compressed identity");
+        assert!(weak.is_weak());
+        keys[2] = weak;
+        assert!(CellSplitUnixEffectPortV1::new(
+            [0, 1, 2, 3].map(|i| root.path().join(format!("{i}.sock"))),
+            keys,
+            Duration::from_secs(1),
+        )
+        .is_err());
     }
 
     #[test]
