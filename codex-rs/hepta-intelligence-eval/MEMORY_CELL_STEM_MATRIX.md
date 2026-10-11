@@ -826,3 +826,40 @@ a hosted re-verification. This is explicitly *post-policy, already-exposed
 labels*: it cannot select a new retrieval hyperparameter on test labels,
 certify an independent benchmark gain, transform weak native-document
 support into independent window entailment or authorize production.
+
+## Train-only residual-scale shadow stress test (nonqualifying)
+
+The strict native matrix now retains an **entirely separate** Shadow
+ablation to test whether the learned Head's source-ranking *direction*
+contains a transferable signal despite unchanged official forced top-1.
+
+For each 16/32/48 checkpoint, five learned arms and two Cells, it
+calibrates **only on previously admitted TRAIN weak document-source
+labels**. Candidate scores are anchored to the original frozen pair
+Encoder, then the learned Encoder+Head residual is multiplied by a
+**preregistered fixed grid** `{0,1,2,4,8,16,32,64}`. Scale choice
+maximizes TRAIN-only equal-source-family macro weak-source accuracy;
+ties deterministically prefer the smallest scale, including zero.
+Native test, transfer, selection or retention annotations do **not**
+enter the scale selection. Unanswerable/no-positive and all-positive
+training rows are visible in the receipt but cannot score as a
+positive-negative ranking opportunity.
+
+This is a separate *source-only*, **non-Reader** experiment. It runs
+after each stage's official six-arm Reader answers without changing
+original retrieval, candidate pool, weights, optimizer, learning rate,
+prompts, answer bytes, or primary source choices. All 480 planned
+shadow source decisions (5 learned arms × 3 stages × 32 questions)
+are retained, including any failures; test/transfer weak source
+labels are read only after all original policy and shadow choices
+are sealed. It produces `shadow-train-calibration.jsonl`,
+`shadow-source-decisions.jsonl` and
+`shadow-source-ceiling.json` separate from all original six-arm
+metrics.
+
+A useful TRAIN-only residual direction may be too small to affect
+the official top-1. A Shadow flip after rescaling is **not an
+achieved Head gain at original scale**, is not a new Reader answer,
+and does not authenticate window entailment, citation quality or
+independent source-family generalization. Even a weak-source label
+gain is diagnostic only. `production_accepted=false`.

@@ -46,6 +46,9 @@ from stem_reader_paired_control import compare_frozen_to_no_evidence
 from stem_cell_geometry import inspect_selection, summarize_geometry
 from stem_cell_training_probe import train_probe, summarize_train_probes
 from stem_head_fit_dynamics import compare_train_head_before_after
+from stem_cell_shadow_scale import (
+    calibrate_shadow_scale, choose_shadow, summarize_shadow_heldout,
+)
 from stem_cell_cache import SharedFeatureCache
 from stem_cell_protocol import (
     ARMS,
@@ -173,6 +176,13 @@ def run(staged, ranker_dir, output):
         generator_config=GENERATION,
         generator_template_digest=digest(SYSTEM),
         primary_policy="same-forced-top1-except-empty-for-all-six-arms",
+        nonqualifying_shadow_scale_protocol=(
+            "train-only weak-source equal-family macro accuracy; "
+            "original frozen logits plus fixed-grid scaling of Head residual; "
+            "test/transfer source-choice labels read only after all policy answers; "
+            "no alternate Reader calls or production serving"
+        ),
+        shadow_preregistered_residual_grid=[0, 1, 2, 4, 8, 16, 32, 64],
         null_diagnostic=(
             "native zero-offset null logit against forced top1; observation only; "
             "no Reader rerun or posthoc threshold search"
@@ -212,6 +222,7 @@ def run(staged, ranker_dir, output):
     adapter_receipts, adapter_errors, index_costs = {}, {}, []
     heads, head_errors, learning, snapshots, attempts = {}, {}, [], {}, []
     training_probes = []
+    shadow_calibrations, shadow_choices = [], []
     try:
         for group in qs.values():
             for q in group:
@@ -669,6 +680,123 @@ def run(staged, ranker_dir, output):
                         )
                         append(output / "policy-predictions.jsonl", item)
                         attempts.append(item)
+            # Shadow ablation follows the official six-arm answers at each
+            # checkpoint. Only previously admitted TRAIN supervision chooses
+            # an alpha; every held-out choice is made without any gold label.
+            shadow_stage_scales = {}
+            for arm in ARMS[1:]:
+                for cell in CELLS:
+                    stage_calibration = dict(
+                        stage=stage, arm=arm, cell=cell,
+                        role="nonqualifying-train-only-shadow-scale",
+                    )
+                    try:
+                        if (arm, cell) in head_errors:
+                            raise ValueError(head_errors[(arm, cell)])
+                        training_inputs = []
+                        for train_row in rows:
+                            qid = train_row.features.question_id
+                            if qid not in admitted_ids:
+                                continue
+                            question = queries[qid]
+                            if route_text(question.content) != cell:
+                                continue
+                            original = initial_features[qid]
+                            adapted = get_features(arm, question)
+                            if (
+                                adapted.question_id != original.question_id
+                                or adapted.family != original.family
+                                or adapted.pool_digest != original.pool_digest
+                                or adapted.candidate_ids != original.candidate_ids
+                            ):
+                                raise ValueError("shadow TRAIN score/pool provenance drift")
+                            with torch.no_grad():
+                                after = heads[(arm, cell)](adapted).tolist()
+                            training_inputs.append(dict(
+                                question_id=qid, family=original.family,
+                                candidate_ids=original.candidate_ids,
+                                positive_indices=train_row.positive_indices,
+                                frozen_logits=original.frozen_scores.tolist(),
+                                head_logits=after[:len(original.candidate_ids)],
+                            ))
+                        calibration = calibrate_shadow_scale(
+                            training_inputs, arm=arm, cell=cell,
+                            stage=stage, admitted_ids=admitted_ids,
+                        )
+                        stage_calibration.update(
+                            status="succeeded", receipt=calibration,
+                            checkpoint_head_sha256=sha256(
+                                heads[(arm, cell)].export()
+                            ),
+                        )
+                        shadow_stage_scales[(arm, cell)] = calibration["chosen_scale"]
+                    except Exception as exc:
+                        stage_calibration.update(
+                            status="failed", error_type=type(exc).__name__,
+                            error=str(exc)[:1024],
+                        )
+                    shadow_calibrations.append(stage_calibration)
+                    append(
+                        output / "shadow-train-calibration.jsonl",
+                        stage_calibration,
+                    )
+            for phase in PHASES:
+                for question in qs[phase]:
+                    cell = route_text(question.content)
+                    for arm in ARMS[1:]:
+                        qid = question.identity
+                        item = dict(
+                            stage=stage, phase=phase, question_id=qid,
+                            arm=arm, cell=cell,
+                            role="shadow-source-only-no-Reader-execution",
+                        )
+                        try:
+                            if (arm, cell) not in shadow_stage_scales:
+                                raise ValueError("unavailable TRAIN-only shadow scale")
+                            original = initial_features[qid]
+                            adapted = get_features(arm, question)
+                            if (
+                                original.question_id != adapted.question_id
+                                or original.family != adapted.family
+                                or original.pool_digest != adapted.pool_digest
+                                or original.candidate_ids != adapted.candidate_ids
+                            ):
+                                raise ValueError("shadow heldout score/pool identity drift")
+                            with torch.no_grad():
+                                after = heads[(arm, cell)](adapted).tolist()
+                            ids = original.candidate_ids
+                            before = original.frozen_scores.tolist()
+                            alpha = shadow_stage_scales[(arm, cell)]
+                            selected = choose_shadow(
+                                ids, before, after[:len(ids)], alpha,
+                            )
+                            frozen = choose_shadow(ids, before, before, 0.0)
+                            if selected is None or frozen is None:
+                                raise ValueError("shadow has no ranked candidate")
+                            pool = pools[qid]
+                            item.update(
+                                status="succeeded",
+                                chosen_scale=alpha,
+                                selected_index=selected,
+                                frozen_index=frozen,
+                                selected_source_id=pool.windows[selected].source_id,
+                                frozen_selected_source_id=pool.windows[frozen].source_id,
+                                changed_frozen_top1=selected != frozen,
+                                original_pool_digest=pool.seal(),
+                                frozen_score_sha256=digest(before),
+                                head_score_sha256=digest(after[:len(ids)]),
+                                head_sha256=sha256(heads[(arm, cell)].export()),
+                                candidate_identity_sha256=digest(ids),
+                                actual_reader_executions=0,
+                                native_targets_unread=True,
+                            )
+                        except Exception as exc:
+                            item.update(
+                                status="failed", error_type=type(exc).__name__,
+                                error=str(exc)[:1024],
+                            )
+                        shadow_choices.append(item)
+                        append(output / "shadow-source-decisions.jsonl", item)
             write(
                 output / f"checkpoint-{stage}.json",
                 dict(
@@ -716,6 +844,16 @@ def run(staged, ranker_dir, output):
             for item in attempts
         ]
         write(output / "scored-policy-attempts.json", scored)
+        # The shadow candidate choices were sealed before ANY native
+        # post-hoc target annotations are used to judge support.
+        shadow_source_report = summarize_shadow_heldout(
+            shadow_choices,
+            {phase: [q.identity for q in qs[phase]] for phase in PHASES},
+            plan["routes"],
+            {q.identity: source_for[q.identity].targets[q.identity]
+             for phase in PHASES for q in qs[phase]},
+        )
+        write(output / "shadow-source-ceiling.json", shadow_source_report)
         oracles = []
         for phase in PHASES:
             for q in qs[phase]:
@@ -883,6 +1021,8 @@ def run(staged, ranker_dir, output):
             weak_training_probes=summarize_train_probes(training_probes),
             within_head_train_fit=within_train_fit_dynamics,
             adapter_pair_opportunities=adapter_opportunities,
+            shadow_source_calibrations=shadow_calibrations,
+            shadow_source_support_postpolicy=shadow_source_report,
             census=census,
             **summarize(scored),
             learning=learning,
