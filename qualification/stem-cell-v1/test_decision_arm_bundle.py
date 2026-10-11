@@ -90,6 +90,14 @@ class DecisionArmBundleTests(unittest.TestCase):
                         "missing_keys": 0, "unexpected_keys": 0,
                         "mismatched_keys": 0, "error_msgs": 0,
                     },
+                    "verified_exact_tensor_materialization": {
+                        "schema": "hepta.local-hf-exact-tensor-materialization.v1",
+                        "complete": True,
+                        "all_state_dict_tensors_compared": True,
+                        "tensor_count": 1, "tensor_elements": 1,
+                        "safetensors_shards": 1,
+                        "production_authorization": False,
+                    },
                     "pretrained_typed_decision_head_existed": False,
                     "checkpoint_zero_shot_score_emitted": False,
                 })
@@ -196,7 +204,11 @@ class DecisionArmBundleTests(unittest.TestCase):
                 ("verified_encoder_loading", {
                     **original["verified_encoder_loading"], "missing_keys": 1,
                 }),
-                ("checkpoint_zero_shot_score_emitted", True)):
+                ("checkpoint_zero_shot_score_emitted", True),
+                ("verified_exact_tensor_materialization", {
+                    **original["verified_exact_tensor_materialization"],
+                    "all_state_dict_tensors_compared": False,
+                })):
             forged = copy.deepcopy(original)
             forged[field] = replacement
             path.write_text(json.dumps(forged))
