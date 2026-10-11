@@ -2,13 +2,18 @@
 //!
 //! This is NOT a production microbatch owner: the pinned Python process loads
 //! the model for a research batch, has no in-process generation fence, no signed
-//! final-use admission and no watchdog. Only reviewed offline weight snapshots
+//! final-use admission. Only reviewed offline weight snapshots
 //! are supported; worker output MUST NOT directly cause a Cell promotion.
 //! It never simulates Encoder logits or returns a production receipt.
 
 use std::collections::BTreeSet;
 use std::fs;
+use std::io::Read;
 use std::io::Write;
+use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
+use std::time::Instant;
 use std::path::PathBuf;
 use std::process::Command;
 use std::process::Stdio;
@@ -25,6 +30,7 @@ use super::Error;
 const MAX_SHADOW_BATCH: usize = 32;
 const MAX_REQUEST_BYTES: usize = 128 * 1024;
 const MAX_RESULT_BYTES: usize = 2 * 1024 * 1024;
+const MAX_SHADOW_RUNTIME: Duration = Duration::from_secs(120);
 const Q24_LIMIT: i64 = 8 * (1 << 24);
 
 #[derive(Clone, Debug)]
@@ -212,10 +218,14 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         .arg(&config.manifest)
         .arg("--requests")
         .arg("-")
+        // The untrusted model loader never inherits unrelated tokens, proxy
+        // credentials or a user-controlled Python module search path.
+        .env_clear()
         .env("HF_HUB_OFFLINE", "1")
         .env("TRANSFORMERS_OFFLINE", "1")
         .env("PYTHONNOUSERSITE", "1")
-        .env_remove("PYTHONPATH")
+        .env("PYTHONDONTWRITEBYTECODE", "1")
+        .env("TOKENIZERS_PARALLELISM", "false")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
@@ -231,12 +241,44 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         let _ = child.wait();
         return Err(error);
     }
-    let output = child.wait_with_output().map_err(|_| Error::FeatureContract)?;
-    if !output.status.success() || output.stdout.len() > MAX_RESULT_BYTES {
+    // std::Child::wait_with_output would buffer unbounded stdout and does not
+    // enforce a deadline. Read at most MAX_RESULT_BYTES + 1 on a separate
+    // thread while supervising the process, then reject excess output.
+    let stdout = child.stdout.take().ok_or(Error::FeatureContract)?;
+    let (sender, receiver) = mpsc::sync_channel(1);
+    thread::spawn(move || {
+        let mut limited = stdout.take((MAX_RESULT_BYTES + 1) as u64);
+        let mut bytes = Vec::new();
+        let read_ok = limited.read_to_end(&mut bytes).is_ok();
+        let _ = sender.send((read_ok, bytes));
+    });
+    let deadline = Instant::now() + MAX_SHADOW_RUNTIME;
+    let status = loop {
+        match child.try_wait() {
+            Ok(Some(status)) => break status,
+            Ok(None) => {}
+            Err(_) => {
+                let _ = child.kill();
+                let _ = child.wait();
+                return Err(Error::FeatureContract);
+            }
+        }
+        if Instant::now() >= deadline {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(Error::DeadlineExpired);
+        }
+        thread::sleep(Duration::from_millis(10));
+    };
+    let time_left = deadline.saturating_duration_since(Instant::now());
+    let (read_ok, response_bytes) = receiver
+        .recv_timeout(time_left)
+        .map_err(|_| Error::DeadlineExpired)?;
+    if !status.success() || !read_ok || response_bytes.len() > MAX_RESULT_BYTES {
         return Err(Error::FeatureContract);
     }
     let response: RawShadowBatch =
-        serde_json::from_slice(&output.stdout).map_err(|_| Error::FeatureContract)?;
+        serde_json::from_slice(&response_bytes).map_err(|_| Error::FeatureContract)?;
     if response.mode != "shadow_only"
         || response.actual_pretrained_forward_calls != 1
         || response.total_cell_requests != requests.len()
