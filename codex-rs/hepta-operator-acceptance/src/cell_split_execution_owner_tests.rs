@@ -763,6 +763,43 @@ fn missing_frozen_plan_after_committed_effect_fences_recovery() {
 }
 
 #[test]
+fn both_frozen_owner_frames_cannot_be_reset_before_first_effect() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("initialize frozen owner");
+        assert_eq!(owner.completed_steps(), 0);
+    }
+    let frozen = root.path().join("cell-split-frozen-plan.json");
+    let pins = root.path().join("cell-split-owner-trust-pins.json");
+    let lock = root.path().join(crate::durable::SIDECAR_LOCK_FILE);
+    assert!(lock.exists());
+    fs::remove_file(&frozen).expect("remove frozen plan");
+    fs::remove_file(&pins).expect("remove frozen pins");
+
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "initialized split owner lost frozen identity"
+        ))
+    ));
+    assert!(!frozen.exists());
+    assert!(!pins.exists());
+    assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
 fn frozen_plan_cannot_reseed_missing_owner_keys_before_any_effect() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
