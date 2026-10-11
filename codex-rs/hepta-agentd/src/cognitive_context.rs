@@ -517,6 +517,13 @@ pub(crate) async fn revalidate(
     .await
 }
 
+pub(crate) struct CognitiveSnapshotProof<'a> {
+    pub snapshot_digest: &'a str,
+    pub read_digest: &'a str,
+    pub omitted_records: u64,
+    pub items: &'a [CognitiveContextItem],
+}
+
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
