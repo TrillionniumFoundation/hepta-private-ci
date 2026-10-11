@@ -211,8 +211,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         .open(witness_path(&path))
         .unwrap();
     let witness = LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = durable_parent_directory(path);
-    let witness_directory = durable_parent_directory(path);
+    let ledger_directory = durable_parent_directory(&path);
+    let witness_directory = durable_parent_directory(&path);
     let mut reopened = LedgerWriter::from_durable(
         reopened_ledger,
         witness,
