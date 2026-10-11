@@ -191,25 +191,36 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
         let root = secure_root(root, "CNS cutover owner root")?;
         let lock = lock_sidecar(&root)?;
         let frozen = canonical_json(&(plan.clone(), binding.clone()))?;
-        match fs::symlink_metadata(root.join(FROZEN)) {
-            Ok(_) if secure_read(&root.join(FROZEN), RECEIPT_MAX_BYTES)? != frozen => {
-                return Err(CellSplitCnsCutoverErrorV1::Invalid);
-            }
-            Ok(_) => {}
-            Err(error) if error.kind() == ErrorKind::NotFound => {
-                write_private_new(&root.join(FROZEN), &frozen)?;
-            }
-            Err(error) => return Err(error.into()),
-        }
-
-        Ok(Self {
+        let frozen_path = root.join(FROZEN);
+        let mut owner = Self {
             root,
             plan,
             plan_digest,
             binding,
             port,
             _lock: lock,
-        })
+        };
+        match fs::symlink_metadata(&frozen_path) {
+            Ok(_) if secure_read(&frozen_path, RECEIPT_MAX_BYTES)? != frozen => {
+                return Err(CellSplitCnsCutoverErrorV1::Invalid);
+            }
+            Ok(_) => {}
+            Err(error) if error.kind() == ErrorKind::NotFound => {
+                // Losing the local frozen binding after a real cutover must
+                // not allow an attacker (or stale caller) to reinitialize the
+                // owner under a new routing plan. Require a fresh nonce-bound
+                // signed observation of the *predecessor* serving route.
+                // An unavailable runtime, already-selected child or unknown
+                // effect stays fail closed without recreating local evidence.
+                let live = owner.checked_live()?;
+                if !owner.is_parent(&live) {
+                    return Err(CellSplitCnsCutoverErrorV1::Invalid);
+                }
+                write_private_new(&frozen_path, &frozen)?;
+            }
+            Err(error) => return Err(error.into()),
+        }
+        Ok(owner)
     }
 
     fn check_intent(
