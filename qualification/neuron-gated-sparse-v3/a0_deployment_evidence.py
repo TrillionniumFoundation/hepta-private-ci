@@ -12,6 +12,8 @@ import argparse
 import base64
 import binascii
 from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 import hashlib
 import json
 from pathlib import Path
@@ -172,7 +174,14 @@ def verify_signed(path: Path, pubkey: Any, fingerprint: str, expected_schema: st
     return payload
 
 
-def evaluate(root: Path, trusted_key: Path) -> dict[str, Any]:
+def evaluate(
+    root: Path,
+    trusted_key: Path,
+    *,
+    expected_host_id: str | None = None,
+    max_age_seconds: int | None = None,
+    evaluation_asof_utc: datetime | None = None,
+) -> dict[str, Any]:
     root = root.resolve(strict=True)
     need(root.is_dir(), "evidence root must be a directory")
     pubkey, fingerprint = load_public_key(trusted_key)
@@ -180,13 +189,27 @@ def evaluate(root: Path, trusted_key: Path) -> dict[str, Any]:
     exact_keys(registry, {"schema", "host_id", "observed_at_utc", "active_cells"}, "registry")
     host = registry["host_id"]
     need(isinstance(host, str) and host.strip() != "", "registry missing host identity")
+    if expected_host_id is not None:
+        need(isinstance(expected_host_id, str) and expected_host_id.strip() != "",
+             "operator expected host ID is invalid")
+        need(host == expected_host_id, "registry does not match independently expected host")
     observed = registry["observed_at_utc"]
     need(isinstance(observed, str) and observed.endswith("Z"),
          "registry missing UTC observation time")
     try:
-        datetime.fromisoformat(observed.replace("Z", "+00:00"))
+        observed_time = datetime.fromisoformat(observed.replace("Z", "+00:00"))
     except ValueError as exc:
         raise EvidenceError("registry UTC observation time is invalid") from exc
+    if max_age_seconds is not None:
+        need(type(max_age_seconds) is int and 1 <= max_age_seconds <= 86_400,
+             "maximum snapshot age must be between 1 and 86400 seconds")
+        asof = evaluation_asof_utc or datetime.now(timezone.utc)
+        need(asof.tzinfo is not None and asof.utcoffset() == timedelta(0),
+             "evaluation as-of must have UTC timezone")
+        need(observed_time <= asof + timedelta(seconds=60),
+             "deployment evidence is dated unacceptably into the future")
+        need(observed_time >= asof - timedelta(seconds=max_age_seconds),
+             "deployment evidence is stale; obtain a fresh owner snapshot")
     active = registry["active_cells"]
     need(isinstance(active, list) and bool(active) and len(active) <= 65_536,
          "registry must name at least one deployed Cell")
@@ -287,10 +310,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence-root", type=Path, required=True)
     parser.add_argument("--trusted-public-key", type=Path, required=True)
+    parser.add_argument("--expected-host-id", required=True)
+    parser.add_argument("--max-age-seconds", type=int, default=300)
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
     try:
-        result = evaluate(args.evidence_root, args.trusted_public_key)
+        result = evaluate(
+            args.evidence_root,
+            args.trusted_public_key,
+            expected_host_id=args.expected_host_id,
+            max_age_seconds=args.max_age_seconds,
+        )
     except (EvidenceError, FileNotFoundError, PermissionError) as exc:
         print(json.dumps({"status": "BLOCKED_A0", "error": str(exc)}), file=sys.stderr)
         return 2
