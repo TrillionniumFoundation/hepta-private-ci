@@ -537,6 +537,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        // The Neuron feature path must obey the same admission envelope as
+        // the ordinary model Driver. A valid payload digest alone does not
+        // permit a request larger than the loaded model or reservation.
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
