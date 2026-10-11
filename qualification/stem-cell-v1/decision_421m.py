@@ -283,6 +283,13 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *, replicates=2000):
         if phase == "checkpoint":
             if item.get("train_steps") != 0 or item.get("trainable_parameters") != 0:
                 raise ValueError("checkpoint phase cannot train on evaluation data")
+            # Raw pretrained HF encoders have no typed Decision Head. Reject a
+            # randomly initialized readout masquerading as a zero-shot model.
+            if item.get("pretrained_typed_decision_head_present") is not True:
+                raise ValueError("checkpoint missing genuinely pretrained typed Decision Head")
+            if item.get("upstream_task_exposure") not in (
+                    "task_specific", "generic_decision", "unknown"):
+                raise ValueError("checkpoint task-pretraining exposure must be disclosed")
         else:
             n = item.get("trainable_parameters")
             if (item.get("train_steps") != plan["train_steps"] or
@@ -361,6 +368,7 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *, replicates=2000):
         "model_weights_executed_by_this_script": False,
         "full_comparison_present": True,
         "checkpoint_is_not_proven_zero_shot": True,
+        "pretrained_typed_checkpoint_head_required": True,
         "brier_definition": "sum_squared_class_error_divided_by_number_of_options",
         "trainable_parameter_ratio": min(budgets) / max(budgets),
         "arm_metrics": reports, "paired_future_vs_original_laya": pairs,
