@@ -66,14 +66,19 @@ def evaluate_strict_run(plan, raw, scored, report, ceiling):
     reader = report["reader"]
     require(
         report["logical_policy_attempts"] == 576
-        and reader["actual_attempts"] == 33
-        and reader["actual_successes"] == 33
+        and reader["actual_attempts"] == 48
+        and reader["actual_successes"] == 48
         and reader["actual_failed_attempts"] == 0
         and reader["cache_hits"] == 543,
         "pinned model Reader invocation accounting changed",
     )
     require(report["no_evidence_reader_report"]["planned_controls"] == 32,
             "control reader census is missing")
+    require(
+        report["no_evidence_reader_call_accounting"]["policy_and_oracle_reader"]
+        ["actual_attempts"] == reader["actual_attempts"],
+        "post-policy Oracle versus independent no-evidence Reader mixed",
+    )
     require(len(report["within_head_train_fit"]) == 30,
             "actual persistent Head before/after receipts missing")
 
@@ -186,6 +191,10 @@ def evaluate_strict_run(plan, raw, scored, report, ceiling):
         answerable_native_support_in_fixed_pool=available,
         answerable_native_support_absent_from_fixed_pool=absent,
         actual_reader_attempts=reader["actual_attempts"],
+        actual_reader_successes=reader["actual_successes"],
+        main_reader_calls_include_postpolicy_oracle_diagnostics=True,
+        six_arm_checkpoint_48_reader_attempts=33,
+        independent_no_evidence_reader_charged_separately=True,
         actual_reader_cache_hits=reader["cache_hits"],
         by_arm_checkpoint_phase=comparisons,
         final_test_transfer_comparison=phase_results,

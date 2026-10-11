@@ -75,9 +75,12 @@ def fixtures():
     report = dict(
         plan=plan, logical_policy_attempts=576,
         production_accepted=False, semantic_citation_precision=None,
-        reader=dict(actual_attempts=33, actual_successes=33,
+        reader=dict(actual_attempts=48, actual_successes=48,
                     actual_failed_attempts=0, cache_hits=543),
         no_evidence_reader_report=dict(planned_controls=32),
+        no_evidence_reader_call_accounting=dict(
+            policy_and_oracle_reader=dict(actual_attempts=48),
+        ),
         within_head_train_fit=[{} for _ in range(30)],
     )
     return plan, raw, scored, report, dict(decisions=list(availability.values()))
@@ -171,6 +174,19 @@ class StrictSourceGateTests(unittest.TestCase):
                 ceiling["decisions"][0]["source_family"] = "other-source"
             with self.subTest(kind=kind), self.assertRaises(AuditError):
                 evaluate_strict_run(p, raw, scored, report, ceiling)
+
+    def test_main_reader_postpolicy_oracle_cost_cannot_be_misassigned(self):
+        p, raw, scored, report, ceiling = fixtures()
+        report["reader"]["actual_attempts"] = 33
+        with self.assertRaisesRegex(AuditError, "Reader invocation"):
+            evaluate_strict_run(p, raw, scored, report, ceiling)
+
+        p, raw, scored, report, ceiling = fixtures()
+        report["no_evidence_reader_call_accounting"][
+            "policy_and_oracle_reader"
+        ]["actual_attempts"] = 33
+        with self.assertRaisesRegex(AuditError, "Oracle"):
+            evaluate_strict_run(p, raw, scored, report, ceiling)
 
     def test_production_field_cannot_be_true_and_noevidence_must_be_complete(self):
         p, raw, scored, report, ceiling = fixtures()

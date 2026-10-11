@@ -956,8 +956,13 @@ GitHub run `38136751661` completed **success** at source commit
 `cb9e98365b5f46e00fb2693f548a7215b1ed1145`, original tree
 `022c9aa8abc095c91ef744644329aaed12564859`. It passed
 **903 Python regressions**, all original **576/576** native policy
-executions, with **33 actual successful frozen Reader calls** and
-**543 canonical request cache hits**. The immutable archived ZIP
+executions, with **33 actual successful frozen Reader calls by the
+final six-arm checkpoint**, followed by further post-policy diagnostic
+Oracle requests. The **entire primary Reader session ended with 48
+actual successful calls** (33 by the last policy checkpoint + 15 new
+Oracle diagnostic requests) and **543 canonical request cache hits**.
+The separately instantiated 32-question no-evidence Reader is
+accounted on its own, never added to those primary-session counts. The immutable archived ZIP
 `11702192907` has external SHA-256
 `be3393f448993451c7860e8867e28a79f5fb7f95d5773f79ed55b30d12a84776`.
 This is full strict-as-of research execution, not a learned-task or
