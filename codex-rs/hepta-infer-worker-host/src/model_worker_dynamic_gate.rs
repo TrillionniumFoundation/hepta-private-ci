@@ -157,16 +157,10 @@ impl DynamicGateArtifactV3 {
         let mut gated = Vec::with_capacity(c.input_width);
         for (index, feature) in features_q24.iter().enumerate() {
             let group = index * c.groups / c.input_width;
-            gated.push(round_q24(
-                i128::from(*feature) * i128::from(gates[group]),
-            )?);
+            gated.push(round_q24(i128::from(*feature) * i128::from(gates[group]))?);
         }
         let drive = dense_q24(&gated, &c.drive_weights_q24, &c.drive_bias_q24)?;
-        let prediction = dense_q24(
-            &gated,
-            &c.prediction_weights_q24,
-            &c.prediction_bias_q24,
-        )?;
+        let prediction = dense_q24(&gated, &c.prediction_weights_q24, &c.prediction_bias_q24)?;
         Ok((drive, prediction))
     }
 }
