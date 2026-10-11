@@ -15,7 +15,7 @@ def _parse_observation(value):
         raise ValueError("bounded observation timestamp string required")
     if re.fullmatch(r"\d{4}", value):
         return datetime.strptime(value, "%Y"), "year", False
-    if re.fullmatch(r"\d{4}[-/]\d{2}[-/]\d{2}", value):
+    if re.fullmatch(r"\d{4}(?:-\d{2}-\d{2}|/\d{2}/\d{2})", value):
         normalized = value.replace("/", "-")
         return datetime.strptime(normalized, "%Y-%m-%d"), "day", False
     if re.fullmatch(

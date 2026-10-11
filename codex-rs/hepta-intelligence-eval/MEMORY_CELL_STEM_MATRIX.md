@@ -233,3 +233,33 @@ or failed Encoder calls remain as unmatched misses, rather than zero-cost
 executions. Per-arm serving latency, energy, power, hardware amortization and
 dollar cost are **unmeasured**. These outputs cannot justify savings relative
 to independent 421M models, nor a production throughput/latency SLA.
+
+## Reader chronology: confirmed historical shared rejection site
+
+The original byte-pinned run `38100601911` has now passed read-only
+accounting audit `38102369705`: SHA256SUMS file census, original commit/tree,
+576 policy attempts and direct canonical Reader reuse all reconcile. The
+original matrix remains **failed**: 396 successful policies, 180 failed
+policies, 33 actual successful Reader calls including privileged diagnostics,
+and 374 policy cache hits. All 180 policy failures had
+`ValueError: unavailable Reader or inadmissible cached evidence`. Historical
+Reader policy scores are unchanged; no independent semantic judgment occurred.
+
+The previous `ExactReaderCache` compared raw `observed_at` strings with
+`>`, which does not order the LoCoMo timestamp grammar
+`1:56 pm on 8 May, 2023` chronologically. This is a common pipeline failure,
+not evidence that Head or LoRA failed. The read-only fix in
+`stem_cell_time.py` parses explicitly registered year/date, ISO and
+LoCoMo minute timestamps and compares normalized values. Unknown or mixed
+precision/timezone values fail closed; actual future evidence is still denied.
+Scope, source withdrawal and candidate bindings remain enforced on cache hits.
+No historical answers are silently rescored or reconstructed.
+
+`stem_cell_time_preflight.py` examines actual pinned native session and
+query timestamp pairs before model evaluation, reports future/incomparable
+observations separately, and never promotes malformed data to admissible
+evidence. The new source revision must demonstrate on its own terminal run
+whether this restores all 576 policies. A passed chronology fixture or
+preflight is not proof of task learning; no independent future windows are
+fabricated. The format's notion of equal timestamps is benchmark-coeval,
+not proof of within-session causal ordering or production chronology authority.

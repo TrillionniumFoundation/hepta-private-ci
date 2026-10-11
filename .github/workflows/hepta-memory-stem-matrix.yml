@@ -78,6 +78,14 @@ jobs:
           if file_inventory(Path('/tmp/stem-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
               raise ValueError('pair encoder tensor drift')
           PY
+      - name: Validate original source chronology without Reader calls
+        env:
+          PYTHONPATH: scripts/memory_cell
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /tmp/stem-python/bin/python scripts/memory_cell/stem_cell_time_preflight.py /tmp/memory-inputs /tmp/stem-native/chronology.json 2>&1 | tee /tmp/stem-native/chronology.log
       - name: All six arms and persistent checkpoints with the same Reader
         env:
           HF_HUB_OFFLINE: "1"
