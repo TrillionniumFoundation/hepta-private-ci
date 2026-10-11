@@ -16,6 +16,7 @@ use super::*;
 struct LiveAuthority {
     cns_live: Arc<AtomicBool>,
     final_use_live: Arc<AtomicBool>,
+    expected_cns_digest: Option<Digest32>,
 }
 
 impl LiveAuthority {
@@ -23,7 +24,13 @@ impl LiveAuthority {
         Self {
             cns_live: Arc::new(AtomicBool::new(true)),
             final_use_live: Arc::new(AtomicBool::new(true)),
+            expected_cns_digest: None,
         }
+    }
+
+    fn with_cns_digest(mut self, expected: Digest32) -> Self {
+        self.expected_cns_digest = Some(expected);
+        self
     }
 }
 
@@ -37,7 +44,8 @@ impl CellSplitFinalizationAuthorityV1 for LiveAuthority {
     ) -> Result<(), Self::Error> {
         if self.cns_live.load(Ordering::Acquire)
             && checkpoint.phase != WriterHandoffPhaseV1::Prepared
-            && binding.cns_cutover_receipt_digest == digest("original signed cns cutover")
+            && binding.cns_cutover_receipt_digest
+                == self.expected_cns_digest.unwrap_or_else(|| digest("original signed cns cutover"))
             && binding.successor_route_digest == digest("live published successor")
         {
             Ok(())
@@ -648,6 +656,10 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         .to_bytes()
         .to_vec();
     original_cns.original_runtime_receipt_bytes = attested;
+    let mut verified_binding = binding();
+    verified_binding.cns_cutover_receipt_digest =
+        Digest32::of_bytes(&original_cns.original_runtime_receipt_bytes);
+    let authority = authority.with_cns_digest(verified_binding.cns_cutover_receipt_digest);
     let original_bytes = serde_json::to_vec(&original_cns).expect("CNS original bytes");
     let mut cns_receipt = CellSplitExecutionReceiptV1 {
         intent: cns_intent,
@@ -666,7 +678,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     assert_ne!(cns_receipt.receipt_digest, cns_receipt.output_digest);
     assert_ne!(
         cns_receipt.receipt_digest,
-        binding().cns_cutover_receipt_digest.to_string()
+        verified_binding.cns_cutover_receipt_digest.to_string()
     );
     supervisor_intent.previous_receipt_digest = cns_receipt.receipt_digest.clone();
     supervisor_intent.idempotency_key = format!(
@@ -684,7 +696,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
         file(&root),
         &minimum,
-        binding(),
+        verified_binding.clone(),
         authority.clone(),
     )
     .expect("real journal");
@@ -746,7 +758,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     let inner_finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
         file(&root_inner_denied),
         &minimum_inner_denied,
-        binding(),
+        verified_binding.clone(),
         authority.clone(),
     )
     .expect("original journal before forged CNS evidence");
@@ -821,7 +833,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     let finalizer_cross_scope = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
         file(&root_cross_scope),
         &minimum_cross_scope,
-        binding(),
+        verified_binding.clone(),
         authority.clone(),
     )
     .expect("real Supervisor journal");
@@ -846,7 +858,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     let denied_finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
         file(&root_denied),
         &minimum_denied,
-        binding(),
+        verified_binding.clone(),
         authority,
     )
     .expect("other real journal");
