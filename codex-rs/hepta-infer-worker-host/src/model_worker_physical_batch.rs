@@ -21,10 +21,47 @@ pub struct PhysicalBatchItemObservationV1 {
 /// independently attested by a target-host observer.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PhysicalBatchRunObservationV1 {
+    /// Canonical identity of this exact ordered request group; not a proof of execution.
+    pub submission_digest: String,
+    /// Backend-reported identity, not independently attested hardware evidence.
     pub batch_execution_digest: String,
     pub claimed_encoder_forward_count: u32,
     pub observed_peak_memory_bytes: u64,
     pub items: Vec<PhysicalBatchItemObservationV1>,
+}
+
+/// Canonical ordered batch identity, distinct from the backend's observation.
+/// Hashes each request/reservation ID, original payload, deadline, and worker
+/// generation. It cannot attest that a backend physically batched inference.
+pub fn canonical_physical_batch_submission_digest_v1(
+    worker_id: &str,
+    model_id: &str,
+    generation: u64,
+    requests: &[NeuronFeatureRequest],
+) -> Digest32 {
+    let mut bytes = b"hepta.worker.physical-batch-submission.v1".to_vec();
+    for value in [worker_id, model_id] {
+        push_batch_identity(&mut bytes, value);
+    }
+    bytes.extend_from_slice(&generation.to_be_bytes());
+    bytes.extend_from_slice(&(requests.len() as u64).to_be_bytes());
+    for request in requests {
+        for field in [
+            request.authorization.request_id.as_str(),
+            request.authorization.reservation_id.as_str(),
+            request.authorization.model_digest.as_str(),
+            request.authorization.payload_digest.as_str(),
+        ] {
+            push_batch_identity(&mut bytes, field);
+        }
+        bytes.extend_from_slice(&request.authorization.deadline_ms.to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
+}
+
+fn push_batch_identity(bytes: &mut Vec<u8>, value: &str) {
+    bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
 /// A reviewed backend must submit the whole slice in one invocation and
@@ -85,6 +122,13 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
                 return Err(Error::PayloadMismatch);
             }
         }
+        let expected_submission_digest =
+            canonical_physical_batch_submission_digest_v1(
+                &self.worker_id,
+                model_id,
+                self.generation,
+                &requests,
+            );
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.active_requests = loaded
             .active_requests
@@ -104,7 +148,8 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
         loaded.active_requests = loaded.active_requests.saturating_sub(size);
         let batch = result?;
         validate_digest(&batch.batch_execution_digest, "physical batch execution")?;
-        if batch.claimed_encoder_forward_count != 1
+        if batch.submission_digest != expected_submission_digest.to_string()
+            || batch.claimed_encoder_forward_count != 1
             || batch.items.len() != size
             || batch.observed_peak_memory_bytes > self.grant.maximum_memory_bytes
         {
