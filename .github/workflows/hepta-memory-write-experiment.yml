@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - "codex/memory-cell-evidence-20261008"
+      - "codex/memory-source-write-isolated-20261011"
     paths:
       - "scripts/memory_cell/experience_*.py"
       - "scripts/memory_cell/test_experience_*.py"
@@ -12,7 +13,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-source-write-1452
+  group: memory-source-write-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   format:
