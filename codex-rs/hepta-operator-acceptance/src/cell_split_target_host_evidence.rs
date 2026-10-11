@@ -16,7 +16,6 @@ use base64::engine::general_purpose::STANDARD as BASE64;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use ed25519_dalek::Verifier;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
@@ -191,6 +190,12 @@ impl CellSplitTargetHostEvidenceTrustPolicyV1 {
         }
         let host_keys = decode_trusted_keys(file.host_keys, "host")?;
         let observer_keys = decode_trusted_keys(file.observer_keys, "observer")?;
+        if host_keys
+            .values()
+            .any(|host| observer_keys.values().any(|observer| observer == host))
+        {
+            return Err(invalid("host and observer trust keys must be independent"));
+        }
         Ok(Self {
             host_keys,
             observer_keys,
@@ -634,6 +639,9 @@ fn decode_trusted_keys(
             .map_err(|_| invalid(format!("{role} verifying key must be 32 bytes")))?;
         let key = VerifyingKey::from_bytes(&bytes)
             .map_err(|_| invalid(format!("malformed {role} verifying key")))?;
+        if key.is_weak() {
+            return Err(invalid(format!("weak {role} verifying key")));
+        }
         if decoded.insert(signer_id, key).is_some() {
             return Err(invalid(format!("duplicate {role} signer id")));
         }
@@ -652,6 +660,9 @@ fn verify_signature(
     expected_key: &VerifyingKey,
     payload: &[u8],
 ) -> Result<(), CellSplitTargetHostEvidenceErrorV1> {
+    if expected_key.is_weak() {
+        return Err(invalid("weak externally pinned verifying key"));
+    }
     let key_bytes = BASE64
         .decode(&signature.verifying_key_base64)
         .map_err(|_| invalid("malformed verifying key"))?;
@@ -664,7 +675,7 @@ fn verify_signature(
     let signature = Signature::from_slice(&signature_bytes)
         .map_err(|_| invalid("malformed Ed25519 signature"))?;
     expected_key
-        .verify(payload, &signature)
+        .verify_strict(payload, &signature)
         .map_err(|_| invalid("signature verification failed"))
 }
 
@@ -916,7 +927,11 @@ fn canonical<T: Serialize>(value: &T) -> Result<Vec<u8>, CellSplitTargetHostEvid
 }
 
 fn digest_shape(value: &str) -> bool {
-    value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+        && value.bytes().any(|byte| byte != b'0')
 }
 
 fn invalid(message: impl Into<String>) -> CellSplitTargetHostEvidenceErrorV1 {
