@@ -957,6 +957,31 @@ impl RuntimeModuleSupervisorV1 {
         Ok(observation)
     }
 
+    /// Revalidate one previously issued diagnostic against THIS Supervisor's
+    /// current active module and complete topology. A locally recomputed
+    /// digest does not prove currentness: quarantine, retirement, cutover
+    /// or unrelated active topology changes must revoke an earlier reading.
+    ///
+    /// This check grants no routing/effect authority and cannot atomically
+    /// fence other process owners. Host orchestration must serialize this
+    /// observation with any future effectful final-use boundary.
+    pub fn revalidate_neuron_active_candidate_v1(
+        &self,
+        previous: &SupervisorNeuronActiveCandidateV1,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        if !previous.validate_integrity() {
+            return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
+        }
+        let live = self.read_neuron_active_candidate_v1(
+            previous.module_generation,
+            previous.candidate_artifact_digest,
+        )?;
+        if live != *previous {
+            return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
+        }
+        Ok(())
+    }
+
     pub fn topology(&self) -> RuntimeTopologySnapshotV1 {
         self.registry.snapshot()
     }
@@ -1248,6 +1273,78 @@ mod tests {
         altered.lifecycle_selection_digest = Digest32::ZERO;
         altered.diagnostic_digest = altered.computed_digest();
         assert!(!altered.validate_integrity());
+
+        // The SAME Supervisor must revalidate this emitted view. Recomputing
+        // a digest is never sufficient to revive stale or wrong-owner facts.
+        supervisor
+            .revalidate_neuron_active_candidate_v1(&observation)
+            .expect("same currently selected owner");
+        let mut forged = observation.clone();
+        forged.owner_id = id("forged-owner");
+        forged.diagnostic_digest = forged.computed_digest();
+        assert!(forged.validate_integrity());
+        assert!(
+            supervisor
+                .revalidate_neuron_active_candidate_v1(&forged)
+                .is_err()
+        );
+
+        // A different ACTIVE module changes the full topology while Neuron's
+        // generation/selection remain unchanged; old receipts fail closed.
+        supervisor
+            .register_bootstrap(abi(1, "independent-memory-runtime", None))
+            .expect("other module selected");
+        assert!(observation.validate_integrity());
+        assert!(
+            supervisor
+                .revalidate_neuron_active_candidate_v1(&observation)
+                .is_err()
+        );
+        let current = supervisor
+            .read_neuron_active_candidate_v1(selected_generation, expected_artifact)
+            .expect("reopened active Neuron observation");
+        supervisor
+            .revalidate_neuron_active_candidate_v1(&current)
+            .expect("new topology currentness");
+
+        // Quarantine suppresses new dispatch immediately, although the writer
+        // generation remains reserved pending drain and reconciliation.
+        supervisor
+            .registry
+            .quarantine(&id("neuron.runtime"), selected_generation)
+            .expect("quarantine");
+        assert_eq!(
+            supervisor.registry.active_generation(&id("neuron.runtime")),
+            Some(selected_generation)
+        );
+        assert!(
+            supervisor
+                .revalidate_neuron_active_candidate_v1(&current)
+                .is_err()
+        );
+        assert!(matches!(
+            supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
+        ));
+
+        // Retiring an independently reconciled owner cannot bring any
+        // previously captured candidate back into the active set.
+        supervisor
+            .retire_after_reconciliation(
+                &id("neuron.runtime"),
+                selected_generation,
+                RuntimeModuleRetirementWitnessV1 {
+                    drain_digest: digest("drained"),
+                    reconciliation_digest: digest("reconciled"),
+                    unknown_effect_count: 0,
+                },
+            )
+            .expect("acknowledged retirement");
+        assert!(matches!(
+            supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
+            Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
+        ));
+        assert!(current.validate_integrity(), "stale integrity is not currency");
     }
 }
 
