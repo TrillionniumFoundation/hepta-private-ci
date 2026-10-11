@@ -105,10 +105,7 @@ def assert_calibration_publication(cases, sources, index_hashes):
         or len(calib_scopes) != 8
         or calib_scopes != set(index_hashes)
         or calib_scopes != {d["scope"] for d in sources}
-        or any(
-            case["query"]["identity"] != case["query"]["scope"]
-            for case in cases
-        )
+        or any(case["query"]["identity"] != case["query"]["scope"] for case in cases)
     ):
         raise ValueError("calibration artifact exposed a held-out scope or index")
 
