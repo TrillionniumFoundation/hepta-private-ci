@@ -388,7 +388,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // This same readback validates the frozen plan, complete receipt chain,
         // pinned signatures and the current real owner state. Do not repeat
         // the four potentially remote owner reads just to export the bytes.
-        let receipts = self.read_verified_prefix()?;
+        let receipts = self.read_verified_prefix(true)?;
         if !self.is_complete() {
             return Ok(None);
         }
@@ -407,7 +407,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// rollback, stale route or post-open sidecar tamper must fence execution,
     /// even when the coordinator previously opened successfully.
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
-        self.read_verified_prefix().map(|_| ())
+        self.read_verified_prefix(false).map(|_| ())
     }
 
     /// One canonical pass for execution preflight and transcript export.
@@ -415,6 +415,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// twice within the same export. None of these receipts grants authority.
     fn read_verified_prefix(
         &mut self,
+        collect_receipts: bool,
     ) -> Result<Vec<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
         let frozen = read_frame(&self.root.join("cell-split-frozen-plan.json"))?.ok_or(
             CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"),
@@ -423,7 +424,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
         }
         let mut predecessor = self.plan_digest.clone();
-        let mut receipts = Vec::with_capacity(self.cursor);
+        let mut receipts = if collect_receipts {
+            Vec::with_capacity(self.cursor)
+        } else {
+            Vec::new()
+        };
         for index in 0..self.cursor {
             let step = CellSplitExecutionStepV1::at(index)
                 .ok_or(CellSplitExecutionErrorV1::Invalid("step index"))?;
@@ -443,8 +448,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             self.port
                 .verify_committed(&intent, &receipt)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
-            predecessor = receipt.receipt_digest.clone();
-            receipts.push(receipt);
+            if collect_receipts {
+                predecessor = receipt.receipt_digest.clone();
+                receipts.push(receipt);
+            } else {
+                predecessor = receipt.receipt_digest;
+            }
         }
         if predecessor != self.previous_receipt_digest {
             return Err(CellSplitExecutionErrorV1::Invalid("committed prefix drift"));
