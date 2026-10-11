@@ -792,3 +792,37 @@ had zero cost. Combining observed responses from two matched but isolated
 model instances is **not** an actually deployed seventh serving policy or a
 prospective causal experiment. Its threshold was not a preregistered
 generation policy and can never authorize production `Cell` routing.
+
+## Read-only strict native retrieval-index lexical ceiling
+
+A new source-only, exact-byte-pinned historical audit uses the **completed
+strict-as-of six-arm matrix** (`38113482210`, artifact `11693742153`,
+ZIP SHA-256 `3bc5f45670b9cbb5fc22d1cbff5b96866443400ea42781072b9fd66ad5ea19c8`)
+and the original LoCoMo input SHA-256
+`79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4`.
+The auditor verifies all original ZIP members, generating source/tree, all
+18 as-of SQLite index snapshots and the 18 source-answerable LoCoMo
+questions from selection/retention/test. No source text is exported.
+
+**All eight native-support candidate-pool misses nevertheless have their
+labelled original source present in the corresponding time-admissible source
+index**. This isolates the missing-recall problem *after* ingestion and
+chronology admission: the source was available but did not survive source
+retrieval and/or candidate-window projection.
+
+Using SQLite FTS5 with the **original frozen OR-token BM25 ordering**, a
+posthoc source-only probe over the eight misses recovers support at
+lexical K=8/16/32/64 in **0/0/0/1** questions. Simply increasing lexical
+channel K is not an evidence-backed solution. One native supporting source
+only first appears at lexical rank 54; the others are absent at K64. Both
+the original source selectors and their actual answers are unchanged.
+
+`stem_lexical_audit.py`, `test_stem_lexical_audit.py` and isolated
+`hepta-memory-stem-lexical-ceiling.yml` pin the exact old artifact, input,
+original SQLite FTS5 ranking and all eight historical missing questions,
+and recheck the census without running an Encoder or Reader. The GitHub
+workflow must pass on its **own exact auditing commit** before declaring it
+a hosted re-verification. This is explicitly *post-policy, already-exposed
+labels*: it cannot select a new retrieval hyperparameter on test labels,
+certify an independent benchmark gain, transform weak native-document
+support into independent window entailment or authorize production.
