@@ -206,3 +206,23 @@ The read-only Rust `SelectedStemHeadBankReaderV1::run_selected_cpu_head_backend_
 The concrete `CpuGatedHeadDriver::observed_backend_batch_invocations` counter is diagnostic for **native CPU Head driver dispatch**, not an independently attested full Encoder execution or fused GPU/Tensor backend. Within the driver the distinct Head calculations are still per-member; batch formation does not prove a throughput increase. A regression on real selected CAS test payloads checks that two different Head IDs produce two typed receipts after **one** Head backend invocation. A separate signed-CAS negative session introduces one modified Q24 member whose self-recomputed payload digest is valid: the selected projection rejects the whole batch, seals both readers and leaves the observed backend invocation count unchanged.
 
 **Non-waivable P1/P2/P3 gates:** this does not install a pretrained HF Encoder in the Rust Worker, sign artifact-load/Final-use receipts, serialize two CURRENT issuances against a production revocation owner, persist a WAL checkpoint, or measure target-host p95/p99/RSS. The product Owner must perform those operations atomically or under a proven generation fence before any route may be promoted. Do not infer 4096-Cell performance or NDU improvement from these L1 fixtures.
+
+## Dual-CAS selection-time equality (L1 replay guard)
+
+The selected Projection and selected Head Bank are checked with **one
+owner-supplied selection-time snapshot** per invocation. Both the single-Cell
+path and the 2–32-member native Head batch reject the entire request if
+`StemCpuHeadUseV1.selection_now` /
+`StemCpuHeadBatchUseV1.selection_now` differs from the Head-bank
+`selection_now`. Any mismatch seals the Head reader before native dispatch;
+there is no sequential retry against an older selection-time value. A separate
+signed CAS test checks 29-versus-30 rejection even though both times are within
+the individual selector certificate windows.
+
+This L1 check prevents split-time admission; it **does not** authenticate the
+caller-provided clock or prove that either independently signed CURRENT is
+still the newest owner head. A production owner must source time from a trusted
+clock, serialize CURRENT and revocation publication against dispatch, bind a
+live generation fence, and persist independently authenticated execution
+receipts. It must not treat an equal timestamp, a digest or an L1 fixture
+as final-use authority.
