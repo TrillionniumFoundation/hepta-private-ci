@@ -14,6 +14,7 @@ import tempfile
 from types import ModuleType, SimpleNamespace
 import unittest
 
+from decision_421m import input_fingerprint
 from hf_joint_decision_runner import run
 from model_runner import snapshot_digest
 
@@ -126,6 +127,11 @@ class FullPipelineModelFreeTests(unittest.TestCase):
             self.assertEqual(receipt["model_source"], "microsoft/deberta-v3-large")
             self.assertEqual(receipt["output_predictions_sha256"],
                              hashlib.sha256(output.read_bytes()).hexdigest())
+            source_by_id = {row["sample_id"]: row for row in rows}
+            self.assertTrue(all(
+                output_row["input_digest"] == input_fingerprint(
+                    source_by_id[output_row["sample_id"]])
+                for output_row in predictions))
             self.assertTrue(all(
                 len(row["logits"]) == 2 and
                 row["arm"] == "deberta_v3_large:equal_budget" and
