@@ -716,3 +716,167 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         .unload_model(100, "model.two.signed.cas")
         .expect("safe model unload");
 }
+
+#[test]
+fn dual_cas_selection_time_must_be_identical_before_any_dispatched_model_call() {
+    // This validator is deliberately shared by single-Cell and backend batch.
+    // A signed selection is never a license to mix two host clock snapshots.
+    assert!(require_same_selection_time(30, 30).is_ok());
+    assert!(matches!(
+        require_same_selection_time(29, 30),
+        Err(StemHeadArtifactError::InvalidBinding)
+    ));
+    assert!(matches!(
+        require_same_selection_time(31, 30),
+        Err(StemHeadArtifactError::InvalidBinding)
+    ));
+
+    let fx = CasPair::new();
+    let (projection_file, projection_current) =
+        fx.current("clock.projection.initial", Digest32::ZERO);
+    let signed_projection = fx.selection(&fx.projection, &projection_current);
+    let selected_projection = fx
+        .selector_verifier
+        .verify(&signed_projection, &projection_current, 30)
+        .expect("signed projection selection");
+    let (head_file, head_current) = fx.current("clock.head.initial", Digest32::ZERO);
+    let signed_head = fx.selection(&fx.bank, &head_current);
+    let selected_head = fx
+        .selector_verifier
+        .verify(&signed_head, &head_current, 30)
+        .expect("signed head selection");
+    let fence = StemProjectionOwnerFenceV1 {
+        scope_digest: digest(b"principal-purpose"),
+        worker_generation: 7,
+        revocation_frontier_digest: digest(b"frontier"),
+    };
+    let mut projection_reader = SelectedStemProjectionReaderV1::load(
+        projection_file,
+        File::open(fx.root.path().join("projection.payload")).expect("projection CAS"),
+        selected_projection,
+        projection_current,
+        fx.projection.compatibility_digest,
+        fence,
+    )
+    .expect("projection CAS load");
+    let mut head_reader = SelectedStemHeadBankReaderV1::load(
+        head_file,
+        File::open(fx.root.path().join("bank.payload")).expect("head CAS"),
+        selected_head,
+        head_current,
+        &projection().encoder_digest,
+        &fx.bank.compatibility_digest.to_string(),
+        fence,
+    )
+    .expect("head CAS load");
+    let manifest = super::super::ModelManifest {
+        model_id: "model.clock.fenced".into(),
+        model_digest: "2".repeat(64),
+        weights_digest: fx.bank.compatibility_digest.to_string(),
+        tokenizer_digest: "4".repeat(64),
+        preprocessor_digest: "5".repeat(64),
+        quantization_digest: "6".repeat(64),
+        runtime_digest: "7".repeat(64),
+        device_digest: "8".repeat(64),
+        maximum_tokens: 128,
+    };
+    let cpu = CpuGatedHeadDriver::new(
+        manifest.clone(),
+        projection().encoder_digest,
+        sorted_heads(),
+    )
+    .expect("pinned CPU Head tensors");
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.clock.fenced".into(),
+        7,
+        super::super::ResourceGrant {
+            grant_id: "grant.clock.fenced".into(),
+            authority_epoch: 2,
+            generation: 7,
+            expires_at_ms: 10_000,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 4,
+            maximum_memory_bytes: 1_000_000,
+            semantic_digest: "1".repeat(64),
+        },
+        cpu,
+    )
+    .expect("worker");
+    worker.load_model(100, manifest).expect("loaded weights");
+
+    let features = [0.5_f32, -0.25, 0.125];
+    let proj = projection();
+    let binding = super::super::stem_projection::StemProjectionBindingV1 {
+        scope_digest: fence.scope_digest.to_string(),
+        generation: fence.worker_generation,
+        revocation_frontier_digest: fence.revocation_frontier_digest.to_string(),
+        encoder_digest: proj.encoder_digest.clone(),
+        preprocessor_digest: proj.preprocessor_digest,
+        runtime_digest: proj.runtime_digest,
+        source_input_digest: digest(b"approved-input").to_string(),
+        source_feature_digest: super::super::stem_projection::stem_feature_f32_digest(
+            &features, 3, "mean",
+        )
+        .expect("feature digest")
+        .to_string(),
+    };
+    let projected = super::super::stem_projection::project_bound_f32(
+        &proj, &binding, &features, 3,
+    )
+    .expect("exact Q24 source projection");
+    let mut request = super::super::NeuronFeatureRequest {
+        authorization: super::super::WorkerRequest {
+            request_id: "request.clock.fenced".into(),
+            reservation_id: "reservation.clock.fenced".into(),
+            model_digest: "2".repeat(64),
+            payload_digest: "0".repeat(64),
+            maximum_tokens: 64,
+            deadline_ms: 9_000,
+            lease_payload_digest: "0".repeat(64),
+            reservation_model_digest: "2".repeat(64),
+            reservation_maximum_tokens: 64,
+            cancelled: false,
+        },
+        encoder_digest: binding.encoder_digest.clone(),
+        head_digest: sorted_heads()[0].digest().expect("Head identity"),
+        weights_digest: fx.bank.compatibility_digest.to_string(),
+        input_digest: projected.projected_input_digest.to_string(),
+        feature_vector_q24: projected.values_q24,
+        expected_output_width: 2,
+    };
+    let payload = super::super::canonical_neuron_feature_payload_digest(&request);
+    request.authorization.payload_digest = payload.clone();
+    request.authorization.lease_payload_digest = payload;
+
+    let (_, projection_current) = fx.current("clock.projection.use", Digest32::ZERO);
+    let (_, head_current) = fx.current("clock.head.use", Digest32::ZERO);
+    let result = head_reader.run_selected_cpu_head(
+        &mut projection_reader,
+        &mut worker,
+        StemCpuHeadUseV1 {
+            selector: &fx.selector_verifier,
+            signed_selection: &signed_projection,
+            current: projection_current,
+            selection_now: 29,
+            binding: &binding,
+            source_features: &features,
+            token_count: 3,
+            request,
+            worker_now_ms: 100,
+            model_id: "model.clock.fenced",
+        },
+        &fx.selector_verifier,
+        &signed_head,
+        head_current,
+        30,
+    );
+    assert!(matches!(result, Err(StemHeadArtifactError::InvalidBinding)));
+    assert!(head_reader.is_sealed());
+    assert!(!projection_reader.is_sealed());
+    assert_eq!(worker.driver.observed_backend_batch_invocations(), 0);
+    worker
+        .unload_model(100, "model.clock.fenced")
+        .expect("no backend use");
+}
