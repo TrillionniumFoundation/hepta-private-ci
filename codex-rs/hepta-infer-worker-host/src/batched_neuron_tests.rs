@@ -454,3 +454,47 @@ fn one_invalid_signature_fences_entire_physical_group_before_backend() {
         before
     );
 }
+
+
+#[test]
+fn physical_backend_coalesces_three_scopes_without_merging_final_use_authority() {
+    let temp = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[41; 32]);
+    let (model, fixture, base) = fixture_request();
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = runner_with_counter(&signer, temp.path(), model, 3, calls.clone());
+    for index in 0_u8..3 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("cross-scope-{index}");
+        request.authorization.reservation_id = format!("cross-reservation-{index}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let mut key = base.clone();
+        key.scope_id = StableId::new(format!("scope-{index}")).unwrap();
+        key.route_fence = 10 + u64::from(index);
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut signed_grant = signed(&signer, binding);
+        signed_grant.grant.grant_id = format!("cross-grant-{index}");
+        signed_grant.grant.nonce = [index + 71; 32];
+        signed_grant.signature = signer
+            .sign(&signed_grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        owner
+            .enqueue(100, "model".into(), request, key, signed_grant)
+            .unwrap();
+    }
+
+    // All three independent scope lanes become ready after max_wait_ms.
+    let result = owner.poll_and_execute_physical(106).unwrap();
+    assert_eq!(result.outcomes.len(), 3);
+    assert_eq!(result.pending, 0);
+    assert!(result.outcomes.iter().all(|item| {
+        matches!(
+            &item.result,
+            Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        )
+    }));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
