@@ -163,6 +163,14 @@ class PrequentialThreeWayTests(unittest.TestCase):
                        if arm != "no_change" else {}),
                     "status": "Succeeded", "production_promotion_permitted": False,
                 })
+        # Match the original Jina producer's deterministic 2-arm JSONL,
+        # not the independently supplied production no-change prediction.
+        sidecar = "".join(
+            json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False,
+                       separators=(",", ":")) + "\n"
+            for row in receipts if row["arm"] in ("frozen", "trained")
+        ).encode("utf-8")
+        self.trial["offline_ood_model_receipts_sha256"] = hashlib.sha256(sidecar).hexdigest()
         return receipts
 
     def test_threeway_ood_uses_only_prior_calibration_and_never_promotes(self):
@@ -219,9 +227,26 @@ class PrequentialThreeWayTests(unittest.TestCase):
         invalid = copy.deepcopy(records)
         next(item for item in invalid if item["split"] == "calibration" and
              item["arm"] == "trained")["probabilities"] = [.99, .01]
-        with self.assertRaisesRegex(ValueError, "must share initial state"):
+        with self.assertRaisesRegex(ValueError, "sidecar byte digest mismatch"):
             offline_threeway_ood_diagnostic(
                 self.rows, self.trial, ("e" * 40, "f" * 64, 1), invalid)
+        # Even forged trial SHA metadata cannot hide a learned-vs-frozen
+        # calibration mismatch; a hash is not a signed producer receipt.
+        forged = copy.deepcopy(self.trial)
+        forged_sidecar = "".join(
+            json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False,
+                       separators=(",", ":")) + "\n"
+            for row in invalid if row["arm"] in ("frozen", "trained")
+        ).encode("utf-8")
+        forged["offline_ood_model_receipts_sha256"] = hashlib.sha256(
+            forged_sidecar).hexdigest()
+        with self.assertRaisesRegex(ValueError, "must share initial state"):
+            offline_threeway_ood_diagnostic(
+                self.rows, forged, ("e" * 40, "f" * 64, 1), invalid)
+        forged.pop("offline_ood_model_receipts_sha256")
+        with self.assertRaisesRegex(ValueError, "immutable SHA identity"):
+            offline_threeway_ood_diagnostic(
+                self.rows, forged, ("e" * 40, "f" * 64, 1), records)
 
     def test_future_ece_brier_are_descriptive_for_all_three_arms(self):
         summary = self.run_report()
