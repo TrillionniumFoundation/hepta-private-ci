@@ -287,3 +287,65 @@ fn rejects_external_scope_and_bad_capacity_without_writes() {
         Some(GatedJournalErrorV3::InvalidLimit)
     );
 }
+
+#[test]
+fn bounded_digest_only_history_reconstructs_exact_old_receipt_after_later_ticks() {
+    let fixture = Fixture::new();
+    let mut journal = checked(GatedSparseJournalV3::open(
+        fixture.create(), config(), scope(), 1_024,
+    ));
+    let mut predecessor = Digest32::ZERO;
+    let mut original_receipt = None;
+    for sequence in 1..=256 {
+        let receipt = checked(journal.commit(predecessor, &tick(sequence)));
+        if sequence == 2 {
+            original_receipt = Some(receipt.clone());
+        }
+        predecessor = receipt.checkpoint_after;
+    }
+    assert_eq!(checked(journal.remaining_capacity()), 1_024 - 256);
+    assert_eq!(
+        checked(journal.retained_history_digest_bytes()),
+        256 * std::mem::size_of::<Digest32>()
+    );
+    let before = checked(fs::read(&fixture.file));
+    let earliest = checked(journal.commit(
+        Digest32::ZERO, &tick(1),
+    ));
+    let second = checked(journal.commit(
+        earliest.checkpoint_after, &tick(2),
+    ));
+    assert_eq!(Some(second), original_receipt);
+    assert_eq!(
+        checked(journal.current_anchor()).expect("latest anchor").checkpoint_digest,
+        predecessor
+    );
+    assert_eq!(checked(fs::read(&fixture.file)), before);
+    drop(journal);
+}
+
+#[test]
+fn historical_idempotent_read_refuses_corrupted_frame_and_poisoned_owner() {
+    let (fixture, _ack2, ack3, _) = committed_fixture();
+    let mut journal = checked(fixture.open_anchored(ack3));
+    let mut bytes = checked(fs::read(&fixture.file));
+    bytes[HEADER_BYTES + 16] ^= 1;
+    checked(fs::write(&fixture.file, &bytes));
+    assert_eq!(
+        journal.commit(Digest32::ZERO, &tick(1)).err(),
+        Some(GatedJournalErrorV3::Corrupt),
+    );
+    assert_eq!(
+        journal.retained_history_digest_bytes().err(),
+        Some(GatedJournalErrorV3::Poisoned),
+    );
+    assert_eq!(
+        journal.commit(ack3.checkpoint_digest, &tick(4)).err(),
+        Some(GatedJournalErrorV3::Poisoned),
+    );
+    drop(journal);
+    assert_eq!(
+        fixture.open_anchored(ack3).err(),
+        Some(GatedJournalErrorV3::Corrupt),
+    );
+}
