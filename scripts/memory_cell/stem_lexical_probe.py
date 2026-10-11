@@ -27,7 +27,9 @@ ARMS = ("legacy", "filtered")
 
 def write(path, obj):
     with path.open("x", encoding="utf-8") as out:
-        json.dump(obj, out, sort_keys=True, ensure_ascii=False, allow_nan=False, indent=2)
+        json.dump(
+            obj, out, sort_keys=True, ensure_ascii=False, allow_nan=False, indent=2
+        )
         out.write("\n")
         out.flush()
         os.fsync(out.fileno())
@@ -36,7 +38,10 @@ def write(path, obj):
 def write_rows(path, rows):
     with path.open("x", encoding="utf-8") as out:
         for row in rows:
-            out.write(json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False) + "\n")
+            out.write(
+                json.dumps(row, sort_keys=True, ensure_ascii=False, allow_nan=False)
+                + "\n"
+            )
         out.flush()
         os.fsync(out.fileno())
 
@@ -61,7 +66,8 @@ def census(plan, rows):
             and isinstance(row["pool_sha256"], str) and len(row["pool_sha256"]) == 64
             and isinstance(row["retrieved_source_ids"], list)
             and 1 <= len(row["retrieved_source_ids"]) <= 8
-            and len(set(row["retrieved_source_ids"])) == len(row["retrieved_source_ids"])
+            and len(set(row["retrieved_source_ids"]))
+            == len(row["retrieved_source_ids"])
             and set(row["window_source_ids"]).issubset(row["retrieved_source_ids"])
             and row["labels_unread"] is True
             and row["reader_calls"] == 0,
@@ -113,7 +119,12 @@ def choose_from_train(plan, records, targets):
                               scored=scored, unscored=len(cohort) - scored,
                               families=len(families))
     # Ties and non-improvement retain original frozen RAG.
-    chosen = "filtered" if summaries["filtered"]["family_macro_window_weak_hit"] > summaries["legacy"]["family_macro_window_weak_hit"] + 1e-12 else "legacy"
+    chosen = (
+        "filtered"
+        if summaries["filtered"]["family_macro_window_weak_hit"]
+        > summaries["legacy"]["family_macro_window_weak_hit"] + 1e-12
+        else "legacy"
+    )
     return dict(
         schema="hepta.stem.lexical-query-train-choice.v1",
         selected=chosen,
@@ -137,7 +148,9 @@ def assess(plan, records, targets, chosen):
             a = records[phase, qid, "legacy"]
             b = records[phase, qid, chosen["selected"]]
             x, y = weak_hit(a, targets[qid]), weak_hit(b, targets[qid])
-            counts["changed_top8"] += a["retrieved_source_ids"] != b["retrieved_source_ids"]
+            counts["changed_top8"] += (
+                a["retrieved_source_ids"] != b["retrieved_source_ids"]
+            )
             if x is None or y is None:
                 require(x is None and y is None, "label drift between arms")
                 counts["unscored"] += 1
@@ -191,7 +204,8 @@ def replay(artifact, staged, output):
         ids = {q for phase in PHASES for q in plan["questions"][phase]}
         require(set(originals) == ids, "original 80 pool identities missing")
         sources = {
-            kind: load(Path(staged) / f"{kind}.json", kind, plan["dataset_sha256"][kind],
+            kind: load(
+                Path(staged) / f"{kind}.json", kind, plan["dataset_sha256"][kind],
                        allow_unresolved_evidence=True,
                        session_conflicts="retain-versioned",
                        invalid_history="quarantine-question",
@@ -202,7 +216,9 @@ def replay(artifact, staged, output):
         for source in sources.values():
             for question in source.questions:
                 if question.identity in ids:
-                    require(question.identity not in questions, "duplicate dataset query")
+                    require(
+                        question.identity not in questions, "duplicate dataset query"
+                    )
                     verify_pinned_replay_question(question, source, ids,
                                                   plan["question_families"])
                     questions[question.identity] = question
@@ -246,13 +262,21 @@ def replay(artifact, staged, output):
                         )
                         for arm, docs in (("legacy", tuple(legacy)),
                                           ("filtered", filtered)):
-                            pool = candidate_windows(docs, q, revoked=set(),
-                                                     budget=budgets, profile="query_windows")
-                            matches = pool.seal() == originals[qid] if arm == "legacy" else None
+                            pool = candidate_windows(
+                                docs, q, revoked=set(),
+                                budget=budgets, profile="query_windows"
+                            )
+                            matches = (
+                                pool.seal() == originals[qid]
+                                if arm == "legacy"
+                                else None
+                            )
                             if arm == "legacy":
-                                require(matches and
-                                        receipt["projection_cut"] == admiss[key]["as_of_cut"],
-                                        "legacy original source/candidate parity failed")
+                                require(
+                                    matches
+                                    and receipt["projection_cut"] == admiss[key]["as_of_cut"],
+                                    "legacy original source/candidate parity failed",
+                                )
                             rows.append(dict(
                                 phase=phase, question_id=qid, arm=arm,
                                 source_family=plan["question_families"][qid],
@@ -262,13 +286,17 @@ def replay(artifact, staged, output):
                                 original_pool_sha256=originals[qid],
                                 pool_sha256=pool.seal(),
                                 pool_matches_original=matches,
-                                retrieved_source_ids=[source_id(d.identity) for d in docs],
+                                retrieved_source_ids=[
+                                    source_id(d.identity) for d in docs
+                                ],
                                 window_source_ids=sorted({
                                     source_id(w.source_id) for w in pool.windows
                                 }),
                                 labels_unread=True, reader_calls=0,
                                 filtered_lexical_term_count=(
-                                    freceipt["lexical_term_count"] if arm == "filtered" else None
+                                    freceipt["lexical_term_count"]
+                                    if arm == "filtered"
+                                    else None
                                 ),
                             ))
             finally:

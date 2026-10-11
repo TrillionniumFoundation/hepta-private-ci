@@ -149,7 +149,10 @@ class QueryTermTests(unittest.TestCase):
         plan, rows, targets = sample()
         for row in rows:
             if row["phase"] == "train" and row["arm"] == "filtered":
-                row["window_source_ids"] = ["supported"] if row["question_id"].endswith("-7") else ["distractor"]
+                row["window_source_ids"] = (
+                    ["supported"] if row["question_id"].endswith("-7")
+                    else ["distractor"]
+                )
         selected = choose_from_train(
             plan, census(plan, rows),
             {q: targets[q] for q in plan["questions"]["train"]},
