@@ -641,7 +641,7 @@ fn make_intent(
     }
 }
 
-fn validate_receipt(
+pub(crate) fn validate_receipt(
     intent: &CellSplitExecutionIntentV1,
     receipt: &CellSplitExecutionReceiptV1,
 ) -> Result<(), CellSplitExecutionErrorV1> {
