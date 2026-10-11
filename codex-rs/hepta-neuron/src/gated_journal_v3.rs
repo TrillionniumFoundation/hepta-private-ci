@@ -70,7 +70,10 @@ pub struct GatedSparseJournalV3 {
     config: GatedSparseConfigV3,
     scope: JournalScope,
     limit: usize,
-    entries: Vec<(Digest32, GatedSparseSignalReceiptV3)>,
+    // 32 bytes per historical tick, independent of temporal/activation widths.
+    // Historical receipts are rebuilt on the rare idempotent retry instead of
+    // retaining up to 1024 full activation/gate vectors per Cell.
+    entries: Vec<Digest32>,
     current: Option<GatedSparseCheckpointV3>,
     poisoned: bool,
 }
@@ -189,7 +192,7 @@ impl GatedSparseJournalV3 {
             if encode_frame(&tick, &receipt) != frame {
                 return Err(GatedJournalErrorV3::Corrupt);
             }
-            result.entries.push((Digest32::of_bytes(&encode_tick(&tick)), receipt));
+            result.entries.push(receipt.checkpoint_after);
             result.current = Some(next);
         }
 
@@ -234,16 +237,19 @@ impl GatedSparseJournalV3 {
         {
             return Err(GatedJournalErrorV3::Mechanism(GatedSparseErrorV3::InvalidInput));
         }
-        let canonical_tick = encode_tick(tick);
-        let tick_digest = Digest32::of_bytes(&canonical_tick);
         if let Some(index) = tick.sequence.checked_sub(1)
             .and_then(|seq| usize::try_from(seq).ok())
-            && let Some((prior, receipt)) = self.entries.get(index)
+            && index < self.entries.len()
         {
-            return if *prior == tick_digest
+            // Exact duplicate retries after later commits still return the
+            // originally committed receipt. Re-read and re-execute every
+            // historical prefix tick, checking every complete frame and
+            // checkpoint digest. No unverified digest-only acknowledgement.
+            let (stored_tick_digest, receipt) = self.replay_receipt_at(index)?;
+            return if stored_tick_digest == Digest32::of_bytes(&encode_tick(tick))
                 && receipt.checkpoint_before == expected_predecessor
             {
-                Ok(receipt.clone())
+                Ok(receipt)
             } else {
                 Err(GatedJournalErrorV3::Conflict)
             };
@@ -272,10 +278,69 @@ impl GatedSparseJournalV3 {
             .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
         self.file.sync_data()
             .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
-        self.entries.push((tick_digest, receipt.clone()));
+        self.entries.push(receipt.checkpoint_after);
         self.current = Some(next);
         self.poisoned = false;
         Ok(receipt)
+    }
+
+    /// Algorithmic bytes used by the journal's in-memory history digest index.
+    /// This excludes Vec capacity, the current checkpoint, OS page cache, and
+    /// file-backed storage. It is not a measured process RSS.
+    pub fn retained_history_digest_bytes(&self) -> Result<usize, GatedJournalErrorV3> {
+        if self.poisoned {
+            return Err(GatedJournalErrorV3::Poisoned);
+        }
+        Ok(self.entries.len() * std::mem::size_of::<Digest32>())
+    }
+
+    /// Reconstruct a historical receipt under the owner-held journal lock.
+    /// Any I/O/replay inconsistency leaves the owner poisoned. A successful
+    /// read unpoisons it, and the public caller still checks exact input and
+    /// expected predecessor before acknowledging a duplicate submission.
+    fn replay_receipt_at(
+        &mut self,
+        index: usize,
+    ) -> Result<(Digest32, GatedSparseSignalReceiptV3), GatedJournalErrorV3> {
+        if index >= self.entries.len() || self.poisoned {
+            return Err(GatedJournalErrorV3::Poisoned);
+        }
+        self.poisoned = true;
+        let frame_len = frame_length(&self.config);
+        self.file
+            .seek(SeekFrom::Start(HEADER_BYTES as u64))
+            .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
+        let mut bytes = vec![0_u8; frame_len];
+        let mut previous = None;
+        for frame_index in 0..=index {
+            self.file
+                .read_exact(&mut bytes)
+                .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
+            let tick = decode_tick(
+                &bytes[..frame_len - FRAME_EXTRA_BYTES],
+                self.config.base.temporal_width,
+                self.config.base.activation_width,
+            )?;
+            if tick.scope_digest != self.scope.scope_digest
+                || tick.objective_digest != self.scope.objective_digest
+            {
+                return Err(GatedJournalErrorV3::Corrupt);
+            }
+            let (next, receipt) =
+                gated_sparse_tick_v3(&self.config, &tick, previous.as_ref())
+                    .map_err(|_| GatedJournalErrorV3::Corrupt)?;
+            if receipt.checkpoint_after != self.entries[frame_index]
+                || encode_frame(&tick, &receipt) != bytes
+            {
+                return Err(GatedJournalErrorV3::Corrupt);
+            }
+            if frame_index == index {
+                self.poisoned = false;
+                return Ok((Digest32::of_bytes(&encode_tick(&tick)), receipt));
+            }
+            previous = Some(next);
+        }
+        Err(GatedJournalErrorV3::Corrupt)
     }
 
     pub fn current(&self) -> Result<Option<&GatedSparseCheckpointV3>, GatedJournalErrorV3> {
@@ -314,10 +379,10 @@ impl GatedSparseJournalV3 {
     fn anchor_at(&self, sequence: u64) -> Option<JournalAnchor> {
         let index = sequence.checked_sub(1)
             .and_then(|n| usize::try_from(n).ok())?;
-        let receipt = &self.entries.get(index)?.1;
+        let checkpoint_digest = *self.entries.get(index)?;
         Some(JournalAnchor {
             sequence,
-            checkpoint_digest: receipt.checkpoint_after,
+            checkpoint_digest,
         })
     }
 }
