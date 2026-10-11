@@ -345,6 +345,9 @@ pub struct CellSplitExecutionOwnerV1 {
     accepted: Vec<CellSplitExternalReceiptV1>,
     pending: Option<CellSplitStepV1>,
     heads: Vec<Digest32>,
+    // Prevent truncated/replaced ledger suffixes from being appended in the
+    // same owner lifetime. The host still owns the private file/directory.
+    durable_bytes: u64,
     // Never report completion before the independent observer has durably
     // acknowledged the exact last ledger head in this process.
     witnessed_sequence: Option<u64>,
@@ -370,6 +373,7 @@ impl CellSplitExecutionOwnerV1 {
             accepted: Vec::new(),
             pending: None,
             heads: vec![Digest32::of_bytes(&header)],
+            durable_bytes: HEADER_SIZE as u64,
             witnessed_sequence: None,
             poisoned: false,
         })
@@ -415,6 +419,7 @@ impl CellSplitExecutionOwnerV1 {
             accepted: Vec::new(),
             pending: None,
             heads: vec![Digest32::of_bytes(&bytes[..HEADER_SIZE])],
+            durable_bytes: HEADER_SIZE as u64,
             witnessed_sequence: None,
             poisoned: false,
         };
@@ -440,6 +445,7 @@ impl CellSplitExecutionOwnerV1 {
             )?;
             owner.accept_replayed(frame)?;
             owner.heads.push(Digest32::of_bytes(&bytes[offset..end]));
+            owner.durable_bytes = end as u64;
             offset = end;
         }
 
@@ -484,6 +490,12 @@ impl CellSplitExecutionOwnerV1 {
         ports: &mut P,
     ) -> Result<CellSplitProgressV1, CellSplitErrorV1> {
         if self.poisoned {
+            return Err(CellSplitErrorV1::Poisoned);
+        }
+        // A live owner must never run an effect on a ledger whose durable
+        // prefix was rolled back or extended behind its exclusive lock.
+        if self.file.0.metadata()?.len() != self.durable_bytes {
+            self.poisoned = true;
             return Err(CellSplitErrorV1::Poisoned);
         }
         for (index, step) in STEPS.into_iter().enumerate() {
@@ -602,9 +614,21 @@ impl CellSplitExecutionOwnerV1 {
             self.heads.len() as u64,
             prev,
         )?;
-        if (self.file.0.metadata()?.len() as usize).saturating_add(bytes.len())
-            > MAX_LEDGER_SIZE
-        {
+        let physical_length = match self.file.0.metadata() {
+            Ok(meta) => meta.len(),
+            Err(_) => {
+                self.poisoned = true;
+                return Err(CellSplitErrorV1::Indeterminate);
+            }
+        };
+        if physical_length != self.durable_bytes {
+            self.poisoned = true;
+            return Err(CellSplitErrorV1::Poisoned);
+        }
+        let next_length = self.durable_bytes
+            .checked_add(bytes.len() as u64)
+            .ok_or(CellSplitErrorV1::Capacity)?;
+        if next_length > MAX_LEDGER_SIZE as u64 {
             return Err(CellSplitErrorV1::Capacity);
         }
         if self.file.0.seek(SeekFrom::End(0)).is_err()
@@ -617,6 +641,7 @@ impl CellSplitExecutionOwnerV1 {
         self.accepted = accepted;
         self.pending = pending;
         self.heads.push(Digest32::of_bytes(&bytes));
+        self.durable_bytes = next_length;
         Ok(())
     }
 }

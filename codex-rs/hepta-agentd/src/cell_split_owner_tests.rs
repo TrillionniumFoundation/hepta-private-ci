@@ -527,3 +527,20 @@ fn selection_candidate_mapping_changes_operation_keys() {
         right.operation_key(CellSplitStepV1::CnsRouteCutover)
     );
 }
+
+#[test]
+fn live_owner_rejects_a_truncated_ledger_before_any_side_effect() {
+    let file = NamedTempFile::new().expect("temp ledger");
+    let p = plan();
+    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p)
+        .expect("bootstrap");
+    let truncated = reopen(&file);
+    truncated.set_len(0).expect("simulate out-of-band truncation");
+    drop(truncated);
+
+    let mut actors = MockOwners::default();
+    assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
+    assert!(!owner.progress().completed);
+    assert!(actors.attempts.is_empty());
+    assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
+}

@@ -78,6 +78,11 @@ product callers.
 Valid suffixes past an earlier anchor survive lost-ACK recovery. Incomplete
 crash tails can be trimmed after verifying every complete predecessor frame.
 Complete invalid frames, mixed scopes or lost anchored history block recovery.
+A live owner's cached durable byte length is checked against the locked file
+before driving or appending further events. Out-of-band truncation or unexpected
+extension poisons the owner and prevents any new effect; a separate trusted
+recovery decision is required. Advisory locks are NOT protection against a
+hostile writer who can bypass the trusted filesystem boundary.
 
 Each frame commits the full bounded raw external receipt, the deterministic
 operation key and generation, a predecessor frame head, and a checksum.
