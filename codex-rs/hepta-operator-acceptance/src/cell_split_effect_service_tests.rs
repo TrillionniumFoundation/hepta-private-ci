@@ -113,7 +113,11 @@ impl CellSplitDurableEffectBackendV1 for DiskEffect {
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
         Ok(self.sequence_override.unwrap_or_else(|| {
-            if self.commit_path().exists() { 7 } else { 1 }
+            if self.commit_path().exists() {
+                7
+            } else {
+                1
+            }
         }))
     }
 }
