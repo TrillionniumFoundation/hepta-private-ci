@@ -1,11 +1,11 @@
 """Runtime contract tests for the encoder LoRA boundary.
 
 These tests deliberately use a tiny local torch module and a narrow PEFT/storage
-shim.  They exercise ``DifferentiatedEncoder`` itself while avoiding a model
-download or loading a pretrained checkpoint in the mechanics workflow.
+shim. They exercise DifferentiatedEncoder without a pretrained checkpoint. The
+separate transformer tests retain actual BERT/PEFT tensor integration coverage.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import importlib.util
 import json
@@ -26,7 +26,6 @@ def _digest(value):
 
 def _load_adapter():
     """Load the adapter against local test doubles, never a pretrained model."""
-
     selector_encoder = types.ModuleType("selector_encoder")
 
     class FrozenPairEncoder:
@@ -37,7 +36,6 @@ def _load_adapter():
             return "encoded", {"fixture": True}
 
     selector_encoder.FrozenPairEncoder = FrozenPairEncoder
-
     native = types.ModuleType("native")
     native.digest = _digest
     pretrained = types.ModuleType("pretrained")
@@ -49,7 +47,6 @@ def _load_adapter():
     pretrained.frozen_digest = frozen_digest
     stem_cell = types.ModuleType("stem_cell")
     stem_cell.sha256 = lambda payload: hashlib.sha256(payload).hexdigest()
-
     peft = types.ModuleType("peft")
 
     class LoraConfig:
@@ -71,13 +68,9 @@ def _load_adapter():
     peft.get_peft_model = get_peft_model
     peft.get_peft_model_state_dict = get_peft_model_state_dict
     peft.set_peft_model_state_dict = set_peft_model_state_dict
-
     modules = {
-        "selector_encoder": selector_encoder,
-        "native": native,
-        "pretrained": pretrained,
-        "stem_cell": stem_cell,
-        "peft": peft,
+        "selector_encoder": selector_encoder, "native": native,
+        "pretrained": pretrained, "stem_cell": stem_cell, "peft": peft,
     }
     saved = {name: sys.modules.get(name) for name in modules}
     sys.modules.update(modules)
@@ -136,9 +129,17 @@ class Query:
     content = "question"
 
 
+@dataclass(frozen=True)
+class FixtureWindow:
+    text: str
+    observed_at: str = "2026-01-01"
+
+    def identity(self):
+        return self.text
+
+
 class Pool:
-    windows = (types.SimpleNamespace(observed_at="2026-01-01", text="positive"),
-               types.SimpleNamespace(observed_at="2026-01-01", text="negative"))
+    windows = (FixtureWindow("positive"), FixtureWindow("negative"))
     inspected = ({"root": "root-a"},)
 
     def seal(self):
@@ -190,34 +191,32 @@ class DifferentiatedEncoderContractTests(unittest.TestCase):
         receipt = encoder.fit((Row(Features()),), {"q1": Query()}, {"q1": Pool()},
                               Cut(), revoked=set(), steps=2)
         self.assertTrue(encoder.frozen)
-        self.assertFalse(any(parameter.requires_grad for parameter in encoder.model.parameters()))
-        self.assertTrue(receipt["adapter_delta_squared_norm"] > 0)
+        self.assertFalse(any(p.requires_grad for p in encoder.model.parameters()))
+        self.assertGreater(receipt["adapter_delta_squared_norm"], 0)
         self.assertEqual(encoder.base_digest, self.module.frozen_digest(encoder.model))
         encoder.verify_frozen()
 
     def test_export_restore_round_trip_preserves_identity(self):
-        source = make_encoder(self.module)
-        source.fit((Row(Features()),), {"q1": Query()}, {"q1": Pool()}, Cut(),
-                   revoked=set(), steps=2)
-        with self.subTest("round trip"):
-            import tempfile
-
-            with tempfile.TemporaryDirectory() as directory:
-                expected = source.export(Path(directory) / "source")
-                restored = make_encoder(self.module)
-                restored.restore_into(Path(directory) / "source",
-                                      expected_metadata=expected,
-                                      allowed_roots={"root-a"}, revoked=set())
-                self.assertEqual(restored.identity, source.identity)
-                self.assertEqual(restored.tensor_bytes(), source.tensor_bytes())
-                restored.verify_frozen()
-
-    def test_restore_rejects_tamper_and_revocation(self):
-        source = make_encoder(self.module)
-        source.fit((Row(Features()),), {"q1": Query()}, {"q1": Pool()}, Cut(),
-                   revoked=set(), steps=2)
         import tempfile
 
+        source = make_encoder(self.module)
+        source.fit((Row(Features()),), {"q1": Query()}, {"q1": Pool()}, Cut(),
+                   revoked=set(), steps=2)
+        with tempfile.TemporaryDirectory() as directory:
+            expected = source.export(Path(directory) / "source")
+            restored = make_encoder(self.module)
+            restored.restore_into(Path(directory) / "source", expected_metadata=expected,
+                                  allowed_roots={"root-a"}, revoked=set())
+            self.assertEqual(restored.identity, source.identity)
+            self.assertEqual(restored.tensor_bytes(), source.tensor_bytes())
+            restored.verify_frozen()
+
+    def test_restore_rejects_tamper_and_revocation(self):
+        import tempfile
+
+        source = make_encoder(self.module)
+        source.fit((Row(Features()),), {"q1": Query()}, {"q1": Pool()}, Cut(),
+                   revoked=set(), steps=2)
         with tempfile.TemporaryDirectory() as directory:
             destination = Path(directory) / "source"
             metadata = source.export(destination)
@@ -228,7 +227,7 @@ class DifferentiatedEncoderContractTests(unittest.TestCase):
                     allowed_roots={"root-a"}, revoked=set())
             with self.assertRaises(ValueError):
                 make_encoder(self.module).restore_into(
-                    Path(directory) / "source", expected_metadata=metadata,
+                    destination, expected_metadata=metadata,
                     allowed_roots={"root-a"}, revoked={"root-a"})
 
     def test_frozen_encoder_withdraws_before_use(self):
@@ -237,6 +236,15 @@ class DifferentiatedEncoderContractTests(unittest.TestCase):
                     revoked=set(), steps=2)
         with self.assertRaises(ValueError):
             encoder.encode(Query(), "family", Pool(), revoked={"root-a"})
+
+    def test_candidate_inventory_drift_rejects_before_training(self):
+        encoder = make_encoder(self.module)
+        before = encoder.tensor_bytes()
+        changed = replace(Features(), candidate_ids=("negative", "positive"))
+        with self.assertRaises(ValueError):
+            encoder.fit((Row(changed),), {"q1": Query()}, {"q1": Pool()},
+                        Cut(), revoked=set(), steps=2)
+        self.assertEqual(encoder.tensor_bytes(), before)
 
 
 if __name__ == "__main__":
