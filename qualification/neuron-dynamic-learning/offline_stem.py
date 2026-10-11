@@ -276,8 +276,12 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Offline pinned real-weight Stem qualification")
     parser.add_argument("--manifest", required=True, type=Path)
-    parser.add_argument("--requests", required=True, type=Path)
+    parser.add_argument("--requests", required=True, help="path or - (stdin JSON)")
     args = parser.parse_args()
     runner = OfflineSharedStem(args.manifest)
-    requests = json.loads(args.requests.read_text(encoding="utf-8"))
+    if args.requests == "-":
+        import sys
+        requests = json.load(sys.stdin)
+    else:
+        requests = json.loads(Path(args.requests).read_text(encoding="utf-8"))
     print(json.dumps(runner.encode_fanout(requests), ensure_ascii=False, sort_keys=True))
