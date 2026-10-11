@@ -1,0 +1,83 @@
+name: Hepta Neuron Four-Gate Research Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/**"
+      - ".github/workflows/hepta-neuron-four-gate.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact source and preserve reproducible research code
+        run: |
+          git rev-parse HEAD > exact-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > four-gate-source.tar.gz
+      - name: Execute full existing and new model-free regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 --version
+          python3 -m compileall -q qualification/neuron-stem
+          PYTHONPATH=qualification/neuron-stem python3 -m unittest discover \
+            -s qualification/neuron-stem -p 'test_*.py' -v 2>&1 | tee four-gate-offline.log
+          git diff --exit-code
+      - name: Preserve actual test output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: four-gate-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            exact-source.txt
+            four-gate-source.tar.gz
+            four-gate-offline.log
+          if-no-files-found: error
+          retention-days: 14
+
+  actual-cpu-mechanisms:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU test dependencies, not pretrained models
+        run: |
+          python3 -m venv /tmp/four-gate-venv
+          /tmp/four-gate-venv/bin/pip install numpy==2.2.6 psutil==7.0.0
+          /tmp/four-gate-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+      - name: Execute actual tensor operations and prequential updates without skips
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > exact-source.txt
+          /tmp/four-gate-venv/bin/python -m pip freeze > cpu-environment.txt
+          PYTHONPATH=qualification/neuron-stem /tmp/four-gate-venv/bin/python \
+            -m unittest capture_cpu_checks -v 2>&1 | tee four-gate-cpu.log
+          git diff --exit-code
+      - name: Preserve actual CPU test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: four-gate-cpu-${{ github.run_id }}
+          path: |
+            exact-source.txt
+            cpu-environment.txt
+            four-gate-cpu.log
+          if-no-files-found: error
+          retention-days: 14
