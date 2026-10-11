@@ -54,6 +54,7 @@ class DecisionArmBundleTests(unittest.TestCase):
                     }, sort_keys=True) + "\n")
             run = {
                 "arm": arm,
+                "model_source": SOURCES[model][0],
                 "checkpoint_sha256": self.plan["checkpoints"][model]["sha256"],
                 "upstream_revision": "a" * 40,
                 "dataset_sha256": "b" * 64,
@@ -129,6 +130,26 @@ class DecisionArmBundleTests(unittest.TestCase):
         fake[0]["run_manifest_path"] = "/tmp/foreign.json"
         with self.assertRaisesRegex(ValueError, "strictly relative"):
             self.build(fake)
+
+    def test_model_source_and_token_envelope_are_bound(self):
+        item = self.entries[0]
+        manifest = self.root / item["run_manifest_path"]
+        document = json.loads(manifest.read_text())
+        document["model_source"] = "different/provider"
+        manifest.write_text(json.dumps(document))
+        with self.assertRaisesRegex(ValueError, "immutable model/data plan"):
+            self.build()
+        document["model_source"] = SOURCES[item["arm"].split(":")[0]][0]
+        manifest.write_text(json.dumps(document))
+        prediction = self.root / item["prediction_path"]
+        rows = [json.loads(line) for line in prediction.read_text().splitlines()]
+        rows[0]["token_count"] = 513
+        prediction.write_text(
+            "".join(json.dumps(row, sort_keys=True) + "\\n" for row in rows))
+        document["output_predictions_sha256"] = sha256_file(prediction)
+        manifest.write_text(json.dumps(document))
+        with self.assertRaisesRegex(ValueError, "token budget"):
+            self.build()
 
     def test_model_cannot_mark_research_as_production(self):
         item = self.entries[0]
