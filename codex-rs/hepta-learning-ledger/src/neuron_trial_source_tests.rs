@@ -1,21 +1,38 @@
 //! Native durable LedgerWriter checks, not only synthetic JSON receipt checks.
 use super::*;
-use std::fs::{self, File, OpenOptions};
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::{self};
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
-use codex_hepta_types::{FixedQ32, ProbabilityQ32};
-use ed25519_dalek::{Signer, SigningKey};
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::ProbabilityQ32;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
-use crate::{
-    ActivatedLearningTrustV1, AuthenticatedOutcomeV1, AuthenticatedPrincipalV1,
-    CandidateSetCompletenessReceiptV1, DatasetFreezePlanV2, DurableLedger, LearningEvidenceTrustV1,
-    LearningTrustDistributionV1, LearningTrustRootV1, LedgerRecovery, LedgerWitnessStore,
-    OutcomeTerminalityV1, OutcomeWatermarkV1, ProductionDecisionV2,
-    SignedLearningTrustDistributionV1, TrustedLearningSignerV1, activate_learning_trust,
-    candidate_ids_digest_v2, candidate_order_digest_v2, decision_signing_payload_v2,
-    outcome_signing_payload_v2,
-};
+use crate::ActivatedLearningTrustV1;
+use crate::AuthenticatedOutcomeV1;
+use crate::AuthenticatedPrincipalV1;
+use crate::CandidateSetCompletenessReceiptV1;
+use crate::DatasetFreezePlanV2;
+use crate::DurableLedger;
+use crate::LearningEvidenceTrustV1;
+use crate::LearningTrustDistributionV1;
+use crate::LearningTrustRootV1;
+use crate::LedgerRecovery;
+use crate::LedgerWitnessStore;
+use crate::OutcomeTerminalityV1;
+use crate::OutcomeWatermarkV1;
+use crate::ProductionDecisionV2;
+use crate::SignedLearningTrustDistributionV1;
+use crate::TrustedLearningSignerV1;
+use crate::activate_learning_trust;
+use crate::candidate_ids_digest_v2;
+use crate::candidate_order_digest_v2;
+use crate::decision_signing_payload_v2;
+use crate::outcome_signing_payload_v2;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
