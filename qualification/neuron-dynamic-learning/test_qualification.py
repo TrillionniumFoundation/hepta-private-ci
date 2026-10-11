@@ -214,6 +214,10 @@ class DynamicLearning(unittest.TestCase):
         incompatible = DynamicCell.initialize("cell.a", "a" * 64, 16, 4, 4, seed=2)
         with self.assertRaises(LearningContractError):
             paired_future_score(head, incompatible, x, y, baseline)
+        poisoned = head.clone_frozen()
+        poisoned.prediction_weights[0] = np.nan
+        with self.assertRaises(LearningContractError):
+            paired_future_score(poisoned, frozen, x, y, baseline)
 
     def test_cell_learning_is_independent_and_no_change_mandatory(self):
         a = DynamicCell.initialize("cell.a", "a" * 64, 8, 4, 4, seed=2)
