@@ -247,6 +247,62 @@ def vectorize_case(torch, model, tokenizer, row, device, *, max_tokens):
     return feature, seq_len
 
 
+def vectorize_scope_batch(torch, model, tokenizer, rows, device, *, max_tokens):
+    """One genuine HF forward for 2..32 same-Scope joint decision cases.
+
+    No model weights are fetched, no source labels reach the Encoder, and
+    unrelated Scopes are never coalesced by the shadow microbatch scheduler.
+    """
+    if not 2 <= len(rows) <= 32:
+        raise ValueError("physical Encoder microbatch requires 2..32 inputs")
+    if len({row["scope"] for row in rows}) != 1:
+        raise ValueError("cross-Scope Encoder batch is forbidden")
+    encoded, lengths = [], []
+    for row in rows:
+        tokens = tokenizer(render_joint(row), return_tensors="pt",
+                           truncation=False)
+        if (not isinstance(tokens, Mapping) or
+                "input_ids" not in tokens or "attention_mask" not in tokens):
+            raise ValueError("incomplete joint tokenizer output")
+        mask = tokens["attention_mask"]
+        if mask.ndim != 2 or mask.shape[0] != 1:
+            raise ValueError("invalid per-case Encoder mask")
+        count = int(mask.sum().item())
+        if not 1 <= count <= max_tokens:
+            raise ValueError("Encoder batch would silently truncate input")
+        sample = {}
+        for name, tensor in tokens.items():
+            if (tensor.ndim != 2 or tensor.shape[0] != 1 or
+                    tensor.shape[1] != mask.shape[1]):
+                raise ValueError("tokenizer emitted incompatible per-case tensor")
+            sample[name] = tensor[0].tolist()
+        encoded.append(sample)
+        lengths.append(count)
+    padded = tokenizer.pad(encoded, padding=True, return_tensors="pt")
+    if (not isinstance(padded, Mapping) or
+            "attention_mask" not in padded or
+            padded["attention_mask"].ndim != 2 or
+            padded["attention_mask"].shape[0] != len(rows)):
+        raise ValueError("incompatible physical Encoder padding layout")
+    masks = padded["attention_mask"]
+    if masks.shape[1] * len(rows) > max_tokens * 32:
+        raise ValueError("physical Encoder batch exceeds joint token memory envelope")
+    if [int(mask.sum().item()) for mask in masks] != lengths:
+        raise ValueError("Encoder padding changed original token identities")
+    args = {name: value.to(device) for name, value in padded.items()}
+    with torch.inference_mode():
+        states = model(**args).last_hidden_state
+        weights = args["attention_mask"].unsqueeze(-1).to(states.dtype)
+        if (states.ndim != 3 or states.shape[0] != len(rows) or
+                states.shape[1] != weights.shape[1]):
+            raise ValueError("physical Encoder batch returned invalid hidden geometry")
+        pooled = (states * weights).sum(dim=1) / weights.sum(dim=1).clamp_min(1)
+        features = pooled.to(torch.float32).detach().cpu()
+    if not torch.isfinite(features).all().item():
+        raise ValueError("nonfinite physical Encoder batch output")
+    return [(features[j], lengths[j]) for j in range(len(rows))]
+
+
 def run(args):
     checkpoint = snapshot_validation(args)
     rows = list(read_strict_jsonl(args.dataset))
@@ -290,23 +346,46 @@ def run(args):
     if type(position_limit) is int and args.context_tokens > position_limit:
         raise ValueError("model position budget smaller than registered context")
 
+    microbatch = getattr(args, "encoder_microbatch_size", 1)
+    if type(microbatch) is not int or not 1 <= microbatch <= 32:
+        raise ValueError("physical shared Encoder batch size must be 1..32")
     vectors, encode_ms, lengths = {}, {}, {}
     feature_bytes = 0
-    for row in rows:
+    encoder_forward_calls, batch_sizes = 0, []
+    cursor = 0
+    while cursor < len(rows):
+        scope = rows[cursor]["scope"]
+        selected = []
+        while (cursor < len(rows) and len(selected) < microbatch and
+               rows[cursor]["scope"] == scope):
+            selected.append(rows[cursor])
+            cursor += 1
+        if args.device.startswith("cuda"):
+            torch.cuda.synchronize()
         start = time.perf_counter_ns()
-        feature, n_tokens = vectorize_case(
-            torch, model, tokenizer, row, args.device,
-            max_tokens=args.context_tokens)
+        if len(selected) == 1:
+            measurements = [vectorize_case(
+                torch, model, tokenizer, selected[0], args.device,
+                max_tokens=args.context_tokens)]
+        else:
+            measurements = vectorize_scope_batch(
+                torch, model, tokenizer, selected, args.device,
+                max_tokens=args.context_tokens)
         if args.device.startswith("cuda"):
             torch.cuda.synchronize()
         duration = (time.perf_counter_ns() - start) / 1e6
-        feature_bytes += feature.numel() * feature.element_size()
-        if feature_bytes > MAX_FEATURE_BYTES:
-            raise ValueError("frozen feature materialization exceeds strict memory budget")
-        if feature.numel() != width:
-            raise ValueError("encoder hidden width differs from pinned manifest")
-        sid = row["sample_id"]
-        vectors[sid], encode_ms[sid], lengths[sid] = feature, duration, n_tokens
+        encoder_forward_calls += 1
+        batch_sizes.append(len(selected))
+        for row, (feature, n_tokens) in zip(selected, measurements):
+            feature_bytes += feature.numel() * feature.element_size()
+            if feature_bytes > MAX_FEATURE_BYTES:
+                raise ValueError("frozen feature materialization exceeds strict memory budget")
+            if feature.numel() != width:
+                raise ValueError("encoder hidden width differs from pinned manifest")
+            sid = row["sample_id"]
+            # Report full physical batch duration for each Cell, never divide
+            # by batch size and misrepresent this as production p99.
+            vectors[sid], encode_ms[sid], lengths[sid] = feature, duration, n_tokens
 
     # Loading different pretrained architectures may consume different RNG.
     # Reset exactly before Head initialization so matched-width Head arms
@@ -375,6 +454,11 @@ def run(args):
         "optimizer": "adamw", "training_split": "train",
         "train_steps": args.train_steps, "trainable_parameters": head_parameters,
         "frozen_encoder_parameters": encoder_params,
+        "physical_encoder_forward_calls": encoder_forward_calls,
+        "physical_encoder_microbatch_ceiling": microbatch,
+        "observed_physical_encoder_batch_sizes": batch_sizes,
+        "per_case_latency_conservatively_charged_full_batch": True,
+        "production_microbatch_qualified": False,
         "verified_encoder_loading": loading_receipt,
         "verified_exact_tensor_materialization": tensor_materialization,
         "model_load_seconds": load_seconds, "training_seconds": train_seconds,
@@ -416,6 +500,8 @@ def main():
     p.add_argument("--train-steps", type=int, required=True)
     p.add_argument("--trainable-budget", type=int, default=262144)
     p.add_argument("--batch-size", type=int, default=16)
+    p.add_argument("--encoder-microbatch-size", type=int, default=1,
+                   help="real same-Scope HF microbatch 1..32; never a native Worker receipt")
     p.add_argument("--context-tokens", type=int, default=512)
     p.add_argument("--seed", type=int, default=7347)
     p.add_argument("--device", default="cpu")
