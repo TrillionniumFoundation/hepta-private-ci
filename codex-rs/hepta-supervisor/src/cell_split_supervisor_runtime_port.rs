@@ -47,10 +47,10 @@ pub struct CellSplitSupervisorJournalRuntimePortV1<A: CellSplitFinalizationAutho
 }
 
 impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV1<A> {
-    /// Compatibility constructor for a previously pinned, identical digest
-    /// representation. Real CNS integration must use the explicit signed
-    /// predecessor constructor: the original runtime receipt digest and the
-    /// coordinator's signed outer receipt digest are not interchangeable.
+    /// Qualification-only constructor for deliberately identical digest
+    /// fixtures. Production cannot call this entry to skip the signed CNS
+    /// predecessor bridge; use new_with_signed_cns_predecessor instead.
+    #[cfg(test)]
     pub fn new(
         plan: CellSplitExecutionPlanV1,
         binding: CellSplitSupervisorFenceBindingV1,
