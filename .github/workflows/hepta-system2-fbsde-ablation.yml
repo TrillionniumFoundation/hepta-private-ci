@@ -82,6 +82,13 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/system2-research/margin-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_margin_transfer.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/margin-transfer 2>&1 | tee /tmp/system2-research/margin-execution.log
+      - name: Test episodic per-Cell few-shot deltas without Encoder or Reader calls
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-research/fewshot-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_fewshot_cells.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/fewshot-cells 2>&1 | tee /tmp/system2-research/fewshot-execution.log
       - name: Retain source identity, partial rows, failures, and full artifacts
         if: always()
         run: |
