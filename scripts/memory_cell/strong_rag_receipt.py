@@ -116,6 +116,7 @@ def _runtime_receipt(directory, run):
         runtime.get("schema") != "hepta.memory.runtime-preflight.v1"
         or runtime.get("bounded_thread_diagnostic_requested") is not False
         or run.get("runtime_preflight_sha256") != file_sha(path)
+        or not isinstance(torch_info, dict)
         or type(torch_info.get("intra_op_threads")) is not int
         or torch_info["intra_op_threads"] < 1
     ):

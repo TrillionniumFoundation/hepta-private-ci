@@ -125,8 +125,10 @@ class StrongRagPolicyTests(unittest.TestCase):
             "q1", "family", "scope", "Which site?", "2026-01-01T00:00:00Z"
         )
         case = dict(
-            query=asdict(query), kind="new_fact",
-            candidate_digest="frozen", frontier="frontier"
+            query=asdict(query),
+            kind="new_fact",
+            candidate_digest="frozen",
+            frontier="frontier",
         )
         with tempfile.TemporaryDirectory() as tmp:
             journal = Path(tmp) / "raw-answers.jsonl"
@@ -136,8 +138,13 @@ class StrongRagPolicyTests(unittest.TestCase):
             ):
                 with self.assertRaisesRegex(RuntimeError, "journal retained"):
                     trial._journal_answers(
-                        SlowReader(), [case], {}, ("k1",),
-                        lambda _case, _arm: (), journal, seed="fixed"
+                        SlowReader(),
+                        [case],
+                        {},
+                        ("k1",),
+                        lambda _case, _arm: (),
+                        journal,
+                        seed="fixed",
                     )
             raw = [json.loads(line) for line in journal.read_text().splitlines()]
             self.assertEqual(len(raw), 1)

@@ -126,11 +126,8 @@ class ReceiptValidationTests(unittest.TestCase):
                 "torch": {"intra_op_threads": 2},
             }
             path.write_text(json.dumps(record), encoding="utf-8")
-            run = {
-                "runtime_preflight_sha256": hashlib.sha256(
-                    path.read_bytes()
-                ).hexdigest()
-            }
+            sha = hashlib.sha256(path.read_bytes()).hexdigest()
+            run = {"runtime_preflight_sha256": sha}
             self.assertEqual(audit._runtime_receipt(directory, run), record)
             path.write_text(json.dumps(record | {"torch": {}}))
             with self.assertRaises(ValueError):
