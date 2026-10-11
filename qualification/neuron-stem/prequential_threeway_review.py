@@ -391,6 +391,8 @@ def offline_threeway_ood_diagnostic(dataset, trial, nochange_identity, receipts)
         }
     return {
         "threeway_exact_offline_coverage": True,
+        "frozen_feature_manifest_digest": feature_manifest_digest,
+        "frozen_stem_cell_generation": generation,
         "production_promotion_permitted": False,
         "independent_prediction_signature_verified": False,
         "ood_after_future_window_verified": True,
