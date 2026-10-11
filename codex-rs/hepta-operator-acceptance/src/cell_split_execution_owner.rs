@@ -228,6 +228,32 @@ impl CellSplitOwnerTrustV1 {
     }
 }
 
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct CellSplitOwnerTrustPinsV1<'a> {
+    schema: &'static str,
+    plan_digest: &'a str,
+    owner_ids: &'a [String; STEP_COUNT],
+    verifying_keys: [[u8; 32]; STEP_COUNT],
+}
+
+/// A local write-once continuity record for independently pinned owner keys.
+/// It does not mint authority or replace any fresh signed owner readback.
+fn frozen_owner_trust_pins(
+    plan: &CellSplitExecutionPlanV1,
+    trust: &CellSplitOwnerTrustV1,
+) -> Result<Vec<u8>, CellSplitExecutionErrorV1> {
+    if trust.plan_digest != plan.digest()? {
+        return Err(CellSplitExecutionErrorV1::Invalid("owner trust plan drift"));
+    }
+    canonical_json(&CellSplitOwnerTrustPinsV1 {
+        schema: "hepta.learning.cell-split.owner-trust-pins.v1",
+        plan_digest: &trust.plan_digest,
+        owner_ids: &plan.owner_ids,
+        verifying_keys: std::array::from_fn(|index| trust.owner_keys[index].to_bytes()),
+    })
+}
+
 fn receipt_digest(
     receipt: &CellSplitExecutionReceiptV1,
 ) -> Result<String, CellSplitExecutionErrorV1> {
@@ -384,6 +410,31 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             None => write_private_new(&path, &bytes)?,
         }
 
+        // Keep all four trusted signer keys frozen across restarts.
+        // The symlink-aware frame scan must not treat a broken link as absence.
+        let pins_path = root.join("cell-split-owner-trust-pins.json");
+        let frozen_pins = frozen_owner_trust_pins(&plan, &trust)?;
+        let has_effect_history = has_successor_frame(&root, 0)?;
+        match read_frame(&pins_path)? {
+            Some(stored) if stored != frozen_pins => {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "persisted effect owner keys changed",
+                ));
+            }
+            Some(_) => {}
+            None if has_effect_history => {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "effect history lost trust pins",
+                ));
+            }
+            None if existing_only => {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "read-only transcript requires existing owner trust pins",
+                ));
+            }
+            None => write_private_new(&pins_path, &frozen_pins)?,
+        }
+
         let mut cursor = 0;
         let mut pending = false;
         let mut previous_receipt_digest = plan_digest.clone();
@@ -411,7 +462,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                         ));
                     }
                     if let Some(bytes) = outcome {
-                        let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
+                        let receipt = decode_committed_receipt(&bytes)?;
                         validate_receipt(&intent, &receipt)?;
                         trust.verify(&intent, &receipt)?;
                         port.verify_committed(&intent, &receipt).map_err(|error| {
@@ -498,6 +549,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if frozen != canonical_json(&self.plan)? {
             return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
         }
+        let pinned = read_frame(&self.root.join("cell-split-owner-trust-pins.json"))?
+            .ok_or(CellSplitExecutionErrorV1::Invalid(
+                "owner trust pins disappeared",
+            ))?;
+        if pinned != frozen_owner_trust_pins(&self.plan, &self.trust)? {
+            return Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"));
+        }
         let mut predecessor = self.plan_digest.clone();
         let mut receipts = if collect_receipts {
             Vec::with_capacity(self.cursor)
@@ -517,7 +575,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             let bytes = read_frame(&frame_path(&self.root, index, "committed"))?.ok_or(
                 CellSplitExecutionErrorV1::Invalid("missing committed receipt"),
             )?;
-            let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&bytes)?;
+            let receipt = decode_committed_receipt(&bytes)?;
             validate_receipt(&intent, &receipt)?;
             self.trust.verify(&intent, &receipt)?;
             self.port
@@ -661,6 +719,18 @@ pub(crate) fn validate_receipt(
         ));
     }
     Ok(())
+}
+
+fn decode_committed_receipt(
+    bytes: &[u8],
+) -> Result<CellSplitExecutionReceiptV1, CellSplitExecutionErrorV1> {
+    let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(bytes)?;
+    if canonical_json(&receipt)? != bytes {
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "noncanonical committed receipt bytes",
+        ));
+    }
+    Ok(receipt)
 }
 
 fn frame_path(root: &Path, index: usize, phase: &str) -> PathBuf {
