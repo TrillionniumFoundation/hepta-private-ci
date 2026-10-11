@@ -24,8 +24,8 @@ use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
 use crate::AgentdPlasticityAnchorStoreV1;
-use crate::AgentdPlasticityHostErrorV1;
 use crate::AgentdPlasticityEvidenceSourcesV1;
+use crate::AgentdPlasticityHostErrorV1;
 use crate::AgentdState;
 use crate::AgentdTopologyAnchorStoreV1;
 use crate::AgentdTopologyHostErrorV1;
