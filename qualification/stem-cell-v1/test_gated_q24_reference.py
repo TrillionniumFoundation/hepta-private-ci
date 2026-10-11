@@ -76,7 +76,7 @@ class GatedQ24ReferenceTests(unittest.TestCase):
     def test_invalid_shapes_nonfinite_and_unsigned_coercions_rejected(self):
         invalid = [
             ("drive_weights_q24", []),
-            ("gate_weights_q24", [0]),
+            ("gate_weights_q24", [0, 0]),
             ("prediction_bias_q24", []),
             ("drive_weights_q24", [True]),
             ("drive_weights_q24", [1.0]),
@@ -94,6 +94,22 @@ class GatedQ24ReferenceTests(unittest.TestCase):
                     infer_gated_q24(head_with_gate(0), features)
         with self.assertRaises(ValueError):
             infer_gated_q24({**head_with_gate(0), "production_authorized": True}, [0])
+
+    def test_dense_explicit_zero_gate_is_valid_and_digest_distinct(self):
+        # A 1x1 explicit zero gate matrix has exactly one coefficient, and
+        # must remain a legitimate dense form. Only the empty tuple/list is
+        # the compact constant-zero representation. Digest binds physical
+        # coefficient layout even when both choices produce the same outputs.
+        compact = head_with_gate(0)
+        dense = head_with_gate(0)
+        dense["gate_weights_q24"] = [0]
+        self.assertEqual(
+            infer_gated_q24(dense, [Q24]),
+            infer_gated_q24(compact, [Q24]),
+        )
+        self.assertNotEqual(gated_head_digest(dense), gated_head_digest(compact))
+        with self.assertRaises(ValueError):
+            infer_gated_q24({**compact, "gate_weights_q24": [0, 0]}, [0])
 
     def test_bounded_output_overflow_fails_closed(self):
         head = {
