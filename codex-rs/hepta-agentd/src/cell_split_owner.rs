@@ -309,6 +309,9 @@ impl CellSplitExecutionOwnerV1 {
             return Err(CellSplitErrorV1::AlreadyInitialized);
         }
         let header = encode_header(&plan);
+        // The host may hand us a genuinely empty file with an arbitrary
+        // cursor. Never durably acknowledge a sparse, misplaced header.
+        file.0.seek(SeekFrom::Start(0)).map_err(|_| CellSplitErrorV1::Indeterminate)?;
         file.0.write_all(&header).map_err(|_| CellSplitErrorV1::Indeterminate)?;
         file.0.sync_all().map_err(|_| CellSplitErrorV1::Indeterminate)?;
         Ok(Self {
