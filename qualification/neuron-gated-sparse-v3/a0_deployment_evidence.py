@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+from datetime import datetime
 import hashlib
 import json
 from pathlib import Path
@@ -42,8 +43,11 @@ def canonical(payload: dict[str, Any]) -> bytes:
 
 
 def object_json(data: bytes, label: str) -> dict[str, Any]:
+    def reject_constant(value: str) -> None:
+        raise EvidenceError(f"{label}: non-finite JSON value {value}")
+
     try:
-        value = json.loads(data)
+        value = json.loads(data, parse_constant=reject_constant)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise EvidenceError(f"{label}: invalid JSON") from exc
     need(isinstance(value, dict), f"{label}: expected JSON object")
@@ -54,14 +58,31 @@ def exact_keys(value: dict[str, Any], expected: set[str], label: str) -> None:
     need(set(value) == expected, f"{label}: missing or unexpected fields")
 
 
+_DIGEST_CACHE: dict[tuple[str, int, int, int, int, int], tuple[str, int]] = {}
+
+
 def sha_file(path: Path) -> tuple[str, int]:
+    # Shared Encoder blobs can back thousands of Cells. Rehash a stable inode
+    # once, never once per Cell; this still requires an immutable owner snapshot.
+    before = path.stat()
+    key = (str(path), before.st_dev, before.st_ino, before.st_size,
+           before.st_mtime_ns, before.st_ctime_ns)
+    if key in _DIGEST_CACHE:
+        return _DIGEST_CACHE[key]
     digest = hashlib.sha256()
     count = 0
     with path.open("rb") as source:
         for block in iter(lambda: source.read(1024 * 1024), b""):
             digest.update(block)
             count += len(block)
-    return digest.hexdigest(), count
+    after = path.stat()
+    need((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns,
+          before.st_ctime_ns) == (after.st_dev, after.st_ino, after.st_size,
+                                 after.st_mtime_ns, after.st_ctime_ns),
+         "artifact changed while being hashed")
+    result = digest.hexdigest(), count
+    _DIGEST_CACHE[key] = result
+    return result
 
 
 def hex_digest(value: Any, label: str) -> None:
@@ -141,8 +162,12 @@ def evaluate(root: Path, trusted_key: Path) -> dict[str, Any]:
     host = registry["host_id"]
     need(isinstance(host, str) and host.strip() != "", "registry missing host identity")
     observed = registry["observed_at_utc"]
-    need(isinstance(observed, str) and observed.endswith("Z") and len(observed) >= 20,
+    need(isinstance(observed, str) and observed.endswith("Z"),
          "registry missing UTC observation time")
+    try:
+        datetime.fromisoformat(observed.replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise EvidenceError("registry UTC observation time is invalid") from exc
     active = registry["active_cells"]
     need(isinstance(active, list) and bool(active) and len(active) <= 65_536,
          "registry must name at least one deployed Cell")
