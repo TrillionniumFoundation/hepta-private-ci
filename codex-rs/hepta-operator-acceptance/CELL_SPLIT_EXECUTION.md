@@ -72,12 +72,20 @@ plan digest, four exact owner IDs and four independently configured Ed25519
 verifying keys. Every `advance` and `transcript` checks the exact canonical
 bytes again, including after reopening the process.
 
-Missing or modified pins **never trigger automatic rekeying** after a prepared
-intent or committed effect exists. A mismatched key, missing file, noncanonical
-committed receipt or dangling journal frame blocks execution and requires
-independent recovery review. Do not delete the affected history, regenerate a
-new trust pin from local inputs, rename the same effect under a new Split ID,
-or replay a possibly executed mutation to bypass the block.
+Missing or modified pins **never trigger automatic rekeying** once the
+frozen plan exists, even before the first prepared intent or external effect.
+If both immutable identity frames disappear, the pre-existing execution-root
+sidecar lock also prevents silent reinitialization. Incomplete initialization,
+a mismatched key, missing file, noncanonical committed receipt or dangling
+journal frame blocks execution and requires independent recovery review.
+Do not delete the affected history, regenerate a new trust pin from local
+inputs, rename the same effect under a new Split ID, or replay a possibly
+executed mutation to bypass the block.
+
+This is local continuity protection, not defense against deletion or rollback
+of the **entire** execution root including its lock. The independently pinned
+configuration and an externally retained witness remain mandatory; neither
+a local lock nor this coordinator can recreate lost owner truth.
 
 The locally frozen pins only prevent unnoticed changes to this coordinator's
 trust identity. They do **not** establish independent custody or authorization:
