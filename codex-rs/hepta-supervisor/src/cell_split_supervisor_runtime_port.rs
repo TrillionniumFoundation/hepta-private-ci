@@ -434,7 +434,6 @@ fn commit_signing_payload(idempotency_key: &str, checkpoint: &[u8]) -> Vec<u8> {
     result
 }
 
-
 #[cfg(test)]
 mod original_cns_signature_tests {
     use super::*;
@@ -492,7 +491,8 @@ mod original_cns_signature_tests {
             &outer.verifying_key(),
             &runtime.verifying_key(),
             &supervisor.verifying_key(),
-        ).is_err());        assert!(verify_independent_cns_runtime_signature(
+        ).is_err());
+        assert!(verify_independent_cns_runtime_signature(
             evidence,
             &valid,
             &outer.verifying_key(),
@@ -506,6 +506,5 @@ mod original_cns_signature_tests {
             &runtime.verifying_key(),
             &outer.verifying_key(),
         ).is_err());
-
     }
 }
