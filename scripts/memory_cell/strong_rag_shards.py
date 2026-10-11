@@ -70,7 +70,11 @@ def _read_local_record(path):
     These records are checked against other source pins and exact journal
     receipts by their callers. A self-hash is NOT independent authentication.
     """
-    if path.is_symlink() or not path.is_file() or path.stat().st_size > 4 * 1024 * 1024:
+    if (
+        path.is_symlink()
+        or not path.is_file()
+        or path.stat().st_size > 4 * 1024 * 1024
+    ):
         raise ValueError("bounded regular local record required")
     return read(path, trial.file_sha(path))
 
@@ -81,6 +85,7 @@ def _read_rows(path, count):
     body = path.read_bytes()
     if not body.endswith(b"\n") or len(body.splitlines()) != count:
         raise ValueError("missing, partial or extra model attempt")
+
     def unique_pairs(pairs):
         value = {}
         for key, obj in pairs:
@@ -92,8 +97,14 @@ def _read_rows(path, count):
     def reject_nonfinite(value):
         raise ValueError("nonfinite raw model result")
 
-    return [json.loads(line.decode("utf-8", "strict"), object_pairs_hook=unique_pairs,
-                       parse_constant=reject_nonfinite) for line in body.splitlines()]
+    return [
+        json.loads(
+            line.decode("utf-8", "strict"),
+            object_pairs_hook=unique_pairs,
+            parse_constant=reject_nonfinite,
+        )
+        for line in body.splitlines()
+    ]
 
 
 def _stage(model_dir, stage_sha):
@@ -102,7 +113,8 @@ def _stage(model_dir, stage_sha):
     if (
         metadata["tier"] != "qwen-3b"
         or metadata["revision"] != "82f42baa094a9600e39ccd80d34058aeeb3abbc1"
-        or inventory["inventory_digest"] != "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
+        or inventory["inventory_digest"]
+        != "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
     ):
         raise ValueError("reader changed from separately pinned research-only Qwen")
     return metadata, inventory
@@ -128,8 +140,22 @@ def _journal_shard(reader, case, originals, arms, selection, path, *, seed):
         )
 
 
-def generate(phase, prep, plan_dir, inputs, model_dir, calibration_dir, output, *,
-             case_index, part, prep_sha=None, plan_sha=None, stage_sha, policy_sha=None):
+def generate(
+    phase,
+    prep,
+    plan_dir,
+    inputs,
+    model_dir,
+    calibration_dir,
+    output,
+    *,
+    case_index,
+    part,
+    prep_sha=None,
+    plan_sha=None,
+    stage_sha,
+    policy_sha=None,
+):
     """Generate one full original-answer journal without opening target labels."""
     from strong_rag_trial import _reader, documents
     from runtime_preflight import capture_runtime
@@ -139,28 +165,48 @@ def generate(phase, prep, plan_dir, inputs, model_dir, calibration_dir, output, 
     scheduled = groups(phase)[part]
     if phase == "calibration":
         manifest = read(prep / "calibration-plan.json", prep_sha)
-        if manifest["schema"] != trial.SCHEMA or manifest["source_commit"] != commit or len(manifest["cases"]) != 8:
+        if (
+            manifest["schema"] != trial.SCHEMA
+            or manifest["source_commit"] != commit
+            or len(manifest["cases"]) != 8
+        ):
             raise ValueError("wrong calibration-only source commit/census")
-        if manifest["calibration_only"] is not True or manifest["test_cases_materialized"] is not False:
+        if (
+            manifest["calibration_only"] is not True
+            or manifest["test_cases_materialized"] is not False
+        ):
             raise ValueError("evaluation data accessible through calibration plan")
         cases = manifest["cases"]
-        originals = documents(read(prep / "calibration-sources.json", manifest["calibration_sources_sha256"]))
+        originals = documents(
+            read(
+                prep / "calibration-sources.json",
+                manifest["calibration_sources_sha256"],
+            )
+        )
         case = cases[case_index]
-        selected = lambda row, arm: trial.chosen_prefix(row["candidate_ids"], int(arm[1:]))
+        selected = lambda row, arm: trial.chosen_prefix(
+            row["candidate_ids"], int(arm[1:])
+        )
         seed = prep_sha
         policy_digest = None
         single_hop = None
     else:
         from event_reader_experiment import preflight
+
         frozen = read(calibration_dir / "frozen-policy.json", policy_sha)
         if (
-            plan_sha != trial.HISTORIC_PLAN_SHA or frozen["source_commit"] != commit
-            or frozen["selected_k"] not in KS or frozen["original_test_plan_sha256"] != plan_sha
-            or frozen["candidate_accepted"] is not False or frozen["frozen_before_evaluation"] is not True
+            plan_sha != trial.HISTORIC_PLAN_SHA
+            or frozen["source_commit"] != commit
+            or frozen["selected_k"] not in KS
+            or frozen["original_test_plan_sha256"] != plan_sha
+            or frozen["candidate_accepted"] is not False
+            or frozen["frozen_before_evaluation"] is not True
         ):
             raise ValueError("unfrozen evaluation or reader source")
         manifest, originals = preflight(plan_dir, inputs, plan_sha)
-        cases, single_hop = trial.freeze_single_hop(manifest["cases"], inputs, originals)
+        cases, single_hop = trial.freeze_single_hop(
+            manifest["cases"], inputs, originals
+        )
         case = cases[case_index]
         selection = trial.eval_selections(case, frozen["selected_k"])
         selected = lambda row, arm: selection[arm]
@@ -181,31 +227,65 @@ def generate(phase, prep, plan_dir, inputs, model_dir, calibration_dir, output, 
     _copy(model_dir / "publisher.json", output / "publisher.json")
     start = time.perf_counter()
     rows = _journal_shard(
-        reader, case, originals, scheduled, selected,
-        output / "raw-answers.jsonl", seed=seed,
+        reader,
+        case,
+        originals,
+        scheduled,
+        selected,
+        output / "raw-answers.jsonl",
+        seed=seed,
     )
-    trial.dump(output / "run.json", dict(
-        schema=SCHEMA, phase=phase, source_commit=commit,
-        case_index=case_index, part=part, case_id=case["query"]["identity"],
-        arms=list(scheduled), model_stage_sha256=stage_sha,
-        reader_identity=inv["inventory_digest"],
-        calibration_plan_sha256=prep_sha if phase == "calibration" else None,
-        test_plan_sha256=plan_sha if phase == "evaluation" else None,
-        policy_sha256=policy_digest,
-        generated=len(rows), raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
-        runtime_preflight_sha256=trial.file_sha(output / "runtime-preflight.json"),
-        seconds=time.perf_counter()-start,
-        model_weight_training=False, allowed_to_train=False,
-        production_accepted=False,
-    ))
-    _seal(output, ["runtime-preflight.json", "stage.json", "inventory.json", "publisher.json", "raw-answers.jsonl", "run.json"])
+    trial.dump(
+        output / "run.json",
+        dict(
+            schema=SCHEMA,
+            phase=phase,
+            source_commit=commit,
+            case_index=case_index,
+            part=part,
+            case_id=case["query"]["identity"],
+            arms=list(scheduled),
+            model_stage_sha256=stage_sha,
+            reader_identity=inv["inventory_digest"],
+            calibration_plan_sha256=prep_sha if phase == "calibration" else None,
+            test_plan_sha256=plan_sha if phase == "evaluation" else None,
+            policy_sha256=policy_digest,
+            generated=len(rows),
+            raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
+            runtime_preflight_sha256=trial.file_sha(output / "runtime-preflight.json"),
+            seconds=time.perf_counter() - start,
+            model_weight_training=False,
+            allowed_to_train=False,
+            production_accepted=False,
+        ),
+    )
+    _seal(
+        output,
+        [
+            "runtime-preflight.json",
+            "stage.json",
+            "inventory.json",
+            "publisher.json",
+            "raw-answers.jsonl",
+            "run.json",
+        ],
+    )
     if any(r["status"] != "succeeded" for r in rows):
         raise ValueError("failed model attempt retained, not accepted")
     return len(rows)
 
 
-def _merge_shards(phase, shard_root, cases, *, commit, prep_sha=None,
-                  plan_sha=None, policy_sha=None, reader_identity=None):
+def _merge_shards(
+    phase,
+    shard_root,
+    cases,
+    *,
+    commit,
+    prep_sha=None,
+    plan_sha=None,
+    policy_sha=None,
+    reader_identity=None,
+):
     """Fail closed on all 16 immutable per-source shard journals and pins."""
     result, records, stage_pin = {}, [], None
     for idx, case in enumerate(cases):
@@ -213,7 +293,12 @@ def _merge_shards(phase, shard_root, cases, *, commit, prep_sha=None,
             folder = shard_root / name(phase, idx, part)
             manifest = _read_local_record(folder / "sha-pins.json")
             expected_files = {
-                "runtime-preflight.json", "stage.json", "inventory.json", "publisher.json", "raw-answers.jsonl", "run.json"
+                "runtime-preflight.json",
+                "stage.json",
+                "inventory.json",
+                "publisher.json",
+                "raw-answers.jsonl",
+                "run.json",
             }
             if set(manifest) != expected_files:
                 raise ValueError("shard file census incomplete")
@@ -221,30 +306,42 @@ def _merge_shards(phase, shard_root, cases, *, commit, prep_sha=None,
                 if trial.file_sha(folder / filename) != digest_pin:
                     raise ValueError("source-shard artifact mutated")
             run = read(folder / "run.json", manifest["run.json"])
-            identity = read(folder / "inventory.json", manifest["inventory.json"])["inventory_digest"]
+            identity = read(folder / "inventory.json", manifest["inventory.json"])[
+                "inventory_digest"
+            ]
             stage = read(folder / "stage.json", manifest["stage.json"])
             if (
-                run["schema"] != SCHEMA or run["phase"] != phase
-                or run["source_commit"] != commit or run["case_index"] != idx
-                or run["part"] != part or run["case_id"] != case["query"]["identity"]
-                or run["arms"] != list(scheduled) or run["generated"] != len(scheduled)
+                run["schema"] != SCHEMA
+                or run["phase"] != phase
+                or run["source_commit"] != commit
+                or run["case_index"] != idx
+                or run["part"] != part
+                or run["case_id"] != case["query"]["identity"]
+                or run["arms"] != list(scheduled)
+                or run["generated"] != len(scheduled)
                 or run["reader_identity"] != identity
                 or run["model_stage_sha256"] != manifest["stage.json"]
                 or stage["inventory_sha256"] != manifest["inventory.json"]
                 or run["runtime_preflight_sha256"] != manifest["runtime-preflight.json"]
                 or run["raw_answers_sha256"] != manifest["raw-answers.jsonl"]
-                or run["calibration_plan_sha256"] != (prep_sha if phase=="calibration" else None)
-                or run["test_plan_sha256"] != (plan_sha if phase=="evaluation" else None)
-                or run["policy_sha256"] != (policy_sha if phase=="evaluation" else None)
+                or run["calibration_plan_sha256"]
+                != (prep_sha if phase == "calibration" else None)
+                or run["test_plan_sha256"]
+                != (plan_sha if phase == "evaluation" else None)
+                or run["policy_sha256"]
+                != (policy_sha if phase == "evaluation" else None)
                 or run["production_accepted"] is not False
-                or identity != "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
+                or identity
+                != "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
                 or (reader_identity is not None and reader_identity != identity)
             ):
                 raise ValueError("cross-shard source/model/phase drift")
             rows = _read_rows(folder / "raw-answers.jsonl", len(scheduled))
             if [r["arm"] for r in rows] != list(scheduled) or any(
-                row["question_id"] != case["query"]["identity"] or row["status"] != "succeeded"
-                or row["candidate_digest"] != case["candidate_digest"] for row in rows
+                row["question_id"] != case["query"]["identity"]
+                or row["status"] != "succeeded"
+                or row["candidate_digest"] != case["candidate_digest"]
+                for row in rows
             ):
                 raise ValueError("missing, moved or failed original model answer")
             if stage_pin is None:
@@ -257,15 +354,21 @@ def _merge_shards(phase, shard_root, cases, *, commit, prep_sha=None,
                 seconds=run["seconds"],
             )
             records.extend(rows)
-    if len(result) != 16 or len(records) != 8*len(tuple(a for grp in groups(phase) for a in grp)):
+    if len(result) != 16 or len(records) != 8 * len(
+        tuple(a for grp in groups(phase) for a in grp)
+    ):
         raise ValueError("incomplete frozen 8 by 2 generation census")
     # Original registered row order; split groups can interleave registered arms.
-    by_key = {(r["question_id"],r["arm"]):r for r in records}
+    by_key = {(r["question_id"], r["arm"]): r for r in records}
     if len(by_key) != len(records):
         raise ValueError("duplicate original model answer")
-    return [by_key[(case["query"]["identity"],arm)] for case in cases for arm in (
-        tuple(f"k{k}" for k in KS) if phase=="calibration" else trial.EVAL_ARMS
-    )], result
+    return [
+        by_key[(case["query"]["identity"], arm)]
+        for case in cases
+        for arm in (
+            tuple(f"k{k}" for k in KS) if phase == "calibration" else trial.EVAL_ARMS
+        )
+    ], result
 
 
 def _write_journal(path, rows):
@@ -278,7 +381,12 @@ def _write_journal(path, rows):
 
 def _first_metadata(shard_root, phase, dest, *, canonical=False):
     shard = shard_root / name(phase, 0, 0)
-    for filename in ("runtime-preflight.json", "stage.json", "inventory.json", "publisher.json"):
+    for filename in (
+        "runtime-preflight.json",
+        "stage.json",
+        "inventory.json",
+        "publisher.json",
+    ):
         _copy(shard / filename, dest / filename)
     return trial.file_sha(dest / "stage.json")
 
@@ -286,127 +394,250 @@ def _first_metadata(shard_root, phase, dest, *, canonical=False):
 def collect_calibration(prep, shard_root, output, *, prep_sha):
     commit = trial.commit_source()
     locked = read(prep / "calibration-plan.json", prep_sha)
-    if locked["schema"] != trial.SCHEMA or locked["source_commit"] != commit or len(locked["cases"]) != 8:
+    if (
+        locked["schema"] != trial.SCHEMA
+        or locked["source_commit"] != commit
+        or len(locked["cases"]) != 8
+    ):
         raise ValueError("wrong pre-committed calibration population")
     cases = locked["cases"]
-    rows, receipts = _merge_shards("calibration", shard_root, cases, commit=commit, prep_sha=prep_sha)
+    rows, receipts = _merge_shards(
+        "calibration", shard_root, cases, commit=commit, prep_sha=prep_sha
+    )
     output.mkdir()
     stage_sha = _first_metadata(shard_root, "calibration", output)
-    inv = read(output / "inventory.json", read(output / "stage.json", stage_sha)["inventory_sha256"])
+    inv = read(
+        output / "inventory.json",
+        read(output / "stage.json", stage_sha)["inventory_sha256"],
+    )
     _write_journal(output / "raw-answers.jsonl", rows)
     labels = read(prep / "calibration-labels.json", locked["calibration_labels_sha256"])
     expected = [c["query"]["identity"] for c in cases]
     choice, stats = trial.choose_k(rows, labels, expected)
     sensitivity = leave_one_out(rows, expected)
     trial.dump(output / "scored-answers.json", rows)
-    trial.dump(output / "run.json", dict(
-        schema=trial.SCHEMA,stage="calibration",source_commit=commit,
-        runtime_preflight_sha256=trial.file_sha(output / "runtime-preflight.json"),
-        calibration_sha256=prep_sha,model_stage_sha256=stage_sha,
-        model=inv,optimizer_executed=False,test_tasks_opened=False,
-        human_reviewed=False,execution_mode="sharded",production_accepted=False,
-    ))
-    trial.dump(output / "report.json", dict(
-        schema=trial.SCHEMA,source_commit=commit,phase="calibration",planned_attempts=len(rows),
-        frozen_k=choice,ks=KS,
-        selection_objective="actual strict task success, then fewer observed input tokens, then smaller k",
-        arms=stats,calibration_sensitivity=sensitivity,
-        total_elapsed_seconds=sum(r["seconds"] for r in receipts.values()),
-        reader_identity=inv["inventory_digest"],model_stage_sha256=stage_sha,
-        raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
-        original_cases_are_exposed_development=True,statistical_superiority=False,
-        independent_semantic_review=False,production_accepted=False,
-        execution_mode="sharded",elapsed_is_sum_not_wall=True,
-    ))
+    trial.dump(
+        output / "run.json",
+        dict(
+            schema=trial.SCHEMA,
+            stage="calibration",
+            source_commit=commit,
+            runtime_preflight_sha256=trial.file_sha(output / "runtime-preflight.json"),
+            calibration_sha256=prep_sha,
+            model_stage_sha256=stage_sha,
+            model=inv,
+            optimizer_executed=False,
+            test_tasks_opened=False,
+            human_reviewed=False,
+            execution_mode="sharded",
+            production_accepted=False,
+        ),
+    )
+    trial.dump(
+        output / "report.json",
+        dict(
+            schema=trial.SCHEMA,
+            source_commit=commit,
+            phase="calibration",
+            planned_attempts=len(rows),
+            frozen_k=choice,
+            ks=KS,
+            selection_objective="actual strict task success, then fewer observed input tokens, then smaller k",
+            arms=stats,
+            calibration_sensitivity=sensitivity,
+            total_elapsed_seconds=sum(r["seconds"] for r in receipts.values()),
+            reader_identity=inv["inventory_digest"],
+            model_stage_sha256=stage_sha,
+            raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
+            original_cases_are_exposed_development=True,
+            statistical_superiority=False,
+            independent_semantic_review=False,
+            production_accepted=False,
+            execution_mode="sharded",
+            elapsed_is_sum_not_wall=True,
+        ),
+    )
     if choice is None:
         raise ValueError("cannot freeze k with missing/failed calibration attempts")
-    trial.dump(output / "frozen-policy.json", dict(
-        schema=trial.SCHEMA,selected_k=choice,ks=KS,source_commit=commit,
-        calibration_plan_sha256=prep_sha,original_test_plan_sha256=trial.HISTORIC_PLAN_SHA,
-        stage_sha256=stage_sha,reader_identity=inv["inventory_digest"],
-        raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
-        scored_answers_sha256=trial.file_sha(output / "scored-answers.json"),
-        calibration_sensitivity_digest=digest(sensitivity),
-        selection_objective="actual strict task success, then fewer observed input tokens, then smaller k",
-        calibration_task_count=8,evaluation_task_count=8,frozen_before_evaluation=True,
-        independent_source_families=0,candidate_accepted=False,production_accepted=False,
-        execution_mode="sharded",
-    ))
-    trial.dump(output / "shard-census.json", dict(schema=SCHEMA,phase="calibration",receipts=receipts,
-        canonical_stage_sha256=stage_sha,raw_sha256=trial.file_sha(output / "raw-answers.jsonl"),
-        source_commit=commit,production_accepted=False))
+    trial.dump(
+        output / "frozen-policy.json",
+        dict(
+            schema=trial.SCHEMA,
+            selected_k=choice,
+            ks=KS,
+            source_commit=commit,
+            calibration_plan_sha256=prep_sha,
+            original_test_plan_sha256=trial.HISTORIC_PLAN_SHA,
+            stage_sha256=stage_sha,
+            reader_identity=inv["inventory_digest"],
+            raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
+            scored_answers_sha256=trial.file_sha(output / "scored-answers.json"),
+            calibration_sensitivity_digest=digest(sensitivity),
+            selection_objective="actual strict task success, then fewer observed input tokens, then smaller k",
+            calibration_task_count=8,
+            evaluation_task_count=8,
+            frozen_before_evaluation=True,
+            independent_source_families=0,
+            candidate_accepted=False,
+            production_accepted=False,
+            execution_mode="sharded",
+        ),
+    )
+    trial.dump(
+        output / "shard-census.json",
+        dict(
+            schema=SCHEMA,
+            phase="calibration",
+            receipts=receipts,
+            canonical_stage_sha256=stage_sha,
+            raw_sha256=trial.file_sha(output / "raw-answers.jsonl"),
+            source_commit=commit,
+            production_accepted=False,
+        ),
+    )
     return choice
 
 
-def collect_evaluation(plan_dir, inputs, prep, calibration_dir, shard_root, output, *, plan_sha, policy_sha):
+def collect_evaluation(
+    plan_dir, inputs, prep, calibration_dir, shard_root, output, *, plan_sha, policy_sha
+):
     from event_reader_experiment import preflight
     from strong_rag_repeatability import audit_repeats
     from historical_event_citation_chain import audit_evaluation
 
-    commit=trial.commit_source()
-    locked_policy=read(calibration_dir / "frozen-policy.json",policy_sha)
-    if locked_policy["source_commit"]!=commit or locked_policy["schema"]!=trial.SCHEMA or locked_policy["candidate_accepted"] is not False:
+    commit = trial.commit_source()
+    locked_policy = read(calibration_dir / "frozen-policy.json", policy_sha)
+    if (
+        locked_policy["source_commit"] != commit
+        or locked_policy["schema"] != trial.SCHEMA
+        or locked_policy["candidate_accepted"] is not False
+    ):
         raise ValueError("unqualified frozen source policy")
-    locked, originals=preflight(plan_dir,inputs,plan_sha)
-    active,hop=trial.freeze_single_hop(locked["cases"],inputs,originals)
-    rows,receipts=_merge_shards("evaluation",shard_root,active,commit=commit,plan_sha=plan_sha,
-                                 policy_sha=policy_sha,reader_identity=locked_policy["reader_identity"])
+    locked, originals = preflight(plan_dir, inputs, plan_sha)
+    active, hop = trial.freeze_single_hop(locked["cases"], inputs, originals)
+    rows, receipts = _merge_shards(
+        "evaluation",
+        shard_root,
+        active,
+        commit=commit,
+        plan_sha=plan_sha,
+        policy_sha=policy_sha,
+        reader_identity=locked_policy["reader_identity"],
+    )
     output.mkdir()
-    _first_metadata(shard_root,"evaluation",output)
+    _first_metadata(shard_root, "evaluation", output)
     _write_journal(output / "raw-answers.jsonl", rows)
-    trial.dump(output / "single-hop-control.json",hop)
-    expected=[c["query"]["identity"] for c in active]
-    labels=read(inputs / "labels.json",locked["labels_sha"])
-    targets=[l for l in labels if l["id"] in set(expected)]
-    trial._score(rows,targets,expected=expected,arms=trial.EVAL_ARMS)
-    trial.dump(output / "scored-answers.json",rows)
-    public_questions=read(inputs / "questions.json",locked["extraction"]["files"]["questions.json"])
-    citations=audit_evaluation(rows,public_questions,targets,originals,expected_qids=expected,arms=trial.EVAL_ARMS)
-    stats,group=trial._stats(rows,trial.EVAL_ARMS,expected)
-    repeats=audit_repeats(rows,expected,trial.EVAL_ARMS)
-    pairs={
-        "selected_minus_hybrid4":trial.paired(group,"hybrid_k4","selected_k"),
-        "organized_minus_selected":trial.paired(group,"selected_k","organized"),
-        "single_hop_minus_hybrid4":trial.paired(group,"hybrid_k4","single_hop"),
-        "entity_time_minus_single_hop":trial.paired(group,"single_hop","entity_time"),
-        "entity_time_minus_hybrid4":trial.paired(group,"hybrid_k4","entity_time"),
-        "organized_minus_entity_time":trial.paired(group,"entity_time","organized"),
-        "organized_minus_hybrid4":trial.paired(group,"hybrid_k4","organized"),
-        "reversed_minus_hybrid4":trial.paired(group,"hybrid_k4","hybrid_k4_reversed"),
-        "hybrid6_minus_hybrid4":trial.paired(group,"hybrid_k4","hybrid_k6"),
+    trial.dump(output / "single-hop-control.json", hop)
+    expected = [c["query"]["identity"] for c in active]
+    labels = read(inputs / "labels.json", locked["labels_sha"])
+    targets = [l for l in labels if l["id"] in set(expected)]
+    trial._score(rows, targets, expected=expected, arms=trial.EVAL_ARMS)
+    trial.dump(output / "scored-answers.json", rows)
+    public_questions = read(
+        inputs / "questions.json", locked["extraction"]["files"]["questions.json"]
+    )
+    citations = audit_evaluation(
+        rows,
+        public_questions,
+        targets,
+        originals,
+        expected_qids=expected,
+        arms=trial.EVAL_ARMS,
+    )
+    stats, group = trial._stats(rows, trial.EVAL_ARMS, expected)
+    repeats = audit_repeats(rows, expected, trial.EVAL_ARMS)
+    pairs = {
+        "selected_minus_hybrid4": trial.paired(group, "hybrid_k4", "selected_k"),
+        "organized_minus_selected": trial.paired(group, "selected_k", "organized"),
+        "single_hop_minus_hybrid4": trial.paired(group, "hybrid_k4", "single_hop"),
+        "entity_time_minus_single_hop": trial.paired(
+            group, "single_hop", "entity_time"
+        ),
+        "entity_time_minus_hybrid4": trial.paired(group, "hybrid_k4", "entity_time"),
+        "organized_minus_entity_time": trial.paired(group, "entity_time", "organized"),
+        "organized_minus_hybrid4": trial.paired(group, "hybrid_k4", "organized"),
+        "reversed_minus_hybrid4": trial.paired(
+            group, "hybrid_k4", "hybrid_k4_reversed"
+        ),
+        "hybrid6_minus_hybrid4": trial.paired(group, "hybrid_k4", "hybrid_k6"),
     }
-    stage_sha=locked_policy["stage_sha256"]
-    if _read_local_record(calibration_dir / "run.json")["model_stage_sha256"]!=stage_sha:
+    stage_sha = locked_policy["stage_sha256"]
+    if _read_local_record(calibration_dir / "run.json")["model_stage_sha256"] != stage_sha:
         raise ValueError("canonical staged reader drift")
-    inv=read(output / "inventory.json",_read_local_record(output / "stage.json")["inventory_sha256"])
-    trial.dump(output / "run.json",dict(
-        schema=trial.SCHEMA,phase="evaluation",source_commit=commit,execution_mode="sharded",
-        runtime_preflight_sha256=trial.file_sha(output / "runtime-preflight.json"),
-        policy_sha256=policy_sha,policy=locked_policy,test_plan_sha256=plan_sha,
-        stage_sha256=stage_sha,model=inv,original_case_census=len(active),
-        training_during_query=False,new_future_sources=False,
-        human_verified_sufficiency=False,production_accepted=False,
-    ))
-    trial.dump(output / "report.json",dict(
-        schema=trial.SCHEMA,phase="evaluation",source_commit=commit,
-        selected_k=locked_policy["selected_k"],test_task_count=len(expected),total_attempts=len(rows),
-        success_by_arm=stats,paired_contrasts=pairs,same_prompt_consistency=repeats,
-        formal_citation_chain=citations,
-        single_hop_control_sha256=trial.file_sha(output / "single-hop-control.json"),
-        source_and_index_costs=locked["frozen"]["costs"],extraction_costs=locked["extraction"],
-        retained_original_source_bytes=sum(len(d.content.encode()) for d in originals.values()),
-        calibration_training_optimizer_seconds=0.0,reader_optimizer_seconds=0.0,
-        wall_seconds=sum(x["seconds"] for x in receipts.values()),
-        raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
-        citation_entailment_accuracy=None,missing_costs=["deployed retention","revocation","real recovery"],
-        total_lifecycle_cost=None,prior_public_authored_exposed_development=True,
-        independent_source_family_count=0,statistical_superiority=False,
-        reader_capacity_gain_is_memory_gain=False,model_or_policy_accepted=False,
-        production_accepted=False,execution_mode="sharded",elapsed_is_sum_not_wall=True,
-    ))
-    trial.dump(output / "shard-census.json",dict(schema=SCHEMA,phase="evaluation",receipts=receipts,
-        canonical_stage_sha256=stage_sha,raw_sha256=trial.file_sha(output / "raw-answers.jsonl"),
-        source_commit=commit,production_accepted=False))
+    inv = read(
+        output / "inventory.json",
+        _read_local_record(output / "stage.json")["inventory_sha256"],
+    )
+    trial.dump(
+        output / "run.json",
+        dict(
+            schema=trial.SCHEMA,
+            phase="evaluation",
+            source_commit=commit,
+            execution_mode="sharded",
+            runtime_preflight_sha256=trial.file_sha(output / "runtime-preflight.json"),
+            policy_sha256=policy_sha,
+            policy=locked_policy,
+            test_plan_sha256=plan_sha,
+            stage_sha256=stage_sha,
+            model=inv,
+            original_case_census=len(active),
+            training_during_query=False,
+            new_future_sources=False,
+            human_verified_sufficiency=False,
+            production_accepted=False,
+        ),
+    )
+    trial.dump(
+        output / "report.json",
+        dict(
+            schema=trial.SCHEMA,
+            phase="evaluation",
+            source_commit=commit,
+            selected_k=locked_policy["selected_k"],
+            test_task_count=len(expected),
+            total_attempts=len(rows),
+            success_by_arm=stats,
+            paired_contrasts=pairs,
+            same_prompt_consistency=repeats,
+            formal_citation_chain=citations,
+            single_hop_control_sha256=trial.file_sha(
+                output / "single-hop-control.json"
+            ),
+            source_and_index_costs=locked["frozen"]["costs"],
+            extraction_costs=locked["extraction"],
+            retained_original_source_bytes=sum(
+                len(d.content.encode()) for d in originals.values()
+            ),
+            calibration_training_optimizer_seconds=0.0,
+            reader_optimizer_seconds=0.0,
+            wall_seconds=sum(x["seconds"] for x in receipts.values()),
+            raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
+            citation_entailment_accuracy=None,
+            missing_costs=["deployed retention", "revocation", "real recovery"],
+            total_lifecycle_cost=None,
+            prior_public_authored_exposed_development=True,
+            independent_source_family_count=0,
+            statistical_superiority=False,
+            reader_capacity_gain_is_memory_gain=False,
+            model_or_policy_accepted=False,
+            production_accepted=False,
+            execution_mode="sharded",
+            elapsed_is_sum_not_wall=True,
+        ),
+    )
+    trial.dump(
+        output / "shard-census.json",
+        dict(
+            schema=SCHEMA,
+            phase="evaluation",
+            receipts=receipts,
+            canonical_stage_sha256=stage_sha,
+            raw_sha256=trial.file_sha(output / "raw-answers.jsonl"),
+            source_commit=commit,
+            production_accepted=False,
+        ),
+    )
     return stats
 
 
@@ -419,11 +650,17 @@ def verify_release(archive, original):
     prep_sha = trial.file_sha(archive / "prep/calibration-plan.json")
     frozen = _read_local_record(archive / "calibration/frozen-policy.json")
     policy_sha = trial.file_sha(archive / "calibration/frozen-policy.json")
-    if frozen["source_commit"] != commit or frozen["calibration_plan_sha256"] != prep_sha:
+    if (
+        frozen["source_commit"] != commit
+        or frozen["calibration_plan_sha256"] != prep_sha
+    ):
         raise ValueError("frozen k detached from exact shard source")
     original_cal, cal_provenance = _merge_shards(
-        "calibration", archive / "shards/calibration", manifest["cases"],
-        commit=commit, prep_sha=prep_sha,
+        "calibration",
+        archive / "shards/calibration",
+        manifest["cases"],
+        commit=commit,
+        prep_sha=prep_sha,
     )
     original_plan, original_sources = preflight(
         original / "plan", original / "observations", trial.HISTORIC_PLAN_SHA
@@ -432,8 +669,12 @@ def verify_release(archive, original):
         original_plan["cases"], original / "observations", original_sources
     )
     original_eval, eval_provenance = _merge_shards(
-        "evaluation", archive / "shards/evaluation", active,
-        commit=commit, plan_sha=trial.HISTORIC_PLAN_SHA, policy_sha=policy_sha,
+        "evaluation",
+        archive / "shards/evaluation",
+        active,
+        commit=commit,
+        plan_sha=trial.HISTORIC_PLAN_SHA,
+        policy_sha=policy_sha,
         reader_identity=frozen["reader_identity"],
     )
     for phase, rows, receipts in (
@@ -442,62 +683,106 @@ def verify_release(archive, original):
     ):
         saved = _read_rows(archive / phase / "raw-answers.jsonl", len(rows))
         if rows != saved:
-            raise ValueError("published answer journal differs from generated shard rows")
+            raise ValueError(
+                "published answer journal differs from generated shard rows"
+            )
         summary = _read_local_record(archive / phase / "shard-census.json")
         if (
-            summary["schema"] != SCHEMA or summary["phase"] != phase
-            or summary["source_commit"] != commit or summary["receipts"] != receipts
-            or summary["raw_sha256"] != trial.file_sha(archive / phase / "raw-answers.jsonl")
-            or (phase == "calibration" and summary["canonical_stage_sha256"] != frozen["stage_sha256"])
+            summary["schema"] != SCHEMA
+            or summary["phase"] != phase
+            or summary["source_commit"] != commit
+            or summary["receipts"] != receipts
+            or summary["raw_sha256"]
+            != trial.file_sha(archive / phase / "raw-answers.jsonl")
+            or (
+                phase == "calibration"
+                and summary["canonical_stage_sha256"] != frozen["stage_sha256"]
+            )
         ):
             raise ValueError("shard source claims differ from audited original rows")
-    return dict(schema=SCHEMA, source_commit=commit, calibration_rows=len(original_cal),
-                evaluation_rows=len(original_eval), shard_census=32,
-                source_byte_replay=True, independent_semantic_judgement=False,
-                production_accepted=False)
+    return dict(
+        schema=SCHEMA,
+        source_commit=commit,
+        calibration_rows=len(original_cal),
+        evaluation_rows=len(original_eval),
+        shard_census=32,
+        source_byte_replay=True,
+        independent_semantic_judgement=False,
+        production_accepted=False,
+    )
 
 
 def main():
-    parser=argparse.ArgumentParser(description=__doc__)
-    sub=parser.add_subparsers(dest="command",required=True)
-    for command in ("calibration-shard","evaluation-shard"):
-        p=sub.add_parser(command)
-        p.add_argument("prep",type=Path)
-        p.add_argument("plan",type=Path)
-        p.add_argument("inputs",type=Path)
-        p.add_argument("model",type=Path)
-        p.add_argument("calibration",type=Path)
-        p.add_argument("output",type=Path)
-        p.add_argument("--case",type=int,required=True)
-        p.add_argument("--part",type=int,required=True)
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    for command in ("calibration-shard", "evaluation-shard"):
+        p = sub.add_parser(command)
+        p.add_argument("prep", type=Path)
+        p.add_argument("plan", type=Path)
+        p.add_argument("inputs", type=Path)
+        p.add_argument("model", type=Path)
+        p.add_argument("calibration", type=Path)
+        p.add_argument("output", type=Path)
+        p.add_argument("--case", type=int, required=True)
+        p.add_argument("--part", type=int, required=True)
         p.add_argument("--prep-sha")
         p.add_argument("--plan-sha")
-        p.add_argument("--stage-sha",required=True)
+        p.add_argument("--stage-sha", required=True)
         p.add_argument("--policy-sha")
-    for command in ("calibration-collect","evaluation-collect"):
-        p=sub.add_parser(command)
-        for field in ("prep","plan","inputs","calibration","shards","output"):
-            p.add_argument(field,type=Path)
+    for command in ("calibration-collect", "evaluation-collect"):
+        p = sub.add_parser(command)
+        for field in ("prep", "plan", "inputs", "calibration", "shards", "output"):
+            p.add_argument(field, type=Path)
         p.add_argument("--prep-sha")
         p.add_argument("--plan-sha")
         p.add_argument("--policy-sha")
-    v=sub.add_parser("verify-release")
-    v.add_argument("archive",type=Path)
-    v.add_argument("original",type=Path)
-    args=parser.parse_args()
+    v = sub.add_parser("verify-release")
+    v.add_argument("archive", type=Path)
+    v.add_argument("original", type=Path)
+    args = parser.parse_args()
     if args.command == "verify-release":
-        print(json.dumps(verify_release(args.archive,args.original),allow_nan=False))
+        print(json.dumps(verify_release(args.archive, args.original), allow_nan=False))
     elif args.command.endswith("-shard"):
-        print(generate(args.command.split("-")[0],args.prep,args.plan,args.inputs,args.model,
-                       args.calibration,args.output,case_index=args.case,part=args.part,
-                       prep_sha=args.prep_sha,plan_sha=args.plan_sha,stage_sha=args.stage_sha,
-                       policy_sha=args.policy_sha))
-    elif args.command=="calibration-collect":
-        print(collect_calibration(args.prep,args.shards,args.output,prep_sha=args.prep_sha))
+        print(
+            generate(
+                args.command.split("-")[0],
+                args.prep,
+                args.plan,
+                args.inputs,
+                args.model,
+                args.calibration,
+                args.output,
+                case_index=args.case,
+                part=args.part,
+                prep_sha=args.prep_sha,
+                plan_sha=args.plan_sha,
+                stage_sha=args.stage_sha,
+                policy_sha=args.policy_sha,
+            )
+        )
+    elif args.command == "calibration-collect":
+        print(
+            collect_calibration(
+                args.prep, args.shards, args.output, prep_sha=args.prep_sha
+            )
+        )
     else:
-        print(json.dumps(collect_evaluation(args.plan,args.inputs,args.prep,args.calibration,args.shards,
-                  args.output,plan_sha=args.plan_sha,policy_sha=args.policy_sha),allow_nan=False))
+        print(
+            json.dumps(
+                collect_evaluation(
+                    args.plan,
+                    args.inputs,
+                    args.prep,
+                    args.calibration,
+                    args.shards,
+                    args.output,
+                    plan_sha=args.plan_sha,
+                    policy_sha=args.policy_sha,
+                ),
+                allow_nan=False,
+            )
+        )
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
