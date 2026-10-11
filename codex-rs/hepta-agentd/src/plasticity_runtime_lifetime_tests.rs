@@ -941,6 +941,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         owner,
         cancellation.clone(),
     );
+    assert!(
+        state.plasticity_admission_ready().expect("live owner admission"),
+        "only the active generation-bound plasticity owner permits submission"
+    );
 
     let first = state
         .submit_parameter_plasticity_v1(request.clone(), 50)
@@ -968,6 +972,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("owner task join")
         .expect("owner task shutdown");
+    assert!(
+        !state.plasticity_admission_ready().expect("closed owner admission"),
+        "a stopped/closed producer must never leave Agentd plasticity admission open"
+    );
     drop(state);
 
     let recovered_ledger = DurableLedger::recover(

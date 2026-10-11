@@ -1,0 +1,48 @@
+name: Hepta Agentd Strict Clippy Convergence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - '.github/workflows/hepta-agentd-clippy-convergence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  native-agentd:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Require canonical source formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Real Agentd native owner unit tests
+        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib
+      - name: Full native Agentd Clippy without warning suppressions
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-agentd --all-targets -- -D warnings
+
+  native-worker-transitive:
+    needs: native-agentd
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy
+      - name: Strict original Worker plus transitive Agentd lints
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings

@@ -314,7 +314,6 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
 
 #[derive(Debug)]
 struct DecodedFrame {
-    sequence: u64,
     kind: String,
     request_id: String,
     payload: Value,
@@ -449,8 +448,9 @@ fn receive_frame<T: BrowserServoTransport>(
             "Browser payload digest mismatch".into(),
         ));
     }
+    // Sequence was already validated and consumed in the owner before decode;
+    // never expose a second unauthenticated sequence value for callers to reuse.
     Ok(DecodedFrame {
-        sequence,
         kind: kind.to_string(),
         request_id: request_id.to_string(),
         payload,
