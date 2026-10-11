@@ -65,6 +65,11 @@ class DecisionHeadContractTests(unittest.TestCase):
             args.upstream_revision = "unversioned-main"
             with self.assertRaisesRegex(ValueError, "pinned"):
                 snapshot_validation(args)
+            args.upstream_revision = "a" * 40
+            from model_runner import snapshot_digest
+            args.expected_snapshot_sha256 = snapshot_digest(snapshot)
+            with self.assertRaisesRegex(ValueError, "reviewed local safetensors"):
+                snapshot_validation(args)
 
 
 @unittest.skipUnless(importlib.util.find_spec("torch") is not None,
