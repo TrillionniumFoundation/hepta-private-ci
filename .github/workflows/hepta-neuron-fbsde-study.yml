@@ -54,6 +54,10 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [label_balanced_v1, independent_targets_v2]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -62,6 +66,7 @@ jobs:
       - name: Fixed CPU runtime, no remote model Python
         run: |
           git rev-parse HEAD > real-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > real-source.tar.gz
           python3 -m venv /tmp/fbsde-venv
           /tmp/fbsde-venv/bin/pip install numpy==2.2.6 psutil==7.0.0 transformers==4.57.3 huggingface-hub==0.36.0
           /tmp/fbsde-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
@@ -72,21 +77,24 @@ jobs:
           HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
           HF_HUB_DISABLE_TELEMETRY: "1"
           TOKENIZERS_PARALLELISM: "false"
+          QUESTION_PROFILE: ${{ matrix.profile }}
         run: |
           set -euo pipefail
           export PYTHONPATH=qualification/neuron-stem
-          /tmp/fbsde-venv/bin/python -m unittest fbsde_tensor_checks -v 2>&1 | tee tensor-tests.log
+          /tmp/fbsde-venv/bin/python -m unittest fbsde_tensor_checks fbsde_v2_tensor_checks -v 2>&1 | tee tensor-tests.log
           /tmp/fbsde-venv/bin/python qualification/neuron-stem/fbsde_encoder.py \
             --source-root "$PWD" --model-dir /tmp/fbsde-mmbert --output real-study \
+            --question-profile "$QUESTION_PROFILE" \
             2>&1 | tee real-study.log
           git diff --exit-code
       - name: Preserve observations, never model weights or credentials
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: fbsde-real-encoder-${{ github.run_id }}
+          name: fbsde-real-encoder-${{ matrix.profile }}-${{ github.run_id }}
           path: |
             real-source.txt
+            real-source.tar.gz
             real-environment.txt
             tensor-tests.log
             real-study.log

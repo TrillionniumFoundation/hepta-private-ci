@@ -19,6 +19,8 @@ from four_gate_capture import tensor_digest
 from fbsde_encoder_cases import (INTENTS, DEPTHS, partition_utterances, cases, formula_vector,
                                   decode_probability, score_decoded, checked_probability)
 from fbsde_tree import belief_bsde, polynomial_probability
+from fbsde_design import (LEGACY, INDEPENDENT, PROFILES, independent_cases, label_cases,
+                         source_census, stratified_metrics)
 
 
 def models(torch):
@@ -61,20 +63,30 @@ def state_digest(model):
     return digest({name: tensor_digest(t) for name,t in model.state_dict().items()})
 
 
-def train_and_compare(torch, partitions, features, output, seed=104729):
+def train_and_compare(torch, partitions, features, output, seed=104729, *, profile=LEGACY):
     """Called with real frozen features by run(); synthetic callers are tests only."""
+    study_start_cpu = time.process_time_ns()
+    require(profile in PROFILES, "unknown question profile")
     nn = torch.nn
     counts = {'train': 640, 'validation': 128, 'calibration': 128, 'test': 192}
     public, truths = {}, {}
     for j, split in enumerate(counts):
-        public[split], truths[split] = cases(partitions[split], split, counts[split], seed+j)
+        if profile == LEGACY:
+            public[split], truths[split] = cases(partitions[split], split, counts[split], seed+j)
+        else:
+            public[split] = independent_cases([{'id':r['id']} for r in partitions[split]],
+                                               split, counts[split], seed+j)
+            truths[split] = label_cases(public[split], partitions[split])
     # This is a prospective-in-process design, not an independent preregistration.
     write_once(output/'design.json', {'schema':'hepta.fbsde.encoder-study.design.v1', 'seed':seed,
         'case_counts':counts, 'public_input_digests':{k:digest(v) for k,v in public.items()},
         'intents':INTENTS, 'depth_grid':DEPTHS, 'fit_steps':96, 'fit_cpu_ceiling_ns':15_000_000_000,
         'per_prediction_cpu_ceiling_ns':100_000_000, 'common_caps_not_equal_actual_work':True,
         'task_kind':'generated_read_once_formulas_over_human_labelled_utterances',
-        'decoder':'fixed_shared_two_sentence_grammar', 'real_future_windows':False})
+        'decoder':'fixed_shared_two_sentence_grammar', 'real_future_windows':False,
+        'question_profile':profile, 'target_generation_reads_labels':profile == LEGACY,
+        'truth_and_predictor_same_process_not_authenticated':True})
+    write_once(output/'public-cases.json', public)
     xy = {k:tensors(torch,v,features) for k,v in public.items()}
     train_y = torch.tensor([float(truths['train'][r['case_id']]) for r in public['train']])
     torch.manual_seed(seed)
@@ -118,6 +130,9 @@ def train_and_compare(torch, partitions, features, output, seed=104729):
                         for r,p in zip(public['validation'],ps))/len(ps)
             validation.append({'depth':d, 'brier':brier})
     best = min(validation,key=lambda v:(v['brier'],v['depth']))['depth']
+    fixed_selection_cost = time.process_time_ns()-cpu
+    fixed_selection_wall = time.perf_counter_ns()-wall
+    stop_cpu,stop_wall = time.process_time_ns(),time.perf_counter_ns()
     # Simple router confidence thresholds selected on calibration ONLY.
     with torch.inference_mode():
         cache = {d:recurrent(*xy['calibration'],d).sigmoid().tolist() for d in DEPTHS}
@@ -134,12 +149,18 @@ def train_and_compare(torch, partitions, features, output, seed=104729):
         threshold_scores.append({'threshold':threshold,'objective':loss/len(public['calibration'])+.0005*cost/len(public['calibration'])})
     threshold=min(threshold_scores,key=lambda v:(v['objective'],v['threshold']))['threshold']
     jobs.append({'job_id':'shared_controller_selection','phase':'search','cpu_ns':time.process_time_ns()-cpu,
-                 'wall_ns':time.perf_counter_ns()-wall})
+                 'wall_ns':time.perf_counter_ns()-wall,
+                 'fixed_selection_cpu_ns':fixed_selection_cost, 'fixed_selection_wall_ns':fixed_selection_wall,
+                 'stop_selection_cpu_ns':time.process_time_ns()-stop_cpu,
+                 'stop_selection_wall_ns':time.perf_counter_ns()-stop_wall})
     write_once(output/'selection.json', {'validation':validation,'selected_depth':best,
         'calibration_thresholds':threshold_scores,'selected_threshold':threshold,
         'test_labels_used':False,'common_semantic_sha256':common_semantic_id,'jobs':jobs})
     arms=('light_head','recurrent_1','recurrent_4','recurrent_12','best_fixed','simple_stop','fbsde_tree','exact_formula')
+    if profile == INDEPENDENT:
+        arms += ('syntax_prior',)
     records={a:[] for a in arms}; actual_cost={a:0 for a in arms}
+    belief_inputs = {}
     cpu_eval=time.process_time_ns()
     for i,row in enumerate(public['test']):
         # All controls observe the same fixed feature table and explicit syntax.
@@ -152,9 +173,13 @@ def train_and_compare(torch, partitions, features, output, seed=104729):
                 # Charge the same semantic forward for every arm; the root
                 # consumes exactly these probabilities plus identical features.
                 uids=row['utterance_ids'];targets=row['target_intents']
-                qs=semantic(torch.stack([features[u] for u in uids])).softmax(-1)
-                ps=[float(qs[j,t].item()) for j,t in enumerate(targets)]
-                x[0, :len(ps), 388] = torch.tensor(ps)
+                if arm == 'syntax_prior':
+                    # This intentionally cheaper null control ignores text and the semantic Head.
+                    ps = [.25]*len(uids)
+                else:
+                    qs=semantic(torch.stack([features[u] for u in uids])).softmax(-1)
+                    ps=[float(qs[j,t].item()) for j,t in enumerate(targets)]
+                    x[0, :len(ps), 388] = torch.tensor(ps)
                 if arm=='light_head':p=float(head(x,s).sigmoid().item())
                 elif arm.startswith('recurrent_') or arm=='best_fixed':
                     depth=best if arm=='best_fixed' else int(arm.split('_')[-1]);executed=depth
@@ -172,24 +197,43 @@ def train_and_compare(torch, partitions, features, output, seed=104729):
             elapsed=time.process_time_ns()-cpu
             require(elapsed<=100_000_000,'per-prediction CPU budget exhausted')
             actual_cost[arm]+=elapsed
+            if arm == 'fbsde_tree':
+                belief_inputs[row['case_id']] = {'public_input_sha256':digest(row),
+                    'leaf_probabilities':ps, 'semantic_sha256':common_semantic_id}
             records[arm].append({'case_id':row['case_id'],'public_input_sha256':digest(row),
                 'probability':p,'text':text,'selected_depth':depth,'actual_recurrent_steps':executed,
                 'bsde_interface_residual':residual,'scenario_nodes':nodes,
                 'cpu_ns':elapsed,'wall_ns':time.perf_counter_ns()-wall})
     # Seal ALL predictions before this code reads test truths for evaluation.
     for arm in arms:write_once(output/(arm+'-predictions.json'),records[arm])
+    write_once(output/'belief-inputs.json', belief_inputs)
     require(state_digest(semantic)==common_semantic_id,'shared semantic Head mutated at inference')
     metrics={arm:score_decoded(records[arm],truths['test']) for arm in arms}
     equality=max(abs(a['probability']-b['probability']) for a,b in zip(records['fbsde_tree'],records['exact_formula']))
     require(equality<1e-12,'finite BSDE diverged from algebraic control on identical beliefs')
     fits={j['job_id']:j['cpu_ns'] for j in jobs}
     root_cost={a:(fits['light_head'] if a=='light_head' else fits['shared_recurrent']
-                  if a not in ('fbsde_tree','exact_formula') else 0) for a in arms}
+                  if a not in ('fbsde_tree','exact_formula','syntax_prior') else 0) for a in arms}
     # Standalone accounting: each arm includes the same available semantic fit.
     # Physical ledger counts each actual common job once, not eight times.
     lifecycle={a:actual_cost[a]+root_cost[a]+fits['common_semantic']+semantic_annotation_cpu+
                (fits['shared_controller_selection'] if a in ('best_fixed','simple_stop') else 0) for a in arms}
-    report={'schema':'hepta.fbsde.encoder-study.results.v1','metrics':metrics,'inference_cpu_ns':actual_cost,
+    if profile == INDEPENDENT:
+        lifecycle['syntax_prior'] = actual_cost['syntax_prior']
+        lifecycle['best_fixed'] -= jobs[-1]['stop_selection_cpu_ns']
+        # Simple stop actually consumes the calibration grid, not best-fixed validation.
+        lifecycle['simple_stop'] -= jobs[-1]['fixed_selection_cpu_ns']
+    evaluated_cost = time.process_time_ns()-cpu_eval-sum(actual_cost.values())
+    strata={a:stratified_metrics(records[a],truths['test'],public['test']) for a in arms}
+    sources={r['id']:r.get('source_sha256',digest(r['id'])) for rows in partitions.values() for r in rows}
+    census=source_census(public['test'],sources)
+    envelope=time.process_time_ns()-study_start_cpu
+    classified=sum(j['cpu_ns'] for j in jobs)+semantic_annotation_cpu+sum(actual_cost.values())+evaluated_cost
+    require(envelope >= classified, 'overlapping CPU accounting')
+    report={'schema':('hepta.fbsde.encoder-study.results.v1' if profile == LEGACY else
+                      'hepta.fbsde.encoder-study.results.v2'),
+            'question_profile':profile, 'strata':strata, 'source_census':census,
+            'metrics':metrics,'inference_cpu_ns':actual_cost,
             'adaptation_plus_inference_cpu_ns':lifecycle,'jobs_once':jobs,'semantic_annotation_cpu_ns':semantic_annotation_cpu,
             'selection':{'best_fixed_depth':best,'simple_stop_threshold':threshold},
             'fbsde_vs_exact_max_probability_difference':equality,
@@ -202,13 +246,18 @@ def train_and_compare(torch, partitions, features, output, seed=104729):
                            'many tasks reuse utterances; task count is not independent source count',
                            'fixed two-sentence decoder, not open-ended generation',
                            'BSDE f=0 finite recursion, not fully coupled continuous NDU'],
-            'evaluation_and_recording_cpu_ns':time.process_time_ns()-cpu_eval-sum(actual_cost.values())}
+            'evaluation_and_recording_cpu_ns':evaluated_cost,
+            'study_cpu_envelope_ns':envelope, 'classified_jobs_once_cpu_ns':classified,
+            'unattributed_preparation_and_reporting_cpu_ns':envelope-classified,
+            'standalone_costs_are_lower_bounds':True,
+            'all_physical_work_accounted_by_envelope_not_sum_of_standalone_arms':True}
     write_once(output/'private-test-truths.json',truths['test'])
     write_once(output/'comparison.json',report)
     return report
 
 
 def run(args):
+    process_start_cpu=time.process_time_ns()
     import torch
     from four_gate_pretrained import load_pinned, MODEL, REVISION
     from four_gate_public_replay import read_public_data, DATA_REV, DATA_PINS
@@ -242,20 +291,34 @@ def run(args):
         features.update({r['id']:vectors[i].clone() for i,r in enumerate(batch)})
     train=torch.stack([features[r['id']] for r in partitions['train']])
     mean,scale=train.mean(0),train.std(0).clamp_min(.1)
+    raw_vectors=torch.stack(list(features.values()))
     features={k:((v-mean)/scale).clamp(-8,8) for k,v in features.items()}
     write_once(args.output/'forward-events.json',{'events':events,'warmup':warmup,
         'normalizer_training_inputs':[r['id'] for r in partitions['train']],
         'normalizer_sha256':digest([tensor_digest(mean),tensor_digest(scale)])})
-    comparison=train_and_compare(torch,partitions,features,args.output,args.seed)
+    # Public-data vectors only, no pretrained weights or private task content.
+    vector_path=args.output/'frozen-features.pt'
+    torch.save({'ids':list(features), 'vectors':torch.stack(list(features.values())),
+                'raw_vectors':raw_vectors, 'normalizer_mean':mean, 'normalizer_scale':scale},vector_path)
+    comparison=train_and_compare(torch,partitions,features,args.output,args.seed,profile=args.question_profile)
     common=load['cpu_ns']+warmup['cpu_ns']+sum(e['cpu_ns'] for e in events)
+    from four_gate_pretrained import file_hash
     write_once(args.output/'physical-summary.json',{'source_sha':source,'model':MODEL,'revision':REVISION,
+        'question_profile':args.question_profile,
+        'feature_artifact_sha256':file_hash(vector_path),
+        'feature_semantics':'frozen_pretrained_vectors_with_train_only_normalization',
+        'measured_cpu_envelope_before_final_report_ns':time.process_time_ns()-process_start_cpu,
+        'standalone_totals_are_lower_bounds':True,
         'real_weights_executed':True,'encoder_forwards':len(events),'encoder_rows':len(rows),
         'common_load_warmup_encoder_cpu_ns':common,
-        'standalone_total_cpu_ns':{a:common+c for a,c in comparison['adaptation_plus_inference_cpu_ns'].items()},
+        'standalone_total_cpu_ns':{a:(c if a=='syntax_prior' else common+c)
+                                   for a,c in comparison['adaptation_plus_inference_cpu_ns'].items()},
         'physical_shared_jobs_counted_once':True,
         'whole_process_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
         'gpu_measured':False,'energy_measured':False,'not_executed_phases':['migration'],
         'full_lifecycle_resource_gate_passed':False,'production_promotion_permitted':False})
+    from fbsde_audit import recompute_comparison
+    write_once(args.output/'arithmetic-audit.json',recompute_comparison(args.output,partitions))
     print('real frozen Encoder comparison completed; no scientific superiority or production gate inferred',flush=True)
 
 
@@ -263,4 +326,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--source-root',type=Path,required=True);p.add_argument('--model-dir',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True);p.add_argument('--seed',type=int,default=104729)
+    p.add_argument('--question-profile',choices=PROFILES,default=LEGACY)
     run(p.parse_args())
