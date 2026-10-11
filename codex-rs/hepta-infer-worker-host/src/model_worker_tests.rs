@@ -846,23 +846,21 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
         Err(Error::FinalUseDenied),
     );
 
-    // Distinct owner instance—even with the same issuer key and exact
-    // binding—cannot pretend to have issued the token. Arc ownership matters.
-    let token = authority
-        .claim(
-            &codex_hepta_contracts::SignedFinalUseGrant {
-                grant: codex_hepta_contracts::FinalUseGrant {
-                    nonce: [78; 32],
-                    grant_id: "stem-final-use-test-grant-2".into(),
-                    ..signed.grant.clone()
-                },
-                // Placeholder will be replaced below with an actual signed
-                // test grant before invoking claim.
-                signature: signed.signature.clone(),
-            },
-            &binding,
-        );
-    assert_eq!(token.unwrap_err(), codex_hepta_contracts::FinalUseError::InvalidSignature);
+    // Distinct verifier instance—even when pinned to the same issuer key
+    // and presented with the exact same grant—cannot impersonate the host
+    // authority that produced the non-cloneable token. Arc ownership matters.
+    let (other_authority, other_signed, _other_directory) =
+        signed_stem_final_use_fixture(binding.clone());
+    let foreign_token = other_authority
+        .claim(&other_signed, &binding)
+        .expect("valid token issued by other verifier instance");
+    assert_eq!(
+        worker.run_verified_stem_feature_receipt_v1(
+            &authority, foreign_token, 100, &source, &access,
+            head, &features, auth,
+        ),
+        Err(Error::FinalUseDenied),
+    );
 }
 
 #[cfg(unix)]
