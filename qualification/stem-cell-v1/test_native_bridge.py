@@ -106,6 +106,11 @@ class SignedCasHeadBankBytesTests(unittest.TestCase):
         from native_bridge import encode_cpu_head_bank_candidate, bundle_digest_many
         first, second = self.candidate(), self.candidate(True)
         raw = encode_cpu_head_bank_candidate([first, second])
+        import hashlib
+        self.assertEqual(
+            hashlib.sha256(raw).hexdigest(),
+            "7be461898ad99e7d421ad2f4b0b1927a4a308260a162f7cf6dba1d594d7f1e93",
+        )
         self.assertEqual(raw, encode_cpu_head_bank_candidate([second, first]))
         self.assertTrue(raw.endswith(b"\n"))
         obj = json.loads(raw)
