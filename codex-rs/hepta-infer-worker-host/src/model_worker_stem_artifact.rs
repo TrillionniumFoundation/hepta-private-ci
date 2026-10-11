@@ -132,8 +132,9 @@ impl SelectedStemProjectionReaderV1 {
         let projection = candidate
             .with_current(current, decode_projection)
             .map_err(|error| StemProjectionArtifactError::Storage(error.to_string()))??;
-        let projection_digest =
-            projection.digest().map_err(StemProjectionArtifactError::Numeric)?;
+        let projection_digest = projection
+            .digest()
+            .map_err(StemProjectionArtifactError::Numeric)?;
         if projection_digest != expected_projection_digest
             || compatibility_digest != expected_projection_digest
         {
@@ -170,12 +171,21 @@ impl SelectedStemProjectionReaderV1 {
         binding: &StemProjectionBindingV1,
         features: &[f32],
         token_count: u64,
-    ) -> Result<(ProjectedStemFeatureV1, StemProjectionReadObservationV1), StemProjectionArtifactError> {
+    ) -> Result<
+        (ProjectedStemFeatureV1, StemProjectionReadObservationV1),
+        StemProjectionArtifactError,
+    > {
         if self.sealed {
             return Err(StemProjectionArtifactError::ConsumerSealed);
         }
         let result = self.project_checked(
-            selector, signed_selection, current, now, binding, features, token_count,
+            selector,
+            signed_selection,
+            current,
+            now,
+            binding,
+            features,
+            token_count,
         );
         if result.is_err() {
             self.sealed = true;
@@ -193,10 +203,14 @@ impl SelectedStemProjectionReaderV1 {
         binding: &StemProjectionBindingV1,
         features: &[f32],
         token_count: u64,
-    ) -> Result<(ProjectedStemFeatureV1, StemProjectionReadObservationV1), StemProjectionArtifactError> {
+    ) -> Result<
+        (ProjectedStemFeatureV1, StemProjectionReadObservationV1),
+        StemProjectionArtifactError,
+    > {
         if binding.scope_digest != self.fence.scope_digest.to_string()
             || binding.generation != self.fence.worker_generation
-            || binding.revocation_frontier_digest != self.fence.revocation_frontier_digest.to_string()
+            || binding.revocation_frontier_digest
+                != self.fence.revocation_frontier_digest.to_string()
             || binding.encoder_digest != self.projection.encoder_digest
             || binding.preprocessor_digest != self.projection.preprocessor_digest
             || binding.runtime_digest != self.projection.runtime_digest
@@ -213,10 +227,13 @@ impl SelectedStemProjectionReaderV1 {
         }
         let witness = current.witness_digest();
         let trust = current.trust_digest();
-        let projected = self.candidate.with_current(current, |_payload| {
-            project_bound_f32(&self.projection, binding, features, token_count)
-        }).map_err(|error| StemProjectionArtifactError::Storage(error.to_string()))?
-          .map_err(StemProjectionArtifactError::Numeric)?;
+        let projected = self
+            .candidate
+            .with_current(current, |_payload| {
+                project_bound_f32(&self.projection, binding, features, token_count)
+            })
+            .map_err(|error| StemProjectionArtifactError::Storage(error.to_string()))?
+            .map_err(StemProjectionArtifactError::Numeric)?;
 
         let observation = StemProjectionReadObservationV1 {
             artifact_id: self.artifact_id.clone(),
