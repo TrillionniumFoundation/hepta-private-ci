@@ -96,6 +96,24 @@ the real Supervisor finalization call connected to the same coordinator,
 and independent Observer confirmation. The strict production result stays
 **0/8 fully accepted**. Native tests do not authorize physical splitting.
 
+## Exact-owner readback concurrency and ledger namespace
+
+The source-side CellSplit RPC owner now double-samples its monotone durable
+frontier and re-reads the original operation after the first live-state check,
+before it signs any positive or negative nonce-bound readback. A commit that
+appears during a previously negative lookup, a changed original receipt, or
+a changed frontier returns an error. The coordinator also rejects unknown
+write-once `cell-split-*` ledger frames (including fabricated fifth steps or
+alternate replay markers), and caps each private execution directory scan at
+32 entries. These are bounded fail-closed checks, not a substitute for a
+production owner lock, true atomic snapshot, signed minimum checkpoint or
+independent Observer witness. Source regressions inject both readback races,
+unexpected frames and namespace exhaustion.
+
+**Qualification status:** these changes are committed to the Draft PR, not
+validated by a new exact-HEAD native CI and not deployed on the target
+machine. No physical split or production acceptance follows from them.
+
 Global cargo-deny is separately blocked by `RUSTSEC-2026-0318` for
 `matrix-sdk-crypto` 0.18.0 (patched in 0.19.0) and `RUSTSEC-2026-0319`
 for the unmaintained `anymap2` crate. Matrix SDK 0.19.1 still depends on
