@@ -57,6 +57,7 @@ def audit(directory, original_splits):
     observed = read('kernel-fit-observations.json')
     require(len(observed) == len(originals['kernel']) and {r['id'] for r in observed} == set(originals['kernel']), 'kernel fit source coverage')
     rebuilt = [float(plan['kernel_alpha'])]*len(count)
+    raw_kernel_rows = []
     for item in observed:
         src = originals['kernel'][item['id']]
         require(item['text_sha256'] == src['text_sha256'] and item['head_sha256'] == selection['head_sha256'], 'kernel observation identity')
@@ -67,7 +68,21 @@ def audit(directory, original_splits):
         index = src['label']
         for symbol in item['symbols']: index = index*symbols+symbol
         rebuilt[index] += 1
-    require(rebuilt == count, 'kernel counts not fitted from original training observations')
+        raw_kernel_rows.append((src['label'], *item['symbols']))
+    kernel_profile = plan.get('kernel_model_profile', 'uniform_joint_v1')
+    require(kernel_profile in ('uniform_joint_v1', 'joint_backoff_cv_v2'), 'unknown kernel profile')
+    expected_arms = ('initial_only', 'full_only', 'all_views', 'best_fixed', 'confidence',
+                     'myopic', 'ndu_bsde', 'compiled_same_model', 'risk_ndu')
+    if kernel_profile == 'joint_backoff_cv_v2':
+        from fbsde_acquisition_kernel_audit import verified_counts
+        choice = read('kernel-selection.json')
+        hashes = [originals['kernel'][item['id']]['text_sha256'] for item in observed]
+        require(stored['binding']['smoothing_selection_sha256'] == digest(choice), 'kernel selection identity')
+        rebuilt = verified_counts(raw_kernel_rows, hashes, classes, choice)
+        expected_arms += ('full_symbol',)
+    require(tuple(plan['arms']) == expected_arms, 'missing or extra control arm')
+    require(len(rebuilt) == len(count) and all(abs(a-b) < 1e-11 for a, b in zip(rebuilt, count)),
+            'kernel counts not fitted from original training observations')
     outcomes = read('outcomes.json')
     require(outcomes == {s: {i: r['label'] for i, r in rows.items()} for s, rows in originals.items()},
             'outcome labels differ from original publisher')
@@ -77,6 +92,24 @@ def audit(directory, original_splits):
             hashlib.sha256(tensor.read_bytes()).hexdigest() == physical['candidate_head_file_sha256'], 'Head artifact mismatch')
     cpu = {s: {} for s in ('validation', 'test')}; metrics = {}; root_decisions = {}; total_events = 0
     for split in ('validation', 'test'):
+        attempted = None
+        if plan.get('view_attempt_profile') == 'measured_attempts_v1':
+            path = root/f'{split}-view-attempts.jsonl'
+            require(path.is_file() and not path.is_symlink() and path.stat().st_size <= 64*1024*1024,
+                    'missing/bounded attempt journal')
+            attempted = {}; previous = None
+            for number, line in enumerate(path.read_bytes().splitlines()):
+                item = strict_loads(line); identity = item.pop('attempt_sha256')
+                require(identity == digest(item) and identity not in attempted and
+                        item['previous_sha256'] == previous and item['sequence'] == number,
+                        'attempt chain mismatch')
+                require(item['status'] == 'returned' and item['prediction_returned'] is True and
+                        item['split'] == split and item['limit_ns'] == plan['prediction_cpu_limit_ns'] and
+                        type(item['cpu_ns']) is int and 0 <= item['cpu_ns'] <= item['limit_ns'],
+                        'failed/overbudget attempt cannot certify a completed trial')
+                require(all(type(v) is int and v >= 0 for v in item['phase_cpu_ns'].values()) and
+                        sum(item['phase_cpu_ns'].values()) == item['cpu_ns'], 'view phase CPU mismatch')
+                attempted[identity] = item; previous = identity
         for arm in plan['arms']:
             path = root/f'{split}-{arm}.jsonl'
             require(path.is_file() and not path.is_symlink() and path.stat().st_size < 32*1024*1024, 'trace file')
@@ -84,6 +117,7 @@ def audit(directory, original_splits):
             require(len(records) == len(originals[split]) and {r['id'] for r in records} == set(originals[split]),
                     'incomplete/unpaired terminal inventory')
             correct = answered = 0; rewards = []; counts = Counter(); events_count = 0; summed_cpu = 0
+            support_bins = {'zero': [], 'one_to_four': [], 'five_plus': []}
             for record in records:
                 r = originals[split][record['id']]; history = (); costs = 0.
                 require(record['source_input_sha256'] == digest(r['text']) and record['head_sha256'] == selection['head_sha256']
@@ -94,6 +128,14 @@ def audit(directory, original_splits):
                     require((v == 0) if index == 0 else record['decisions'][index-1]['action'] == f'read:{v}',
                             'unrequested future evidence delivered')
                     receipt = event['receipt']; p = receipt['probabilities']
+                    if attempted is not None:
+                        identity = receipt.get('attempt_sha256')
+                        require(identity in attempted, 'missing/reused view attempt')
+                        attempt = attempted.pop(identity)
+                        payload = {k: v for k, v in receipt.items() if k != 'attempt_sha256'}
+                        require(attempt['computed_receipt_sha256'] == digest(payload) and
+                                (attempt['arm'], attempt['id'], attempt['view'], attempt['head_sha256']) ==
+                                (arm, record['id'], v, selection['head_sha256']), 'attempt/terminal mismatch')
                     require(len(p) == classes and all(type(x) in (int, float) and math.isfinite(x) and 0 <= x <= 1 for x in p)
                             and abs(sum(p)-1) < 1e-5, 'invalid actual Head probabilities')
                     require(event['symbol'] == max(range(classes), key=lambda j: p[j]) and receipt['text_sha256'] == digest(text_view(r['text'], v)),
@@ -103,12 +145,22 @@ def audit(directory, original_splits):
                     key = (arm, history)
                     require(root_decisions.setdefault(key, decision['action']) == decision['action'],
                             'same information prefix changed its decision')
+                    if arm == 'full_symbol':
+                        expected = f'answer:{dict(history)[2]}' if 2 in dict(history) else 'read:2'
+                        require(decision['action'] == expected, 'full-symbol control drift')
                     if arm in ('ndu_bsde', 'compiled_same_model', 'risk_ndu', 'myopic'):
                         expected, value = optimum(history, .5 if arm == 'risk_ndu' else 0., arm == 'myopic')
                         require(decision['action'] == expected, 'policy disagrees with independently reconstructed law')
                         if decision['bsde'] is not None:
                             require(abs(decision['bsde']['root_value']-value) < 1e-9, 'original-law value mismatch')
                     costs += plan['objective']['costs'][v-1] if v else 0.
+                if split == 'test' and kernel_profile == 'joint_backoff_cv_v2':
+                    support = sum(all(rr[v+1] == symbol for v, symbol in history) for rr in raw_kernel_rows)
+                    belief = conditional(history)[0]
+                    loss = -math.log(belief[r['label']])
+                    brier = sum((q-(j == r['label']))**2 for j, q in enumerate(belief))/classes
+                    group = 'zero' if support == 0 else 'one_to_four' if support < 5 else 'five_plus'
+                    support_bins[group].append((support, loss, brier))
                 answer = record['action']; require(answer == record['decisions'][-1]['action'], 'final decision drift')
                 if answer == 'abstain':
                     require(record['text'] == 'Insufficient evidence; abstain.', 'decoder altered abstention')
@@ -124,11 +176,22 @@ def audit(directory, original_splits):
                 rewards.append(reward-costs); counts[len(history)-1] += 1; summed_cpu += record['cpu_ns']; events_count += len(history)
             cpu[split][arm] = summed_cpu; total_events += events_count
             if split == 'test':
+                if kernel_profile == 'joint_backoff_cv_v2':
+                    for name, values in support_bins.items():
+                        saved = result['posterior_support'][arm][name]
+                        require(saved['cases'] == len(values) and
+                                saved['minimum_raw_support'] == min((r[0] for r in values), default=None),
+                                'raw support count mismatch')
+                        for key, i in (('mean_log_loss', 1), ('mean_brier', 2)):
+                            expected = sum(r[i] for r in values)/len(values) if values else None
+                            require(saved[key] is None if expected is None else
+                                    abs(saved[key]-expected) < 1e-10, 'support calibration mismatch')
                 m = result['metrics'][arm]
                 require(m['correct'] == correct and m['answered'] == answered and abs(m['mean_external_score_minus_cost']-sum(rewards)/len(rewards)) < 1e-12,
                         'reported answer/utility metrics mismatch')
                 require(result['actual_test_forwards'][arm] == events_count, 'forward-count mismatch')
                 metrics[arm] = {'correct': correct, 'answered': answered, 'mean_score': sum(rewards)/len(rewards)}
+        require(attempted is None or not attempted, 'unaccounted attempted work')
     require(cpu['test'] == result['actual_test_cpu_ns'] and cpu['validation'] == result['actual_validation_cpu_ns'], 'CPU sums mismatch')
     classified = sum(j['cpu_ns'] for j in result['jobs_once'])+sum(sum(v.values()) for v in cpu.values())
     require(len({j['id'] for j in result['jobs_once']}) == len(result['jobs_once']), 'physical job repeated')

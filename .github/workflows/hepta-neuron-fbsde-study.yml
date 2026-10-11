@@ -156,6 +156,7 @@ jobs:
       max-parallel: 2
       matrix:
         backend: [hashing_reference_v1, mmbert]
+        kernel_profile: [uniform_joint_v1, joint_backoff_cv_v2]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -176,12 +177,13 @@ jobs:
           HF_HUB_DISABLE_TELEMETRY: "1"
           TOKENIZERS_PARALLELISM: "false"
           ACQUISITION_BACKEND: ${{ matrix.backend }}
+          KERNEL_PROFILE: ${{ matrix.kernel_profile }}
         run: |
           set -euo pipefail
           export PYTHONPATH=qualification/neuron-stem
-          /tmp/acquisition-venv/bin/python -m unittest fbsde_acquisition_tensor_checks -v 2>&1 | tee acquisition-tests.log
+          /tmp/acquisition-venv/bin/python -m unittest fbsde_acquisition_tensor_checks fbsde_acquisition_support_tensor_checks -v 2>&1 | tee acquisition-tests.log
           /tmp/acquisition-venv/bin/python qualification/neuron-stem/fbsde_study.py \
-            --profile semantic_acquisition_v1 --backend "$ACQUISITION_BACKEND" \
+            --profile semantic_acquisition_v1 --backend "$ACQUISITION_BACKEND" --kernel-profile "$KERNEL_PROFILE" \
             --model-dir /tmp/acquisition-mmbert --output acquisition-study \
             2>&1 | tee acquisition-study.log
           git diff --exit-code
@@ -189,7 +191,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: fbsde-acquisition-${{ matrix.backend }}-${{ github.run_id }}
+          name: fbsde-acquisition-${{ matrix.backend }}-${{ matrix.kernel_profile }}-${{ github.run_id }}
           path: |
             acquisition-source.txt
             acquisition-source.tar.gz

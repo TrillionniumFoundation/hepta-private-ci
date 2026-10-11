@@ -13,6 +13,9 @@ import time
 
 from four_gate_common import canonical, digest, require, write_once
 from four_gate_capture import tensor_digest
+from fbsde_acquisition_observe import AttemptJournal, observe_view
+from fbsde_acquisition_support import (LEGACY_KERNEL, SUPPORTED_KERNEL, KERNEL_PROFILES,
+                                       select_counts, support_summary)
 from fbsde_acquisition import (JointKernel, Objective, ViewPort, certainty_equivalent,
                                exhaustive_reference, history_key, solve, terminal)
 from fbsde_acquisition_data import (DATA_REV, DATA_PINS, INTENTS, PARTITIONS,
@@ -60,8 +63,8 @@ def scored(records, labels, objective):
 
 
 def choose(arm, kernel, history, objective, fixed, threshold, tables):
-    if arm in ('initial_only', 'full_only', 'all_views', 'best_fixed'):
-        order = {'initial_only': (), 'full_only': (2,), 'all_views': (1, 2), 'best_fixed': fixed}[arm]
+    if arm in ('initial_only', 'full_only', 'all_views', 'best_fixed', 'full_symbol'):
+        order = {'initial_only': (), 'full_only': (2,), 'all_views': (1, 2), 'best_fixed': fixed, 'full_symbol': (2,)}[arm]
         for view in order:
             if view not in dict(history): return f'read:{view}', None
     elif arm == 'confidence':
@@ -77,6 +80,7 @@ def choose(arm, kernel, history, objective, fixed, threshold, tables):
         value = solve(kernel, history, objective, one_step=arm == 'myopic')
         return value['action'], {'root_value': value['value'], 'edges': value['edges'],
                                  'kernel_sha256': value['kernel_sha256']}
+    if arm == 'full_symbol': return f'answer:{dict(history)[2]}', None
     return terminal(kernel, history, objective)[0], None
 
 
@@ -103,12 +107,15 @@ def execute(row, arm, kernel, objective, provider, fixed, threshold, tables, hea
     raise ValueError('acquisition policy exceeded horizon')
 
 
-def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_dir=None):
+def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_dir=None,
+        kernel_profile=LEGACY_KERNEL):
     import torch
     from torch import nn
     from four_gate_pretrained import MODEL, REVISION, load_pinned, file_hash
 
     require(backend in ('hashing_reference_v1', 'mmbert'), 'explicit backend; no silent substitute')
+    require(kernel_profile in KERNEL_PROFILES, 'explicit kernel profile')
+    arms = ARMS + (('full_symbol',) if kernel_profile == SUPPORTED_KERNEL else ())
     output = Path(output); output.mkdir(parents=True, exist_ok=False)
     torch.set_num_threads(2); torch.manual_seed(SEED)
     envelope_cpu = time.process_time_ns(); jobs = []
@@ -120,8 +127,10 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         'publisher_pins': DATA_PINS, 'sources': sources, 'intents': INTENTS, 'partitions': PARTITIONS,
         'seed': SEED, 'steps': 96, 'lr': .003, 'kernel_alpha': .01,
         'normalization_fit_only': True, 'view_protocol': 'first_3_words,last_3_words,full_original',
-        'objective': asdict(objective), 'risk_objective': asdict(risk), 'arms': ARMS,
+        'objective': asdict(objective), 'risk_objective': asdict(risk), 'arms': arms,
+        'kernel_model_profile': kernel_profile,
         'fixed_grid': FIXED, 'confidence_grid': THRESHOLDS, 'prediction_cpu_limit_ns': 100_000_000,
+        'view_attempt_profile': 'measured_attempts_v1',
         'test_labels_not_used_for_selection': True, 'real_future_observations': False,
         'source_author_independence_unknown': True, 'production_promotion_permitted': False})
     begin = time.process_time_ns()
@@ -191,7 +200,13 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
     kernel_rows = [(labels['kernel'][r['id']], *observations[r['id']]) for r in inputs['kernel']]
     binding = {'head': head_id, 'backend': physical, 'kernel_inputs': digest(inputs['kernel']),
                'normalizer': digest([tensor_digest(mean), tensor_digest(scale)])}
-    kernel = JointKernel.fit(kernel_rows, 8, binding)
+    if kernel_profile == SUPPORTED_KERNEL:
+        counts, selected_kernel = select_counts(kernel_rows, [r['text_sha256'] for r in inputs['kernel']], 8)
+        binding = {**binding, 'smoothing_selection_sha256': digest(selected_kernel)}
+        kernel = JointKernel(counts, 8, 8, binding)
+        write_once(output/'kernel-selection.json', selected_kernel)
+    else:
+        kernel = JointKernel.fit(kernel_rows, 8, binding)
     jobs.append({'id': 'joint_kernel_fit', 'phase': 'training', 'cpu_ns': time.process_time_ns()-begin})
     write_once(output/'kernel-fit-observations.json', kernel_observations)
     write_once(output/'kernel.json', {'counts': kernel.counts, 'binding': binding, 'identity': kernel.identity,
@@ -221,45 +236,53 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         'tables_binding': tables[0], 'tables': [{'history': h, 'action': a} for h, a in table.items()],
         'training_losses': losses, 'head_parameters': sum(p.numel() for p in head.parameters()),
         'finite_bsde_edges': interfaces})
-    records = {a: [] for a in ARMS}; validation_records = {a: [] for a in ARMS}
+    # Preserve completed preparation even when a later requested view fails.
+    tensor_file = output/'candidate-head.pt'
+    torch.save({'state': head.state_dict(), 'mean': mean, 'scale': scale}, tensor_file)
+    write_once(output/'preparation-forwards.json', forward_records)
+    write_once(output/'physical.json', {**physical, 'normalizer_fit_ids': [r['id'] for r in inputs['fit']],
+        'candidate_head_file_sha256': file_hash(tensor_file), 'candidate_head_identity': head_id})
+    write_once(output/'preparation-jobs.json', jobs)
+    records = {a: [] for a in arms}; validation_records = {a: [] for a in arms}
     # Freeze all model selection before validation/test. Validate is reported, never used to tune.
     for split in ('validation', 'test'):
-        streams = {a: (output/f'{split}-{a}.jsonl').open('xb') for a in ARMS}
+        streams = {a: (output/f'{split}-{a}.jsonl').open('xb') for a in arms}
+        attempts = AttemptJournal(output/f'{split}-view-attempts.jsonl')
         try:
             for ordinal, row in enumerate(inputs[split]):
-                order = list(ARMS); random.Random(SEED+ordinal).shuffle(order)
+                order = list(arms); random.Random(SEED+ordinal).shuffle(order)
                 for arm in order:
                     obj = risk if arm == 'risk_ndu' else objective
                     def provider(view):
-                        t = time.process_time_ns(); txt = text_view(row['text'], view)
-                        with torch.inference_mode():
-                            vector = encode([txt]); p = head(normalize(vector)).softmax(-1)[0]
-                        require(torch.isfinite(p).all().item(), 'nonfinite actual observation')
-                        elapsed = time.process_time_ns()-t
-                        require(elapsed <= 100_000_000, 'per-view CPU budget exceeded')
-                        return int(p.argmax().item()), {'kind': 'actual_requested_forward',
-                            'text_sha256': digest(txt), 'vector_sha256': tensor_digest(vector),
-                            'probabilities': p.tolist(), 'cpu_ns': elapsed, 'head_sha256': head_id}
+                        return observe_view(view, lambda v: text_view(row['text'], v), encode,
+                            normalize, head, torch, head_id, attempts,
+                            {'split': split, 'arm': arm, 'id': row['id'],
+                             'source_input_sha256': row['text_sha256']})
                     rec = execute(row, arm, kernel, obj, provider, fixed, threshold, tables, head_id)
                     streams[arm].write(canonical(rec)+b'\n'); streams[arm].flush()
                     (records if split == 'test' else validation_records)[arm].append(rec)
+        except Exception as error:
+            write_once(output/'failure.json', {'schema': 'hepta.acquisition.failure.v1',
+                'split': split, 'error_type': type(error).__name__,
+                'attempts_in_split': attempts.sequence, 'last_attempt_sha256': attempts.previous,
+                'run_complete': False, 'scientific_pass': False, 'budget_relaxed': False,
+                'measured_experiment_cpu_ns': time.process_time_ns()-envelope_cpu,
+                'completed_terminal_counts': {a: len((records if split == 'test' else validation_records)[a]) for a in arms}})
+            raise
         finally:
+            attempts.close()
             for stream in streams.values():
                 stream.flush(); os.fsync(stream.fileno()); stream.close()
     require(head_id == digest({k: tensor_digest(v) for k, v in head.state_dict().items()}), 'selected head mutated')
     # All test predictions exist on disk BEFORE the outcome scorer uses labels.
     begin = time.process_time_ns()
-    metrics = {a: scored(records[a], labels['test'], objective) for a in ARMS}
+    metrics = {a: scored(records[a], labels['test'], objective) for a in arms}
     jobs.append({'id': 'outcome_scoring', 'phase': 'evaluation', 'cpu_ns': time.process_time_ns()-begin})
     for a, b in zip(records['ndu_bsde'], records['compiled_same_model']):
         require(a['id'] == b['id'] and a['action'] == b['action'] and
                 [e['view'] for e in a['events']] == [e['view'] for e in b['events']],
                 'compiled policy differs from same-model BSDE')
-    tensor_file = output/'candidate-head.pt'; torch.save({'state': head.state_dict(), 'mean': mean, 'scale': scale}, tensor_file)
     write_once(output/'outcomes.json', labels)
-    write_once(output/'preparation-forwards.json', forward_records)
-    write_once(output/'physical.json', {**physical, 'normalizer_fit_ids': [r['id'] for r in inputs['fit']],
-        'candidate_head_file_sha256': file_hash(tensor_file), 'candidate_head_identity': head_id})
     elapsed = time.process_time_ns()-envelope_cpu
     classified = sum(j['cpu_ns'] for j in jobs)+sum(r['cpu_ns'] for grouped in (records, validation_records) for rows in grouped.values() for r in rows)
     require(elapsed >= classified, 'overlapping CPU components')
@@ -276,6 +299,12 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         'risk_objective_is_preregistered_not_redefined_by_predictions': True,
         'validation_not_used_for_selection': True,
         'interpretation': 'partial historical text views; no new user response or world truth is synthesized'}
+    report['kernel_model_profile'] = kernel_profile
+    if kernel_profile == SUPPORTED_KERNEL:
+        report['posterior_support'] = {a: support_summary(kernel_rows, records[a], labels['test'], kernel)
+                                       for a in arms}
+        report['kernel_cv_choice'] = selected_kernel['selected']
+        report['test_reuse_is_exploratory'] = True
     write_once(output/'results.json', report)
     from fbsde_acquisition_audit import audit
     write_once(output/'arithmetic-audit.json', audit(output, splits))
