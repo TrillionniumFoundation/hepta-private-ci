@@ -675,6 +675,80 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
 }
 
 #[test]
+fn observed_completed_assistant_item_supplies_missing_text_without_duplicate_delta() {
+    fn complete_item(thread: &str, turn: &str, text: String) -> ServerNotification {
+        ServerNotification::ItemCompleted(codex_app_server_protocol::ItemCompletedNotification {
+            thread_id: thread.to_string(),
+            turn_id: turn.to_string(),
+            completed_at_ms: 0,
+            item: ThreadItem::AgentMessage {
+                id: "item-1".to_string(),
+                text,
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            },
+        })
+    }
+
+    let mut empty = output();
+    observe_for_test(&mut empty, complete_item("foreign", "turn-a", "wrong".into())).unwrap();
+    observe_for_test(&mut empty, complete_item("thread-a", "foreign", "wrong".into())).unwrap();
+    assert!(empty.output.is_empty());
+    observe_for_test(
+        &mut empty,
+        complete_item("thread-a", "turn-a", "fresh context accepted".into()),
+    )
+    .unwrap();
+    assert_eq!(empty.output, "fresh context accepted");
+    assert!(!empty.terminal_observed);
+
+    let mut streamed = output();
+    observe_for_test(
+        &mut streamed,
+        ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+            thread_id: "thread-a".into(),
+            turn_id: "turn-a".into(),
+            item_id: "item-1".into(),
+            delta: "streamed text".into(),
+        }),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut streamed,
+        complete_item("thread-a", "turn-a", "streamed text".into()),
+    )
+    .unwrap();
+    assert_eq!(streamed.output, "streamed text");
+    assert!(!streamed.terminal_observed);
+    assert!(
+        observe_for_test(
+            &mut output(),
+            complete_item("thread-a", "turn-a", "x".repeat(MAX_OUTPUT_BYTES + 1)),
+        )
+        .is_err(),
+    );
+}
+
+#[test]
+fn terminal_snapshot_supplies_full_assistant_text_if_no_item_deltas_arrived() {
+    let mut output = output();
+    let mut finished = terminal("thread-a", "turn-a", TurnStatus::Completed);
+    if let ServerNotification::TurnCompleted(completed) = &mut finished {
+        completed.turn.items.push(ThreadItem::AgentMessage {
+            id: "item-1".to_string(),
+            text: "snapshot assistant text".to_string(),
+            phase: None,
+            memory_citation: None,
+            delivery: None,
+        });
+    }
+    assert!(observe_for_test(&mut output, finished).unwrap());
+    assert_eq!(output.output, "snapshot assistant text");
+    assert!(output.terminal_observed);
+}
+
+#[test]
 fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
     for boundary_status in [
         NativeBoundaryStatus::Cancelled,
