@@ -18,7 +18,7 @@ concurrency:
   group: memory-source-write-1452-${{ github.sha }}
   cancel-in-progress: false
 jobs:
-  format:
+  repository-format:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -52,8 +52,35 @@ jobs:
           name: memory-source-write-format
           path: /tmp/source-write-format.*
           if-no-files-found: error
+  # The PR-wide formatting gate is retained above. A formatting failure in an
+  # unrelated research file must not censor a source-only model experiment.
+  # Scoped source validation and the full locked regression suite remain required.
+  source-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Verify exact source-write syntax, registered protocol and scoped formatting
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22 PyYAML==6.0.3
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/source_completion_loss.py \
+            scripts/memory_cell/source_write_effects.py \
+            scripts/memory_cell/test_source_completion_hf.py \
+            scripts/memory_cell/test_source_write_execution_gate.py
+          python3 -m compileall -q scripts/memory_cell
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_execution_gate.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_workflow_gates.py' -v
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
   write-and-read:
-    needs: format
+    needs: source-contracts
     runs-on: ubuntu-latest
     timeout-minutes: 330
     env:
