@@ -76,6 +76,13 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    /// Observable owner-channel liveness only. This is not a proposal grant;
+    /// the long-lived owner still validates all trust and CAS frontiers.
+    #[must_use]
+    pub fn is_open(&self) -> bool {
+        !self.sender.is_closed()
+    }
+
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
