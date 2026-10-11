@@ -69,7 +69,7 @@ jobs:
           fi
       - name: Test V1/V2/V3 neuron kernel without modifying legacy semantics
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-neuron --lib
+        run: cargo test --locked -p codex-hepta-neuron --all-targets
       - name: Run selected strict Clippy
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
