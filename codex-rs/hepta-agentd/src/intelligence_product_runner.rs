@@ -190,7 +190,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     compilation_receipt_digest: envelope.envelope_digest.to_string(),
                 };
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(
-                    PreparedAgentdIntelligenceRunV1 {
+                    Box::new(PreparedAgentdIntelligenceRunV1 {
                         envelope: *envelope,
                         dispatch_proposal_digest,
                         snapshot,
