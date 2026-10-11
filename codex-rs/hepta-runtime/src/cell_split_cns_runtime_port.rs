@@ -55,14 +55,7 @@ pub trait CellSplitCnsKernelWitnessV1 {
         plan: &CellSplitExecutionPlanV1,
         binding: &CellSplitCnsRouteBindingV1,
         intent: &CellSplitExecutionIntentV1,
-    ) -> Result<
-        (
-            Arc<FinalUseAuthority>,
-            SignedFinalUseGrant,
-            RuntimeTopologyApplyRequestV1,
-        ),
-        Self::Error,
-    >;
+    ) -> Result<(SignedFinalUseGrant, RuntimeTopologyApplyRequestV1), Self::Error>;
 
     fn persist_actual_runtime_receipt(
         &mut self,
@@ -86,6 +79,7 @@ pub trait CellSplitCnsKernelWitnessV1 {
 /// only supplies the exact control boundary and verifies external signatures.
 pub struct CellSplitCnsKernelRuntimePortV1<W: CellSplitCnsKernelWitnessV1> {
     runtime: HeptaRuntime,
+    authority: Arc<FinalUseAuthority>,
     plan: CellSplitExecutionPlanV1,
     binding: CellSplitCnsRouteBindingV1,
     intent: CellSplitExecutionIntentV1,
@@ -96,6 +90,7 @@ pub struct CellSplitCnsKernelRuntimePortV1<W: CellSplitCnsKernelWitnessV1> {
 impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
     pub fn new(
         runtime: HeptaRuntime,
+        authority: Arc<FinalUseAuthority>,
         plan: CellSplitExecutionPlanV1,
         binding: CellSplitCnsRouteBindingV1,
         intent: CellSplitExecutionIntentV1,
@@ -130,7 +125,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         {
             return Err("unbound CNS runtime port configuration".into());
         }
-        Ok(Self { runtime, plan, binding, intent, runtime_key, witness })
+        Ok(Self { runtime, authority, plan, binding, intent, runtime_key, witness })
     }
 
     fn live_runtime(&self) -> Result<RuntimeTopologySnapshotV1, String> {
@@ -250,7 +245,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         {
             return Err("already committed CNS cutover cannot run again".into());
         }
-        let (authority, grant, request) = self.witness
+        let (grant, request) = self.witness
             .take_admitted_successor(plan, binding, intent)
             .map_err(|e| e.to_string())?;
         let expected = request.successor.snapshot();
@@ -268,7 +263,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
             return Err("CNS route changed after admitted successor preparation".into());
         }
         let actual = self.runtime.apply_governed_topology(
-            &authority, &grant, request,
+            &self.authority, &grant, request,
         ).map_err(|e| e.to_string())?;
         // This is the genuine live runtime operation receipt, *not* a digest
         // fixture. It must describe precisely the transition just observed.
