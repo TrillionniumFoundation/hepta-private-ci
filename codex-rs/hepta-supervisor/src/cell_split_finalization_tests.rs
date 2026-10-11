@@ -461,7 +461,7 @@ fn lost_ack_after_real_journal_fsync_recovers_without_second_retirement() {
 }
 
 
-#[cfg(unix)]
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 fn real_supervisor_effect_inputs() -> (
     codex_hepta_operator_acceptance::CellSplitExecutionPlanV1,
     codex_hepta_operator_acceptance::CellSplitSupervisorFenceBindingV1,
@@ -524,7 +524,7 @@ fn real_supervisor_effect_inputs() -> (
     (execution, outer, intent, accepted_handoff)
 }
 
-#[cfg(unix)]
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
 fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
     use codex_hepta_operator_acceptance::{
@@ -577,7 +577,7 @@ fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
     assert!(reopened.verify_current(&intent, &original).is_err());
 }
 
-#[cfg(unix)]
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
 fn real_journal_port_rejects_forged_nonce_and_unpinned_cutover() {
     use codex_hepta_operator_acceptance::CellSplitSupervisorRuntimePortV1;
@@ -616,7 +616,7 @@ fn real_journal_port_rejects_forged_nonce_and_unpinned_cutover() {
 }
 
 
-#[cfg(unix)]
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
 fn real_journal_port_signed_rpc_reconciles_original_after_restart() {
     use codex_hepta_operator_acceptance::{
