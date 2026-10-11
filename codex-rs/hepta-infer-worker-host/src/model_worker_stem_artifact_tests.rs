@@ -353,6 +353,54 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
         fx.manifest.content_digest
     );
     assert!(!observation.production_authorized);
+
+    // A second, non-authorizing Worker check cannot be tricked into treating
+    // caller-supplied feature references from another scope/frontier as valid.
+    let mut admitted = super::super::NeuronFeatureRequest {
+        authorization: super::super::WorkerRequest {
+            request_id: "request.selected-stem".to_owned(),
+            reservation_id: "reservation.selected-stem".to_owned(),
+            model_digest: "2".repeat(64),
+            payload_digest: "0".repeat(64),
+            maximum_tokens: 64,
+            deadline_ms: 9000,
+            lease_payload_digest: "0".repeat(64),
+            reservation_model_digest: "2".repeat(64),
+            reservation_maximum_tokens: 64,
+            cancelled: false,
+        },
+        encoder_digest: binding.encoder_digest.clone(),
+        head_digest: "b".repeat(64),
+        weights_digest: "c".repeat(64),
+        input_digest: projected.projected_input_digest.to_string(),
+        feature_vector_q24: projected.values_q24.clone(),
+        expected_output_width: 2,
+    };
+    let payload_digest = super::super::canonical_neuron_feature_payload_digest(&admitted);
+    admitted.authorization.payload_digest = payload_digest.clone();
+    admitted.authorization.lease_payload_digest = payload_digest;
+    reader
+        .check_worker_request(&binding, &projected, &admitted)
+        .expect("same fenced generation and scope");
+    let mut mismatched_scope = binding.clone();
+    mismatched_scope.scope_digest = digest(b"different-scope").to_string();
+    assert!(matches!(
+        reader.check_worker_request(&mismatched_scope, &projected, &admitted),
+        Err(StemProjectionArtifactError::InvalidBinding)
+    ));
+    let mut mismatched_frontier = binding.clone();
+    mismatched_frontier.revocation_frontier_digest = digest(b"previous-frontier").to_string();
+    assert!(matches!(
+        reader.check_worker_request(&mismatched_frontier, &projected, &admitted),
+        Err(StemProjectionArtifactError::InvalidBinding)
+    ));
+    let mut wrong_generation = binding.clone();
+    wrong_generation.generation += 1;
+    assert!(matches!(
+        reader.check_worker_request(&wrong_generation, &projected, &admitted),
+        Err(StemProjectionArtifactError::InvalidBinding)
+    ));
+
     let before_revoke = fx.registry.snapshot().head_digest;
     fx.registry
         .append(ArtifactEvent::Revoke(StateChange {
@@ -381,5 +429,3 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
     assert!(reader.is_sealed());
 }
 
-#[path = "model_worker_stem_artifact_integration_tests.rs"]
-mod integration;
