@@ -6,7 +6,10 @@ on:
       - "scripts/memory_cell/stem_current_strict_readout_audit.py"
       - "scripts/memory_cell/test_stem_current_strict_readout_audit.py"
       - "scripts/memory_cell/stem_native_reader_stratification.py"
-      - "scripts/memory_cell/test_stem_native_reader_stratification.py scripts/memory_cell/stem_native_oracle_reader_capacity.py scripts/memory_cell/test_stem_native_oracle_reader_capacity.py"
+      - "scripts/memory_cell/test_stem_native_reader_stratification.py"
+      - "scripts/memory_cell/stem_native_oracle_reader_capacity.py"
+      - "scripts/memory_cell/test_stem_native_oracle_reader_capacity.py"
+      - "scripts/memory_cell/test_stem_current_workflow_path_gates.py"
       - "scripts/memory_cell/stem_native_oracle_reader_capacity.py"
       - "scripts/memory_cell/test_stem_native_oracle_reader_capacity.py"
       - ".github/workflows/hepta-memory-stem-current-source-gate.yml"
@@ -34,7 +37,7 @@ jobs:
           mkdir -p /tmp/stem-current-source
           git rev-parse HEAD > /tmp/stem-current-source/auditor-commit.txt
           git rev-parse HEAD^{tree} > /tmp/stem-current-source/auditor-tree.txt
-          python3 -m unittest -v test_stem_current_strict_readout_audit test_stem_native_reader_stratification test_stem_native_oracle_reader_capacity 2>&1 | tee /tmp/stem-current-source/tests.log
+          python3 -m unittest -v test_stem_current_strict_readout_audit test_stem_native_reader_stratification test_stem_native_oracle_reader_capacity test_stem_current_workflow_path_gates 2>&1 | tee /tmp/stem-current-source/tests.log
           python3 -m compileall -q scripts/memory_cell/stem_current_strict_readout_audit.py scripts/memory_cell/test_stem_current_strict_readout_audit.py scripts/memory_cell/stem_native_reader_stratification.py scripts/memory_cell/test_stem_native_reader_stratification.py
       - name: Fetch the exact completed 576-of-576 strict native experiment
         env:
