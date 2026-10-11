@@ -86,7 +86,7 @@ jobs:
           uv run --frozen --project scripts ruff format --diff scripts .github || true
           echo "::endgroup::"
           echo "::group::Exact Buildifier formatting diff"
-          buildifier -d codex-rs/hepta-operator-acceptance/BUILD.bazel || true
+          ./tools/buildifier -d codex-rs/hepta-operator-acceptance/BUILD.bazel || true
           echo "::endgroup::"
           # Diagnostics do not waive the original formatting failure.
           exit 1
