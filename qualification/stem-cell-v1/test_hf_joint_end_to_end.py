@@ -77,7 +77,13 @@ class FullPipelineModelFreeTests(unittest.TestCase):
         fake_hf.AutoTokenizer = SimpleNamespace(
             from_pretrained=lambda *a, **kw: FakeTokenizer())
         fake_hf.AutoModel = SimpleNamespace(
-            from_pretrained=lambda *a, **kw: FakeEncoder())
+            from_pretrained=lambda *a, **kw: (
+                FakeEncoder(), {
+                    "missing_keys": [],
+                    "unexpected_keys": [],
+                    "mismatched_keys": [],
+                    "error_msgs": [],
+                }))
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -127,6 +133,7 @@ class FullPipelineModelFreeTests(unittest.TestCase):
             self.assertFalse(receipt["checkpoint_zero_shot_score_emitted"])
             self.assertFalse(receipt["production_promotion_permitted"])
             self.assertEqual(receipt["model_source"], "microsoft/deberta-v3-large")
+            self.assertEqual(receipt["verified_encoder_loading"]["complete"], True)
             self.assertEqual(receipt["output_predictions_sha256"],
                              hashlib.sha256(output.read_bytes()).hexdigest())
             source_by_id = {row["sample_id"]: row for row in rows}
