@@ -91,6 +91,11 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
         raise ValueError("future windows are not strictly chronological")
     indexed = {}
     earliest_by_cell = set()
+    last_committed_head = {}
+    any_head_update = False
+    updates_per_event = trial.get("update_steps_per_future_event")
+    if type(updates_per_event) is not int or updates_per_event < 0:
+        raise ValueError("missing precommitted per-event optimizer update count")
     initial = trial.get("initial_head_digests", {})
     for index, (row, record, prec) in enumerate(zip(futures, records, journal)):
         if type(record) is not dict or type(prec) is not dict:
@@ -122,6 +127,9 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
             raise ValueError("tampered prediction precommit or unbound weights/input")
         require_sha(prec["head_digest"])
         require_sha(record.get("postupdate_head_digest"))
+        if (type(record.get("local_update_steps_after_prediction")) is not int or
+                record["local_update_steps_after_prediction"] != updates_per_event):
+            raise ValueError("local Cell update steps disagree with frozen trial protocol")
         classes = len(row["options"])
         valid_probs(record["trained_probabilities"], classes)
         valid_probs(record["frozen_same_initialization_probabilities"], classes)
@@ -130,6 +138,8 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
         if initial_key not in initial:
             raise ValueError("missing frozen same-initialization Cell Head")
         require_sha(initial[initial_key])
+        if key in last_committed_head and prec["head_digest"] != last_committed_head[key]:
+            raise ValueError("discontinuous Cell Head update digest lineage")
         if key not in earliest_by_cell:
             if (prec["head_digest"] != initial[initial_key] or
                     any(abs(a - b) > 1e-6
@@ -137,6 +147,8 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
                                         record["frozen_same_initialization_probabilities"]))):
                 raise ValueError("initial learned/frozen Head mismatch before first update")
             earliest_by_cell.add(key)
+        any_head_update |= record["postupdate_head_digest"] != prec["head_digest"]
+        last_committed_head[key] = record["postupdate_head_digest"]
         indexed[row["case_id"]] = {
             "dataset": row,
             "trained": record["trained_probabilities"],
@@ -144,6 +156,10 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
         }
     if trial.get("pre_label_prediction_journal_event_count") != len(futures):
         raise ValueError("wrong committed prediction count")
+    final_heads = trial.get("final_head_digests")
+    if (type(final_heads) is not dict or
+            final_heads != {str(key): digest for key, digest in last_committed_head.items()}):
+        raise ValueError("final Cell Head artifact digests do not match replayed update chain")
     if type(nochange) is not list or len(nochange) != len(futures):
         raise ValueError("genuine production no-change prediction coverage missing")
     observed, nochange_identity = set(), None
@@ -176,7 +192,7 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
         observed.add(case_id)
     if set(indexed) != observed:
         raise ValueError("missing no-change predictions")
-    return indexed, audit, nochange_identity
+    return indexed, audit, nochange_identity, bool(updates_per_event and any_head_update)
 
 
 def measure(probs, correct_index):
@@ -262,7 +278,7 @@ def review(dataset, trial, journal_bytes, nochange, *,
         raise ValueError("bootstraps require at least 1000 draws")
     if type(min_future_groups) is not int or min_future_groups < 2:
         raise ValueError("future groups must be bounded")
-    indexed, audit, owner = verify_and_index(
+    indexed, audit, owner, head_learning_evidence = verify_and_index(
         dataset, trial, journal_bytes, nochange)
     pairing = {}
     for index, window in enumerate(WINDOWS):
@@ -296,7 +312,7 @@ def review(dataset, trial, journal_bytes, nochange, *,
         item["brier_delta_bonferroni_ucb"] < 0
         for part in pairing.values() for item in part.values())
     resource_ok = validate_resource_reports(resources, trial)
-    predictive_pass = all_future and retention_ok
+    predictive_pass = all_future and retention_ok and head_learning_evidence
     return {
         "schema": SCHEMA,
         "status": "offline_three_way_test_then_learn_diagnostic_not_independent_ndu",
@@ -306,6 +322,8 @@ def review(dataset, trial, journal_bytes, nochange, *,
         "genuine_future_outcome_authentication_verified": False,
         "production_worker_4096_cell_evidence_verified": False,
         "quality_three_way_precheck_passed": predictive_pass,
+        "sealed_cell_update_chain_consistent": True,
+        "observed_actual_head_parameter_change_in_offline_trace": head_learning_evidence,
         "four_scale_research_resource_precheck_passed": resource_ok,
         "joint_offline_diagnostic_passed": predictive_pass and resource_ok,
         "dataset_digest": audit["dataset_digest"],
