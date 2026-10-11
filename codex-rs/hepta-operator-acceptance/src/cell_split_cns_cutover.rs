@@ -403,6 +403,10 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             {
                 return Err(CellSplitCnsCutoverErrorV1::Invalid);
             }
+            // An independently signed but unrelated runtime message must
+            // never be laundered by the outer CNS effect-owner envelope.
+            CellSplitCnsRuntimeAttestationV1::verify_original_bytes(&self.plan, record)
+                .map_err(|_| CellSplitCnsCutoverErrorV1::Invalid)?;
             self.port
                 .verify_original_commit(record)
                 .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
