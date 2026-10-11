@@ -1479,6 +1479,23 @@ impl fmt::Display for DurableRegistryError {
 
 impl std::error::Error for DurableRegistryError {}
 
+#[cfg(all(test, not(unix)))]
+mod unsupported_secure_backend_tests {
+    use super::*;
+
+    #[test]
+    fn unsupported_platform_cannot_create_unprotected_registry_state() {
+        let temp = tempfile::tempdir().expect("private test directory");
+        let path = temp.path().join("durable-prompt-registry");
+        let result = DurablePromptRegistry::open_state_dir(&path, 8);
+        assert!(
+            matches!(result, Err(DurableRegistryError::UnsafeStateDirectory)),
+            "no audited non-Unix secure file owner exists"
+        );
+        assert!(!path.exists(), "refusal must precede state creation");
+    }
+}
+
 #[cfg(all(test, unix))]
 mod tests {
     use crate::TestMust;
