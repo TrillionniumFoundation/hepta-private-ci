@@ -198,10 +198,10 @@ fn transcript_only_reopen_cannot_dispatch_an_uncommitted_effect() {
             "read-only CellSplit owner cannot advance"
         ))
     ));
-    assert!(reader
+    let transcript = reader
         .verified_transcript()
-        .expect("read-only evidence inspection")
-        .is_none());
+        .expect("read-only evidence inspection");
+    assert!(transcript.is_none());
     assert_eq!(reader.completed_steps(), 0);
     assert_eq!(state.borrow().executions, 0);
     assert!(!root.path().join("cell-split-00-prepared.json").exists());
