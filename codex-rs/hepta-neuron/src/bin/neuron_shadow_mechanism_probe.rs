@@ -314,9 +314,9 @@ fn run() -> Result<(), String> {
             let input = request_for(row, cell);
             let started = Instant::now();
             let digest = states.apply(cell, &input, &configs)?;
-            let micros = u64::try_from(started.elapsed().as_micros())
+            let nanos = u64::try_from(started.elapsed().as_nanos())
                 .unwrap_or(u64::MAX);
-            samples.push(micros);
+            samples.push(nanos);
             *frontier = digest;
         }
     }
@@ -343,9 +343,12 @@ fn run() -> Result<(), String> {
         "trace_sha256": trace_digest.to_string(),
         "logical_tick_count": total_ticks,
         "process_wall_micros": wall_ns / 1_000,
-        "p50_tick_micros": percentile(&samples, 50),
-        "p95_tick_micros": percentile(&samples, 95),
-        "p99_tick_micros": percentile(&samples, 99),
+        "p50_tick_nanos": percentile(&samples, 50),
+        "p95_tick_nanos": percentile(&samples, 95),
+        "p99_tick_nanos": percentile(&samples, 99),
+        "p50_tick_micros": (percentile(&samples, 50) as f64) / 1000.0,
+        "p95_tick_micros": (percentile(&samples, 95) as f64) / 1000.0,
+        "p99_tick_micros": (percentile(&samples, 99) as f64) / 1000.0,
         "process_peak_rss_bytes": process_peak_rss_bytes(),
         "mechanism_tick_throughput_per_second_milli": total_ticks
             .saturating_mul(1_000_000_000_000)
