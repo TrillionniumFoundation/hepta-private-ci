@@ -233,3 +233,48 @@ fn compact_constant_gate_and_zero_prediction_do_not_triple_head_storage() {
     assert_eq!(drive, vec![Q24 / 2, Q24 / 4]);
     assert_eq!(prediction, vec![0, 0]);
 }
+
+#[test]
+fn hard_sigmoid_half_ties_round_to_even_not_towards_zero() {
+    // A zero-weight affine output with a unit drive lets us observe the
+    // half-sigmoid quantization exactly, including signed odd-Q24 ties.
+    let mut candidate = CpuGatedHead {
+        input_width: 1,
+        output_width: 1,
+        drive_weights_q24: vec![0],
+        prediction_weights_q24: Vec::new(),
+        gate_weights_q24: Vec::new(),
+        drive_bias_q24: vec![Q24],
+        prediction_bias_q24: vec![0],
+        gate_bias_q24: vec![0],
+    };
+    for (pre, expected) in [
+        (-Q24 - 1, 0),
+        (-Q24, 0),
+        (-3, Q24 / 2 - 2),
+        (-1, Q24 / 2),
+        (0, Q24 / 2),
+        (1, Q24 / 2),
+        (3, Q24 / 2 + 2),
+        (Q24, Q24),
+        (Q24 + 1, Q24),
+    ] {
+        candidate.gate_bias_q24[0] = pre;
+        let (drive, prediction) = candidate.infer(&[0]).expect("bounded Q24 gate");
+        assert_eq!(drive, vec![expected], "gate_pre={pre}");
+        assert_eq!(prediction, vec![0]);
+    }
+}
+
+#[test]
+fn hard_sigmoid_gate_keeps_actual_single_and_batch_numeric_parity() {
+    let mut candidate = sample_head(false);
+    candidate.gate_weights_q24.clear();
+    candidate.gate_bias_q24 = vec![-1, 3];
+    let input = [Q24 / 2, Q24 / 4];
+    let (drive, prediction) = candidate.infer(&input).expect("gated arithmetic");
+    assert_eq!(drive[0], Q24 / 4);
+    assert_eq!(drive[1], Q24 / 8 + 1);
+    assert_eq!(prediction[0], Q24 / 8);
+    assert_eq!(prediction[1], Q24 / 4 + 1);
+}
