@@ -513,6 +513,75 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         fx.bank.compatibility_digest.to_string()
     );
     assert!(!observation.production_authorized);
+    assert_eq!(worker.driver.observed_backend_batch_invocations(), 0);
+
+    // Both signed CAS artifacts must remain current for the ENTIRE batch.
+    // The selected projection is recomputed for every Cell, then the Q24
+    // Head backend is invoked precisely once for two distinct Cell Heads.
+    let mut first = request.clone();
+    first.authorization.request_id = "request.cas.batch.first".to_owned();
+    first.authorization.reservation_id = "reservation.cas.batch.first".to_owned();
+    let first_payload = super::super::canonical_neuron_feature_payload_digest(&first);
+    first.authorization.payload_digest = first_payload.clone();
+    first.authorization.lease_payload_digest = first_payload;
+
+    let mut second = first.clone();
+    second.authorization.request_id = "request.cas.batch.second".to_owned();
+    second.authorization.reservation_id = "reservation.cas.batch.second".to_owned();
+    second.head_digest = sorted_heads()[1].digest().expect("second pinned Head");
+    // Even when the two selected Head IDs coincide with an input order change,
+    // the backend and its typed receipts must bind each exact ID independently.
+    if second.head_digest == first.head_digest {
+        second.head_digest = sorted_heads()[0].digest().expect("other pinned Head");
+    }
+    let second_payload = super::super::canonical_neuron_feature_payload_digest(&second);
+    second.authorization.payload_digest = second_payload.clone();
+    second.authorization.lease_payload_digest = second_payload;
+
+    let first_head = first.head_digest.clone();
+    let second_head = second.head_digest.clone();
+    let (_, batch_projection_current) = fx.current("projection.batch", Digest32::ZERO);
+    let (_, batch_head_current) = fx.current("head.batch", Digest32::ZERO);
+    let (batch, batch_observation) = head_reader
+        .run_selected_cpu_head_backend_batch(
+            &mut projection_reader,
+            &mut worker,
+            StemCpuHeadBatchUseV1 {
+                selector: &fx.selector_verifier,
+                signed_selection: &signed_projection,
+                current: batch_projection_current,
+                selection_now: 30,
+                items: vec![
+                    super::super::StemCpuHeadBatchItemV1 {
+                        binding: &bound,
+                        source_features: &features,
+                        token_count: 3,
+                        request: first,
+                    },
+                    super::super::StemCpuHeadBatchItemV1 {
+                        binding: &bound,
+                        source_features: &features,
+                        token_count: 3,
+                        request: second,
+                    },
+                ],
+                worker_now_ms: 100,
+                model_id: "model.two.signed.cas",
+            },
+            &fx.selector_verifier,
+            &signed_head,
+            batch_head_current,
+            30,
+        )
+        .expect("one native Head batch under both CURRENT guards");
+    assert_eq!(worker.driver.observed_backend_batch_invocations(), 1);
+    assert_eq!(batch.receipts.len(), 2);
+    assert_ne!(first_head, second_head);
+    assert_eq!(batch.receipts[0].head_digest.to_string(), first_head);
+    assert_eq!(batch.receipts[1].head_digest.to_string(), second_head);
+    assert_ne!(batch.receipts[0].receipt_digest, batch.receipts[1].receipt_digest);
+    assert!(batch.receipts.iter().all(|r| !r.authority.grants_any()));
+    assert!(!batch_observation.production_authorized);
 
     let old_head = fx.registry.snapshot().head_digest;
     fx.registry
