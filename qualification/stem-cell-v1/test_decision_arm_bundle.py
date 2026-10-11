@@ -79,6 +79,20 @@ class DecisionArmBundleTests(unittest.TestCase):
                 "optimizer": "adamw",
                 "output_predictions_sha256": sha256_file(pred_file),
             }
+            if model in ("deberta_v3_large", "modernbert_large"):
+                run.update({
+                    "schema": "hepta.stem-cell-actual-hf-joint-decision.v1",
+                    "runner_source_sha256": sha256_file(
+                        Path(__file__).with_name("hf_joint_decision_runner.py")),
+                    "verified_encoder_loading": {
+                        "schema": "hepta.local-hf-encoder-weight-load.v1",
+                        "complete": True,
+                        "missing_keys": 0, "unexpected_keys": 0,
+                        "mismatched_keys": 0, "error_msgs": 0,
+                    },
+                    "pretrained_typed_decision_head_existed": False,
+                    "checkpoint_zero_shot_score_emitted": False,
+                })
             meta = self.root / (model + ".run.json")
             meta.write_text(json.dumps(run, sort_keys=True))
             self.entries.append({
@@ -171,6 +185,24 @@ class DecisionArmBundleTests(unittest.TestCase):
         manifest.write_text(json.dumps(document))
         with self.assertRaisesRegex(ValueError, "token budget"):
             self.build()
+
+    def test_hf_runner_cannot_claim_success_without_complete_pretrained_weights(self):
+        entry = next(row for row in self.entries
+                     if row["arm"] == "deberta_v3_large:equal_budget")
+        path = self.root / entry["run_manifest_path"]
+        original = json.loads(path.read_text())
+        for field, replacement in (
+                ("runner_source_sha256", "0" * 64),
+                ("verified_encoder_loading", {
+                    **original["verified_encoder_loading"], "missing_keys": 1,
+                }),
+                ("checkpoint_zero_shot_score_emitted", True)):
+            forged = copy.deepcopy(original)
+            forged[field] = replacement
+            path.write_text(json.dumps(forged))
+            with self.assertRaisesRegex(ValueError, "audited safetensors"):
+                self.build()
+        path.write_text(json.dumps(original))
 
     def test_model_cannot_mark_research_as_production(self):
         item = self.entries[0]
