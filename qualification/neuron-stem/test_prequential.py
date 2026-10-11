@@ -1,7 +1,8 @@
 """Chronological continual-learning proof obligations; offline pure-Python only."""
 import unittest
 
-from prequential_trial import prepare_chronology, prediction_precommit, score_prediction
+from prequential_trial import (model_only_ood_receipt, prepare_chronology,
+                              prediction_precommit, score_prediction)
 
 
 def rows_fixture():
@@ -23,6 +24,42 @@ def rows_fixture():
 
 
 class PrequentialTests(unittest.TestCase):
+    def test_ood_receipts_are_model_only_and_never_embed_labels(self):
+        record = dict(rows_fixture()[3])
+        record["split"] = "ood"
+        item = model_only_ood_receipt(
+            record, "frozen", [.4, .6], model="jina-v5-text-nano",
+            revision="d" * 40, weights_digest="c" * 64, generation=7)
+        self.assertEqual(item["case_id"], record["case_id"])
+        self.assertEqual(item["split"], "ood")
+        self.assertNotIn("label", item)
+        self.assertNotIn("outcome", item)
+        self.assertNotIn("external_ndu_utility", item)
+        self.assertFalse(item["production_promotion_permitted"])
+        self.assertEqual(item["generation"], 7)
+        reordered = dict(record)
+        reordered["options"] = list(reversed(record["options"]))
+        self.assertNotEqual(
+            item["input_digest"],
+            model_only_ood_receipt(
+                reordered, "frozen", [.4, .6], model="jina-v5-text-nano",
+                revision="d" * 40, weights_digest="c" * 64,
+                generation=7)["input_digest"])
+        for invalid_kwargs, error in (
+                ({"arm": "no_change"}, "only learned/frozen"),
+                ({"weights_digest": "unpinned"}, "revision/generation not pinned"),
+                ({"generation": 0}, "checkpoint revision"),
+                ({"revision": "G" * 40}, "checkpoint revision"),
+                ({"probabilities": [float("nan"), 1.0]}, "normalized"),
+                ({"probabilities": [.9, .9]}, "normalized")):
+            values = dict(
+                arm="trained", probabilities=[.4, .6],
+                model="jina-v5-text-nano", revision="d" * 40,
+                weights_digest="c" * 64, generation=1)
+            values.update(invalid_kwargs)
+            with self.assertRaisesRegex(ValueError, error):
+                model_only_ood_receipt(record, **values)
+
     def test_precommit_is_label_free_and_deterministic(self):
         row = rows_fixture()[0]
         record = prediction_precommit(row, [.3, .7], "a" * 64, 0)

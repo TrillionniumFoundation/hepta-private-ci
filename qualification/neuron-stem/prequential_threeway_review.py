@@ -288,6 +288,114 @@ def window_bootstrap(rows, *, control, seed, replicates, alpha=.05 / 8):
     }
 
 
+def offline_threeway_ood_diagnostic(dataset, trial, nochange_identity, receipts):
+    """Paired ID-calibration/OOD diagnostic; NOT authenticated NDU or a gate.
+
+    This accepts only *externally provided* per-arm model probabilities.
+    Training code must not create its own no-change control. The OOD threshold
+    is fixed from historical calibration input before OOD labels are examined.
+    Even complete local input coverage is neither a producer signature nor
+    authority to deploy a Cell.
+    """
+    if type(receipts) is not list or not receipts:
+        raise ValueError("missing three-way offline OOD evidence")
+    relevant = {row["case_id"]: row for row in dataset
+                if row["task_id"] == trial["task_id"] and
+                row["split"] in ("calibration", "ood")}
+    calibration = [row for row in relevant.values() if row["split"] == "calibration"]
+    ood = [row for row in relevant.values() if row["split"] == "ood"]
+    future = [row for row in dataset
+              if row["task_id"] == trial["task_id"] and row["split"] == "future"]
+    if (not calibration or not ood or not future or
+            min(event_time(row) for row in ood) <= max(event_time(row) for row in future)):
+        raise ValueError("OOD must be sampled strictly after the entire future learning window")
+    arms = ("no_change", "frozen", "trained")
+    expected = {(row["case_id"], arm) for row in relevant.values() for arm in arms}
+    if len(receipts) != len(expected):
+        raise ValueError("OOD requires full three-arm calibration and OOD coverage")
+    nochange_rev, nochange_weights, nochange_gen = nochange_identity
+    observed = {}
+    forbidden = {"label", "outcome", "external_ndu_utility", "total_cost",
+                 "producer_signature_verified", "independent_evaluator_signature_verified"}
+    for receipt in receipts:
+        if type(receipt) is not dict or any(field in receipt for field in forbidden):
+            raise ValueError("OOD prediction cannot smuggle outcome or verification authority")
+        case_id, arm = receipt.get("case_id"), receipt.get("arm")
+        key = (case_id, arm)
+        if key not in expected or key in observed:
+            raise ValueError("unknown, duplicate or missing paired OOD arm")
+        row = relevant[case_id]
+        if (receipt.get("production_promotion_permitted") is not False or
+                receipt.get("status") != "Succeeded" or
+                receipt.get("scope_id") != row["scope_id"] or
+                receipt.get("cell_id") != row["cell_id"] or
+                receipt.get("split") != row["split"] or
+                receipt.get("event_time") != row["event_time"] or
+                receipt.get("input_digest") != sha256_record(
+                    [row["state"], row["question"], row["options"]])):
+            raise ValueError("OOD source/Cell/option ordering is not bound")
+        valid_probs(receipt.get("probabilities"), len(row["options"]))
+        if arm == "no_change":
+            identity_ok = (receipt.get("model_revision") == nochange_rev and
+                           receipt.get("weights_digest") == nochange_weights and
+                           receipt.get("generation") == nochange_gen and
+                           receipt.get("model_id") == "no-change")
+        else:
+            cell_key = str((row["scope_id"], row["cell_id"]))
+            declared = (trial["initial_head_digests"] if
+                        arm == "frozen" or row["split"] == "calibration"
+                        else trial["final_head_digests"])
+            identity_ok = (receipt.get("model_revision") == trial["revision"] and
+                           receipt.get("weights_digest") == declared.get(cell_key) and
+                           receipt.get("model_id") == trial["model"])
+        if not identity_ok:
+            raise ValueError("OOD frozen/learned/no-change weight or generation lineage drifted")
+        observed[key] = receipt["probabilities"]
+    if set(observed) != expected:
+        raise ValueError("missing exact paired calibration/OOD predictions")
+    for row in calibration:
+        if any(abs(a - b) > 1e-6 for a, b in zip(
+                observed[(row["case_id"], "trained")],
+                observed[(row["case_id"], "frozen")])):
+            raise ValueError("calibration learned and frozen Heads must share initial state")
+
+    measures = {}
+    for arm in arms:
+        calibration_conf = [max(observed[(row["case_id"], arm)])
+                            for row in calibration]
+        threshold = percentile(calibration_conf, .05)
+        false_accepts = sum(
+            max(observed[(row["case_id"], arm)]) >= threshold for row in ood)
+        accepted_calibration = sum(conf >= threshold for conf in calibration_conf)
+        measures[arm] = {
+            "calibration_cases": len(calibration),
+            "calibration_groups": len({(r["scope_id"], r["group_id"])
+                                        for r in calibration}),
+            "ood_cases": len(ood),
+            "ood_groups": len({(r["scope_id"], r["group_id"]) for r in ood}),
+            "threshold_from_historical_calibration": threshold,
+            "historical_calibration_accept_rate": accepted_calibration / len(calibration),
+            "ood_false_accept_rate": false_accepts / len(ood),
+            "basis": "unsigned_offline_predictions_and_dataset_labels_not_independent_NDU",
+        }
+    return {
+        "threeway_exact_offline_coverage": True,
+        "production_promotion_permitted": False,
+        "independent_prediction_signature_verified": False,
+        "ood_after_future_window_verified": True,
+        "results": measures,
+        "trained_ood_far_delta_vs_frozen": (
+            measures["trained"]["ood_false_accept_rate"] -
+            measures["frozen"]["ood_false_accept_rate"]),
+        "trained_ood_far_delta_vs_no_change": (
+            measures["trained"]["ood_false_accept_rate"] -
+            measures["no_change"]["ood_false_accept_rate"]),
+        "negative_transfer_ood_far_vs_frozen": (
+            measures["trained"]["ood_false_accept_rate"] >
+            measures["frozen"]["ood_false_accept_rate"]),
+    }
+
+
 def validate_resource_reports(reports, trial):
     if reports is None:
         return False
@@ -330,7 +438,8 @@ def validate_resource_reports(reports, trial):
 
 
 def review(dataset, trial, journal_bytes, nochange, *,
-           resources=None, min_future_groups=30, replicates=2000, seed=20261011):
+           resources=None, ood_receipts=None, min_future_groups=30,
+           replicates=2000, seed=20261011):
     if type(replicates) is not int or replicates < 1000:
         raise ValueError("bootstraps require at least 1000 draws")
     if type(min_future_groups) is not int or min_future_groups < 2:
@@ -374,6 +483,9 @@ def review(dataset, trial, journal_bytes, nochange, *,
         item["brier_delta_bonferroni_ucb"] < 0
         for part in pairing.values() for item in part.values())
     resource_ok = validate_resource_reports(resources, trial)
+    offline_ood = (offline_threeway_ood_diagnostic(
+        dataset, trial, owner, ood_receipts)
+        if ood_receipts is not None else None)
     predictive_pass = all_future and retention_ok and head_learning_evidence
     return {
         "schema": SCHEMA,
@@ -399,6 +511,8 @@ def review(dataset, trial, journal_bytes, nochange, *,
         "future_window_calibration_descriptive": calibration,
         "ece_15_calculated_for_all_three_controls": True,
         "ood_threeway_model_evidence_present": False,
+        "offline_ood_threeway_diagnostic": offline_ood,
+        "offline_ood_threeway_coverage_present": offline_ood is not None,
         "full_quality_and_ood_gate_passed": False,
         "historical_per_cell_brier_regression": regressions,
         "retention_cap": loss_limit,
@@ -431,6 +545,7 @@ def main():
     p.add_argument("--prelabel-journal", required=True)
     p.add_argument("--no-change", required=True)
     p.add_argument("--resources", help="JSON array of four paired research scale gates")
+    p.add_argument("--ood-receipts", help="External unsigned three-way calibration/OOD JSONL")
     p.add_argument("--output", required=True)
     p.add_argument("--min-future-groups", type=int, default=30)
     p.add_argument("--bootstrap-replicates", type=int, default=2000)
@@ -440,8 +555,10 @@ def main():
     trial = strict_json_loads(Path(a.trial).read_text(encoding="utf-8"))
     nochange = read_jsonl(a.no_change)
     resource = strict_json_loads(Path(a.resources).read_text(encoding="utf-8")) if a.resources else None
+    ood = read_jsonl(a.ood_receipts) if a.ood_receipts else None
     result = review(dataset, trial, Path(a.prelabel_journal).read_bytes(),
-                    nochange, resources=resource, min_future_groups=a.min_future_groups,
+                    nochange, resources=resource, ood_receipts=ood,
+                    min_future_groups=a.min_future_groups,
                     replicates=a.bootstrap_replicates, seed=a.seed)
     write_frozen_report(a.output, result)
 

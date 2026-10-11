@@ -1,8 +1,12 @@
 """Offline budget gate contracts; all numbers are synthetic test fixtures."""
 import copy
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
-from resource_gate import paired_resource_gate, verify_summary
+from resource_gate import (load_strict_resource_evidence, paired_resource_gate,
+                           verify_summary, write_immutable_resource_gate)
 
 
 def fixture(model="jina-v5-text-nano"):
@@ -57,6 +61,32 @@ BUDGET = {
 
 
 class ResourceGateTests(unittest.TestCase):
+    def test_resource_json_cannot_hide_duplicate_metric_or_replace_prior_gate(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            source = root / "resource.json"
+            source.write_text('{"candidate_rss_bytes":100,"candidate_rss_bytes":0}')
+            with self.assertRaisesRegex(ValueError, "duplicate JSON evidence field"):
+                load_strict_resource_evidence(source)
+            source.write_text('{"p99_ms":NaN}')
+            with self.assertRaisesRegex(ValueError, "non-standard JSON number"):
+                load_strict_resource_evidence(source)
+            source.write_text('[1,2,3]')
+            with self.assertRaisesRegex(ValueError, "JSON object"):
+                load_strict_resource_evidence(source)
+            source.write_text(json.dumps({"schema": "safe"}))
+            self.assertEqual(load_strict_resource_evidence(source)["schema"], "safe")
+            report_path = root / "qualified.json"
+            write_immutable_resource_gate(report_path, {"production_promotion_permitted": False})
+            first = report_path.read_bytes()
+            with self.assertRaises(FileExistsError):
+                write_immutable_resource_gate(
+                    report_path, {"production_promotion_permitted": True})
+            self.assertEqual(report_path.read_bytes(), first)
+            with self.assertRaises(ValueError):
+                write_immutable_resource_gate(root / "nan.json", {"rss": float("nan")})
+            self.assertFalse((root / "nan.json").exists())
+
     def test_pair_pass_is_always_research_only(self):
         before = fixture()
         after = fixture("jina-v5-text-small")

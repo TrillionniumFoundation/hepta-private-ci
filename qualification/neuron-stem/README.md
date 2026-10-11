@@ -458,3 +458,59 @@ file is created. Source-run prediction journals and output reports remain
 operator-supplied or local unsigned evidence; exclusive-create protects
 audit history but is not CAS, a signed evaluator receipt, durable crash
 transaction, or a production final-use grant.
+
+
+### Optional matched three-arm post-future OOD diagnostic
+
+`prequential_threeway_review.py --ood-receipts PATH.jsonl` consumes a fully
+paired external prediction trace for historical `calibration` and OOD cases
+from three actual sources: production `no_change`, post-history frozen Head,
+and the continuously learned Cell Head. Each row must be label-free and bind
+its sample ID, Scope, Cell, exact state/question/**ordered** options hash,
+case time/split, model revision, Head/weight digest and (for no-change) the
+same original model generation as the future baseline. The OOD cohort must
+occur strictly **after** the two future learning windows. The learned
+calibration predictions must equal the frozen same-initialization baseline;
+the learned OOD Head must match each Cell's final update-chain digest.
+
+For each of three arms the reviewer freezes the 5th-percentile confidence
+threshold on historical ID calibration predictions *before* evaluating OOD
+labels, then reports historical acceptance, OOD false acceptance, paired
+candidate-vs-frozen/no-change FAR deltas and possible negative transfer.
+Missing cases, duplicates, altered Scope/options, swapped weights, drifted
+no-change generation, embedded labels or an alleged signed evaluation
+result fail closed.
+
+This is strictly an **unsigned offline descriptive diagnostic**, even if
+complete paired predictions are supplied. The scorecard's
+`ood_threeway_model_evidence_present`, `full_quality_and_ood_gate_passed`
+and `production_promotion_permitted` stay `false` until independently
+authenticated prediction producers, signed NDU/outcome receipts, verified
+actual model inference, native Worker admission and target hardware
+acceptance are implemented by the respective production owners.
+`prequential_trial.py` does NOT fabricate the external no-change arm.
+
+
+### Real frozen/learned model-produced OOD sidecar (no no-change impersonation)
+
+On a *genuine* pinned Jina v5 local-weight `prequential_trial.py` run,
+`--emit-ood-model-receipts` can now emit two and **only two** per-Cell model
+prediction arms to `<output>.ood-model-receipts.jsonl`. Before any future
+label update, it snapshots learned/frozen historical-calibration predictions
+and exact initial Head weight digests. After both future learning windows, it
+runs the actually loaded Jina Encoder and the final learned/frozen Heads on
+the OOD input cohort, requires OOD to occur later than every future event,
+and binds the final per-Cell digest without using OOD labels. The sidecar
+is created exclusively, flushed and fsynced; its byte SHA is recorded in
+the shadow trial. The output explicitly records
+`production_no_change_ood_receipts_present=false`.
+
+The independent production no-change owner must separately emit its own
+calibration/OOD predictions with the same immutable revision, weights and
+generation as the future baseline. Combine only after auditing all producer
+and dataset identities, then provide the full three-arm JSONL to
+`prequential_threeway_review.py --ood-receipts`.
+
+Synthetic tests check the output contract, NOT pretrained model learning.
+No automatic completion of the no-change arm, independent signature
+verification, production authorization, artifact CAS or release occurs.

@@ -11,7 +11,7 @@ import math
 from pathlib import Path
 
 from jina_v5 import sha256_record
-from qualified_eval import write_json
+from qualified_eval import strict_json_loads
 
 SCHEMA = "hepta.jina-v5-shadow-scale-probe.v1"
 WORKLOAD_FIELDS = (
@@ -166,6 +166,30 @@ def paired_resource_gate(reference, candidate, budget):
     }
 
 
+MAX_RESOURCE_EVIDENCE_BYTES = 16 * 1024 * 1024
+
+
+def load_strict_resource_evidence(path):
+    """Only bounded unambiguous JSON objects are comparable."""
+    source = Path(path)
+    if not source.is_file() or source.stat().st_size > MAX_RESOURCE_EVIDENCE_BYTES:
+        raise ValueError("missing or oversized immutable resource evidence")
+    document = strict_json_loads(source.read_text(encoding="utf-8"))
+    if type(document) is not dict:
+        raise ValueError("resource evidence must contain a JSON object")
+    return document
+
+
+def write_immutable_resource_gate(path, report):
+    """No previous resource assessment can be silently replaced by a rerun."""
+    raw = json.dumps(report, ensure_ascii=False, sort_keys=True,
+                     separators=(",", ":"), allow_nan=False) + "\n"
+    target = Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open("x", encoding="utf-8") as stream:
+        stream.write(raw)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--reference", required=True, help="Nano or other measured Jina research reference")
@@ -173,13 +197,11 @@ def main():
     p.add_argument("--budget", required=True, help="explicit precommitted external JSON budget")
     p.add_argument("--out", required=True)
     a = p.parse_args()
-    output = Path(a.out)
-    if output.exists():
-        raise ValueError("refusing to overwrite existing budget evidence")
-    def load(path):
-        with open(path, encoding="utf-8") as stream:
-            return json.load(stream)
-    write_json(output, paired_resource_gate(load(a.reference), load(a.candidate), load(a.budget)))
+    verdict = paired_resource_gate(
+        load_strict_resource_evidence(a.reference),
+        load_strict_resource_evidence(a.candidate),
+        load_strict_resource_evidence(a.budget))
+    write_immutable_resource_gate(a.out, verdict)
 
 
 if __name__ == "__main__":
