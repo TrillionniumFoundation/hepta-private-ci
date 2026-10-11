@@ -720,6 +720,10 @@ fn validate_neuron_feature_output(
     Ok(())
 }
 
+#[path = "model_worker_physical_batch.rs"]
+mod physical_batch;
+pub use physical_batch::NeuronPhysicalBatchDriver;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
