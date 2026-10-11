@@ -24,7 +24,11 @@ ARCHIVES = {
     "smol-1.7b": "67d46247bd1881c8fb3f73ec6122415d0d15a0ec24b02f193fb1294e7ea63bae",
 }
 ARMS = (
-    "empty", "hybrid", "entity_time", "organized", "program_support",
+    "empty",
+    "hybrid",
+    "entity_time",
+    "organized",
+    "program_support",
     "without_prerequisite",
 )
 MARKER = re.compile(r"\[(E[1-9][0-9]*)\]")
@@ -46,15 +50,18 @@ def strict_json(data):
         return result
 
     return json.loads(
-        data, object_pairs_hook=unique,
+        data,
+        object_pairs_hook=unique,
         parse_constant=lambda _: (_ for _ in ()).throw(ValueError("nonfinite JSON")),
     )
 
 
 def digest_json(value):
-    return sha(json.dumps(
-        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8"))
+    return sha(
+        json.dumps(
+            value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+    )
 
 
 def archived_files(path, expected_sha):
@@ -74,8 +81,10 @@ def archived_files(path, expected_sha):
             name = item.filename
             parts = name.split("/")
             if (
-                name in files or item.is_dir()
-                or name.startswith("/") or "\\" in name
+                name in files
+                or item.is_dir()
+                or name.startswith("/")
+                or "\\" in name
                 or any(p in ("", ".", "..") for p in parts)
                 or stat.S_ISLNK(item.external_attr >> 16)
             ):
@@ -114,7 +123,11 @@ def trace_cited_chain(spec, cited_sources, original_docs, identifier):
     that explicit correction is visible at the same logical revision and scope.
     Mere newer dates or unexpressed conflicts never revoke prior evidence.
     """
-    if not identifier or not cited_sources or len(set(cited_sources)) != len(cited_sources):
+    if (
+        not identifier
+        or not cited_sources
+        or len(set(cited_sources)) != len(cited_sources)
+    ):
         return False
     scope = original_docs[cited_sources[0]]["scope"]
     if any(original_docs[key]["scope"] != scope for key in cited_sources):
@@ -147,12 +160,17 @@ def trace_cited_chain(spec, cited_sources, original_docs, identifier):
         entities = next_entities
     return entities == {identifier}
 
+
 def trace_row(row, spec, declared_support, original_docs):
     if row["status"] == "failed":
         return dict(
-            question_id=row["question_id"], kind=row["kind"], arm=row["arm"],
-            generation_status="failed", strict_task_success=None,
-            cited_source_ids=[], missing_program_declared_support=None,
+            question_id=row["question_id"],
+            kind=row["kind"],
+            arm=row["arm"],
+            generation_status="failed",
+            strict_task_success=None,
+            cited_source_ids=[],
+            missing_program_declared_support=None,
             program_declared_support_cited=None,
             publicly_declared_event_path_connected=None,
             answer_has_citation_marker=None,
@@ -170,7 +188,8 @@ def trace_row(row, spec, declared_support, original_docs):
         identity = source["original_id"]
         original = original_docs[identity]
         if (
-            source["label"] != f"E{i}" or source["label"] in labels
+            source["label"] != f"E{i}"
+            or source["label"] in labels
             or source["excerpt"] != original["content"]
             or source["scope"] != original["scope"]
             or source["root"] != original["root"]
@@ -200,9 +219,14 @@ def trace_row(row, spec, declared_support, original_docs):
     missing = sorted(set(declared_support) - set(cited))
     path_connected = trace_cited_chain(spec, cited, original_docs, identifier)
     return dict(
-        question_id=row["question_id"], kind=row["kind"], arm=row["arm"],
-        answer=answer, generation_status="succeeded", strict_task_success=success,
-        cited_source_ids=cited, missing_program_declared_support=missing,
+        question_id=row["question_id"],
+        kind=row["kind"],
+        arm=row["arm"],
+        answer=answer,
+        generation_status="succeeded",
+        strict_task_success=success,
+        cited_source_ids=cited,
+        missing_program_declared_support=missing,
         program_declared_support_cited=bool(cited) and not missing,
         publicly_declared_event_path_connected=path_connected,
         answer_has_citation_marker=bool(claim_markers),
@@ -218,16 +242,25 @@ def summarize(rows, *, arms=ARMS, expected_questions=8):
         correct = [r for r in group if r["strict_task_success"] is True]
         summaries[arm] = dict(
             attempted=len(group),
-            generations_succeeded=sum(r["generation_status"] == "succeeded" for r in group),
+            generations_succeeded=sum(
+                r["generation_status"] == "succeeded" for r in group
+            ),
             generations_failed=sum(r["generation_status"] == "failed" for r in group),
             strict_task_success=len(correct),
-            correct_with_full_program_declared_citations=sum(r["program_declared_support_cited"] for r in correct),
-            correct_with_public_event_chain_connected=sum(r["publicly_declared_event_path_connected"] for r in correct),
-            correct_without_citation_marker=sum(not r["answer_has_citation_marker"] for r in correct),
-            correct_missing_program_declared_support=sum(bool(r["missing_program_declared_support"]) for r in correct),
+            correct_with_full_program_declared_citations=sum(
+                r["program_declared_support_cited"] for r in correct
+            ),
+            correct_with_public_event_chain_connected=sum(
+                r["publicly_declared_event_path_connected"] for r in correct
+            ),
+            correct_without_citation_marker=sum(
+                not r["answer_has_citation_marker"] for r in correct
+            ),
+            correct_missing_program_declared_support=sum(
+                bool(r["missing_program_declared_support"]) for r in correct
+            ),
         )
     return summaries
-
 
 
 def audit_evaluation(rows, specs, labels, documents, *, expected_qids, arms):
@@ -240,22 +273,31 @@ def audit_evaluation(rows, specs, labels, documents, *, expected_qids, arms):
     spec_by_id = {s["id"]: s for s in specs}
     truth_by_id = {s["id"]: s for s in labels}
     docs_by_id = {
-        (d["identity"] if isinstance(d, dict) else d.identity):
-        (d if isinstance(d, dict) else dict(
-            identity=d.identity, root=d.root, scope=d.scope,
-            content=d.content,
-        )) for d in (documents.values() if isinstance(documents, dict) else documents)
+        (d["identity"] if isinstance(d, dict) else d.identity): (
+            d
+            if isinstance(d, dict)
+            else dict(
+                identity=d.identity,
+                root=d.root,
+                scope=d.scope,
+                content=d.content,
+            )
+        )
+        for d in (documents.values() if isinstance(documents, dict) else documents)
     }
     if (
-        not expected_qids or len(set(expected_qids)) != len(expected_qids)
-        or not arms or len(set(arms)) != len(arms)
+        not expected_qids
+        or len(set(expected_qids)) != len(expected_qids)
+        or not arms
+        or len(set(arms)) != len(arms)
         or len(rows) != len(expected_qids) * len(arms)
         or len(spec_by_id) != len(specs)
         or len(truth_by_id) != len(labels)
         or any(q not in spec_by_id or q not in truth_by_id for q in expected_qids)
         or {(r["question_id"], r["arm"]) for r in rows}
         != {(qid, arm) for qid in expected_qids for arm in arms}
-        or len(docs_by_id) != (len(documents) if not isinstance(documents, dict) else len(documents))
+        or len(docs_by_id)
+        != (len(documents) if not isinstance(documents, dict) else len(documents))
     ):
         raise ValueError("incomplete formal citation census")
     verified = []
@@ -263,9 +305,14 @@ def audit_evaluation(rows, specs, labels, documents, *, expected_qids, arms):
         qid = row["question_id"]
         if row["kind"] != spec_by_id[qid]["kind"]:
             raise ValueError("public task kind drift")
-        verified.append(trace_row(
-            row, spec_by_id[qid], truth_by_id[qid]["support"], docs_by_id,
-        ))
+        verified.append(
+            trace_row(
+                row,
+                spec_by_id[qid],
+                truth_by_id[qid]["support"],
+                docs_by_id,
+            )
+        )
     return dict(
         schema="hepta.memory-cell.formal-citation-evaluation.v1",
         planned_questions=len(expected_qids),
@@ -298,9 +345,10 @@ def audit_model(archive, *, model, original, plan, specs, targets, files_sha):
     if set(cases) != {q for q in specs if specs[q]["phase"] == "test"}:
         raise ValueError("public test partition drift")
     expected = {(qid, arm) for qid in cases for arm in ARMS}
-    if len({(r["question_id"], r["arm"]) for r in scored}) != len(scored) or {
-        (r["question_id"], r["arm"]) for r in scored
-    } != expected:
+    if (
+        len({(r["question_id"], r["arm"]) for r in scored}) != len(scored)
+        or {(r["question_id"], r["arm"]) for r in scored} != expected
+    ):
         raise ValueError("missing/duplicated attempt")
     results = []
     for row in scored:
@@ -323,8 +371,12 @@ def audit(original_root, *, archives, scored_pins):
     plan = bounded_source(root / "plan/plan.json", PLAN_SHA256)
     documents = bounded_source(root / "plan/source-view.json", plan["source_view_sha"])
     targets = bounded_source(root / "observations/labels.json", plan["labels_sha"])
-    collection = bounded_source(root / "observations/collection.json", plan["frozen"]["collection_sha"])
-    questions = bounded_source(root / "observations/questions.json", collection["files"]["questions.json"])
+    collection = bounded_source(
+        root / "observations/collection.json", plan["frozen"]["collection_sha"]
+    )
+    questions = bounded_source(
+        root / "observations/questions.json", collection["files"]["questions.json"]
+    )
     specs = {r["id"]: r for r in questions}
     truths = {r["id"]: r for r in targets}
     if len(specs) != 16 or len(truths) != 16:
@@ -339,10 +391,18 @@ def audit(original_root, *, archives, scored_pins):
         formal_event_path_is_production_semantic_precision=False,
         independent_source_families=0,
         production_accepted=False,
-        models={name: audit_model(
-            archives[name], model=name, original=documents, plan=plan,
-            specs=specs, targets=truths, files_sha=scored_pins[name],
-        ) for name in ARCHIVES},
+        models={
+            name: audit_model(
+                archives[name],
+                model=name,
+                original=documents,
+                plan=plan,
+                specs=specs,
+                targets=truths,
+                files_sha=scored_pins[name],
+            )
+            for name in ARCHIVES
+        },
     )
 
 
@@ -355,15 +415,32 @@ def main():
     parser.add_argument("--smol-scored-sha256", required=True)
     parser.add_argument("--output", required=True, type=Path)
     a = parser.parse_args()
-    report = audit(a.original, archives={
-        "qwen-3b": a.qwen_archive, "smol-1.7b": a.smol_archive,
-    }, scored_pins={
-        "qwen-3b": a.qwen_scored_sha256, "smol-1.7b": a.smol_scored_sha256,
-    })
+    report = audit(
+        a.original,
+        archives={
+            "qwen-3b": a.qwen_archive,
+            "smol-1.7b": a.smol_archive,
+        },
+        scored_pins={
+            "qwen-3b": a.qwen_scored_sha256,
+            "smol-1.7b": a.smol_scored_sha256,
+        },
+    )
     with a.output.open("x", encoding="utf-8") as target:
-        json.dump(report, target, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
+        json.dump(
+            report,
+            target,
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+            allow_nan=False,
+        )
         target.write("\n")
-    print(json.dumps({n: r["by_arm"] for n, r in report["models"].items()}, sort_keys=True))
+    print(
+        json.dumps(
+            {n: r["by_arm"] for n, r in report["models"].items()}, sort_keys=True
+        )
+    )
 
 
 if __name__ == "__main__":

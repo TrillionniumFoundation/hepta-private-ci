@@ -13,10 +13,17 @@ from test_stem_cell_runtime import Reader, evidence, query
 
 class ResumeTests(unittest.TestCase):
     def test_non_epoch_boundary_resume_matches_uninterrupted_training(self):
-        rows = tuple(Supervision(features(name), positive)
-                     for name, positive in (("a", (0,)), ("b", (1,)), ("c", (0,))))
-        cut = TrainingCut(frozenset({"a", "b", "c"}), frozenset({"family"}),
-                          frozenset({"root"}), frozenset({"held-out"}), "admission")
+        rows = tuple(
+            Supervision(features(name), positive)
+            for name, positive in (("a", (0,)), ("b", (1,)), ("c", (0,)))
+        )
+        cut = TrainingCut(
+            frozenset({"a", "b", "c"}),
+            frozenset({"family"}),
+            frozenset({"root"}),
+            frozenset({"held-out"}),
+            "admission",
+        )
         for kind in ("linear", "gated"):
             with self.subTest(kind=kind):
                 whole = StemHead(4, "encoder-v1", kind=kind)
@@ -25,11 +32,17 @@ class ResumeTests(unittest.TestCase):
                 first = split.fit(rows, cut, revoked=set(), steps=5, pair_ceiling=24)
                 self.assertEqual(first["sample_cursor"], 2)
                 payload = split.export()
-                resumed = StemHead.restore(payload, expected_sha256=sha256(payload),
-                    encoder_identity="encoder-v1", allowed_roots={"root"}, revoked=set())
+                resumed = StemHead.restore(
+                    payload,
+                    expected_sha256=sha256(payload),
+                    encoder_identity="encoder-v1",
+                    allowed_roots={"root"},
+                    revoked=set(),
+                )
                 # The caller's row order is not hidden state either.
-                second = resumed.fit(tuple(reversed(rows)), cut, revoked=set(),
-                                     steps=7, pair_ceiling=24)
+                second = resumed.fit(
+                    tuple(reversed(rows)), cut, revoked=set(), steps=7, pair_ceiling=24
+                )
                 self.assertEqual(second["sample_cursor"], 0)
                 self.assertEqual(resumed.steps, 12)
                 self.assertEqual(resumed.pair_evaluations, 24)

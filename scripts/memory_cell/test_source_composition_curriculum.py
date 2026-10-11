@@ -76,7 +76,9 @@ class SourceCompositionTests(unittest.TestCase):
 
     def test_input_permutation_and_past_revision(self):
         rows = fixture()
-        self.assertEqual(compile_examples(rows), compile_examples(tuple(reversed(rows))))
+        self.assertEqual(
+            compile_examples(rows), compile_examples(tuple(reversed(rows)))
+        )
         past, _ = compile_examples(rows, revision=1)
         self.assertEqual(past[0]["target"], "site_old")
         self.assertEqual(set(past[0]["sources"]), {"bridge", "old"})
@@ -129,9 +131,7 @@ class SourceCompositionTests(unittest.TestCase):
         for scope in ("a", "b"):
             first = next(x for x in combined if x["query"]["scope"] == scope)
             self.assertTrue(first["query"]["identity"].startswith("source_path_"))
-        self.assertEqual(
-            len({x["query"]["identity"] for x in combined}), len(combined)
-        )
+        self.assertEqual(len({x["query"]["identity"] for x in combined}), len(combined))
         with self.assertRaises(ValueError):
             compile_examples(rows, limit=1)
 
@@ -141,9 +141,7 @@ class SourceCompositionTests(unittest.TestCase):
                 compile_examples(fixture(), limit=invalid)
         rows = fixture()
         with self.assertRaises(ValueError):
-            compile_examples(
-                (replace(rows[0], observed_at="2026-10-11"), *rows[1:])
-            )
+            compile_examples((replace(rows[0], observed_at="2026-10-11"), *rows[1:]))
 
 
 if __name__ == "__main__":

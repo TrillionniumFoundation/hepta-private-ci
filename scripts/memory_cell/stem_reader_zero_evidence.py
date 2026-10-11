@@ -17,27 +17,35 @@ from native import digest
 PHASES = ("select", "retention", "test", "transfer")
 
 
-def generate_empty_evidence_controls(phase_questions, generate, *,
-                                    reader_identity, reader_profile,
-                                    family_by_question=None):
+def generate_empty_evidence_controls(
+    phase_questions,
+    generate,
+    *,
+    reader_identity,
+    reader_profile,
+    family_by_question=None,
+):
     """Yield original control records, without examining benchmark answers."""
     if (
         not callable(generate)
-        or not reader_identity or not reader_profile
+        or not reader_identity
+        or not reader_profile
         or len(phase_questions) != 32
-        or tuple(phase_questions) != tuple(
-            (phase, q) for phase in PHASES
-            for p, q in phase_questions if p == phase
+        or tuple(phase_questions)
+        != tuple(
+            (phase, q) for phase in PHASES for p, q in phase_questions if p == phase
         )
-        or {phase: sum(p == phase for p, _ in phase_questions)
-            for phase in PHASES} != {phase: 8 for phase in PHASES}
+        or {phase: sum(p == phase for p, _ in phase_questions) for phase in PHASES}
+        != {phase: 8 for phase in PHASES}
         or len({q.identity for _, q in phase_questions}) != 32
         or (
             family_by_question is not None
             and (
                 set(family_by_question) != {q.identity for _, q in phase_questions}
-                or any(not isinstance(family, str) or not family
-                       for family in family_by_question.values())
+                or any(
+                    not isinstance(family, str) or not family
+                    for family in family_by_question.values()
+                )
             )
         )
     ):
@@ -63,25 +71,24 @@ def generate_empty_evidence_controls(phase_questions, generate, *,
             supports_independently_verified=False,
         )
         try:
-            raw, receipt = generate(
-                q, (), f"no-evidence/{phase}/{q.identity}"
-            )
+            raw, receipt = generate(q, (), f"no-evidence/{phase}/{q.identity}")
             if (
-                not isinstance(raw, str) or not raw.strip()
+                not isinstance(raw, str)
+                or not raw.strip()
                 or receipt["generator_identity"] != reader_identity
                 or receipt["generator_profile"] != reader_profile
                 or receipt["observable_query"] != asdict(q)
                 or receipt["delivered_evidence"] != []
-                or receipt["canonical_request_digest"] != digest((
-                    reader_identity, reader_profile, asdict(q), []
-                ))
+                or receipt["canonical_request_digest"]
+                != digest((reader_identity, reader_profile, asdict(q), []))
                 or type(receipt["actual_reader_execution"]) is not bool
             ):
                 raise ValueError("detached no-evidence Reader receipt")
             row.update(status="succeeded", answer=raw, receipt=receipt)
         except Exception as exc:
             row.update(
-                status="failed", error_type=type(exc).__name__,
+                status="failed",
+                error_type=type(exc).__name__,
                 error=str(exc)[:1024],
             )
         rows.append(row)
@@ -101,8 +108,10 @@ def evaluate_empty_evidence_controls(rows, targets, diagnose):
             raise ValueError("duplicate or unregistered no-evidence record")
         seen.add(key)
         result = dict(
-            phase=row["phase"], question_id=row["question_id"],
-            family=row["family"], status=row["status"],
+            phase=row["phase"],
+            question_id=row["question_id"],
+            family=row["family"],
+            status=row["status"],
             was_zero_evidence=True,
             semantic_citation_precision=None,
             evidence_support_measured=False,
@@ -113,7 +122,8 @@ def evaluate_empty_evidence_controls(rows, targets, diagnose):
             value = diagnose(answer, target)
             if value is not None and (
                 type(value) not in (float, int)
-                or not math.isfinite(value) or not 0 <= value <= 1
+                or not math.isfinite(value)
+                or not 0 <= value <= 1
             ):
                 raise ValueError("invalid diagnostic Reader token F1")
             result["diagnostic_answer_f1"] = value
@@ -131,14 +141,15 @@ def evaluate_empty_evidence_controls(rows, targets, diagnose):
             raise ValueError("unrecognized no-evidence control status")
         scored.append(result)
         grouped[row["phase"]].append(result)
-    if {phase: len(rows) for phase, rows in grouped.items()} != {
-        p: 8 for p in PHASES
-    }:
+    if {phase: len(rows) for phase, rows in grouped.items()} != {p: 8 for p in PHASES}:
         raise ValueError("zero-evidence phase coverage drift")
     per_phase = {}
     for phase, attempts in sorted(grouped.items()):
-        observed = [a["diagnostic_answer_f1"] for a in attempts
-                    if a["diagnostic_answer_f1"] is not None]
+        observed = [
+            a["diagnostic_answer_f1"]
+            for a in attempts
+            if a["diagnostic_answer_f1"] is not None
+        ]
         n = len(attempts)
         per_phase[phase] = dict(
             attempted=n,

@@ -4,6 +4,7 @@ The original six-arm forced-top1 outputs and 32 real empty-evidence Reader
 controls are immutable inputs. A splice is an observed-answers diagnostic,
 not a new Reader run, an activated policy, or independent semantic judgement.
 """
+
 from collections import defaultdict
 import math
 import re
@@ -12,28 +13,44 @@ from native import digest
 
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
+)
 
 
 def observed_zero_offset_reader_splice(
-    plan, scored, empty_controls, targets, diagnose, *,
-    reader_identity, reader_profile,
+    plan,
+    scored,
+    empty_controls,
+    targets,
+    diagnose,
+    *,
+    reader_identity,
+    reader_profile,
 ):
     """Pair actual fixed-Reader answers at stage 48; do not invoke a model."""
     expected = {
         (stage, phase, q, arm)
-        for stage in STAGES for phase in PHASES
-        for q in plan["questions"][phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for q in plan["questions"][phase]
+        for arm in ARMS
     }
     if (
         tuple(plan["arms"]) != ARMS
         or tuple(plan["curriculum_attempted_examples"]) != STAGES
         or any(len(plan["questions"][phase]) != 8 for phase in PHASES)
         or len({q for phase in PHASES for q in plan["questions"][phase]}) != 32
-        or len(scored) != 576 or len(empty_controls) != 32
+        or len(scored) != 576
+        or len(empty_controls) != 32
         or not callable(diagnose)
-        or not reader_identity or not reader_profile
+        or not reader_identity
+        or not reader_profile
         or set(targets) != {q for phase in PHASES for q in plan["questions"][phase]}
     ):
         raise ValueError("incomplete matched zero-offset native Reader census")
@@ -50,9 +67,11 @@ def observed_zero_offset_reader_splice(
     controls = {}
     for row in empty_controls:
         key = (row["phase"], row["question_id"])
-        if key in controls or key not in {
-            (p, q) for p in PHASES for q in plan["questions"][p]
-        } or row["status"] not in ("succeeded", "failed"):
+        if (
+            key in controls
+            or key not in {(p, q) for p in PHASES for q in plan["questions"][p]}
+            or row["status"] not in ("succeeded", "failed")
+        ):
             raise ValueError("unregistered or duplicate empty-evidence Reader control")
         if row.get("evidence_count") != 0:
             raise ValueError("nonempty evidence introduced in no-evidence control")
@@ -65,10 +84,15 @@ def observed_zero_offset_reader_splice(
                 or rec.get("delivered_evidence") != []
                 or not isinstance(rec.get("observable_query"), dict)
                 or rec["observable_query"].get("identity") != key[1]
-                or rec.get("canonical_request_digest") != digest((
-                    reader_identity, reader_profile,
-                    rec["observable_query"], [],
-                ))
+                or rec.get("canonical_request_digest")
+                != digest(
+                    (
+                        reader_identity,
+                        reader_profile,
+                        rec["observable_query"],
+                        [],
+                    )
+                )
                 or not isinstance(row.get("answer"), str)
             ):
                 raise ValueError("unbound or source-bearing empty-Reader answer")
@@ -87,10 +111,13 @@ def observed_zero_offset_reader_splice(
                 or not isinstance(target.unresolved_evidence, (tuple, list))
             ):
                 raise ValueError("invalid retrospective native answerability")
-            cat = ("native-unanswerable" if target.unanswerable
-                   else "native-support-unresolved"
-                   if target.unresolved_evidence or not target.evidence
-                   else "answerable-native-document-support")
+            cat = (
+                "native-unanswerable"
+                if target.unanswerable
+                else "native-support-unresolved"
+                if target.unresolved_evidence or not target.evidence
+                else "answerable-native-document-support"
+            )
             for arm in ARMS:
                 row = originals[(48, phase, qid, arm)]
                 if control.get("family") != row.get("family"):
@@ -103,10 +130,12 @@ def observed_zero_offset_reader_splice(
                 else:
                     decision = claim.get("zero_offset_would_abstain")
                     if (
-                        claim.get("schema") != "hepta.stem-label-free-null-counterfactual.v1"
+                        claim.get("schema")
+                        != "hepta.stem-label-free-null-counterfactual.v1"
                         or type(decision) is not bool
                         or claim.get("original_forced_top1_unchanged") is not True
-                        or claim.get("posthoc_labels_used_to_select_cutoff") is not False
+                        or claim.get("posthoc_labels_used_to_select_cutoff")
+                        is not False
                         or "selected" not in row
                         or (row["selected"] is None and decision is False)
                         or claim.get("observed_forced_top1_index") != row["selected"]
@@ -129,14 +158,14 @@ def observed_zero_offset_reader_splice(
                         or not isinstance(rec.get("observable_query"), dict)
                         or rec["observable_query"].get("identity") != qid
                         or not isinstance(rec.get("delivered_evidence"), list)
-                        or len(rec["delivered_evidence"]) != (
-                            0 if row.get("selected") is None else 1
-                        )
+                        or len(rec["delivered_evidence"])
+                        != (0 if row.get("selected") is None else 1)
                     ):
                         raise ValueError("changed original Reader identity or evidence")
                     original_evidence_count = len(rec["delivered_evidence"])
                     if control["status"] == "succeeded" and (
-                        rec["observable_query"] != control["receipt"]["observable_query"]
+                        rec["observable_query"]
+                        != control["receipt"]["observable_query"]
                     ):
                         raise ValueError("original/empty Reader query changed")
                 selected_answer = None
@@ -153,30 +182,42 @@ def observed_zero_offset_reader_splice(
                     b = diagnose(row["answer"], target)
                     a = diagnose(selected_answer, target)
                     if a is not None and b is not None:
-                        if any(type(v) not in (int, float) or not math.isfinite(v)
-                               or not 0 <= v <= 1 for v in (a, b)):
+                        if any(
+                            type(v) not in (int, float)
+                            or not math.isfinite(v)
+                            or not 0 <= v <= 1
+                            for v in (a, b)
+                        ):
                             raise ValueError("invalid post-answer Reader token F1")
                         delta = a - b
-                grouped[(phase, arm)].append(dict(
-                    phase=phase, arm=arm, question_id=qid, category=cat,
-                    original_reader_succeeded=orig_ok,
-                    original_evidence_count=original_evidence_count,
-                    no_evidence_reader_succeeded=control["status"] == "succeeded",
-                    zero_offset_null_decision_observed=decision is not None,
-                    zero_offset_would_abstain=decision,
-                    actual_answer_basis=basis,
-                    actual_shadow_answer_observed=selected_answer is not None,
-                    scored_answer_pair=delta is not None,
-                    paired_diagnostic_f1_delta=delta,
-                    answer_generated_for_shadow_policy=False,
-                    semantic_citation_precision=None,
-                ))
+                grouped[(phase, arm)].append(
+                    dict(
+                        phase=phase,
+                        arm=arm,
+                        question_id=qid,
+                        category=cat,
+                        original_reader_succeeded=orig_ok,
+                        original_evidence_count=original_evidence_count,
+                        no_evidence_reader_succeeded=control["status"] == "succeeded",
+                        zero_offset_null_decision_observed=decision is not None,
+                        zero_offset_would_abstain=decision,
+                        actual_answer_basis=basis,
+                        actual_shadow_answer_observed=selected_answer is not None,
+                        scored_answer_pair=delta is not None,
+                        paired_diagnostic_f1_delta=delta,
+                        answer_generated_for_shadow_policy=False,
+                        semantic_citation_precision=None,
+                    )
+                )
     report = {}
     for phase in PHASES:
         for arm in ARMS:
             rows = grouped[(phase, arm)]
-            deltas = [r["paired_diagnostic_f1_delta"] for r in rows
-                      if r["paired_diagnostic_f1_delta"] is not None]
+            deltas = [
+                r["paired_diagnostic_f1_delta"]
+                for r in rows
+                if r["paired_diagnostic_f1_delta"] is not None
+            ]
             n, missing = len(rows), len(rows) - len(deltas)
             total = math.fsum(deltas)
             if n != 8:
@@ -189,7 +230,8 @@ def observed_zero_offset_reader_splice(
             ):
                 selected = [row for row in rows if row["category"] == category]
                 measured = [
-                    row["paired_diagnostic_f1_delta"] for row in selected
+                    row["paired_diagnostic_f1_delta"]
+                    for row in selected
                     if row["paired_diagnostic_f1_delta"] is not None
                 ]
                 missing_category = len(selected) - len(measured)
@@ -207,13 +249,17 @@ def observed_zero_offset_reader_splice(
                         amount / len(measured) if measured else None
                     ),
                     all_category_planned_bounds=(
-                        [(amount - missing_category) / len(selected),
-                         (amount + missing_category) / len(selected)]
-                        if selected else None
+                        [
+                            (amount - missing_category) / len(selected),
+                            (amount + missing_category) / len(selected),
+                        ]
+                        if selected
+                        else None
                     ),
                 )
             report[f"{phase}/{arm}"] = dict(
-                planned=n, by_native_answerability=by_category,
+                planned=n,
+                by_native_answerability=by_category,
                 zero_offset_decisions_observed=sum(
                     r["zero_offset_null_decision_observed"] for r in rows
                 ),
@@ -233,14 +279,16 @@ def observed_zero_offset_reader_splice(
                     total / len(deltas) if deltas else None
                 ),
                 all_planned_paired_delta_bounds=[
-                    (total - missing) / n, (total + missing) / n
+                    (total - missing) / n,
+                    (total + missing) / n,
                 ],
                 semantic_citation_precision=None,
                 independent_task_superiority=False,
             )
     return dict(
         schema="hepta.stem-reused-null-reader-diagnostic.v1",
-        stage=48, planned_original_policy_rows=576,
+        stage=48,
+        planned_original_policy_rows=576,
         planned_unique_empty_reader_questions=32,
         actual_extra_reader_calls_in_this_analysis=0,
         empty_reader_generation_already_charged_to_separate_control=True,
@@ -248,7 +296,6 @@ def observed_zero_offset_reader_splice(
         posthoc_zero_offset_not_a_preregistered_policy=True,
         independent_answer_semantics_unverified=True,
         per_phase_arm=report,
-        rows=[r for phase in PHASES for arm in ARMS
-              for r in grouped[(phase, arm)]],
+        rows=[r for phase in PHASES for arm in ARMS for r in grouped[(phase, arm)]],
         production_accepted=False,
     )

@@ -20,8 +20,7 @@ def eligible_pairs_by_stage(train_questions, rows, routes, adapter_receipts=None
         or len(set(registered)) != 48
         or set(routes) != set(registered)
         or any(routes[q] not in CELLS for q in registered)
-        or (adapter_receipts is not None
-            and set(adapter_receipts) != set(ADAPTERS))
+        or (adapter_receipts is not None and set(adapter_receipts) != set(ADAPTERS))
     ):
         raise ValueError("incomplete registered TRAIN curriculum/Cell/Adapter binding")
     admitted = {}
@@ -31,9 +30,12 @@ def eligible_pairs_by_stage(train_questions, rows, routes, adapter_receipts=None
         n = len(f.candidate_ids)
         positive = row.positive_indices
         if (
-            qid not in routes or qid in admitted
-            or not isinstance(f.family, str) or not f.family
-            or not 0 <= n <= 64 or len(set(f.candidate_ids)) != n
+            qid not in routes
+            or qid in admitted
+            or not isinstance(f.family, str)
+            or not f.family
+            or not 0 <= n <= 64
+            or len(set(f.candidate_ids)) != n
             or len(set(positive)) != len(positive)
             or any(type(i) is not int or i < 0 or i >= n for i in positive)
         ):
@@ -72,11 +74,18 @@ def eligible_pairs_by_stage(train_questions, rows, routes, adapter_receipts=None
     if adapter_receipts is not None:
         lineage = adapter_receipts["lineage"]
         if set(lineage["prepared_questions"]) != warm:
-            raise ValueError("lineage actual warm start differs from registered pair eligibility")
+            raise ValueError(
+                "lineage actual warm start differs from registered pair eligibility"
+            )
         for cell in CELLS:
             selected = {q for q in warm if routes[q] == cell}
-            if set(adapter_receipts["independent-" + cell]["prepared_questions"]) != selected:
-                raise ValueError("independent LoRA warm start used wrong Cell questions")
+            if (
+                set(adapter_receipts["independent-" + cell]["prepared_questions"])
+                != selected
+            ):
+                raise ValueError(
+                    "independent LoRA warm start used wrong Cell questions"
+                )
     return dict(
         schema="hepta.stem-pair-opportunity-census.v1",
         registered_train_count=48,

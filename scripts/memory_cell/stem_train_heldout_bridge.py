@@ -10,8 +10,14 @@ import math
 
 from native import digest
 
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
+)
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
 CELLS = ("general", "temporal")
@@ -32,9 +38,7 @@ def train_to_heldout_gap(plan, learning, scored, targets):
         or any(cell not in CELLS for cell in routes.values())
     ):
         raise ValueError("incomplete originally registered Stem curriculum")
-    heldout_ids = {
-        qid for phase in PHASES for qid in questions[phase]
-    }
+    heldout_ids = {qid for phase in PHASES for qid in questions[phase]}
     if not isinstance(targets, dict) or set(targets) != heldout_ids:
         raise ValueError("only original 32 post-policy target bindings allowed")
     target_class = {}
@@ -53,8 +57,10 @@ def train_to_heldout_gap(plan, learning, scored, targets):
             target_class[qid] = "answerable-native-document-support"
     expected = {
         (stage, phase, qid, arm)
-        for stage in STAGES for phase in PHASES
-        for qid in questions[phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for qid in questions[phase]
+        for arm in ARMS
     }
     predictions = {}
     for row in scored:
@@ -69,8 +75,13 @@ def train_to_heldout_gap(plan, learning, scored, targets):
     fit = {}
     for row in learning:
         key = row["stage"], row["arm"], row["cell"]
-        if (key in fit or key[0] not in STAGES or key[1] not in ARMS
-                or key[2] not in CELLS or row["status"] not in ("succeeded", "failed")):
+        if (
+            key in fit
+            or key[0] not in STAGES
+            or key[1] not in ARMS
+            or key[2] not in CELLS
+            or row["status"] not in ("succeeded", "failed")
+        ):
             raise ValueError("unexpected or duplicate original Head checkpoint")
         if row["status"] == "succeeded" and row["arm"] != "frozen_rerank":
             dynamics = row.get("within_train_fit_dynamics")
@@ -99,16 +110,21 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                     raise ValueError("baseline route differs from registered Cell")
                 for arm in ARMS[1:]:
                     learned = predictions[(stage, phase, qid, arm)]
-                    if (
-                        learned.get("cell") != baseline["cell"]
-                        or learned.get("family") != baseline.get("family")
-                    ):
-                        raise ValueError("matched Cell/source-family changed across arms")
+                    if learned.get("cell") != baseline["cell"] or learned.get(
+                        "family"
+                    ) != baseline.get("family"):
+                        raise ValueError(
+                            "matched Cell/source-family changed across arms"
+                        )
                     b_selection = "selected" in baseline
                     l_selection = "selected" in learned
-                    if b_selection and l_selection and (
-                        baseline.get("pool_digest") != learned.get("pool_digest")
-                        or not baseline.get("pool_digest")
+                    if (
+                        b_selection
+                        and l_selection
+                        and (
+                            baseline.get("pool_digest") != learned.get("pool_digest")
+                            or not baseline.get("pool_digest")
+                        )
                     ):
                         raise ValueError("paired source candidate pool changed")
                     base_valid = baseline.get("source_choice_correct")
@@ -119,15 +135,21 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                     )
                     native_scored = (
                         weak_native_source_support
-                        and b_selection and l_selection
-                        and type(base_valid) is int and base_valid in (0, 1)
-                        and type(learned_valid) is int and learned_valid in (0, 1)
+                        and b_selection
+                        and l_selection
+                        and type(base_valid) is int
+                        and base_valid in (0, 1)
+                        and type(learned_valid) is int
+                        and learned_valid in (0, 1)
                     )
                     abstention_scored = (
                         category == "native-unanswerable"
-                        and b_selection and l_selection
-                        and type(base_valid) is int and base_valid in (0, 1)
-                        and type(learned_valid) is int and learned_valid in (0, 1)
+                        and b_selection
+                        and l_selection
+                        and type(base_valid) is int
+                        and base_valid in (0, 1)
+                        and type(learned_valid) is int
+                        and learned_valid in (0, 1)
                     )
                     if abstention_scored and (
                         base_valid != int(baseline["selected"] is None)
@@ -164,14 +186,14 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                         if orig_f1 is not None and new_f1 is not None:
                             if any(
                                 type(v) not in (float, int)
-                                or not math.isfinite(v) or not 0 <= v <= 1
+                                or not math.isfinite(v)
+                                or not 0 <= v <= 1
                                 for v in (orig_f1, new_f1)
                             ):
                                 raise ValueError("invalid paired Reader token F1")
                             f1_delta = new_f1 - orig_f1
                     paired_pool_digest = (
-                        baseline["pool_digest"] if b_selection and l_selection
-                        else None
+                        baseline["pool_digest"] if b_selection and l_selection else None
                     )
                     frozen_request_identity = (
                         (
@@ -179,11 +201,16 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                             b_receipt["generator_profile"],
                             digest(b_receipt["observable_query"]),
                         )
-                        if good_pair else None
+                        if good_pair
+                        else None
                     )
                     row = dict(
-                        stage=stage, phase=phase, arm=arm, cell=routes[qid],
-                        question_id=qid, source_family=baseline["family"],
+                        stage=stage,
+                        phase=phase,
+                        arm=arm,
+                        cell=routes[qid],
+                        question_id=qid,
+                        source_family=baseline["family"],
                         both_source_choices_observed=b_selection and l_selection,
                         matched_original_pool_digest=paired_pool_digest,
                         matched_reader_request_identity=frozen_request_identity,
@@ -196,7 +223,8 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                         ),
                         changed_top1=(
                             baseline["selected"] != learned["selected"]
-                            if b_selection and l_selection else None
+                            if b_selection and l_selection
+                            else None
                         ),
                         weak_support_gain=(
                             learned_valid - base_valid if native_scored else None
@@ -217,17 +245,26 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                 by_phase = {}
                 for phase in PHASES:
                     rows = groups[(stage, arm, cell, phase)]
-                    known = [r["weak_support_gain"] for r in rows
-                             if r["weak_support_gain"] is not None]
-                    abstentions = [r["native_abstention_gain"] for r in rows
-                                   if r["native_abstention_gain"] is not None]
-                    f1 = [r["diagnostic_answer_f1_delta"] for r in rows
-                          if r["diagnostic_answer_f1_delta"] is not None]
+                    known = [
+                        r["weak_support_gain"]
+                        for r in rows
+                        if r["weak_support_gain"] is not None
+                    ]
+                    abstentions = [
+                        r["native_abstention_gain"]
+                        for r in rows
+                        if r["native_abstention_gain"] is not None
+                    ]
+                    f1 = [
+                        r["diagnostic_answer_f1_delta"]
+                        for r in rows
+                        if r["diagnostic_answer_f1_delta"] is not None
+                    ]
                     n = len(rows)
                     by_phase[phase] = dict(
                         planned=n,
                         source_compared=len(known),
-                        source_unresolved_or_unselected=n-len(known),
+                        source_unresolved_or_unselected=n - len(known),
                         answerable_native_document_support_rows=sum(
                             r["native_answerable_source_support"] for r in rows
                         ),
@@ -236,7 +273,8 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                             for r in rows
                         ),
                         native_support_unresolved_rows=sum(
-                            r["native_source_label_category"] == "native-support-unresolved"
+                            r["native_source_label_category"]
+                            == "native-support-unresolved"
                             for r in rows
                         ),
                         observed_native_abstention_pairs=len(abstentions),
@@ -244,25 +282,35 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                         native_abstention_regressions=sum(d == -1 for d in abstentions),
                         native_support_gains=sum(delta == 1 for delta in known),
                         native_support_regressions=sum(delta == -1 for delta in known),
-                        source_decision_changes=sum(r["changed_top1"] is True for r in rows),
-                        source_choice_not_observed=sum(r["changed_top1"] is None for r in rows),
+                        source_decision_changes=sum(
+                            r["changed_top1"] is True for r in rows
+                        ),
+                        source_choice_not_observed=sum(
+                            r["changed_top1"] is None for r in rows
+                        ),
                         both_readers_succeeded=sum(
-                            r["both_original_reader_calls_succeeded"] for r in rows),
+                            r["both_original_reader_calls_succeeded"] for r in rows
+                        ),
                         reader_f1_scored=len(f1),
-                        reader_f1_unscored=n-len(f1),
+                        reader_f1_unscored=n - len(f1),
                         paired_reader_f1_delta_mean=(
-                            math.fsum(f1)/len(f1) if f1 else None
+                            math.fsum(f1) / len(f1) if f1 else None
                         ),
                         all_planned_reader_f1_delta_bounds=(
-                            [(math.fsum(f1)-(n-len(f1)))/n,
-                             (math.fsum(f1)+(n-len(f1)))/n]
-                            if n else None
+                            [
+                                (math.fsum(f1) - (n - len(f1))) / n,
+                                (math.fsum(f1) + (n - len(f1))) / n,
+                            ]
+                            if n
+                            else None
                         ),
                         independent_family_semantics_verified=False,
                     )
                 heldout = [by_phase[phase] for phase in ("test", "transfer")]
                 heldout_gains = sum(g["native_support_gains"] for g in heldout)
-                heldout_regressions = sum(g["native_support_regressions"] for g in heldout)
+                heldout_regressions = sum(
+                    g["native_support_regressions"] for g in heldout
+                )
                 reports[f"{stage}/{arm}/{cell}"] = dict(
                     head_trained_checkpoint_succeeded=observed,
                     within_head_train_mean_weak_loss_delta=(
@@ -272,21 +320,27 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                         head_probe.get("weak_source_top1_gains") if head_probe else None
                     ),
                     within_head_train_mean_pair_margin_delta=(
-                        head_probe.get("mean_positive_over_negative_candidate_margin_delta")
-                        if head_probe else None
+                        head_probe.get(
+                            "mean_positive_over_negative_candidate_margin_delta"
+                        )
+                        if head_probe
+                        else None
                     ),
                     heldout_test_transfer_native_support_net_gain=(
                         heldout_gains - heldout_regressions
                     ),
                     train_fit_but_no_heldout_native_source_net_gain=(
                         bool(
-                            observed and head_probe["mean_weak_loss_delta"] < 0
+                            observed
+                            and head_probe["mean_weak_loss_delta"] < 0
                             and heldout_gains <= heldout_regressions
                         )
                         if observed and sum(g["source_compared"] for g in heldout)
                         else None
                     ),
-                    limited_development_question_count=sum(g["planned"] for g in heldout),
+                    limited_development_question_count=sum(
+                        g["planned"] for g in heldout
+                    ),
                     comparison_includes_encoder_adaptation=(
                         arm in ("lineage_lora_gated", "independent_lora_gated")
                     ),

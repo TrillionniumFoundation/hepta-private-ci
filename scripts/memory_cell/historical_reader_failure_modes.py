@@ -20,8 +20,17 @@ MODELS = {
 }
 GENERATING_SOURCE = "59f9eadd5cc919359079e04442f7343838a60057"
 PLAN_SHA = "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
-ARMS = ("empty", "hybrid", "entity_time", "organized", "program_support", "without_prerequisite")
-IDENTIFIER = re.compile(r"(?<![A-Za-z0-9_-])(?:site|mode)_[A-Za-z0-9_-]+(?![A-Za-z0-9_-])")
+ARMS = (
+    "empty",
+    "hybrid",
+    "entity_time",
+    "organized",
+    "program_support",
+    "without_prerequisite",
+)
+IDENTIFIER = re.compile(
+    r"(?<![A-Za-z0-9_-])(?:site|mode)_[A-Za-z0-9_-]+(?![A-Za-z0-9_-])"
+)
 
 
 def sealed_zip(path, pin):
@@ -37,10 +46,14 @@ def sealed_zip(path, pin):
         by_name = {}
         for member in members:
             name = PurePosixPath(member.filename)
-            if (str(name) != member.filename or name.is_absolute()
-                    or ".." in name.parts or member.is_dir()
-                    or stat.S_ISLNK(member.external_attr >> 16)
-                    or member.filename in by_name):
+            if (
+                str(name) != member.filename
+                or name.is_absolute()
+                or ".." in name.parts
+                or member.is_dir()
+                or stat.S_ISLNK(member.external_attr >> 16)
+                or member.filename in by_name
+            ):
                 raise ValueError("invalid inner archive member")
             by_name[member.filename] = archive.read(member)
         if "SHA256SUMS" not in by_name:
@@ -72,10 +85,17 @@ def classify(row, gold):
     answer = row["answer"]
     tokens = IDENTIFIER.findall(answer)
     if not tokens:
-        return "explicit_abstention" if answer.strip() == "I do not have enough evidence." else "no_identifier"
+        return (
+            "explicit_abstention"
+            if answer.strip() == "I do not have enough evidence."
+            else "no_identifier"
+        )
     if len(tokens) == 1 and tokens[0] == gold:
-        return ("gold_literal_with_failed_procedure" if row.get("parsed_identifier") == gold
-                else "gold_literal_without_strict_grammar")
+        return (
+            "gold_literal_with_failed_procedure"
+            if row.get("parsed_identifier") == gold
+            else "gold_literal_without_strict_grammar"
+        )
     if len(tokens) == 1:
         return "wrong_identifier"
     return "multiple_identifiers_unadjudicated"
@@ -96,9 +116,12 @@ def diagnose(original_zip, qwen_zip, smol_zip):
             raise ValueError("generation source drift")
         raw = [json.loads(line) for line in files["run/raw-answers.jsonl"].splitlines()]
         scored = json.loads(files["run/scored-answers.json"])
-        if (len(raw) != len(scored) or len(raw) != len(expected) * len(ARMS)
-                or {(r["question_id"], r["arm"]) for r in raw}
-                != {(qid, arm) for qid in expected for arm in ARMS}):
+        if (
+            len(raw) != len(scored)
+            or len(raw) != len(expected) * len(ARMS)
+            or {(r["question_id"], r["arm"]) for r in raw}
+            != {(qid, arm) for qid in expected for arm in ARMS}
+        ):
             raise ValueError("incomplete original answer census")
         counts = {arm: Counter() for arm in ARMS}
         cases = []
@@ -110,19 +133,35 @@ def diagnose(original_zip, qwen_zip, smol_zip):
                 raise ValueError("task kind drift")
             kind = classify(row, expected[qid]["expected"])
             counts[arm][kind] += 1
-            cases.append(dict(question_id=qid, task_kind=row["kind"], arm=arm,
-                              original_answer=row.get("answer"), failure_class=kind,
-                              strict_success=row.get("strict_task_success"),
-                              annotated_support_covered=row.get("required_sources_covered")))
+            cases.append(
+                dict(
+                    question_id=qid,
+                    task_kind=row["kind"],
+                    arm=arm,
+                    original_answer=row.get("answer"),
+                    failure_class=kind,
+                    strict_success=row.get("strict_task_success"),
+                    annotated_support_covered=row.get("required_sources_covered"),
+                )
+            )
         output[model] = dict(
-            generation_commit=GENERATING_SOURCE, planned=len(raw),
-            by_arm={a: dict(sorted(counts[a].items())) for a in ARMS}, cases=cases)
-    return dict(schema="hepta.memory-cell.reader-surface-failures.v1",
-                source_plan_sha256=PLAN_SHA, historical_source_sha=GENERATING_SOURCE,
-                independently_sampled=False, new_model_generations=0,
-                label_derived_diagnostic_only=True, modifies_primary_task_score=False,
-                semantic_citation_adjudication=False, production_accepted=False,
-                models=output)
+            generation_commit=GENERATING_SOURCE,
+            planned=len(raw),
+            by_arm={a: dict(sorted(counts[a].items())) for a in ARMS},
+            cases=cases,
+        )
+    return dict(
+        schema="hepta.memory-cell.reader-surface-failures.v1",
+        source_plan_sha256=PLAN_SHA,
+        historical_source_sha=GENERATING_SOURCE,
+        independently_sampled=False,
+        new_model_generations=0,
+        label_derived_diagnostic_only=True,
+        modifies_primary_task_score=False,
+        semantic_citation_adjudication=False,
+        production_accepted=False,
+        models=output,
+    )
 
 
 def main():
@@ -136,7 +175,14 @@ def main():
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(result, stream, indent=2, ensure_ascii=False, allow_nan=False)
         stream.write("\n")
-    print(json.dumps({model: value["by_arm"]["hybrid"] for model, value in result["models"].items()}))
+    print(
+        json.dumps(
+            {
+                model: value["by_arm"]["hybrid"]
+                for model, value in result["models"].items()
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

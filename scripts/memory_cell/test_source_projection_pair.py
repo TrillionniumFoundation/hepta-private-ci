@@ -18,15 +18,27 @@ def fixture(backend):
     items = {name: b"same" for name in SOURCE}
     items["snapshot/READY.json"] = encode(
         dict(
-            source_sha="s", source_documents_digest="s", base_identity="m",
-            reader_profile="m", scopes=["scope"], roots=["root"],
-            retained_original_source_bytes=3, write_seconds=3.0,
+            source_sha="s",
+            source_documents_digest="s",
+            base_identity="m",
+            reader_profile="m",
+            scopes=["scope"],
+            roots=["root"],
+            retained_original_source_bytes=3,
+            write_seconds=3.0,
             training=dict(
-                loss_backend=backend, revision=2, examples=2, steps=2,
-                source_supervision=["source"], training_digest="training",
+                loss_backend=backend,
+                revision=2,
+                examples=2,
+                steps=2,
+                source_supervision=["source"],
+                training_digest="training",
                 write_schedule=dict(visits_per_example=[1, 1]),
-                input_tokens=20, supervised_tokens=4, trainable_parameters=4,
-                base_unchanged=True, full_projection_positions=20,
+                input_tokens=20,
+                supervised_tokens=4,
+                trainable_parameters=4,
+                base_unchanged=True,
+                full_projection_positions=20,
                 actual_projection_positions=20 if backend == "full" else 4,
                 losses=[3.0, 2.0],
             ),
@@ -37,26 +49,31 @@ def fixture(backend):
         empty = arm in ("parameter_only", "empty")
         rows.append(
             dict(
-                question_id="q", arm=arm, kind="new_fact", status="succeeded",
-                candidate_digest="pool", selected=[] if empty else ["id"],
-                answer="id", receipt=dict(
+                question_id="q",
+                arm=arm,
+                kind="new_fact",
+                status="succeeded",
+                candidate_digest="pool",
+                selected=[] if empty else ["id"],
+                answer="id",
+                receipt=dict(
                     input_ids_digest="empty" if empty else "same",
                     delivered_evidence=[] if empty else ["source"],
-                    derived_evidence=[], reader_identity="same",
+                    derived_evidence=[],
+                    reader_identity="same",
                     reader_profile="same",
                     knowledge_module_enabled=arm in ("parameter_only", "knowledge"),
                 ),
             )
         )
-    items["tasks/raw-answers.jsonl"] = (
-        b"\n".join(encode(row) for row in rows) + b"\n"
-    )
+    items["tasks/raw-answers.jsonl"] = b"\n".join(encode(row) for row in rows) + b"\n"
     return items
 
 
 def diagnostic():
     return dict(
-        original_task_count=1, original_generation_calls=7,
+        original_task_count=1,
+        original_generation_calls=7,
         actual_optimizer_updates=2,
         strict_task_successes={arm: 0 for arm in ARMS},
         paired_effects={},
@@ -72,9 +89,7 @@ class PairTests(unittest.TestCase):
             "source_projection_pair.diagnose",
             side_effect=[diagnostic(), diagnostic()],
         ):
-            return compare(
-                full, sparse, full_commit=FULL, sparse_commit=SPARSE
-            )
+            return compare(full, sparse, full_commit=FULL, sparse_commit=SPARSE)
 
     def test_same_inputs_and_outputs_are_not_new_task_gain(self):
         result = self.check(fixture("full"), fixture("supervised_positions"))
@@ -86,8 +101,7 @@ class PairTests(unittest.TestCase):
     def test_answer_change_is_recorded_not_repaired(self):
         full, sparse = fixture("full"), fixture("supervised_positions")
         rows = [
-            json.loads(line)
-            for line in sparse["tasks/raw-answers.jsonl"].splitlines()
+            json.loads(line) for line in sparse["tasks/raw-answers.jsonl"].splitlines()
         ]
         rows[1]["answer"] = "different"
         sparse["tasks/raw-answers.jsonl"] = (
@@ -129,9 +143,7 @@ class PairTests(unittest.TestCase):
             full, sparse = fixture("full"), fixture("supervised_positions")
             ready = json.loads(full["snapshot/READY.json"])
             ready["write_seconds"] = value
-            full["snapshot/READY.json"] = json.dumps(
-                ready, allow_nan=True
-            ).encode()
+            full["snapshot/READY.json"] = json.dumps(ready, allow_nan=True).encode()
             with self.subTest(value=value), self.assertRaises(ValueError):
                 self.check(full, sparse)
 

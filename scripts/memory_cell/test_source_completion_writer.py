@@ -100,9 +100,7 @@ class SourceWriterLoopTests(unittest.TestCase):
     def test_mock_plan_matches_full_original_source_admission_contract(self):
         examples = source_only_fixture_examples()
         prepared, plan = mock_source_schedule()
-        receipt = audit_coverage(
-            examples, prepared, plan, curriculum="single_hop"
-        )
+        receipt = audit_coverage(examples, prepared, plan, curriculum="single_hop")
         self.assertEqual(plan["planned_steps"], 7)
         self.assertEqual(plan["planned_input_tokens"], 35)
         self.assertEqual(plan["planned_supervised_tokens"], 14)

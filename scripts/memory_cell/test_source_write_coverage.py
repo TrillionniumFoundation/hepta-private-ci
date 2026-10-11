@@ -25,8 +25,10 @@ def fixture():
         for i, scope in enumerate(scopes)
     ]
     plan = schedule(
-        prepared, {"alpha": [0, 1], "beta": [2]},
-        maximum_steps=6, token_ceiling=32,
+        prepared,
+        {"alpha": [0, 1], "beta": [2]},
+        maximum_steps=6,
+        token_ceiling=32,
     )
     return examples, prepared, plan
 
@@ -67,14 +69,14 @@ class SourceCoverageTests(unittest.TestCase):
     def test_unvisited_composition_retained_in_denominator(self):
         examples, prepared, _ = fixture()
         plan = schedule(
-            prepared, {"alpha": [0, 1], "beta": [2]},
-            maximum_steps=6, token_ceiling=9,
+            prepared,
+            {"alpha": [0, 1], "beta": [2]},
+            maximum_steps=6,
+            token_ceiling=9,
         )
         result = audit_coverage(examples, prepared, plan, curriculum="source_two_hop")
         self.assertEqual(plan["entries"], [0, 2])
-        self.assertEqual(
-            result["by_kind"]["two_hop"]["source_examples_unvisited"], 1
-        )
+        self.assertEqual(result["by_kind"]["two_hop"]["source_examples_unvisited"], 1)
         self.assertEqual(result["by_kind"]["two_hop"]["planned_updates"], 0)
 
     def test_audit_does_not_modify_training_examples_or_budget(self):
@@ -86,7 +88,10 @@ class SourceCoverageTests(unittest.TestCase):
     def test_curriculum_duplicate_question_and_invalid_sources_reject(self):
         examples, prepared, plan = fixture()
         for mode in (
-            "wrong_curriculum", "duplicate", "unknown_kind", "duplicate_source"
+            "wrong_curriculum",
+            "duplicate",
+            "unknown_kind",
+            "duplicate_source",
         ):
             altered = deepcopy(examples)
             kind = "single_hop" if mode == "wrong_curriculum" else "source_two_hop"
@@ -102,8 +107,12 @@ class SourceCoverageTests(unittest.TestCase):
     def test_changed_prepared_tokens_or_plan_cannot_claim_coverage(self):
         examples, prepared, plan = fixture()
         for mode in (
-            "prepared", "visits", "budget", "token_count",
-            "negative_index", "boolean_index"
+            "prepared",
+            "visits",
+            "budget",
+            "token_count",
+            "negative_index",
+            "boolean_index",
         ):
             ex, pr, sp = deepcopy((examples, prepared, plan))
             if mode == "prepared":

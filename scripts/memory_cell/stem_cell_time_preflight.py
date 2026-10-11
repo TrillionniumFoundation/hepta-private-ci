@@ -27,16 +27,25 @@ def native_chronology(sources):
         for (scope, _), question in sorted(observable.items()):
             for doc in by_scope[scope]:
                 try:
-                    admitted = source_not_after_question(doc.observed_at, question.observed_at)
+                    admitted = source_not_after_question(
+                        doc.observed_at, question.observed_at
+                    )
                     status = "not-future" if admitted else "future"
                 except ValueError:
                     status = "unknown"
                 outcomes[status] += 1
                 if status in examples and len(examples[status]) < 32:
-                    examples[status].append(digest((
-                        benchmark.source_sha256, question.identity, doc.identity,
-                        question.observed_at, doc.observed_at,
-                    )))
+                    examples[status].append(
+                        digest(
+                            (
+                                benchmark.source_sha256,
+                                question.identity,
+                                doc.identity,
+                                question.observed_at,
+                                doc.observed_at,
+                            )
+                        )
+                    )
         reports[name] = dict(
             unique_scope_question_timestamp_pairs=len(observable),
             source_observation_checks=sum(outcomes.values()),
@@ -62,7 +71,9 @@ def main(staged: Path, output: Path):
     stage_info = json.loads((staged / "staging.json").read_text())
     benchmarks = {
         name: load(
-            staged / f"{name}.json", name, stage_info[name]["sha256"],
+            staged / f"{name}.json",
+            name,
+            stage_info[name]["sha256"],
             allow_unresolved_evidence=True,
             session_conflicts="retain-versioned",
             invalid_history="quarantine-question",

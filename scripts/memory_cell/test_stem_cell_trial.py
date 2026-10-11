@@ -99,17 +99,20 @@ class TrialTests(unittest.TestCase):
         self.assertIn("东京", original)
         self.assertGreater(item["source_start"], 0)
 
-
     def test_privileged_reference_rejects_mixed_precision_or_future_source(self):
         doc = SimpleNamespace(
-            identity="source", root="root", scope="scope",
+            identity="source",
+            root="root",
+            scope="scope",
             observed_at="2023-01-01",
             content="原定目的地是东京。",
         )
         src = SimpleNamespace(history=lambda q: [doc])
         target = SimpleNamespace(
-            unanswerable=False, unresolved_evidence=(),
-            evidence=("source",), answer="东京",
+            unanswerable=False,
+            unresolved_evidence=(),
+            evidence=("source",),
+            answer="东京",
         )
         for observed_at in ("2024", "2022-01-01"):
             q = Question("q", "family", "scope", "目的地是哪儿？", observed_at)

@@ -15,39 +15,87 @@ from stem_audit_archive import AuditError, PinnedArchive, parse_json
 
 def fixture():
     plan = dict(
-        arms=list(ARMS), curriculum_attempted_examples=list(CURVE),
-        questions={p: [p] for p in PHASES}, question_families={p: "family" for p in PHASES},
+        arms=list(ARMS),
+        curriculum_attempted_examples=list(CURVE),
+        questions={p: [p] for p in PHASES},
+        question_families={p: "family" for p in PHASES},
     )
     raw, first = [], {}
     for stage in CURVE:
         for phase in PHASES:
             for arm in ARMS:
-                query = dict(identity=phase, scope=phase, family="family", content="Question", observed_at="2024")
+                query = dict(
+                    identity=phase,
+                    scope=phase,
+                    family="family",
+                    content="Question",
+                    observed_at="2024",
+                )
                 receipt = dict(
-                    generator_identity="reader", generator_profile="profile", observable_query=query,
-                    delivered_evidence=[], generation_seconds=0.1,
+                    generator_identity="reader",
+                    generator_profile="profile",
+                    observable_query=query,
+                    delivered_evidence=[],
+                    generation_seconds=0.1,
                     canonical_request_digest=digest(("reader", "profile", query, [])),
                 )
-                row = dict(stage=stage, phase=phase, question_id=phase, family="family",
-                           arm=arm, status="succeeded", selected=0, answer="original")
+                row = dict(
+                    stage=stage,
+                    phase=phase,
+                    question_id=phase,
+                    family="family",
+                    arm=arm,
+                    status="succeeded",
+                    selected=0,
+                    answer="original",
+                )
                 actual = phase not in first
-                receipt.update(actual_reader_execution=actual,
-                               reused_from=None if actual else first[phase],
-                               incremental_generation_seconds=0.1 if actual else 0.0)
+                receipt.update(
+                    actual_reader_execution=actual,
+                    reused_from=None if actual else first[phase],
+                    incremental_generation_seconds=0.1 if actual else 0.0,
+                )
                 row["receipt"] = receipt
                 first.setdefault(phase, record_key(row))
                 raw.append(row)
-    scored = [dict(deepcopy(r), source_choice_correct=1, diagnostic_answer_f1=0.5,
-                   citation_structure=dict(semantic_precision=None)) for r in raw]
-    oracles = [dict(phase=p, question_id=p, status="unavailable", policy_comparator=False,
-                    semantic_entailment_independently_verified=False) for p in PHASES]
+    scored = [
+        dict(
+            deepcopy(r),
+            source_choice_correct=1,
+            diagnostic_answer_f1=0.5,
+            citation_structure=dict(semantic_precision=None),
+        )
+        for r in raw
+    ]
+    oracles = [
+        dict(
+            phase=p,
+            question_id=p,
+            status="unavailable",
+            policy_comparator=False,
+            semantic_entailment_independently_verified=False,
+        )
+        for p in PHASES
+    ]
     report = dict(
-        plan=deepcopy(plan), production_accepted=False, superiority_claim=False,
+        plan=deepcopy(plan),
+        production_accepted=False,
+        superiority_claim=False,
         logical_policy_attempts=72,
-        reader=dict(actual_attempts=4, actual_successes=4, actual_failed_attempts=0, cache_hits=68),
-        metrics={f"{s}/{p}/{a}": dict(attempted=1, succeeded=1, failed=0,
-                                    source_accuracy=1, diagnostic_f1=0.5)
-                 for s in CURVE for p in PHASES for a in ARMS},
+        reader=dict(
+            actual_attempts=4,
+            actual_successes=4,
+            actual_failed_attempts=0,
+            cache_hits=68,
+        ),
+        metrics={
+            f"{s}/{p}/{a}": dict(
+                attempted=1, succeeded=1, failed=0, source_accuracy=1, diagnostic_f1=0.5
+            )
+            for s in CURVE
+            for p in PHASES
+            for a in ARMS
+        },
     )
     return dict(plan=plan, raw=raw, scored=scored, oracles=oracles, report=report)
 
@@ -78,9 +126,9 @@ class RecordAuditTests(unittest.TestCase):
         data = fixture()
         receipt = data["raw"][1]["receipt"]
         receipt["observable_query"]["content"] = "different question"
-        receipt["canonical_request_digest"] = digest((
-            "reader", "profile", receipt["observable_query"], []
-        ))
+        receipt["canonical_request_digest"] = digest(
+            ("reader", "profile", receipt["observable_query"], [])
+        )
         data["scored"][1]["receipt"] = deepcopy(receipt)
         with self.assertRaisesRegex(AuditError, "reuse changed"):
             validate_records(**data)
@@ -99,9 +147,12 @@ class RecordAuditTests(unittest.TestCase):
         row.pop("receipt")
         row.pop("answer")
         row.update(status="failed", error_type="ValueError", error="before Reader")
-        data["scored"][-1] = dict(deepcopy(row), source_choice_correct=0,
-                                 diagnostic_answer_f1=0.0,
-                                 citation_structure=dict(semantic_precision=None))
+        data["scored"][-1] = dict(
+            deepcopy(row),
+            source_choice_correct=0,
+            diagnostic_answer_f1=0.0,
+            citation_structure=dict(semantic_precision=None),
+        )
         data["report"]["reader"]["cache_hits"] -= 1
         data["report"]["metrics"]["48/transfer/independent_lora_gated"] = dict(
             attempted=1, succeeded=0, failed=1, source_accuracy=0, diagnostic_f1=0.0

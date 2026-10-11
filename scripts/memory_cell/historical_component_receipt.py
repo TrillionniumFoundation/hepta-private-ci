@@ -61,9 +61,10 @@ def archive_records(path, expected_sha):
         raise ValueError("historical transport digest drift")
     with zipfile.ZipFile(path) as artifact:
         inventory = artifact.infolist()
-        if not 1 <= len(inventory) <= 128 or sum(
-            item.file_size for item in inventory
-        ) > MAX_INNER_BYTES:
+        if (
+            not 1 <= len(inventory) <= 128
+            or sum(item.file_size for item in inventory) > MAX_INNER_BYTES
+        ):
             raise ValueError("historical extraction budget")
         seen = set()
         for item in inventory:

@@ -44,9 +44,13 @@ class SourceRecallTests(unittest.TestCase):
 
     def do_probe(self, fn):
         return probe(
-            self.reader, self.docs, self.path,
-            snapshot_sha="a"*64, writer_source="b"*40,
-            source_commit="c"*40, generate=fn
+            self.reader,
+            self.docs,
+            self.path,
+            snapshot_sha="a" * 64,
+            writer_source="b" * 40,
+            source_commit="c" * 40,
+            generate=fn,
         )
 
     def test_fixed_source_questions_and_no_results_in_model_input(self):
@@ -67,7 +71,7 @@ class SourceRecallTests(unittest.TestCase):
 
         report = self.do_probe(generated)
         self.assertEqual(len(calls), 4)
-        self.assertTrue(all(len(prompt)==2 for prompt, _ in calls))
+        self.assertTrue(all(len(prompt) == 2 for prompt, _ in calls))
         self.assertEqual({a for _, a in calls}, set(ARMS))
         self.assertEqual(report["arms"]["base"]["exact_targets"], 0)
         self.assertEqual(report["arms"]["memory"]["exact_targets"], 1)
@@ -80,9 +84,7 @@ class SourceRecallTests(unittest.TestCase):
             self.do_probe(generated)
 
     def test_invalid_empty_context_citations_are_not_perfect_precision(self):
-        result = self.do_probe(
-            lambda reader, prompt, arm: ("site_a [E1]", 2, 0.01)
-        )
+        result = self.do_probe(lambda reader, prompt, arm: ("site_a [E1]", 2, 0.01))
         self.assertEqual(result["arms"]["memory"]["exact_targets"], 0)
         self.assertEqual(result["arms"]["memory"]["unsupported_citation_answers"], 2)
         self.assertIsNone(result["semantic_citation_precision"])
@@ -99,42 +101,58 @@ class SourceRecallTests(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             self.do_probe(fails)
-        raw = [json.loads(row) for row in
-               (self.path / "raw-answers.jsonl").read_text().splitlines()]
+        raw = [
+            json.loads(row)
+            for row in (self.path / "raw-answers.jsonl").read_text().splitlines()
+        ]
         self.assertEqual(len(raw), 4)
         self.assertEqual(raw[0]["status"], "failed")
-        self.assertEqual(json.loads((self.path / "report.json").read_text())["compared_pairs"], 1)
+        self.assertEqual(
+            json.loads((self.path / "report.json").read_text())["compared_pairs"], 1
+        )
         self.assertEqual(self.reader.verified, 1)
 
     def test_nonfinite_or_boolean_receipts_are_failures_not_successes(self):
-        for receipt in (("correct", True, 0.1), ("correct", 1, float("nan")),
-                        ("", 1, 0.1), ("correct", 1000, 0.1)):
+        for receipt in (
+            ("correct", True, 0.1),
+            ("correct", 1, float("nan")),
+            ("", 1, 0.1),
+            ("correct", 1000, 0.1),
+        ):
             with self.subTest(receipt=receipt):
                 output = Path(self.tmp.name) / ("probe-" + digest(str(receipt))[:9])
                 with self.assertRaises(ValueError):
                     probe(
-                        self.reader, self.docs, output,
-                        snapshot_sha="a"*64, writer_source="b"*40,
-                        source_commit="c"*40,
-                        generate=lambda reader, prompt, arm: receipt
+                        self.reader,
+                        self.docs,
+                        output,
+                        snapshot_sha="a" * 64,
+                        writer_source="b" * 40,
+                        source_commit="c" * 40,
+                        generate=lambda reader, prompt, arm: receipt,
                     )
-                recorded = [json.loads(x) for x in
-                            (output / "raw-answers.jsonl").read_text().splitlines()]
+                recorded = [
+                    json.loads(x)
+                    for x in (output / "raw-answers.jsonl").read_text().splitlines()
+                ]
                 self.assertEqual(len(recorded), 4)
                 self.assertTrue(all(row["status"] == "failed" for row in recorded))
 
     def test_source_or_provenance_changes_reject_before_generation(self):
         for name, documents, sha in (
-            ("missing_scope", self.docs[:1], "a"*64),
+            ("missing_scope", self.docs[:1], "a" * 64),
             ("invalid_sha", self.docs, "no-sha"),
         ):
             with self.subTest(name=name):
                 with self.assertRaises(ValueError):
                     probe(
-                        self.reader, documents, self.path,
-                        snapshot_sha=sha, writer_source="b"*40,
-                        source_commit="c"*40,
-                        generate=lambda *args: self.fail("model invoked")
+                        self.reader,
+                        documents,
+                        self.path,
+                        snapshot_sha=sha,
+                        writer_source="b" * 40,
+                        source_commit="c" * 40,
+                        generate=lambda *args: self.fail("model invoked"),
                     )
                 self.assertFalse(self.path.exists())
 

@@ -5,27 +5,49 @@ import os
 import unittest
 
 from stem_strict_repeatability import (
-    ARMS, EARLIER, LATER, STAGES, PHASES,
-    audit_pinned_paths, compare_adapters, compare_plan, compare_policy_pair,
+    ARMS,
+    EARLIER,
+    LATER,
+    STAGES,
+    PHASES,
+    audit_pinned_paths,
+    compare_adapters,
+    compare_plan,
+    compare_policy_pair,
 )
 
 
 def policies():
     before = dict(
-        stage=16, phase="test", question_id="registered-q", arm="gated",
-        status="succeeded", selected=0, answer="Original answer.",
-        pool_digest="same-sealed-pool", feature_digest="same-features",
-        head_sha256="saved-head", encoder_identity="same-encoder",
-        family="same-original-family", cell="general",
+        stage=16,
+        phase="test",
+        question_id="registered-q",
+        arm="gated",
+        status="succeeded",
+        selected=0,
+        answer="Original answer.",
+        pool_digest="same-sealed-pool",
+        feature_digest="same-features",
+        head_sha256="saved-head",
+        encoder_identity="same-encoder",
+        family="same-original-family",
+        cell="general",
         selection_geometry=dict(candidate_count=2, changed_selected_candidate=False),
-        head_seconds=0.01, inclusive_attempt_seconds=0.02,
+        head_seconds=0.01,
+        inclusive_attempt_seconds=0.02,
         receipt=dict(
-            generator_identity="frozen-generator", generator_profile="same-prompt",
-            generator_parameter_updates=0, semantic_citation_precision=None,
-            production_accepted=False, delivered_evidence=[{"label": "E1"}],
-            input_ids_digest="same-request-tokens", generated_ids_digest="same-output-tokens",
-            reused_from=None, actual_reader_execution=True,
-            generation_seconds=0.2, incremental_generation_seconds=0.2,
+            generator_identity="frozen-generator",
+            generator_profile="same-prompt",
+            generator_parameter_updates=0,
+            semantic_citation_precision=None,
+            production_accepted=False,
+            delivered_evidence=[{"label": "E1"}],
+            input_ids_digest="same-request-tokens",
+            generated_ids_digest="same-output-tokens",
+            reused_from=None,
+            actual_reader_execution=True,
+            generation_seconds=0.2,
+            incremental_generation_seconds=0.2,
         ),
     )
     after = deepcopy(before)
@@ -33,7 +55,8 @@ def policies():
     after["receipt"].update(generation_seconds=0.4, incremental_generation_seconds=0.4)
     after["null_counterfactual"] = dict(
         schema="hepta.stem-label-free-null-counterfactual.v1",
-        observed_forced_top1_index=0, original_forced_top1_unchanged=True,
+        observed_forced_top1_index=0,
+        original_forced_top1_unchanged=True,
         actual_reader_answer_not_recomputed=True,
         posthoc_labels_used_to_select_cutoff=False,
     )
@@ -42,12 +65,15 @@ def policies():
 
 def plans():
     old = dict(
-        source_commit=EARLIER[0], arms=list(ARMS),
+        source_commit=EARLIER[0],
+        arms=list(ARMS),
         curriculum_attempted_examples=list(STAGES),
-        questions=dict(train=[f"train-{i}" for i in range(48)], **{
-            p: [f"{p}-{i}" for i in range(8)] for p in PHASES
-        }),
-        dataset_sha256="pinned-inputs", reader_inventory="frozen-model",
+        questions=dict(
+            train=[f"train-{i}" for i in range(48)],
+            **{p: [f"{p}-{i}" for i in range(8)] for p in PHASES},
+        ),
+        dataset_sha256="pinned-inputs",
+        reader_inventory="frozen-model",
         generator_config={"do_sample": False},
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
     )
@@ -59,13 +85,18 @@ def plans():
 
 def adapters():
     old = dict(
-        failures={}, receipts={
+        failures={},
+        receipts={
             name: dict(
-                prepared_questions=["q1", "q2"], adapter_delta_squared_norm=0.1,
-                base_unchanged=True, status="succeeded",
+                prepared_questions=["q1", "q2"],
+                adapter_delta_squared_norm=0.1,
+                base_unchanged=True,
+                status="succeeded",
                 admission_digest="first-original-commit-bound-cut",
-                seconds=1.0, reload_and_probe_seconds=0.2,
-            ) for name in ("lineage", "independent-general", "independent-temporal")
+                seconds=1.0,
+                reload_and_probe_seconds=0.2,
+            )
+            for name in ("lineage", "independent-general", "independent-temporal")
         },
     )
     new = deepcopy(old)
@@ -92,7 +123,10 @@ class StrictRepeatabilityTests(unittest.TestCase):
         ):
             a, b = policies()
             b[field] = value
-            with self.subTest(field=field), self.assertRaisesRegex(ValueError, "changed"):
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(ValueError, "changed"),
+            ):
                 compare_policy_pair(a, b)
 
     def test_canonical_reader_input_output_and_reuse_cannot_be_rewritten(self):
@@ -154,8 +188,10 @@ class StrictRepeatabilityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "LoRA"):
             compare_adapters(a, b)
 
-    @unittest.skipUnless(os.environ.get("HEPTA_STEM_REPRO_EARLIER"),
-                         "real archived ZIP integration runs on pinned CI")
+    @unittest.skipUnless(
+        os.environ.get("HEPTA_STEM_REPRO_EARLIER"),
+        "real archived ZIP integration runs on pinned CI",
+    )
     def test_exact_two_pinned_run_archives(self):
         result = audit_pinned_paths(
             os.environ["HEPTA_STEM_REPRO_EARLIER"],

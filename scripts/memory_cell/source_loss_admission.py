@@ -30,10 +30,14 @@ def require_parity(
     if curriculum not in ("single_hop", "source_two_hop"):
         raise ValueError("unregistered source write curriculum")
     if backend == "supervised_positions" and curriculum != "single_hop":
-        raise ValueError("source-two-hop optimization requires its own pretrained parity")
+        raise ValueError(
+            "source-two-hop optimization requires its own pretrained parity"
+        )
     if backend == "full":
         if receipt_path is not None or receipt_sha is not None:
-            raise ValueError("full source loss must not absorb an unrelated parity proof")
+            raise ValueError(
+                "full source loss must not absorb an unrelated parity proof"
+            )
         return None
     if backend != "supervised_positions":
         raise ValueError("unregistered source loss backend")
@@ -78,7 +82,8 @@ def require_parity(
     if any(type(item.get(k)) is not int or item[k] <= 0 for k in quantities):
         raise ValueError("missing exact source exposure counts")
     if not (
-        item["full_projection_positions"] == item["compared_input_tokens"]
+        item["full_projection_positions"]
+        == item["compared_input_tokens"]
         > item["compared_supervised_tokens"]
         == item["selected_projection_positions"]
     ):

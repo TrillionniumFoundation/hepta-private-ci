@@ -67,16 +67,19 @@ class HeadTests(unittest.TestCase):
         previous = sha256(head.export())
         with torch.no_grad():
             before = [head(self.row.features).tolist()]
-        receipt = head.fit(
-            (self.row,), training_cut(), revoked=set(), steps=64
-        )
+        receipt = head.fit((self.row,), training_cut(), revoked=set(), steps=64)
         updated = sha256(head.export())
         with torch.no_grad():
             after = [head(self.row.features).tolist()]
         report = compare_train_head_before_after(
-            (self.row,), before, after,
-            admitted_ids={"train"}, stage=16, arm="gated",
-            cell="general", previous_head_sha256=previous,
+            (self.row,),
+            before,
+            after,
+            admitted_ids={"train"},
+            stage=16,
+            arm="gated",
+            cell="general",
+            previous_head_sha256=previous,
             updated_head_sha256=updated,
         )
         self.assertGreater(receipt["tensor_delta_squared_norm"], 0)

@@ -21,7 +21,8 @@ def verified_visits(documents, tokenizer, training):
     from source_write_schedule import prepare
 
     if not isinstance(training, dict) or training.get("curriculum") not in (
-        "single_hop", "source_two_hop"
+        "single_hop",
+        "source_two_hop",
     ):
         raise ValueError("registered source-written curriculum required")
     if (
@@ -59,8 +60,10 @@ def verified_visits(documents, tokenizer, training):
         raise ValueError("source training schedule is missing")
     maximum, ceiling = existing.get("maximum_steps"), existing.get("token_ceiling")
     if (
-        type(maximum) is not int or not 1 <= maximum <= STEPS
-        or type(ceiling) is not int or not 1 <= ceiling <= TOKEN_CEILING
+        type(maximum) is not int
+        or not 1 <= maximum <= STEPS
+        or type(ceiling) is not int
+        or not 1 <= ceiling <= TOKEN_CEILING
     ):
         raise ValueError("source exposure exceeds the registered write bounds")
     prepared, expected = prepare(

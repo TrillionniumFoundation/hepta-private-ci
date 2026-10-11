@@ -49,9 +49,7 @@ def compositions(
         first_keys = sorted(
             {(row["entity"], row["attribute"]) for row in visible.values()}
         )
-        observed = max(
-            datetime.fromisoformat(d.observed_at) for d in docs
-        ).isoformat()
+        observed = max(datetime.fromisoformat(d.observed_at) for d in docs).isoformat()
         for entity, first_attr in first_keys:
             first_ids, state = select_current(
                 projection,
@@ -60,14 +58,8 @@ def compositions(
                 revoked=revoked,
                 limit=8,
             )
-            first_values = {
-                projection.facts[key]["value"] for key in first_ids
-            }
-            if (
-                state["incomplete"]
-                or state["conflicts"]
-                or len(first_values) != 1
-            ):
+            first_values = {projection.facts[key]["value"] for key in first_ids}
+            if state["incomplete"] or state["conflicts"] or len(first_values) != 1:
                 continue
             successor = next(iter(first_values))
             second_attrs = sorted(
@@ -94,11 +86,7 @@ def compositions(
                     )
                     == (successor, second_attr)
                 }
-                if (
-                    outcome["incomplete"]
-                    or outcome["conflicts"]
-                    or len(terminal) != 1
-                ):
+                if outcome["incomplete"] or outcome["conflicts"] or len(terminal) != 1:
                     unknown.append(
                         dict(
                             scope=scope,
@@ -166,9 +154,9 @@ def combine_source_examples(documents, *, revision, allowed_roots, revoked):
             *(x for x in direct if x["query"]["scope"] == scope),
         )
     )
-    if len(combined) > 2048 or len(
-        {x["query"]["identity"] for x in combined}
-    ) != len(combined):
+    if len(combined) > 2048 or len({x["query"]["identity"] for x in combined}) != len(
+        combined
+    ):
         raise ValueError("duplicate or unbounded source-writing examples")
     receipt = dict(
         curriculum=PROFILE,

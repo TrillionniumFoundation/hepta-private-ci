@@ -166,7 +166,13 @@ class ExperienceReader(ReferenceReader):
         self.quarantined = False
 
     def fit_sources(
-        self, documents, *, revision, allowed_roots, revoked, loss_backend="full",
+        self,
+        documents,
+        *,
+        revision,
+        allowed_roots,
+        revoked,
+        loss_backend="full",
         curriculum="single_hop",
     ):
         import torch

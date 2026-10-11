@@ -15,18 +15,24 @@ from test_stem_cell_runtime import Reader, evidence, query
 class NativeChronologyTests(unittest.TestCase):
     def test_locomo_native_months_not_lexicographic_strings(self):
         # Raw LoCoMo format; lexicographically "9" > "1", but April precedes May.
-        self.assertTrue(source_not_after_question(
-            "9:36 am on 2 April, 2023", "1:56 pm on 8 May, 2023"
-        ))
+        self.assertTrue(
+            source_not_after_question(
+                "9:36 am on 2 April, 2023", "1:56 pm on 8 May, 2023"
+            )
+        )
         # Lexicographically "1" < "9", but May follows April.
-        self.assertFalse(source_not_after_question(
-            "1:56 pm on 8 May, 2023", "9:36 am on 2 April, 2023"
-        ))
+        self.assertFalse(
+            source_not_after_question(
+                "1:56 pm on 8 May, 2023", "9:36 am on 2 April, 2023"
+            )
+        )
 
     def test_exact_native_timestamps_are_comparable_without_rewriting(self):
-        self.assertTrue(source_not_after_question(
-            "1:56 pm on 8 May, 2023", "1:56 pm on 8 May, 2023"
-        ))
+        self.assertTrue(
+            source_not_after_question(
+                "1:56 pm on 8 May, 2023", "1:56 pm on 8 May, 2023"
+            )
+        )
         self.assertTrue(source_not_after_question("2023-10-01", "2024-01-01"))
         self.assertFalse(source_not_after_question("2024-01-01", "2023-10-01"))
         self.assertTrue(source_not_after_question("2023", "2024"))
@@ -34,18 +40,24 @@ class NativeChronologyTests(unittest.TestCase):
         self.assertTrue(source_not_after_question("2023/10/01", "2023-10-01"))
 
     def test_longmemeval_native_weekday_and_minute_chronology(self):
-        self.assertTrue(source_not_after_question(
-            "2023/04/10 (Mon) 17:50",
-            "2023/04/10 (Mon) 23:07",
-        ))
-        self.assertTrue(source_not_after_question(
-            "2023/04/10 (Mon) 23:59",
-            "2023/04/11 (Tue) 00:00",
-        ))
-        self.assertFalse(source_not_after_question(
-            "2023/04/10 (Mon) 23:07",
-            "2023/04/10 (Mon) 17:50",
-        ))
+        self.assertTrue(
+            source_not_after_question(
+                "2023/04/10 (Mon) 17:50",
+                "2023/04/10 (Mon) 23:07",
+            )
+        )
+        self.assertTrue(
+            source_not_after_question(
+                "2023/04/10 (Mon) 23:59",
+                "2023/04/11 (Tue) 00:00",
+            )
+        )
+        self.assertFalse(
+            source_not_after_question(
+                "2023/04/10 (Mon) 23:07",
+                "2023/04/10 (Mon) 17:50",
+            )
+        )
 
     def test_longmemeval_weekday_drift_and_invalid_calendar_reject(self):
         for native in (
@@ -57,22 +69,20 @@ class NativeChronologyTests(unittest.TestCase):
             "2023/04/10 Mon 17:50",
         ):
             with self.subTest(native=native), self.assertRaises(ValueError):
-                source_not_after_question(
-                    native, "2023/04/10 (Mon) 23:07"
-                )
+                source_not_after_question(native, "2023/04/10 (Mon) 23:07")
 
     def test_longmemeval_precision_conflict_and_future_fail_closed(self):
         with self.assertRaisesRegex(ValueError, "incomparable"):
-            source_not_after_question(
-                "2023/04/10 (Mon) 17:50", "2023/04/10"
-            )
+            source_not_after_question("2023/04/10 (Mon) 17:50", "2023/04/10")
         reader = Reader()
         cache = ExactReaderCache(reader)
         q = replace(query(), observed_at="2023/05/28 (Sun) 06:47")
-        too_late = (dict(
-            evidence()[0],
-            observed_at="2023/05/28 (Sun) 07:17",
-        ),)
+        too_late = (
+            dict(
+                evidence()[0],
+                observed_at="2023/05/28 (Sun) 07:17",
+            ),
+        )
         with self.assertRaisesRegex(ValueError, "future evidence"):
             cache.answer(q, too_late, "denied", revoked=set())
         self.assertEqual(reader.calls, 0)
@@ -81,8 +91,7 @@ class NativeChronologyTests(unittest.TestCase):
         reader = Reader()
         cache = ExactReaderCache(reader)
         q = replace(query(), observed_at="2023/04/10 (Mon) 23:07")
-        valid = (dict(evidence()[0],
-                      observed_at="2023/04/10 (Mon) 17:50"),)
+        valid = (dict(evidence()[0], observed_at="2023/04/10 (Mon) 17:50"),)
         first, receipt = cache.answer(q, valid, "first", revoked=set())
         self.assertTrue(receipt["actual_reader_execution"])
         self.assertEqual(receipt["delivered_evidence"], list(valid))
@@ -93,12 +102,16 @@ class NativeChronologyTests(unittest.TestCase):
         self.assertEqual(reader.calls, 1)
 
     def test_utc_offsets_use_same_instant_not_text_order(self):
-        self.assertTrue(source_not_after_question(
-            "2024-01-01T01:00:00+01:00", "2024-01-01T00:30:00Z"
-        ))
-        self.assertFalse(source_not_after_question(
-            "2024-01-01T02:00:00+01:00", "2024-01-01T00:30:00Z"
-        ))
+        self.assertTrue(
+            source_not_after_question(
+                "2024-01-01T01:00:00+01:00", "2024-01-01T00:30:00Z"
+            )
+        )
+        self.assertFalse(
+            source_not_after_question(
+                "2024-01-01T02:00:00+01:00", "2024-01-01T00:30:00Z"
+            )
+        )
 
     def test_unknown_invalid_and_mixed_precision_fail_closed(self):
         for a, b in (
@@ -135,8 +148,12 @@ class NativeChronologyTests(unittest.TestCase):
         q = replace(query(), observed_at="1:56 pm on 8 May, 2023")
         for observed in ("9:36 pm on 9 May, 2023", "not a date", "2024-01-01"):
             with self.subTest(observed=observed), self.assertRaises(ValueError):
-                cache.answer(q, (dict(evidence()[0], observed_at=observed),),
-                             "denied", revoked=set())
+                cache.answer(
+                    q,
+                    (dict(evidence()[0], observed_at=observed),),
+                    "denied",
+                    revoked=set(),
+                )
         self.assertEqual(reader.calls, 0)
 
     def test_time_check_is_not_an_access_control_bypass(self):

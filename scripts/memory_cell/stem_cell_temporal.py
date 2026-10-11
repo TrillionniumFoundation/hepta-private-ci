@@ -20,9 +20,12 @@ def admit_history(query, documents, *, revoked):
         or not 1 <= len(documents) <= 10000
         or not isinstance(revoked, set)
         or any(
-            not isinstance(doc.identity, str) or not doc.identity
-            or not isinstance(doc.root, str) or not doc.root
-            or doc.scope != query.scope or doc.root in revoked
+            not isinstance(doc.identity, str)
+            or not doc.identity
+            or not isinstance(doc.root, str)
+            or not doc.root
+            or doc.scope != query.scope
+            or doc.root in revoked
             for doc in documents
         )
         or len({d.identity for d in documents}) != len(documents)
@@ -51,12 +54,12 @@ def admit_history(query, documents, *, revoked):
         original_count=len(documents),
         admitted_count=len(visible),
         excluded_future_count=len(excluded),
-        source_identity_digest=digest([
-            (d.identity, d.root, d.observed_at) for d in visible
-        ]),
-        excluded_future_identity_digest=digest([
-            (d.identity, d.root, d.observed_at) for d in excluded
-        ]),
+        source_identity_digest=digest(
+            [(d.identity, d.root, d.observed_at) for d in visible]
+        ),
+        excluded_future_identity_digest=digest(
+            [(d.identity, d.root, d.observed_at) for d in excluded]
+        ),
         native_gold_targets_inspected=False,
         source_content_rewritten=False,
         source_permissions_expanded=False,
@@ -68,22 +71,29 @@ def build_as_of_index(source, query, encoder, output, *, revoked):
     from index import PersistentIndex
 
     started = time.perf_counter()
-    docs, admission = admit_history(
-        query, source.history(query), revoked=revoked
-    )
+    docs, admission = admit_history(query, source.history(query), revoked=revoked)
     key = (source.source_sha256, query.scope, query.observed_at)
-    as_of_cut = digest((
-        "stem-native-as-of-v1", key, admission["source_identity_digest"],
-    ))
-    vectors = encoder.encode([
-        f"{doc.observed_at}: {doc.content}" for doc in docs
-    ])
+    as_of_cut = digest(
+        (
+            "stem-native-as-of-v1",
+            key,
+            admission["source_identity_digest"],
+        )
+    )
+    vectors = encoder.encode([f"{doc.observed_at}: {doc.content}" for doc in docs])
     path = output / f"index-{digest(key)}.sqlite"
     pinned = PersistentIndex.build(
-        path, docs, vectors, encoder.identity, as_of_cut,
+        path,
+        docs,
+        vectors,
+        encoder.identity,
+        as_of_cut,
     )
     index = PersistentIndex(
-        path, as_of_cut, revoked, expected_file_digest=pinned,
+        path,
+        as_of_cut,
+        revoked,
+        expected_file_digest=pinned,
         expected_encoder=encoder.identity,
     )
     return index, dict(

@@ -19,7 +19,7 @@ class SourceWriteExecutionGateTests(unittest.TestCase):
         self.assertIn("repository-format", self.jobs)
         repository = str(self.jobs["repository-format"])
         self.assertIn("just fmt --check --base", repository)
-        self.assertIn("exit \"$status\"", repository)
+        self.assertIn('exit "$status"', repository)
         self.assertIn("memory-source-write-format", repository)
 
     def test_actual_writer_does_not_depend_on_unrelated_pr_formatting(self):
@@ -54,7 +54,7 @@ class SourceWriteExecutionGateTests(unittest.TestCase):
     def test_format_job_does_not_claim_a_model_success(self):
         self.assertNotIn("write-and-read", self.jobs["repository-format"])
         self.assertNotIn("source-contracts", self.jobs["repository-format"])
-        self.assertIn("exit \"$status\"", str(self.jobs["repository-format"]))
+        self.assertIn('exit "$status"', str(self.jobs["repository-format"]))
 
 
 if __name__ == "__main__":

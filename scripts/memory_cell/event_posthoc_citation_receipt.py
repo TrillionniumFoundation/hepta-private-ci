@@ -139,6 +139,7 @@ def audit(
         file_sha,
         freeze_single_hop,
     )
+
     with tempfile.TemporaryDirectory(prefix="strong-rag-posthoc-") as tmp:
         root = Path(tmp)
         original, generated = root / "source", root / "generated"
@@ -196,8 +197,7 @@ def audit(
         replayed = _check_scored(raw, scored, truths, question_ids, EVAL_ARMS)
         by_qid = {c["query"]["identity"]: c for c in cases}
         selections = {
-            qid: eval_selections(c, frozen["selected_k"])
-            for qid, c in by_qid.items()
+            qid: eval_selections(c, frozen["selected_k"]) for qid, c in by_qid.items()
         }
         profiles = set()
         for row in raw:

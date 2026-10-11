@@ -19,7 +19,9 @@ class AdapterIdentityTests(unittest.TestCase):
     def test_state_digest_binds_bits_names_shape_dtype_not_mapping_order(self):
         state = {"a": torch.tensor([1.0, -0.0]), "b": torch.tensor([2.0])}
         expected = tensor_state_digest(state)
-        self.assertEqual(expected, tensor_state_digest(dict(reversed(list(state.items())))))
+        self.assertEqual(
+            expected, tensor_state_digest(dict(reversed(list(state.items()))))
+        )
         for changed in (
             {"a": torch.tensor([1.0, 0.0]), "b": state["b"]},
             {"a": state["a"].reshape(1, 2), "b": state["b"]},
@@ -39,7 +41,9 @@ class AdapterIdentityTests(unittest.TestCase):
         self.assertNotEqual(sha256(first), sha256(second))
         identity = encoder.identity
         # Integrity verification must never depend on reserializing a container.
-        with patch.object(encoder, "tensor_bytes", side_effect=AssertionError("serialization")):
+        with patch.object(
+            encoder, "tensor_bytes", side_effect=AssertionError("serialization")
+        ):
             encoder.verify_frozen()
         self.assertEqual(encoder.identity, identity)
         with tempfile.TemporaryDirectory() as tmp:
@@ -47,10 +51,15 @@ class AdapterIdentityTests(unittest.TestCase):
             with patch.object(encoder, "tensor_bytes", return_value=second):
                 metadata = encoder.export(directory)
             self.assertEqual(metadata["tensor_sha256"], sha256(second))
-            self.assertEqual(metadata["tensor_state_sha256"], tensor_state_digest(state))
+            self.assertEqual(
+                metadata["tensor_state_sha256"], tensor_state_digest(state)
+            )
             restored = tiny_encoder()
             restored.restore_into(
-                directory, expected_metadata=metadata, allowed_roots={"root"}, revoked=set()
+                directory,
+                expected_metadata=metadata,
+                allowed_roots={"root"},
+                revoked=set(),
             )
             before, _ = encoder.encode(Query(), "family", Pool(), revoked=set())
             after, _ = restored.encode(Query(), "family", Pool(), revoked=set())
@@ -60,8 +69,10 @@ class AdapterIdentityTests(unittest.TestCase):
             (directory / "adapter.safetensors").write_bytes(first)
             with self.assertRaisesRegex(ValueError, "restore identity"):
                 tiny_encoder().restore_into(
-                    directory, expected_metadata=metadata,
-                    allowed_roots={"root"}, revoked=set(),
+                    directory,
+                    expected_metadata=metadata,
+                    allowed_roots={"root"},
+                    revoked=set(),
                 )
 
     def test_training_inside_no_grad_is_local_and_restores_callers_mode(self):
@@ -80,7 +91,9 @@ class AdapterIdentityTests(unittest.TestCase):
         with torch.inference_mode():
             with self.assertRaisesRegex(ValueError, "inference-mode"):
                 fit(encoder)
-        self.assertEqual(before, tensor_state_digest(get_peft_model_state_dict(encoder.model)))
+        self.assertEqual(
+            before, tensor_state_digest(get_peft_model_state_dict(encoder.model))
+        )
         self.assertFalse(encoder.frozen)
 
     def test_base_and_adapter_mutations_have_distinct_failure_reasons(self):
@@ -113,8 +126,10 @@ class AdapterIdentityTests(unittest.TestCase):
             (directory / "adapter.json").write_text(json.dumps(metadata))
             with self.assertRaisesRegex(ValueError, "canonical tensor-state"):
                 tiny_encoder().restore_into(
-                    directory, expected_metadata=metadata,
-                    allowed_roots={"root"}, revoked=set(),
+                    directory,
+                    expected_metadata=metadata,
+                    allowed_roots={"root"},
+                    revoked=set(),
                 )
 
 

@@ -22,42 +22,52 @@ BASELINE = (64, 0.5)
 
 def label_key(policy):
     k, weight = policy
-    if (type(k) is not int or k not in CHANNELS
-            or type(weight) is not float or weight not in WEIGHTS):
+    if (
+        type(k) is not int
+        or k not in CHANNELS
+        or type(weight) is not float
+        or weight not in WEIGHTS
+    ):
         raise ValueError("policy not in preregistered frozen retrieval grid")
     return f"k{k}/lex{weight:.2f}"
 
 
 def validate_unlabelled(plan, records):
     cohorts = plan["questions"]
-    if (set(cohorts) != set(PHASES)
-            or len(cohorts["train"]) != 48
-            or any(len(cohorts[p]) != 8 for p in PHASES[1:])
-            or len({q for p in PHASES for q in cohorts[p]}) != 80
-            or set(plan["question_families"])
-            != {q for p in PHASES for q in cohorts[p]}
-            or plan["source_visibility_policy"]
-            != "strict-as-of-before-index-and-every-Encoder-v1"):
+    if (
+        set(cohorts) != set(PHASES)
+        or len(cohorts["train"]) != 48
+        or any(len(cohorts[p]) != 8 for p in PHASES[1:])
+        or len({q for p in PHASES for q in cohorts[p]}) != 80
+        or set(plan["question_families"]) != {q for p in PHASES for q in cohorts[p]}
+        or plan["source_visibility_policy"]
+        != "strict-as-of-before-index-and-every-Encoder-v1"
+    ):
         raise ValueError("nonoriginal candidate plan or source admission")
-    expected = {(p, q, label_key(config))
-                for p in PHASES for q in cohorts[p] for config in GRID}
+    expected = {
+        (p, q, label_key(config)) for p in PHASES for q in cohorts[p] for config in GRID
+    }
     observed = {}
     for row in records:
         key = (row["phase"], row["question_id"], row["policy"])
         ids, windows = row["retrieved_source_ids"], row["window_source_ids"]
-        if (key not in expected or key in observed
-                or row["source_family"] != plan["question_families"][key[1]]
-                or not isinstance(ids, list) or not 1 <= len(ids) <= 8
-                or len(set(ids)) != len(ids)
-                or not isinstance(windows, list)
-                or len(set(windows)) != len(windows)
-                or not set(windows).issubset(ids)
-                or not isinstance(row["original_as_of_index_sha256"], str)
-                or len(row["original_as_of_index_sha256"]) != 64
-                or not isinstance(row["pool_sha256"], str)
-                or len(row["pool_sha256"]) != 64
-                or row.get("source_text_exported") is not False
-                or row.get("read_targets_for_retrieval") is not False):
+        if (
+            key not in expected
+            or key in observed
+            or row["source_family"] != plan["question_families"][key[1]]
+            or not isinstance(ids, list)
+            or not 1 <= len(ids) <= 8
+            or len(set(ids)) != len(ids)
+            or not isinstance(windows, list)
+            or len(set(windows)) != len(windows)
+            or not set(windows).issubset(ids)
+            or not isinstance(row["original_as_of_index_sha256"], str)
+            or len(row["original_as_of_index_sha256"]) != 64
+            or not isinstance(row["pool_sha256"], str)
+            or len(row["pool_sha256"]) != 64
+            or row.get("source_text_exported") is not False
+            or row.get("read_targets_for_retrieval") is not False
+        ):
             raise ValueError("unregistered, duplicated or unbound retrieval receipt")
         observed[key] = row
     if set(observed) != expected:
@@ -69,9 +79,12 @@ def validate_unlabelled(plan, records):
             if not original.get("replayed_original_pool_sha256"):
                 raise ValueError("original frozen pool identity not reproduced")
             pins = {
-                (observed[(phase, qid, label_key(config))][
-                    "original_as_of_index_sha256"
-                ], observed[(phase, qid, label_key(config))]["source_family"])
+                (
+                    observed[(phase, qid, label_key(config))][
+                        "original_as_of_index_sha256"
+                    ],
+                    observed[(phase, qid, label_key(config))]["source_family"],
+                )
                 for config in GRID
             }
             if pins != {(original["original_as_of_index_sha256"], family)}:
@@ -112,14 +125,17 @@ def select_from_train(plan, unlabelled, targets):
         macro = math.fsum(
             math.fsum(values) / len(values) for values in family.values()
         ) / len(family)
-        bests.append(dict(
-            id=label_key(config),
-            channel_k=config[0], lexical_weight=config[1],
-            family_macro_window_recall=macro,
-            training_families=len(family),
-            scored=sum(map(len, family.values())),
-            unscored=unscored,
-        ))
+        bests.append(
+            dict(
+                id=label_key(config),
+                channel_k=config[0],
+                lexical_weight=config[1],
+                family_macro_window_recall=macro,
+                training_families=len(family),
+                scored=sum(map(len, family.values())),
+                unscored=unscored,
+            )
+        )
     selected = min(
         bests,
         key=lambda x: (
@@ -151,11 +167,12 @@ def select_from_train(plan, unlabelled, targets):
 def evaluate_fixed(plan, unlabelled, targets, selection):
     """Held-out labels only after the TRAIN-only choice is immutable."""
     eval_ids = [q for p in PHASES[1:] for q in plan["questions"][p]]
-    if (selection["selected_policy"] not in
-            {label_key(c) for c in GRID}
-            or set(targets) != set(eval_ids)
-            or not selection["train_only"]
-            or not selection["evaluation_labels_were_not_read_to_select"]):
+    if (
+        selection["selected_policy"] not in {label_key(c) for c in GRID}
+        or set(targets) != set(eval_ids)
+        or not selection["train_only"]
+        or not selection["evaluation_labels_were_not_read_to_select"]
+    ):
         raise ValueError("evaluation targets changed calibration selection")
     out, decisions = {}, []
     for phase in PHASES[1:]:
@@ -166,7 +183,9 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
             original, proposed = annotate(a, targets[qid]), annotate(b, targets[qid])
             counts["planned"] += 1
             row = dict(
-                phase=phase, question_id=qid, source_family=a["source_family"],
+                phase=phase,
+                question_id=qid,
+                source_family=a["source_family"],
                 native_support_resolved=original is not None,
                 original_document_hit=original[0] if original is not None else None,
                 selected_document_hit=proposed[0] if proposed is not None else None,

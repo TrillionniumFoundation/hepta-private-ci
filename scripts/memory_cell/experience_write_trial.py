@@ -58,8 +58,16 @@ def model_inputs(model_dir, stage_sha):
 
 
 def write_memory(
-    sources, model_dir, output, *, source_sha, stage_sha, loss_backend="full",
-    parity_receipt=None, parity_sha=None, curriculum="single_hop",
+    sources,
+    model_dir,
+    output,
+    *,
+    source_sha,
+    stage_sha,
+    loss_backend="full",
+    parity_receipt=None,
+    parity_sha=None,
+    curriculum="single_hop",
 ):
     from pretrained import LoRAReader
     from source_completion_loss import BACKENDS
@@ -75,10 +83,14 @@ def write_memory(
     from source_loss_admission import require_parity
 
     parity_binding = require_parity(
-        loss_backend, parity_receipt, parity_sha,
-        source_sha=source_sha, source_commit=commit,
+        loss_backend,
+        parity_receipt,
+        parity_sha,
+        source_sha=source_sha,
+        source_commit=commit,
         model_identity=inventory["inventory_digest"],
-        repository=stage["repository"], revision=stage["revision"],
+        repository=stage["repository"],
+        revision=stage["revision"],
         curriculum=curriculum,
     )
     output.mkdir()
@@ -521,7 +533,9 @@ if __name__ == "__main__":
     )
     p.add_argument("--parity-receipt", type=Path)
     p.add_argument("--parity-sha")
-    p.add_argument("--curriculum", choices=("single_hop", "source_two_hop"), default="single_hop")
+    p.add_argument(
+        "--curriculum", choices=("single_hop", "source_two_hop"), default="single_hop"
+    )
     p = sub.add_parser("read")
     for name in ("plan", "inputs", "model", "snapshot", "output"):
         p.add_argument(name, type=Path)

@@ -11,8 +11,9 @@ import math
 
 from sessions import source_id
 
-ARMS = frozenset(("prototype", "linear", "gated",
-                  "lineage_lora_gated", "independent_lora_gated"))
+ARMS = frozenset(
+    ("prototype", "linear", "gated", "lineage_lora_gated", "independent_lora_gated")
+)
 CELLS = frozenset(("general", "temporal"))
 STAGES = frozenset((16, 32, 48))
 GRID = (0.0, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0)
@@ -20,7 +21,10 @@ GRID = (0.0, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0)
 
 def _pin(value):
     data = json.dumps(
-        value, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
+        value,
+        sort_keys=True,
+        ensure_ascii=False,
+        separators=(",", ":"),
         allow_nan=False,
     )
     return hashlib.sha256(data.encode()).hexdigest()
@@ -31,13 +35,17 @@ def choose_shadow(ids, original, learned, scale):
     if (
         not isinstance(ids, (tuple, list))
         or not 0 <= len(ids) <= 64
-        or len(ids) != len(original) or len(ids) != len(learned)
+        or len(ids) != len(original)
+        or len(ids) != len(learned)
         or len(set(ids)) != len(ids)
         or any(not isinstance(x, str) or not x for x in ids)
-        or type(scale) not in (int, float) or not math.isfinite(scale)
+        or type(scale) not in (int, float)
+        or not math.isfinite(scale)
         or not 0 <= scale <= max(GRID)
-        or any(type(x) not in (int, float) or not math.isfinite(x)
-               for x in (*original, *learned))
+        or any(
+            type(x) not in (int, float) or not math.isfinite(x)
+            for x in (*original, *learned)
+        )
     ):
         raise ValueError("unbound candidate scores or invalid preregistered scale")
     if not ids:
@@ -54,7 +62,9 @@ def choose_shadow(ids, original, learned, scale):
 def calibrate_shadow_scale(rows, *, arm, cell, stage, admitted_ids):
     """TRAIN-only equal-family-macro weak-source accuracy; tie favors zero."""
     if (
-        arm not in ARMS or cell not in CELLS or stage not in STAGES
+        arm not in ARMS
+        or cell not in CELLS
+        or stage not in STAGES
         or not isinstance(admitted_ids, (set, frozenset))
         or not 1 <= len(rows) <= 48
     ):
@@ -69,13 +79,15 @@ def calibrate_shadow_scale(rows, *, arm, cell, stage, admitted_ids):
         choose_shadow(ids, original, learned, 0)
         choose_shadow(ids, original, learned, 1)
         if (
-            not isinstance(qid, str) or not qid
-            or qid not in admitted_ids or qid in seen
-            or not isinstance(family, str) or not family
+            not isinstance(qid, str)
+            or not qid
+            or qid not in admitted_ids
+            or qid in seen
+            or not isinstance(family, str)
+            or not family
             or not isinstance(positives, (list, tuple))
             or len(set(positives)) != len(positives)
-            or any(type(i) is not int or not 0 <= i < len(ids)
-                   for i in positives)
+            or any(type(i) is not int or not 0 <= i < len(ids) for i in positives)
         ):
             raise ValueError("shadow train row not admitted or candidate pool drift")
         seen.add(qid)
@@ -88,15 +100,17 @@ def calibrate_shadow_scale(rows, *, arm, cell, stage, admitted_ids):
         per_family = defaultdict(list)
         for row in eligible:
             index = choose_shadow(
-                row["candidate_ids"], row["frozen_logits"],
-                row["head_logits"], scale,
+                row["candidate_ids"],
+                row["frozen_logits"],
+                row["head_logits"],
+                scale,
             )
-            per_family[row["family"]].append(
-                int(index in row["positive_indices"])
-            )
+            per_family[row["family"]].append(int(index in row["positive_indices"]))
         scores[str(scale)] = (
             math.fsum(math.fsum(v) / len(v) for v in per_family.values())
-            / len(per_family) if per_family else None
+            / len(per_family)
+            if per_family
+            else None
         )
     if eligible:
         high = max(scores[str(v)] for v in GRID)
@@ -105,14 +119,16 @@ def calibrate_shadow_scale(rows, *, arm, cell, stage, admitted_ids):
         chosen = 0.0
     return dict(
         schema="hepta.stem-train-only-shadow-scale.v1",
-        arm=arm, cell=cell, stage=stage, scale_grid=GRID,
-        chosen_scale=chosen, admitted_train_question_count=len(seen),
+        arm=arm,
+        cell=cell,
+        stage=stage,
+        scale_grid=GRID,
+        chosen_scale=chosen,
+        admitted_train_question_count=len(seen),
         positive_negative_eligible_train_count=len(eligible),
         ineligible_null_or_no_competing_support_count=excluded,
         equal_family_weighted_train_source_accuracy_by_scale=scores,
-        distinct_weak_train_source_families=len({
-            row["family"] for row in eligible
-        }),
+        distinct_weak_train_source_families=len({row["family"] for row in eligible}),
         train_question_set_sha256=_pin(sorted(seen)),
         winner_chosen_from_train_only=True,
         all_test_and_transfer_answers_and_labels_unseen=True,
@@ -136,8 +152,10 @@ def verify_shadow_source_receipts(shadow_rows, calibrations, pools):
     for row in calibrations:
         key = row["stage"], row["arm"], row["cell"]
         if (
-            key in calibration or key[0] not in STAGES
-            or key[1] not in ARMS or key[2] not in CELLS
+            key in calibration
+            or key[0] not in STAGES
+            or key[1] not in ARMS
+            or key[2] not in CELLS
             or row["status"] not in ("succeeded", "failed")
         ):
             raise ValueError("duplicated or unregistered TRAIN scale checkpoint")
@@ -146,7 +164,8 @@ def verify_shadow_source_receipts(shadow_rows, calibrations, pools):
             if (
                 info["winner_chosen_from_train_only"] is not True
                 or info["all_test_and_transfer_answers_and_labels_unseen"] is not True
-                or info["stage"] != key[0] or info["arm"] != key[1]
+                or info["stage"] != key[0]
+                or info["arm"] != key[1]
                 or info["cell"] != key[2]
                 or info["chosen_scale"] not in GRID
                 or not isinstance(row["checkpoint_head_sha256"], str)
@@ -163,9 +182,11 @@ def verify_shadow_source_receipts(shadow_rows, calibrations, pools):
         cell = row["cell"]
         calib = calibration.get((key[0], key[3], cell))
         if (
-            key in seen or key[0] not in STAGES or key[1] not in
-            ("select", "retention", "test", "transfer")
-            or key[3] not in ARMS or cell not in CELLS
+            key in seen
+            or key[0] not in STAGES
+            or key[1] not in ("select", "retention", "test", "transfer")
+            or key[3] not in ARMS
+            or cell not in CELLS
             or row["status"] not in ("succeeded", "failed")
             or calib is None
         ):
@@ -182,14 +203,15 @@ def verify_shadow_source_receipts(shadow_rows, calibrations, pools):
         winner, frozen = row["selected_index"], row["frozen_index"]
         if (
             not candidates
-            or type(winner) is not int or type(frozen) is not int
+            or type(winner) is not int
+            or type(frozen) is not int
             or not 0 <= winner < len(candidates)
             or not 0 <= frozen < len(candidates)
             or row["chosen_scale"] != calib["receipt"]["chosen_scale"]
             or row["head_sha256"] != calib["checkpoint_head_sha256"]
             or row["original_pool_digest"] != pool.seal()
-            or row["candidate_identity_sha256"] !=
-            _pin(tuple(w.identity() for w in candidates))
+            or row["candidate_identity_sha256"]
+            != _pin(tuple(w.identity() for w in candidates))
             or row["selected_source_id"] != candidates[winner].source_id
             or row["frozen_selected_source_id"] != candidates[frozen].source_id
             or type(row["changed_frozen_top1"]) is not bool
@@ -217,22 +239,22 @@ def summarize_shadow_heldout(shadow_rows, phase_questions, registered_routes, ta
     expected = {
         (stage, phase, qid, arm)
         for stage in (16, 32, 48)
-        for phase in phases for qid in phase_questions[phase]
+        for phase in phases
+        for qid in phase_questions[phase]
         for arm in ARMS
     }
     if (
         any(len(phase_questions[p]) != 8 for p in phases)
         or len(expected) != 480
-        or set(targets) != {
-            qid for phase in phases for qid in phase_questions[phase]
-        }
+        or set(targets) != {qid for phase in phases for qid in phase_questions[phase]}
     ):
         raise ValueError("shadow 480-choice preregistration incomplete")
     seen, grouped = set(), defaultdict(list)
     for row in shadow_rows:
         key = row["stage"], row["phase"], row["question_id"], row["arm"]
         if (
-            key not in expected or key in seen
+            key not in expected
+            or key in seen
             or registered_routes[key[2]] != row["cell"]
             or row["status"] not in ("succeeded", "failed")
         ):
@@ -248,11 +270,14 @@ def summarize_shadow_heldout(shadow_rows, phase_questions, registered_routes, ta
         support, baseline_support = None, None
         if cls == "answerable-native-source" and row["status"] == "succeeded":
             choice, baseline = (
-                row["selected_source_id"], row["frozen_selected_source_id"]
+                row["selected_source_id"],
+                row["frozen_selected_source_id"],
             )
             if (
-                not isinstance(choice, str) or not choice
-                or not isinstance(baseline, str) or not baseline
+                not isinstance(choice, str)
+                or not choice
+                or not isinstance(baseline, str)
+                or not baseline
             ):
                 raise ValueError("unbound original and shadow source identities")
             original_sources = {source_id(s) for s in target.evidence}
@@ -260,7 +285,9 @@ def summarize_shadow_heldout(shadow_rows, phase_questions, registered_routes, ta
             baseline_support = int(source_id(baseline) in original_sources)
         grouped[(row["stage"], row["arm"], row["cell"], row["phase"])].append(
             dict(
-                status=row["status"], category=cls, scored_support=support,
+                status=row["status"],
+                category=cls,
+                scored_support=support,
                 baseline_support=baseline_support,
                 changed_top1=row.get("changed_frozen_top1"),
             )
@@ -283,23 +310,15 @@ def summarize_shadow_heldout(shadow_rows, phase_questions, registered_routes, ta
                 x["category"] == "native-support-unresolved" for x in rows
             ),
             source_scored=sum(x["scored_support"] is not None for x in rows),
-            native_weak_source_correct=sum(
-                x["scored_support"] == 1 for x in rows
-            ),
-            frozen_weak_source_correct=sum(
-                x["baseline_support"] == 1 for x in rows
-            ),
+            native_weak_source_correct=sum(x["scored_support"] == 1 for x in rows),
+            frozen_weak_source_correct=sum(x["baseline_support"] == 1 for x in rows),
             shadow_weak_source_gains=sum(
-                x["baseline_support"] == 0 and x["scored_support"] == 1
-                for x in rows
+                x["baseline_support"] == 0 and x["scored_support"] == 1 for x in rows
             ),
             shadow_weak_source_regressions=sum(
-                x["baseline_support"] == 1 and x["scored_support"] == 0
-                for x in rows
+                x["baseline_support"] == 1 and x["scored_support"] == 0 for x in rows
             ),
-            changed_source_top1=sum(
-                x["changed_top1"] is True for x in rows
-            ),
+            changed_source_top1=sum(x["changed_top1"] is True for x in rows),
             semantic_entailment_judged=False,
             reader_called_for_shadow=False,
         )

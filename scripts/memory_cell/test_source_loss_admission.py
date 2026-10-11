@@ -63,16 +63,16 @@ class SourceLossAdmissionTests(unittest.TestCase):
         )
 
     def test_exact_source_model_and_optimizer_parity_admitted(self):
-        self.assertEqual(self.admit(), hashlib.sha256(self.file.read_bytes()).hexdigest())
+        self.assertEqual(
+            self.admit(), hashlib.sha256(self.file.read_bytes()).hexdigest()
+        )
         self.assertIsNone(require_parity("full", None, None, **self.arguments))
 
     def test_full_path_does_not_accept_a_spurious_receipt(self):
         with self.assertRaises(ValueError):
             require_parity("full", self.file, "1" * 64, **self.arguments)
         with self.assertRaises(ValueError):
-            require_parity(
-                "supervised_positions", None, None, **self.arguments
-            )
+            require_parity("supervised_positions", None, None, **self.arguments)
         with self.assertRaises(ValueError):
             require_parity("unknown", None, None, **self.arguments)
 
@@ -126,17 +126,20 @@ class SourceLossAdmissionTests(unittest.TestCase):
         link.symlink_to(self.file)
         with self.assertRaises(ValueError):
             require_parity(
-                "supervised_positions", link,
+                "supervised_positions",
+                link,
                 hashlib.sha256(self.file.read_bytes()).hexdigest(),
                 **self.arguments,
             )
 
-
     def test_source_two_hop_requires_a_separate_actual_parity_receipt(self):
         with self.assertRaisesRegex(ValueError, "source-two-hop optimization"):
             require_parity(
-                "supervised_positions", None, None,
-                curriculum="source_two_hop", **self.arguments
+                "supervised_positions",
+                None,
+                None,
+                curriculum="source_two_hop",
+                **self.arguments,
             )
         self.assertIsNone(
             require_parity(

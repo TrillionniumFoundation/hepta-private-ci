@@ -38,7 +38,12 @@ def conditional_nll(reader, prompt, completion, arm):
     from grounded_protocol import completion_ids
     from source_completion_loss import completion_loss
 
-    if arm not in ARMS or not prompt or not isinstance(completion, str) or not completion:
+    if (
+        arm not in ARMS
+        or not prompt
+        or not isinstance(completion, str)
+        or not completion
+    ):
         raise ValueError("bounded real likelihood input required")
     ids, labels = completion_ids(reader.tokenizer, prompt, completion, maximum=2112)
     started = time.perf_counter()
@@ -59,7 +64,10 @@ def conditional_nll(reader, prompt, completion, arm):
 
 def _valid_score(result, prefix):
     if not isinstance(result, dict) or set(result) != {
-        "mean_nll", "input_tokens", "supervised_tokens", "seconds"
+        "mean_nll",
+        "input_tokens",
+        "supervised_tokens",
+        "seconds",
     }:
         raise ValueError("incomplete conditional likelihood receipt")
     if (
@@ -79,21 +87,33 @@ def _valid_score(result, prefix):
 
 
 def summarize(rows, scopes):
-    expected = {(wording, scope, arm, completion)
-                for wording in WORDINGS for scope in scopes
-                for arm in ARMS for completion in COMPLETIONS}
+    expected = {
+        (wording, scope, arm, completion)
+        for wording in WORDINGS
+        for scope in scopes
+        for arm in ARMS
+        for completion in COMPLETIONS
+    }
     keys = [(r["wording"], r["scope"], r["arm"], r["completion_kind"]) for r in rows]
-    if len(rows) != len(expected) or len(set(keys)) != len(keys) or set(keys) != expected:
+    if (
+        len(rows) != len(expected)
+        or len(set(keys)) != len(keys)
+        or set(keys) != expected
+    ):
         raise ValueError("incomplete original likelihood comparison census")
-    grouped = {(r["wording"], r["scope"], r["arm"], r["completion_kind"]): r
-               for r in rows}
+    grouped = {
+        (r["wording"], r["scope"], r["arm"], r["completion_kind"]): r for r in rows
+    }
     result = {}
     for wording in WORDINGS:
         full = improved_target = improved_margin = 0
         target_change = margin_change = 0.0
         for scope in scopes:
-            subset = [grouped[(wording, scope, arm, kind)]
-                      for arm in ARMS for kind in COMPLETIONS]
+            subset = [
+                grouped[(wording, scope, arm, kind)]
+                for arm in ARMS
+                for kind in COMPLETIONS
+            ]
             if len({r["prompt_sha256"] for r in subset}) != 1:
                 raise ValueError("base and adapter did not score the same question")
             if any(r["status"] != "succeeded" for r in subset):
@@ -121,16 +141,26 @@ def summarize(rows, scopes):
     return result
 
 
-def probe(reader, documents, output, *,
-          snapshot_sha, writer_source, source_commit,
-          maximum=MAX_SCOPES, scorer=conditional_nll, training=None):
+def probe(
+    reader,
+    documents,
+    output,
+    *,
+    snapshot_sha,
+    writer_source,
+    source_commit,
+    maximum=MAX_SCOPES,
+    scorer=conditional_nll,
+    training=None,
+):
     if (
         output.exists()
         or not re.fullmatch(r"[0-9a-f]{64}", snapshot_sha)
         or not re.fullmatch(r"[0-9a-f]{40}", writer_source)
         or not re.fullmatch(r"[0-9a-f]{40}", source_commit)
         or not callable(scorer)
-        or type(maximum) is not int or not 1 <= maximum <= MAX_SCOPES
+        or type(maximum) is not int
+        or not 1 <= maximum <= MAX_SCOPES
         or {d.root for d in documents} != reader.roots
         or {d.scope for d in documents} != reader.scopes
     ):
@@ -142,7 +172,8 @@ def probe(reader, documents, output, *,
 
     exposure, exposure_digest = (
         verified_visits(documents, reader.tokenizer, training)
-        if training is not None else (None, None)
+        if training is not None
+        else (None, None)
     )
     original_questions = tuple(ex["query"]["identity"] for ex in examples)
     if exposure is not None and not set(original_questions).issubset(exposure):
@@ -156,12 +187,17 @@ def probe(reader, documents, output, *,
     prompts = []
     for wording in WORDINGS:
         for ex in examples:
-            question = (Question(**ex["query"]) if wording == "training"
-                        else paraphrase_writer_question(ex))
+            question = (
+                Question(**ex["query"])
+                if wording == "training"
+                else paraphrase_writer_question(ex)
+            )
             prompt = render(reader.tokenizer, question, [], [])
             original_id = ex["query"]["identity"]
             index = original_questions.index(original_id)
-            prompts.append((wording, question, prompt, ex["target"], original_id, visits[index]))
+            prompts.append(
+                (wording, question, prompt, ex["target"], original_id, visits[index])
+            )
     # Pin the question/prompt identities before opening the diagnostic target.
     plan = dict(
         schema="hepta.source-recall-likelihood.plan.v1",
@@ -177,10 +213,17 @@ def probe(reader, documents, output, *,
         training_schedule_sha256=exposure_digest,
         source_question_optimizer_visits=list(visits),
         unvisited_question_is_not_independent_holdout=True,
-        questions=[dict(wording=w, question=asdict(q),
-                        prompt_sha256=digest(p), target_digest=digest(target),
-                        training_question_id=original_id, optimizer_visits=count)
-                   for w, q, p, target, original_id, count in prompts],
+        questions=[
+            dict(
+                wording=w,
+                question=asdict(q),
+                prompt_sha256=digest(p),
+                target_digest=digest(target),
+                training_question_id=original_id,
+                optimizer_visits=count,
+            )
+            for w, q, p, target, original_id, count in prompts
+        ],
         unresolved_source_facts=len(dispositions),
         all_evidence_views_empty=True,
         teacher_forced_reference_only_for_diagnostic=True,
@@ -216,11 +259,13 @@ def probe(reader, documents, output, *,
                         row.update(status="succeeded", **receipt)
                     except Exception as error:
                         row.update(
-                            status="failed", error_type=type(error).__name__,
-                            error=str(error)[:512]
+                            status="failed",
+                            error_type=type(error).__name__,
+                            error=str(error)[:512],
                         )
-                    stream.write(json.dumps(row, ensure_ascii=False, allow_nan=False)
-                                 + "\n")
+                    stream.write(
+                        json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                    )
                     stream.flush()
                     os.fsync(stream.fileno())
                     rows.append(row)
@@ -229,8 +274,18 @@ def probe(reader, documents, output, *,
     by_exposure = {}
     for category in ("visited", "unvisited", "unknown"):
         scoped = tuple(
-            scope for scope, count in zip(scopes, visits, strict=True)
-            if (("unknown" if count is None else "visited" if count > 0 else "unvisited") == category)
+            scope
+            for scope, count in zip(scopes, visits, strict=True)
+            if (
+                (
+                    "unknown"
+                    if count is None
+                    else "visited"
+                    if count > 0
+                    else "unvisited"
+                )
+                == category
+            )
         )
         scoped_set = set(scoped)
         by_exposure[category] = summarize(
@@ -302,7 +357,8 @@ def main():
         args.model / "reader", expected_inventory=ready["base_identity"]
     )
     LoRAReader.load_candidate(
-        reader, args.snapshot / "adapter",
+        reader,
+        args.snapshot / "adapter",
         expected_manifest_sha256=ready["manifest_sha"],
         scope=reader.scope,
         allowed_roots={d.root for d in docs},
@@ -314,7 +370,9 @@ def main():
     if reader.profile != ready["reader_profile"]:
         raise ValueError("source reader prompt profile drift")
     return probe(
-        reader, docs, args.output,
+        reader,
+        docs,
+        args.output,
         snapshot_sha=args.ready_sha,
         writer_source=ready["writer_source"],
         source_commit=args.source_commit,

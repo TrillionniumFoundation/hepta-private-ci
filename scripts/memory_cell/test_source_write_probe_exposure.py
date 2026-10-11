@@ -54,7 +54,9 @@ class ProbeExposureTests(unittest.TestCase):
                 revoked=set(),
             )
         prepared, plan = prepare(
-            self.tokenizer, examples, maximum_steps=maximum_steps,
+            self.tokenizer,
+            examples,
+            maximum_steps=maximum_steps,
             token_ceiling=65536,
         )
         return dict(
@@ -68,7 +70,10 @@ class ProbeExposureTests(unittest.TestCase):
             write_schedule=plan,
             training_digest=digest((examples, prepared)),
             write_curriculum_coverage=audit_coverage(
-                examples, prepared, plan, curriculum=curriculum,
+                examples,
+                prepared,
+                plan,
+                curriculum=curriculum,
             ),
             steps=plan["planned_steps"],
             losses=[1.0] * plan["planned_steps"],
@@ -78,7 +83,9 @@ class ProbeExposureTests(unittest.TestCase):
 
     def test_unvisited_scope_not_mislabeled_training_recall(self):
         visits, schedule_digest = verified_visits(
-            self.docs, self.tokenizer, self.training,
+            self.docs,
+            self.tokenizer,
+            self.training,
         )
         self.assertEqual(len(visits), 2)
         self.assertEqual(sorted(visits.values()), [0, 1])
@@ -99,8 +106,15 @@ class ProbeExposureTests(unittest.TestCase):
 
     def test_tampering_training_receipt_or_source_fails_closed(self):
         for name in (
-            "visits", "schedule", "training_digest", "steps", "tokens",
-            "source_supervision", "loss", "roots", "curriculum_coverage",
+            "visits",
+            "schedule",
+            "training_digest",
+            "steps",
+            "tokens",
+            "source_supervision",
+            "loss",
+            "roots",
+            "curriculum_coverage",
         ):
             with self.subTest(name=name):
                 training = deepcopy(self.training)
@@ -160,24 +174,34 @@ class ProbeIntegrationTests(unittest.TestCase):
             tokenizer, examples, maximum_steps=1, token_ceiling=65536
         )
         training = dict(
-            revision=2, curriculum="single_hop",
-            roots=sorted({d.root for d in docs}), scopes=schedule["scopes"],
-            source_supervision=examples, dispositions=dispositions,
-            curriculum_receipt=None, write_schedule=schedule,
+            revision=2,
+            curriculum="single_hop",
+            roots=sorted({d.root for d in docs}),
+            scopes=schedule["scopes"],
+            source_supervision=examples,
+            dispositions=dispositions,
+            curriculum_receipt=None,
+            write_schedule=schedule,
             training_digest=digest((examples, prepared)),
             write_curriculum_coverage=audit_coverage(
                 examples, prepared, schedule, curriculum="single_hop"
             ),
-            steps=1, losses=[1.0], input_tokens=schedule["planned_input_tokens"],
+            steps=1,
+            losses=[1.0],
+            input_tokens=schedule["planned_input_tokens"],
             supervised_tokens=schedule["planned_supervised_tokens"],
         )
         reader = FakeReader(docs)
         reader.tokenizer = tokenizer
         with tempfile.TemporaryDirectory() as directory:
             result = probe(
-                reader, docs, Path(directory) / "probe",
-                snapshot_sha="a" * 64, writer_source="b" * 40,
-                source_commit="c" * 40, training=training,
+                reader,
+                docs,
+                Path(directory) / "probe",
+                snapshot_sha="a" * 64,
+                writer_source="b" * 40,
+                source_commit="c" * 40,
+                training=training,
                 generate=lambda *_: ("no match", 2, 0.1),
             )
             self.assertTrue(result["training_exposure_verified"])
@@ -186,9 +210,9 @@ class ProbeIntegrationTests(unittest.TestCase):
             self.assertFalse(result["input_is_trained_source_question"])
             lines = [
                 json.loads(line)
-                for line in (
-                    Path(directory) / "probe" / "raw-answers.jsonl"
-                ).read_text().splitlines()
+                for line in (Path(directory) / "probe" / "raw-answers.jsonl")
+                .read_text()
+                .splitlines()
             ]
             self.assertEqual(
                 sorted({r["source_example_optimizer_visits"] for r in lines}), [0, 1]

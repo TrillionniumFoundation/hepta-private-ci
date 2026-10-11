@@ -148,7 +148,9 @@ class StemHead(nn.Module):
             or not cut.admission_digest
             or self.roots.intersection(revoked | cut.forbidden_roots)
         ):
-            raise ValueError("unavailable session, inference-mode training or invalid cumulative budget")
+            raise ValueError(
+                "unavailable session, inference-mode training or invalid cumulative budget"
+            )
         seen, admitted_roots = set(), set(self.roots)
         for row in rows:
             f = row.features

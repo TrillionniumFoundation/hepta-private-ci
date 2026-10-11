@@ -27,50 +27,67 @@ def _logsumexp(values):
 
 
 def train_probe(
-    encoder_logits, checkpoint_logits, positive_indices, *,
-    fit_strategy, original_frozen_logits=None, encoder_adapted=False,
+    encoder_logits,
+    checkpoint_logits,
+    positive_indices,
+    *,
+    fit_strategy,
+    original_frozen_logits=None,
+    encoder_adapted=False,
 ):
     """Three-way weak-label probe on a single admitted TRAIN candidate pool.
 
     Native frozen versus adapted Encoder versus adapted Encoder plus Head.
     This is NOT a before/after trajectory for the same Head checkpoint.
     """
-    original = encoder_logits if original_frozen_logits is None else original_frozen_logits
+    original = (
+        encoder_logits if original_frozen_logits is None else original_frozen_logits
+    )
     if (
         fit_strategy not in ("sgd", "prototype", "frozen")
         or type(encoder_adapted) is not bool
         or not 1 <= len(encoder_logits) <= 65
         or len(original) != len(encoder_logits)
         or len(checkpoint_logits) != len(encoder_logits)
-        or any(type(v) not in (int, float) or not math.isfinite(v)
-               for v in (*original, *encoder_logits, *checkpoint_logits))
+        or any(
+            type(v) not in (int, float) or not math.isfinite(v)
+            for v in (*original, *encoder_logits, *checkpoint_logits)
+        )
         or len(set(positive_indices)) != len(positive_indices)
-        or any(type(n) is not int or not 0 <= n < len(encoder_logits) - 1
-               for n in positive_indices)
-        or (encoder_adapted and (
-            original_frozen_logits is None or fit_strategy != "sgd"
-        ))
+        or any(
+            type(n) is not int or not 0 <= n < len(encoder_logits) - 1
+            for n in positive_indices
+        )
+        or (
+            encoder_adapted
+            and (original_frozen_logits is None or fit_strategy != "sgd")
+        )
         or (fit_strategy != "sgd" and encoder_adapted)
         or (not encoder_adapted and list(original) != list(encoder_logits))
-        or (fit_strategy == "frozen" and
-            list(encoder_logits) != list(checkpoint_logits))
+        or (
+            fit_strategy == "frozen" and list(encoder_logits) != list(checkpoint_logits)
+        )
     ):
         raise ValueError("invalid or unbound three-way weak-label probe")
     n = len(encoder_logits) - 1
     positives = tuple(positive_indices) or (n,)
+
     def loss(scores):
         return _logsumexp(scores) - _logsumexp([scores[k] for k in positives])
 
     competitors = [k for k in range(n + 1) if k not in positives]
+
     def margin(scores):
         return (
-            max(scores[k] for k in positives)
-            - max(scores[k] for k in competitors)
-            if competitors else None
+            max(scores[k] for k in positives) - max(scores[k] for k in competitors)
+            if competitors
+            else None
         )
 
     original_loss, encoder_loss, learned_loss = (
-        loss(original), loss(encoder_logits), loss(checkpoint_logits)
+        loss(original),
+        loss(encoder_logits),
+        loss(checkpoint_logits),
     )
     return dict(
         schema="hepta.stem-weak-training-probe.v3",
@@ -135,15 +152,18 @@ def summarize_train_probes(records):
             no_candidate_sgd_step=sum(x["no_candidate_sgd_step"] for x in rows),
             native_diagnostic_loss_mean=(
                 math.fsum(x["frozen_weak_label_loss"] for x in rows) / len(rows)
-                if rows else None
+                if rows
+                else None
             ),
             checkpoint_diagnostic_loss_mean=(
                 math.fsum(x["learned_weak_label_loss"] for x in rows) / len(rows)
-                if rows else None
+                if rows
+                else None
             ),
             encoder_only_diagnostic_loss_mean=(
                 math.fsum(x["encoder_only_weak_label_loss"] for x in rows) / len(rows)
-                if rows else None
+                if rows
+                else None
             ),
             encoder_adapted_observations=sum(x["encoder_adapted"] for x in rows),
             encoder_only_loss_lower_than_original=sum(

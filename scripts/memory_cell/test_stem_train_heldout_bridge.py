@@ -5,8 +5,14 @@ import unittest
 from native import Target
 from stem_train_heldout_bridge import train_to_heldout_gap
 
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
+)
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
 CELLS = ("general", "temporal")
@@ -14,14 +20,15 @@ CELLS = ("general", "temporal")
 
 def fixture():
     questions = {"train": [f"train-{i}" for i in range(48)]}
-    questions.update({
-        phase: [f"{phase}-{i}" for i in range(8)] for phase in PHASES
-    })
-    routes = {q: CELLS[i % 2] for group in questions.values()
-              for i, q in enumerate(group)}
+    questions.update({phase: [f"{phase}-{i}" for i in range(8)] for phase in PHASES})
+    routes = {
+        q: CELLS[i % 2] for group in questions.values() for i, q in enumerate(group)
+    }
     plan = dict(
-        questions=questions, routes=routes,
-        arms=list(ARMS), curriculum_attempted_examples=list(STAGES),
+        questions=questions,
+        routes=routes,
+        arms=list(ARMS),
+        curriculum_attempted_examples=list(STAGES),
         cells=list(CELLS),
     )
     scored = []
@@ -29,36 +36,49 @@ def fixture():
         for phase in PHASES:
             for qid in questions[phase]:
                 for arm in ARMS:
-                    scored.append(dict(
-                        stage=stage, phase=phase, question_id=qid, arm=arm,
-                        status="succeeded", cell=routes[qid],
-                        family="native-family-" + qid,
-                        selected=0,
-                        pool_digest="sealed-" + qid,
-                        source_choice_correct=0,
-                        diagnostic_answer_f1=0.25,
-                        answer="fixture answer",
-                        receipt=dict(
-                            generator_identity="pinned-reader",
-                            generator_profile="pinned-reader-prompt",
-                            observable_query=dict(
-                                identity=qid, content="Fixture question.",
-                                observed_at="2024-01-01", scope="scope-" + qid,
+                    scored.append(
+                        dict(
+                            stage=stage,
+                            phase=phase,
+                            question_id=qid,
+                            arm=arm,
+                            status="succeeded",
+                            cell=routes[qid],
+                            family="native-family-" + qid,
+                            selected=0,
+                            pool_digest="sealed-" + qid,
+                            source_choice_correct=0,
+                            diagnostic_answer_f1=0.25,
+                            answer="fixture answer",
+                            receipt=dict(
+                                generator_identity="pinned-reader",
+                                generator_profile="pinned-reader-prompt",
+                                observable_query=dict(
+                                    identity=qid,
+                                    content="Fixture question.",
+                                    observed_at="2024-01-01",
+                                    scope="scope-" + qid,
+                                ),
                             ),
-                        ),
-                    ))
+                        )
+                    )
     learning = []
     for stage in STAGES:
         for arm in ARMS:
             for cell in CELLS:
                 h = dict(
-                    stage=stage, arm=arm, cell=cell,
-                    status="succeeded", before_sha256="a"*64,
-                    after_sha256="b"*64,
+                    stage=stage,
+                    arm=arm,
+                    cell=cell,
+                    status="succeeded",
+                    before_sha256="a" * 64,
+                    after_sha256="b" * 64,
                 )
                 if arm != "frozen_rerank":
                     h["within_train_fit_dynamics"] = dict(
-                        checkpoint=stage, arm=arm, cell=cell,
+                        checkpoint=stage,
+                        arm=arm,
+                        cell=cell,
                         previous_head_sha256=h["before_sha256"],
                         updated_head_sha256=h["after_sha256"],
                         heldout_annotations_consulted=False,
@@ -71,7 +91,8 @@ def fixture():
                 learning.append(h)
     targets = {
         q: Target("fixture answer", "fixture", ("native-source-" + q,), False)
-        for phase in PHASES for q in questions[phase]
+        for phase in PHASES
+        for q in questions[phase]
     }
     return plan, learning, scored, targets
 
@@ -90,11 +111,16 @@ class GeneralizationBridgeTests(unittest.TestCase):
         self.assertFalse(arm["authentic_independent_generalization"])
         self.assertFalse(result["production_accepted"])
 
-    def test_one_heldout_supported_selection_gain_is_not_fabricated_for_other_arms(self):
+    def test_one_heldout_supported_selection_gain_is_not_fabricated_for_other_arms(
+        self,
+    ):
         plan, learning, scored, targets = fixture()
         changed = next(
-            row for row in scored if row["stage"] == 48
-            and row["phase"] == "test" and row["question_id"] == "test-0"
+            row
+            for row in scored
+            if row["stage"] == 48
+            and row["phase"] == "test"
+            and row["question_id"] == "test-0"
             and row["arm"] == "gated"
         )
         changed["selected"] = 1
@@ -114,9 +140,14 @@ class GeneralizationBridgeTests(unittest.TestCase):
 
     def test_reader_failure_does_not_erase_observed_selector_choice(self):
         plan, learning, scored, targets = fixture()
-        x = next(row for row in scored if row["stage"] == 48
-                 and row["phase"] == "test" and row["question_id"] == "test-0"
-                 and row["arm"] == "gated")
+        x = next(
+            row
+            for row in scored
+            if row["stage"] == 48
+            and row["phase"] == "test"
+            and row["question_id"] == "test-0"
+            and row["arm"] == "gated"
+        )
         x["status"] = "failed"
         x.pop("diagnostic_answer_f1")
         x["source_choice_correct"] = 1
@@ -133,11 +164,15 @@ class GeneralizationBridgeTests(unittest.TestCase):
         plan, learning, scored, targets = fixture()
         for row in scored:
             if (row["stage"], row["phase"], row["question_id"]) == (
-                48, "transfer", "transfer-0"
+                48,
+                "transfer",
+                "transfer-0",
             ):
                 row["source_choice_correct"] = None
         result = train_to_heldout_gap(plan, learning, scored, targets)
-        summary = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"]["transfer"]
+        summary = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"][
+            "transfer"
+        ]
         self.assertEqual(summary["planned"], 4)
         self.assertEqual(summary["source_compared"], 3)
         self.assertEqual(summary["source_unresolved_or_unselected"], 1)
@@ -150,8 +185,11 @@ class GeneralizationBridgeTests(unittest.TestCase):
         ):
             plan, learning, scored, targets = fixture()
             candidate = next(
-                x for x in scored if x["stage"] == 16
-                and x["phase"] == "test" and x["question_id"] == "test-0"
+                x
+                for x in scored
+                if x["stage"] == 16
+                and x["phase"] == "test"
+                and x["question_id"] == "test-0"
                 and x["arm"] == "gated"
             )
             candidate[field] = value
@@ -187,9 +225,14 @@ class GeneralizationBridgeTests(unittest.TestCase):
     def test_forged_abstention_correctness_is_rejected(self):
         plan, learning, scored, targets = fixture()
         targets["test-0"] = Target(None, "native-abs", (), True)
-        learned = next(x for x in scored if x["stage"] == 48
-                       and x["phase"] == "test" and x["question_id"] == "test-0"
-                       and x["arm"] == "gated")
+        learned = next(
+            x
+            for x in scored
+            if x["stage"] == 48
+            and x["phase"] == "test"
+            and x["question_id"] == "test-0"
+            and x["arm"] == "gated"
+        )
         learned["source_choice_correct"] = 1
         with self.assertRaisesRegex(ValueError, "abstention label"):
             train_to_heldout_gap(plan, learning, scored, targets)
@@ -200,7 +243,9 @@ class GeneralizationBridgeTests(unittest.TestCase):
             "answer", "fixture", (), False, ("unresolved-source",)
         )
         result = train_to_heldout_gap(plan, learning, scored, targets)
-        transfer = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"]["transfer"]
+        transfer = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"][
+            "transfer"
+        ]
         self.assertEqual(transfer["planned"], 4)
         self.assertEqual(transfer["native_support_unresolved_rows"], 1)
         self.assertEqual(transfer["source_compared"], 3)
@@ -223,16 +268,20 @@ class GeneralizationBridgeTests(unittest.TestCase):
         ):
             plan, learning, scored, targets = fixture()
             learned = next(
-                x for x in scored if x["stage"] == 48
-                and x["phase"] == "test" and x["question_id"] == "test-0"
+                x
+                for x in scored
+                if x["stage"] == 48
+                and x["phase"] == "test"
+                and x["question_id"] == "test-0"
                 and x["arm"] == "gated"
             )
             if drift == "wrong-question":
                 learned["receipt"][key]["identity"] = "test-1"
             else:
                 learned["receipt"][key] = drift
-            with self.subTest(drift=drift), self.assertRaisesRegex(
-                ValueError, "Reader model/prompt/query"
+            with (
+                self.subTest(drift=drift),
+                self.assertRaisesRegex(ValueError, "Reader model/prompt/query"),
             ):
                 train_to_heldout_gap(plan, learning, scored, targets)
 
@@ -245,8 +294,9 @@ class GeneralizationBridgeTests(unittest.TestCase):
                 probe["previous_head_sha256"] = "c" * 64
             else:
                 probe["heldout_annotations_consulted"] = True
-            with self.subTest(corruption=corruption), self.assertRaisesRegex(
-                ValueError, "TRAIN-only"
+            with (
+                self.subTest(corruption=corruption),
+                self.assertRaisesRegex(ValueError, "TRAIN-only"),
             ):
                 train_to_heldout_gap(plan, learning, scored, targets)
 

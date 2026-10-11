@@ -12,12 +12,11 @@ from sessions import source_id
 PHASES = ("select", "retention", "test", "transfer")
 
 
-def retrospective_pool_ceiling(phase_questions, pools, targets,
-                               source_families, scored_policies,
-                               *, final_stage=48):
+def retrospective_pool_ceiling(
+    phase_questions, pools, targets, source_families, scored_policies, *, final_stage=48
+):
     registered = {
-        (phase, q.identity): q for phase in PHASES
-        for q in phase_questions[phase]
+        (phase, q.identity): q for phase in PHASES for q in phase_questions[phase]
     }
     all_ids = [q.identity for phase in PHASES for q in phase_questions[phase]]
     if (
@@ -43,9 +42,9 @@ def retrospective_pool_ceiling(phase_questions, pools, targets,
     for key, q in registered.items():
         phase, qid = key
         t, f = targets[qid], frozen[key]
-        if (
-            f["family"] != source_families[qid]
-            or f["status"] not in ("succeeded", "failed")
+        if f["family"] != source_families[qid] or f["status"] not in (
+            "succeeded",
+            "failed",
         ):
             raise ValueError("family or status differs from registered policy")
         pool = pools.get(qid)
@@ -55,26 +54,33 @@ def retrospective_pool_ceiling(phase_questions, pools, targets,
                 raise ValueError("cross-scope candidate pool in retrospective audit")
             source_ids = {source_id(x) for x in t.evidence}
             supported_indices = tuple(
-                i for i, w in enumerate(pool.windows)
+                i
+                for i, w in enumerate(pool.windows)
                 if source_id(w.source_id) in source_ids
             )
         valid = not t.unanswerable and bool(t.evidence) and not t.unresolved_evidence
         selected = f.get("selected")
         if selected is not None and (
-            pool is None or type(selected) is not int
+            pool is None
+            or type(selected) is not int
             or not 0 <= selected < len(pool.windows)
         ):
             raise ValueError("selected candidate detached from fixed pool")
         if (
             f["status"] == "succeeded"
-            and pool is not None and pool.windows and selected is None
+            and pool is not None
+            and pool.windows
+            and selected is None
         ):
             raise ValueError("successful frozen policy omitted forced-top1 selection")
         if "pool_digest" in f and pool is not None and f["pool_digest"] != pool.seal():
             raise ValueError("fixed candidate pool was rewritten after answering")
         possible = bool(supported_indices) if valid and pool is not None else None
-        picked = (selected in supported_indices
-                  if valid and selected is not None and pool is not None else None)
+        picked = (
+            selected in supported_indices
+            if valid and selected is not None and pool is not None
+            else None
+        )
         row = dict(
             phase=phase,
             question_id=qid,
@@ -92,8 +98,7 @@ def retrospective_pool_ceiling(phase_questions, pools, targets,
             frozen_failed_before_selection=selected is None,
             frozen_reader_execution_succeeded=f["status"] == "succeeded",
             missed_native_support_within_pool=(
-                bool(possible and picked is False)
-                if picked is not None else None
+                bool(possible and picked is False) if picked is not None else None
             ),
             source_content_or_gold_answers_exported=False,
             native_weak_support_not_window_entailment=True,
@@ -111,7 +116,9 @@ def retrospective_pool_ceiling(phase_questions, pools, targets,
             attempted=len(group),
             native_source_resolved=len(resolved),
             native_unanswerable=sum(r["native_source_unanswerable"] for r in group),
-            native_unresolved_support=sum(r["unresolved_native_support"] for r in group),
+            native_unresolved_support=sum(
+                r["unresolved_native_support"] for r in group
+            ),
             candidate_pool_missing=sum(
                 not r["candidate_pool_available"] for r in group
             ),

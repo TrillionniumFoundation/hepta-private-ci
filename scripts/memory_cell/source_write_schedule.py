@@ -207,6 +207,8 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     preflight(
-        args.sources, args.output,
-        source_sha=args.source_sha, curriculum=args.curriculum,
+        args.sources,
+        args.output,
+        source_sha=args.source_sha,
+        curriculum=args.curriculum,
     )

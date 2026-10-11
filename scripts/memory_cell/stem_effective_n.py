@@ -14,17 +14,21 @@ import math
 STAGES = (16, 32, 48)
 PHASES = ("test", "transfer")
 CELLS = ("general", "temporal")
-ARMS = ("prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
-KINDS = ("answerable-native-document-support", "native-unanswerable",
-         "native-support-unresolved")
+ARMS = ("prototype", "linear", "gated", "lineage_lora_gated", "independent_lora_gated")
+KINDS = (
+    "answerable-native-document-support",
+    "native-unanswerable",
+    "native-support-unresolved",
+)
 
 
 def _bounds(values, planned):
     if not planned:
         raise ValueError("empty planned effective-N cohort")
-    if any(type(v) not in (int, float) or not math.isfinite(v)
-           or not -1 <= v <= 1 for v in values):
+    if any(
+        type(v) not in (int, float) or not math.isfinite(v) or not -1 <= v <= 1
+        for v in values
+    ):
         raise ValueError("invalid paired native effect")
     missing = planned - len(values)
     if missing < 0:
@@ -49,48 +53,47 @@ def effective_heldout_subjects(plan, paired_bridge):
         or any(len(questions[phase]) != 8 for phase in PHASES)
     ):
         raise ValueError("unbound native held-out paired cohort")
-    subjects = {
-        q: phase for phase in PHASES for q in questions[phase]
-    }
+    subjects = {q: phase for phase in PHASES for q in questions[phase]}
     if (
         len(subjects) != 16
         or len(set(questions["test"] + questions["transfer"])) != 16
         or not set(subjects).issubset(families)
         or not set(subjects).issubset(routes)
-        or any(routes[q] not in CELLS or not isinstance(families[q], str)
-               or not families[q] for q in subjects)
+        or any(
+            routes[q] not in CELLS
+            or not isinstance(families[q], str)
+            or not families[q]
+            for q in subjects
+        )
     ):
         raise ValueError("held-out question/family/route identities drifted")
     all_phases = ("train", "select", "retention", "test", "transfer")
     if any(
-        phase not in questions or any(
-            q not in families or not isinstance(families[q], str)
-            or not families[q] for q in questions[phase]
+        phase not in questions
+        or any(
+            q not in families or not isinstance(families[q], str) or not families[q]
+            for q in questions[phase]
         )
         for phase in all_phases
     ):
         raise ValueError("unregistered original source-family lineage")
     family_sets = {
-        phase: {families[q] for q in questions[phase]}
-        for phase in all_phases
+        phase: {families[q] for q in questions[phase]} for phase in all_phases
     }
     source_family_units = dict(
         test=len(family_sets["test"]),
         transfer=len(family_sets["transfer"]),
-        combined_test_transfer=len(
-            family_sets["test"] | family_sets["transfer"]
-        ),
+        combined_test_transfer=len(family_sets["test"] | family_sets["transfer"]),
         retention=len(family_sets["retention"]),
-        test_shared_with_retention=len(
-            family_sets["test"] & family_sets["retention"]
-        ),
-        test_new_beyond_retention=len(
-            family_sets["test"] - family_sets["retention"]
-        ),
+        test_shared_with_retention=len(family_sets["test"] & family_sets["retention"]),
+        test_new_beyond_retention=len(family_sets["test"] - family_sets["retention"]),
         transfer_shared_with_train_select_retention_test=len(
-            family_sets["transfer"] & (
-                family_sets["train"] | family_sets["select"]
-                | family_sets["retention"] | family_sets["test"]
+            family_sets["transfer"]
+            & (
+                family_sets["train"]
+                | family_sets["select"]
+                | family_sets["retention"]
+                | family_sets["test"]
             )
         ),
         test_is_unseen_source_family_vs_retention=(
@@ -105,7 +108,8 @@ def effective_heldout_subjects(plan, paired_bridge):
         raise ValueError("full three-stage repeated question panel required")
     expected = {
         (stage, arm, phase, q)
-        for stage in STAGES for arm in ARMS
+        for stage in STAGES
+        for arm in ARMS
         for q, phase in subjects.items()
     }
     indexed = {}
@@ -144,7 +148,8 @@ def effective_heldout_subjects(plan, paired_bridge):
         reader = row["matched_reader_request_identity"]
         if row["both_original_reader_calls_succeeded"]:
             if (
-                not isinstance(reader, (tuple, list)) or len(reader) != 3
+                not isinstance(reader, (tuple, list))
+                or len(reader) != 3
                 or any(not isinstance(v, str) or not v for v in reader)
             ):
                 raise ValueError("unbound matched Reader source/prompt/question")
@@ -161,19 +166,33 @@ def effective_heldout_subjects(plan, paired_bridge):
         gain = row["weak_support_gain"]
         abstain = row["native_abstention_gain"]
         if (
-            (gain is not None and
-             (cat != KINDS[0] or type(gain) is not int or gain not in (-1, 0, 1)))
-            or (abstain is not None and
-                (cat != KINDS[1] or type(abstain) is not int
-                 or abstain not in (-1, 0, 1)))
+            (
+                gain is not None
+                and (cat != KINDS[0] or type(gain) is not int or gain not in (-1, 0, 1))
+            )
+            or (
+                abstain is not None
+                and (
+                    cat != KINDS[1]
+                    or type(abstain) is not int
+                    or abstain not in (-1, 0, 1)
+                )
+            )
             or (cat == KINDS[2] and (gain is not None or abstain is not None))
         ):
-            raise ValueError("abstention or unresolved source laundered into source gain")
+            raise ValueError(
+                "abstention or unresolved source laundered into source gain"
+            )
         f1 = row["diagnostic_answer_f1_delta"]
         if (
-            (f1 is not None and
-             (type(f1) not in (int, float) or not math.isfinite(f1)
-              or not -1 <= f1 <= 1))
+            (
+                f1 is not None
+                and (
+                    type(f1) not in (int, float)
+                    or not math.isfinite(f1)
+                    or not -1 <= f1 <= 1
+                )
+            )
             or row["both_reader_answers_scored"] != (f1 is not None)
             or (f1 is not None and not row["both_original_reader_calls_succeeded"])
         ):
@@ -183,15 +202,27 @@ def effective_heldout_subjects(plan, paired_bridge):
         raise ValueError("missing native repeated observation or question category")
     report = {}
     for arm in ARMS:
-        stage48 = [indexed[(48, arm, subjects[q], q)]
-                   for q in questions["test"] + questions["transfer"]]
+        stage48 = [
+            indexed[(48, arm, subjects[q], q)]
+            for q in questions["test"] + questions["transfer"]
+        ]
+
         def summarize(cohort):
-            gain = [x["weak_support_gain"] for x in cohort
-                    if x["weak_support_gain"] is not None]
-            abstain = [x["native_abstention_gain"] for x in cohort
-                       if x["native_abstention_gain"] is not None]
-            answer = [x["diagnostic_answer_f1_delta"] for x in cohort
-                      if x["diagnostic_answer_f1_delta"] is not None]
+            gain = [
+                x["weak_support_gain"]
+                for x in cohort
+                if x["weak_support_gain"] is not None
+            ]
+            abstain = [
+                x["native_abstention_gain"]
+                for x in cohort
+                if x["native_abstention_gain"] is not None
+            ]
+            answer = [
+                x["diagnostic_answer_f1_delta"]
+                for x in cohort
+                if x["diagnostic_answer_f1_delta"] is not None
+            ]
             by_type = Counter(x["native_source_label_category"] for x in cohort)
             n = len(cohort)
             return dict(
@@ -227,19 +258,17 @@ def effective_heldout_subjects(plan, paired_bridge):
                 ),
                 reader_f1_all_planned_bounds=_bounds(answer, n),
             )
+
         per_phase = {
             phase: summarize([x for x in stage48 if x["phase"] == phase])
             for phase in PHASES
         }
         per_cell = {
-            cell: summarize([x for x in stage48 if x["cell"] == cell])
-            for cell in CELLS
+            cell: summarize([x for x in stage48 if x["cell"] == cell]) for cell in CELLS
         }
         repeat_panel = {}
         for q in questions["test"] + questions["transfer"]:
-            observations = [
-                indexed[(stage, arm, subjects[q], q)] for stage in STAGES
-            ]
+            observations = [indexed[(stage, arm, subjects[q], q)] for stage in STAGES]
             repeat_panel[q] = dict(
                 phase=subjects[q],
                 cell=routes[q],
@@ -252,8 +281,7 @@ def effective_heldout_subjects(plan, paired_bridge):
                     x["weak_support_gain"] == 1 for x in observations
                 ),
                 original_reader_both_succeeded_all_stages=all(
-                    x["both_original_reader_calls_succeeded"]
-                    for x in observations
+                    x["both_original_reader_calls_succeeded"] for x in observations
                 ),
             )
         report[arm] = dict(

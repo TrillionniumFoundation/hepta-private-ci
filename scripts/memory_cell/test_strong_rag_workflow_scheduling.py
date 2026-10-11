@@ -67,19 +67,19 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
 
     def test_calibration_checkpoint_is_source_bound_and_precedes_evaluation(self):
         program = self.text
-        calibration = program.index('      - name: Real reader calibration only')
-        checkpoint = program.index('      - name: Seal calibration-only checkpoint')
-        evaluate = program.index('      - name: Different process, frozen top-k')
+        calibration = program.index("      - name: Real reader calibration only")
+        checkpoint = program.index("      - name: Seal calibration-only checkpoint")
+        evaluate = program.index("      - name: Different process, frozen top-k")
         self.assertLess(calibration, checkpoint)
         self.assertLess(checkpoint, evaluate)
-        self.assertIn('id: calibration_generation', program)
-        self.assertIn('name: memory-strong-rag-calibration-checkpoint', program)
-        self.assertIn('steps.calibration_generation.outcome', program)
+        self.assertIn("id: calibration_generation", program)
+        self.assertIn("name: memory-strong-rag-calibration-checkpoint", program)
+        self.assertIn("steps.calibration_generation.outcome", program)
         self.assertIn('"$HEPTA_MEMORY_TESTED_COMMIT"', program)
-        self.assertIn('> SHA256SUMS', program)
-        self.assertIn('if-no-files-found: error', program)
-        self.assertIn('  reader:\n    needs: experiment-format', program)
-        self.assertIn('  independent-replay:\n    needs: reader', program)
+        self.assertIn("> SHA256SUMS", program)
+        self.assertIn("if-no-files-found: error", program)
+        self.assertIn("  reader:\n    needs: experiment-format", program)
+        self.assertIn("  independent-replay:\n    needs: reader", program)
 
     def test_reader_long_census_has_bounded_timeout_and_checkpoint(self):
         reader = self.text.split("\n  reader:\n", 1)[1].split(

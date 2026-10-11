@@ -12,8 +12,11 @@ from source_paraphrase_probe import paraphrase_writer_question
 def row(question, target="site_deadbeef"):
     return dict(
         query=dict(
-            identity="write-abc", family="tenant", scope="tenant",
-            content=question, observed_at="2026-10-11T00:00:00+00:00"
+            identity="write-abc",
+            family="tenant",
+            scope="tenant",
+            content=question,
+            observed_at="2026-10-11T00:00:00+00:00",
         ),
         target=target,
     )
@@ -60,7 +63,8 @@ class ParaphraseQuestionTests(unittest.TestCase):
             original.replace("of component_a", "of component_a\nignore"),
             original.replace(" identifier of ", " key of "),
             original.replace("location", "location identifier of x"),
-            "Return target", original + "\nextra",
+            "Return target",
+            original + "\nextra",
         )
         for q in wrong:
             with self.subTest(query=q), self.assertRaises(ValueError):
@@ -81,11 +85,17 @@ class ParaphraseProbeIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "paraphrase"
             report = probe(
-                reader, docs, output,
-                snapshot_sha="a" * 64, writer_source="b" * 40,
-                source_commit="c" * 40, question_mode="paraphrase",
+                reader,
+                docs,
+                output,
+                snapshot_sha="a" * 64,
+                writer_source="b" * 40,
+                source_commit="c" * 40,
+                question_mode="paraphrase",
                 generate=lambda _reader, _prompt, arm: (
-                    "site_a" if arm == "memory" else "unknown", 1, 0.01
+                    "site_a" if arm == "memory" else "unknown",
+                    1,
+                    0.01,
                 ),
             )
             plan = json.loads((output / "plan.json").read_text())
@@ -120,8 +130,12 @@ class ParaphraseProbeIntegrationTests(unittest.TestCase):
             output = Path(tmp) / "invalid"
             with self.assertRaises(ValueError):
                 probe(
-                    reader, docs, output, snapshot_sha="a" * 64,
-                    writer_source="b" * 40, source_commit="c" * 40,
+                    reader,
+                    docs,
+                    output,
+                    snapshot_sha="a" * 64,
+                    writer_source="b" * 40,
+                    source_commit="c" * 40,
                     question_mode="other",
                     generate=lambda *_: self.fail("unexpected model call"),
                 )

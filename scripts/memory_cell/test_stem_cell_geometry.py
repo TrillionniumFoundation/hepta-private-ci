@@ -60,10 +60,20 @@ class RankGeometryTests(unittest.TestCase):
         stable = inspect_selection([5.0, 1.0], [6.0, 1.5], ("A", "B"), 0)
         change = inspect_selection([3.0, 2.0], [1.0, 4.0], ("A", "B"), 1)
         rows = [
-            dict(stage=16, phase="test", arm="gated", status="succeeded",
-                 selection_geometry=stable),
-            dict(stage=16, phase="test", arm="gated", status="failed",
-                 selection_geometry=change),
+            dict(
+                stage=16,
+                phase="test",
+                arm="gated",
+                status="succeeded",
+                selection_geometry=stable,
+            ),
+            dict(
+                stage=16,
+                phase="test",
+                arm="gated",
+                status="failed",
+                selection_geometry=change,
+            ),
             dict(stage=16, phase="test", arm="gated", status="failed"),
         ]
         out = summarize_geometry(rows)["16/test/gated"]
@@ -73,11 +83,14 @@ class RankGeometryTests(unittest.TestCase):
         self.assertFalse(out["verified_new_correct_evidence_gain"])
         self.assertIsNone(out["semantic_citation_precision"])
 
-
     def test_adapter_changes_rank_without_head_contribution(self):
         item = inspect_selection(
-            [1.0, 9.0], [1.0, 9.0], ("A", "B"), 1,
-            original_frozen_scores=[8.0, 2.0], encoder_adapted=True,
+            [1.0, 9.0],
+            [1.0, 9.0],
+            ("A", "B"),
+            1,
+            original_frozen_scores=[8.0, 2.0],
+            encoder_adapted=True,
         )
         self.assertTrue(item["encoder_only_changed_selected_candidate"])
         self.assertFalse(item["head_changed_selected_candidate"])
@@ -94,16 +107,27 @@ class RankGeometryTests(unittest.TestCase):
 
     def test_head_cancels_encoder_rank_change_not_a_joint_improvement(self):
         item = inspect_selection(
-            [1.0, 9.0], [8.0, 2.0], ("A", "B"), 0,
-            original_frozen_scores=[8.0, 2.0], encoder_adapted=True,
+            [1.0, 9.0],
+            [8.0, 2.0],
+            ("A", "B"),
+            0,
+            original_frozen_scores=[8.0, 2.0],
+            encoder_adapted=True,
         )
         self.assertTrue(item["encoder_only_changed_selected_candidate"])
         self.assertTrue(item["head_changed_selected_candidate"])
         self.assertFalse(item["changed_selected_candidate"])
-        aggregate = summarize_geometry([
-            dict(stage=48, phase="transfer", arm="lineage_lora_gated",
-                 status="succeeded", selection_geometry=item),
-        ])["48/transfer/lineage_lora_gated"]
+        aggregate = summarize_geometry(
+            [
+                dict(
+                    stage=48,
+                    phase="transfer",
+                    arm="lineage_lora_gated",
+                    status="succeeded",
+                    selection_geometry=item,
+                ),
+            ]
+        )["48/transfer/lineage_lora_gated"]
         self.assertEqual(aggregate["cancelled_rank_changes"], 1)
         self.assertEqual(aggregate["changed_top1_count"], 0)
         self.assertEqual(aggregate["head_conditional_changed_top1_count"], 1)
@@ -111,13 +135,20 @@ class RankGeometryTests(unittest.TestCase):
     def test_adapter_rank_claim_requires_original_frozen_baseline(self):
         with self.assertRaisesRegex(ValueError, "unbound"):
             inspect_selection(
-                [1.0, 9.0], [1.0, 9.0], ("A", "B"), 1,
+                [1.0, 9.0],
+                [1.0, 9.0],
+                ("A", "B"),
+                1,
                 encoder_adapted=True,
             )
         with self.assertRaisesRegex(ValueError, "unbound"):
             inspect_selection(
-                [1.0, 9.0], [1.0, 9.0], ("A", "B"), 1,
-                original_frozen_scores=[8.0, 2.0], encoder_adapted=False,
+                [1.0, 9.0],
+                [1.0, 9.0],
+                ("A", "B"),
+                1,
+                original_frozen_scores=[8.0, 2.0],
+                encoder_adapted=False,
             )
 
 

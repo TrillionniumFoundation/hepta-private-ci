@@ -41,9 +41,12 @@ def parse_json(payload):
 
 class PinnedArchive:
     def __init__(self, path, expected_sha256):
-        require(re.fullmatch(r"[0-9a-f]{64}", expected_sha256), "external ZIP pin required")
         require(
-            not path.is_symlink() and path.is_file()
+            re.fullmatch(r"[0-9a-f]{64}", expected_sha256), "external ZIP pin required"
+        )
+        require(
+            not path.is_symlink()
+            and path.is_file()
             and 0 < path.stat().st_size <= 128 * 1024 * 1024,
             "bounded regular ZIP required",
         )
@@ -54,15 +57,20 @@ class PinnedArchive:
         try:
             entries = self.archive.infolist()
             require(0 < len(entries) <= 4096, "archive member bound")
-            require(sum(e.file_size for e in entries) <= 512 * 1024 * 1024, "ZIP size bound")
+            require(
+                sum(e.file_size for e in entries) <= 512 * 1024 * 1024, "ZIP size bound"
+            )
             self.files, seen = set(), set()
             for entry in entries:
                 name = entry.filename
                 path_name = PurePosixPath(name)
                 require(
-                    name not in seen and not path_name.is_absolute()
-                    and ".." not in path_name.parts and "\\" not in name
-                    and ":" not in name and "\x00" not in name
+                    name not in seen
+                    and not path_name.is_absolute()
+                    and ".." not in path_name.parts
+                    and "\\" not in name
+                    and ":" not in name
+                    and "\x00" not in name
                     and str(path_name) == name.rstrip("/")
                     and stat.S_IFMT(entry.external_attr >> 16)
                     in (0, stat.S_IFREG, stat.S_IFDIR)
@@ -80,7 +88,10 @@ class PinnedArchive:
                 value, name = match.groups()
                 require(name not in pins, "duplicate manifest member")
                 pins[name] = value
-            require(set(pins) == self.files - {"SHA256SUMS"}, "manifest file census mismatch")
+            require(
+                set(pins) == self.files - {"SHA256SUMS"},
+                "manifest file census mismatch",
+            )
             for name, expected in pins.items():
                 with self.archive.open(name) as stream:
                     actual = hashlib.file_digest(stream, "sha256").hexdigest()

@@ -14,8 +14,13 @@ import stat
 import zipfile
 
 ARMS = (
-    "hybrid", "organized", "knowledge", "parameter_only", "empty",
-    "policy_initial", "policy",
+    "hybrid",
+    "organized",
+    "knowledge",
+    "parameter_only",
+    "empty",
+    "policy_initial",
+    "policy",
 )
 PAIRS = (
     ("organization_vs_hybrid", "hybrid", "organized"),
@@ -54,16 +59,23 @@ def checked_archive(archive_path, expected_sha256):
         raise ValueError("original artifact ZIP hash differs")
     with zipfile.ZipFile(path) as archive:
         entries = archive.infolist()
-        if not 1 <= len(entries) <= 256 or sum(e.file_size for e in entries) > 32 * 1024**2:
+        if (
+            not 1 <= len(entries) <= 256
+            or sum(e.file_size for e in entries) > 32 * 1024**2
+        ):
             raise ValueError("unbounded artifact contents")
         found = {}
         for item in entries:
             name = PurePosixPath(item.filename)
             key = str(name)
             if (
-                item.is_dir() or name.is_absolute() or ".." in name.parts
-                or "\\" in item.filename or stat.S_ISLNK(item.external_attr >> 16)
-                or key in found or str(name) != item.filename
+                item.is_dir()
+                or name.is_absolute()
+                or ".." in name.parts
+                or "\\" in item.filename
+                or stat.S_ISLNK(item.external_attr >> 16)
+                or key in found
+                or str(name) != item.filename
             ):
                 raise ValueError("duplicate, symlink or unsafe artifact entry")
             found[key] = archive.read(item)
@@ -82,7 +94,10 @@ def checked_archive(archive_path, expected_sha256):
         expected[name] = checksum
     if set(found) != set(expected) | {"SHA256SUMS"}:
         raise ValueError("incomplete or extra internal artifact file")
-    if any(hashlib.sha256(found[name]).hexdigest() != checksum for name, checksum in expected.items()):
+    if any(
+        hashlib.sha256(found[name]).hexdigest() != checksum
+        for name, checksum in expected.items()
+    ):
         raise ValueError("original artifact internal bytes changed")
     return found
 
@@ -94,68 +109,99 @@ def diagnose(found, generating_commit):
     ready, execution = get("snapshot/READY.json"), get("tasks/execution.json")
     source = found["tested-commit.txt"].decode().strip()
     if (
-        generating_commit != source or ready["writer_source"] != source
-        or execution["writer_source"] != source or execution["source_commit"] != source
+        generating_commit != source
+        or ready["writer_source"] != source
+        or execution["writer_source"] != source
+        or execution["source_commit"] != source
         or execution["snapshot_loaded_before_task_payload"] is not True
         or ready["task_payload_consumed"] is not False
         or ready["production_accepted"] is not False
     ):
         raise ValueError("original source/read separation drift")
-    if hashlib.sha256(found["snapshot/READY.json"]).hexdigest() != execution["ready_sha"]:
+    if (
+        hashlib.sha256(found["snapshot/READY.json"]).hexdigest()
+        != execution["ready_sha"]
+    ):
         raise ValueError("original READY pin differs")
     training = ready["training"]
     sched = training["write_schedule"]
     if (
-        type(training["steps"]) is not int or training["steps"] < 1
+        type(training["steps"]) is not int
+        or training["steps"] < 1
         or training["steps"] != sched["planned_steps"]
         or training["input_tokens"] != sched["planned_input_tokens"]
         or training["supervised_tokens"] != sched["planned_supervised_tokens"]
         or training["steps"] != sum(sched["visits_per_example"])
         or training["examples"] != len(sched["visits_per_example"])
         or len(training["losses"]) != training["steps"]
-        or not all(type(x) in (int, float) and math.isfinite(x) and x >= 0 for x in training["losses"])
+        or not all(
+            type(x) in (int, float) and math.isfinite(x) and x >= 0
+            for x in training["losses"]
+        )
         or type(training["adapter_delta_squared_norm"]) not in (int, float)
         or not math.isfinite(training["adapter_delta_squared_norm"])
         or training["adapter_delta_squared_norm"] <= 0
     ):
         raise ValueError("training exposure, optimizer or integrity drift")
-    raw = [strict_json(line.decode()) for line in found["tasks/raw-answers.jsonl"].splitlines()]
+    raw = [
+        strict_json(line.decode())
+        for line in found["tasks/raw-answers.jsonl"].splitlines()
+    ]
     scored = get("tasks/scored-answers.json")
     old_report, old_effects = get("tasks/report.json"), get("tasks/source-effects.json")
-    if old_effects["raw_answers_sha256"] != hashlib.sha256(
-        found["tasks/raw-answers.jsonl"]
-    ).hexdigest():
+    if (
+        old_effects["raw_answers_sha256"]
+        != hashlib.sha256(found["tasks/raw-answers.jsonl"]).hexdigest()
+    ):
         raise ValueError("published effects do not bind original raw answers")
     questions = {r["question_id"] for r in raw}
     census = {(q, arm) for q in questions for arm in ARMS}
-    if not questions or len(questions) > 1024 or len(raw) != len(census) or len(scored) != len(raw):
+    if (
+        not questions
+        or len(questions) > 1024
+        or len(raw) != len(census)
+        or len(scored) != len(raw)
+    ):
         raise ValueError("incomplete original seven-arm census")
     rows, unsupported, totals = {}, {}, {arm: 0 for arm in ARMS}
     for original, annotated in zip(raw, scored, strict=True):
         key = (original["question_id"], original["arm"])
         if (
-            key in rows or key not in census or original["status"] not in ("succeeded", "failed")
+            key in rows
+            or key not in census
+            or original["status"] not in ("succeeded", "failed")
             or any(k not in annotated or annotated[k] != v for k, v in original.items())
-            or set(annotated) - set(original) != (
+            or set(annotated) - set(original)
+            != (
                 {"parsed_identifier", "strict_task_success", "procedure_verification"}
                 if original["status"] == "succeeded" and original["kind"] == "procedure"
                 else {"parsed_identifier", "strict_task_success"}
-                if original["status"] == "succeeded" else set()
+                if original["status"] == "succeeded"
+                else set()
             )
         ):
-            raise ValueError("missing, duplicate or retrospectively rewritten raw answer")
+            raise ValueError(
+                "missing, duplicate or retrospectively rewritten raw answer"
+            )
         if original["status"] == "succeeded":
             if type(annotated["strict_task_success"]) is not bool:
                 raise ValueError("missing strict task result")
             receipt = original["receipt"]
-            if type(receipt["knowledge_module_enabled"]) is not bool or receipt["knowledge_module_enabled"] != (key[1] in ("knowledge", "parameter_only")):
+            if type(receipt["knowledge_module_enabled"]) is not bool or receipt[
+                "knowledge_module_enabled"
+            ] != (key[1] in ("knowledge", "parameter_only")):
                 raise ValueError("adapter did not match declared arm")
             if len(receipt["delivered_evidence"]) != len(original["selected"]):
                 raise ValueError("source count differs from selected evidence")
-            if key[1] in ("empty", "parameter_only") and (original["selected"] or receipt["delivered_evidence"]):
+            if key[1] in ("empty", "parameter_only") and (
+                original["selected"] or receipt["delivered_evidence"]
+            ):
                 raise ValueError("empty-context arm received evidence")
             totals[key[1]] += int(annotated["strict_task_success"])
-            if CITATION.search(original["answer"]) and not receipt["delivered_evidence"]:
+            if (
+                CITATION.search(original["answer"])
+                and not receipt["delivered_evidence"]
+            ):
                 unsupported[key] = True
         rows[key] = annotated
     if set(rows) != census:
@@ -180,14 +226,23 @@ def diagnose(found, generating_commit):
                 for attr in ("selected",):
                     if a[attr] != b[attr]:
                         raise ValueError("parameter comparison changed selection")
-                for attr in ("input_ids_digest", "delivered_evidence", "derived_evidence"):
+                for attr in (
+                    "input_ids_digest",
+                    "delivered_evidence",
+                    "derived_evidence",
+                ):
                     if a["receipt"][attr] != b["receipt"][attr]:
                         raise ValueError("parameter comparison changed model input")
         bound = old_effects["contrasts"][label]["all"]
-        if any(bound[k] != v for k, v in (
-            ("wins", wins), ("losses", losses),
-            ("missing_pairs", missing), ("changed_answers", changed),
-        )):
+        if any(
+            bound[k] != v
+            for k, v in (
+                ("wins", wins),
+                ("losses", losses),
+                ("missing_pairs", missing),
+                ("changed_answers", changed),
+            )
+        ):
             raise ValueError("published effect comparison differs from original")
         contrasts[label] = dict(
             wins=wins, losses=losses, missing_pairs=missing, changed_answers=changed
@@ -198,8 +253,10 @@ def diagnose(found, generating_commit):
     # Wrong labels on zero delivered sources are structural unsupported claims,
     # not an independently measured entailment precision.
     module_rejected = (
-        contrasts["knowledge_vs_same_evidence"]["wins"] <= contrasts["knowledge_vs_same_evidence"]["losses"]
-        or contrasts["parameter_only_vs_empty"]["wins"] <= contrasts["parameter_only_vs_empty"]["losses"]
+        contrasts["knowledge_vs_same_evidence"]["wins"]
+        <= contrasts["knowledge_vs_same_evidence"]["losses"]
+        or contrasts["parameter_only_vs_empty"]["wins"]
+        <= contrasts["parameter_only_vs_empty"]["losses"]
         or bad_citations["parameter_only"] > 0
     )
     return dict(
@@ -218,20 +275,33 @@ def diagnose(found, generating_commit):
         examples_visited_once=sched["visits_per_example"].count(1),
         examples_visited_twice=sched["visits_per_example"].count(2),
         unvisited_examples=len(sched["unvisited_examples"]),
-        early_training_loss_mean=sum(training["losses"][:8]) / min(8, len(training["losses"])),
-        late_training_loss_mean=sum(training["losses"][-8:]) / min(8, len(training["losses"])),
+        early_training_loss_mean=sum(training["losses"][:8])
+        / min(8, len(training["losses"])),
+        late_training_loss_mean=sum(training["losses"][-8:])
+        / min(8, len(training["losses"])),
         actual_adapter_delta_squared_norm=training["adapter_delta_squared_norm"],
         strict_task_successes=totals,
         paired_effects=contrasts,
         unsupported_empty_context_citation_answers=bad_citations,
         research_parameter_candidate_rejected=module_rejected,
         reason_codes=(
-            (["no_independent_knowledge_gain"]
-             if contrasts["knowledge_vs_same_evidence"]["wins"] <= contrasts["knowledge_vs_same_evidence"]["losses"] else [])
-            + (["no_parameter_only_task_gain"]
-               if contrasts["parameter_only_vs_empty"]["wins"] <= contrasts["parameter_only_vs_empty"]["losses"] else [])
-            + (["empty_context_hallucinated_citations"]
-               if bad_citations["parameter_only"] else [])
+            (
+                ["no_independent_knowledge_gain"]
+                if contrasts["knowledge_vs_same_evidence"]["wins"]
+                <= contrasts["knowledge_vs_same_evidence"]["losses"]
+                else []
+            )
+            + (
+                ["no_parameter_only_task_gain"]
+                if contrasts["parameter_only_vs_empty"]["wins"]
+                <= contrasts["parameter_only_vs_empty"]["losses"]
+                else []
+            )
+            + (
+                ["empty_context_hallucinated_citations"]
+                if bad_citations["parameter_only"]
+                else []
+            )
         ),
         output_source="pinned_completed_historical_model_execution",
         new_model_calls=0,
@@ -259,6 +329,10 @@ if __name__ == "__main__":
     parser.add_argument("--artifact-sha256", required=True)
     parser.add_argument("--generating-commit", required=True)
     args = parser.parse_args()
-    print(json.dumps(run(
-        args.artifact, args.artifact_sha256, args.generating_commit, args.output
-    )))
+    print(
+        json.dumps(
+            run(
+                args.artifact, args.artifact_sha256, args.generating_commit, args.output
+            )
+        )
+    )

@@ -38,7 +38,8 @@ class AsOfAdmissionTests(unittest.TestCase):
     def test_empty_as_of_history_is_not_replaced_with_a_guess(self):
         with self.assertRaisesRegex(ValueError, "no as-of-admissible"):
             admit_history(
-                query(), (document("future", "2023/05/28 (Sun) 21:04"),),
+                query(),
+                (document("future", "2023/05/28 (Sun) 21:04"),),
                 revoked=set(),
             )
 
@@ -48,8 +49,9 @@ class AsOfAdmissionTests(unittest.TestCase):
             "2023/05/42 (Sun) 05:47",
             "source time unavailable",
         ):
-            with self.subTest(observed_at=observed_at), self.assertRaisesRegex(
-                ValueError, "uncomparable native"
+            with (
+                self.subTest(observed_at=observed_at),
+                self.assertRaisesRegex(ValueError, "uncomparable native"),
             ):
                 admit_history(
                     query(),
@@ -64,8 +66,13 @@ class AsOfAdmissionTests(unittest.TestCase):
         for documents, revoked in (
             ((document("a", "2023/05/28 (Sun) 05:47", scope="other"),), set()),
             ((document("a", "2023/05/28 (Sun) 05:47"),), {"root"}),
-            ((document("a", "2023/05/28 (Sun) 05:47"),
-              document("a", "2023/05/28 (Sun) 06:00")), set()),
+            (
+                (
+                    document("a", "2023/05/28 (Sun) 05:47"),
+                    document("a", "2023/05/28 (Sun) 06:00"),
+                ),
+                set(),
+            ),
             ((), set()),
         ):
             with self.subTest(docs=len(documents)), self.assertRaises(ValueError):
@@ -110,8 +117,15 @@ class AsOfAdmissionTests(unittest.TestCase):
                 path.write_bytes(b"bounded-mock-index")
                 return "pinned-test-artifact"
 
-            def __init__(self, path, expected_cut, revoked, *,
-                         expected_file_digest, expected_encoder):
+            def __init__(
+                self,
+                path,
+                expected_cut,
+                revoked,
+                *,
+                expected_file_digest,
+                expected_encoder,
+            ):
                 self_outer.assertEqual(expected_cut, seen["index_cut"])
                 self_outer.assertEqual(expected_file_digest, "pinned-test-artifact")
                 self_outer.assertEqual(expected_encoder, "pinned-encoder")
@@ -122,16 +136,31 @@ class AsOfAdmissionTests(unittest.TestCase):
         source = SimpleNamespace(
             source_sha256="frozen-source-sha",
             history=lambda _: (
-                Document("before", "r1", "scope", "session",
-                         "2023/05/28 (Sun) 05:47", "EARLIER_VALID"),
-                Document("after", "r2", "scope", "session",
-                         "2023/05/28 (Sun) 21:04", "FUTURE_NEVER_ENCODE"),
+                Document(
+                    "before",
+                    "r1",
+                    "scope",
+                    "session",
+                    "2023/05/28 (Sun) 05:47",
+                    "EARLIER_VALID",
+                ),
+                Document(
+                    "after",
+                    "r2",
+                    "scope",
+                    "session",
+                    "2023/05/28 (Sun) 21:04",
+                    "FUTURE_NEVER_ENCODE",
+                ),
             ),
         )
         with tempfile.TemporaryDirectory() as directory:
             with patch.dict(sys.modules, {"index": mock_index}):
                 index, result = build_as_of_index(
-                    source, query(), FakeEncoder(), Path(directory),
+                    source,
+                    query(),
+                    FakeEncoder(),
+                    Path(directory),
                     revoked=set(),
                 )
             self.assertIsInstance(index, FakeIndex)
@@ -140,7 +169,6 @@ class AsOfAdmissionTests(unittest.TestCase):
             self.assertEqual(result["receipt"]["excluded_future_count"], 1)
             self.assertEqual(result["as_of_cut"], seen["index_cut"])
             self.assertEqual(result["index_cost"]["documents"], 1)
-
 
 
 if __name__ == "__main__":

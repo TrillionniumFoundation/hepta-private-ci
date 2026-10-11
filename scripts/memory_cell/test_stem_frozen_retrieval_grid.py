@@ -4,8 +4,13 @@ from types import SimpleNamespace as Obj
 import unittest
 
 from stem_frozen_retrieval_grid import (
-    GRID, BASELINE, PHASES, evaluate_fixed, label_key,
-    select_from_train, validate_unlabelled,
+    GRID,
+    BASELINE,
+    PHASES,
+    evaluate_fixed,
+    label_key,
+    select_from_train,
+    validate_unlabelled,
 )
 from stem_frozen_retrieval_grid_trial import verify_pinned_replay_question
 
@@ -17,7 +22,8 @@ def fixture():
         questions=cohorts,
         question_families={
             q: ("family-%d" % (i % 6))
-            for group in cohorts.values() for i, q in enumerate(group)
+            for group in cohorts.values()
+            for i, q in enumerate(group)
         },
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
     )
@@ -33,24 +39,29 @@ def fixture():
                     pool.append("source-positive")
                 if config == BASELINE and qid.endswith("-7"):
                     pool.append("source-positive")
-                records.append(dict(
-                    phase=phase, question_id=qid,
-                    source_family=plan["question_families"][qid],
-                    policy=label_key(config),
-                    retrieved_source_ids=docs,
-                    window_source_ids=pool,
-                    original_as_of_index_sha256="e" * 64,
-                    pool_sha256="f" * 64,
-                    replayed_original_pool_sha256=(
-                        True if config == BASELINE else None
-                    ),
-                    source_text_exported=False,
-                    read_targets_for_retrieval=False,
-                ))
+                records.append(
+                    dict(
+                        phase=phase,
+                        question_id=qid,
+                        source_family=plan["question_families"][qid],
+                        policy=label_key(config),
+                        retrieved_source_ids=docs,
+                        window_source_ids=pool,
+                        original_as_of_index_sha256="e" * 64,
+                        pool_sha256="f" * 64,
+                        replayed_original_pool_sha256=(
+                            True if config == BASELINE else None
+                        ),
+                        source_text_exported=False,
+                        read_targets_for_retrieval=False,
+                    )
+                )
     targets = {
-        q: Obj(unanswerable=False, evidence=("source-positive",),
-               unresolved_evidence=())
-        for group in cohorts.values() for q in group
+        q: Obj(
+            unanswerable=False, evidence=("source-positive",), unresolved_evidence=()
+        )
+        for group in cohorts.values()
+        for q in group
     }
     return plan, records, targets
 
@@ -61,15 +72,21 @@ class FrozenGridTests(unittest.TestCase):
         # when its historical source partitioner is invoked out of context.
         # The original 80-question trial already pinned the partitions.
         question = Obj(identity="q0", scope="scope-0", family="native-kind")
+
         class OneFamily:
             families = {"native-kind": "pinned-source-family"}
+
             def partition(self, ignored):
                 raise AssertionError("would re-split a frozen test cohort")
+
         self.assertEqual(
             verify_pinned_replay_question(
-                question, OneFamily(), {"q0"},
+                question,
+                OneFamily(),
+                {"q0"},
                 {"q0": "pinned-source-family"},
-            ), "q0",
+            ),
+            "q0",
         )
 
     def test_pinned_replay_rejects_other_native_question_and_source_family(self):
@@ -80,8 +97,9 @@ class FrozenGridTests(unittest.TestCase):
             ({"q0"}, {"q0": "forged-family"}),
             ({"q0"}, {}),
         ):
-            with self.subTest(ids=ids, declared=declared), self.assertRaises(
-                ValueError
+            with (
+                self.subTest(ids=ids, declared=declared),
+                self.assertRaises(ValueError),
             ):
                 verify_pinned_replay_question(question, benchmark, ids, declared)
 
@@ -102,8 +120,9 @@ class FrozenGridTests(unittest.TestCase):
         bound = validate_unlabelled(plan, rows)
         train = {q: targets[q] for q in plan["questions"]["train"]}
         selection = select_from_train(plan, bound, train)
-        evaluation = {q: targets[q] for phase in PHASES[1:]
-                      for q in plan["questions"][phase]}
+        evaluation = {
+            q: targets[q] for phase in PHASES[1:] for q in plan["questions"][phase]
+        }
         result = evaluate_fixed(plan, bound, evaluation, selection)
         self.assertEqual(result["matched_question_count"], 32)
         self.assertEqual(result["results"]["test"]["planned"], 8)
@@ -146,14 +165,14 @@ class FrozenGridTests(unittest.TestCase):
         bound = validate_unlabelled(plan, rows)
         train = {q: targets[q] for q in plan["questions"]["train"]}
         chosen = select_from_train(plan, bound, train)
-        eval_targets = {q: targets[q] for p in PHASES[1:]
-                        for q in plan["questions"][p]}
+        eval_targets = {q: targets[q] for p in PHASES[1:] for q in plan["questions"][p]}
         eval_targets["test-0"] = Obj(
             unanswerable=True, evidence=(), unresolved_evidence=()
         )
         eval_targets["test-1"] = Obj(
-            unanswerable=False, evidence=("source-positive",),
-            unresolved_evidence=("unreviewable",)
+            unanswerable=False,
+            evidence=("source-positive",),
+            unresolved_evidence=("unreviewable",),
         )
         result = evaluate_fixed(plan, bound, eval_targets, chosen)
         self.assertEqual(result["results"]["test"]["planned"], 8)

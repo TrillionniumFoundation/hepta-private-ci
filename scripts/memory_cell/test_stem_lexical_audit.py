@@ -12,12 +12,17 @@ from stem_lexical_audit import K, lexical_rank, native_qa
 class ImmutableLexicalTests(unittest.TestCase):
     def make_db(self):
         db = sqlite3.connect(":memory:")
-        db.execute("CREATE VIRTUAL TABLE lexical USING fts5(content, tokenize='unicode61')")
-        for i, text in enumerate((
-            "Caroline visited the sports team.",
-            "Caroline attended the support group.",
-            "Winter picnic at the river.",
-        ), 1):
+        db.execute(
+            "CREATE VIRTUAL TABLE lexical USING fts5(content, tokenize='unicode61')"
+        )
+        for i, text in enumerate(
+            (
+                "Caroline visited the sports team.",
+                "Caroline attended the support group.",
+                "Winter picnic at the river.",
+            ),
+            1,
+        ):
             db.execute("INSERT INTO lexical(rowid,content) VALUES(?,?)", (i, text))
         return db
 
@@ -37,8 +42,9 @@ class ImmutableLexicalTests(unittest.TestCase):
         try:
             self.assertEqual(lexical_rank(db, "???"), [])
             self.assertEqual(lexical_rank(db, "quixoticnoanswerword"), [])
-            self.assertEqual(lexical_rank(db, "support support support"),
-                             lexical_rank(db, "support"))
+            self.assertEqual(
+                lexical_rank(db, "support support support"), lexical_rank(db, "support")
+            )
         finally:
             db.close()
 
@@ -47,8 +53,9 @@ class ImmutableLexicalTests(unittest.TestCase):
         try:
             row = lexical_rank(db, "support') OR DROP TABLE lexical --")
             self.assertIsInstance(row, list)
-            self.assertEqual(db.execute(
-                "SELECT count(*) FROM lexical").fetchone()[0], 3)
+            self.assertEqual(
+                db.execute("SELECT count(*) FROM lexical").fetchone()[0], 3
+            )
         finally:
             db.close()
 
@@ -64,9 +71,16 @@ class ImmutableLexicalTests(unittest.TestCase):
     def test_modified_or_unrelated_native_json_fails_external_pin(self):
         with tempfile.TemporaryDirectory() as d:
             path = Path(d) / "locomo.json"
-            path.write_text(json.dumps([{
-                "sample_id": "forged", "qa": [{"question": "forgery", "evidence": []}]
-            }]))
+            path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "sample_id": "forged",
+                            "qa": [{"question": "forgery", "evidence": []}],
+                        }
+                    ]
+                )
+            )
             with self.assertRaisesRegex(ValueError, "LoCoMo source bytes"):
                 native_qa(path)
 

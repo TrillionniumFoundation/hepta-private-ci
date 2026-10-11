@@ -12,8 +12,12 @@ from stem_native_null_ablation import (
 
 PHASES = ("select", "retention", "test", "transfer")
 ARMS = (
-    "frozen_rerank", "prototype", "linear", "gated",
-    "lineage_lora_gated", "independent_lora_gated",
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
 )
 STAGES = (16, 32, 48)
 
@@ -23,17 +27,21 @@ def fixture():
     qs.update({p: [f"{p}-{i}" for i in range(8)] for p in PHASES})
     unanswerable = {
         f"{p}-{n}"
-        for p, count in (("select", 2), ("retention", 2), ("test", 2),
-                         ("transfer", 1))
+        for p, count in (("select", 2), ("retention", 2), ("test", 2), ("transfer", 1))
         for n in range(count)
     }
     targets = {
-        q: Obj(unanswerable=q in unanswerable,
-               evidence=("native-source",), unresolved_evidence=())
-        for p in PHASES for q in qs[p]
+        q: Obj(
+            unanswerable=q in unanswerable,
+            evidence=("native-source",),
+            unresolved_evidence=(),
+        )
+        for p in PHASES
+        for q in qs[p]
     }
     plan = dict(
-        arms=list(ARMS), curriculum_attempted_examples=list(STAGES),
+        arms=list(ARMS),
+        curriculum_attempted_examples=list(STAGES),
         questions=qs,
     )
     scored = []
@@ -44,12 +52,18 @@ def fixture():
                 logits = [2.0, 1.0, 3.0 if is_abs else 0.0]
                 diagnosis = observe_null_choice(logits, ("A", "B"), 0)
                 for arm in ARMS:
-                    scored.append(dict(
-                        stage=stage, phase=phase, question_id=qid, arm=arm,
-                        status="succeeded", selected=0,
-                        source_choice_correct=0 if is_abs else 1,
-                        null_counterfactual=dict(diagnosis),
-                    ))
+                    scored.append(
+                        dict(
+                            stage=stage,
+                            phase=phase,
+                            question_id=qid,
+                            arm=arm,
+                            status="succeeded",
+                            selected=0,
+                            source_choice_correct=0 if is_abs else 1,
+                            null_counterfactual=dict(diagnosis),
+                        )
+                    )
     return plan, scored, targets
 
 
@@ -88,7 +102,11 @@ class NullCounterfactualTests(unittest.TestCase):
     def test_false_abstention_harms_answerable_but_does_not_make_reader_answer(self):
         plan, scored, targets = fixture()
         for r in scored:
-            if r["stage"] == 48 and r["phase"] == "test" and r["question_id"] == "test-2":
+            if (
+                r["stage"] == 48
+                and r["phase"] == "test"
+                and r["question_id"] == "test-2"
+            ):
                 r["null_counterfactual"] = observe_null_choice(
                     [2.0, 1.0, 4.0], ("A", "B"), 0
                 )
@@ -101,9 +119,14 @@ class NullCounterfactualTests(unittest.TestCase):
 
     def test_reader_failures_are_never_dropped_from_original_census(self):
         plan, scored, targets = fixture()
-        row = next(x for x in scored if x["stage"] == 48
-                   and x["phase"] == "test" and x["question_id"] == "test-2"
-                   and x["arm"] == "gated")
+        row = next(
+            x
+            for x in scored
+            if x["stage"] == 48
+            and x["phase"] == "test"
+            and x["question_id"] == "test-2"
+            and x["arm"] == "gated"
+        )
         row["status"] = "failed"
         x = review_null_counterfactual(plan, scored, targets)
         self.assertEqual(x["per_arm_phase_checkpoint"]["48/test/gated"]["attempted"], 8)

@@ -27,9 +27,14 @@ class LikelihoodExposureTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as directory:
             result = probe(
-                reader, docs, Path(directory) / "likelihood",
-                snapshot_sha="a" * 64, writer_source="b" * 40,
-                source_commit="c" * 40, maximum=2, scorer=score,
+                reader,
+                docs,
+                Path(directory) / "likelihood",
+                snapshot_sha="a" * 64,
+                writer_source="b" * 40,
+                source_commit="c" * 40,
+                maximum=2,
+                scorer=score,
                 training=training,
             )
             self.assertTrue(result["training_exposure_verified"])
@@ -40,7 +45,10 @@ class LikelihoodExposureTests(unittest.TestCase):
                 result["by_exposure"]["visited"]["training"]["planned_source_scopes"], 1
             )
             self.assertEqual(
-                result["by_exposure"]["unvisited"]["paraphrase"]["planned_source_scopes"], 1
+                result["by_exposure"]["unvisited"]["paraphrase"][
+                    "planned_source_scopes"
+                ],
+                1,
             )
             self.assertEqual(
                 result["by_exposure"]["unknown"]["training"]["planned_source_scopes"], 0

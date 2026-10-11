@@ -47,7 +47,9 @@ from stem_cell_geometry import inspect_selection, summarize_geometry
 from stem_cell_training_probe import train_probe, summarize_train_probes
 from stem_head_fit_dynamics import compare_train_head_before_after
 from stem_cell_shadow_scale import (
-    calibrate_shadow_scale, choose_shadow, summarize_shadow_heldout,
+    calibrate_shadow_scale,
+    choose_shadow,
+    summarize_shadow_heldout,
     verify_shadow_source_receipts,
 )
 from stem_cell_cache import SharedFeatureCache
@@ -231,9 +233,7 @@ def run(staged, ranker_dir, output):
                 try:
                     if q.identity in source.ingress_failures:
                         raise ValueError("native history ingress failed")
-                    index_key = (
-                        source.source_sha256, q.scope, q.observed_at
-                    )
+                    index_key = (source.source_sha256, q.scope, q.observed_at)
                     index_digest = digest(index_key)
                     if index_key not in indices:
                         index, admission = build_as_of_index(
@@ -385,7 +385,8 @@ def run(staged, ranker_dir, output):
             rows,
             {q.identity: plan["routes"][q.identity] for q in qs["train"]},
             adapter_receipts
-            if not adapter_errors and len(adapter_receipts) == 3 else None,
+            if not adapter_errors and len(adapter_receipts) == 3
+            else None,
         )
         adapter_opportunities["actual_adapter_failures"] = sorted(adapter_errors)
         write(output / "adapter-pair-opportunities.json", adapter_opportunities)
@@ -484,13 +485,18 @@ def run(staged, ranker_dir, output):
                         payload = head.export()
                         fit_dynamics = (
                             compare_train_head_before_after(
-                                current, prefit_logits, postfit_logits,
+                                current,
+                                prefit_logits,
+                                postfit_logits,
                                 admitted_ids=admitted_ids,
-                                stage=stage, arm=arm, cell=cell,
+                                stage=stage,
+                                arm=arm,
+                                cell=cell,
                                 previous_head_sha256=old_digest,
                                 updated_head_sha256=sha256(payload),
                             )
-                            if arm != "frozen_rerank" else None
+                            if arm != "frozen_rerank"
+                            else None
                         )
                         path = output / f"head-{stage}-{arm}-{cell}.json"
                         path.write_bytes(payload)
@@ -547,7 +553,10 @@ def run(staged, ranker_dir, output):
                     question = queries[qid]
                     cell = route_text(question.content)
                     item = dict(
-                        stage=stage, arm=arm, cell=cell, question_id=qid,
+                        stage=stage,
+                        arm=arm,
+                        cell=cell,
+                        question_id=qid,
                         family=train_row.features.family,
                         admitted_training_cut_digest=cut.admission_digest,
                     )
@@ -559,8 +568,10 @@ def run(staged, ranker_dir, output):
                         if (
                             train_features.question_id != original_features.question_id
                             or train_features.family != original_features.family
-                            or train_features.pool_digest != original_features.pool_digest
-                            or train_features.candidate_ids != original_features.candidate_ids
+                            or train_features.pool_digest
+                            != original_features.pool_digest
+                            or train_features.candidate_ids
+                            != original_features.candidate_ids
                             or train_row.features.seal() != original_features.seal()
                         ):
                             raise ValueError(
@@ -578,20 +589,25 @@ def run(staged, ranker_dir, output):
                             original_encoder_identity=original_features.encoder_identity,
                             checkpoint_encoder_identity=train_features.encoder_identity,
                             candidate_pool_digest=original_features.pool_digest,
-                            candidate_ids_digest=digest(original_features.candidate_ids),
+                            candidate_ids_digest=digest(
+                                original_features.candidate_ids
+                            ),
                             probe=train_probe(
                                 train_features.frozen_scores.tolist() + [0.0],
-                                snapshot_scores, train_row.positive_indices,
+                                snapshot_scores,
+                                train_row.positive_indices,
                                 fit_strategy=(
-                                    "frozen" if arm == "frozen_rerank"
-                                    else "prototype" if arm == "prototype"
+                                    "frozen"
+                                    if arm == "frozen_rerank"
+                                    else "prototype"
+                                    if arm == "prototype"
                                     else "sgd"
                                 ),
                                 original_frozen_logits=(
-                                    initial_features[qid].frozen_scores.tolist()
-                                    + [0.0]
+                                    initial_features[qid].frozen_scores.tolist() + [0.0]
                                 ),
-                                encoder_adapted=arm in (
+                                encoder_adapted=arm
+                                in (
                                     "lineage_lora_gated",
                                     "independent_lora_gated",
                                 ),
@@ -599,7 +615,8 @@ def run(staged, ranker_dir, output):
                         )
                     except Exception as exc:
                         item.update(
-                            status="failed", error_type=type(exc).__name__,
+                            status="failed",
+                            error_type=type(exc).__name__,
                             error=str(exc)[:1024],
                         )
                     append(output / "weak-training-probes.jsonl", item)
@@ -647,7 +664,8 @@ def run(staged, ranker_dir, output):
                                 f.candidate_ids,
                                 selected,
                                 original_frozen_scores=original.frozen_scores.tolist(),
-                                encoder_adapted=arm in (
+                                encoder_adapted=arm
+                                in (
                                     "lineage_lora_gated",
                                     "independent_lora_gated",
                                 ),
@@ -664,7 +682,9 @@ def run(staged, ranker_dir, output):
                                 encoder_identity=f.encoder_identity,
                             )
                             item["null_counterfactual"] = observe_null_choice(
-                                values, f.candidate_ids, selected,
+                                values,
+                                f.candidate_ids,
+                                selected,
                             )
                             raw, receipt = generate(
                                 q, evidence, f"{stage}/{phase}/{q.identity}/{arm}"
@@ -688,7 +708,9 @@ def run(staged, ranker_dir, output):
             for arm in ARMS[1:]:
                 for cell in CELLS:
                     stage_calibration = dict(
-                        stage=stage, arm=arm, cell=cell,
+                        stage=stage,
+                        arm=arm,
+                        cell=cell,
                         role="nonqualifying-train-only-shadow-scale",
                     )
                     try:
@@ -710,30 +732,38 @@ def run(staged, ranker_dir, output):
                                 or adapted.pool_digest != original.pool_digest
                                 or adapted.candidate_ids != original.candidate_ids
                             ):
-                                raise ValueError("shadow TRAIN score/pool provenance drift")
+                                raise ValueError(
+                                    "shadow TRAIN score/pool provenance drift"
+                                )
                             with torch.no_grad():
                                 after = heads[(arm, cell)](adapted).tolist()
-                            training_inputs.append(dict(
-                                question_id=qid, family=original.family,
-                                candidate_ids=original.candidate_ids,
-                                positive_indices=train_row.positive_indices,
-                                frozen_logits=original.frozen_scores.tolist(),
-                                head_logits=after[:len(original.candidate_ids)],
-                            ))
+                            training_inputs.append(
+                                dict(
+                                    question_id=qid,
+                                    family=original.family,
+                                    candidate_ids=original.candidate_ids,
+                                    positive_indices=train_row.positive_indices,
+                                    frozen_logits=original.frozen_scores.tolist(),
+                                    head_logits=after[: len(original.candidate_ids)],
+                                )
+                            )
                         calibration = calibrate_shadow_scale(
-                            training_inputs, arm=arm, cell=cell,
-                            stage=stage, admitted_ids=admitted_ids,
+                            training_inputs,
+                            arm=arm,
+                            cell=cell,
+                            stage=stage,
+                            admitted_ids=admitted_ids,
                         )
                         stage_calibration.update(
-                            status="succeeded", receipt=calibration,
-                            checkpoint_head_sha256=sha256(
-                                heads[(arm, cell)].export()
-                            ),
+                            status="succeeded",
+                            receipt=calibration,
+                            checkpoint_head_sha256=sha256(heads[(arm, cell)].export()),
                         )
                         shadow_stage_scales[(arm, cell)] = calibration["chosen_scale"]
                     except Exception as exc:
                         stage_calibration.update(
-                            status="failed", error_type=type(exc).__name__,
+                            status="failed",
+                            error_type=type(exc).__name__,
                             error=str(exc)[:1024],
                         )
                     shadow_calibrations.append(stage_calibration)
@@ -747,8 +777,11 @@ def run(staged, ranker_dir, output):
                     for arm in ARMS[1:]:
                         qid = question.identity
                         item = dict(
-                            stage=stage, phase=phase, question_id=qid,
-                            arm=arm, cell=cell,
+                            stage=stage,
+                            phase=phase,
+                            question_id=qid,
+                            arm=arm,
+                            cell=cell,
                             role="shadow-source-only-no-Reader-execution",
                         )
                         try:
@@ -762,14 +795,19 @@ def run(staged, ranker_dir, output):
                                 or original.pool_digest != adapted.pool_digest
                                 or original.candidate_ids != adapted.candidate_ids
                             ):
-                                raise ValueError("shadow heldout score/pool identity drift")
+                                raise ValueError(
+                                    "shadow heldout score/pool identity drift"
+                                )
                             with torch.no_grad():
                                 after = heads[(arm, cell)](adapted).tolist()
                             ids = original.candidate_ids
                             before = original.frozen_scores.tolist()
                             alpha = shadow_stage_scales[(arm, cell)]
                             selected = choose_shadow(
-                                ids, before, after[:len(ids)], alpha,
+                                ids,
+                                before,
+                                after[: len(ids)],
+                                alpha,
                             )
                             frozen = choose_shadow(ids, before, before, 0.0)
                             if selected is None or frozen is None:
@@ -781,11 +819,13 @@ def run(staged, ranker_dir, output):
                                 selected_index=selected,
                                 frozen_index=frozen,
                                 selected_source_id=pool.windows[selected].source_id,
-                                frozen_selected_source_id=pool.windows[frozen].source_id,
+                                frozen_selected_source_id=pool.windows[
+                                    frozen
+                                ].source_id,
                                 changed_frozen_top1=selected != frozen,
                                 original_pool_digest=pool.seal(),
                                 frozen_score_sha256=digest(before),
-                                head_score_sha256=digest(after[:len(ids)]),
+                                head_score_sha256=digest(after[: len(ids)]),
                                 head_sha256=sha256(heads[(arm, cell)].export()),
                                 candidate_identity_sha256=digest(ids),
                                 actual_reader_executions=0,
@@ -793,7 +833,8 @@ def run(staged, ranker_dir, output):
                             )
                         except Exception as exc:
                             item.update(
-                                status="failed", error_type=type(exc).__name__,
+                                status="failed",
+                                error_type=type(exc).__name__,
                                 error=str(exc)[:1024],
                             )
                         shadow_choices.append(item)
@@ -820,7 +861,8 @@ def run(staged, ranker_dir, output):
             )
 
         within_train_fit_dynamics = [
-            item["within_train_fit_dynamics"] for item in learning
+            item["within_train_fit_dynamics"]
+            for item in learning
             if item["status"] == "succeeded"
             and item["within_train_fit_dynamics"] is not None
         ]
@@ -838,7 +880,9 @@ def run(staged, ranker_dir, output):
         # Verify the sealed shadow source-pool, Head and TRAIN-scale receipts
         # before the first held-out source annotation is opened for scoring.
         shadow_provenance = verify_shadow_source_receipts(
-            shadow_choices, shadow_calibrations, pools,
+            shadow_choices,
+            shadow_calibrations,
+            pools,
         )
         write(output / "shadow-provenance.json", shadow_provenance)
         census = validate_census(attempts, plan)
@@ -857,8 +901,11 @@ def run(staged, ranker_dir, output):
             shadow_choices,
             {phase: [q.identity for q in qs[phase]] for phase in PHASES},
             plan["routes"],
-            {q.identity: source_for[q.identity].targets[q.identity]
-             for phase in PHASES for q in qs[phase]},
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES
+                for q in qs[phase]
+            },
         )
         write(output / "shadow-source-ceiling.json", shadow_source_report)
         oracles = []
@@ -938,15 +985,12 @@ def run(staged, ranker_dir, output):
         control_session = ExactReaderCache(control_generator)
 
         def generate_empty(q, evidence, record_key):
-            return control_session.answer(
-                q, evidence, record_key, revoked=set()
-            )
+            return control_session.answer(q, evidence, record_key, revoked=set())
 
-        control_queries = [
-            (phase, q) for phase in PHASES for q in qs[phase]
-        ]
+        control_queries = [(phase, q) for phase in PHASES for q in qs[phase]]
         empty_controls = generate_empty_evidence_controls(
-            control_queries, generate_empty,
+            control_queries,
+            generate_empty,
             reader_identity=generator.identity,
             reader_profile=generator.profile,
             family_by_question={
@@ -958,15 +1002,20 @@ def run(staged, ranker_dir, output):
             append(output / "reader-no-evidence.jsonl", item)
         no_evidence_report = evaluate_empty_evidence_controls(
             empty_controls,
-            {q.identity: source_for[q.identity].targets[q.identity]
-             for _, q in control_queries},
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for _, q in control_queries
+            },
             diagnose,
         )
         write(output / "reader-no-evidence-report.json", no_evidence_report)
         paired_reader_controls = compare_frozen_to_no_evidence(
-            scored, empty_controls,
-            {q.identity: source_for[q.identity].targets[q.identity]
-             for _, q in control_queries},
+            scored,
+            empty_controls,
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for _, q in control_queries
+            },
             diagnose,
         )
         write(output / "reader-paired-no-evidence.json", paired_reader_controls)
@@ -976,10 +1025,16 @@ def run(staged, ranker_dir, output):
         retrospective_source_ceiling = retrospective_pool_ceiling(
             {phase: qs[phase] for phase in PHASES},
             pools,
-            {q.identity: source_for[q.identity].targets[q.identity]
-             for phase in PHASES for q in qs[phase]},
-            {q.identity: source_for[q.identity].families[q.family]
-             for phase in PHASES for q in qs[phase]},
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES
+                for q in qs[phase]
+            },
+            {
+                q.identity: source_for[q.identity].families[q.family]
+                for phase in PHASES
+                for q in qs[phase]
+            },
             scored,
         )
         write(
@@ -988,31 +1043,42 @@ def run(staged, ranker_dir, output):
         )
         # Only after all policy calls and scoring; targets never enter fitting.
         train_heldout_diagnostic = train_to_heldout_gap(
-            plan, learning, scored,
-            {q.identity: source_for[q.identity].targets[q.identity]
-             for phase in PHASES for q in qs[phase]},
+            plan,
+            learning,
+            scored,
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES
+                for q in qs[phase]
+            },
         )
         write(output / "train-heldout-gap.json", train_heldout_diagnostic)
-        heldout_effective_n = effective_heldout_subjects(
-            plan, train_heldout_diagnostic
-        )
+        heldout_effective_n = effective_heldout_subjects(plan, train_heldout_diagnostic)
         write(output / "heldout-effective-n.json", heldout_effective_n)
         # Native target labels enter only after every original Reader answer;
         # the zero-offset null decision has never been used to choose evidence.
         null_choice_diagnostic = review_null_counterfactual(
-            plan, scored,
-            {q.identity: source_for[q.identity].targets[q.identity]
-             for phase in PHASES for q in qs[phase]},
+            plan,
+            scored,
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES
+                for q in qs[phase]
+            },
         )
-        write(output / "zero-offset-null-counterfactual.json",
-              null_choice_diagnostic)
+        write(output / "zero-offset-null-counterfactual.json", null_choice_diagnostic)
         # The real isolated zero-evidence answers were already generated.
         # A fixed zero-offset null score selects between existing raw answers;
         # this retrospective splice NEVER generates a new Reader answer.
         null_reader_splice = observed_zero_offset_reader_splice(
-            plan, scored, empty_controls,
-            {q.identity: source_for[q.identity].targets[q.identity]
-             for phase in PHASES for q in qs[phase]},
+            plan,
+            scored,
+            empty_controls,
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES
+                for q in qs[phase]
+            },
             diagnose,
             reader_identity=generator.identity,
             reader_profile=generator.profile,

@@ -31,8 +31,12 @@ class ResidualRankScaleTests(unittest.TestCase):
 
     def test_encoder_only_flip_can_be_cancelled_by_head(self):
         row = inspect_selection(
-            [3, 9], [8, 2], ("a", "b"), 0,
-            original_frozen_scores=[8, 2], encoder_adapted=True,
+            [3, 9],
+            [8, 2],
+            ("a", "b"),
+            0,
+            original_frozen_scores=[8, 2],
+            encoder_adapted=True,
         )
         self.assertTrue(row["encoder_only_changed_selected_candidate"])
         self.assertTrue(row["head_changed_selected_candidate"])
@@ -45,10 +49,20 @@ class ResidualRankScaleTests(unittest.TestCase):
         can_flip = inspect_selection([8, 2], [7.5, 2.5], ("a", "b"), 0)
         cannot = inspect_selection([8, 2], [8.7, 2.3], ("a", "b"), 0)
         rows = [
-            dict(stage=48, phase="test", arm="gated", status="succeeded",
-                 selection_geometry=can_flip),
-            dict(stage=48, phase="test", arm="gated", status="failed",
-                 selection_geometry=cannot),
+            dict(
+                stage=48,
+                phase="test",
+                arm="gated",
+                status="succeeded",
+                selection_geometry=can_flip,
+            ),
+            dict(
+                stage=48,
+                phase="test",
+                arm="gated",
+                status="failed",
+                selection_geometry=cannot,
+            ),
             dict(stage=48, phase="test", arm="gated", status="failed"),
         ]
         summary = summarize_geometry(rows)["48/test/gated"]

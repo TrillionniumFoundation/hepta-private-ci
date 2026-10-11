@@ -11,8 +11,10 @@ from stem_audit_archive import require
 
 
 def finite_nonnegative(value, what):
-    require(type(value) in (int, float) and math.isfinite(value) and value >= 0,
-            "invalid or missing resource measure: " + what)
+    require(
+        type(value) in (int, float) and math.isfinite(value) and value >= 0,
+        "invalid or missing resource measure: " + what,
+    )
     return value
 
 
@@ -20,8 +22,10 @@ def audit_resources(report, encoding):
     """Reconcile logged successful encoder calls and preserve unknown work."""
     caches = report["caches"]
     weights = report["backend_resident_weight_bytes"]
-    require(isinstance(caches, dict) and caches and set(caches) == set(weights),
-            "cache/backend inventory drift")
+    require(
+        isinstance(caches, dict) and caches and set(caches) == set(weights),
+        "cache/backend inventory drift",
+    )
     grouped = defaultdict(list)
     for row in encoding:
         backend = row["backend"]
@@ -35,12 +39,18 @@ def audit_resources(report, encoding):
             require("extraction" in cost, "missing real encoding receipt")
             ext = cost["extraction"]
             finite_nonnegative(ext["seconds"], "encoder receipt")
-            require(math.isclose(seconds, ext["seconds"], rel_tol=0, abs_tol=1e-9),
-                    "encoder receipt time detached from cache bill")
-            require(type(ext["pairs"]) is int and ext["pairs"] >= 0,
-                    "invalid executed pair count")
-            require(type(ext["pair_tokens"]) is int and ext["pair_tokens"] >= 0,
-                    "invalid executed token count")
+            require(
+                math.isclose(seconds, ext["seconds"], rel_tol=0, abs_tol=1e-9),
+                "encoder receipt time detached from cache bill",
+            )
+            require(
+                type(ext["pairs"]) is int and ext["pairs"] >= 0,
+                "invalid executed pair count",
+            )
+            require(
+                type(ext["pair_tokens"]) is int and ext["pair_tokens"] >= 0,
+                "invalid executed token count",
+            )
         grouped[backend].append(cost)
     encoders = {}
     for backend in sorted(caches):
@@ -48,16 +58,26 @@ def audit_resources(report, encoding):
         hit = sum(x["cache_hit"] for x in log)
         misses = len(log) - hit
         recorded = caches[backend]
-        require(recorded["hits"] == hit, "cache hits differ from immutable encoding records")
-        require(type(recorded["misses"]) is int and recorded["misses"] >= misses,
-                "cache misses less than successful encoded requests")
-        require(type(recorded["evictions"]) is int and recorded["evictions"] >= 0,
-                "invalid cache eviction count")
-        require(recorded["retained_estimated_bytes"] <= recorded["maximum_bytes"]
-                and recorded["retained_estimated_bytes"] >= 0,
-                "cache budget exceeded")
-        require(type(weights[backend]) is int and weights[backend] > 0,
-                "unknown or invalid backend memory")
+        require(
+            recorded["hits"] == hit, "cache hits differ from immutable encoding records"
+        )
+        require(
+            type(recorded["misses"]) is int and recorded["misses"] >= misses,
+            "cache misses less than successful encoded requests",
+        )
+        require(
+            type(recorded["evictions"]) is int and recorded["evictions"] >= 0,
+            "invalid cache eviction count",
+        )
+        require(
+            recorded["retained_estimated_bytes"] <= recorded["maximum_bytes"]
+            and recorded["retained_estimated_bytes"] >= 0,
+            "cache budget exceeded",
+        )
+        require(
+            type(weights[backend]) is int and weights[backend] > 0,
+            "unknown or invalid backend memory",
+        )
         extracts = [x["extraction"] for x in log if not x["cache_hit"]]
         encoders[backend] = dict(
             resident_model_weight_bytes=weights[backend],
@@ -67,38 +87,53 @@ def audit_resources(report, encoding):
             unmatched_or_failed_encoder_misses=recorded["misses"] - misses,
             executed_query_candidate_pairs=sum(e["pairs"] for e in extracts),
             executed_pair_tokens=sum(e["pair_tokens"] for e in extracts),
-            measured_successful_encoding_seconds=math.fsum(e["seconds"] for e in extracts),
+            measured_successful_encoding_seconds=math.fsum(
+                e["seconds"] for e in extracts
+            ),
             retained_cache_estimated_bytes=recorded["retained_estimated_bytes"],
             cache_allocator_overhead_unmeasured=True,
             cold_start_included_in_encoding_seconds=False,
         )
 
-    heads = defaultdict(lambda: dict(
-        successful_sessions=0, failed_sessions=0, attempted_training_seconds=0.0,
-        sgd_optimizer_steps=0, prototype_examples_consolidated=0,
-        consumed_training_iterations=0, persisted_head_artifact_bytes=0,
-        maximum_reported_gradient_bytes=0, maximum_reported_parameter_bytes=0,
-        maximum_reported_optimizer_bytes=0,
-    ))
+    heads = defaultdict(
+        lambda: dict(
+            successful_sessions=0,
+            failed_sessions=0,
+            attempted_training_seconds=0.0,
+            sgd_optimizer_steps=0,
+            prototype_examples_consolidated=0,
+            consumed_training_iterations=0,
+            persisted_head_artifact_bytes=0,
+            maximum_reported_gradient_bytes=0,
+            maximum_reported_parameter_bytes=0,
+            maximum_reported_optimizer_bytes=0,
+        )
+    )
     for row in report["learning"]:
         arm = row["arm"]
         require(isinstance(arm, str) and arm, "invalid Head arm")
         ledger = heads[arm]
         ledger["attempted_training_seconds"] += finite_nonnegative(
-            row["inclusive_attempt_seconds"], "Head fitting wall time")
+            row["inclusive_attempt_seconds"], "Head fitting wall time"
+        )
         if row["status"] == "succeeded":
             ledger["successful_sessions"] += 1
             receipt = row["receipt"]
-            require(type(receipt["consumed_steps"]) is int and
-                    receipt["consumed_steps"] >= 0, "invalid Head optimizer steps")
+            require(
+                type(receipt["consumed_steps"]) is int
+                and receipt["consumed_steps"] >= 0,
+                "invalid Head optimizer steps",
+            )
             ledger["consumed_training_iterations"] += receipt["consumed_steps"]
             if arm == "prototype":
                 ledger["prototype_examples_consolidated"] += receipt["consumed_steps"]
             elif arm != "frozen_rerank":
                 ledger["sgd_optimizer_steps"] += receipt["consumed_steps"]
             else:
-                require(receipt["consumed_steps"] == 0,
-                        "frozen baseline has nonzero training iterations")
+                require(
+                    receipt["consumed_steps"] == 0,
+                    "frozen baseline has nonzero training iterations",
+                )
             ledger["persisted_head_artifact_bytes"] += row["artifact_bytes"]
             for dest, name in (
                 ("maximum_reported_gradient_bytes", "gradient_bytes"),
@@ -114,10 +149,12 @@ def audit_resources(report, encoding):
 
     reader = report["reader"]
     duration = finite_nonnegative(reader["measured_call_seconds"], "Reader calls")
-    require(type(reader["actual_attempts"]) is int
-            and type(reader["cache_hits"]) is int
-            and reader["actual_attempts"] >= reader["actual_successes"] >= 0,
-            "Reader counter inventory missing or invalid")
+    require(
+        type(reader["actual_attempts"]) is int
+        and type(reader["cache_hits"]) is int
+        and reader["actual_attempts"] >= reader["actual_successes"] >= 0,
+        "Reader counter inventory missing or invalid",
+    )
     index = report["index_costs"]
     require(isinstance(index, list), "index cost inventory absent")
     index_seconds, index_bytes = 0.0, 0

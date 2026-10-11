@@ -8,7 +8,12 @@ import unittest
 import torch
 
 from source_recall_likelihood import (
-    ARMS, COMPLETIONS, REFUSAL, WORDINGS, conditional_nll, probe
+    ARMS,
+    COMPLETIONS,
+    REFUSAL,
+    WORDINGS,
+    conditional_nll,
+    probe,
 )
 from test_experience_memory import source
 from test_source_recall_probe import FakeReader
@@ -28,16 +33,23 @@ class LikelihoodTests(unittest.TestCase):
 
     def run_probe(self, scorer):
         return probe(
-            self.reader, self.documents, self.output,
-            snapshot_sha="a" * 64, writer_source="b" * 40,
-            source_commit="c" * 40, maximum=2, scorer=scorer
+            self.reader,
+            self.documents,
+            self.output,
+            snapshot_sha="a" * 64,
+            writer_source="b" * 40,
+            source_commit="c" * 40,
+            maximum=2,
+            scorer=scorer,
         )
 
     @staticmethod
     def scored(reader, prompt, completion, arm):
         is_target = completion != REFUSAL
-        nll = (0.6 if arm == "base" else 0.3) if is_target else (
-            0.2 if arm == "base" else 0.4
+        nll = (
+            (0.6 if arm == "base" else 0.3)
+            if is_target
+            else (0.2 if arm == "base" else 0.4)
         )
         return dict(
             mean_nll=nll,
@@ -55,13 +67,16 @@ class LikelihoodTests(unittest.TestCase):
             comparison = result["score_comparisons"][wording]
             self.assertEqual(comparison["complete_base_adapter_pairs"], 2)
             self.assertEqual(comparison["target_mean_nll_decreased_count"], 2)
-            self.assertEqual(comparison["relative_target_refusal_margin_improved_count"], 2)
+            self.assertEqual(
+                comparison["relative_target_refusal_margin_improved_count"], 2
+            )
             self.assertAlmostEqual(comparison["mean_target_nll_change"], 0.3)
             self.assertAlmostEqual(comparison["mean_relative_margin_change"], 0.5)
         plan = json.loads((self.output / "plan.json").read_text())
-        rows = [json.loads(line) for line in (
-            self.output / "raw-likelihoods.jsonl"
-        ).read_text().splitlines()]
+        rows = [
+            json.loads(line)
+            for line in (self.output / "raw-likelihoods.jsonl").read_text().splitlines()
+        ]
         self.assertEqual({r["wording"] for r in rows}, set(WORDINGS))
         self.assertEqual({r["arm"] for r in rows}, set(ARMS))
         self.assertEqual({r["completion_kind"] for r in rows}, set(COMPLETIONS))
@@ -89,18 +104,27 @@ class LikelihoodTests(unittest.TestCase):
             self.run_probe(invalid)
         result = json.loads((self.output / "report.json").read_text())
         self.assertEqual(result["completed_records"], 12)
-        self.assertEqual(result["score_comparisons"]["training"]["complete_base_adapter_pairs"], 0)
-        self.assertEqual(result["score_comparisons"]["paraphrase"]["missing_or_failed_scopes"], 2)
+        self.assertEqual(
+            result["score_comparisons"]["training"]["complete_base_adapter_pairs"], 0
+        )
+        self.assertEqual(
+            result["score_comparisons"]["paraphrase"]["missing_or_failed_scopes"], 2
+        )
 
     def test_scope_and_provenance_reject_before_any_scoring(self):
         invoked = []
-        for docs, sha in ((self.documents[:1], "a" * 64),
-                          (self.documents, "missing-sha")):
+        for docs, sha in (
+            (self.documents[:1], "a" * 64),
+            (self.documents, "missing-sha"),
+        ):
             with self.subTest(sha=sha, scope_count=len(docs)):
                 with self.assertRaises(ValueError):
                     probe(
-                        self.reader, docs, self.output,
-                        snapshot_sha=sha, writer_source="b" * 40,
+                        self.reader,
+                        docs,
+                        self.output,
+                        snapshot_sha=sha,
+                        writer_source="b" * 40,
                         source_commit="c" * 40,
                         scorer=lambda *args: invoked.append(True),
                     )
@@ -123,8 +147,17 @@ class LikelihoodTests(unittest.TestCase):
                 self.assertTrue(0 <= score["mean_nll"] < float("inf"))
                 self.assertEqual(score["supervised_tokens"], 2)
                 self.assertEqual(score["input_tokens"], 5)
-        self.assertTrue(all(torch.equal(p, before[name]) for name, p in model.model.named_parameters()))
-        self.assertTrue(all(not p.requires_grad and p.grad is None for p in model.model.parameters()))
+        self.assertTrue(
+            all(
+                torch.equal(p, before[name])
+                for name, p in model.model.named_parameters()
+            )
+        )
+        self.assertTrue(
+            all(
+                not p.requires_grad and p.grad is None for p in model.model.parameters()
+            )
+        )
 
 
 if __name__ == "__main__":

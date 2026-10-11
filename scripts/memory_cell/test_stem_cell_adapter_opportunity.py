@@ -23,19 +23,25 @@ def fixture():
             family="family-%d" % (i % 6),
             candidate_ids=("evidence-0", "evidence-1"),
         )
-        rows.append(Row(
-            features=feature,
-            positive_indices=() if i in no_pair else (0,),
-        ))
-    warm = {x.features.question_id for x in rows
-            if int(x.features.question_id.split("-")[1]) < 16
-            and x.positive_indices}
+        rows.append(
+            Row(
+                features=feature,
+                positive_indices=() if i in no_pair else (0,),
+            )
+        )
+    warm = {
+        x.features.question_id
+        for x in rows
+        if int(x.features.question_id.split("-")[1]) < 16 and x.positive_indices
+    }
     adapters = {
         "lineage": dict(prepared_questions=sorted(warm)),
-        "independent-general": dict(prepared_questions=sorted(
-            x for x in warm if routes[x] == "general")),
-        "independent-temporal": dict(prepared_questions=sorted(
-            x for x in warm if routes[x] == "temporal")),
+        "independent-general": dict(
+            prepared_questions=sorted(x for x in warm if routes[x] == "general")
+        ),
+        "independent-temporal": dict(
+            prepared_questions=sorted(x for x in warm if routes[x] == "temporal")
+        ),
     }
     return questions, rows, routes, adapters
 
@@ -63,9 +69,7 @@ class OpportunityTests(unittest.TestCase):
                 adapters["lineage"]["prepared_questions"].pop()
             else:
                 adapters["lineage"]["prepared_questions"].append("train-46")
-            with self.subTest(mode=mode), self.assertRaisesRegex(
-                ValueError, "lineage"
-            ):
+            with self.subTest(mode=mode), self.assertRaisesRegex(ValueError, "lineage"):
                 eligible_pairs_by_stage(qs, rows, routes, adapters)
 
     def test_independent_cell_cross_routing_is_rejected(self):
@@ -83,8 +87,9 @@ class OpportunityTests(unittest.TestCase):
                 rows.append(rows[0])
             elif mode == "unregistered":
                 rows[0] = Row(
-                    features=Row(question_id="test-leak", family="test",
-                                 candidate_ids=("a", "b")),
+                    features=Row(
+                        question_id="test-leak", family="test", candidate_ids=("a", "b")
+                    ),
                     positive_indices=(0,),
                 )
             else:

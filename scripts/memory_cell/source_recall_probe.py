@@ -48,7 +48,10 @@ def actual_generate(reader, prompt, mode):
 
     if mode not in ARMS or not prompt:
         raise ValueError("unregistered source probe")
-    if len(prompt) + GENERATION["max_new_tokens"] > reader.model.config.max_position_embeddings:
+    if (
+        len(prompt) + GENERATION["max_new_tokens"]
+        > reader.model.config.max_position_embeddings
+    ):
         raise ValueError("probe would overflow model position limit")
     x = torch.tensor([prompt], dtype=torch.long)
     start = time.perf_counter()
@@ -60,7 +63,7 @@ def actual_generate(reader, prompt, mode):
             eos_token_id=reader.tokenizer.eos_token_id,
             pad_token_id=reader.tokenizer.eos_token_id,
         )
-    generated = output[0, len(prompt):].tolist()
+    generated = output[0, len(prompt) :].tolist()
     answer = reader.tokenizer.decode(
         generated, skip_special_tokens=True, clean_up_tokenization_spaces=False
     )
@@ -69,9 +72,20 @@ def actual_generate(reader, prompt, mode):
     return answer, len(generated), time.perf_counter() - start
 
 
-def probe(reader, documents, output, *, snapshot_sha, writer_source, source_commit,
-          revision=2, maximum=MAX_SCOPES, generate=actual_generate,
-          question_mode="training", training=None):
+def probe(
+    reader,
+    documents,
+    output,
+    *,
+    snapshot_sha,
+    writer_source,
+    source_commit,
+    revision=2,
+    maximum=MAX_SCOPES,
+    generate=actual_generate,
+    question_mode="training",
+    training=None,
+):
     if (
         question_mode not in ("training", "paraphrase")
         or output.exists()
@@ -92,7 +106,8 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
 
     exposure, schedule_digest = (
         verified_visits(documents, reader.tokenizer, training)
-        if training is not None else (None, None)
+        if training is not None
+        else (None, None)
     )
     source_ids = tuple(item["query"]["identity"] for item in selected)
     if exposure is not None and not set(source_ids).issubset(exposure):
@@ -153,40 +168,57 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
                     source_example_optimizer_visits=visits,
                     result_is_in_sample_training_recall=(
                         question_mode == "training" and visits > 0
-                        if visits is not None else None
+                        if visits is not None
+                        else None
                     ),
                 )
                 try:
                     answer, generated, seconds = generate(reader, prompt, arm)
                     if (
-                        not isinstance(answer, str) or not answer.strip()
-                        or type(generated) is not int or not 1 <= generated <= GENERATION["max_new_tokens"]
+                        not isinstance(answer, str)
+                        or not answer.strip()
+                        or type(generated) is not int
+                        or not 1 <= generated <= GENERATION["max_new_tokens"]
                         or type(seconds) not in (int, float)
-                        or not math.isfinite(seconds) or seconds < 0
+                        or not math.isfinite(seconds)
+                        or seconds < 0
                     ):
                         raise ValueError("invalid model generation receipt")
                     row.update(
-                        status="succeeded", answer=answer,
-                        generated_tokens=generated, seconds=seconds
+                        status="succeeded",
+                        answer=answer,
+                        generated_tokens=generated,
+                        seconds=seconds,
                     )
                 except Exception as error:
                     row.update(
-                        status="failed", error_type=type(error).__name__,
-                        error=str(error)[:512]
+                        status="failed",
+                        error_type=type(error).__name__,
+                        error=str(error)[:512],
                     )
-                journal.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+                journal.write(
+                    json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                )
                 journal.flush()
                 os.fsync(journal.fileno())
                 records.append(row)
     reader.verify_frozen()
-    targets = {q.identity: item["target"] for q, item in zip(questions, selected, strict=True)}
+    targets = {
+        q.identity: item["target"] for q, item in zip(questions, selected, strict=True)
+    }
     seen = {(r["question_id"], r["arm"]) for r in records}
     if len(seen) != len(records) or len(records) != len(questions) * len(ARMS):
         raise ValueError("incomplete probe census")
     stats = {
-        arm: dict(planned=len(questions), succeeded=0, failed=0,
-                  exact_targets=0, unsupported_citation_answers=0,
-                  output_tokens=0, observed_seconds=0.0)
+        arm: dict(
+            planned=len(questions),
+            succeeded=0,
+            failed=0,
+            exact_targets=0,
+            unsupported_citation_answers=0,
+            output_tokens=0,
+            observed_seconds=0.0,
+        )
         for arm in ARMS
     }
     # Keep answer quality split by actual optimizer exposure; an unvisited
@@ -201,7 +233,9 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
     results = {}
     for row in records:
         visits = row["source_example_optimizer_visits"]
-        category = "unknown" if visits is None else "visited" if visits > 0 else "unvisited"
+        category = (
+            "unknown" if visits is None else "visited" if visits > 0 else "unvisited"
+        )
         cohort = by_exposure[row["arm"]][category]
         cohort["planned"] += 1
         arm = row["arm"]
@@ -240,16 +274,22 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
         selected_train_facts=len(questions),
         training_exposure_verified=exposure is not None,
         training_schedule_sha256=schedule_digest,
-        visited_source_questions=sum(count > 0 for count in visit_counts if count is not None),
-        unvisited_source_questions=sum(count == 0 for count in visit_counts if count is not None),
+        visited_source_questions=sum(
+            count > 0 for count in visit_counts if count is not None
+        ),
+        unvisited_source_questions=sum(
+            count == 0 for count in visit_counts if count is not None
+        ),
         by_exposure=by_exposure,
         model_calls=len(records) - sum(s["failed"] for s in stats.values()),
         arms=stats,
         compared_pairs=paired,
         memory_wins=wins,
         memory_losses=losses,
-        unknown_pair_bounds=[(wins-losses-(len(questions)-paired))/len(questions),
-                             (wins-losses+(len(questions)-paired))/len(questions)],
+        unknown_pair_bounds=[
+            (wins - losses - (len(questions) - paired)) / len(questions),
+            (wins - losses + (len(questions) - paired)) / len(questions),
+        ],
         input_is_trained_source_question=question_mode == "training" and all_visited,
         source_derived_untrained_query_paraphrase=question_mode == "paraphrase",
         zero_task_questions_or_labels_consumed=True,
@@ -278,7 +318,9 @@ def main():
         parser.add_argument(name, type=Path)
     for name in ("source-sha", "stage-sha", "ready-sha", "source-commit"):
         parser.add_argument("--" + name, required=True)
-    parser.add_argument("--question-mode", choices=("training", "paraphrase"), default="training")
+    parser.add_argument(
+        "--question-mode", choices=("training", "paraphrase"), default="training"
+    )
     args = parser.parse_args()
     ready = read(args.snapshot / "READY.json", args.ready_sha)
     if (
@@ -297,7 +339,8 @@ def main():
         args.model / "reader", expected_inventory=ready["base_identity"]
     )
     LoRAReader.load_candidate(
-        reader, args.snapshot / "adapter",
+        reader,
+        args.snapshot / "adapter",
         expected_manifest_sha256=ready["manifest_sha"],
         scope=reader.scope,
         allowed_roots={d.root for d in docs},
@@ -309,7 +352,9 @@ def main():
     if reader.profile != ready["reader_profile"]:
         raise ValueError("source probe changed reader profile")
     probe(
-        reader, docs, args.output,
+        reader,
+        docs,
+        args.output,
         snapshot_sha=args.ready_sha,
         writer_source=ready["writer_source"],
         source_commit=args.source_commit,

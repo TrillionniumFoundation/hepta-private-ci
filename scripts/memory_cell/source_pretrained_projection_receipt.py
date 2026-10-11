@@ -64,9 +64,7 @@ def compare(sources, model_dir, output, *, source_sha, stage_sha, commit):
     parameters = {name: p for name, p in model.named_parameters() if p.requires_grad}
     if not parameters:
         raise ValueError("no trainable LoRA parameters")
-    start_values = {
-        name: p.detach().clone() for name, p in parameters.items()
-    }
+    start_values = {name: p.detach().clone() for name, p in parameters.items()}
     base_digest = reader.base_digest
     model.train()
     runs = []
@@ -108,11 +106,16 @@ def compare(sources, model_dir, output, *, source_sha, stage_sha, commit):
     first, second = runs
     if first["projection"]["input_tokens"] != second["projection"]["input_tokens"]:
         raise ValueError("source input exposure changed")
-    if first["projection"]["supervised_tokens"] != second["projection"]["supervised_tokens"]:
+    if (
+        first["projection"]["supervised_tokens"]
+        != second["projection"]["supervised_tokens"]
+    ):
         raise ValueError("source completion exposure changed")
     torch.testing.assert_close(
-        torch.tensor(first["loss"]), torch.tensor(second["loss"]),
-        rtol=0.001, atol=0.001
+        torch.tensor(first["loss"]),
+        torch.tensor(second["loss"]),
+        rtol=0.001,
+        atol=0.001,
     )
     max_grad_difference = 0.0
     max_update_difference = 0.0
@@ -133,9 +136,15 @@ def compare(sources, model_dir, output, *, source_sha, stage_sha, commit):
 
     if frozen_digest(model) != base_digest:
         raise ValueError("frozen pretrained base changed")
-    if not all(math.isfinite(x) for x in (
-        max_grad_difference, max_update_difference, first["loss"], second["loss"]
-    )):
+    if not all(
+        math.isfinite(x)
+        for x in (
+            max_grad_difference,
+            max_update_difference,
+            first["loss"],
+            second["loss"],
+        )
+    ):
         raise ValueError("nonfinite comparison")
     report = dict(
         schema="hepta.source-only.pretrained-loss-parity.v2",
@@ -166,7 +175,9 @@ def compare(sources, model_dir, output, *, source_sha, stage_sha, commit):
         maximum_gradient_absolute_difference=max_grad_difference,
         maximum_updated_parameter_absolute_difference=max_update_difference,
         full_projection_positions=first["projection"]["actual_projection_positions"],
-        selected_projection_positions=second["projection"]["actual_projection_positions"],
+        selected_projection_positions=second["projection"][
+            "actual_projection_positions"
+        ],
         first_step_seconds=first["seconds"],
         second_step_seconds=second["seconds"],
         measured_peak_rss_kib=second["peak_rss_kib"],
@@ -195,7 +206,9 @@ if __name__ == "__main__":
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args()
     compare(
-        args.sources, args.model, args.receipt,
+        args.sources,
+        args.model,
+        args.receipt,
         source_sha=args.source_sha,
         stage_sha=args.stage_sha,
         commit=args.source_commit,

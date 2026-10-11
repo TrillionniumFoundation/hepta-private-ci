@@ -25,33 +25,55 @@ EARLIER_SUCCESS = (
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
 ARMS = (
-    "frozen_rerank", "prototype", "linear", "gated",
-    "lineage_lora_gated", "independent_lora_gated",
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
 )
 REGISTRATION_KEYS = (
-    "schema", "dataset_sha256", "questions", "question_families",
-    "families", "routes", "arms", "curriculum_attempted_examples",
-    "cells", "reader_inventory", "retriever_inventory",
-    "generator_config", "generator_template_digest", "primary_policy",
+    "schema",
+    "dataset_sha256",
+    "questions",
+    "question_families",
+    "families",
+    "routes",
+    "arms",
+    "curriculum_attempted_examples",
+    "cells",
+    "reader_inventory",
+    "retriever_inventory",
+    "generator_config",
+    "generator_template_digest",
+    "primary_policy",
 )
 
 
 def index_census(plan, rows):
     """Census every registered question/arm/stage; duplicate is a hard error."""
     require(tuple(plan["arms"]) == ARMS, "unregistered arm ordering")
-    require(tuple(plan["curriculum_attempted_examples"]) == STAGES,
-            "unregistered checkpoint schedule")
+    require(
+        tuple(plan["curriculum_attempted_examples"]) == STAGES,
+        "unregistered checkpoint schedule",
+    )
     require(len(plan["questions"]["train"]) == 48, "training cut size drift")
     questions = {p: plan["questions"][p] for p in PHASES}
-    require(all(len(ids) == 8 and len(set(ids)) == 8
-                for ids in questions.values()), "phase cohort count drift")
+    require(
+        all(len(ids) == 8 and len(set(ids)) == 8 for ids in questions.values()),
+        "phase cohort count drift",
+    )
     registered = [q for ids in plan["questions"].values() for q in ids]
-    require(len(registered) == len(set(registered)) == 80,
-            "question identity duplication across partitions")
+    require(
+        len(registered) == len(set(registered)) == 80,
+        "question identity duplication across partitions",
+    )
     expected = {
         (stage, phase, qid, arm)
-        for stage in STAGES for phase in PHASES
-        for qid in questions[phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for qid in questions[phase]
+        for arm in ARMS
     }
     indexed = {}
     for row in rows:
@@ -59,8 +81,10 @@ def index_census(plan, rows):
         require(key not in indexed, "duplicate policy attempt")
         require(row["status"] in ("failed", "succeeded"), "unknown policy status")
         indexed[key] = row
-    require(len(indexed) == 576 and set(indexed) == expected,
-            "missing or unregistered policy identity")
+    require(
+        len(indexed) == 576 and set(indexed) == expected,
+        "missing or unregistered policy identity",
+    )
     return indexed
 
 
@@ -76,8 +100,10 @@ def candidate_distribution(plan, frozen_encoding):
         require(qid in expected, "unknown frozen Encoder query")
         n = row["cost"]["extraction"]["pairs"]
         require(type(n) is int and 0 <= n <= 64, "invalid frozen candidate count")
-        require(qid not in seen or seen[qid] == n,
-                "candidate cardinality changed on repeated original encoding")
+        require(
+            qid not in seen or seen[qid] == n,
+            "candidate cardinality changed on repeated original encoding",
+        )
         seen[qid] = n
     require(set(seen) == set(expected), "missing frozen question encoding")
     return {
@@ -95,20 +121,27 @@ def candidate_distribution(plan, frozen_encoding):
     }
 
 
-def compare_receipts(original_plan, original_rows, legacy_plan, legacy_rows,
-                     legacy_encoding):
+def compare_receipts(
+    original_plan, original_rows, legacy_plan, legacy_rows, legacy_encoding
+):
     for field in REGISTRATION_KEYS:
-        require(original_plan[field] == legacy_plan[field],
-                "cohort, Reader, model or experiment registration drift: " + field)
+        require(
+            original_plan[field] == legacy_plan[field],
+            "cohort, Reader, model or experiment registration drift: " + field,
+        )
     first = index_census(original_plan, original_rows)
     later = index_census(legacy_plan, legacy_rows)
-    before, after = Counter(x["status"] for x in first.values()), Counter(
-        x["status"] for x in later.values()
+    before, after = (
+        Counter(x["status"] for x in first.values()),
+        Counter(x["status"] for x in later.values()),
     )
-    require(before == {"succeeded": 396, "failed": 180},
-            "original policy status totals changed")
-    require(after == {"succeeded": 576},
-            "legacy success artifact is not a complete matrix")
+    require(
+        before == {"succeeded": 396, "failed": 180},
+        "original policy status totals changed",
+    )
+    require(
+        after == {"succeeded": 576}, "legacy success artifact is not a complete matrix"
+    )
 
     exact_answer_preservations = 0
     cross_run_selection_changes = []
@@ -123,10 +156,15 @@ def compare_receipts(original_plan, original_rows, legacy_plan, legacy_rows,
                 old["selected"] == new["selected"]
                 and old["answer"] == new["answer"]
                 and a["delivered_evidence"] == b["delivered_evidence"]
-                and all(a[name] == b[name] for name in (
-                    "generator_identity", "generator_profile",
-                    "input_ids_digest", "generated_ids_digest",
-                )),
+                and all(
+                    a[name] == b[name]
+                    for name in (
+                        "generator_identity",
+                        "generator_profile",
+                        "input_ids_digest",
+                        "generated_ids_digest",
+                    )
+                ),
                 "previously successful raw Reader output or request was rewritten",
             )
             exact_answer_preservations += 1
@@ -139,8 +177,10 @@ def compare_receipts(original_plan, original_rows, legacy_plan, legacy_rows,
                 for qid in legacy_plan["questions"][phase]:
                     base = later[(stage, phase, qid, ARMS[0])]
                     candidate = later[(stage, phase, qid, arm)]
-                    require(base["family"] == candidate["family"],
-                            "matched frozen source-family changed")
+                    require(
+                        base["family"] == candidate["family"],
+                        "matched frozen source-family changed",
+                    )
                     total += 1
                     changed += base["selected"] != candidate["selected"]
                     changed_answer += base["answer"] != candidate["answer"]
@@ -180,12 +220,17 @@ def audit_two_zip_paths(original_path, legacy_path):
         legacy = PinnedArchive(legacy_path, EARLIER_SUCCESS[2])
         try:
             for bundle, (source, tree, _) in (
-                (original, ORIGINAL), (legacy, EARLIER_SUCCESS)
+                (original, ORIGINAL),
+                (legacy, EARLIER_SUCCESS),
             ):
-                require(bundle.read("tested-commit.txt").decode().strip() == source,
-                        "generating commit pin drift")
-                require(bundle.read("tested-tree.txt").decode().strip() == tree,
-                        "generating tree pin drift")
+                require(
+                    bundle.read("tested-commit.txt").decode().strip() == source,
+                    "generating commit pin drift",
+                )
+                require(
+                    bundle.read("tested-tree.txt").decode().strip() == tree,
+                    "generating tree pin drift",
+                )
             result = compare_receipts(
                 original.json("comparison/preregistered.json"),
                 original.jsonl("comparison/policy-predictions.jsonl"),
@@ -202,11 +247,13 @@ def audit_two_zip_paths(original_path, legacy_path):
             # The earlier successful runner called its generator directly,
             # without the later ExactReaderCache's before-call time admission.
             runner = legacy.read("source/stem_cell_trial.py").decode()
-            require("def generate(q, evidence, record_key):" in runner
-                    and "cache_key = digest(" in runner
-                    and "ExactReaderCache" not in runner
-                    and "source_not_after_question" not in runner,
-                    "legacy Reader-admission implementation unexpectedly changed")
+            require(
+                "def generate(q, evidence, record_key):" in runner
+                and "cache_key = digest(" in runner
+                and "ExactReaderCache" not in runner
+                and "source_not_after_question" not in runner,
+                "legacy Reader-admission implementation unexpectedly changed",
+            )
             return result
         finally:
             legacy.close()

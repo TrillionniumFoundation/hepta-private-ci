@@ -157,7 +157,9 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(kind, "no-admitted-literal-reference-span")
 
     def test_future_source_cannot_be_privileged_reference(self):
-        doc = SimpleNamespace(identity="source", observed_at="2023-01-03", content="Paris")
+        doc = SimpleNamespace(
+            identity="source", observed_at="2023-01-03", content="Paris"
+        )
         source = SimpleNamespace(history=lambda q: [doc])
         query = SimpleNamespace(observed_at="2023-01-02")
         target = SimpleNamespace(
@@ -167,7 +169,6 @@ class ProtocolTests(unittest.TestCase):
             answer="Paris",
         )
         self.assertIsNone(oracle_sources(source, query, target)[0])
-
 
     def test_privileged_reference_uses_native_calendar_order(self):
         # Lexical ordering of the native LoCoMo grammar would reject April
@@ -190,6 +191,7 @@ class ProtocolTests(unittest.TestCase):
         evidence, kind = oracle_sources(source, query, target)
         self.assertEqual(kind, "native-source-literal-span")
         self.assertIsNotNone(evidence)
+
 
 if __name__ == "__main__":
     unittest.main()

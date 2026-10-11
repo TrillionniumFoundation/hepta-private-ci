@@ -86,7 +86,8 @@ def compact_report(full):
                     r["strict_task_success"] is True
                     and r["program_declared_support_cited"] is True
                     for r in arm_rows
-                ) != counts["correct_with_full_program_declared_citations"]
+                )
+                != counts["correct_with_full_program_declared_citations"]
             ):
                 raise ValueError(
                     "aggregated citation counts detached from original rows"

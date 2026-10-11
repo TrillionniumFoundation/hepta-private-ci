@@ -18,9 +18,7 @@ def _parse_observation(value):
     if re.fullmatch(r"\d{4}(?:-\d{2}-\d{2}|/\d{2}/\d{2})", value):
         normalized = value.replace("/", "-")
         return datetime.strptime(normalized, "%Y-%m-%d"), "day", False
-    if re.fullmatch(
-        r"\d{1,2}:\d{2} [aApP][mM] on \d{1,2} [A-Za-z]+, \d{4}", value
-    ):
+    if re.fullmatch(r"\d{1,2}:\d{2} [aApP][mM] on \d{1,2} [A-Za-z]+, \d{4}", value):
         for fmt in ("%I:%M %p on %d %B, %Y", "%I:%M %p on %d %b, %Y"):
             try:
                 return datetime.strptime(value, fmt), "minute", False
@@ -37,9 +35,7 @@ def _parse_observation(value):
     )
     if native:
         year, month, day, weekday, hour, minute = native.groups()
-        parsed = datetime(
-            int(year), int(month), int(day), int(hour), int(minute)
-        )
+        parsed = datetime(int(year), int(month), int(day), int(hour), int(minute))
         if ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")[
             parsed.weekday()
         ] != weekday:
@@ -63,9 +59,7 @@ def _parse_observation(value):
 def source_not_after_question(source_observed_at, question_observed_at):
     """Fail closed when date formats are incomparable; do not truncate times."""
     source, precision, aware = _parse_observation(source_observed_at)
-    question, target_precision, target_aware = _parse_observation(
-        question_observed_at
-    )
+    question, target_precision, target_aware = _parse_observation(question_observed_at)
     if precision != target_precision or aware != target_aware:
         raise ValueError("incomparable observation precision or timezone")
     return source <= question

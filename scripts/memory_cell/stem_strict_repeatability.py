@@ -23,8 +23,12 @@ LATER = (
     133,
 )
 ARMS = (
-    "frozen_rerank", "prototype", "linear", "gated",
-    "lineage_lora_gated", "independent_lora_gated",
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
 )
 PHASES = ("select", "retention", "test", "transfer")
 STAGES = (16, 32, 48)
@@ -43,112 +47,168 @@ def _key(row):
 
 def compare_plan(old, new):
     """Only the generating SHA and new post-policy null probe may differ."""
-    require(set(new) == set(old) | {"null_diagnostic"},
-            "unregistered experimental configuration field changed")
-    require(old.get("source_commit") == EARLIER[0]
-            and new.get("source_commit") == LATER[0],
-            "unbound original generating source")
-    require(all(old[k] == new[k] for k in old if k != "source_commit"),
-            "frozen dataset/model/cohort/Reader/curriculum config drift")
-    require(tuple(old["arms"]) == ARMS
-            and tuple(old["curriculum_attempted_examples"]) == STAGES
-            and all(len(old["questions"][phase]) == 8 for phase in PHASES)
-            and len(old["questions"]["train"]) == 48,
-            "original 80-task native curriculum changed")
-    require("null" in new["null_diagnostic"].lower(),
-            "new observation was not the declared null-only diagnostic")
+    require(
+        set(new) == set(old) | {"null_diagnostic"},
+        "unregistered experimental configuration field changed",
+    )
+    require(
+        old.get("source_commit") == EARLIER[0] and new.get("source_commit") == LATER[0],
+        "unbound original generating source",
+    )
+    require(
+        all(old[k] == new[k] for k in old if k != "source_commit"),
+        "frozen dataset/model/cohort/Reader/curriculum config drift",
+    )
+    require(
+        tuple(old["arms"]) == ARMS
+        and tuple(old["curriculum_attempted_examples"]) == STAGES
+        and all(len(old["questions"][phase]) == 8 for phase in PHASES)
+        and len(old["questions"]["train"]) == 48,
+        "original 80-task native curriculum changed",
+    )
+    require(
+        "null" in new["null_diagnostic"].lower(),
+        "new observation was not the declared null-only diagnostic",
+    )
 
 
 def compare_policy_pair(before, after):
     """Reject answer, source, input, weight, and caching changes; ignore clocks."""
-    require(before["status"] == after["status"] == "succeeded",
-            "not a complete original matched policy answer")
-    require(set(after) - set(before) == {"null_counterfactual"}
-            and not (set(before) - set(after)),
-            "unregistered policy observation or deleted original field")
-    require(all(before[field] == after[field]
-                for field in before
-                if field not in TIMED_ROW_FIELDS | {"receipt"}),
-            "original source choice, answer, Encoder/Head or pool changed")
+    require(
+        before["status"] == after["status"] == "succeeded",
+        "not a complete original matched policy answer",
+    )
+    require(
+        set(after) - set(before) == {"null_counterfactual"}
+        and not (set(before) - set(after)),
+        "unregistered policy observation or deleted original field",
+    )
+    require(
+        all(
+            before[field] == after[field]
+            for field in before
+            if field not in TIMED_ROW_FIELDS | {"receipt"}
+        ),
+        "original source choice, answer, Encoder/Head or pool changed",
+    )
     original, current = before["receipt"], after["receipt"]
-    require(set(original) == set(current)
-            and all(original[field] == current[field]
-                    for field in original if field not in TIMED_READER_FIELDS),
-            "Reader input, model/prompt, generated tokens or cache reuse changed")
-    require(original["generator_parameter_updates"] == 0
-            and original["semantic_citation_precision"] is None
-            and original["production_accepted"] is False
-            and len(original["delivered_evidence"]) == 1,
-            "experimental Reader must remain frozen and source-bound")
+    require(
+        set(original) == set(current)
+        and all(
+            original[field] == current[field]
+            for field in original
+            if field not in TIMED_READER_FIELDS
+        ),
+        "Reader input, model/prompt, generated tokens or cache reuse changed",
+    )
+    require(
+        original["generator_parameter_updates"] == 0
+        and original["semantic_citation_precision"] is None
+        and original["production_accepted"] is False
+        and len(original["delivered_evidence"]) == 1,
+        "experimental Reader must remain frozen and source-bound",
+    )
     null = after["null_counterfactual"]
-    require(null["schema"] == "hepta.stem-label-free-null-counterfactual.v1"
-            and null["observed_forced_top1_index"] == after["selected"]
-            and null["original_forced_top1_unchanged"] is True
-            and null["actual_reader_answer_not_recomputed"] is True
-            and null["posthoc_labels_used_to_select_cutoff"] is False,
-            "supplementary null observation modified actual policy answer")
+    require(
+        null["schema"] == "hepta.stem-label-free-null-counterfactual.v1"
+        and null["observed_forced_top1_index"] == after["selected"]
+        and null["original_forced_top1_unchanged"] is True
+        and null["actual_reader_answer_not_recomputed"] is True
+        and null["posthoc_labels_used_to_select_cutoff"] is False,
+        "supplementary null observation modified actual policy answer",
+    )
 
 
 def _indexed(attempts, plan):
     expected = {
         (stage, phase, q, arm)
-        for stage in STAGES for phase in PHASES
-        for q in plan["questions"][phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for q in plan["questions"][phase]
+        for arm in ARMS
     }
     observed = {}
     for row in attempts:
         k = _key(row)
-        require(k in expected and k not in observed,
-                "duplicate or unregistered original policy attempt")
+        require(
+            k in expected and k not in observed,
+            "duplicate or unregistered original policy attempt",
+        )
         observed[k] = row
-    require(len(attempts) == 576 and set(observed) == expected,
-            "incomplete original 576-case policy census")
+    require(
+        len(attempts) == 576 and set(observed) == expected,
+        "incomplete original 576-case policy census",
+    )
     return observed
 
 
 def compare_adapters(original, current):
-    require(set(original) == set(current) == {"receipts", "failures"}
-            and original["failures"] == current["failures"] == {},
-            "adapter train session unexpectedly failed")
-    require(set(original["receipts"]) == set(current["receipts"])
-            == {"lineage", "independent-general", "independent-temporal"},
-            "missing source-bound LoRA receipt")
+    require(
+        set(original) == set(current) == {"receipts", "failures"}
+        and original["failures"] == current["failures"] == {},
+        "adapter train session unexpectedly failed",
+    )
+    require(
+        set(original["receipts"])
+        == set(current["receipts"])
+        == {"lineage", "independent-general", "independent-temporal"},
+        "missing source-bound LoRA receipt",
+    )
     changed_allowed = {"reload_and_probe_seconds", "seconds", "admission_digest"}
     for key in original["receipts"]:
         a, b = original["receipts"][key], current["receipts"][key]
-        require(set(a) == set(b)
-                and all(a[k] == b[k] for k in a if k not in changed_allowed),
-                "LoRA base-weight, actual source examples or fitted tensor changed")
-    return {key: len(row["prepared_questions"])
-            for key, row in current["receipts"].items()}
+        require(
+            set(a) == set(b)
+            and all(a[k] == b[k] for k in a if k not in changed_allowed),
+            "LoRA base-weight, actual source examples or fitted tensor changed",
+        )
+    return {
+        key: len(row["prepared_questions"]) for key, row in current["receipts"].items()
+    }
 
 
 def audit_two_archives(a, b):
     """Inputs must be fully SHA-256-verified PinnedArchive instances."""
     for archive, (source, tree, _, members) in ((a, EARLIER), (b, LATER)):
-        require(archive.read("tested-commit.txt").decode().strip() == source
-                and archive.read("tested-tree.txt").decode().strip() == tree
-                and archive.manifest_entries == members,
-                "external generating commit/tree or manifest cardinality drift")
-    plan_a, plan_b = (a.json("comparison/preregistered.json"),
-                      b.json("comparison/preregistered.json"))
+        require(
+            archive.read("tested-commit.txt").decode().strip() == source
+            and archive.read("tested-tree.txt").decode().strip() == tree
+            and archive.manifest_entries == members,
+            "external generating commit/tree or manifest cardinality drift",
+        )
+    plan_a, plan_b = (
+        a.json("comparison/preregistered.json"),
+        b.json("comparison/preregistered.json"),
+    )
     compare_plan(plan_a, plan_b)
-    raw_a, raw_b = (_indexed(a.jsonl("comparison/policy-predictions.jsonl"), plan_a),
-                    _indexed(b.jsonl("comparison/policy-predictions.jsonl"), plan_b))
+    raw_a, raw_b = (
+        _indexed(a.jsonl("comparison/policy-predictions.jsonl"), plan_a),
+        _indexed(b.jsonl("comparison/policy-predictions.jsonl"), plan_b),
+    )
     for k, old in raw_a.items():
         compare_policy_pair(old, raw_b[k])
 
-    head_paths = {path for path in a.files if path.startswith("comparison/head-")
-                  and path.endswith(".json")}
-    require(len(head_paths) == 36
-            and head_paths.issubset(b.files)
-            and all(a.read(name) == b.read(name) for name in head_paths),
-            "persisted frozen/learned Head checkpoint bytes changed")
-    adapter_paths = {f"comparison/adapter-{n}/adapter.safetensors"
-                     for n in ("lineage", "independent-general", "independent-temporal")}
-    require(adapter_paths.issubset(a.files) and adapter_paths.issubset(b.files)
-            and all(a.read(f) == b.read(f) for f in adapter_paths),
-            "stored differentiated LoRA tensor bytes changed")
+    head_paths = {
+        path
+        for path in a.files
+        if path.startswith("comparison/head-") and path.endswith(".json")
+    }
+    require(
+        len(head_paths) == 36
+        and head_paths.issubset(b.files)
+        and all(a.read(name) == b.read(name) for name in head_paths),
+        "persisted frozen/learned Head checkpoint bytes changed",
+    )
+    adapter_paths = {
+        f"comparison/adapter-{n}/adapter.safetensors"
+        for n in ("lineage", "independent-general", "independent-temporal")
+    }
+    require(
+        adapter_paths.issubset(a.files)
+        and adapter_paths.issubset(b.files)
+        and all(a.read(f) == b.read(f) for f in adapter_paths),
+        "stored differentiated LoRA tensor bytes changed",
+    )
     static = (
         "comparison/training-dispositions.json",
         "comparison/feature-failures.json",
@@ -159,25 +219,45 @@ def audit_two_archives(a, b):
         "comparison/reader-paired-no-evidence.json",
         "comparison/adapter-pair-opportunities.json",
     )
-    require(all(a.read(path) == b.read(path) for path in static),
-            "TRAIN, original source admission or fixed-Reader evidence changed")
-    counts = compare_adapters(a.json("comparison/adapter-training.json"),
-                              b.json("comparison/adapter-training.json"))
-    old_report, new_report = (a.json("comparison/report.json"),
-                              b.json("comparison/report.json"))
-    require(old_report["production_accepted"] is False
-            and new_report["production_accepted"] is False
-            and old_report["semantic_citation_precision"] is None
-            and new_report["semantic_citation_precision"] is None
-            and old_report["logical_policy_attempts"] == 576
-            and new_report["logical_policy_attempts"] == 576,
-            "experimental result improperly promoted to semantic or production success")
-    for metric in ("actual_attempts", "actual_successes", "actual_failed_attempts", "cache_hits"):
-        require(old_report["reader"][metric] == new_report["reader"][metric],
-                "real frozen Reader invocation/cache count changed")
-    require(new_report["zero_offset_null_counterfactual"]["production_accepted"] is False
-            and new_report["zero_offset_null_counterfactual"]["original_policy_counts_preserved"] == 576,
-            "new null diagnostic falsely changed Reader/policy output")
+    require(
+        all(a.read(path) == b.read(path) for path in static),
+        "TRAIN, original source admission or fixed-Reader evidence changed",
+    )
+    counts = compare_adapters(
+        a.json("comparison/adapter-training.json"),
+        b.json("comparison/adapter-training.json"),
+    )
+    old_report, new_report = (
+        a.json("comparison/report.json"),
+        b.json("comparison/report.json"),
+    )
+    require(
+        old_report["production_accepted"] is False
+        and new_report["production_accepted"] is False
+        and old_report["semantic_citation_precision"] is None
+        and new_report["semantic_citation_precision"] is None
+        and old_report["logical_policy_attempts"] == 576
+        and new_report["logical_policy_attempts"] == 576,
+        "experimental result improperly promoted to semantic or production success",
+    )
+    for metric in (
+        "actual_attempts",
+        "actual_successes",
+        "actual_failed_attempts",
+        "cache_hits",
+    ):
+        require(
+            old_report["reader"][metric] == new_report["reader"][metric],
+            "real frozen Reader invocation/cache count changed",
+        )
+    require(
+        new_report["zero_offset_null_counterfactual"]["production_accepted"] is False
+        and new_report["zero_offset_null_counterfactual"][
+            "original_policy_counts_preserved"
+        ]
+        == 576,
+        "new null diagnostic falsely changed Reader/policy output",
+    )
     changes = Counter()
     paired_count = Counter()
     for stage in STAGES:
@@ -199,8 +279,10 @@ def audit_two_archives(a, b):
         identical_lora_adapter_tensors=len(adapter_paths),
         unchanged_original_training_and_source_retrieval=True,
         only_new_instrumentation="label-free zero-offset null counterfactual",
-        learned_per_arm={arm:dict(matched=paired_count[arm], changed_source=changes[arm])
-                         for arm in ARMS[1:]},
+        learned_per_arm={
+            arm: dict(matched=paired_count[arm], changed_source=changes[arm])
+            for arm in ARMS[1:]
+        },
         matched_reader_actual_executions=new_report["reader"]["actual_attempts"],
         matched_reader_cache_hits=new_report["reader"]["cache_hits"],
         observed_unique_adapter_pairs=counts,
@@ -212,6 +294,7 @@ def audit_two_archives(a, b):
 
 def audit_pinned_paths(earlier, later):
     from stem_audit_archive import PinnedArchive
+
     a, b = PinnedArchive(Path(earlier), EARLIER[2]), None
     try:
         b = PinnedArchive(Path(later), LATER[2])

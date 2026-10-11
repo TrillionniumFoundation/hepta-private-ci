@@ -19,8 +19,14 @@ SHA256 = "d2147964d4b916a01bfa0051dec3a3e9aaedb5b2864625c5f2a25db0c44f20e0"
 GRID = (0.0, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0)
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
+)
 
 
 def _require(condition, reason):
@@ -33,7 +39,8 @@ def audit_rank_opportunity(plan, predictions, experiment):
     questions = plan["questions"]
     _require(
         plan["source_commit"] == SOURCE
-        and plan["source_visibility_policy"] == "strict-as-of-before-index-and-every-Encoder-v1"
+        and plan["source_visibility_policy"]
+        == "strict-as-of-before-index-and-every-Encoder-v1"
         and tuple(plan["arms"]) == ARMS
         and tuple(plan["curriculum_attempted_examples"]) == STAGES
         and set(questions) == {"train", *PHASES}
@@ -42,27 +49,38 @@ def audit_rank_opportunity(plan, predictions, experiment):
         and len({q for values in questions.values() for q in values}) == 80,
         "registered strict-as-of model/question/curriculum drift",
     )
-    expected = {(stage, phase, q, arm)
-                for stage in STAGES for phase in PHASES
-                for q in questions[phase] for arm in ARMS}
+    expected = {
+        (stage, phase, q, arm)
+        for stage in STAGES
+        for phase in PHASES
+        for q in questions[phase]
+        for arm in ARMS
+    }
     observed = {}
     for row in predictions:
         key = row["stage"], row["phase"], row["question_id"], row["arm"]
-        _require(key in expected and key not in observed,
-                 "unknown or duplicate original policy row")
+        _require(
+            key in expected and key not in observed,
+            "unknown or duplicate original policy row",
+        )
         geo = row.get("selection_geometry")
-        _require(row["status"] == "succeeded" and isinstance(geo, dict)
-                 and geo.get("schema") == "hepta.stem-selection-geometry.v2"
-                 and geo.get("selected_index") == row.get("selected")
-                 and geo.get("has_ranking_competition") is True
-                 and type(geo.get("candidate_count")) is int
-                 and 2 <= geo["candidate_count"] <= 64
-                 and isinstance(row.get("pool_digest"), str)
-                 and bool(row["pool_digest"]),
-                 "missing true selected candidate or sealed ranking receipt")
+        _require(
+            row["status"] == "succeeded"
+            and isinstance(geo, dict)
+            and geo.get("schema") == "hepta.stem-selection-geometry.v2"
+            and geo.get("selected_index") == row.get("selected")
+            and geo.get("has_ranking_competition") is True
+            and type(geo.get("candidate_count")) is int
+            and 2 <= geo["candidate_count"] <= 64
+            and isinstance(row.get("pool_digest"), str)
+            and bool(row["pool_digest"]),
+            "missing true selected candidate or sealed ranking receipt",
+        )
         observed[key] = row
-    _require(set(observed) == expected and len(observed) == 576,
-             "incomplete original 576-attempt matrix")
+    _require(
+        set(observed) == expected and len(observed) == 576,
+        "incomplete original 576-attempt matrix",
+    )
     published = experiment["selection_geometry"]
     output = {}
     for stage in STAGES:
@@ -95,9 +113,12 @@ def audit_rank_opportunity(plan, predictions, experiment):
                     if limit is None:
                         counts["cannot_reverse_frozen_by_nonnegative_scale"] += 1
                     else:
-                        _require(type(limit) in (int, float)
-                                 and math.isfinite(limit) and limit >= 0,
-                                 "nonfinite, invalid or negative flip threshold")
+                        _require(
+                            type(limit) in (int, float)
+                            and math.isfinite(limit)
+                            and limit >= 0,
+                            "nonfinite, invalid or negative flip threshold",
+                        )
                         bounds.append(limit)
                         for alpha in GRID:
                             # Infimum can be a no-flip tie boundary, so keep
@@ -107,20 +128,24 @@ def audit_rank_opportunity(plan, predictions, experiment):
                             if limit <= alpha:
                                 counts[f"at_or_below_{alpha:g}"] += 1
                     frozen_gap = geom["frozen_top1_gap"]
-                    _require(type(frozen_gap) in (int, float)
-                             and math.isfinite(frozen_gap) and frozen_gap >= 0,
-                             "invalid frozen top-1 score gap")
+                    _require(
+                        type(frozen_gap) in (int, float)
+                        and math.isfinite(frozen_gap)
+                        and frozen_gap >= 0,
+                        "invalid frozen top-1 score gap",
+                    )
                     margins.append(frozen_gap)
                 key = f"{stage}/{phase}/{arm}"
                 archived = published[key]
-                _require(len(margins) == 8
-                         and archived["observed_pre_reader_decisions"] == 8
-                         and archived["changed_top1_count"]
-                         == counts["actual_top1_changed"]
-                         and archived["joint_direction_can_flip_count"] == len(bounds)
-                         and archived["joint_direction_cannot_flip_count"]
-                         == counts["cannot_reverse_frozen_by_nonnegative_scale"],
-                         "counterfactual receipt does not match source-pinned journal")
+                _require(
+                    len(margins) == 8
+                    and archived["observed_pre_reader_decisions"] == 8
+                    and archived["changed_top1_count"] == counts["actual_top1_changed"]
+                    and archived["joint_direction_can_flip_count"] == len(bounds)
+                    and archived["joint_direction_cannot_flip_count"]
+                    == counts["cannot_reverse_frozen_by_nonnegative_scale"],
+                    "counterfactual receipt does not match source-pinned journal",
+                )
                 output[key] = dict(
                     original_planned_questions=8,
                     actual_source_selection_changes=counts["actual_top1_changed"],
@@ -138,8 +163,7 @@ def audit_rank_opportunity(plan, predictions, experiment):
                         for alpha in GRID
                     },
                     possible_flip_at_or_below_grid={
-                        str(alpha): counts[f"at_or_below_{alpha:g}"]
-                        for alpha in GRID
+                        str(alpha): counts[f"at_or_below_{alpha:g}"] for alpha in GRID
                     },
                     **{
                         "no_source_truth_or_task_answer_read": True,
@@ -150,7 +174,8 @@ def audit_rank_opportunity(plan, predictions, experiment):
                 )
     return dict(
         schema="hepta.stem-archived-residual-scale-opportunity.v1",
-        generating_source=SOURCE, generating_tree=TREE,
+        generating_source=SOURCE,
+        generating_tree=TREE,
         actual_original_policy_attempts=576,
         original_policy_source_digest_not_reinterpreted=True,
         fixed_grid=GRID,
@@ -167,11 +192,14 @@ def audit_rank_opportunity(plan, predictions, experiment):
 def audit_zip(path):
     # Reuse the independently tested original ZIP byte/manifest validator.
     from stem_audit_archive import PinnedArchive
+
     archive = PinnedArchive(Path(path), SHA256)
     try:
-        _require(archive.read("tested-commit.txt").decode().strip() == SOURCE
-                 and archive.read("tested-tree.txt").decode().strip() == TREE,
-                 "generating source/tree SHA differs from externally pinned artifact")
+        _require(
+            archive.read("tested-commit.txt").decode().strip() == SOURCE
+            and archive.read("tested-tree.txt").decode().strip() == TREE,
+            "generating source/tree SHA differs from externally pinned artifact",
+        )
         report = audit_rank_opportunity(
             archive.json("comparison/preregistered.json"),
             archive.jsonl("comparison/policy-predictions.jsonl"),
@@ -193,9 +221,15 @@ def main():
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(report, stream, indent=2, ensure_ascii=False, allow_nan=False)
         stream.write("\n")
-    print(json.dumps(dict(schema=report["schema"],
-                          groups=len(report["groups"]),
-                          production_accepted=False)))
+    print(
+        json.dumps(
+            dict(
+                schema=report["schema"],
+                groups=len(report["groups"]),
+                production_accepted=False,
+            )
+        )
+    )
 
 
 if __name__ == "__main__":

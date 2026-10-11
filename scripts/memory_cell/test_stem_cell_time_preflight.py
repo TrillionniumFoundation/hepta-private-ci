@@ -50,15 +50,23 @@ class NativeTimePreflightTests(unittest.TestCase):
             Document("b", "b", "scope", "9:36 pm on 9 May, 2023"),
             Document("c", "c", "scope", "invalid"),
         )
-        result = native_chronology({"locomo": Corpus(
-            "sha", docs, (Question("first", "scope", "1:56 pm on 8 May, 2023"),)
-        )})
+        result = native_chronology(
+            {
+                "locomo": Corpus(
+                    "sha", docs, (Question("first", "scope", "1:56 pm on 8 May, 2023"),)
+                )
+            }
+        )
         self.assertEqual(result["datasets"]["locomo"]["accepted"], 1)
         self.assertEqual(result["datasets"]["locomo"]["future"], 1)
         self.assertEqual(result["datasets"]["locomo"]["unknown"], 1)
         self.assertFalse(result["all_observations_comparable_and_nonfuture"])
-        self.assertEqual(len(result["datasets"]["locomo"]["example_identity_digests"]["future"]), 1)
-        self.assertEqual(len(result["datasets"]["locomo"]["example_identity_digests"]["unknown"]), 1)
+        self.assertEqual(
+            len(result["datasets"]["locomo"]["example_identity_digests"]["future"]), 1
+        )
+        self.assertEqual(
+            len(result["datasets"]["locomo"]["example_identity_digests"]["unknown"]), 1
+        )
 
     def test_scope_does_not_leak_into_another_question(self):
         docs = (
@@ -96,13 +104,11 @@ class NativeTimePreflightTests(unittest.TestCase):
         self.assertEqual(result["actual_future_window_count"], 0)
 
     def test_longmemeval_original_minute_grammar_is_comparable(self):
-        doc = (Document("a", "root", "scope",
-                        "2023/05/20 (Sat) 02:21"),)
+        doc = (Document("a", "root", "scope", "2023/05/20 (Sat) 02:21"),)
         q = (Question("q", "scope", "2023/05/30 (Tue) 23:40"),)
         report = native_chronology({"longmemeval": Corpus("sha", doc, q)})
         self.assertEqual(report["datasets"]["longmemeval"]["accepted"], 1)
         self.assertEqual(report["datasets"]["longmemeval"]["unknown"], 0)
-
 
 
 if __name__ == "__main__":

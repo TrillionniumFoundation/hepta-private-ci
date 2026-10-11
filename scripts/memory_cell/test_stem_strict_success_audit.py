@@ -7,7 +7,11 @@ import unittest
 
 from stem_audit_archive import AuditError, PinnedArchive
 from stem_strict_success_audit import (
-    SOURCE, TREE, ZIP_SHA256, audit_records, audit_archive,
+    SOURCE,
+    TREE,
+    ZIP_SHA256,
+    audit_records,
+    audit_archive,
 )
 
 
@@ -110,13 +114,18 @@ class StrictCompletedNativeTests(unittest.TestCase):
                 dataset[5]["phases"]["test"]["support_missing_from_pool"] += 1
             elif damage == "source-scorer":
                 registered = next(
-                    x for x in dataset[5]["decisions"] if x["phase"] == "test"
+                    x
+                    for x in dataset[5]["decisions"]
+                    if x["phase"] == "test"
                     and x["weak_native_support_resolved"]
                     and not x["native_source_unanswerable"]
                 )
                 frozen = next(
-                    x for x in dataset[2] if x["stage"] == 48
-                    and x["phase"] == "test" and x["arm"] == "frozen_rerank"
+                    x
+                    for x in dataset[2]
+                    if x["stage"] == 48
+                    and x["phase"] == "test"
+                    and x["arm"] == "frozen_rerank"
                     and x["question_id"] == registered["question_id"]
                 )
                 frozen["source_choice_correct"] = 1 - frozen["source_choice_correct"]

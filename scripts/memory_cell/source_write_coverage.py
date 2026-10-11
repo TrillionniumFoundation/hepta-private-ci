@@ -52,17 +52,16 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
         kind = (
             "direct"
             if "curriculum" not in ex
-            else "two_hop" if ex["curriculum"] == TWO_HOP else "invalid"
+            else "two_hop"
+            if ex["curriculum"] == TWO_HOP
+            else "invalid"
         )
-        if kind == "invalid" or (
-            curriculum == "single_hop" and kind != "direct"
-        ):
+        if kind == "invalid" or (curriculum == "single_hop" and kind != "direct"):
             raise ValueError("example curriculum differs from admitted writer")
         kinds.append(kind)
-    if (
-        plan.get("prepared_digest") != digest(prepared)
-        or plan.get("groups_digest") != digest(groups)
-    ):
+    if plan.get("prepared_digest") != digest(prepared) or plan.get(
+        "groups_digest"
+    ) != digest(groups):
         raise ValueError("source schedule differs from prepared source examples")
     entries = plan.get("entries")
     if (
@@ -82,13 +81,9 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
     visits = [counts[i] for i in range(len(prepared))]
     if (
         plan.get("visits_per_example") != visits
-        or plan.get("unvisited_examples")
-        != [i for i, n in enumerate(visits) if not n]
-        or sum(len(prepared[i][0]) for i in entries)
-        != plan.get("planned_input_tokens")
-        or sum(
-            sum(label != -100 for label in prepared[i][1]) for i in entries
-        )
+        or plan.get("unvisited_examples") != [i for i, n in enumerate(visits) if not n]
+        or sum(len(prepared[i][0]) for i in entries) != plan.get("planned_input_tokens")
+        or sum(sum(label != -100 for label in prepared[i][1]) for i in entries)
         != plan.get("planned_supervised_tokens")
         or plan["planned_input_tokens"] > plan["token_ceiling"]
     ):
@@ -102,9 +97,7 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
             source_examples_seen_at_least_once=len(viewed),
             source_examples_unvisited=len(indices) - len(viewed),
             planned_updates=sum(visits[i] for i in indices),
-            planned_input_tokens=sum(
-                len(prepared[i][0]) * visits[i] for i in indices
-            ),
+            planned_input_tokens=sum(len(prepared[i][0]) * visits[i] for i in indices),
             planned_supervised_tokens=sum(
                 sum(label != -100 for label in prepared[i][1]) * visits[i]
                 for i in indices

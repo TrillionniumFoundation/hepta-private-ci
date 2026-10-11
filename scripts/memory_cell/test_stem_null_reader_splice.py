@@ -7,8 +7,14 @@ from native import digest
 from stem_native_null_ablation import observe_null_choice
 from stem_null_reader_splice import observed_zero_offset_reader_splice
 
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
+)
 PHASES = ("select", "retention", "test", "transfer")
 STAGES = (16, 32, 48)
 IDENTITY, PROFILE = "fixed-reader", "same-prompt"
@@ -17,44 +23,78 @@ IDENTITY, PROFILE = "fixed-reader", "same-prompt"
 def fixture():
     questions = {"train": [f"train-{i}" for i in range(48)]}
     questions.update({p: [f"{p}-{i}" for i in range(8)] for p in PHASES})
-    plan = dict(arms=list(ARMS), curriculum_attempted_examples=list(STAGES),
-                questions=questions)
-    targets = {q: NS(answer="BAR", evidence=("source",),
-                     unanswerable=False, unresolved_evidence=())
-               for phase in PHASES for q in questions[phase]}
+    plan = dict(
+        arms=list(ARMS), curriculum_attempted_examples=list(STAGES), questions=questions
+    )
+    targets = {
+        q: NS(
+            answer="BAR",
+            evidence=("source",),
+            unanswerable=False,
+            unresolved_evidence=(),
+        )
+        for phase in PHASES
+        for q in questions[phase]
+    }
     scored, controls = [], []
     for phase in PHASES:
         for q in questions[phase]:
-            query = dict(identity=q, content="What was it?", scope="scope-"+q,
-                         observed_at="2024-05-01")
-            controls.append(dict(
-                phase=phase, question_id=q, family="family-"+q,
-                status="succeeded", answer="BAR", evidence_count=0,
-                receipt=dict(
-                    generator_identity=IDENTITY, generator_profile=PROFILE,
-                    delivered_evidence=[], observable_query=query,
-                    canonical_request_digest=digest((
-                        IDENTITY, PROFILE, query, [],
-                    )),
-                    actual_reader_execution=True,
-                ),
-            ))
+            query = dict(
+                identity=q,
+                content="What was it?",
+                scope="scope-" + q,
+                observed_at="2024-05-01",
+            )
+            controls.append(
+                dict(
+                    phase=phase,
+                    question_id=q,
+                    family="family-" + q,
+                    status="succeeded",
+                    answer="BAR",
+                    evidence_count=0,
+                    receipt=dict(
+                        generator_identity=IDENTITY,
+                        generator_profile=PROFILE,
+                        delivered_evidence=[],
+                        observable_query=query,
+                        canonical_request_digest=digest(
+                            (
+                                IDENTITY,
+                                PROFILE,
+                                query,
+                                [],
+                            )
+                        ),
+                        actual_reader_execution=True,
+                    ),
+                )
+            )
             for stage in STAGES:
                 for arm in ARMS:
-                    scored.append(dict(
-                        stage=stage, phase=phase, question_id=q, arm=arm,
-                        family="family-"+q, status="succeeded", selected=0,
-                        answer="FOO",
-                        null_counterfactual=observe_null_choice(
-                            [2.0, 1.0, 3.0], ("A", "B"), 0
-                        ),
-                        receipt=dict(
-                            generator_identity=IDENTITY, generator_profile=PROFILE,
-                            observable_query=query, delivered_evidence=[
-                                dict(label="E1", excerpt="Some content.")
-                            ],
-                        ),
-                    ))
+                    scored.append(
+                        dict(
+                            stage=stage,
+                            phase=phase,
+                            question_id=q,
+                            arm=arm,
+                            family="family-" + q,
+                            status="succeeded",
+                            selected=0,
+                            answer="FOO",
+                            null_counterfactual=observe_null_choice(
+                                [2.0, 1.0, 3.0], ("A", "B"), 0
+                            ),
+                            receipt=dict(
+                                generator_identity=IDENTITY,
+                                generator_profile=PROFILE,
+                                observable_query=query,
+                                delivered_evidence=[
+                                    dict(label="E1", excerpt="Some content.")
+                                ],
+                            ),
+                        )
+                    )
     return plan, scored, controls, targets
 
 
@@ -64,8 +104,13 @@ def diagnose(answer, target):
 
 def run(plan, scored, control, targets):
     return observed_zero_offset_reader_splice(
-        plan, scored, control, targets, diagnose,
-        reader_identity=IDENTITY, reader_profile=PROFILE,
+        plan,
+        scored,
+        control,
+        targets,
+        diagnose,
+        reader_identity=IDENTITY,
+        reader_profile=PROFILE,
     )
 
 
@@ -84,7 +129,8 @@ class SpliceTests(unittest.TestCase):
         self.assertEqual(
             phase["by_native_answerability"]["answerable-native-document-support"][
                 "original_evidence_replaced_count"
-            ], 8,
+            ],
+            8,
         )
         self.assertEqual(phase["paired_diagnostic_f1_delta_mean"], 1.0)
         self.assertEqual(phase["all_planned_paired_delta_bounds"], [1, 1])
@@ -92,11 +138,16 @@ class SpliceTests(unittest.TestCase):
 
     def test_keep_original_answer_if_zero_offset_selects_source(self):
         p, scored, controls, targets = fixture()
-        item = next(r for r in scored if (
-            r["stage"], r["phase"], r["question_id"], r["arm"]
-        ) == (48, "test", "test-0", "gated"))
+        item = next(
+            r
+            for r in scored
+            if (r["stage"], r["phase"], r["question_id"], r["arm"])
+            == (48, "test", "test-0", "gated")
+        )
         item["null_counterfactual"] = observe_null_choice(
-            [2.0, 1.0, -1.0], ("A", "B"), 0,
+            [2.0, 1.0, -1.0],
+            ("A", "B"),
+            0,
         )
         report = run(p, scored, controls, targets)["per_phase_arm"]["test/gated"]
         self.assertEqual(report["would_abstain"], 7)
@@ -105,9 +156,12 @@ class SpliceTests(unittest.TestCase):
 
     def test_failure_does_not_disappear_or_become_f1_success(self):
         p, scored, controls, targets = fixture()
-        row = next(r for r in scored if (
-            r["stage"], r["phase"], r["question_id"], r["arm"]
-        ) == (48, "test", "test-0", "gated"))
+        row = next(
+            r
+            for r in scored
+            if (r["stage"], r["phase"], r["question_id"], r["arm"])
+            == (48, "test", "test-0", "gated")
+        )
         row["status"] = "failed"
         row.pop("answer")
         row.pop("receipt")
@@ -148,9 +202,12 @@ class SpliceTests(unittest.TestCase):
     def test_null_receipt_tampering_and_forged_empty_source_reject(self):
         for mode in ("claim", "selected", "forge", "missing"):
             p, scored, controls, targets = fixture()
-            row = next(r for r in scored if (
-                r["stage"], r["phase"], r["question_id"], r["arm"]
-            ) == (48, "test", "test-0", "gated"))
+            row = next(
+                r
+                for r in scored
+                if (r["stage"], r["phase"], r["question_id"], r["arm"])
+                == (48, "test", "test-0", "gated")
+            )
             if mode == "claim":
                 row["null_counterfactual"]["zero_offset_would_abstain"] = False
             elif mode == "selected":
@@ -164,15 +221,21 @@ class SpliceTests(unittest.TestCase):
 
     def test_original_already_empty_and_failed_evidence_not_falsely_replaced(self):
         p, scored, controls, targets = fixture()
-        one = next(r for r in scored if (
-            r["stage"], r["phase"], r["question_id"], r["arm"]
-        ) == (48, "test", "test-0", "gated"))
+        one = next(
+            r
+            for r in scored
+            if (r["stage"], r["phase"], r["question_id"], r["arm"])
+            == (48, "test", "test-0", "gated")
+        )
         one["selected"] = None
         one["null_counterfactual"] = observe_null_choice([0.0], (), None)
         one["receipt"]["delivered_evidence"] = []
-        broken = next(r for r in scored if (
-            r["stage"], r["phase"], r["question_id"], r["arm"]
-        ) == (48, "test", "test-1", "gated"))
+        broken = next(
+            r
+            for r in scored
+            if (r["stage"], r["phase"], r["question_id"], r["arm"])
+            == (48, "test", "test-1", "gated")
+        )
         broken["status"] = "failed"
         broken.pop("receipt")
         broken.pop("answer")
@@ -193,12 +256,14 @@ class SpliceTests(unittest.TestCase):
         self.assertEqual(
             output["per_phase_arm"]["test/gated"]["by_native_answerability"][
                 "native-unanswerable"
-            ]["registered_questions"], 1,
+            ]["registered_questions"],
+            1,
         )
         self.assertEqual(
             output["per_phase_arm"]["test/gated"]["by_native_answerability"][
                 "answerable-native-document-support"
-            ]["registered_questions"], 7,
+            ]["registered_questions"],
+            7,
         )
         self.assertIsNone(row["semantic_citation_precision"])
         self.assertTrue(output["posthoc_zero_offset_not_a_preregistered_policy"])

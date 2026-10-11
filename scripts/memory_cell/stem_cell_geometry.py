@@ -22,8 +22,7 @@ def _gap(scores, order):
 
 
 def _max_difference(before, after):
-    return max((abs(y - x) for x, y in zip(before, after, strict=True)),
-               default=0.0)
+    return max((abs(y - x) for x, y in zip(before, after, strict=True)), default=0.0)
 
 
 def inspect_selection(
@@ -42,8 +41,7 @@ def inspect_selection(
     original-score vector is mandatory for an adapted Encoder.
     """
     original = (
-        encoder_scores
-        if original_frozen_scores is None else original_frozen_scores
+        encoder_scores if original_frozen_scores is None else original_frozen_scores
     )
     if (
         not isinstance(candidate_ids, (list, tuple))
@@ -97,12 +95,8 @@ def inspect_selection(
             candidate_ids[head_winner] if head_winner is not None else None
         ),
         selected_index=selected,
-        encoder_only_changed_selected_candidate=(
-            encoder_winner != frozen_winner
-        ),
-        head_changed_selected_candidate=(
-            head_winner != encoder_winner
-        ),
+        encoder_only_changed_selected_candidate=(encoder_winner != frozen_winner),
+        head_changed_selected_candidate=(head_winner != encoder_winner),
         changed_selected_candidate=head_winner != frozen_winner,
         encoder_only_flip_scale_infimum=encoder_scale,
         head_conditional_flip_scale_infimum=head_scale,
@@ -115,18 +109,23 @@ def inspect_selection(
         head_conditional_max_abs_score_delta=delta_head,
         max_abs_score_delta=delta_joint,
         mean_abs_score_delta=(
-            math.fsum(abs(y - x)
-                      for x, y in zip(original, head_scores, strict=True))
+            math.fsum(abs(y - x) for x, y in zip(original, head_scores, strict=True))
             / len(candidate_ids)
-            if candidate_ids else 0.0
+            if candidate_ids
+            else 0.0
         ),
         # A gap bound is a sufficient condition, not a calibrated confidence.
         gap_exceeds_twice_max_residual=(
             frozen_gap > 2 * delta_joint if frozen_gap is not None else None
         ),
-        raw_scores_sha256=digest((
-            tuple(candidate_ids), original, encoder_scores, head_scores,
-        )),
+        raw_scores_sha256=digest(
+            (
+                tuple(candidate_ids),
+                original,
+                encoder_scores,
+                head_scores,
+            )
+        ),
         evidence_entailment_evaluated=False,
         no_answer_policy_calibrated=False,
         label_free=True,
@@ -160,7 +159,8 @@ def summarize_geometry(attempts):
             cancelled_rank_changes=sum(
                 r["encoder_only_changed_selected_candidate"]
                 and r["head_changed_selected_candidate"]
-                and not r["changed_selected_candidate"] for r in rows
+                and not r["changed_selected_candidate"]
+                for r in rows
             ),
             nonflipped_dominated_margins=sum(
                 r["gap_exceeds_twice_max_residual"] is True for r in rankable
@@ -173,21 +173,25 @@ def summarize_geometry(attempts):
             ),
             joint_requires_scale_above_one_count=sum(
                 r["joint_flip_scale_infimum"] is not None
-                and r["joint_flip_scale_infimum"] > 1 for r in rankable
+                and r["joint_flip_scale_infimum"] > 1
+                for r in rankable
             ),
             median_max_abs_score_delta=(
                 statistics.median(r["max_abs_score_delta"] for r in rows)
-                if rows else None
+                if rows
+                else None
             ),
             median_encoder_only_max_abs_score_delta=(
-                statistics.median(
-                    r["encoder_only_max_abs_score_delta"] for r in rows
-                ) if rows else None
+                statistics.median(r["encoder_only_max_abs_score_delta"] for r in rows)
+                if rows
+                else None
             ),
             median_head_conditional_max_abs_score_delta=(
                 statistics.median(
                     r["head_conditional_max_abs_score_delta"] for r in rows
-                ) if rows else None
+                )
+                if rows
+                else None
             ),
             verified_new_correct_evidence_gain=False,
             semantic_citation_precision=None,

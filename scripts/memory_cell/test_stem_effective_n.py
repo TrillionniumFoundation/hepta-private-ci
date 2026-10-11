@@ -11,8 +11,7 @@ from test_stem_train_heldout_bridge import fixture
 def realistic_fixture():
     plan, learning, scored, targets = fixture()
     plan["question_families"] = {
-        q: "native-family-" + q
-        for ids in plan["questions"].values() for q in ids
+        q: "native-family-" + q for ids in plan["questions"].values() for q in ids
     }
     paired = train_to_heldout_gap(plan, learning, scored, targets)
     return plan, paired
@@ -32,22 +31,28 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
         self.assertEqual(each["per_cell"]["general"]["planned_unique_questions"], 8)
         self.assertEqual(each["per_cell"]["temporal"]["planned_unique_questions"], 8)
         self.assertEqual(len(each["exploratory_all_three_checkpoint_subjects"]), 16)
-        self.assertTrue(each["repeated_observations_must_not_be_48_independent_examples"])
-        self.assertIsNone(each["variance_or_significance_from_nonindependent_questions"])
+        self.assertTrue(
+            each["repeated_observations_must_not_be_48_independent_examples"]
+        )
+        self.assertIsNone(
+            each["variance_or_significance_from_nonindependent_questions"]
+        )
         self.assertFalse(each["independent_generalization_proven"])
 
     def test_frozen_matched_heldout_question_gain_not_tripled(self):
         plan, learning, scored, targets = fixture()
         plan["question_families"] = {
-            q: "native-family-" + q
-            for ids in plan["questions"].values() for q in ids
+            q: "native-family-" + q for ids in plan["questions"].values() for q in ids
         }
         for stage in (16, 32, 48):
-            candidate = next(row for row in scored
-                             if row["stage"] == stage
-                             and row["phase"] == "test"
-                             and row["question_id"] == "test-0"
-                             and row["arm"] == "gated")
+            candidate = next(
+                row
+                for row in scored
+                if row["stage"] == stage
+                and row["phase"] == "test"
+                and row["question_id"] == "test-0"
+                and row["arm"] == "gated"
+            )
             candidate.update(selected=1, source_choice_correct=1)
         paired = train_to_heldout_gap(plan, learning, scored, targets)
         report = effective_heldout_subjects(plan, paired)["by_arm"]["gated"]
@@ -55,21 +60,26 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
         self.assertEqual(report["per_phase"]["test"]["source_support_gains"], 1)
         self.assertEqual(report["primary"]["source_support_scored_pairs"], 16)
         self.assertEqual(report["repeated_checkpoint_observations"], 48)
-        self.assertTrue(report["exploratory_all_three_checkpoint_subjects"]["test-0"][
-            "native_support_gain_on_all_three_stages"
-        ])
+        self.assertTrue(
+            report["exploratory_all_three_checkpoint_subjects"]["test-0"][
+                "native_support_gain_on_all_three_stages"
+            ]
+        )
         self.assertFalse(report["independent_generalization_proven"])
 
     def test_reader_failure_does_not_make_an_observation_independent(self):
         plan, learning, scored, targets = fixture()
         plan["question_families"] = {
-            q: "native-family-" + q
-            for ids in plan["questions"].values() for q in ids
+            q: "native-family-" + q for ids in plan["questions"].values() for q in ids
         }
-        learned = next(row for row in scored if row["stage"] == 48
-                       and row["phase"] == "transfer"
-                       and row["question_id"] == "transfer-2"
-                       and row["arm"] == "gated")
+        learned = next(
+            row
+            for row in scored
+            if row["stage"] == 48
+            and row["phase"] == "transfer"
+            and row["question_id"] == "transfer-2"
+            and row["arm"] == "gated"
+        )
         learned["status"] = "failed"
         learned.pop("diagnostic_answer_f1")
         paired = train_to_heldout_gap(plan, learning, scored, targets)
@@ -85,10 +95,10 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
     def test_original_natively_unanswerable_is_not_a_supported_source_gain(self):
         plan, learning, scored, targets = fixture()
         from dataclasses import replace
+
         targets["test-0"] = replace(targets["test-0"], unanswerable=True)
         plan["question_families"] = {
-            q: "native-family-" + q
-            for ids in plan["questions"].values() for q in ids
+            q: "native-family-" + q for ids in plan["questions"].values() for q in ids
         }
         paired = train_to_heldout_gap(plan, learning, scored, targets)
         report = effective_heldout_subjects(plan, paired)["by_arm"]["gated"]["primary"]
@@ -134,18 +144,23 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
     def test_stable_frozen_pool_and_reader_must_match_across_checkpoints(self):
         for drift, replacement in (
             ("matched_original_pool_digest", "silently-changed-pool"),
-            ("matched_reader_request_identity",
-             ("same-model", "different-prompt", "wrong-request-hash")),
+            (
+                "matched_reader_request_identity",
+                ("same-model", "different-prompt", "wrong-request-hash"),
+            ),
         ):
             plan, paired = realistic_fixture()
             row = next(
-                x for x in paired["test_transfer_paired_panel_rows"]
-                if x["stage"] == 32 and x["arm"] == "gated"
+                x
+                for x in paired["test_transfer_paired_panel_rows"]
+                if x["stage"] == 32
+                and x["arm"] == "gated"
                 and x["question_id"] == "test-0"
             )
             row[drift] = replacement
-            with self.subTest(drift=drift), self.assertRaisesRegex(
-                ValueError, "changed between checkpoints"
+            with (
+                self.subTest(drift=drift),
+                self.assertRaisesRegex(ValueError, "changed between checkpoints"),
             ):
                 effective_heldout_subjects(plan, paired)
 
@@ -194,9 +209,7 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
 
     def test_retention_overlap_does_not_require_gold_label_leakage(self):
         plan, paired = realistic_fixture()
-        plan["question_families"]["retention-0"] = (
-            plan["question_families"]["test-0"]
-        )
+        plan["question_families"]["retention-0"] = plan["question_families"]["test-0"]
         report = effective_heldout_subjects(plan, paired)
         family = report["original_native_source_family_structure"]
         self.assertEqual(family["test_shared_with_retention"], 1)

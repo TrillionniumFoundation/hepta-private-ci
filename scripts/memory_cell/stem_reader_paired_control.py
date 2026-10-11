@@ -13,8 +13,9 @@ import math
 PHASES = ("select", "retention", "test", "transfer")
 
 
-def compare_frozen_to_no_evidence(scored_policies, no_evidence_rows,
-                                  targets, diagnose, *, final_stage=48):
+def compare_frozen_to_no_evidence(
+    scored_policies, no_evidence_rows, targets, diagnose, *, final_stage=48
+):
     if len(no_evidence_rows) != 32:
         raise ValueError("zero-evidence control must retain all 32 questions")
     controls = {}
@@ -46,9 +47,9 @@ def compare_frozen_to_no_evidence(scored_policies, no_evidence_rows,
             or c["evidence_count"] != 0
         ):
             raise ValueError("misbound evidence/no-evidence comparison")
-        if (
-            p["status"] not in ("succeeded", "failed")
-            or c["status"] not in ("succeeded", "failed")
+        if p["status"] not in ("succeeded", "failed") or c["status"] not in (
+            "succeeded",
+            "failed",
         ):
             raise ValueError("invalid paired Reader execution status")
         original_ok = p["status"] == "succeeded"
@@ -61,23 +62,31 @@ def compare_frozen_to_no_evidence(scored_policies, no_evidence_rows,
             supplied_count = len(received)
         if empty_ok and c["receipt"]["delivered_evidence"] != []:
             raise ValueError("zero-evidence control received a source")
-        if original_ok and empty_ok and (
-            p["receipt"].get("generator_identity")
-            != c["receipt"].get("generator_identity")
-            or p["receipt"].get("generator_profile")
-            != c["receipt"].get("generator_profile")
-            or not p["receipt"].get("generator_identity")
-            or not p["receipt"].get("generator_profile")
+        if (
+            original_ok
+            and empty_ok
+            and (
+                p["receipt"].get("generator_identity")
+                != c["receipt"].get("generator_identity")
+                or p["receipt"].get("generator_profile")
+                != c["receipt"].get("generator_profile")
+                or not p["receipt"].get("generator_identity")
+                or not p["receipt"].get("generator_profile")
+            )
         ):
             raise ValueError("frozen/no-evidence Reader identity or prompt drift")
         row = dict(
-            phase=key[0], question_id=key[1], family=p["family"],
+            phase=key[0],
+            question_id=key[1],
+            family=p["family"],
             frozen_reader_succeeded=original_ok,
             zero_evidence_reader_succeeded=empty_ok,
             actual_frozen_evidence_count=supplied_count,
             evidence_exposure=(
-                "unknown-after-failure" if supplied_count is None
-                else "one-evidence" if supplied_count == 1
+                "unknown-after-failure"
+                if supplied_count is None
+                else "one-evidence"
+                if supplied_count == 1
                 else "no-evidence"
             ),
             scored_pair=False,
@@ -90,9 +99,12 @@ def compare_frozen_to_no_evidence(scored_policies, no_evidence_rows,
             original_f1 = diagnose(p["answer"], targets[key[1]])
             no_evidence_f1 = diagnose(c["answer"], targets[key[1]])
             if original_f1 is not None and no_evidence_f1 is not None:
-                if any(type(v) not in (int, float) or not math.isfinite(v)
-                       or not 0 <= v <= 1
-                       for v in (original_f1, no_evidence_f1)):
+                if any(
+                    type(v) not in (int, float)
+                    or not math.isfinite(v)
+                    or not 0 <= v <= 1
+                    for v in (original_f1, no_evidence_f1)
+                ):
                     raise ValueError("invalid paired Reader diagnostic score")
                 row.update(
                     scored_pair=True,
@@ -103,12 +115,12 @@ def compare_frozen_to_no_evidence(scored_policies, no_evidence_rows,
         by_phase[key[0]].append(row)
     summaries = {}
     for phase, rows in sorted(by_phase.items()):
-        successes = [row["diagnostic_answer_f1_delta"]
-                     for row in rows if row["scored_pair"]]
+        successes = [
+            row["diagnostic_answer_f1_delta"] for row in rows if row["scored_pair"]
+        ]
         exposed = [row for row in rows if row["evidence_exposure"] == "one-evidence"]
         exposed_scored = [
-            row["diagnostic_answer_f1_delta"] for row in exposed
-            if row["scored_pair"]
+            row["diagnostic_answer_f1_delta"] for row in exposed if row["scored_pair"]
         ]
         exposed_missing = len(exposed) - len(exposed_scored)
         exposed_sum = math.fsum(exposed_scored)
@@ -140,14 +152,15 @@ def compare_frozen_to_no_evidence(scored_policies, no_evidence_rows,
             exposed_cohort_scored_pairs=len(exposed_scored),
             exposed_cohort_failed_or_unscored=exposed_missing,
             exposed_cohort_conditional_delta_mean=(
-                exposed_sum / len(exposed_scored)
-                if exposed_scored else None
+                exposed_sum / len(exposed_scored) if exposed_scored else None
             ),
             exposed_cohort_all_observed_source_bounds=(
                 [
                     (exposed_sum - exposed_missing) / len(exposed),
                     (exposed_sum + exposed_missing) / len(exposed),
-                ] if exposed else None
+                ]
+                if exposed
+                else None
             ),
             # The all-32 planned bound above still includes pairs with
             # unknown evidence exposure following a failed frozen policy.

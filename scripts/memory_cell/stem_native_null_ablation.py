@@ -5,6 +5,7 @@ The zero-offset null choice is a diagnostic, never used to generate answers
 or select a checkpoint. Native labels are consulted only by the later
 read-only summarizer after every original policy answer has been saved.
 """
+
 from collections import defaultdict
 import math
 
@@ -13,8 +14,12 @@ from native import digest
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
 ARMS = (
-    "frozen_rerank", "prototype", "linear", "gated",
-    "lineage_lora_gated", "independent_lora_gated",
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
 )
 
 
@@ -27,8 +32,7 @@ def observe_null_choice(logits, candidate_ids, actual_forced_selection):
         or len(logits) != n + 1
         or len(set(candidate_ids)) != n
         or any(not isinstance(x, str) or not x for x in candidate_ids)
-        or any(type(x) not in (int, float) or not math.isfinite(x)
-               for x in logits)
+        or any(type(x) not in (int, float) or not math.isfinite(x) for x in logits)
     ):
         raise ValueError("unbound or nonfinite null-choice Head logits")
     best = min(range(n), key=lambda i: (-logits[i], candidate_ids[i])) if n else None
@@ -57,8 +61,10 @@ def observe_null_choice(logits, candidate_ids, actual_forced_selection):
 def review_null_counterfactual(plan, scored, targets):
     registered = {
         (stage, phase, qid, arm)
-        for stage in STAGES for phase in PHASES
-        for qid in plan["questions"][phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for qid in plan["questions"][phase]
+        for arm in ARMS
     }
     questions = {qid for phase in PHASES for qid in plan["questions"][phase]}
     if (
@@ -80,9 +86,11 @@ def review_null_counterfactual(plan, scored, targets):
             raise ValueError("unknown original forced policy execution status")
         seen.add(key)
         target = targets[row["question_id"]]
-        if type(target.unanswerable) is not bool or not isinstance(
-            target.evidence, (tuple, list)
-        ) or not isinstance(target.unresolved_evidence, (tuple, list)):
+        if (
+            type(target.unanswerable) is not bool
+            or not isinstance(target.evidence, (tuple, list))
+            or not isinstance(target.unresolved_evidence, (tuple, list))
+        ):
             raise ValueError("invalid native answerability label")
         if target.unanswerable:
             category = "native-unanswerable"
@@ -99,9 +107,8 @@ def review_null_counterfactual(plan, scored, targets):
                 or receipt.get("posthoc_labels_used_to_select_cutoff") is not False
                 or "selected" not in row
                 or receipt["observed_forced_top1_index"] != row["selected"]
-                or receipt["counterfactual_choice"] != (
-                    None if receipt["zero_offset_would_abstain"] else row["selected"]
-                )
+                or receipt["counterfactual_choice"]
+                != (None if receipt["zero_offset_would_abstain"] else row["selected"])
             ):
                 raise ValueError("altered forced choice or null diagnostic receipt")
         if receipt is None and "selected" in row:
@@ -110,19 +117,22 @@ def review_null_counterfactual(plan, scored, targets):
             margin = receipt["null_minus_best_candidate"]
             count = receipt["candidate_count"]
             if (
-                type(count) is not int or not 0 <= count <= 64
+                type(count) is not int
+                or not 0 <= count <= 64
                 or (count == 0 and (margin is not None or row["selected"] is not None))
-                or (count > 0 and (
-                    type(margin) not in (int, float)
-                    or not math.isfinite(margin)
-                ))
-                or receipt["zero_offset_would_abstain"] is not (
-                    count == 0 or margin >= 0
+                or (
+                    count > 0
+                    and (type(margin) not in (int, float) or not math.isfinite(margin))
                 )
-                or (count > 0 and (
-                    type(row["selected"]) is not int
-                    or not 0 <= row["selected"] < count
-                ))
+                or receipt["zero_offset_would_abstain"]
+                is not (count == 0 or margin >= 0)
+                or (
+                    count > 0
+                    and (
+                        type(row["selected"]) is not int
+                        or not 0 <= row["selected"] < count
+                    )
+                )
             ):
                 raise ValueError("inconsistent zero-offset native null choice")
         source_correctness = row.get("source_choice_correct")
@@ -143,24 +153,26 @@ def review_null_counterfactual(plan, scored, targets):
                 alternate = 0 if receipt["zero_offset_would_abstain"] else actual
         else:
             actual = alternate = None
-        by_arm[(row["stage"], row["phase"], row["arm"])].append(dict(
-            question_id=row["question_id"],
-            native_answerability_category=category,
-            reader_generation_status=row["status"],
-            null_score_observed=receipt is not None,
-            fixed_cutoff_zero_only=True,
-            original_source_correctness=actual,
-            null_counterfactual_source_correctness=alternate,
-            native_source_choice_delta=(
-                alternate - actual if native_scored else None
-            ),
-            zero_offset_would_abstain=(
-                receipt["zero_offset_would_abstain"] if receipt else None
-            ),
-            original_policy_answer_bytes_unchanged=True,
-            counterfactual_reader_answer_not_evaluated=True,
-            independently_adjudicated_entailment=False,
-        ))
+        by_arm[(row["stage"], row["phase"], row["arm"])].append(
+            dict(
+                question_id=row["question_id"],
+                native_answerability_category=category,
+                reader_generation_status=row["status"],
+                null_score_observed=receipt is not None,
+                fixed_cutoff_zero_only=True,
+                original_source_correctness=actual,
+                null_counterfactual_source_correctness=alternate,
+                native_source_choice_delta=(
+                    alternate - actual if native_scored else None
+                ),
+                zero_offset_would_abstain=(
+                    receipt["zero_offset_would_abstain"] if receipt else None
+                ),
+                original_policy_answer_bytes_unchanged=True,
+                counterfactual_reader_answer_not_evaluated=True,
+                independently_adjudicated_entailment=False,
+            )
+        )
     if set(seen) != registered:
         raise ValueError("missing original six-arm null-counterfactual attempt")
     summaries = {}
@@ -170,8 +182,11 @@ def review_null_counterfactual(plan, scored, targets):
                 rows = by_arm[(stage, phase, arm)]
                 if len(rows) != 8:
                     raise ValueError("null diagnosis lost phase denominator")
-                scored_delta = [x["native_source_choice_delta"] for x in rows
-                                if x["native_source_choice_delta"] is not None]
+                scored_delta = [
+                    x["native_source_choice_delta"]
+                    for x in rows
+                    if x["native_source_choice_delta"] is not None
+                ]
                 unobserved = len(rows) - len(scored_delta)
                 observed_sum = sum(scored_delta)
                 summaries[f"{stage}/{phase}/{arm}"] = dict(
@@ -181,7 +196,8 @@ def review_null_counterfactual(plan, scored, targets):
                         for x in rows
                     ),
                     native_support_unresolved_count=sum(
-                        x["native_answerability_category"] == "native-support-unresolved"
+                        x["native_answerability_category"]
+                        == "native-support-unresolved"
                         for x in rows
                     ),
                     source_compared=len(scored_delta),
@@ -191,12 +207,14 @@ def review_null_counterfactual(plan, scored, targets):
                     ),
                     native_unanswerable_recovered=sum(
                         x["native_answerability_category"] == "native-unanswerable"
-                        and x["native_source_choice_delta"] == 1 for x in rows
+                        and x["native_source_choice_delta"] == 1
+                        for x in rows
                     ),
                     native_answerable_harmed_by_abstention=sum(
-                        x["native_answerability_category"] ==
-                        "answerable-native-document-support"
-                        and x["native_source_choice_delta"] == -1 for x in rows
+                        x["native_answerability_category"]
+                        == "answerable-native-document-support"
+                        and x["native_source_choice_delta"] == -1
+                        for x in rows
                     ),
                     native_source_correctness_delta_sum=observed_sum,
                     all_planned_native_correctness_delta_bounds=[

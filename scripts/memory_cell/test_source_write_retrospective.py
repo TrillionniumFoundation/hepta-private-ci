@@ -18,21 +18,29 @@ def bytes_json(value):
 
 def fixture():
     ready = dict(
-        writer_source=COMMIT, task_payload_consumed=False,
+        writer_source=COMMIT,
+        task_payload_consumed=False,
         production_accepted=False,
         training=dict(
-            steps=2, examples=2, input_tokens=10, supervised_tokens=4,
-            adapter_delta_squared_norm=1.0, losses=[3.0, 2.0],
+            steps=2,
+            examples=2,
+            input_tokens=10,
+            supervised_tokens=4,
+            adapter_delta_squared_norm=1.0,
+            losses=[3.0, 2.0],
             write_schedule=dict(
-                planned_steps=2, planned_input_tokens=10,
-                planned_supervised_tokens=4, visits_per_example=[1, 1],
+                planned_steps=2,
+                planned_input_tokens=10,
+                planned_supervised_tokens=4,
+                visits_per_example=[1, 1],
                 unvisited_examples=[],
             ),
         ),
     )
     ready_raw = bytes_json(ready)
     execution = dict(
-        source_commit=COMMIT, writer_source=COMMIT,
+        source_commit=COMMIT,
+        writer_source=COMMIT,
         ready_sha=hashlib.sha256(ready_raw).hexdigest(),
         snapshot_loaded_before_task_payload=True,
     )
@@ -42,7 +50,10 @@ def fixture():
             empty = arm in ("empty", "parameter_only")
             yes = arm in ("organized", "knowledge", "policy")
             record = dict(
-                question_id=q, kind="new_fact", arm=arm, status="succeeded",
+                question_id=q,
+                kind="new_fact",
+                arm=arm,
+                status="succeeded",
                 selected=[] if empty else ["source"],
                 answer="site_deadbeef" if yes else "site_wrong [E1]",
                 receipt=dict(
@@ -53,15 +64,24 @@ def fixture():
                 ),
             )
             raw.append(record)
-            scored.append(record | dict(
-                parsed_identifier="site_deadbeef" if yes else None,
-                strict_task_success=yes,
-            ))
+            scored.append(
+                record
+                | dict(
+                    parsed_identifier="site_deadbeef" if yes else None,
+                    strict_task_success=yes,
+                )
+            )
     report = dict(
-        all_attempts=len(raw), source_commit=COMMIT,
-        arms={a: dict(strict_task_successes=sum(
-            r["strict_task_success"] for r in scored if r["arm"] == a
-        )) for a in ARMS},
+        all_attempts=len(raw),
+        source_commit=COMMIT,
+        arms={
+            a: dict(
+                strict_task_successes=sum(
+                    r["strict_task_success"] for r in scored if r["arm"] == a
+                )
+            )
+            for a in ARMS
+        },
     )
     pairs = {}
     for label, before, after in PAIRS:
@@ -72,9 +92,14 @@ def fixture():
             wins += int(b["strict_task_success"] and not a["strict_task_success"])
             losses += int(a["strict_task_success"] and not b["strict_task_success"])
             changed += int(a["answer"] != b["answer"])
-        pairs[label] = dict(all=dict(
-            wins=wins, losses=losses, missing_pairs=0, changed_answers=changed,
-        ))
+        pairs[label] = dict(
+            all=dict(
+                wins=wins,
+                losses=losses,
+                missing_pairs=0,
+                changed_answers=changed,
+            )
+        )
     raw_bytes = b"".join(bytes_json(r) for r in raw)
     return {
         "snapshot/READY.json": ready_raw,
@@ -83,10 +108,12 @@ def fixture():
         "tasks/raw-answers.jsonl": raw_bytes,
         "tasks/scored-answers.json": bytes_json(scored),
         "tasks/report.json": bytes_json(report),
-        "tasks/source-effects.json": bytes_json(dict(
-            raw_answers_sha256=hashlib.sha256(raw_bytes).hexdigest(),
-            contrasts=pairs,
-        )),
+        "tasks/source-effects.json": bytes_json(
+            dict(
+                raw_answers_sha256=hashlib.sha256(raw_bytes).hexdigest(),
+                contrasts=pairs,
+            )
+        ),
     }
 
 
@@ -109,8 +136,12 @@ class RetrospectiveTests(unittest.TestCase):
         self.assertEqual(result["actual_optimizer_updates"], 2)
         self.assertEqual(result["strict_task_successes"]["knowledge"], 2)
         self.assertEqual(result["strict_task_successes"]["parameter_only"], 0)
-        self.assertEqual(result["paired_effects"]["knowledge_vs_same_evidence"]["wins"], 0)
-        self.assertEqual(result["unsupported_empty_context_citation_answers"]["parameter_only"], 2)
+        self.assertEqual(
+            result["paired_effects"]["knowledge_vs_same_evidence"]["wins"], 0
+        )
+        self.assertEqual(
+            result["unsupported_empty_context_citation_answers"]["parameter_only"], 2
+        )
         self.assertTrue(result["research_parameter_candidate_rejected"])
         self.assertIsNone(result["semantic_citation_precision"])
 
@@ -125,7 +156,10 @@ class RetrospectiveTests(unittest.TestCase):
     def test_wrong_adapter_and_context_admission_rejected(self):
         for mode in ("adapter", "context"):
             found = fixture()
-            rows = [json.loads(line) for line in found["tasks/raw-answers.jsonl"].splitlines()]
+            rows = [
+                json.loads(line)
+                for line in found["tasks/raw-answers.jsonl"].splitlines()
+            ]
             matching = next(r for r in rows if r["arm"] == "parameter_only")
             if mode == "adapter":
                 matching["receipt"]["knowledge_module_enabled"] = False
@@ -139,9 +173,10 @@ class RetrospectiveTests(unittest.TestCase):
         for mode in ("missing", "altered"):
             found = fixture()
             if mode == "missing":
-                found["tasks/raw-answers.jsonl"] = b"\n".join(
-                    found["tasks/raw-answers.jsonl"].splitlines()[:-1]
-                ) + b"\n"
+                found["tasks/raw-answers.jsonl"] = (
+                    b"\n".join(found["tasks/raw-answers.jsonl"].splitlines()[:-1])
+                    + b"\n"
+                )
             else:
                 result = json.loads(found["tasks/source-effects.json"])
                 result["contrasts"]["knowledge_vs_same_evidence"]["all"]["wins"] = 1

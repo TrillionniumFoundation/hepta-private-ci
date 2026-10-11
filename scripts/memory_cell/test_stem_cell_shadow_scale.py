@@ -5,17 +5,24 @@ import math
 import unittest
 
 from stem_cell_shadow_scale import (
-    GRID, calibrate_shadow_scale, choose_shadow, summarize_shadow_heldout,
-    verify_shadow_source_receipts, _pin,
+    GRID,
+    calibrate_shadow_scale,
+    choose_shadow,
+    summarize_shadow_heldout,
+    verify_shadow_source_receipts,
+    _pin,
 )
 
 
 def training():
     return [
         dict(
-            question_id=f"train-{n}", family=f"family-{n}",
-            candidate_ids=("A", "B"), positive_indices=(1,),
-            frozen_logits=[8.0, 2.0], head_logits=[7.5, 2.5],
+            question_id=f"train-{n}",
+            family=f"family-{n}",
+            candidate_ids=("A", "B"),
+            positive_indices=(1,),
+            frozen_logits=[8.0, 2.0],
+            head_logits=[7.5, 2.5],
         )
         for n in range(2)
     ]
@@ -23,7 +30,10 @@ def training():
 
 def calibrate(rows=None):
     return calibrate_shadow_scale(
-        rows or training(), arm="gated", cell="general", stage=16,
+        rows or training(),
+        arm="gated",
+        cell="general",
+        stage=16,
         admitted_ids={"train-0", "train-1"},
     )
 
@@ -34,10 +44,12 @@ class ShadowScaleTests(unittest.TestCase):
         self.assertEqual(receipt["chosen_scale"], 8.0)
         self.assertIn(receipt["chosen_scale"], GRID)
         self.assertEqual(
-            receipt["equal_family_weighted_train_source_accuracy_by_scale"]["0.0"], 0.0,
+            receipt["equal_family_weighted_train_source_accuracy_by_scale"]["0.0"],
+            0.0,
         )
         self.assertEqual(
-            receipt["equal_family_weighted_train_source_accuracy_by_scale"]["8.0"], 1.0,
+            receipt["equal_family_weighted_train_source_accuracy_by_scale"]["8.0"],
+            1.0,
         )
         self.assertFalse(receipt["production_accepted"])
 
@@ -54,9 +66,7 @@ class ShadowScaleTests(unittest.TestCase):
         for row in rows:
             row["positive_indices"] = (0,)
         self.assertEqual(calibrate(rows)["chosen_scale"], 0.0)
-        self.assertEqual(
-            choose_shadow(("B", "A"), [1, 1], [1, 1], 0), 1
-        )
+        self.assertEqual(choose_shadow(("B", "A"), [1, 1], [1, 1], 0), 1)
 
     def test_unregistered_or_duplicate_train_questions_fail_closed(self):
         for rows, allowed in (
@@ -65,7 +75,10 @@ class ShadowScaleTests(unittest.TestCase):
         ):
             with self.subTest(size=len(rows)), self.assertRaises(ValueError):
                 calibrate_shadow_scale(
-                    rows, arm="gated", cell="general", stage=16,
+                    rows,
+                    arm="gated",
+                    cell="general",
+                    stage=16,
                     admitted_ids=allowed,
                 )
 
@@ -86,24 +99,37 @@ class ShadowScaleTests(unittest.TestCase):
         qids = {p: [f"{p}-{i}" for i in range(8)] for p in phases}
         routes = {qid: "general" for group in qids.values() for qid in group}
         targets = {
-            qid: Row(unanswerable=False, unresolved_evidence=(),
-                     evidence=("source",))
+            qid: Row(unanswerable=False, unresolved_evidence=(), evidence=("source",))
             for qid in routes
         }
         targets["test-0"] = Row(
-            unanswerable=True, unresolved_evidence=(), evidence=(),
+            unanswerable=True,
+            unresolved_evidence=(),
+            evidence=(),
         )
-        arms = ("prototype", "linear", "gated",
-                "lineage_lora_gated", "independent_lora_gated")
+        arms = (
+            "prototype",
+            "linear",
+            "gated",
+            "lineage_lora_gated",
+            "independent_lora_gated",
+        )
         rows = [
             dict(
-                stage=stage, phase=phase, question_id=qid, arm=arm,
-                cell="general", status="succeeded",
-                selected_source_id="source", frozen_selected_source_id="source",
+                stage=stage,
+                phase=phase,
+                question_id=qid,
+                arm=arm,
+                cell="general",
+                status="succeeded",
+                selected_source_id="source",
+                frozen_selected_source_id="source",
                 changed_frozen_top1=False,
             )
-            for stage in (16, 32, 48) for phase in phases
-            for qid in qids[phase] for arm in arms
+            for stage in (16, 32, 48)
+            for phase in phases
+            for qid in qids[phase]
+            for arm in arms
         ]
         result = summarize_shadow_heldout(rows, qids, routes, targets)
         check = result["results"]["48/gated/general/test"]
@@ -117,50 +143,78 @@ class ShadowScaleTests(unittest.TestCase):
     def test_shadow_provenance_binds_all_480_choices_to_train_calibration(self):
         class Window:
             source_id = "source"
+
             def identity(self):
                 return "fixed-window"
+
         class Pool:
             windows = (Window(),)
+
             def seal(self):
                 return "sealed-original-pool"
+
         phases = ("select", "retention", "test", "transfer")
-        arms = ("prototype", "linear", "gated",
-                "lineage_lora_gated", "independent_lora_gated")
+        arms = (
+            "prototype",
+            "linear",
+            "gated",
+            "lineage_lora_gated",
+            "independent_lora_gated",
+        )
         pools = {f"{p}-{n}": Pool() for p in phases for n in range(8)}
         calibration = [
             dict(
-                stage=stage, arm=arm, cell=cell, status="succeeded",
+                stage=stage,
+                arm=arm,
+                cell=cell,
+                status="succeeded",
                 checkpoint_head_sha256="a" * 64,
                 receipt=dict(
-                    stage=stage, arm=arm, cell=cell, chosen_scale=0.0,
+                    stage=stage,
+                    arm=arm,
+                    cell=cell,
+                    chosen_scale=0.0,
                     winner_chosen_from_train_only=True,
                     all_test_and_transfer_answers_and_labels_unseen=True,
                 ),
             )
-            for stage in (16, 32, 48) for arm in arms
+            for stage in (16, 32, 48)
+            for arm in arms
             for cell in ("general", "temporal")
         ]
         selected = [
             dict(
-                stage=stage, phase=phase, arm=arm, cell="general",
-                question_id=f"{phase}-{n}", status="succeeded",
-                chosen_scale=0.0, selected_index=0, frozen_index=0,
-                selected_source_id="source", frozen_selected_source_id="source",
+                stage=stage,
+                phase=phase,
+                arm=arm,
+                cell="general",
+                question_id=f"{phase}-{n}",
+                status="succeeded",
+                chosen_scale=0.0,
+                selected_index=0,
+                frozen_index=0,
+                selected_source_id="source",
+                frozen_selected_source_id="source",
                 changed_frozen_top1=False,
                 original_pool_digest="sealed-original-pool",
                 candidate_identity_sha256=_pin(("fixed-window",)),
-                head_sha256="a" * 64, native_targets_unread=True,
+                head_sha256="a" * 64,
+                native_targets_unread=True,
                 actual_reader_executions=0,
             )
-            for stage in (16, 32, 48) for phase in phases
-            for n in range(8) for arm in arms
+            for stage in (16, 32, 48)
+            for phase in phases
+            for n in range(8)
+            for arm in arms
         ]
         census = verify_shadow_source_receipts(selected, calibration, pools)
         self.assertEqual(census["source_choices_verified"], 480)
         self.assertEqual(census["failed_source_choices"], 0)
         for field, wrong in (
-            ("chosen_scale", 8.0), ("selected_source_id", "fabricated"),
-            ("head_sha256", "b" * 64), ("original_pool_digest", "another"),
+            ("chosen_scale", 8.0),
+            ("selected_source_id", "fabricated"),
+            ("head_sha256", "b" * 64),
+            ("original_pool_digest", "another"),
             ("candidate_identity_sha256", "other"),
             ("changed_frozen_top1", True),
         ):
@@ -179,21 +233,30 @@ class ShadowScaleTests(unittest.TestCase):
         qids = {p: [f"{p}-{i}" for i in range(8)] for p in phases}
         routes = {qid: "general" for group in qids.values() for qid in group}
         targets = {
-            qid: Row(unanswerable=False, unresolved_evidence=(),
-                     evidence=("source",))
+            qid: Row(unanswerable=False, unresolved_evidence=(), evidence=("source",))
             for qid in routes
         }
         rows = [
             dict(
-                stage=stage, phase=phase, question_id=qid, arm=arm,
-                cell="general", status="succeeded",
-                selected_source_id="source", frozen_selected_source_id="other",
+                stage=stage,
+                phase=phase,
+                question_id=qid,
+                arm=arm,
+                cell="general",
+                status="succeeded",
+                selected_source_id="source",
+                frozen_selected_source_id="other",
                 changed_frozen_top1=True,
             )
-            for stage in (16, 32, 48) for phase in phases
-            for qid in qids[phase] for arm in (
-                "prototype", "linear", "gated",
-                "lineage_lora_gated", "independent_lora_gated",
+            for stage in (16, 32, 48)
+            for phase in phases
+            for qid in qids[phase]
+            for arm in (
+                "prototype",
+                "linear",
+                "gated",
+                "lineage_lora_gated",
+                "independent_lora_gated",
             )
         ]
         result = summarize_shadow_heldout(rows, qids, routes, targets)
