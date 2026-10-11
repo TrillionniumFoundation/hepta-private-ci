@@ -1,0 +1,92 @@
+name: MemoryCell temporary AST-equivalent format candidate
+on:
+  push:
+    branches:
+      - codex/memory-python-format-prep-20261011
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Produce syntax-invariant formatting over changed Python sources
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user uv==0.8.22
+          export PATH="$HOME/.local/bin:$PATH"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          python3 - <<'PY'
+          import ast
+          import json
+          from pathlib import Path
+          import subprocess
+          paths = subprocess.check_output(
+              ['git', 'diff', '--name-only', '78fdb0cf8537e3a84fc6e0a849707559c80881e8', 'HEAD', '--', 'scripts/memory_cell'],
+              text=True,
+          ).splitlines()
+          targets = [p for p in paths if p.endswith('.py') and Path(p).is_file()]
+          if not 1 <= len(targets) <= 400 or len(set(targets)) != len(targets):
+              raise ValueError('bounded changed Python census required')
+          initial = {p: ast.dump(ast.parse(Path(p).read_text(encoding='utf-8'))) for p in targets}
+          subprocess.run(
+              ['uv', 'run', '--frozen', '--project', 'scripts', 'ruff', 'format', *targets],
+              check=True,
+          )
+          for p, before in initial.items():
+              if ast.dump(ast.parse(Path(p).read_text(encoding='utf-8'))) != before:
+                  raise ValueError('formatter changed executable AST: ' + p)
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          if not set(changed).issubset(targets):
+              raise ValueError('formatter changed files outside admitted source census')
+          Path('/tmp/memory-python-format-count.json').write_text(
+              json.dumps({'examined': len(targets), 'changed': len(changed), 'changed_paths': changed}, indent=2)
+          )
+          print(Path('/tmp/memory-python-format-count.json').read_text())
+          PY
+      - name: Run existing full repository format gate without waivers
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -uo pipefail
+          just fmt --check --base "$BASE" > /tmp/memory-python-format-check.log 2>&1
+          status=$?
+          cat /tmp/memory-python-format-check.log
+          echo "$status" > /tmp/memory-python-format-check.status
+      - name: Publish review branch, never update the main PR branch here
+        run: |
+          set -euo pipefail
+          git add -- scripts/memory_cell
+          git rm -- .github/workflows/hepta-memory-python-format-review-20261011.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format changed Python without modifying AST'
+          git push origin "HEAD:refs/heads/codex/memory-python-format-review-${GITHUB_RUN_ID}"
+          git rev-parse HEAD > /tmp/memory-python-format-review-sha.txt
+      - name: Retain original code and fail if unrelated gates still fail
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-python-format-evidence
+          cp /tmp/memory-python-format-* /tmp/memory-python-format-evidence/ 2>/dev/null || true
+          git rev-parse HEAD > /tmp/memory-python-format-evidence/exact-commit.txt
+          (cd /tmp/memory-python-format-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-python-format-review
+          path: /tmp/memory-python-format-evidence
+          if-no-files-found: error
+      - name: Enforce repository format result
+        run: |
+          set -euo pipefail
+          test "$(cat /tmp/memory-python-format-check.status)" = 0
