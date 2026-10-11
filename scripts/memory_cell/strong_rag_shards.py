@@ -64,6 +64,17 @@ def _seal(output, extras):
     trial.dump(output / "sha-pins.json", digest_fields)
 
 
+def _read_local_record(path):
+    """Reopen one bounded, unexternally-pinned artifact without disabling read().
+
+    These records are checked against other source pins and exact journal
+    receipts by their callers. A self-hash is NOT independent authentication.
+    """
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 4 * 1024 * 1024:
+        raise ValueError("bounded regular local record required")
+    return read(path, trial.file_sha(path))
+
+
 def _read_rows(path, count):
     if path.is_symlink() or not path.is_file() or path.stat().st_size > 4_000_000:
         raise ValueError("bounded immutable original journal required")
@@ -200,7 +211,7 @@ def _merge_shards(phase, shard_root, cases, *, commit, prep_sha=None,
     for idx, case in enumerate(cases):
         for part, scheduled in enumerate(groups(phase)):
             folder = shard_root / name(phase, idx, part)
-            manifest = read(folder / "sha-pins.json", None)
+            manifest = _read_local_record(folder / "sha-pins.json")
             expected_files = {
                 "runtime-preflight.json", "stage.json", "inventory.json", "publisher.json", "raw-answers.jsonl", "run.json"
             }
@@ -365,9 +376,9 @@ def collect_evaluation(plan_dir, inputs, prep, calibration_dir, shard_root, outp
         "hybrid6_minus_hybrid4":trial.paired(group,"hybrid_k4","hybrid_k6"),
     }
     stage_sha=locked_policy["stage_sha256"]
-    if read(calibration_dir / "run.json",None)["model_stage_sha256"]!=stage_sha:
+    if _read_local_record(calibration_dir / "run.json")["model_stage_sha256"]!=stage_sha:
         raise ValueError("canonical staged reader drift")
-    inv=read(output / "inventory.json",read(output / "stage.json",None)["inventory_sha256"])
+    inv=read(output / "inventory.json",_read_local_record(output / "stage.json")["inventory_sha256"])
     trial.dump(output / "run.json",dict(
         schema=trial.SCHEMA,phase="evaluation",source_commit=commit,execution_mode="sharded",
         runtime_preflight_sha256=trial.file_sha(output / "runtime-preflight.json"),
@@ -404,9 +415,9 @@ def verify_release(archive, original):
     from event_reader_experiment import preflight
 
     commit = trial.commit_source()
-    manifest = read(archive / "prep/calibration-plan.json", None)
+    manifest = _read_local_record(archive / "prep/calibration-plan.json")
     prep_sha = trial.file_sha(archive / "prep/calibration-plan.json")
-    frozen = read(archive / "calibration/frozen-policy.json", None)
+    frozen = _read_local_record(archive / "calibration/frozen-policy.json")
     policy_sha = trial.file_sha(archive / "calibration/frozen-policy.json")
     if frozen["source_commit"] != commit or frozen["calibration_plan_sha256"] != prep_sha:
         raise ValueError("frozen k detached from exact shard source")
@@ -432,7 +443,7 @@ def verify_release(archive, original):
         saved = _read_rows(archive / phase / "raw-answers.jsonl", len(rows))
         if rows != saved:
             raise ValueError("published answer journal differs from generated shard rows")
-        summary = read(archive / phase / "shard-census.json", None)
+        summary = _read_local_record(archive / phase / "shard-census.json")
         if (
             summary["schema"] != SCHEMA or summary["phase"] != phase
             or summary["source_commit"] != commit or summary["receipts"] != receipts
