@@ -232,3 +232,32 @@ runs the new leakage, failure-denominator and digest-integration tests.
 This is a **calibration-quality diagnostic only**. Independent source families,
 real future tasks, semantic source review, and production qualification remain
 unmet; `production_accepted=false`.
+
+## Branch-scoped Actions scheduling (2026-10-11)
+
+The research workflow now runs on a **push of relevant strong-RAG code** to
+`codex/memory-cell-evidence-20261008`, not a `pull_request` `synchronize`.
+Pull-request path filters operate on the overall PR file set. In this large
+ongoing PR, unrelated concurrent Stem commits repeatedly queued the frozen
+reader job. A branch-scoped push path filter does not match these unrelated
+changes. The workflow itself and this document remain included in the trigger.
+
+Calibration, evaluation, saved evidence and separate replay now check out the
+same exact `github.sha` of the triggering push. Research concurrency is
+scoped to the branch, so pending duplicate research work is bounded without
+automatically cancelling a reader that is already executing. The source-only
+`experiment-format` gate still runs before actual Qwen inference.
+
+The broad `format` job is preserved and checks the current default-branch
+comparison. It is separately observable but is not a reader prerequisite,
+because unrelated files can fail it. The repository's independent required
+`blocking-ci` and other PR-wide gates are unchanged; their failure still
+blocks merge and production qualification. The scheduling contract is
+regression-tested by `test_strong_rag_workflow_scheduling.py`.
+
+Previously queued PR-triggered runs are not retroactively cancelled, renamed,
+or counted as successful push-triggered experiments. Running code checks alone
+establishes no Qwen task accuracy, parameter advantage, semantic judgement,
+future observation, or production acceptance. Only a completed exact-source
+40-answer calibration, 56-answer evaluation and separate artifact replay can
+supply the next bounded result.
