@@ -1,9 +1,15 @@
 """No future source may enter a native retrieval index or any Encoder."""
 
 import unittest
+from pathlib import Path
+import sys
+import tempfile
+import types
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from native import Document, Question
-from stem_cell_temporal import admit_history
+from stem_cell_temporal import admit_history, build_as_of_index
 
 
 def query(date="2023/05/28 (Sun) 06:47", scope="scope"):
@@ -80,6 +86,61 @@ class AsOfAdmissionTests(unittest.TestCase):
         _, first = admit_history(q1, (d,), revoked=set())
         _, second = admit_history(q2, (d,), revoked=set())
         self.assertNotEqual(first["source_query_digest"], second["source_query_digest"])
+
+    def test_as_of_filter_executes_before_encoder_and_seals_index_cut(self):
+        # Fake Index and Encoder prove the source boundary without pretrained
+        # models or a real SQLite file. This is a data-flow safety regression.
+        seen = {}
+
+        class FakeEncoder:
+            identity = "pinned-encoder"
+
+            def encode(self, texts):
+                seen["encoded"] = list(texts)
+                self_outer.assertNotIn("FUTURE_NEVER_ENCODE", str(texts))
+                return [[0.25, 0.75] for _ in texts]
+
+        class FakeIndex:
+            @staticmethod
+            def build(path, documents, vectors, encoder, cut):
+                seen["indexed"] = tuple(d.identity for d in documents)
+                seen["index_cut"] = cut
+                seen["index_vectors"] = len(vectors)
+                self_outer.assertEqual(encoder, "pinned-encoder")
+                path.write_bytes(b"bounded-mock-index")
+                return "pinned-test-artifact"
+
+            def __init__(self, path, expected_cut, revoked, *,
+                         expected_file_digest, expected_encoder):
+                self_outer.assertEqual(expected_cut, seen["index_cut"])
+                self_outer.assertEqual(expected_file_digest, "pinned-test-artifact")
+                self_outer.assertEqual(expected_encoder, "pinned-encoder")
+
+        self_outer = self
+        mock_index = types.ModuleType("index")
+        mock_index.PersistentIndex = FakeIndex
+        source = SimpleNamespace(
+            source_sha256="frozen-source-sha",
+            history=lambda _: (
+                Document("before", "r1", "scope", "session",
+                         "2023/05/28 (Sun) 05:47", "EARLIER_VALID"),
+                Document("after", "r2", "scope", "session",
+                         "2023/05/28 (Sun) 21:04", "FUTURE_NEVER_ENCODE"),
+            ),
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.dict(sys.modules, {"index": mock_index}):
+                index, result = build_as_of_index(
+                    source, query(), FakeEncoder(), Path(directory),
+                    revoked=set(),
+                )
+            self.assertIsInstance(index, FakeIndex)
+            self.assertEqual(seen["indexed"], ("before",))
+            self.assertEqual(seen["index_vectors"], 1)
+            self.assertEqual(result["receipt"]["excluded_future_count"], 1)
+            self.assertEqual(result["as_of_cut"], seen["index_cut"])
+            self.assertEqual(result["index_cost"]["documents"], 1)
+
 
 
 if __name__ == "__main__":
