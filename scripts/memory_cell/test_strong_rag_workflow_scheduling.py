@@ -41,7 +41,18 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
     def test_same_push_sha_binds_generating_and_review_jobs(self):
         self.assertIn("HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}", self.text)
         self.assertIn("GENERATING_COMMIT: ${{ github.sha }}", self.text)
-        self.assertGreaterEqual(self.text.count("ref: ${{ github.sha }}"), 4)
+        # The workflow has exactly three jobs with checkouts. Calibration and
+        # evaluation are separate processes within the same pinned reader job.
+        # Validate each job, not an unrelated count of string occurrences.
+        jobs = ("experiment-format", "reader", "independent-replay")
+        for index, name in enumerate(jobs):
+            block = self.text.split(f"\n  {name}:\n", 1)[1]
+            if index + 1 < len(jobs):
+                block = block.split(f"\n  {jobs[index + 1]}:\n", 1)[0]
+            with self.subTest(job=name):
+                self.assertEqual(block.count("ref: ${{ github.sha }}"), 1)
+                self.assertIn("persist-credentials: false", block)
+        self.assertEqual(self.text.count("ref: ${{ github.sha }}"), len(jobs))
 
     def test_real_reader_runs_only_after_scoped_preflight(self):
         self.assertIn("  experiment-format:\n", self.text)
