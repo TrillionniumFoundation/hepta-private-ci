@@ -549,3 +549,27 @@ artifact and pin its content. Do not add an ignore list of missing or
 unexpected tensor keys to make an incomplete checkpoint look green. This
 loading receipt is local technical evidence, NOT cryptographic attestation
 of the operator, upstream revision or NDU outcomes.
+
+
+### L2 safetensors actual tensor-materialization guard
+
+The HF AutoModel output_loading_info report is necessary, but in some
+Transformers versions/architecture profiles a clean loading-info list alone
+does not prove that the checkpoint tensors were restored. The real local
+DeBERTa/ModernBERT runner therefore additionally traverses every registered
+safetensors shard with safetensors.safe_open and checks that its entire key
+inventory exactly matches model.state_dict(), including tensor shapes and
+actual values. Float32 source weights are compared after converting to the
+selected runtime dtype (fp32/bf16/fp16). Any missing/extra keys, duplicate
+shard entries, meta tensors, wrong shapes or differing loaded values block
+the research trial. This is bounded to 64 shards and 2.5 billion source
+weight bytes and records tensor_count, tensor_elements and shard count.
+The arm evidence bundler requires the corresponding full-materialization
+receipt in addition to the complete loading-info and source-code SHA.
+
+This strict base-model-only convention can reject upstream artifacts
+with model-specific name prefixes, tied-parameter aliases or extra
+pretraining heads. They require a separately audited, content-pinned
+canonical base conversion rather than weakening the gate. Model-free
+mocks test both matching and wrong-in-memory tensor values, but do not
+prove real 435M DeBERTa execution or external NDU benefits.
