@@ -520,7 +520,7 @@ mod tests {
             .revoked_grant_ids
             .insert("grant-b".into());
         drifted.signature = distributor
-            .sign(&drifted.must(update.signing_bytes()))
+            .sign(&must(drifted.update.signing_bytes()))
             .to_bytes()
             .to_vec();
         assert_eq!(
@@ -535,7 +535,7 @@ mod tests {
         removed.update.issued_at_unix_ms = 1_250;
         removed.update.expires_at_unix_ms = 2_100;
         removed.signature = distributor
-            .sign(&removed.must(update.signing_bytes()))
+            .sign(&must(removed.update.signing_bytes()))
             .to_bytes()
             .to_vec();
         assert_eq!(
@@ -548,7 +548,7 @@ mod tests {
         newer.update.issued_at_unix_ms = 1_250;
         newer.update.expires_at_unix_ms = 2_100;
         newer.signature = distributor
-            .sign(&newer.must(update.signing_bytes()))
+            .sign(&must(newer.update.signing_bytes()))
             .to_bytes()
             .to_vec();
         must(coordinator.install_update(newer));
