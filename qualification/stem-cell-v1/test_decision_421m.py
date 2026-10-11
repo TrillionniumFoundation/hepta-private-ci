@@ -108,6 +108,32 @@ class FourWayDecisionTests(unittest.TestCase):
         self.assertEqual(result["arm_metrics"]["laya_original:checkpoint"]
                          ["by_split"]["future_1"]["count"], 8)
 
+    def test_four_model_batch_capacity_must_be_precommitted(self):
+        self.assertEqual(self.plan["encoder_microbatch_size"], 1)
+        altered = copy.deepcopy(self.runs)
+        altered[0]["physical_encoder_microbatch_ceiling"] = 4
+        with self.assertRaisesRegex(ValueError, "run provenance"):
+            evaluate(self.plan, altered, self.predictions, self.indexed,
+                     replicates=1000)
+        plan = copy.deepcopy(self.plan)
+        plan["encoder_microbatch_size"] = 4
+        with self.assertRaisesRegex(ValueError, "run provenance"):
+            evaluate(plan, self.runs, self.predictions, self.indexed,
+                     replicates=1000)
+        # Research-only fixtures may exercise coverage with a matching
+        # manifest, but that does not attest that four actual models ran.
+        for item in altered:
+            item["physical_encoder_microbatch_ceiling"] = 4
+        matched = evaluate(plan, altered, self.predictions, self.indexed,
+                           replicates=1000)
+        self.assertFalse(matched["production_promotion_permitted"])
+        with self.assertRaisesRegex(ValueError, "unregistered physical Encoder"):
+            build_plan(
+                self.data, self.descriptors, train_steps=100,
+                trainable_budget=262144, batch_size=16, context_tokens=512,
+                seed=7347, device="cpu", dtype="fp32",
+                encoder_microbatch_size=33)
+
     def test_equal_budget_only_is_comparable_without_fake_checkpoint(self):
         runs = [r for r in self.runs if r["arm"].endswith(":equal_budget")]
         predictions = [r for r in self.predictions
