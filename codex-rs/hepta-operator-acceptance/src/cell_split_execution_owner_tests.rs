@@ -528,6 +528,35 @@ fn missing_frozen_plan_after_initialization_is_not_recreated() {
 }
 
 #[test]
+fn missing_frozen_plan_after_lost_ack_fences_reconciliation() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut port = FixturePort::new(state.clone());
+        port.drop_ack = true;
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+        assert!(owner.advance().is_err());
+    }
+    let frozen = root.path().join("cell-split-frozen-plan.json");
+    fs::remove_file(&frozen).expect("remove frozen plan");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "frozen plan lost after initialization"
+        ))
+    ));
+    assert!(!frozen.exists());
+    // The original external effect may already be durable: never retry it.
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn missing_frozen_plan_after_committed_effect_fences_recovery() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
