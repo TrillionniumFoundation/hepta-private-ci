@@ -62,7 +62,7 @@ jobs:
           Path("/tmp/format-repair/changed.json").write_text(json.dumps(changed, sort_keys=True))
           PY
           just fmt --check --base "$BASE" 2>&1 | tee /tmp/format-repair/format.log
-      - name: Execute the complete pinned Python regression suite
+      # The immutable Stem audit runs all six real-artifact tests in its own\n      # hash-pinned job; the generic full suite reports its external integration\n      # as unavailable when that pinned artifact is not staged.\n      - name: Execute the complete pinned Python regression suite
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
