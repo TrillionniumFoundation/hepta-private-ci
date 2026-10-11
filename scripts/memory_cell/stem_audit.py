@@ -16,6 +16,7 @@ from stem_audit_archive import PinnedArchive, require
 from stem_audit_diagnosis import diagnose
 from stem_audit_cost import audit_resources
 from stem_audit_candidate import candidate_capacity
+from stem_audit_adapter_warmstart import analyze_warmstart
 
 ARMS = (
     "frozen_rerank", "prototype", "linear", "gated",
@@ -206,6 +207,12 @@ def audit_zip(path, pin, source, tree):
         result["resources"] = audit_resources(report, encoding)
         result["candidate_capacity"] = candidate_capacity(
             plan, encoding, raw, archive.json("comparison/feature-failures.json")
+        )
+        result["adapter_unique_example_census"] = analyze_warmstart(
+            plan,
+            archive.json("comparison/training-dispositions.json"),
+            archive.json("comparison/adapter-training.json"),
+            report,
         )
         tests = archive.read("tests.log").decode("utf-8")
         matched = re.findall(r"(?m)^Ran (\d+) tests in [^\n]+\n\s*\nOK(?:\n|$)", tests)

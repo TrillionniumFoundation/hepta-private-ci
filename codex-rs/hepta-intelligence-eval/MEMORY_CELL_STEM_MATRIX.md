@@ -486,3 +486,38 @@ found 1,475 truly future session timestamps out of 23,867 across all 500
 native questions. The eight preregistered transfer questions had no
 future-dated session in their histories. These are source-level chronology
 counts, not 500 prospective independent answers or adjudicated support.
+
+## Adapter warm-start: optimizer steps are not independent supervision
+
+The byte-pinned original `e9c8f9c9...` audit now reconciles every LoRA
+prepared, pair-ineligible and actually consumed training question with the
+48-question predeclared train cut and its source-family/Cell route. The
+historical result is:
+
+| Registered quantity | Actually recorded |
+| --- | ---: |
+| Planned train questions | 48 |
+| Admitted Head weak-source questions | 40 |
+| Adapter warm-start prefix | 16 |
+| Admitted warm-start Head questions | 14 |
+| Actual positive/negative pair-trainable lineage questions | **10** |
+| Lineage optimization steps | 24 (14 repeated-question steps) |
+| Independent General LoRA unique questions / steps | **4 / 12** |
+| Independent Temporal LoRA unique questions / steps | **6 / 12** |
+| Independent training source families in lineage warm start | **5** |
+
+The 3 frozen Adapters finished with real nonzero tensor changes and exact
+artifact-only reload parity, but the **Encoder Adapters were frozen after
+the first 16 train questions**. They did not adapt to the additional
+questions admitted by the 32/48-Head checkpoints. The native corpus marks
+unannotated negatives only as **weak distractors**, not independently
+verified contradictions or entailment. Thus 24 LoRA SGD steps are **not**
+24 independent supervision examples. This distinction is crucial before
+claiming Cell transfer, sample efficiency or per-Cell cost savings.
+
+`stem_audit_adapter_warmstart.py` enforces the all-example partition,
+duplicate/admission checks, per-route isolation, complete Head journal,
+base-unchanged proof and actual adapter-only reload receipts. It joins
+the independent original-artifact audit but **does not change** historical
+answers, re-run an Encoder, authenticate source families for production
+or issue qualification. `production_accepted=false`.
