@@ -18,6 +18,8 @@ from torch import nn
 from selector_head import Features
 
 KINDS = ("linear", "prototype", "gated")
+MAX_SEEN = 4096
+MAX_ROOTS = 16384
 
 
 def sha256(payload):
@@ -26,9 +28,8 @@ def sha256(payload):
 
 def route_text(text):
     """Observable fixed two-domain route, NOT a discovered semantic topology."""
-    return "temporal" if re.search(
-        r"\b(when|before|after|first|last|year|month|earlier|later)\b", text.lower()
-    ) else "general"
+    pattern = r"\b(when|before|after|first|last|year|month|earlier|later)\b"
+    return "temporal" if re.search(pattern, text.lower()) else "general"
 
 
 def clone_features(batch):
@@ -89,7 +90,8 @@ class StemHead(nn.Module):
             return torch.zeros(1)
         if self.kind == "prototype":
             means = self.sums / self.counts.clamp(min=1).unsqueeze(1)
-            residual = torch.nn.functional.normalize(x, dim=-1) @ (means[1] - means[0])
+            normalized = torch.nn.functional.normalize(x, dim=-1)
+            residual = normalized @ (means[1] - means[0])
             null = torch.zeros(1)
         else:
             if self.kind == "gated":
@@ -122,7 +124,7 @@ class StemHead(nn.Module):
         return selected, scores.tolist()
 
     def fit(self, rows, cut, *, revoked, steps=192, pair_ceiling=1000000, lr=0.03):
-        """Continue this head; validate the whole batch before any mutation.
+        """Continue this head; validate all rows before any mutation.
 
         The pair ceiling is cumulative, including earlier fit calls. Native
         source-support labels are weak supervision, not entailment verdicts.
@@ -140,7 +142,7 @@ class StemHead(nn.Module):
             or self.roots.intersection(revoked | cut.forbidden_roots)
         ):
             raise ValueError("unavailable session or invalid cumulative budget")
-        seen = set()
+        seen, admitted_roots = set(), set(self.roots)
         for row in rows:
             f = row.features
             f.validate(self.dimension)
@@ -153,20 +155,25 @@ class StemHead(nn.Module):
                 or not f.roots.issubset(cut.allowed_roots)
                 or f.roots.intersection(revoked | cut.forbidden_roots)
                 or len(set(row.positive_indices)) != len(row.positive_indices)
-                or any(type(i) is not int or not 0 <= i < len(f.candidate_ids)
-                       for i in row.positive_indices)
+                or any(
+                    type(i) is not int or not 0 <= i < len(f.candidate_ids)
+                    for i in row.positive_indices
+                )
             ):
                 raise ValueError("unadmitted, duplicated, withdrawn or held-out row")
             seen.add(f.question_id)
-        before = self.export()
+            admitted_roots.update(f.roots)
+        if len(self.seen | seen) > MAX_SEEN or len(admitted_roots) > MAX_ROOTS:
+            raise ValueError("bounded persistent lineage capacity exceeded")
+        before = {k: v.clone() for k, v in self.state_dict().items()}
         started, losses, consumed = time.perf_counter(), [], 0
         parameters = list(self.parameters())
         optimizer = torch.optim.SGD(parameters, lr=lr) if parameters else None
-        # Prototype sufficient statistics count each source example only once.
         ordered = sorted(rows, key=lambda r: (r.features.family, r.features.question_id))
         batches = [ordered[i % len(ordered)] for i in range(steps)]
         if self.kind == "prototype":
             batches = [r for r in ordered if r.features.question_id not in self.seen]
+        no_new_prototypes = self.kind == "prototype" and not batches
         try:
             for row in batches:
                 f = row.features
@@ -198,38 +205,62 @@ class StemHead(nn.Module):
                 self.roots.update(f.roots)
                 if any(not torch.isfinite(t).all() for t in self.state_dict().values()):
                     raise ValueError("nonfinite persistent state")
-            if not consumed:
+            if not consumed and not no_new_prototypes:
                 raise ValueError("no admitted update fits remaining budget")
         except Exception:
             self.quarantined = True
             raise
+        delta = sum(
+            float((value - before[k]).square().sum())
+            for k, value in self.state_dict().items()
+        )
         return dict(
-            kind=self.kind, requested_steps=steps, consumed_steps=consumed,
-            cumulative_steps=self.steps, cumulative_pairs=self.pair_evaluations,
-            cumulative_unique_examples=len(self.seen), pair_ceiling=pair_ceiling,
+            kind=self.kind,
+            requested_steps=steps,
+            consumed_steps=consumed,
+            cumulative_steps=self.steps,
+            cumulative_pairs=self.pair_evaluations,
+            cumulative_unique_examples=len(self.seen),
+            pair_ceiling=pair_ceiling,
+            no_update_reason="no-new-prototype-examples" if no_new_prototypes else None,
             loss_first=None if not losses else losses[0],
             loss_last=None if not losses else losses[-1],
             wall_seconds=time.perf_counter() - started,
+            trainable_parameters=sum(p.numel() for p in parameters),
             parameter_bytes=sum(p.numel() * p.element_size() for p in parameters),
             buffer_bytes=sum(b.numel() * b.element_size() for b in self.buffers()),
-            gradient_bytes=sum(p.grad.numel() * p.grad.element_size()
-                               for p in parameters if p.grad is not None),
-            persistent_optimizer_bytes=0, optimizer="SGD-no-momentum",
-            state_changed=before != self.export(), encoder_updates=0,
+            gradient_bytes=sum(
+                p.grad.numel() * p.grad.element_size()
+                for p in parameters if p.grad is not None
+            ),
+            persistent_optimizer_bytes=0,
+            optimizer="sufficient-statistics" if self.kind == "prototype" else "SGD-no-momentum",
+            tensor_delta_squared_norm=delta,
+            state_changed=delta > 0,
+            encoder_updates=0,
             production_accepted=False,
         )
 
     def export(self):
         if self.quarantined:
             raise ValueError("cannot export quarantined head")
-        return json.dumps(dict(
-            schema="hepta.stem-head.research.v1", dimension=self.dimension,
-            encoder_identity=self.encoder_identity, kind=self.kind, rank=self.rank,
-            seed=self.seed, roots=sorted(self.roots), seen=sorted(self.seen),
-            steps=self.steps, pair_evaluations=self.pair_evaluations,
-            state={k: v.detach().tolist() for k, v in self.state_dict().items()},
-            production_accepted=False,
-        ), sort_keys=True, allow_nan=False, separators=(",", ":")).encode()
+        return json.dumps(
+            dict(
+                schema="hepta.stem-head.research.v1",
+                dimension=self.dimension,
+                encoder_identity=self.encoder_identity,
+                kind=self.kind,
+                rank=self.rank,
+                seed=self.seed,
+                roots=sorted(self.roots),
+                seen=sorted(self.seen),
+                steps=self.steps,
+                pair_evaluations=self.pair_evaluations,
+                state={k: v.detach().tolist() for k, v in self.state_dict().items()},
+                production_accepted=False,
+            ),
+            sort_keys=True, allow_nan=False, separators=(",", ":"),
+        ).encode()
 
     @classmethod
     def restore(cls, payload, *, expected_sha256, encoder_identity, allowed_roots, revoked):
@@ -245,30 +276,42 @@ class StemHead(nn.Module):
             return result
 
         obj = json.loads(payload, object_pairs_hook=unique)
-        keys = {"schema", "dimension", "encoder_identity", "kind", "rank", "seed",
-                "roots", "seen", "steps", "pair_evaluations", "state", "production_accepted"}
+        keys = {
+            "schema", "dimension", "encoder_identity", "kind", "rank", "seed",
+            "roots", "seen", "steps", "pair_evaluations", "state", "production_accepted",
+        }
         if (
             set(obj) != keys
             or obj["schema"] != "hepta.stem-head.research.v1"
             or obj["production_accepted"] is not False
             or obj["encoder_identity"] != encoder_identity
-            or any(not isinstance(v, list) or len(v) != len(set(v))
-                   or any(not isinstance(s, str) or not s for s in v)
-                   for v in (obj["roots"], obj["seen"]))
+            or any(
+                not isinstance(v, list) or len(v) != len(set(v))
+                or any(not isinstance(s, str) or not s for s in v)
+                for v in (obj["roots"], obj["seen"])
+            )
+            or len(obj["seen"]) > MAX_SEEN
+            or len(obj["roots"]) > MAX_ROOTS
             or not set(obj["roots"]).issubset(allowed_roots)
             or set(obj["roots"]) & revoked
-            or any(type(obj[k]) is not int or not 0 <= obj[k] <= 10000000
-                   for k in ("steps", "pair_evaluations"))
+            or any(
+                type(obj[k]) is not int or not 0 <= obj[k] <= 10000000
+                for k in ("steps", "pair_evaluations")
+            )
         ):
             raise ValueError("head artifact identity, lineage or counter mismatch")
-        head = cls(obj["dimension"], encoder_identity, kind=obj["kind"],
-                   rank=obj["rank"], seed=obj["seed"])
+        head = cls(
+            obj["dimension"], encoder_identity, kind=obj["kind"],
+            rank=obj["rank"], seed=obj["seed"],
+        )
         expected = head.state_dict()
         if set(obj["state"]) != set(expected):
             raise ValueError("head tensor inventory")
         tensors = {k: torch.tensor(v, dtype=torch.float32) for k, v in obj["state"].items()}
-        if any(tensors[k].shape != v.shape or not torch.isfinite(tensors[k]).all()
-               for k, v in expected.items()):
+        if any(
+            tensors[k].shape != v.shape or not torch.isfinite(tensors[k]).all()
+            for k, v in expected.items()
+        ):
             raise ValueError("head tensor layout or values")
         if head.kind == "prototype" and (tensors["counts"] < 0).any():
             raise ValueError("negative prototype counts")
