@@ -310,6 +310,68 @@ fn owner(root: &Path, ready: Arc<AtomicBool>) -> CellSplitCnsCutoverOwnerV1<Disk
 }
 
 #[test]
+fn deleted_frozen_binding_after_real_cutover_cannot_reinitialize_owner() {
+    let root = private_root();
+    let ready = Arc::new(AtomicBool::new(true));
+    let request = intent();
+    {
+        let mut original = owner(root.path(), ready.clone());
+        original.commit_once(&request).expect("durable CNS cutover");
+        assert!(original
+            .read_committed(&request)
+            .expect("original signed CNS effect")
+            .is_some());
+    }
+
+    let frozen = root.path().join(FROZEN);
+    fs::remove_file(&frozen).expect("simulate lost frozen local binding");
+    let reopened = CellSplitCnsCutoverOwnerV1::open(
+        root.path(),
+        plan(),
+        binding(),
+        DiskCns::open(
+            root.path().to_path_buf(),
+            SigningKey::from_bytes(&[9; 32]),
+            ready,
+        ),
+    );
+    assert!(matches!(reopened, Err(CellSplitCnsCutoverErrorV1::Invalid)));
+    assert!(!frozen.exists(), "reopening must not mint new frozen evidence");
+
+    let actual = DiskCns::open(
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
+        Arc::new(AtomicBool::new(true)),
+    )
+    .route();
+    assert_eq!(actual.generation, plan().child_generation);
+    assert_eq!(actual.route, binding().successor_route_digest);
+}
+
+#[test]
+fn new_cns_binding_requires_authenticated_fenced_predecessor() {
+    let root = private_root();
+    let backend = DiskCns::open(
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
+        Arc::new(AtomicBool::new(true)),
+    );
+    let mut route = backend.route();
+    route.old_writer_fenced = false;
+    backend
+        .durable_replace(&route)
+        .expect("unfenced serving route");
+    let opened = CellSplitCnsCutoverOwnerV1::open(
+        root.path(),
+        plan(),
+        binding(),
+        backend,
+    );
+    assert!(matches!(opened, Err(CellSplitCnsCutoverErrorV1::Invalid)));
+    assert!(!root.path().join(FROZEN).exists());
+}
+
+#[test]
 fn direct_cns_readback_rejects_original_receipt_ahead_of_durable_frontier() {
     let root = private_root();
     let ready = Arc::new(AtomicBool::new(true));
