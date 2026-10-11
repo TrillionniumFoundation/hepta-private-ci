@@ -149,6 +149,12 @@ impl CellSplitUnixEffectPortV1 {
         })
     }
 
+    /// A live readback can only prove the original frozen owner when these
+    /// socket verifier pins are identical to the coordinator's trust pins.
+    pub(crate) fn uses_exact_owner_keys(&self, frozen: &[VerifyingKey; OWNER_COUNT]) -> bool {
+        self.verifying_keys == *frozen
+    }
+
     fn call(
         &self,
         intent: &CellSplitExecutionIntentV1,
