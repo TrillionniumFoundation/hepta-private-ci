@@ -276,9 +276,11 @@ impl AgentdState {
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
+                    crate::cognitive_context::CognitiveReadOwnerPorts {
+                        retrieval: self.cognitive_retrieval_context.get(),
+                        learning: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
                 )
                 .await;
                 self.refresh_generation()?;
@@ -352,10 +354,12 @@ impl AgentdState {
                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
                     store.as_ref(),
                     &self.identity.agent_id,
-                    &snapshot_digest,
-                    &read_digest,
-                    omitted_records,
-                    &items,
+                    crate::cognitive_context::CognitiveSnapshotProof {
+                        snapshot_digest: &snapshot_digest,
+                        read_digest: &read_digest,
+                        omitted_records,
+                        items: &items,
+                    },
                     plan.as_ref(),
                     self.cognitive_ranker.get(),
                     self.identity.spawn_generation,

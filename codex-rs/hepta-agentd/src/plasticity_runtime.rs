@@ -303,9 +303,11 @@ impl PlasticityRuntimeOwnerV1 {
                         self.owner_evidence_resolver.as_ref(),
                         &self.owner_evidence_policy,
                         &self.verifier,
-                        &mut self.parameter_writer,
-                        &mut self.parameter_anchor_store,
-                        now,
+                        crate::plasticity_host::AgentdPlasticityCommitContextV1 {
+                            writer: &mut self.parameter_writer,
+                            anchor_store: &mut self.parameter_anchor_store,
+                            now,
+                        },
                     )
                     .map_err(PlasticityRuntimeCallErrorV1::Parameter);
                     let _ = response.send(result);
