@@ -191,7 +191,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                 };
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(
                     PreparedAgentdIntelligenceRunV1 {
-                        envelope,
+                        envelope: *envelope,
                         dispatch_proposal_digest,
                         snapshot,
                         candidate_ids,
