@@ -20,7 +20,9 @@ from model_runner import snapshot_digest
 from study import quantile, validate_dataset
 
 SOURCES = {
-    "laya_original": ("NandhaKishorM/laya", 421_000_000),
+    # Weight artifact identity lives on Hugging Face; the separate Laya
+    # executable/library source is NandhaKishorM/laya and must be audited too.
+    "laya_original": ("convaiinnovations/laya", 421_000_000),
     "laya_typed": ("convaiinnovations/laya-typed-decisions", 421_000_000),
     "deberta_v3_large": ("microsoft/deberta-v3-large", 435_000_000),
     "modernbert_large": ("answerdotai/ModernBERT-large", 395_000_000),
