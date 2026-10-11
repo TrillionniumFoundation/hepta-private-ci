@@ -366,3 +366,94 @@ fn main() {
         std::process::exit(2);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn sample_trace() -> MechanismTraceV1 {
+        MechanismTraceV1 {
+            schema: "hepta.neuron.mechanism-probe-trace.q24.v1".to_owned(),
+            width: 32,
+            events: vec![
+                TraceEvent {
+                    sequence: 1,
+                    monotonic_micros: 100,
+                    drive_q24: vec![Q / 2; 32],
+                    prediction_q24: vec![0; 32],
+                },
+                TraceEvent {
+                    sequence: 2,
+                    monotonic_micros: 200,
+                    drive_q24: vec![Q; 32],
+                    prediction_q24: vec![0; 32],
+                },
+            ],
+        }
+    }
+
+    fn bytes(trace: &MechanismTraceV1) -> Vec<u8> {
+        let events = trace.events.iter().map(|event| json!({
+            "sequence": event.sequence,
+            "monotonic_micros": event.monotonic_micros,
+            "drive_q24": event.drive_q24,
+            "prediction_q24": event.prediction_q24,
+        })).collect::<Vec<_>>();
+        serde_json::to_vec(&json!({
+            "schema": trace.schema,
+            "width": trace.width,
+            "events": events,
+        })).expect("test trace serialization")
+    }
+
+    #[test]
+    fn every_arm_accepts_the_exact_same_32_dimensional_trace() {
+        let trace = parse_trace(&bytes(&sample_trace()))
+            .expect("valid 32D two-tick trace");
+        let configs = make_configs(trace.width).expect("valid mechanisms");
+        let v1 = configs.v1.digest().expect("v1 config digest");
+        let v2 = configs.v2.digest().expect("v2 config digest");
+        assert_ne!(v1, v2);
+        assert_eq!(configs.v2.populations.len(), 2);
+        assert_eq!(configs.v2.global_top_k, 3);
+        for arm in ["v1", "v2", "v3", "ssm"] {
+            let mut states = ActiveState::new(arm, 64).expect("valid arm");
+            let mut frontier = Digest32::ZERO;
+            for row in &trace.events {
+                let input = request_for(row, 7);
+                frontier = states.apply(7, &input, &configs)
+                    .expect("arm must process same Q24 trace");
+                assert!(!frontier.is_zero());
+            }
+        }
+    }
+
+    #[test]
+    fn trace_schema_clock_sequence_and_bounds_fail_closed() {
+        let mut trace = sample_trace();
+        trace.events[1].sequence = 3;
+        assert!(parse_trace(&bytes(&trace)).is_err());
+        trace = sample_trace();
+        trace.events[1].monotonic_micros = 100;
+        assert!(parse_trace(&bytes(&trace)).is_err());
+        trace = sample_trace();
+        trace.events[1].drive_q24[0] = H + 1;
+        assert!(parse_trace(&bytes(&trace)).is_err());
+        trace = sample_trace();
+        trace.width = 256;
+        assert!(parse_trace(&bytes(&trace)).is_err());
+        trace = sample_trace();
+        trace.schema = "unknown".to_owned();
+        assert!(parse_trace(&bytes(&trace)).is_err());
+        assert!(parse_trace(b"{}").is_err());
+    }
+
+    #[test]
+    fn only_preregistered_cell_scales_and_known_arm_identifiers_are_valid() {
+        for n in ALLOWED_CELLS {
+            assert!(ActiveState::new("v1", *n).is_ok());
+        }
+        assert!(ActiveState::new("unknown", 64).is_err());
+        assert_eq!(ALLOWED_CELLS, &[64, 256, 1024, 4096]);
+    }
+}
