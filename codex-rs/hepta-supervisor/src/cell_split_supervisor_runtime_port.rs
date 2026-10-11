@@ -10,7 +10,10 @@
 //! a production authorization grant. Deployments must provision a separate
 //! Supervisor signer, signed CNS/selection readers and a trusted minimum.
 
+use codex_hepta_operator_acceptance::CellSplitCnsRuntimeCommitV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionIntentV1;
+use codex_hepta_operator_acceptance::CellSplitExecutionReceiptV1;
+use codex_hepta_operator_acceptance::verify_cell_split_cns_step_receipt_v1;
 use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
 use codex_hepta_operator_acceptance::CellSplitSupervisorCommitV1;
@@ -22,6 +25,7 @@ use codex_hepta_types::Digest32;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
+use ed25519_dalek::VerifyingKey;
 use sha2::Digest as _;
 use sha2::Sha256;
 
@@ -43,6 +47,10 @@ pub struct CellSplitSupervisorJournalRuntimePortV1<A: CellSplitFinalizationAutho
 }
 
 impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV1<A> {
+    /// Compatibility constructor for a previously pinned, identical digest
+    /// representation. Real CNS integration must use the explicit signed
+    /// predecessor constructor: the original runtime receipt digest and the
+    /// coordinator's signed outer receipt digest are not interchangeable.
     pub fn new(
         plan: CellSplitExecutionPlanV1,
         binding: CellSplitSupervisorFenceBindingV1,
@@ -50,6 +58,74 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
         accepted_handoff_plan_digest: Digest32,
         finalizer: CellSplitSupervisorJournalFinalizerV1<A>,
         signer: SigningKey,
+    ) -> Result<Self, String> {
+        Self::new_inner(
+            plan,
+            binding,
+            intent,
+            accepted_handoff_plan_digest,
+            finalizer,
+            signer,
+            None,
+        )
+    }
+
+    /// Link the genuine Supervisor journal to both layers of the preceding
+    /// signed CNS cutover. This accepts an independently pinned CNS effect
+    /// signer but does NOT replace the live CNS reader or final-use owner.
+    pub fn new_with_signed_cns_predecessor(
+        plan: CellSplitExecutionPlanV1,
+        binding: CellSplitSupervisorFenceBindingV1,
+        intent: CellSplitExecutionIntentV1,
+        accepted_handoff_plan_digest: Digest32,
+        finalizer: CellSplitSupervisorJournalFinalizerV1<A>,
+        signer: SigningKey,
+        cns_receipt: &CellSplitExecutionReceiptV1,
+        pinned_cns_key: &VerifyingKey,
+    ) -> Result<Self, String> {
+        verify_cell_split_cns_step_receipt_v1(&plan, cns_receipt, pinned_cns_key)
+            .map_err(|e| e.to_string())?;
+        if intent.previous_receipt_digest != cns_receipt.receipt_digest {
+            return Err("Supervisor predecessor is not the signed CNS coordinator receipt".into());
+        }
+        let original: CellSplitCnsRuntimeCommitV1 =
+            serde_json::from_slice(&cns_receipt.owner_receipt_bytes)
+                .map_err(|_| "CNS owner did not return a typed original cutover")?;
+        if original.idempotency_key != cns_receipt.intent.idempotency_key
+            || original.predecessor_generation != plan.parent_generation
+            || original.successor_generation != plan.child_generation
+            || original.authority_epoch != binding.authority_epoch
+            || original.committed_sequence != cns_receipt.owner_sequence
+            || original.successor_route_digest != binding.successor_route_digest
+            || original.original_runtime_receipt_bytes.is_empty()
+            || original.original_runtime_receipt_bytes.len() > 32 * 1024
+            || original.original_runtime_signature_bytes.len() != 64
+        {
+            return Err("signed CNS predecessor contains inconsistent original runtime evidence".into());
+        }
+        // The source signature covers the full typed CNS commit record. The
+        // journal binding covers the exact *inner* original runtime bytes.
+        // This remains subject to the finalizer's live CNS/Selector readback.
+        let original_digest = Digest32::of_bytes(&original.original_runtime_receipt_bytes);
+        Self::new_inner(
+            plan,
+            binding,
+            intent,
+            accepted_handoff_plan_digest,
+            finalizer,
+            signer,
+            Some(original_digest),
+        )
+    }
+
+    fn new_inner(
+        plan: CellSplitExecutionPlanV1,
+        binding: CellSplitSupervisorFenceBindingV1,
+        intent: CellSplitExecutionIntentV1,
+        accepted_handoff_plan_digest: Digest32,
+        finalizer: CellSplitSupervisorJournalFinalizerV1<A>,
+        signer: SigningKey,
+        verified_original_cns_digest: Option<Digest32>,
     ) -> Result<Self, String> {
         let original = finalizer.binding();
         let plan_digest = plan.digest().map_err(|e| e.to_string())?;
@@ -76,7 +152,16 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
             || original.old_generation.get() != plan.parent_generation
             || original.new_generation.get() != plan.child_generation
             || original.authority_epoch != binding.authority_epoch
-            || original.cns_cutover_receipt_digest.to_string() != intent.previous_receipt_digest
+            || match verified_original_cns_digest {
+                Some(digest) => original.cns_cutover_receipt_digest != digest,
+                None => {
+                    // Source-only compatibility. A real cross-owner cutover
+                    // has two distinct digest layers and must use the signed
+                    // CNS predecessor constructor below.
+                    original.cns_cutover_receipt_digest.to_string()
+                        != intent.previous_receipt_digest
+                }
+            }
             || original.successor_route_digest.to_string() != binding.successor_route_digest
             || accepted_handoff_plan_digest.to_string() != binding.handoff_plan_digest
             || binding.supervisor_id.is_empty()
