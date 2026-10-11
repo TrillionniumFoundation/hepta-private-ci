@@ -197,3 +197,28 @@ fn q24_exponent_and_signed_ties_to_even_are_deterministic() {
     assert_eq!(mul_q24(-3, Q / 2), -2);
     assert_eq!(mul_q24(-1, Q / 2), 0);
 }
+
+#[test]
+fn independent_python_diagonal_ssm_q24_golden_is_bit_exact() {
+    // qualification/neuron-gated-sparse-v3/q24_temporal_oracle.py
+    let cfg = config();
+    let inputs = [
+        (1_u64, 100_u64, Q), (2, 200, -(Q / 2)),
+        (3, 401, 3 * Q / 2), (4, 1301, -3 * Q), (5, 1302, 0),
+    ];
+    let steps = [1_u64, 1, 3, 9, 1];
+    let retention = [8388608_i64, 8388608, 2097152, 32768, 8388608];
+    let expected = [8388608_i64, 0, 12582912, -25141248, -12570624];
+    let mut previous = None;
+    for (index, (sequence, micros, drive)) in inputs.into_iter().enumerate() {
+        let mut input = tick(sequence, micros);
+        input.temporal_drive_q24[0] = drive;
+        let (next, receipt) = checked(diagonal_ssm_tick_v1(
+            &cfg, &input, previous.as_ref()
+        ));
+        assert_eq!(receipt.elapsed_steps, steps[index]);
+        assert_eq!(q24_power(Q / 2, receipt.elapsed_steps), retention[index]);
+        assert_eq!(next.temporal_q24()[0], expected[index]);
+        previous = Some(next);
+    }
+}
