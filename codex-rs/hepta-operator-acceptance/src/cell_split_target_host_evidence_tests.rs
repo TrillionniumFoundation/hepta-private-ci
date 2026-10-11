@@ -622,3 +622,50 @@ fn observer_join_rejects_reused_effect_owner_as_host_signer() {
     ).is_err());
     assert_eq!(current.verification_count, 0);
 }
+
+
+#[cfg(unix)]
+#[test]
+fn observer_public_gate_refuses_independently_rekeyed_rpc_transport() {
+    use std::time::Duration;
+
+    let payload = complete_recorder();
+    let host = key(3);
+    let observer = key(7);
+    let envelope = payload.sign(
+        "host-signer", &host,
+        [("observer-signer".to_string(), observer.clone())],
+    ).expect("signed evidence");
+    let (transcript, trust) = signed_owner_transcript_for_host(&envelope.payload);
+    let signed_join = signed_observer_join_fixture(
+        &envelope, &transcript, &host, &observer,
+    );
+    let root = tempfile::tempdir().expect("local sockets not opened");
+    let endpoints = std::array::from_fn(|index| {
+        root.path().join(format!("absent-owner-{index}.sock"))
+    });
+    // These are four strong but DIFFERENT keys from the original owner
+    // signatures in the transcript. The join must refuse before connecting.
+    let wrong_keys = [61_u8, 62, 63, 64].map(|seed| {
+        key(seed).verifying_key()
+    });
+    let mut untrusted = crate::CellSplitUnixEffectPortV1::new(
+        endpoints,
+        wrong_keys,
+        Duration::from_secs(1),
+    ).expect("well-shaped but untrusted transport");
+    let result = crate::verify_cell_split_observer_join_v1(
+        &signed_join,
+        &transcript,
+        &trust,
+        &envelope,
+        &policy(&host, &observer),
+        &mut untrusted,
+    );
+    assert!(matches!(
+        result,
+        Err(crate::CellSplitObserverJoinErrorV1::Invalid(
+            "live RPC trust pins differ from four original effect owners"
+        ))
+    ));
+}
