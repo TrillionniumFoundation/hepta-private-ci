@@ -196,6 +196,30 @@ class GeneralizationBridgeTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 train_to_heldout_gap(plan, learning, scored, targets)
 
+    def test_final_checkpoint_repeated_questions_are_not_48_independent_cases(self):
+        plan, learning, scored, targets = fixture()
+        out = train_to_heldout_gap(plan, learning, scored, targets)
+        arm = out["final_checkpoint_unique_question_units"]["gated"]
+        self.assertEqual(arm["unique_test_transfer_questions"], 16)
+        self.assertEqual(arm["training_checkpoint_repeats_per_question"], 3)
+        self.assertEqual(arm["observed_source_support_pairs"], 16)
+        self.assertEqual(arm["native_source_net_gain"], 0)
+        self.assertEqual(arm["native_source_all_planned_net_gain_bounds"], [0, 0])
+        self.assertTrue(arm["confidence_interval_not_claimed"])
+
+    def test_missing_evaluable_source_pair_keeps_conservative_unique_bounds(self):
+        plan, learning, scored, targets = fixture()
+        for row in scored:
+            if (row["stage"], row["phase"], row["question_id"]) == (
+                48, "test", "test-0"
+            ):
+                row["source_choice_correct"] = None
+        out = train_to_heldout_gap(plan, learning, scored, targets)
+        arm = out["final_checkpoint_unique_question_units"]["gated"]
+        self.assertEqual(arm["observed_source_support_pairs"], 15)
+        self.assertEqual(arm["native_source_all_planned_net_gain_bounds"], [-1, 1])
+        self.assertEqual(arm["unique_test_transfer_questions"], 16)
+
     def test_missing_or_duplicate_policy_or_head_fails_closed(self):
         for corruption in ("missing-policy", "duplicate-policy", "missing-head"):
             plan, learning, scored, targets = fixture()

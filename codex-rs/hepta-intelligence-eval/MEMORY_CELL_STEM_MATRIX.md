@@ -937,3 +937,15 @@ passage entailment, semantic citation accuracy or prospective benefit.
 A successful protocol test alone is not evidence of a successful model
 replay. The work is not eligible for production without independent
 source-family/time windows, Reader outcomes, p95/TCO, and review.
+
+## Effective question units versus repeated 16/32/48 policy observations
+
+The Head-vs-frozen test/transfer bridge now independently reports the
+**16 distinct registered test+transfer questions per learned arm** at
+checkpoint 48. The same questions were evaluated at 16, 32, and 48
+training examples, so 48 repeated measurements are not 48 independent
+statistical subjects. The descriptive final-stage report preserves missing
+weak-native-support labels and Reader failures in conservative all-16 bounds.
+It does not claim a confidence interval, independent source-family sampling,
+blinded entailment review, or production acceptance. Raw 576-policy attempt
+accounting and all stage-specific receipts remain unchanged.

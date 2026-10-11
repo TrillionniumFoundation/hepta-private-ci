@@ -366,8 +366,51 @@ def train_to_heldout_gap(plan, learning, scored, targets):
     ]
     if len(heldout_panel) != len(STAGES) * len(ARMS[1:]) * 16:
         raise ValueError("missing registered test/transfer repeated observations")
+    # Repeated evaluations at 16/32/48 share the same native questions.
+    # Do not count them as 48 independent test/transfer subjects per arm.
+    # The final checkpoint is a single descriptive cohort, not a new test.
+    final_panel = [
+        row for row in heldout_panel if row["stage"] == STAGES[-1]
+    ]
+    unique_native_questions = {
+        (row["phase"], row["question_id"])
+        for row in final_panel
+    }
+    if len(unique_native_questions) != 16:
+        raise ValueError("test/transfer effective independent question census drift")
+    stage_question_units = {}
+    for arm in ARMS[1:]:
+        arm_final = [row for row in final_panel if row["arm"] == arm]
+        if len(arm_final) != 16 or {
+            (row["phase"], row["question_id"]) for row in arm_final
+        } != unique_native_questions:
+            raise ValueError("final checkpoint missing frozen-matched question")
+        source = [row["weak_support_gain"] for row in arm_final
+                  if row["weak_support_gain"] is not None]
+        f1 = [row["diagnostic_answer_f1_delta"] for row in arm_final
+              if row["diagnostic_answer_f1_delta"] is not None]
+        missing_source = 16 - len(source)
+        missing_f1 = 16 - len(f1)
+        stage_question_units[arm] = dict(
+            unique_test_transfer_questions=16,
+            training_checkpoint_repeats_per_question=len(STAGES),
+            observed_source_support_pairs=len(source),
+            native_answerability_unknown_or_not_comparable=missing_source,
+            native_source_net_gain=sum(source),
+            native_source_all_planned_net_gain_bounds=[
+                sum(source) - missing_source, sum(source) + missing_source
+            ],
+            observed_reader_answer_pairs=len(f1),
+            unanswered_or_unscored_reader_pairs=missing_f1,
+            reader_f1_all_planned_bounds=[
+                (math.fsum(f1) - missing_f1) / 16,
+                (math.fsum(f1) + missing_f1) / 16,
+            ],
+            confidence_interval_not_claimed=True,
+            independent_source_family_sampling_not_established=True,
+        )
     return dict(
-        schema="hepta.stem-train-heldout-diagnostic-gap.v3",
+        schema="hepta.stem-train-heldout-diagnostic-gap.v4",
         planned_source_policy_rows=len(scored),
         planned_stages=STAGES,
         learned_arms=ARMS[1:],
@@ -380,6 +423,7 @@ def train_to_heldout_gap(plan, learning, scored, targets):
         independent_semantic_evidence_review=False,
         by_checkpoint_cell_arm=reports,
         test_transfer_paired_panel_rows=heldout_panel,
+        final_checkpoint_unique_question_units=stage_question_units,
         panel_observations_are_not_independent_subjects=True,
         production_accepted=False,
     )
