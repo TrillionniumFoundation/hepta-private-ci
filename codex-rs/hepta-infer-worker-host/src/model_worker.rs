@@ -201,6 +201,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
         &self.worker_id
     }
 
+    /// Current worker generation owned by this runtime instance. A process
+    /// restart changes this; it is not an independent signed deployment fence.
+    pub fn worker_generation(&self) -> u64 {
+        self.generation
+    }
+
     pub fn load_model(
         &mut self,
         now_ms: u64,
