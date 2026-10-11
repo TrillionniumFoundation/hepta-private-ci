@@ -277,6 +277,10 @@ class ProjectedStemEngine:
                     request.runtime_digest != self.projection.runtime_digest or
                     request.representation != self.projection.representation):
                 raise ValueError("projector/backend identity mismatch")
+        scopes = {(r.scope_digest, r.generation,
+                   r.revocation_frontier_digest, r.representation) for r in requests}
+        if len(scopes) != 1:
+            raise ValueError("mixed scope/generation/revocation projection batch")
         observation, frozen = self.shared_encoder_engine.run(requests, return_features=True)
         if len(frozen) != len(requests):
             raise ValueError("Encoder feature bundle count mismatch")
