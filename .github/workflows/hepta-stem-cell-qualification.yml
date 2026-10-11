@@ -6,6 +6,9 @@ on:
     paths:
       - 'qualification/stem-cell-v1/**'
       - 'codex-rs/hepta-infer-worker-host/src/model_worker*.rs'
+      - 'codex-rs/hepta-infer-worker-host/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'MODULE.bazel.lock'
       - 'codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs'
       - '.github/workflows/hepta-stem-cell-qualification.yml'
 
@@ -67,6 +70,33 @@ jobs:
           if-no-files-found: warn
           retention-days: 7
 
+  bazel-dependency-lock:
+    name: Bazel module lock consistency (read-only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind immutable candidate and Cargo lock
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree}
+          python3 scripts/verify_cargo_lock.py
+      - name: Prepare canonical Bazel host
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: stem-cas-lock
+      - name: Check generated Bazel lock without modification
+        run: ./scripts/check-module-bazel-lock.sh
+      - name: Verify clean checkout
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
   native-worker-batch:
     name: Native Neuron Head/batch and final-use ordering contracts (L1 only)
     runs-on: ubuntu-24.04
@@ -97,6 +127,12 @@ jobs:
         run: >
           just test --locked -p codex-hepta-infer-worker-host --lib
           -E 'test(model_worker::) | test(cognitive_final_use_revalidation_follows_durable_dispatch)'
+      - name: Strict native Worker Clippy
+        working-directory: codex-rs
+        run: >
+          cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --
+          -D clippy::correctness -D clippy::await_holding_lock
+          -D clippy::await_holding_invalid_type
       - name: Enforce Rust formatting
         if: always()
         working-directory: codex-rs
