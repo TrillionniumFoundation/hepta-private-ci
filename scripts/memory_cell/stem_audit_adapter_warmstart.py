@@ -4,7 +4,6 @@ This does not train models, inspect answers, or infer task-level advantage.
 The original 16-question warm-start is weaker than the 48-question planned
 Head curriculum: count actual pair-admitted questions, not optimizer steps.
 """
-from collections import Counter
 
 from stem_audit_archive import PinnedArchive, require
 
