@@ -137,11 +137,18 @@ report. At least two unique positive texts must exist in each retrieval cohort.
 python3 qualification/neuron-stem/jina_v5_multimodal.py \
   --text-model jina-v5-text-nano --text-revision TEXT40CHARCOMMITSHA \
   --omni-model jina-v5-omni-nano --omni-revision OMNI40CHARCOMMITSHA \
-  --modality vision --dimension 256 \
+  --modality vision --dimension 256 --direction media-to-text \
   --dataset /approved/paired-media.jsonl --media-root /approved/media \
   --principal-id local-researcher --allow-pinned-remote-code \
   --output /evidence/paired-alignment.json
 ```
+
+The retrieval direction is a frozen part of experiment identity:
+`media-to-text` uses the Omni media **query** adapter and the paired text
+**document** adapter, whereas `text-to-media` uses text **query** and Omni
+media **document**. Never use document/document cosine to claim official
+asymmetric Jina retrieval accuracy, and never aggregate the two directional
+Recall@1 scores without distinguishing their query/document contracts.
 
 This measures retrieval-alignment only. Object relation and video temporal
 reasoning require separately approved labels and fusion experiments, not
