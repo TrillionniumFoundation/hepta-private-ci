@@ -207,6 +207,37 @@ class ProjectionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             project_ref(Request(),src,spec())
 
+class ProjectionManifestTests(unittest.TestCase):
+    def test_manifest_roundtrip_and_immutable_snapshot_identity(self):
+        import tempfile
+        import json
+        from pathlib import Path
+        from stem_projection import save_shadow_projection, load_shadow_projection
+        with tempfile.TemporaryDirectory() as tmp:
+            dest=Path(tmp)/'projector.json'
+            digest=save_shadow_projection(dest,spec(),training_lineage_digest=d('f'))
+            self.assertEqual(load_shadow_projection(dest,expected_file_sha256=digest),spec())
+            with self.assertRaises(FileExistsError):
+                save_shadow_projection(dest,spec(),training_lineage_digest=d('f'))
+            data=json.loads(dest.read_text())
+            data['production_authorized']=True
+            dest.write_text(json.dumps(data))
+            with self.assertRaisesRegex(ValueError,'changed/oversize'):
+                load_shadow_projection(dest,expected_file_sha256=digest)
+            changed=hashlib.sha256(dest.read_bytes()).hexdigest()
+            with self.assertRaisesRegex(ValueError,'non-shadow'):
+                load_shadow_projection(dest,expected_file_sha256=changed)
+
+    def test_manifest_duplicate_key_is_not_accepted(self):
+        import tempfile
+        from pathlib import Path
+        from stem_projection import load_shadow_projection
+        with tempfile.TemporaryDirectory() as tmp:
+            p=Path(tmp)/'projection.json'
+            p.write_text('{"schema":"foo","schema":"bar"}')
+            sha=hashlib.sha256(p.read_bytes()).hexdigest()
+            with self.assertRaisesRegex(ValueError,'duplicate projection manifest'):
+                load_shadow_projection(p, expected_file_sha256=sha)
 
 if __name__ == '__main__':
     unittest.main()
