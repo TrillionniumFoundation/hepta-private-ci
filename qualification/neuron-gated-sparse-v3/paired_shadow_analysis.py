@@ -91,7 +91,7 @@ def clustered_mean_ci(delta_by_cell: dict[str, list[int]]) -> dict[str, Any]:
         2.228, 2.201, 2.179, 2.160, 2.145, 2.131, 2.120, 2.110, 2.101,
         2.093, 2.086, 2.080, 2.074, 2.069, 2.064, 2.060, 2.056, 2.052,
         2.048, 2.045, 2.042
-    )[(count - 2)] if count <= 31 else 1.96
+    )[(count - 2)] if count <= 31 else 2.042
     margin = critical * math.sqrt(variance / count)
     return {
         "independent_cell_count": count,
@@ -140,7 +140,8 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
         "selector_key_id", "preregistered_at_utc", "training_cutoff_utc",
         "evaluation_asof_utc",
         "host_profile_digest", "a0_registry_sha256", "frozen_baseline",
-        "no_change_arm", "arms", "total_parameter_ceiling",
+        "no_change_arm", "arms", "candidate_optimizer_steps", "training_dataset_digest",
+        "total_parameter_ceiling",
         "total_state_bytes_ceiling", "samples", "scale_receipts",
     }, "experiment")
     need(payload["schema"] == SCHEMA, "invalid experiment schema")
@@ -162,6 +163,8 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
     hex_digest(payload["host_profile_digest"], "host profile")
     hex_digest(payload["a0_registry_sha256"], "frozen A0 registry")
     need(payload["frozen_baseline"] is True, "no-change baseline was not frozen")
+    positive_int(payload["candidate_optimizer_steps"], "candidate optimizer step budget")
+    hex_digest(payload["training_dataset_digest"], "preregistered training dataset")
     positive_int(payload["total_parameter_ceiling"], "total parameter ceiling")
     positive_int(payload["total_state_bytes_ceiling"], "total state ceiling")
 
@@ -190,8 +193,10 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
             need(arm["optimizer_steps"] == 0,
                  "no-change baseline must be frozen with zero experimental training steps")
         else:
-            need(arm["optimizer_steps"] > 0,
-                 "candidate needs a nonzero preregistered training budget")
+            need(arm["optimizer_steps"] == payload["candidate_optimizer_steps"],
+                 "candidate optimizer steps differ from preregistered budget")
+            need(arm["training_data_digest"] == payload["training_dataset_digest"],
+                 "candidate training data differ from preregistered dataset")
             candidate_train_set.add(arm["training_data_digest"])
             candidate_training_steps.add(arm["optimizer_steps"])
     need(len(encoder_set) == len(candidate_train_set) == len(candidate_training_steps) == 1,
