@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if python qualification/neuron-gated-sparse-v3/a0_deployment_evidence.py             --evidence-root qualification/neuron-gated-sparse-v3             --trusted-public-key qualification/neuron-gated-sparse-v3/unavailable.pem; then
+          if python qualification/neuron-gated-sparse-v3/a0_deployment_evidence.py             --evidence-root qualification/neuron-gated-sparse-v3             --trusted-public-key qualification/neuron-gated-sparse-v3/unavailable.pem --expected-host-id missing-ci-host --max-age-seconds 300; then
             echo "A0 unexpectedly accepted missing deployment evidence" >&2
             exit 1
           fi
