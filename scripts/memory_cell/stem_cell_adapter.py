@@ -33,8 +33,11 @@ class DifferentiatedEncoder(FrozenPairEncoder):
             self.model = get_peft_model(
                 self.model,
                 LoraConfig(
-                    r=4, lora_alpha=8, lora_dropout=0.0,
-                    target_modules=["query", "value"], bias="none",
+                    r=4,
+                    lora_alpha=8,
+                    lora_dropout=0.0,
+                    target_modules=["query", "value"],
+                    bias="none",
                 ),
             )
         self.base_digest = frozen_digest(self.model)
@@ -46,8 +49,11 @@ class DifferentiatedEncoder(FrozenPairEncoder):
 
     def fit(self, rows, queries, pools, cut, *, revoked, steps=24, token_ceiling=16384):
         if (
-            self.frozen or self.quarantined or not 1 <= len(rows) <= 256
-            or type(steps) is not int or not 1 <= steps <= 48
+            self.frozen
+            or self.quarantined
+            or not 1 <= len(rows) <= 256
+            or type(steps) is not int
+            or not 1 <= steps <= 48
             or not cut.admission_digest
             or self.roots.intersection(revoked | cut.forbidden_roots)
         ):
@@ -76,7 +82,8 @@ class DifferentiatedEncoder(FrozenPairEncoder):
             query, pool = queries[f.question_id], pools[f.question_id]
             pool.revalidate(query, revoked)
             if (
-                query.identity != f.question_id or pool.seal() != f.pool_digest
+                query.identity != f.question_id
+                or pool.seal() != f.pool_digest
                 or f.candidate_ids != tuple(w.identity() for w in pool.windows)
             ):
                 raise ValueError("encoder training source binding")
@@ -94,26 +101,37 @@ class DifferentiatedEncoder(FrozenPairEncoder):
                 for i in (pos, neg)
             ]
             if any(
-                len(self.tokenizer.encode(question, text, add_special_tokens=True)) > 512
+                len(self.tokenizer.encode(question, text, add_special_tokens=True))
+                > 512
                 for text in texts
             ):
                 raise ValueError("encoder training token overflow; no truncation")
             x = self.tokenizer(
-                [question] * 2, texts, padding=True,
-                truncation=False, return_tensors="pt",
+                [question] * 2,
+                texts,
+                padding=True,
+                truncation=False,
+                return_tensors="pt",
             )
             prepared.append((f, x))
         if not prepared:
             raise ValueError("no admitted positive-negative encoder training pair")
         parameters = [p for p in self.model.parameters() if p.requires_grad]
         optimizer = torch.optim.AdamW(parameters, lr=5e-5)
-        before = {k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()}
+        before = {
+            k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()
+        }
         tokens, losses, started, used = 0, [], time.perf_counter(), []
         self.receipt = dict(
-            status="running", steps=0, tokens=0, token_ceiling=token_ceiling,
+            status="running",
+            steps=0,
+            tokens=0,
+            token_ceiling=token_ceiling,
             prepared_questions=[f.question_id for f, _ in prepared],
-            consumed_questions=[], ineligible_pair_questions=omissions,
-            weak_unannotated_negatives=True, admission_digest=cut.admission_digest,
+            consumed_questions=[],
+            ineligible_pair_questions=omissions,
+            weak_unannotated_negatives=True,
+            admission_digest=cut.admission_digest,
             trainable_parameters=sum(p.numel() for p in parameters),
             production_accepted=False,
         )
@@ -141,16 +159,23 @@ class DifferentiatedEncoder(FrozenPairEncoder):
                 self.roots.update(f.roots)
             state = get_peft_model_state_dict(self.model)
             delta = sum(float((v - before[k]).square().sum()) for k, v in state.items())
-            if not losses or not delta > 0 or frozen_digest(self.model) != self.base_digest:
+            if (
+                not losses
+                or not delta > 0
+                or frozen_digest(self.model) != self.base_digest
+            ):
                 raise ValueError("no encoder adapter update or base drift")
             if any(not torch.isfinite(t).all() for t in state.values()):
                 raise ValueError("nonfinite encoder adapter weights")
             self.receipt.update(
-                status="succeeded", seconds=time.perf_counter() - started,
-                adapter_delta_squared_norm=delta, base_unchanged=True,
+                status="succeeded",
+                seconds=time.perf_counter() - started,
+                adapter_delta_squared_norm=delta,
+                base_unchanged=True,
                 optimizer_tensor_bytes=sum(
                     v.numel() * v.element_size()
-                    for state in optimizer.state.values() for v in state.values()
+                    for state in optimizer.state.values()
+                    for v in state.values()
                     if isinstance(v, torch.Tensor)
                 ),
             )
@@ -185,9 +210,12 @@ class DifferentiatedEncoder(FrozenPairEncoder):
         payload = self.tensor_bytes()
         (directory / "adapter.safetensors").write_bytes(payload)
         metadata = dict(
-            parent_identity=self.parent_identity, identity=self.identity,
-            tensor_sha256=sha256(payload), roots=sorted(self.roots),
-            receipt=self.receipt, production_accepted=False,
+            parent_identity=self.parent_identity,
+            identity=self.identity,
+            tensor_sha256=sha256(payload),
+            roots=sorted(self.roots),
+            receipt=self.receipt,
+            production_accepted=False,
         )
         (directory / "adapter.json").write_text(
             json.dumps(metadata, indent=2, allow_nan=False)
@@ -199,14 +227,17 @@ class DifferentiatedEncoder(FrozenPairEncoder):
             raise ValueError("restore requires a fresh differentiated encoder")
         paths = (directory / "adapter.json", directory / "adapter.safetensors")
         if directory.is_symlink() or any(
-            p.is_symlink() or not p.is_file() or not 0 < p.stat().st_size <= 4 * 1024 * 1024
+            p.is_symlink()
+            or not p.is_file()
+            or not 0 < p.stat().st_size <= 4 * 1024 * 1024
             for p in paths
         ):
             raise ValueError("bounded regular adapter artifact files required")
         metadata = json.loads(paths[0].read_text())
         payload = paths[1].read_bytes()
         if (
-            metadata != expected_metadata or metadata["production_accepted"] is not False
+            metadata != expected_metadata
+            or metadata["production_accepted"] is not False
             or metadata["parent_identity"] != self.parent_identity
             or sha256(payload) != metadata["tensor_sha256"]
             or not set(metadata["roots"]).issubset(allowed_roots)
@@ -215,8 +246,10 @@ class DifferentiatedEncoder(FrozenPairEncoder):
             raise ValueError("adapter restore identity or lineage")
         state, expected = load_tensors(payload), get_peft_model_state_dict(self.model)
         if set(state) != set(expected) or any(
-            state[k].shape != v.shape or state[k].dtype != v.dtype
-            or not torch.isfinite(state[k]).all() for k, v in expected.items()
+            state[k].shape != v.shape
+            or state[k].dtype != v.dtype
+            or not torch.isfinite(state[k]).all()
+            for k, v in expected.items()
         ):
             raise ValueError("adapter restore tensor contract")
         set_peft_model_state_dict(self.model, state)
@@ -233,7 +266,8 @@ class DifferentiatedEncoder(FrozenPairEncoder):
 
     def verify_frozen(self):
         if (
-            not self.frozen or self.quarantined
+            not self.frozen
+            or self.quarantined
             or frozen_digest(self.model) != self.base_digest
             or sha256(self.tensor_bytes()) != self.adapter_digest
             or any(p.requires_grad for p in self.model.parameters())
