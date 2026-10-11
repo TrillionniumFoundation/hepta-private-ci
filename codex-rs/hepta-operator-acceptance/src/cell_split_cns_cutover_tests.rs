@@ -170,9 +170,7 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
         // Real durable file mutation in the fixture; a production port must
         // instead execute HeptaRuntime's authoritative CNS cutover.
         self.durable_replace(&after)?;
-        let proof = canonical_json(&(intent, &after)).map_err(|e| e.to_string())?;
-        let signature = self.signer.sign(&proof).to_bytes().to_vec();
-        let receipt = CellSplitCnsRuntimeCommitV1 {
+        let mut receipt = CellSplitCnsRuntimeCommitV1 {
             idempotency_key: intent.idempotency_key.clone(),
             cns_id: binding.cns_id.clone(),
             predecessor_route_digest: binding.predecessor_route_digest.clone(),
@@ -181,9 +179,14 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
             successor_generation: plan.child_generation,
             authority_epoch: binding.authority_epoch,
             committed_sequence: 11,
-            original_runtime_receipt_bytes: proof,
-            original_runtime_signature_bytes: signature,
+            original_runtime_receipt_bytes: Vec::new(),
+            original_runtime_signature_bytes: Vec::new(),
         };
+        let proof = canonical_json(&CellSplitCnsRuntimeAttestationV1::for_commit(plan, &receipt))
+            .map_err(|e| e.to_string())?;
+        receipt.original_runtime_signature_bytes =
+            self.signer.sign(&proof).to_bytes().to_vec();
+        receipt.original_runtime_receipt_bytes = proof;
         crate::durable::write_private_new(
             &self.commit_path(&intent.idempotency_key),
             &canonical_json(&receipt).map_err(|e| e.to_string())?,
