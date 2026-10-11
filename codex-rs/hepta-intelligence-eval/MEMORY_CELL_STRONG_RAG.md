@@ -136,3 +136,53 @@ breadth and production cutover/rollback all remain **unknown/unaccepted**.
 Do **not** train or adopt an experience-specific parametric module based only
 on this authored baseline; require reproducible advantage over the best
 eligible, same-tools organized and tuned-RAG readers on fresh sources first.
+
+## Separate read-only receipt replay (next validation gate)
+
+The `independent-replay` workflow job runs **after** the actual model-generation
+job succeeds, in a separate checkout/process. It does not load the Qwen weights,
+train a parameter, emit a new language-model answer, sign on behalf of a human,
+or rewrite the original artifact. The verifier also re-fetches the immutable
+historical source ZIP and checks the ZIP digest and all inner `SHA256SUMS` pins.
+
+`strong_rag_receipt.py` verifies the downloaded model artifact's **entire** file
+census, not only its success report. It binds the emitting commit, frozen policy,
+reader inventory and source partitions; confirms calibration never contained
+an evaluation source scope; and checks every saved selected source against its
+original event JSON, UTF-8 excerpt, correction/valid-time representation,
+delivered order, identity and native citation request. The request is rebuilt
+using the existing unsigned citation capture protocol and must match the saved
+record exactly. Reader profiles, input/output ceilings, untrained base and raw
+answer non-postprocessing are enforced per attempt.
+
+The scorer is replayed from the original **unmodified** raw JSONL answers after
+checking the full question-by-arm census. Every bounded procedure worker is
+re-executed and compared on its request, stdout, stderr and exit code; elapsed
+time and process observation timestamps are measured anew, not falsely equated
+with their historical values. The eight calibration questions must reproduce
+the exact selected `k` using the frozen success-first selection rule, original
+prompt-token totals, and the same source/model SHA pins. All evaluation arm
+counts, paired win/loss/unknown bounds and frozen reader parameters are then
+recomputed and compared to the persisted report. When identical source lists
+are shown to the same question, their recorded prompt-token IDs must agree.
+
+This is a **read-only reproducibility and causal bookkeeping gate**, not an
+independent semantic citation judgment, independently sampled held-out source
+family, deployment observation or evidence that MemoryCell learned useful
+parameters. Earlier public author-created cases remain exposed development
+cases. The tool continues to emit `production_accepted=false`,
+`independent_semantic_judge=false` and `statistical_superiority=false`.
+
+Run when the completed exact source artifact exists:
+
+```sh
+PYTHONPATH=scripts/memory_cell python3 scripts/memory_cell/strong_rag_receipt.py \
+  ARTIFACT_DIRECTORY PINNED_ORIGINAL_INPUT_DIRECTORY \
+  --generating-commit EXACT_SHA \
+  --output NEW_RECEIPT.json
+```
+
+A later committed verifier cannot retroactively change the identity or scoring
+of an earlier generating commit. Failure of the separate replay **blocks any
+positive research claim**; a successful replay establishes faithful execution
+and bookkeeping only, and must not be relabeled as production qualification.
