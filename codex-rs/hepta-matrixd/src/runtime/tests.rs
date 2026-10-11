@@ -585,6 +585,35 @@ async fn persisted_terminal_identity_or_incomplete_items_cannot_complete_dispatc
         runtime.recover_pending(10, 40).await,
         Err(MatrixRuntimeError::Protocol(_))
     ));
+    // A terminal AgentMessage without its exact admitted UserMessage
+    // cannot satisfy recovery: do not panic or create a final outbox.
+    let missing_user = terminal_items(&client_id)
+        .into_iter()
+        .filter(|item| matches!(item, ThreadItem::AgentMessage { .. }))
+        .collect();
+    fake.set_persisted_turns(vec![persisted_turn(
+        "turn-1",
+        TurnStatus::Completed,
+        missing_user,
+    )]);
+    assert!(matches!(
+        runtime.recover_pending(10, 42).await,
+        Err(MatrixRuntimeError::Protocol(message))
+            if message.contains("full exact client/input identity")
+    ));
+    // Duplicate matching client IDs remain ambiguous even with equal text.
+    let mut duplicate_user = terminal_items(&client_id);
+    duplicate_user.push(duplicate_user[0].clone());
+    fake.set_persisted_turns(vec![persisted_turn(
+        "turn-1",
+        TurnStatus::Completed,
+        duplicate_user,
+    )]);
+    assert!(matches!(
+        runtime.recover_pending(10, 43).await,
+        Err(MatrixRuntimeError::Protocol(message))
+            if message.contains("full exact client/input identity")
+    ));
     let mut changed_items = terminal_items(&client_id);
     if let ThreadItem::UserMessage { content, .. } = &mut changed_items[0] {
         *content = vec![UserInput::Text {
