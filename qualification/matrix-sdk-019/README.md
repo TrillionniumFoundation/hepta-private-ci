@@ -91,3 +91,30 @@ The final scoped lint and real protocol/daemon CI results are separate gates.
 This is a draft. Final test/CI results and unresolved gates are recorded in the
 PR. Do not equate dependency resolution, a focused pass, or an SDK protocol
 pass with full installed-host acceptance.
+
+
+## Exact-current-main qualification refresh (2026-10-11)
+
+This research/security branch was advanced without a force push by an
+explicit two-parent merge:
+
+- Security source parent: `7c86aa2bdee62de6709f327c65b20df89a1526c6`
+- Reviewed main parent: `78fdb0cf8537e3a84fc6e0a849707559c80881e8`
+- Resulting merge commit: `09b6f41b75160c14d37831a02a56c84efd3adbf6`
+- Exact GitHub prospective merge tree at that refresh:
+  `8af6ba650724b5f35f7107455b5f32fda4583447`
+
+The PR base was explicitly refreshed to the reviewed main SHA rather than
+silently accepting an older event-pinned base
+(`c6f90d48c40f7b5267db587bb3c3f4934f1414a8`).
+A previous architecture base-merge run used the stale event base and
+correctly failed the exact two-parent check; its failure is not evidence
+that this new combination passed or failed.
+
+Every later HEAD must independently prove its GitHub prospective merge
+parent identities and tree before evaluating Matrix 0.18->0.19 crypto
+migration, event handlers, Synapse transport, restart and durable outbox.
+Continue to require unwaived cargo-deny, pinned Rust, native cross-platform
+tests and independent paired-host crash/restore evidence. This is a
+qualification history record, not a signed security attestation,
+production final-use grant or permission to merge this Draft PR.
