@@ -303,13 +303,21 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    let exhausted = supervisor.tick(now);
+    assert_eq!(exhausted.faults.len(), 1);
+    assert_eq!(exhausted.faults[0].agent_id, agent_id);
+    assert!(exhausted.faults[0].message.contains("restart budget"));
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
         &event.kind,
         SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
     )));
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(10)),
+        TickReport::default()
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     Ok(())
 }
