@@ -5,6 +5,9 @@ on:
     paths:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/cli/src/main.rs"
+      - "codex-rs/cli/src/codex.rs"
+      - "codex-rs/cli/src/hepta.rs"
       - "codex-rs/hepta-agentd/src/prompt_runtime.rs"
       - "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
       - "codex-rs/hepta-contracts/src/final_use_store.rs"
@@ -163,6 +166,24 @@ jobs:
           cd codex-rs
           rustc --version --verbose
           cargo --version
+      - name: Prove CLI recursion attributes live on actual crate roots
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          root = Path("codex-rs/cli/src")
+          shared = (root / "main.rs").read_text(encoding="utf-8")
+          if re.search(r"(?m)^\\s*#!\\[", shared):
+              raise SystemExit("included main.rs contains a forbidden crate-level inner attribute")
+          for name in ("codex", "hepta"):
+              source = (root / f"{name}.rs").read_text(encoding="utf-8")
+              if (not source.startswith('#![recursion_limit = "256"]') or
+                      'include!("main.rs");' not in source):
+                  raise SystemExit(f"{name} must own the crate-level recursion limit")
+          print("CLI recursion attr owned only by native Rust binary crate roots")
+          PY
       - name: Locked all-target compilation
         shell: bash
         run: |
