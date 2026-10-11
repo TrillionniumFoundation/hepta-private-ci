@@ -437,15 +437,35 @@ run_bazel_with_startup_args \
   -- \
   "${bazel_targets[@]}" \
   2>&1 | tee "$bazel_console_log"
-bazel_status=${PIPESTATUS[0]}
+bazel_pipeline_status=("${PIPESTATUS[@]}")
+bazel_status=${bazel_pipeline_status[0]}
+bazel_console_status=${bazel_pipeline_status[1]}
 set -e
+
+# The Bazel result is primary. A failed capture must not turn a successful
+# command into complete evidence, or replace an already failed Bazel result.
+if [[ $bazel_status -eq 0 && $bazel_console_status -ne 0 ]]; then
+  bazel_status=$bazel_console_status
+fi
 
 if [[ ${bazel_status:-0} -ne 0 ]]; then
   if [[ $print_failed_bazel_action_summary -eq 1 ]]; then
-    print_bazel_action_failure_summary "$bazel_console_log"
+    set +e
+    (set -e; print_bazel_action_failure_summary "$bazel_console_log")
+    bazel_diagnostic_status=$?
+    set -e
+    if [[ $bazel_diagnostic_status -ne 0 ]]; then
+      echo "Bazel action diagnostics failed; preserving exit $bazel_status." >&2
+    fi
   fi
   if [[ $print_failed_bazel_test_logs -eq 1 ]]; then
-    print_bazel_test_log_tails "$bazel_console_log"
+    set +e
+    (set -e; print_bazel_test_log_tails "$bazel_console_log")
+    bazel_diagnostic_status=$?
+    set -e
+    if [[ $bazel_diagnostic_status -ne 0 ]]; then
+      echo "Bazel test diagnostics failed; preserving exit $bazel_status." >&2
+    fi
   fi
   exit "$bazel_status"
 fi
