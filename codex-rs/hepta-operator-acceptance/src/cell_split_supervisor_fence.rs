@@ -158,6 +158,9 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
         binding: CellSplitSupervisorFenceBindingV1,
         port: P,
     ) -> Result<Self, CellSplitSupervisorFenceErrorV1> {
+        // Require the coordinator's complete frozen-plan contract even when
+        // this effect owner is opened independently of Agentd.
+        let plan_digest = plan.digest().map_err(|_| CellSplitSupervisorFenceErrorV1::Invalid)?;
         if binding.supervisor_id.is_empty()
             || binding.domain_id.is_empty()
             || binding.supervisor_id.len() > 256
@@ -186,7 +189,7 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
             }
             Err(error) => return Err(error.into()),
         }
-        let plan_digest = sha256(&canonical_json(&plan)?);
+
         Ok(Self {
             root,
             plan,
