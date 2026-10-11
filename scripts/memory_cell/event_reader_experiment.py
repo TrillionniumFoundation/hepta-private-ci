@@ -247,6 +247,7 @@ def run(
         next_stage="no parameter or production adoption from this diagnostic",
     )
     write(output / "report.json", result)
+    write(output / "paired-diagnosis.json", baseline["causal_diagnosis"])
     if any(row["status"] != "succeeded" for row in rows):
         raise ValueError("failed original attempts retained; experiment failed")
     return result

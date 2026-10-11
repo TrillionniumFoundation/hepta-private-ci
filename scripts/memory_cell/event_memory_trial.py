@@ -16,6 +16,7 @@ import re
 import time
 
 from bundle_trial import write
+from event_causal_diagnosis import diagnose as diagnose_event_controls
 from evidence_bundle import EvidenceBundle, EvidenceSpan
 from event_experience import call_worker, question
 from event_projection import EventProjection
@@ -313,6 +314,7 @@ def summarize(records, expected):
         )
     return dict(
         arms=stats,
+        causal_diagnosis=diagnose_event_controls(records, expected),
         reader_profiles=list(profiles),
         all_attempts=len(records),
         controlled_support_minus_empty=(
@@ -483,6 +485,7 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
         long_term_qualification="not_executed_no_real_prospective_windows_or_deployed_recovery",
     )
     write(output / "report.json", result)
+    write(output / "paired-diagnosis.json", result["causal_diagnosis"])
     if any(r["status"] != "succeeded" for r in rows):
         raise ValueError("failed actual calls retained; experiment failed")
     return result
