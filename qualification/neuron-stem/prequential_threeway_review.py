@@ -314,7 +314,21 @@ def offline_threeway_ood_diagnostic(dataset, trial, nochange_identity, receipts)
     if len(receipts) != len(expected):
         raise ValueError("OOD requires full three-arm calibration and OOD coverage")
     nochange_rev, nochange_weights, nochange_gen = nochange_identity
+    # A reused Head digest is not sufficient identity across Worker generations
+    # or Encoder revisions. Require the frozen trial's exact model-only lineage
+    # before interpreting even a descriptive OOD comparison.
+    generation = trial.get("generation")
+    if type(generation) is not int or generation <= 0:
+        raise ValueError("offline OOD trial lacks pinned Stem/Cell generation")
+    feature_manifest_digest = trial.get("feature_manifest_digest")
+    require_sha(feature_manifest_digest)
+    # The original model-only sidecar is created and fsynced before the
+    # no-change arm is merged. Its exact byte SHA must remain bound to this
+    # trial; per-row identity matching cannot detect substituted logits alone.
+    sidecar_digest = trial.get("offline_ood_model_receipts_sha256")
+    require_sha(sidecar_digest)
     observed = {}
+    verified_source_rows = {}
     forbidden = {"label", "outcome", "external_ndu_utility", "total_cost",
                  "producer_signature_verified", "independent_evaluator_signature_verified"}
     for receipt in receipts:
@@ -347,12 +361,32 @@ def offline_threeway_ood_diagnostic(dataset, trial, nochange_identity, receipts)
                         else trial["final_head_digests"])
             identity_ok = (receipt.get("model_revision") == trial["revision"] and
                            receipt.get("weights_digest") == declared.get(cell_key) and
-                           receipt.get("model_id") == trial["model"])
+                           receipt.get("model_id") == trial["model"] and
+                           receipt.get("generation") == generation and
+                           receipt.get("feature_manifest_digest") ==
+                           feature_manifest_digest)
         if not identity_ok:
             raise ValueError("OOD frozen/learned/no-change weight or generation lineage drifted")
         observed[key] = receipt["probabilities"]
+        verified_source_rows[key] = receipt
     if set(observed) != expected:
         raise ValueError("missing exact paired calibration/OOD predictions")
+    # Canonicalize the 2-arm model-only projection of the 3-arm review in the
+    # EXACT producer order: historical calibration, then post-future OOD;
+    # chronological event/case order; Frozen before learned. Do not include
+    # externally supplied production no-change records in the Stem sidecar.
+    model_rows = []
+    for cohort in (calibration, ood):
+        for source in sorted(cohort, key=lambda item: (event_time(item), item["case_id"])):
+            for arm in ("frozen", "trained"):
+                model_rows.append(verified_source_rows[(source["case_id"], arm)])
+    sidecar_bytes = "".join(
+        json.dumps(value, sort_keys=True, ensure_ascii=False, allow_nan=False,
+                   separators=(",", ":")) + "\n"
+        for value in model_rows
+    ).encode("utf-8")
+    if hashlib.sha256(sidecar_bytes).hexdigest() != sidecar_digest:
+        raise ValueError("frozen/learned OOD model sidecar byte digest mismatch")
     for row in calibration:
         if any(abs(a - b) > 1e-6 for a, b in zip(
                 observed[(row["case_id"], "trained")],
@@ -380,6 +414,8 @@ def offline_threeway_ood_diagnostic(dataset, trial, nochange_identity, receipts)
         }
     return {
         "threeway_exact_offline_coverage": True,
+        "frozen_feature_manifest_digest": feature_manifest_digest,
+        "frozen_stem_cell_generation": generation,
         "production_promotion_permitted": False,
         "independent_prediction_signature_verified": False,
         "ood_after_future_window_verified": True,

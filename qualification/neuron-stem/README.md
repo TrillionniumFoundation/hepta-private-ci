@@ -534,3 +534,38 @@ blocked pending a separately reviewed Windows Owner with private ACL and
 owner-token verification, reparse-point/hard-link rejection, handle-relative
 safe opens, atomic replacement, directory durability and real crash recovery.
 Keep all source/merge and cargo-deny gates unchanged.
+
+
+### Encoder/generation binding on the paired OOD evidence (2026-10-11)
+
+The optional Frozen/Learned model-side OOD receipts now bind the exact
+`feature_manifest_digest` of the physically executed pinned Jina Stem,
+together with `generation` and the per-Cell Head digest. The prequential
+trial and its offline run manifest record the source generation, and the
+independent three-way offline reviewer fails closed if a Head receipt belongs
+to a different Stem manifest or generation, even when its Q24 Head bytes
+happen to match. The diagnostic also reports those two frozen identities.
+
+The production no-change arm retains its independent model revision,
+weights digest and generation. These are *research-only, unsigned local
+integrity checks*: neither a manifest SHA nor a generation number authenticates
+the source process, attests the device, proves OOD utility or satisfies
+signed independent NDU / production final-use.
+
+
+### Byte-exact OOD model-sidecar integrity (2026-10-11)
+
+When three matched OOD arms are provided, the reviewer now also requires
+the trial's `offline_ood_model_receipts_sha256`. It extracts only the
+Frozen/Learned model predictions (never the separately owned production
+no-change records), reserializes them in the producer's actual event and arm
+order, and verifies the byte-exact SHA of the original fsynced model
+sidecar. Rewritten logits with unchanged Scope/Cell/revision/Head identities
+cannot silently be presented as the original model trace. The
+adversarial tests include unchanged-SHA tampering, replacing the SHA to
+match forged logits, missing SHA and altered Encoder/Worker generations.
+
+This is local **integrity**, not independent producer authentication:
+an adversary controlling both the unsigned trial and its sidecar can
+rewrite both. Real operator/observer signatures and future NDU outcomes
+remain separately mandatory, and the reviewer can never promote a Cell.

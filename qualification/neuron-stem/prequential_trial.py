@@ -122,7 +122,7 @@ def prediction_precommit(row, probabilities, head_digest, event_order):
 
 
 def model_only_ood_receipt(row, arm, probabilities, *, model, revision,
-                           weights_digest, generation):
+                           weights_digest, generation, feature_manifest_digest):
     """Label-free model output, deliberately without production no-change."""
     if arm not in ("frozen", "trained") or row.get("split") not in ("calibration", "ood"):
         raise ValueError("only learned/frozen calibration and OOD model records allowed")
@@ -130,8 +130,11 @@ def model_only_ood_receipt(row, arm, probabilities, *, model, revision,
             any(c not in "0123456789abcdef" for c in revision) or
             not isinstance(weights_digest, str) or len(weights_digest) != 64 or
             any(c not in "0123456789abcdef" for c in weights_digest) or
-            type(generation) is not int or generation <= 0):
-        raise ValueError("OOD model snapshot revision/generation not pinned")
+            type(generation) is not int or generation <= 0 or
+            not isinstance(feature_manifest_digest, str) or
+            len(feature_manifest_digest) != 64 or
+            any(c not in "0123456789abcdef" for c in feature_manifest_digest)):
+        raise ValueError("OOD model snapshot revision/generation/Encoder manifest not pinned")
     if (not isinstance(probabilities, list) or
             len(probabilities) != len(row["options"]) or
             any(type(p) not in (float, int) or not math.isfinite(p) or p < 0 or p > 1
@@ -145,6 +148,7 @@ def model_only_ood_receipt(row, arm, probabilities, *, model, revision,
         "probabilities": probabilities,
         "model_id": model, "model_revision": revision,
         "weights_digest": weights_digest, "generation": generation,
+        "feature_manifest_digest": feature_manifest_digest,
         "status": "Succeeded", "production_promotion_permitted": False,
     }
 
@@ -156,6 +160,8 @@ def trial(args):
 
     if args.model not in ("jina-v5-text-nano", "jina-v5-text-small"):
         raise ValueError("prequential trial is text-only; Omni requires a separate qualified trainer")
+    if type(args.generation) is not int or args.generation <= 0:
+        raise ValueError("Stem/Cell generation must be a positive integer")
     if not 1 <= args.max_cells <= 4096 or args.pretrain_steps < 0 or args.update_steps < 0:
         raise ValueError("training parameters outside finite bounded profile")
     if not all(math.isfinite(v) and v > 0
@@ -283,7 +289,8 @@ def trial(args):
             for arm, prob in (("frozen", frozen_p), ("trained", initial_p)):
                 ood_partials.append(model_only_ood_receipt(
                     row, arm, prob, model=args.model, revision=args.revision,
-                    weights_digest=initial_digests[str(key)], generation=args.generation))
+                    weights_digest=initial_digests[str(key)], generation=args.generation,
+                    feature_manifest_digest=stem.manifest_digest))
 
     outcomes, frozen_outcomes, records = [], [], []
     update_ms = 0.
@@ -383,7 +390,8 @@ def trial(args):
                     ("trained", learned_p, final_digests[str(key)])):
                 ood_partials.append(model_only_ood_receipt(
                     row, arm, prob, model=args.model, revision=args.revision,
-                    weights_digest=digest, generation=args.generation))
+                    weights_digest=digest, generation=args.generation,
+                    feature_manifest_digest=stem.manifest_digest))
         raw_ood = "".join(json.dumps(row, ensure_ascii=False, sort_keys=True,
                                      allow_nan=False, separators=(",", ":")) + "\n"
                           for row in ood_partials).encode("utf-8")
@@ -410,6 +418,7 @@ def trial(args):
         "independent_ndu_signature_verified": False,
         "genuine_future_outcomes_authenticated": False,
         "model": args.model, "revision": args.revision,
+        "generation": args.generation,
         "feature_manifest_digest": stem.manifest_digest,
         "dataset_audit": audit, "task_id": args.task_id,
         "principal_id": args.principal_id,
@@ -465,6 +474,8 @@ def trial(args):
         "trial_digest": sha256_record(result),
         "production_promotion_permitted": False,
         "source_model_revision": args.revision,
+        "source_worker_generation": args.generation,
+        "source_feature_manifest_digest": stem.manifest_digest,
         "dataset_digest": audit["dataset_digest"],
         "signed_evaluator_receipt": False,
         "prediction_journal_sha256": journal_hash.hexdigest(),

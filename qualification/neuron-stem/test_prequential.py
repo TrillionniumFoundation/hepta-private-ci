@@ -29,7 +29,8 @@ class PrequentialTests(unittest.TestCase):
         record["split"] = "ood"
         item = model_only_ood_receipt(
             record, "frozen", [.4, .6], model="jina-v5-text-nano",
-            revision="d" * 40, weights_digest="c" * 64, generation=7)
+            revision="d" * 40, weights_digest="c" * 64, generation=7,
+            feature_manifest_digest="b" * 64)
         self.assertEqual(item["case_id"], record["case_id"])
         self.assertEqual(item["split"], "ood")
         self.assertNotIn("label", item)
@@ -37,6 +38,7 @@ class PrequentialTests(unittest.TestCase):
         self.assertNotIn("external_ndu_utility", item)
         self.assertFalse(item["production_promotion_permitted"])
         self.assertEqual(item["generation"], 7)
+        self.assertEqual(item["feature_manifest_digest"], "b" * 64)
         reordered = dict(record)
         reordered["options"] = list(reversed(record["options"]))
         self.assertNotEqual(
@@ -44,18 +46,21 @@ class PrequentialTests(unittest.TestCase):
             model_only_ood_receipt(
                 reordered, "frozen", [.4, .6], model="jina-v5-text-nano",
                 revision="d" * 40, weights_digest="c" * 64,
-                generation=7)["input_digest"])
+                generation=7, feature_manifest_digest="b" * 64)["input_digest"])
         for invalid_kwargs, error in (
                 ({"arm": "no_change"}, "only learned/frozen"),
-                ({"weights_digest": "unpinned"}, "revision/generation not pinned"),
-                ({"generation": 0}, "revision/generation not pinned"),
-                ({"revision": "G" * 40}, "revision/generation not pinned"),
+                ({"weights_digest": "unpinned"}, "revision/generation/Encoder manifest not pinned"),
+                ({"generation": 0}, "revision/generation/Encoder manifest not pinned"),
+                ({"feature_manifest_digest": "unpinned"}, "Encoder manifest not pinned"),
+                ({"feature_manifest_digest": "G" * 64}, "Encoder manifest not pinned"),
+                ({"revision": "G" * 40}, "revision/generation/Encoder manifest not pinned"),
                 ({"probabilities": [float("nan"), 1.0]}, "normalized"),
                 ({"probabilities": [.9, .9]}, "normalized")):
             values = dict(
                 arm="trained", probabilities=[.4, .6],
                 model="jina-v5-text-nano", revision="d" * 40,
-                weights_digest="c" * 64, generation=1)
+                weights_digest="c" * 64, generation=1,
+                feature_manifest_digest="b" * 64)
             values.update(invalid_kwargs)
             with self.assertRaisesRegex(ValueError, error):
                 model_only_ood_receipt(record, **values)
