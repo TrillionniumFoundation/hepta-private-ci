@@ -364,6 +364,7 @@ pub struct CellSplitExecutionOwnerV1<P: CellSplitExecutionPortV1> {
     trust: CellSplitOwnerTrustV1,
     cursor: usize,
     pending: bool,
+    read_only: bool,
     previous_receipt_digest: String,
     _lock: SidecarLock,
 }
@@ -511,6 +512,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             trust,
             cursor,
             pending,
+            read_only: existing_only,
             previous_receipt_digest,
             _lock: lock,
         })
@@ -649,6 +651,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     pub fn advance(
         &mut self,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
+        // Inspection handles may authenticate existing evidence but must never
+        // prepare an intent or invoke an external CAS/CNS/Supervisor effect.
+        if self.read_only {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "read-only CellSplit owner cannot advance",
+            ));
+        }
         self.verify_committed_prefix()?;
         let Some(step) = CellSplitExecutionStepV1::at(self.cursor) else {
             return Ok(None);
