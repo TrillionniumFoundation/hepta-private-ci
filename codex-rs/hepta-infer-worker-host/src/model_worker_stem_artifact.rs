@@ -315,8 +315,9 @@ impl SelectedStemProjectionReaderV1 {
     /// serialize that acquisition with native inference dispatch. Merely
     /// passing a previously retained `VerifiedCurrentRegistryViewV1`
     /// cannot prove that no newer revocation was published.
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
-    pub fn check_worker_request(
+    pub(crate) fn check_worker_request(
         &mut self,
         selector: &ArtifactSelectionVerifierV1,
         signed_selection: &SignedArtifactSelectionV1,
@@ -344,6 +345,7 @@ impl SelectedStemProjectionReaderV1 {
         result
     }
 
+    #[cfg(test)]
     #[allow(clippy::too_many_arguments)]
     fn check_worker_request_current(
         &mut self,
