@@ -8,6 +8,15 @@ use std::collections::BTreeSet;
 
 use super::*;
 
+/// An item carries the exact request and payload identities so a batched
+/// backend cannot silently associate one Cell's output with another Cell.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PhysicalBatchItemObservationV1 {
+    pub request_id: String,
+    pub payload_digest: String,
+    pub observation: DriverNeuronFeatureObservation,
+}
+
 /// A reviewed backend must submit the full slice in one backend invocation.
 /// Observations correspond to input order, exactly one per request.
 /// An uncertain or malformed batch fails the whole local attempt.
@@ -16,7 +25,7 @@ pub trait NeuronPhysicalBatchDriver: NeuronFeatureDriver {
         &mut self,
         handle: &DriverModelHandle,
         requests: &[NeuronFeatureRequest],
-    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error>;
+    ) -> Result<Vec<PhysicalBatchItemObservationV1>, Error>;
 }
 
 impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
@@ -89,7 +98,13 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
             return Err(Error::FeatureContract);
         }
         let mut receipts = Vec::with_capacity(size);
-        for (request, observed) in requests.into_iter().zip(observations) {
+        for (request, item) in requests.into_iter().zip(observations) {
+            if item.request_id != request.authorization.request_id
+                || item.payload_digest != request.authorization.payload_digest
+            {
+                return Err(Error::FeatureContract);
+            }
+            let observed = item.observation;
             if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
                 return Err(Error::ModelCapacity);
             }
