@@ -71,9 +71,11 @@ pub(crate) async fn read(
         query,
         limit,
         ranker,
-        None,
-        None,
-        None,
+        CognitiveReadOwnerPorts {
+            retrieval: None,
+            learning: None,
+            request_id: None,
+        },
     )
     .await
 }
