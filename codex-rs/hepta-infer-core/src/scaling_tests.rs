@@ -67,6 +67,7 @@ fn workload_64_256_1024_4096_scope_cells() {
                     request_id: id(format!("req-{scope_index}-{local}")),
                     key: key.clone(),
                     feature_digest: shared.digest(),
+                    encoder_digest: None,
                     shared_features: Some(shared.clone()),
                     deadline_ms: 100_000,
                 });

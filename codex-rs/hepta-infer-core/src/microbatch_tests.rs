@@ -32,6 +32,7 @@ fn intent(
             authority_epoch: 1,
         },
         feature_digest: digest("feature"),
+        encoder_digest: None,
         shared_features: None,
         deadline_ms: deadline,
     }

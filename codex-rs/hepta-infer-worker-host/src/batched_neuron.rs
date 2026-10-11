@@ -181,6 +181,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         if signed.grant.binding != binding {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
+        let encoder_digest = Digest32::from_str(&request.encoder_digest)
+            .map_err(|_| BatchWorkerErrorV1::InvalidBinding)?;
         let feature =
             SharedFeatureBufferV1::from_vec(std::mem::take(&mut request.feature_vector_q24))
                 .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
@@ -191,6 +193,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     request_id: id.clone(),
                     key,
                     feature_digest: feature.digest(),
+                    encoder_digest: Some(encoder_digest),
                     shared_features: Some(feature.clone()),
                     deadline_ms: request.authorization.deadline_ms,
                 },
