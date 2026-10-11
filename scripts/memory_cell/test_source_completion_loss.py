@@ -69,9 +69,7 @@ class CompletionLossTests(unittest.TestCase):
                     models = [CausalFixture(dtype), CausalFixture(dtype)]
                     ids = [i % 251 for i in range(prefix + tail)]
                     labels = [-100] * prefix + ids[prefix:]
-                    before = {
-                        k: v.clone() for k, v in models[0].state_dict().items()
-                    }
+                    before = {k: v.clone() for k, v in models[0].state_dict().items()}
                     losses, gradients, receipts = [], [], []
                     for backend, model in zip(("full", "supervised_positions"), models):
                         opt = torch.optim.AdamW(
@@ -101,9 +99,7 @@ class CompletionLossTests(unittest.TestCase):
                         opt.step()
                         receipts.append(receipt)
                         self.assertEqual(model.last_input.tolist(), [ids])
-                        self.assertEqual(
-                            model.last_mask.tolist(), [[1] * len(ids)]
-                        )
+                        self.assertEqual(model.last_mask.tolist(), [[1] * len(ids)])
                         self.assertFalse(model.last_cache)
                         for name in ("embedding.weight", "head.weight"):
                             self.assertTrue(
@@ -129,9 +125,7 @@ class CompletionLossTests(unittest.TestCase):
                         models[1].last_positions.tolist(),
                         list(range(prefix - 1, len(ids) - 1)),
                     )
-                    self.assertEqual(
-                        receipts[1]["actual_projection_positions"], tail
-                    )
+                    self.assertEqual(receipts[1]["actual_projection_positions"], tail)
                     self.assertEqual(
                         receipts[0]["input_tokens"], receipts[1]["input_tokens"]
                     )

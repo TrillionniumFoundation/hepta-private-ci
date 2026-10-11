@@ -47,9 +47,7 @@ class QwenCompletionTests(unittest.TestCase):
                 )
                 sliced = deepcopy(full)
                 models = (full, sliced)
-                initial = {
-                    n: p.detach().clone() for n, p in full.named_parameters()
-                }
+                initial = {n: p.detach().clone() for n, p in full.named_parameters()}
                 optimizers = [
                     torch.optim.AdamW(
                         [p for p in m.parameters() if p.requires_grad], lr=0.0002

@@ -44,7 +44,8 @@ def writer_loop():
     )
     ns = dict(
         source_examples=lambda *a, **kw: (
-            [dict(query=dict(scope="s"), target="fixture")], []
+            [dict(query=dict(scope="s"), target="fixture")],
+            [],
         ),
         Question=lambda **kw: SimpleNamespace(**kw),
         render=lambda *a: [1, 2, 3],
@@ -156,9 +157,7 @@ class SourceWriterLoopTests(unittest.TestCase):
             "sys.modules",
             {
                 "peft": SimpleNamespace(get_peft_model_state_dict=adapter_state),
-                "source_write_schedule": SimpleNamespace(
-                        prepare=mock_source_schedule
-                    ),
+                "source_write_schedule": SimpleNamespace(prepare=mock_source_schedule),
                 "pretrained": SimpleNamespace(frozen_digest=frozen_state),
             },
         ):
