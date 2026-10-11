@@ -352,6 +352,15 @@ mod tests {
     use super::*;
 
     #[test]
+    fn closed_plasticity_owner_channel_never_reports_ready() {
+        let (sender, receiver) = mpsc::channel(1);
+        let handle = PlasticityRuntimeHandleV1 { sender };
+        assert!(handle.is_open());
+        drop(receiver);
+        assert!(!handle.is_open());
+    }
+
+    #[test]
     fn runtime_queue_capacity_is_bounded() {
         assert!(validate_plasticity_runtime_capacity(1).is_ok());
         assert!(validate_plasticity_runtime_capacity(MAX_PLASTICITY_RUNTIME_QUEUE).is_ok());

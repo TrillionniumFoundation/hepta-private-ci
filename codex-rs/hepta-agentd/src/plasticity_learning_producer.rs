@@ -21,4 +21,31 @@ impl AgentdLearningPlasticityProducerV1 {
     pub(crate) fn owner_channel_open(&self) -> bool {
         self.handle.is_open()
     }
+
+    /// Qualification-only compatibility callers exercise the REAL bounded
+    /// runtime owner and WAL/CAS replay. No production caller is wired until
+    /// a separately signed learning admission has been verified.
+    #[cfg(test)]
+    pub(crate) async fn submit_parameter(
+        &self,
+        request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
+        now: u64,
+    ) -> Result<
+        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
+        crate::PlasticityRuntimeCallErrorV1,
+    > {
+        self.handle.propose_parameter(request, now).await
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn submit_topology(
+        &self,
+        request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
+        now: u64,
+    ) -> Result<
+        codex_hepta_intelligence::TopologyPlasticityProductReceiptV1,
+        crate::PlasticityRuntimeCallErrorV1,
+    > {
+        self.handle.propose_topology(request, now).await
+    }
 }

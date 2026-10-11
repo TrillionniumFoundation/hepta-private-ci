@@ -29,6 +29,29 @@ impl CognitiveRetrievalLearningSink {
         }
     }
 
+    /// Legacy idempotent append helper is exercised in the replay tests;
+    /// production invokes the explicit policy+propensity entry point.
+    #[cfg(test)]
+    pub(crate) fn append(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        request_id: u64,
+        observation: &RetrievalAssignmentObservationV1,
+    ) -> Result<AppendReceipt, String> {
+        self.append_with_delivery_policy(
+            owner,
+            body_generation,
+            request_id,
+            observation,
+            &[],
+            false,
+            None,
+            None,
+            ProbabilityQ32::ONE,
+        )
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn append_with_delivery_policy(
         &self,

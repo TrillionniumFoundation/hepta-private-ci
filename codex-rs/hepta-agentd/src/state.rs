@@ -173,6 +173,41 @@ impl AgentdState {
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
+    /// Real owner-lifetime/restart integration tests use these bounded
+    /// submission hooks. No executable production ingress exposes them:
+    /// that requires independently signed learning authorization first.
+    #[cfg(test)]
+    pub(crate) async fn submit_parameter_plasticity_v1(
+        &self,
+        request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
+        now: u64,
+    ) -> Result<
+        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
+        crate::PlasticityRuntimeCallErrorV1,
+    > {
+        let producer = self
+            .plasticity_runtime
+            .get()
+            .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
+        producer.submit_parameter(request, now).await
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn submit_topology_plasticity_v1(
+        &self,
+        request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
+        now: u64,
+    ) -> Result<
+        codex_hepta_intelligence::TopologyPlasticityProductReceiptV1,
+        crate::PlasticityRuntimeCallErrorV1,
+    > {
+        let producer = self
+            .plasticity_runtime
+            .get()
+            .ok_or(crate::PlasticityRuntimeCallErrorV1::Closed)?;
+        producer.submit_topology(request, now).await
+    }
+
     pub(crate) fn attach_cognitive_store(
         &self,
         store: Arc<CognitiveStore>,
