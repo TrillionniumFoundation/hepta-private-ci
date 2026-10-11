@@ -63,7 +63,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host -- --config imports_granularity=Item
           git diff --binary -- codex-rs/hepta-infer-worker-host/src > "$RUNNER_TEMP/stem-rustfmt.patch"
           git restore --worktree -- codex-rs/hepta-infer-worker-host/src
           git diff --check
@@ -140,10 +140,12 @@ jobs:
           cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --
           -D clippy::correctness -D clippy::await_holding_lock
           -D clippy::await_holding_invalid_type
-      - name: Enforce Rust formatting
+      - name: Enforce both crate and global Rust formatting
         if: always()
         working-directory: codex-rs
-        run: cargo fmt --package codex-hepta-infer-worker-host -- --check
+        run: |
+          cargo fmt --package codex-hepta-infer-worker-host -- --check
+          cargo fmt --package codex-hepta-infer-worker-host -- --config imports_granularity=Item --check
       # Retain the deterministic formatter's exact proposed diff on the tested
       # SHA.  CI has only contents:read and never commits a formatting result.
       # This step runs even when compile/test fails; source is then restored so
@@ -153,7 +155,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host -- --config imports_granularity=Item
           git diff --binary -- codex-rs/hepta-infer-worker-host/src > "$RUNNER_TEMP/stem-worker-rustfmt.patch"
           git restore --worktree -- codex-rs/hepta-infer-worker-host/src
       - name: Upload rustfmt diagnostics
