@@ -505,10 +505,12 @@ pub(crate) async fn revalidate(
     revalidate_with_retrieval_context(
         store,
         owner,
-        snapshot_digest,
-        read_digest,
-        omitted_records,
-        items,
+        CognitiveSnapshotProof {
+            snapshot_digest,
+            read_digest,
+            omitted_records,
+            items,
+        },
         plan,
         ranker,
         1,
