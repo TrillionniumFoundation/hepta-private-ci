@@ -121,9 +121,7 @@ class StrongRagPolicyTests(unittest.TestCase):
                     "delivered_evidence": [],
                 }
 
-        query = Question(
-            "q1", "family", "scope", "Which site?", "2026-01-01T00:00:00Z"
-        )
+        query = Question("q1", "family", "scope", "Which site?", "2026-01-01T00:00:00Z")
         case = dict(
             query=asdict(query),
             kind="new_fact",
