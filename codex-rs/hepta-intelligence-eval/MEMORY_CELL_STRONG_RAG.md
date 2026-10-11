@@ -377,3 +377,28 @@ queued reader jobs remain source-pinned without synthetic model results.
 Research success still requires completed **40 calibration plus 72 evaluation**
 generations, immutable source artifact and separately checked citation/score
 replay. A passing research workflow does not itself qualify production.
+
+## Intermediate calibration evidence checkpoint
+
+The hosted CPU reader runs forty Qwen calibration calls before the distinct
+nine-arm development evaluation. The original workflow only uploaded the
+final artifact after both stages. If evaluation subsequently failed, the
+expensive calibration evidence lacked an independently downloadable stage
+record. The new checkpoint step runs **between calibration and evaluation**
+and also runs on a non-successful calibration step (if that step was started).
+
+`memory-strong-rag-calibration-checkpoint` contains the generating commit
+(`tested-commit.txt`), any completed `prep` and `calibration` directories,
+reader inventory/stage and resource logs when available, plus a complete
+`SHA256SUMS` file census. Model weights and evaluation labels are not copied.
+Every entry is from the exact checked-out `github.sha`; no score is repaired
+or replaced. A partially written calibration journal remains a **partial
+failure artifact**, never an eligible selected-k policy.
+
+The original later `memory-strong-rag-calibrated-reader` artifact and
+separate `independent-replay` still require successful generation and
+complete frozen-source verification. The checkpoint alone is not an
+independent model effect, semantic citation judgement, or production
+acceptance. It does not rescue files from a runner killed by its overall
+job timeout if GitHub does not execute subsequent `always()` steps.
+

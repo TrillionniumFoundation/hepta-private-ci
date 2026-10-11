@@ -156,12 +156,40 @@ jobs:
           /tmp/strong-rag-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/strong-rag-reader
           cp /tmp/strong-rag-reader/{inventory.json,stage.json,publisher.json} /tmp/strong-rag-evidence/
       - name: Real reader calibration only, with final tasks absent from inputs
+        id: calibration_generation
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/strong-rag-evidence/calibration-resources.txt /tmp/strong-rag-python/bin/python scripts/memory_cell/strong_rag_trial.py calibrate /tmp/strong-rag-evidence/prep /tmp/strong-rag-reader /tmp/strong-rag-evidence/calibration --prep-sha "$(sha256sum /tmp/strong-rag-evidence/prep/calibration-plan.json | cut -d ' ' -f1)" --stage-sha "$(sha256sum /tmp/strong-rag-reader/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/strong-rag-evidence/calibration.log
+      # Preserve completed calibration even if later nine-arm evaluation fails.
+      # This diagnostic is not an independent replay or deployment receipt.
+      - name: Seal calibration-only checkpoint with original generating SHA
+        if: ${{ always() && steps.calibration_generation.outcome != 'skipped' }}
+        run: |
+          set -euo pipefail
+          checkpoint=/tmp/strong-rag-calibration-checkpoint
+          mkdir -p "$checkpoint"
+          printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > "$checkpoint/tested-commit.txt"
+          for directory in prep calibration; do
+            if [ -d "/tmp/strong-rag-evidence/$directory" ]; then
+              cp -a "/tmp/strong-rag-evidence/$directory" "$checkpoint/"
+            fi
+          done
+          for filename in input-pin.txt inventory.json stage.json publisher.json environment.txt prep.log calibration.log calibration-resources.txt tests.log; do
+            if [ -f "/tmp/strong-rag-evidence/$filename" ]; then
+              cp "/tmp/strong-rag-evidence/$filename" "$checkpoint/$filename"
+            fi
+          done
+          test -z "$(find "$checkpoint" -type l -print -quit)"
+          (cd "$checkpoint" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: ${{ always() && steps.calibration_generation.outcome != 'skipped' }}
+        with:
+          name: memory-strong-rag-calibration-checkpoint
+          path: /tmp/strong-rag-calibration-checkpoint
+          if-no-files-found: error
       - name: Different process, frozen top-k versus matched original controls
         env:
           HF_HUB_OFFLINE: "1"
