@@ -702,6 +702,12 @@ fn replay_payload(
     let mut previous_timestamp = 0_u128;
     let mut operation_ids = BTreeSet::new();
     let mut receipt_digests = BTreeSet::new();
+    // The lifecycle stages are not independently interchangeable. A valid
+    // signature over a forged event stream cannot promote a recovery observed
+    // on one route while the route-cutover/rollback evidence refers to another.
+    let mut active_child_route = None;
+    let mut restored_parent_route = None;
+    let mut committed_tombstone = None;
     for (offset, event) in payload.events.iter().enumerate() {
         if event.sequence != offset as u64 + 1
             || event.split_id != payload.split_id
@@ -719,6 +725,46 @@ fn replay_payload(
             return Err(invalid("event replay or hash chain"));
         }
         validate_event_payload(event, payload)?;
+        // Bind *actual* stage output to the following recovery and rollback
+        // operations. This comparison is in addition to the signed hash chain.
+        match event.event_kind {
+            CellSplitTargetHostEventKindV1::ArtifactLoaded => {}
+            CellSplitTargetHostEventKindV1::RouteCutover => {
+                active_child_route = Some(event.route_digest.as_str());
+            }
+            CellSplitTargetHostEventKindV1::RestartRecovered
+            | CellSplitTargetHostEventKindV1::PowerLossRecovered => {
+                if active_child_route != Some(event.route_digest.as_str()) {
+                    return Err(invalid("recovery did not preserve committed child route"));
+                }
+            }
+            CellSplitTargetHostEventKindV1::RollbackCompleted => {
+                if active_child_route != Some(event.predecessor_digest.as_str())
+                    || event.route_digest.is_empty()
+                    || Some(event.route_digest.as_str()) == active_child_route
+                {
+                    return Err(invalid("rollback did not restore predecessor route"));
+                }
+                restored_parent_route = Some(event.route_digest.as_str());
+            }
+            CellSplitTargetHostEventKindV1::TombstoneCommitted => {
+                if restored_parent_route != Some(event.route_digest.as_str())
+                    || restored_parent_route != Some(event.predecessor_digest.as_str())
+                {
+                    return Err(invalid("tombstone did not bind restored parent route"));
+                }
+                committed_tombstone = Some(event.tombstone_digest.as_str());
+            }
+            CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
+                if restored_parent_route != Some(event.route_digest.as_str())
+                    || restored_parent_route != Some(event.predecessor_digest.as_str())
+                    || committed_tombstone != Some(event.tombstone_digest.as_str())
+                {
+                    return Err(invalid("no-resurrection evidence is not bound to tombstone"));
+                }
+            }
+            CellSplitTargetHostEventKindV1::ResourceMeasurement => {}
+        }
         if !matches!(
             event.event_kind,
             CellSplitTargetHostEventKindV1::ResourceMeasurement
@@ -749,12 +795,18 @@ fn validate_event_payload(
     event: &CellSplitTargetHostEventV1,
     payload: &CellSplitTargetHostEvidenceV1,
 ) -> Result<(), CellSplitTargetHostEvidenceErrorV1> {
+    // A lifecycle can only load, serve, recover and eventually tombstone the
+    // exact child artifact selected for this split. Empty or alternate child
+    // bindings in later receipts are not harmless metadata omissions.
+    if !matches!(
+        event.event_kind,
+        CellSplitTargetHostEventKindV1::ResourceMeasurement
+    ) && event.artifact_digest != payload.child_artifact_digest
+    {
+        return Err(invalid("lifecycle event refers to a different child artifact"));
+    }
     match event.event_kind {
-        CellSplitTargetHostEventKindV1::ArtifactLoaded => {
-            if event.artifact_digest != payload.child_artifact_digest {
-                return Err(invalid("loaded artifact differs from child artifact"));
-            }
-        }
+        CellSplitTargetHostEventKindV1::ArtifactLoaded => {}
         CellSplitTargetHostEventKindV1::RouteCutover => {
             if event.route_digest.is_empty() || event.predecessor_digest.is_empty() {
                 return Err(invalid("route cutover receipt is incomplete"));
