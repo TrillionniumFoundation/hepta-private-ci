@@ -45,15 +45,18 @@ impl FakeRuntime {
         CellSplitTargetHostOperationReceiptV1 {
             operation_id: format!("operation-{n}"),
             occurred_at_unix_nanos: self.next_timestamp,
-            artifact_digest: (name == "load")
-                .then(|| CHILD.to_string())
-                .unwrap_or_default(),
-            route_digest: (name == "route")
-                .then(|| "route-child".to_string())
-                .unwrap_or_default(),
-            predecessor_digest: matches!(name, "route" | "rollback" | "resurrection")
-                .then(|| "route-parent-fence".to_string())
-                .unwrap_or_default(),
+            artifact_digest: CHILD.to_string(),
+            route_digest: match name {
+                "route" | "restart" | "power-loss" => "route-child".to_string(),
+                "rollback" | "tombstone" | "resurrection" => "route-parent".to_string(),
+                _ => String::new(),
+            },
+            predecessor_digest: match name {
+                "route" => "route-parent-fence".to_string(),
+                "rollback" => "route-child".to_string(),
+                "tombstone" | "resurrection" => "route-parent".to_string(),
+                _ => String::new(),
+            },
             tombstone_digest: matches!(name, "tombstone" | "resurrection")
                 .then(|| TOMBSTONE.to_string())
                 .unwrap_or_default(),
