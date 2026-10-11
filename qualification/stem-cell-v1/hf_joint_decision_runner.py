@@ -169,6 +169,60 @@ def validate_encoder_loading_info(info):
     }
 
 
+def verify_loaded_safetensors(torch, model, root):
+    """Exact, read-only tensor comparison against every pinned safetensors key.
+
+    Transformers loading_info is advisory for some version/architecture
+    combinations; a clean list by itself is NOT sufficient. Require that
+    the locally admitted, base-only safetensors inventory equals the actual
+    model.state_dict() inventory and every tensor value after the requested
+    model dtype conversion matches. Reject aliases/partial architecture
+    conversions until a separate audited canonical model artifact exists.
+    """
+    from safetensors import safe_open
+
+    files = sorted(Path(root).rglob("*.safetensors"))
+    if not files or len(files) > 64:
+        raise ValueError("empty or excessive safetensors shard inventory")
+    if sum(p.stat().st_size for p in files) > 2_500_000_000:
+        raise ValueError("pretrained safetensors exceed local research weight envelope")
+    stored = model.state_dict()
+    if not isinstance(stored, Mapping) or not stored or len(stored) > 250_000:
+        raise ValueError("unsupported pretrained model tensor inventory")
+    seen = set()
+    elements = 0
+    for file in files:
+        with safe_open(str(file), framework="pt", device="cpu") as handle:
+            for key in handle.keys():
+                if key in seen or key not in stored:
+                    raise ValueError("duplicate or unexpected safetensors parameter key")
+                observed = stored[key]
+                expected = handle.get_tensor(key)
+                if (not hasattr(observed, "shape") or
+                        tuple(observed.shape) != tuple(expected.shape) or
+                        observed.device.type == "meta"):
+                    raise ValueError("safetensors tensor shape or materialization mismatch")
+                # Loading at bf16/fp16 legitimately casts source values.
+                # Compare at the exact dtype actually held by the model.
+                source = expected.to(dtype=observed.dtype, device="cpu")
+                actual = observed.detach().to(device="cpu")
+                if not torch.equal(source, actual):
+                    raise ValueError("loaded pretrained tensor differs from pinned safetensors")
+                elements += int(expected.numel())
+                seen.add(key)
+    if seen != set(stored):
+        raise ValueError("incomplete safetensors inventory for loaded Encoder")
+    return {
+        "schema": "hepta.local-hf-exact-tensor-materialization.v1",
+        "complete": True,
+        "all_state_dict_tensors_compared": True,
+        "tensor_count": len(seen),
+        "tensor_elements": elements,
+        "safetensors_shards": len(files),
+        "production_authorization": False,
+    }
+
+
 def vectorize_case(torch, model, tokenizer, row, device, *, max_tokens):
     text = render_joint(row)
     tokens = tokenizer(text, return_tensors="pt", truncation=False)
@@ -220,6 +274,7 @@ def run(args):
     model, loading_info = loaded
     loading_receipt = validate_encoder_loading_info(loading_info)
     model = model.to(args.device).eval()
+    tensor_materialization = verify_loaded_safetensors(torch, model, checkpoint)
     load_seconds = time.perf_counter() - began
     for parameter in model.parameters():
         parameter.requires_grad_(False)
@@ -321,6 +376,7 @@ def run(args):
         "train_steps": args.train_steps, "trainable_parameters": head_parameters,
         "frozen_encoder_parameters": encoder_params,
         "verified_encoder_loading": loading_receipt,
+        "verified_exact_tensor_materialization": tensor_materialization,
         "model_load_seconds": load_seconds, "training_seconds": train_seconds,
         "feature_bytes": feature_bytes, "process_rss_after_bytes": rss,
         "output_predictions_sha256": sha256_file(target),
