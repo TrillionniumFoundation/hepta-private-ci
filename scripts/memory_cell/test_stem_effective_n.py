@@ -224,15 +224,17 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
 
     def test_unknown_test_names_and_forged_independence_are_rejected(self):
         plan, paired = realistic_fixture()
-        for mode in ("question", "route", "schema"):
+        for mode in ("question", "route", "schema", "obsolete-v3"):
             p = deepcopy(plan)
             b = deepcopy(paired)
             if mode == "question":
                 p["questions"]["test"][0] = "transfer-0"
             elif mode == "route":
                 p["routes"]["test-0"] = "unregistered-cell"
-            else:
+            elif mode == "schema":
                 b["schema"] = "hepta.stem-train-heldout-diagnostic-gap.v2"
+            else:
+                b["schema"] = "hepta.stem-train-heldout-diagnostic-gap.v3"
             with self.subTest(mode=mode), self.assertRaises(ValueError):
                 effective_heldout_subjects(p, b)
 
