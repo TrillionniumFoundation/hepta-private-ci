@@ -209,6 +209,12 @@ impl CellSplitOwnerTrustV1 {
         })
     }
 
+    /// Used by independent Observer acceptance to prevent a purported host
+    /// or observer from reusing one of the four effect-owner signing keys.
+    pub(crate) fn contains_owner_key(&self, key: &VerifyingKey) -> bool {
+        self.owner_keys.iter().any(|owner| owner == key)
+    }
+
     fn verify(
         &self,
         intent: &CellSplitExecutionIntentV1,
