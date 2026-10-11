@@ -76,6 +76,11 @@ fn selected_head_bank_encoding_is_exact_and_read_only() {
     let encoder = "a".repeat(64);
     let bytes = encode_cpu_head_bank_candidate_v1(&encoder, &heads).expect("encode");
     let decoded = decode_cpu_head_bank(&bytes).expect("decode");
+    // Cross-language golden: identical Python sort_keys/compact JSON Q24 bank.
+    assert_eq!(
+        Digest32::of_bytes(&bytes).to_string(),
+        "7be461898ad99e7d421ad2f4b0b1927a4a308260a162f7cf6dba1d594d7f1e93"
+    );
     assert_eq!(decoded.encoder_digest, encoder);
     assert_eq!(decoded.heads, heads);
     assert_eq!(
