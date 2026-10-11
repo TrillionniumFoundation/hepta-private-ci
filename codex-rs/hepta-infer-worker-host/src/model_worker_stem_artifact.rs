@@ -124,6 +124,22 @@ pub struct StemProjectionReadObservationV1 {
     pub production_authorized: bool,
 }
 
+/// One model-only, read-only dispatch over a previously projected and
+/// pre-authorized Q24 request. All identity and authority inputs are supplied
+/// by independent product owners: this type manufactures none of them.
+#[derive(Debug)]
+pub struct StemCpuHeadUseV1<'a> {
+    pub selector: &'a ArtifactSelectionVerifierV1,
+    pub signed_selection: &'a SignedArtifactSelectionV1,
+    pub current: VerifiedCurrentRegistryViewV1,
+    pub selection_now: u64,
+    pub binding: &'a StemProjectionBindingV1,
+    pub projected: &'a ProjectedStemFeatureV1,
+    pub request: super::NeuronFeatureRequest,
+    pub worker_now_ms: u64,
+    pub model_id: &'a str,
+}
+
 #[derive(Debug)]
 pub struct SelectedStemProjectionReaderV1 {
     candidate: RevalidatingCandidate,
@@ -335,17 +351,7 @@ impl SelectedStemProjectionReaderV1 {
         projected: &ProjectedStemFeatureV1,
         request: &super::NeuronFeatureRequest,
     ) -> Result<(), StemProjectionArtifactError> {
-        if projected.projection_digest != self.projection_digest
-            || binding.scope_digest != self.fence.scope_digest.to_string()
-            || binding.generation != self.fence.worker_generation
-            || binding.revocation_frontier_digest
-                != self.fence.revocation_frontier_digest.to_string()
-            || binding.encoder_digest != self.projection.encoder_digest
-            || binding.preprocessor_digest != self.projection.preprocessor_digest
-            || binding.runtime_digest != self.projection.runtime_digest
-        {
-            return Err(StemProjectionArtifactError::InvalidBinding);
-        }
+        self.verify_worker_static_binding(binding, projected)?;
         let verified = selector
             .verify(signed_selection, &current, now)
             .map_err(|error| StemProjectionArtifactError::Selection(error.to_string()))?;
@@ -361,6 +367,88 @@ impl SelectedStemProjectionReaderV1 {
             })
             .map_err(|error| StemProjectionArtifactError::Storage(error.to_string()))?
             .map_err(StemProjectionArtifactError::Numeric)
+    }
+
+    /// Execute ONLY the installed local Q24 CPU Head while the selected CAS
+    /// payload is under an authenticated CURRENT revalidation.
+    ///
+    /// The worker consumes a pre-existing grant/reservation/lease and returns
+    /// a non-authoritative typed receipt. This method cannot dispatch tools or
+    /// run a generic provider. The *production* owner must still serialize
+    /// CURRENT publication, revocation and this dispatch under its own fence;
+    /// a stored CURRENT object is not proof of absolute present-time freshness.
+    pub fn run_selected_cpu_head(
+        &mut self,
+        worker: &mut super::InferenceWorker<super::CpuGatedHeadDriver>,
+        use_request: StemCpuHeadUseV1<'_>,
+    ) -> Result<codex_hepta_infer_core::NeuronFeatureReceiptV1, StemProjectionArtifactError> {
+        if self.sealed {
+            return Err(StemProjectionArtifactError::ConsumerSealed);
+        }
+        let result = self.run_selected_cpu_head_checked(worker, use_request);
+        if result.is_err() {
+            self.sealed = true;
+        }
+        result
+    }
+
+    fn run_selected_cpu_head_checked(
+        &mut self,
+        worker: &mut super::InferenceWorker<super::CpuGatedHeadDriver>,
+        use_request: StemCpuHeadUseV1<'_>,
+    ) -> Result<codex_hepta_infer_core::NeuronFeatureReceiptV1, StemProjectionArtifactError> {
+        let StemCpuHeadUseV1 {
+            selector,
+            signed_selection,
+            current,
+            selection_now,
+            binding,
+            projected,
+            request,
+            worker_now_ms,
+            model_id,
+        } = use_request;
+        if worker.generation != self.fence.worker_generation {
+            return Err(StemProjectionArtifactError::InvalidBinding);
+        }
+        self.verify_worker_static_binding(binding, projected)?;
+        let verified = selector
+            .verify(signed_selection, &current, selection_now)
+            .map_err(|error| StemProjectionArtifactError::Selection(error.to_string()))?;
+        if verified.selection_digest() != self.selected_digest
+            || verified.artifact_id() != &self.artifact_id
+        {
+            return Err(StemProjectionArtifactError::StaleOrUnselected);
+        }
+        let generation = self.fence.worker_generation;
+        self.candidate
+            .with_current(current, |_payload| {
+                verify_neuron_projected_request(binding, projected, &request, generation)
+                    .map_err(StemProjectionArtifactError::Numeric)?;
+                worker
+                    .run_neuron_features_receipt(worker_now_ms, model_id, request)
+                    .map_err(StemProjectionArtifactError::Numeric)
+            })
+            .map_err(|error| StemProjectionArtifactError::Storage(error.to_string()))?
+    }
+
+    fn verify_worker_static_binding(
+        &self,
+        binding: &StemProjectionBindingV1,
+        projected: &ProjectedStemFeatureV1,
+    ) -> Result<(), StemProjectionArtifactError> {
+        if projected.projection_digest != self.projection_digest
+            || binding.scope_digest != self.fence.scope_digest.to_string()
+            || binding.generation != self.fence.worker_generation
+            || binding.revocation_frontier_digest
+                != self.fence.revocation_frontier_digest.to_string()
+            || binding.encoder_digest != self.projection.encoder_digest
+            || binding.preprocessor_digest != self.projection.preprocessor_digest
+            || binding.runtime_digest != self.projection.runtime_digest
+        {
+            return Err(StemProjectionArtifactError::InvalidBinding);
+        }
+        Ok(())
     }
 
     pub fn is_sealed(&self) -> bool {
