@@ -475,6 +475,9 @@ pub struct DriverNeuronFeatureObservation {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct BoundStemFeatureExecutionV1 {
     pub stem_feature_ref_digest: Digest32,
+    /// The domain-separated Scope/Principal/Generation-bound input digest
+    /// actually incorporated into the Worker payload and receipt.
+    pub scoped_input_digest: Digest32,
     pub worker_receipt: NeuronFeatureReceiptV1,
     pub authority: codex_hepta_types::AuthorityPosture,
 }
@@ -616,6 +619,21 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     }
 }
 
+/// Domain-separated raw-input + scoped feature reference digest.
+///
+/// This value (not the unscoped source input digest) is used in the existing
+/// Worker payload hash. Thus an authorization for one Scope, Principal, lease
+/// or Stem generation cannot be reused with another caller-declared binding.
+/// Cryptographic authentication of the source and principal remains the
+/// independent authority owner's responsibility.
+fn scoped_stem_worker_input_digest_v1(bound: &BoundStemNeuronRequestV1) -> Digest32 {
+    Digest32::of_parts(&[
+        b"hepta.infer-worker.scoped-stem-input.v1",
+        bound.request.input_digest.as_array(),
+        bound.feature_ref_digest.as_array(),
+    ])
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// Dispatch a previously authorized and still-current shared Stem feature
     /// through the real loaded Head driver and typed Neuron receipt boundary.
@@ -664,12 +682,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        // The ordinary Worker request does not carry Scope/Principal fields.
+        // Bind them into its existing input-digest slot before comparing the
+        // independently issued lease payload. Otherwise a request authorized
+        // for Scope A could be replayed under a caller-declared Scope B when
+        // the raw input bytes happened to match.
+        let scoped_input_digest = scoped_stem_worker_input_digest_v1(&bound);
         let request = NeuronFeatureRequest {
             authorization,
             encoder_digest: bound.request.encoder_digest.to_string(),
             head_digest: bound.request.head_digest.to_string(),
             weights_digest: bound.request.weights_digest.to_string(),
-            input_digest: bound.request.input_digest.to_string(),
+            input_digest: scoped_input_digest.to_string(),
             feature_vector_q24: bound.request.feature_vector_q24,
             expected_output_width: bound.request.expected_output_width,
         };
@@ -689,6 +713,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         }
         Ok(BoundStemFeatureExecutionV1 {
             stem_feature_ref_digest: bound.feature_ref_digest,
+            scoped_input_digest,
             worker_receipt: receipt,
             authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
         })
