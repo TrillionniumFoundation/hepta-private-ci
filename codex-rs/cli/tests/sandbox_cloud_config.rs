@@ -24,45 +24,38 @@ use wiremock::matchers::method;
 use wiremock::matchers::path;
 
 #[cfg(windows)]
-fn stage_windows_helpers(test_executable: &Path) -> Result<()> {
-    let resources = test_executable
-        .parent()
-        .context("CLI test executable has no parent directory")?;
-    std::fs::create_dir_all(resources)
-        .with_context(|| format!("create helper directory {}", resources.display()))?;
-    for name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
-        let source = codex_utils_cargo_bin::cargo_bin(name)?;
-        let destination = resources.join(Path::new(name).with_extension("exe"));
+fn stage_windows_sandbox_fixture(codex: &Path) -> Result<TempDir> {
+    // The Bazel-built CLI directory can be shared by concurrent tests. Keep
+    // the executable and both helpers in a fixture-owned directory instead
+    // of publishing helper files into shared build outputs or runfiles.
+    let fixture = TempDir::new()?;
+    for (name, source) in [
+        ("codex", codex.to_path_buf()),
+        (
+            "codex-windows-sandbox-setup",
+            codex_utils_cargo_bin::cargo_bin("codex-windows-sandbox-setup")?,
+        ),
+        (
+            "codex-command-runner",
+            codex_utils_cargo_bin::cargo_bin("codex-command-runner")?,
+        ),
+    ] {
+        let destination = fixture.path().join(Path::new(name).with_extension("exe"));
         let expected = std::fs::read(&source)
-            .with_context(|| format!("read built helper {}", source.display()))?;
-        if std::fs::read(&destination).ok().as_deref() == Some(expected.as_slice()) {
-            continue;
-        }
-        let mut staged = tempfile::NamedTempFile::new_in(resources)?;
+            .with_context(|| format!("read built fixture binary {}", source.display()))?;
+        let mut staged = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&destination)?;
         staged.write_all(&expected)?;
         staged.flush()?;
         anyhow::ensure!(
-            std::fs::read(staged.path())? == expected,
-            "helper staging changed bytes"
-        );
-        if let Err(error) = staged.persist_noclobber(&destination)
-            && std::fs::read(&destination).ok().as_deref() != Some(expected.as_slice())
-        {
-            return Err(error.error).with_context(|| {
-                format!(
-                    "publish helper {} at {}",
-                    source.display(),
-                    destination.display()
-                )
-            });
-        }
-        anyhow::ensure!(
             std::fs::read(&destination)? == expected,
-            "staged helper differs from the current build: {}",
+            "staged fixture differs from the current build: {}",
             destination.display()
         );
     }
-    Ok(())
+    Ok(fixture)
 }
 
 const CLOUD_MANAGED_PERMISSION_PROFILE_REQUIREMENTS: &str = r#"
@@ -146,7 +139,9 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
     #[cfg(windows)]
-    stage_windows_helpers(&codex)?;
+    let sandbox_fixture = stage_windows_sandbox_fixture(&codex)?;
+    #[cfg(windows)]
+    let codex = sandbox_fixture.path().join("codex.exe");
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())
