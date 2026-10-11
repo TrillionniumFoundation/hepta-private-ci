@@ -9,6 +9,8 @@
 
 mod organs;
 mod topology_execution;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+mod cell_split_cns_runtime_port;
 
 use std::fmt;
 use std::fs::File;
@@ -54,6 +56,12 @@ pub use topology_execution::RuntimeTopologyExecutionError;
 pub use topology_execution::RuntimeTopologyMigrationOwnerV1;
 pub use topology_execution::RuntimeTopologySnapshotV1;
 pub use topology_execution::RuntimeTopologySuccessorV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_cns_runtime_port::CellSplitCnsKernelRuntimePortV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_cns_runtime_port::CellSplitCnsKernelWitnessV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_cns_runtime_port::cell_split_cns_live_route_signing_bytes_v1;
 pub use topology_execution::runtime_topology_final_use_binding_v1;
 pub use topology_execution::runtime_topology_recovery_final_use_binding_v1;
 
