@@ -701,6 +701,12 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
+pub struct AgentdPlasticityCommitContextV1<'a> {
+    pub writer: &'a mut AnchoredPlasticityWriterV1,
+    pub anchor_store: &'a mut AgentdPlasticityAnchorStoreV1,
+    pub now: u64,
+}
+
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,
