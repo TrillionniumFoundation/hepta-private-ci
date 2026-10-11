@@ -442,12 +442,19 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitOwnedEffectV1>, Self::Error> {
-        Ok(self
-            .read_manifest(intent)?
-            .map(|bytes| CellSplitOwnedEffectV1 {
-                owner_sequence: self.migration.parent_anchor().sequence,
-                owner_receipt_bytes: bytes,
-            }))
+        let Some(bytes) = self.read_manifest(intent)? else {
+            return Ok(None);
+        };
+        // The raw backend port is also reachable without the surrounding
+        // RPC service. Never expose an acknowledged migration if its original
+        // commit marker no longer matches every child file on disk.
+        if !self.verify_manifest(intent, &bytes)? {
+            return Err(CellSplitChildStateCasErrorV1::Invalid);
+        }
+        Ok(Some(CellSplitOwnedEffectV1 {
+            owner_sequence: self.migration.parent_anchor().sequence,
+            owner_receipt_bytes: bytes,
+        }))
     }
 
     fn verify_current(
