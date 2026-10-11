@@ -304,8 +304,8 @@ mod tests {
         assert!(head.compute(&"b".repeat(64), "cell.a", &[Q24, Q24], 1).is_err());
         assert!(head.compute(&"a".repeat(64), "cell.a", &[Q24], 1).is_err());
         assert!(head.compute(&"a".repeat(64), "cell.a", &[9 * Q24, 0], 1).is_err());
-        assert_eq!(head.parameter_count(), 12);
-        assert_eq!(head.tensor_bytes().expect("bytes"), 96);
+        assert_eq!(head.parameter_count(), 14);
+        assert_eq!(head.tensor_bytes().expect("bytes"), 112);
     }
 
     #[test]
