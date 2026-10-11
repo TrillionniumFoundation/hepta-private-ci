@@ -40,7 +40,7 @@ jobs:
           cat /tmp/strong-rag-format/check.log
           if [ "$code" -ne 0 ]; then
             just fmt --base "$BASE"
-            cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py /tmp/strong-rag-format/
+            cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py /tmp/strong-rag-format/
           fi
           git rev-parse HEAD > /tmp/strong-rag-format/tested-commit.txt
           exit "$code"
