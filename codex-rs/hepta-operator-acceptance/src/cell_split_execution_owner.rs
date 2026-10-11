@@ -310,6 +310,17 @@ pub fn verify_cell_split_execution_transcript_signatures_v1(
 pub trait CellSplitExecutionPortV1 {
     type Error: std::fmt::Display;
 
+    /// Check original-owner readiness without dispatching an effect. Called
+    /// only before creating a new prepared intent, never during reconciliation.
+    /// Production ports must use an authenticated current-state readback;
+    /// source-only harnesses may retain the default no-op implementation.
+    fn preflight_uncommitted(
+        &mut self,
+        _intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        Ok(())
+    }
+
     fn execute(
         &mut self,
         intent: &CellSplitExecutionIntentV1,
@@ -661,6 +672,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
             }
         } else {
+            // A missing/retired original effect owner must not strand a newly
+            // selected split in permanent reconcile-only state before the
+            // first mutation request has even been sent.
+            self.port
+                .preflight_uncommitted(&intent)
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,
