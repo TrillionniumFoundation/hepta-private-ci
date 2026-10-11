@@ -146,3 +146,56 @@ jobs:
             learned-coupled/
           if-no-files-found: error
           retention-days: 30
+
+  semantic-acquisition:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        backend: [hashing_reference_v1, mmbert]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin exact source and CPU dependencies
+        run: |
+          git rev-parse HEAD > acquisition-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > acquisition-source.tar.gz
+          python3 -m venv /tmp/acquisition-venv
+          /tmp/acquisition-venv/bin/pip install numpy==2.2.6 psutil==7.0.0 transformers==4.57.3 huggingface-hub==0.36.0
+          /tmp/acquisition-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/acquisition-venv/bin/pip freeze > acquisition-environment.txt
+      - name: Execute requested views and original-label outcome scoring
+        shell: bash
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+          ACQUISITION_BACKEND: ${{ matrix.backend }}
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/acquisition-venv/bin/python -m unittest fbsde_acquisition_tensor_checks -v 2>&1 | tee acquisition-tests.log
+          /tmp/acquisition-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile semantic_acquisition_v1 --backend "$ACQUISITION_BACKEND" \
+            --model-dir /tmp/acquisition-mmbert --output acquisition-study \
+            2>&1 | tee acquisition-study.log
+          git diff --exit-code
+      - name: Preserve all requests, failures and selected small Head; no pretrained weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fbsde-acquisition-${{ matrix.backend }}-${{ github.run_id }}
+          path: |
+            acquisition-source.txt
+            acquisition-source.tar.gz
+            acquisition-environment.txt
+            acquisition-tests.log
+            acquisition-study.log
+            acquisition-study/
+          if-no-files-found: error
+          retention-days: 30
