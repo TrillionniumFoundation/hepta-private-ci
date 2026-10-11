@@ -480,6 +480,53 @@ mod tests {
     }
 
     #[test]
+    fn execute_rejects_real_socket_reply_signed_by_the_wrong_owner() {
+        let root = tempfile::tempdir().expect("root");
+        let cas_socket = root.path().join("cas.sock");
+        let listener = UnixListener::bind(&cas_socket).expect("socket");
+        let server = thread::spawn(move || {
+            let (mut socket, _) = listener.accept().expect("accepted");
+            let request: CellSplitEffectRpcRequestV1 =
+                receive_frame(&mut socket).expect("request");
+            assert_eq!(request.action, CellSplitEffectRpcActionV1::Execute);
+            let forged = committed(
+                &request.intent,
+                &SigningKey::from_bytes(&[9_u8; 32]),
+            );
+            send_frame(
+                &mut socket,
+                &CellSplitEffectRpcResponseV1 {
+                    schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+                    action: request.action,
+                    receipt: Some(forged),
+                    readback: None,
+                    error: None,
+                },
+            )
+            .expect("forged response sent");
+        });
+        let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let mut client = CellSplitUnixEffectPortV1::new(
+            [
+                cas_socket,
+                root.path().join("migration.sock"),
+                root.path().join("cns.sock"),
+                root.path().join("supervisor.sock"),
+            ],
+            keys,
+            Duration::from_secs(3),
+        )
+        .expect("pinned real RPC port");
+        assert!(matches!(
+            client.execute(&intent()),
+            Err(CellSplitEffectRpcErrorV1::Invalid(
+                "untrusted owner effect receipt"
+            ))
+        ));
+        server.join().expect("server done");
+    }
+
+    #[test]
     fn public_rpc_port_rejects_forged_original_receipt_before_returning_it() {
         let root = tempfile::tempdir().expect("root");
         let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
