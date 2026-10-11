@@ -46,6 +46,33 @@ pub struct CellSplitSupervisorJournalRuntimePortV1<A: CellSplitFinalizationAutho
     signer: SigningKey,
 }
 
+/// Verify the original CNS runtime's signature independently of the outer
+/// effect-owner signature, with a separately pinned non-weak public key.
+/// The original runtime payload is intentionally opaque and is signed byte
+/// for byte by the canonical runtime, not reconstructed from an untrusted
+/// caller's declared digest.
+fn verify_independent_cns_runtime_signature(
+    original_bytes: &[u8],
+    signature_bytes: &[u8],
+    outer_effect_key: &VerifyingKey,
+    original_runtime_key: &VerifyingKey,
+) -> Result<(), String> {
+    if original_bytes.is_empty()
+        || original_bytes.len() > 32 * 1024
+        || signature_bytes.len() != 64
+        || original_runtime_key.is_weak()
+        || outer_effect_key.is_weak()
+        || original_runtime_key == outer_effect_key
+    {
+        return Err("CNS original runtime signer is absent, weak, or not independent".into());
+    }
+    let signature = Signature::from_slice(signature_bytes)
+        .map_err(|_| "malformed original CNS runtime signature")?;
+    original_runtime_key
+        .verify_strict(original_bytes, &signature)
+        .map_err(|_| "CNS original runtime signature does not authenticate committed bytes".into())
+}
+
 impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV1<A> {
     /// Qualification-only constructor for deliberately identical digest
     /// fixtures. Production cannot call this entry to skip the signed CNS
@@ -70,9 +97,11 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
         )
     }
 
-    /// Link the genuine Supervisor journal to both layers of the preceding
-    /// signed CNS cutover. This accepts an independently pinned CNS effect
-    /// signer but does NOT replace the live CNS reader or final-use owner.
+    /// Bind the Supervisor journal to TWO independently authenticated CNS
+    /// signatures: the outer CellSplit effect-owner envelope and the original
+    /// runtime cutover bytes. A signed outer envelope must not launder forged
+    /// inner runtime evidence. Live CNS and NDU/Selector final-use verification
+    /// remain separately mandatory.
     pub fn new_with_signed_cns_predecessor(
         plan: CellSplitExecutionPlanV1,
         binding: CellSplitSupervisorFenceBindingV1,
@@ -82,6 +111,7 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
         signer: SigningKey,
         cns_receipt: &CellSplitExecutionReceiptV1,
         pinned_cns_key: &VerifyingKey,
+        pinned_cns_runtime_key: &VerifyingKey,
     ) -> Result<Self, String> {
         verify_cell_split_cns_step_receipt_v1(&plan, cns_receipt, pinned_cns_key)
             .map_err(|e| e.to_string())?;
@@ -105,9 +135,15 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
                 "signed CNS predecessor contains inconsistent original runtime evidence".into(),
             );
         }
-        // The source signature covers the full typed CNS commit record. The
-        // journal binding covers the exact *inner* original runtime bytes.
-        // This remains subject to the finalizer's live CNS/Selector readback.
+        verify_independent_cns_runtime_signature(
+            &original.original_runtime_receipt_bytes,
+            &original.original_runtime_signature_bytes,
+            pinned_cns_key,
+            pinned_cns_runtime_key,
+        )?;
+        // Both the signed outer receipt and the independently signed original
+        // runtime payload are checked before the journal records this digest.
+        // Live CNS/Selector readback is still required at every final use.
         let original_digest = Digest32::of_bytes(&original.original_runtime_receipt_bytes);
         Self::new_inner(
             plan,
