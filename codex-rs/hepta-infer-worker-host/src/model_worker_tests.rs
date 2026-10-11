@@ -584,8 +584,9 @@ fn scoped_stem_worker_payload_cannot_replay_across_principals_or_scopes() {
         ),
         Err(Error::PayloadMismatch)
     );
-    let mut other_source = original.clone();
-    let mut other_access = access.clone();
+    // The original fixture is not needed after this second replay case.
+    let mut other_source = original;
+    let mut other_access = access;
     other_source.principal_id = StableId::new("principal.other").expect("principal");
     other_access.principal_id = other_source.principal_id.clone();
     assert_eq!(
@@ -913,7 +914,7 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
         .update_revocations(codex_hepta_contracts::FinalUseRevocations {
             authority_epoch: 2,
             revision: 2,
-            revoked_grant_ids: std::collections::BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: std::collections::BTreeSet::from([signed.grant.grant_id]),
         })
         .expect("trusted revocation update");
     assert_eq!(
