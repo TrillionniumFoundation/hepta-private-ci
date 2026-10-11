@@ -142,6 +142,35 @@ independently verified; the execution coordinator never resends a prepared
 intent. Recovery needs an independently approved reconciliation procedure,
 not an opportunistic adoption of orphan bytes.
 
+## Opt-in Agentd selected-plan ingress
+
+Agentd now has an opt-in `cell-split-operator-bridge` Cargo feature,
+**disabled by default**. The caller
+`advance_selected_cell_split_v1` accepts an opaque independently verified
+`VerifiedSelfEvolutionSelectionV1`, a signed NDU snapshot read and the
+Control-owned `NduReadVerifierV1`. After the operator configuration's
+external SHA-256 pin is verified but **before** the coordinator is opened,
+it checks the selected Split identity, predecessor/child generations,
+predecessor/child artifact digests and NDU snapshot digest, and re-verifies
+the signed NDU read against protected time and the current Control frontier.
+
+If this preflight rejects, it prepares no intent and invokes no effect owner.
+A selection receipt is **not** a final-use grant. The four independent
+effect services must still authenticate current Selector/NDU and one-shot
+final-use at their own mutation/readback boundaries. The current bridge is
+a callable source ingress, not a canonical startup composition or live
+deployment registration. The exact selected candidate-to-child route
+association, CNS durable cutover, independent observer evidence and
+target-host power-loss/recovery qualification remain unproven.
+
+Targeted source check:
+
+```sh
+cargo test --locked --manifest-path codex-rs/Cargo.toml \
+  -p codex-hepta-agentd --features cell-split-operator-bridge \
+  --lib cell_split_execution
+```
+
 ## Native source checks
 
 ```sh
