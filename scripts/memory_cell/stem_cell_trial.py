@@ -31,6 +31,7 @@ from selector_head import Supervision, TrainingCut
 from selector_windows import WindowBudget, candidate_windows
 from stem_cell import StemHead, route_text, sha256
 from stem_cell_adapter import DifferentiatedEncoder
+from stem_cell_temporal import build_as_of_index
 from stem_cell_geometry import inspect_selection, summarize_geometry
 from stem_cell_training_probe import train_probe, summarize_train_probes
 from stem_cell_cache import SharedFeatureCache
@@ -160,6 +161,7 @@ def run(staged, ranker_dir, output):
         generator_config=GENERATION,
         generator_template_digest=digest(SYSTEM),
         primary_policy="same-forced-top1-except-empty-for-all-six-arms",
+        source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
         score_geometry_policy="frozen-native-logits-versus-head; forced-top1; label-free",
         training_probe_policy="three-way frozen Encoder vs adapted Encoder vs saved Head; only train cut",
         calibration_or_final_label_hyperparameter_search=False,
@@ -175,6 +177,7 @@ def run(staged, ranker_dir, output):
     )
     write(output / "preregistered.json", plan)
     indices, pools, initial_features, feature_failures = {}, {}, {}, {}
+    temporal_admissions = {}
     stamp = time.perf_counter()
     retrieval_encoder, frozen_encoder = (
         Encoder(staged / "encoder"),
@@ -195,40 +198,27 @@ def run(staged, ranker_dir, output):
                 try:
                     if q.identity in source.ingress_failures:
                         raise ValueError("native history ingress failed")
-                    if q.scope not in indices:
-                        stamp = time.perf_counter()
-                        docs = source.history(q)
-                        vectors = retrieval_encoder.encode(
-                            [f"{d.observed_at}: {d.content}" for d in docs]
+                    index_key = (
+                        source.source_sha256, q.scope, q.observed_at
+                    )
+                    index_digest = digest(index_key)
+                    if index_key not in indices:
+                        index, admission = build_as_of_index(
+                            source, q, retrieval_encoder, output, revoked=set()
                         )
-                        path = output / f"index-{digest(q.scope)}.sqlite"
-                        pin = PersistentIndex.build(
-                            path,
-                            docs,
-                            vectors,
-                            retrieval_encoder.identity,
-                            source.source_sha256,
+                        indices[index_key] = index
+                        temporal_admissions[index_digest] = dict(
+                            receipt=admission["receipt"],
+                            as_of_cut=admission["as_of_cut"],
+                            verified_index_digest=admission["verified_index_digest"],
                         )
-                        indices[q.scope] = PersistentIndex(
-                            path,
-                            source.source_sha256,
-                            set(),
-                            expected_file_digest=pin,
-                            expected_encoder=retrieval_encoder.identity,
-                        )
-                        index_costs.append(
-                            dict(
-                                scope=q.scope,
-                                documents=len(docs),
-                                file_bytes=path.stat().st_size,
-                                seconds=time.perf_counter() - stamp,
-                            )
-                        )
-                    documents, receipt = indices[q.scope].query(
+                        index_costs.append(admission["index_cost"])
+                    as_of_cut = temporal_admissions[index_digest]["as_of_cut"]
+                    documents, receipt = indices[index_key].query(
                         q,
                         retrieval_encoder.encode([q.content])[0],
                         RetrievalPolicy(),
-                        current_cut=source.source_sha256,
+                        current_cut=as_of_cut,
                         revoked=set(),
                     )
                     pool = candidate_windows(
@@ -256,6 +246,7 @@ def run(staged, ranker_dir, output):
                     feature_failures[q.identity] = dict(
                         error_type=type(exc).__name__, error=str(exc)[:1024]
                     )
+        write(output / "source-admission.json", temporal_admissions)
         write(output / "feature-failures.json", feature_failures)
         if any(q.identity in feature_failures for q in qs["train"]):
             raise ValueError(

@@ -372,3 +372,24 @@ calendar date, 24-hour time and the supplied weekday. Inconsistent weekday,
 invalid calendar, unknown format, mixed precision and real future sources
 still fail closed. This compatibility repair does not retroactively change
 the original 576-record experiment; the new run must produce its own result.
+
+## Strict as-of admission before retrieval and all Encoder work
+
+A Reader-only future-source check is too late: a future document can already
+affect index ranking, features and training. The research matrix now uses the
+same bounded, strict timestamp parser to select the source history **before**
+building the full-text/vector retrieval index. Each index is keyed by its
+original source-file pin, scope and exact question observation timestamp, and
+a distinct as-of index cut binds source identities and measured resources.
+Future documents are excluded from every arm's candidate pool, not merely
+rejected after Head selection. Unknown timestamps, missing eligible sources,
+source withdrawal and cross-scope history fail closed.
+
+The code retains `source-admission.json` receipts reporting admitted vs
+excluded-future *source occurrences*, alongside every failure in the original
+planned question census. This is a new preregistered input policy; results
+cannot be compared with older all-history outputs as if only the Head changed.
+A future support annotation does not justify recovering the unseen source.
+This benchmark filtering does **not** replace the authenticated production
+source-authorization owner, real future-window observation, or semantic
+entailment admission.
