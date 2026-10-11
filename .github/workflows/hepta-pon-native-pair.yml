@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: a6b8a72eabc32c8e26df53194f6ed9179483ea66
+      CHAIN_SOURCE_SHA: 13ae9e1993f2597a750ccab57e4f3413c7fe7df9
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'a6b8a72eabc32c8e26df53194f6ed9179483ea66' || '828f1ca8421469fd4389f2c7a860d4adb120e1dd' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '13ae9e1993f2597a750ccab57e4f3413c7fe7df9' || '8bef9043c7fae2827adbec2f9a1451a0749dbcac' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -122,6 +122,20 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-work-arithmetic.json" --minimum-tests 6 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib consensus::tests:: -- --show-output --test-threads=1
           for selector in aligned_division_preserves_all_512_shift_and_limb_boundaries aligned_division_matches_original_for_wide_arbitrary_operands aligned_required_work_and_retarget_match_original_arithmetic; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "consensus::tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require complete state-root equivalence and every current input boundary
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-state-wire.json" --minimum-tests 12 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-protocol --lib pon_wire:: -- --include-ignored --show-output --test-threads=1
+          for selector in state_node_single_buffer_matches_original_wire state_empty_constants_match_all_depths_and_parallel_callers state_root_constants_do_not_cache_values_or_failures; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-protocol --lib "pon_wire::streamed_state_root_tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require owned CPU continuation without new reserve or debt forgiveness
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-owned-cpu.json" --minimum-tests 7 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib ingress::public_v3::scalar_cpu::request_owned_reserve_tests -- --show-output --test-threads=1
+          for selector in owned_quantum_remains_credited_when_request_crosses_its_first_quantum extended_request_cannot_spend_the_other_owned_quantum actual_cpu_extension_uses_its_own_reserve_and_settles_exact_total; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "ingress::public_v3::scalar_cpu::request_owned_reserve_tests::$selector" -- --exact --show-output --test-threads=1
           done
       - name: Require complete authenticated snapshot retention and rollback controls
         run: |
