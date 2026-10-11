@@ -219,6 +219,40 @@ def measure(probs, correct_index):
                 for i, p in enumerate(probs)) / len(probs))
 
 
+def future_calibration_metrics(rows, arm, bins=15):
+    """Descriptive ECE/Brier on offline future labels; NEVER an NDU receipt."""
+    if arm not in ("trained", "frozen", "no_change") or not rows:
+        raise ValueError("unknown or empty precommitted future calibration arm")
+    if type(bins) is not int or bins != 15:
+        raise ValueError("only the fixed 15-bin ECE is registered")
+    grouped = [[] for _ in range(bins)]
+    accuracy, brier = 0.0, 0.0
+    for record in rows:
+        y = record["dataset"]["label"]
+        probs = record[arm]
+        valid_probs(probs, len(record["dataset"]["options"]))
+        won = max(range(len(probs)), key=probs.__getitem__)
+        correct = float(won == y)
+        confidence = probs[won]
+        accuracy += correct
+        brier += sum((p - float(i == y)) ** 2
+                     for i, p in enumerate(probs)) / len(probs)
+        grouped[min(bins - 1, int(confidence * bins))].append(
+            (confidence, correct))
+    n = len(rows)
+    ece = sum(len(items) / n *
+              abs(sum(item[0] for item in items) / len(items) -
+                  sum(item[1] for item in items) / len(items))
+              for items in grouped if items)
+    return {
+        "events": n,
+        "accuracy": accuracy / n,
+        "normalized_multiclass_brier": brier / n,
+        "ece_15": ece,
+        "outcomes": "offline_dataset_labels_unattested_not_independent_ndu",
+    }
+
+
 def window_bootstrap(rows, *, control, seed, replicates, alpha=.05 / 8):
     clusters = defaultdict(list)
     for record in rows:
@@ -298,6 +332,7 @@ def review(dataset, trial, journal_bytes, nochange, *,
     indexed, audit, owner, head_learning_evidence = verify_and_index(
         dataset, trial, journal_bytes, nochange)
     pairing = {}
+    calibration = {}
     for index, window in enumerate(WINDOWS):
         items = [item for item in indexed.values()
                  if item["dataset"]["future_window"] == window]
@@ -306,6 +341,10 @@ def review(dataset, trial, journal_bytes, nochange, *,
                                       seed=seed + index * 2 + other,
                                       replicates=replicates)
             for other, control in enumerate(("no_change", "frozen"))
+        }
+        calibration[window] = {
+            arm: future_calibration_metrics(items, arm)
+            for arm in ("no_change", "frozen", "trained")
         }
     loss_limit = trial.get("precommitted_max_per_cell_retention_brier_regression")
     retention = trial.get("held_out_test_retention_before", {})
@@ -351,6 +390,10 @@ def review(dataset, trial, journal_bytes, nochange, *,
         "no_change_model_identity_unverified": {
             "revision": owner[0], "weights_digest": owner[1], "generation": owner[2]},
         "future_grouped_paired": pairing,
+        "future_window_calibration_descriptive": calibration,
+        "ece_15_calculated_for_all_three_controls": True,
+        "ood_threeway_model_evidence_present": False,
+        "full_quality_and_ood_gate_passed": False,
         "historical_per_cell_brier_regression": regressions,
         "retention_cap": loss_limit,
         "limitations": [
@@ -358,6 +401,7 @@ def review(dataset, trial, journal_bytes, nochange, *,
             "A journal SHA and fsync claim are not a signature or live receipt",
             "Resource pairs measure research Python, not native Rust Worker physical dispatch",
             "A positive predictive gain cannot replace causal external NDU/future outcome receipts",
+            "OOD three-way model predictions are absent; ECE on offline future labels does not satisfy OOD gate",
             "Selector, Executor, Artifact CAS, generation-fenced final-use and unclean crash recovery remain unverified",
         ],
     }
