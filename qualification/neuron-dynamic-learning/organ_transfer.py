@@ -39,7 +39,7 @@ def fit_frozen_organ(
     labels = np.asarray(y, dtype=np.float64)
     if (
         features.ndim != 2 or not 1 <= features.shape[1] <= 512
-        or len(features) < 16 or len(labels) != len(features)
+        or len(features) < 16 or labels.shape != (len(features),)
         or len(groups) != len(features) or len(timestamps) != len(features)
         or not np.isfinite(features).all()
         or not np.isin(labels, [0, 1]).all()
@@ -83,7 +83,7 @@ def compare_organ(
         x.ndim != 2 or f.ndim != 2 or x.shape[1] != f.shape[1]
         or x.shape[1] != len(organ.direction)
         or len(x) < 8 or len(f) < 8
-        or len(y) != len(x) or len(fy) != len(f)
+        or y.shape != (len(x),) or fy.shape != (len(f),)
         or len(training_groups) != len(x) or len(training_times) != len(x)
         or len(future_groups) != len(f) or len(future_times) != len(f)
         or any(type(t) is not int or t < 0 for t in training_times + future_times)
@@ -91,7 +91,10 @@ def compare_organ(
         or not np.isin(y, [0, 1]).all() or not np.isin(fy, [0, 1]).all()
         or len(set(training_groups) & set(future_groups)) > 0
         or len(set(organ.source_groups) & (set(training_groups) | set(future_groups))) > 0
-        or max([organ.source_latest_time] + training_times) >= min(future_times)
+        # Source history must be frozen before the first target update:
+        # source < target train < future, not merely source/train < future.
+        or organ.source_latest_time >= min(training_times)
+        or max(training_times) >= min(future_times)
         or steps <= 0 or steps > 1000
     ):
         raise LearningContractError("leakage, chronology, group or budget violation")
