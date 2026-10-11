@@ -178,7 +178,11 @@ class SharedStemEngine:
         self.backend = backend
         self.cache = ScopedFeatureCache(max_cache_bytes)
 
-    def run(self, requests):
+    def run(self, requests, *, return_features=False):
+        # Do not expose feature vectors in standard receipts. A privileged
+        # shadow-only projection caller must opt in to ephemeral immutable values.
+        if type(return_features) is not bool:
+            raise ValueError("invalid feature-return mode")
         start_ns, cpu_start = time.perf_counter_ns(), time.process_time_ns()
         if not isinstance(requests, (list, tuple)) or not 1 <= len(requests) <= MAX_ITEMS:
             raise ValueError("batch size must be within 1..32")
@@ -241,10 +245,13 @@ class SharedStemEngine:
         else:
             local_results = {}
         receipts = []
+        ephemeral_features = []
         for r in requests:
             item = self.cache.get(r.cache_key()) or local_results.get(r.cache_key())
             if item is None:
                 raise ValueError("unresolved feature after backend invocation")
+            if return_features:
+                ephemeral_features.append(item)
             receipts.append(FeatureReceipt(
                 request_id=r.request_id, cell_id=r.cell_id, scope_digest=r.scope_digest,
                 generation=r.generation, revocation_frontier_digest=r.revocation_frontier_digest,
@@ -255,11 +262,14 @@ class SharedStemEngine:
                 cache_hit=r.cache_key() not in missing,
                 native_q24_compatible_width=len(item.values) <= NATIVE_Q24_INPUT_LIMIT,
             ))
-        return BatchObservation(
+        observed = BatchObservation(
             tuple(receipts), ident, len(missing), hits, calls, tuple(batch_widths),
             time.perf_counter_ns() - start_ns, time.process_time_ns() - cpu_start,
             self.cache.size_bytes, getattr(self.backend, "simulated", True),
         )
+        if return_features:
+            return observed, tuple(ephemeral_features)
+        return observed
 
 
 class FrozenLocalHfBackend:
