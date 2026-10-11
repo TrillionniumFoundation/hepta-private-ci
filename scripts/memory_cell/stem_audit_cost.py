@@ -4,7 +4,7 @@ Observed seconds from one CPU execution are not per-arm latency or hardware TCO.
 Existing experiment emissions remain unchanged and source pinned.
 """
 
-from collections import Counter, defaultdict
+from collections import defaultdict
 import math
 
 from stem_audit_archive import require
@@ -75,7 +75,8 @@ def audit_resources(report, encoding):
 
     heads = defaultdict(lambda: dict(
         successful_sessions=0, failed_sessions=0, attempted_training_seconds=0.0,
-        actual_updates=0, persisted_head_artifact_bytes=0,
+        sgd_optimizer_steps=0, prototype_examples_consolidated=0,
+        consumed_training_iterations=0, persisted_head_artifact_bytes=0,
         maximum_reported_gradient_bytes=0, maximum_reported_parameter_bytes=0,
         maximum_reported_optimizer_bytes=0,
     ))
@@ -90,7 +91,14 @@ def audit_resources(report, encoding):
             receipt = row["receipt"]
             require(type(receipt["consumed_steps"]) is int and
                     receipt["consumed_steps"] >= 0, "invalid Head optimizer steps")
-            ledger["actual_updates"] += receipt["consumed_steps"]
+            ledger["consumed_training_iterations"] += receipt["consumed_steps"]
+            if arm == "prototype":
+                ledger["prototype_examples_consolidated"] += receipt["consumed_steps"]
+            elif arm != "frozen_rerank":
+                ledger["sgd_optimizer_steps"] += receipt["consumed_steps"]
+            else:
+                require(receipt["consumed_steps"] == 0,
+                        "frozen baseline has nonzero training iterations")
             ledger["persisted_head_artifact_bytes"] += row["artifact_bytes"]
             for dest, name in (
                 ("maximum_reported_gradient_bytes", "gradient_bytes"),

@@ -48,7 +48,7 @@ class CostTests(unittest.TestCase):
         self.assertEqual(frozen["executed_query_candidate_pairs"], 5)
         self.assertEqual(frozen["executed_pair_tokens"], 250)
         self.assertEqual(frozen["measured_successful_encoding_seconds"], 0.75)
-        self.assertEqual(output["head_training"]["linear"]["actual_updates"], 4)
+        self.assertEqual(output["head_training"]["linear"]["sgd_optimizer_steps"], 4)
         self.assertEqual(output["head_training"]["linear"]["failed_sessions"], 1)
         self.assertAlmostEqual(output["head_training"]["linear"]["attempted_training_seconds"], 0.35)
         self.assertEqual(output["reader_actual_calls"], 2)
