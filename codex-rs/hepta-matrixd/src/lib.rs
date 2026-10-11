@@ -16,6 +16,7 @@ pub mod send_observer;
 
 mod config;
 mod control;
+mod history_error;
 mod runner;
 
 use std::collections::BTreeMap;
@@ -26,6 +27,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 use std::sync::atomic::AtomicI64;
 use std::sync::atomic::Ordering;
+use std::time::Duration;
 
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
@@ -58,8 +60,12 @@ use codex_app_server_protocol::ThreadSortKey;
 use codex_app_server_protocol::ThreadSource;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
+use codex_app_server_protocol::ThreadTurnsListParams;
+use codex_app_server_protocol::ThreadTurnsListResponse;
+use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnInterruptParams;
 use codex_app_server_protocol::TurnInterruptResponse;
+use codex_app_server_protocol::TurnItemsView;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::SessionTransport;
@@ -113,6 +119,7 @@ const DEFAULT_PAGE_SIZE: u32 = 100;
 const DEFAULT_COMMAND_CAPACITY: usize = 64;
 const DEFAULT_EVENT_CAPACITY: usize = 512;
 const MAX_RECONCILIATION_PAGES: usize = 1_024;
+const PERSISTED_TURN_PAGE_SIZE: u32 = 100;
 const JSON_RPC_INVALID_REQUEST_CODE: i64 = -32_600;
 
 /// The strongest admission guarantee this bridge and Core queue jointly make.
@@ -154,6 +161,21 @@ pub trait MatrixAppServerTransport: Send + Sync {
         &self,
         request: BridgeQueueReconcile,
     ) -> BridgeFuture<'_, BridgeQueueReconcileResponse>;
+
+    /// Read one bounded page of persisted turns for terminal recovery. This
+    /// must load full items; admission is always reconciled separately first.
+    fn list_persisted_turns<'a>(
+        &'a self,
+        thread_id: &'a str,
+        cursor: Option<&'a str>,
+    ) -> BridgeFuture<'a, BridgePage<Turn>> {
+        let _ = (thread_id, cursor);
+        Box::pin(async {
+            Err(MatrixBridgeError::Protocol(
+                "transport does not support persisted Matrix turn recovery".to_string(),
+            ))
+        })
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -918,6 +940,40 @@ impl RemoteMatrixAppServerEvents {
 }
 
 impl MatrixAppServerTransport for RemoteMatrixAppServerTransport {
+    fn list_persisted_turns<'a>(
+        &'a self,
+        thread_id: &'a str,
+        cursor: Option<&'a str>,
+    ) -> BridgeFuture<'a, BridgePage<Turn>> {
+        Box::pin(async move {
+            let response: ThreadTurnsListResponse = tokio::time::timeout(
+                Duration::from_secs(5),
+                self.request_handle
+                    .request_typed(ClientRequest::ThreadTurnsList {
+                        request_id: self.request_id(),
+                        params: ThreadTurnsListParams {
+                            thread_id: thread_id.to_string(),
+                            cursor: cursor.map(str::to_owned),
+                            limit: Some(PERSISTED_TURN_PAGE_SIZE),
+                            sort_direction: Some(SortDirection::Desc),
+                            items_view: Some(TurnItemsView::BoundedFull),
+                        },
+                    }),
+            )
+            .await
+            .map_err(|_| {
+                MatrixBridgeError::AppServer(
+                    "persisted Matrix turn observation timed out".to_string(),
+                )
+            })?
+            .map_err(history_error::classify)?;
+            Ok(BridgePage {
+                data: response.data,
+                next_cursor: response.next_cursor,
+            })
+        })
+    }
+
     fn create_project(&self, request: BridgeProjectCreate) -> BridgeFuture<'_, BridgeProject> {
         Box::pin(async move {
             let response: ProjectCreateResponse = self
@@ -1122,6 +1178,8 @@ pub enum MatrixBridgeError {
     Invalid(String),
     #[error("Matrix App Server protocol violation: {0}")]
     Protocol(String),
+    #[error("Matrix persisted recovery is unavailable: {0}")]
+    RecoveryUnavailable(String),
     #[error("Matrix App Server request failed: {0}")]
     AppServer(String),
     #[error(transparent)]
