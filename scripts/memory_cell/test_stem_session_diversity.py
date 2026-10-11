@@ -94,6 +94,8 @@ class SessionDiversityTests(unittest.TestCase):
             row["ranked_original_source_sessions"][2]["session"] = "s3"
             row["selected_original_identities"] = ["source-distractor", "source-duplicate"]
             row["retrieved_source_ids"] = ["source-distractor", "source-duplicate"]
+            # No-change control must retain only its baseline delivered window.
+            row["window_source_ids"] = ["source-distractor"]
         outcomes = validate_session_receipts(plan, original, rows)
         result = compare_session_diversity(plan, original, outcomes, labels)
         self.assertEqual(result["results"]["test"]["document_rescues"], 0)
