@@ -76,14 +76,29 @@ fn canonical_projection_payload(
     fields.insert("a_q24", serde_json::json!(&projection.a_q24));
     fields.insert("b_q24", serde_json::json!(&projection.b_q24));
     fields.insert("bias_q24", serde_json::json!(&projection.bias_q24));
-    fields.insert("encoder_digest", serde_json::json!(&projection.encoder_digest));
+    fields.insert(
+        "encoder_digest",
+        serde_json::json!(&projection.encoder_digest),
+    );
     fields.insert("input_width", serde_json::json!(projection.input_width));
-    fields.insert("normalizer_digest", serde_json::json!(&projection.normalizer_digest));
+    fields.insert(
+        "normalizer_digest",
+        serde_json::json!(&projection.normalizer_digest),
+    );
     fields.insert("output_width", serde_json::json!(projection.output_width));
-    fields.insert("preprocessor_digest", serde_json::json!(&projection.preprocessor_digest));
+    fields.insert(
+        "preprocessor_digest",
+        serde_json::json!(&projection.preprocessor_digest),
+    );
     fields.insert("rank", serde_json::json!(projection.rank));
-    fields.insert("representation", serde_json::json!(&projection.representation));
-    fields.insert("runtime_digest", serde_json::json!(&projection.runtime_digest));
+    fields.insert(
+        "representation",
+        serde_json::json!(&projection.representation),
+    );
+    fields.insert(
+        "runtime_digest",
+        serde_json::json!(&projection.runtime_digest),
+    );
     let mut payload = std::collections::BTreeMap::new();
     payload.insert("projection", serde_json::json!(fields));
     payload.insert("schema", serde_json::json!(STEM_PROJECTION_SCHEMA));
@@ -434,13 +449,9 @@ impl SelectedStemProjectionReaderV1 {
                 // Never admit a caller-constructed Q24 feature vector under a
                 // trusted projection ID. Recompute the selected CAS matrix
                 // inside CURRENT and compare its exact input/output binding.
-                let projected = project_bound_f32(
-                    projection,
-                    binding,
-                    source_features,
-                    token_count,
-                )
-                .map_err(StemProjectionArtifactError::Numeric)?;
+                let projected =
+                    project_bound_f32(projection, binding, source_features, token_count)
+                        .map_err(StemProjectionArtifactError::Numeric)?;
                 verify_neuron_projected_request(binding, &projected, &request, generation)
                     .map_err(StemProjectionArtifactError::Numeric)?;
                 worker
