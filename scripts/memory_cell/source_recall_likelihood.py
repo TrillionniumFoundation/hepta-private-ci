@@ -123,7 +123,7 @@ def summarize(rows, scopes):
 
 def probe(reader, documents, output, *,
           snapshot_sha, writer_source, source_commit,
-          maximum=MAX_SCOPES, scorer=conditional_nll):
+          maximum=MAX_SCOPES, scorer=conditional_nll, training=None):
     if (
         output.exists()
         or not re.fullmatch(r"[0-9a-f]{64}", snapshot_sha)
@@ -138,6 +138,18 @@ def probe(reader, documents, output, *,
     examples, dispositions = source_probe_plan(
         documents, revision=2, roots=reader.roots, maximum=maximum
     )
+    from source_probe_exposure import verified_visits
+
+    exposure, exposure_digest = (
+        verified_visits(documents, reader.tokenizer, training)
+        if training is not None else (None, None)
+    )
+    original_questions = tuple(ex["query"]["identity"] for ex in examples)
+    if exposure is not None and not set(original_questions).issubset(exposure):
+        raise ValueError("teacher-forced source question absent from writer schedule")
+    visits = tuple(
+        exposure[q] if exposure is not None else None for q in original_questions
+    )
     scopes = tuple(Question(**x["query"]).scope for x in examples)
     if len(scopes) != len(set(scopes)):
         raise ValueError("duplicate source-only probe scope")
@@ -147,7 +159,9 @@ def probe(reader, documents, output, *,
             question = (Question(**ex["query"]) if wording == "training"
                         else paraphrase_writer_question(ex))
             prompt = render(reader.tokenizer, question, [], [])
-            prompts.append((wording, question, prompt, ex["target"]))
+            original_id = ex["query"]["identity"]
+            index = original_questions.index(original_id)
+            prompts.append((wording, question, prompt, ex["target"], original_id, visits[index]))
     # Pin the question/prompt identities before opening the diagnostic target.
     plan = dict(
         schema="hepta.source-recall-likelihood.plan.v1",
@@ -159,9 +173,14 @@ def probe(reader, documents, output, *,
         source_roots_sha256=digest(sorted(reader.roots)),
         scopes=list(scopes),
         wordings=list(WORDINGS),
+        training_exposure_verified=exposure is not None,
+        training_schedule_sha256=exposure_digest,
+        source_question_optimizer_visits=list(visits),
+        unvisited_question_is_not_independent_holdout=True,
         questions=[dict(wording=w, question=asdict(q),
-                        prompt_sha256=digest(p), target_digest=digest(target))
-                   for w, q, p, target in prompts],
+                        prompt_sha256=digest(p), target_digest=digest(target),
+                        training_question_id=original_id, optimizer_visits=count)
+                   for w, q, p, target, original_id, count in prompts],
         unresolved_source_facts=len(dispositions),
         all_evidence_views_empty=True,
         teacher_forced_reference_only_for_diagnostic=True,
@@ -174,7 +193,7 @@ def probe(reader, documents, output, *,
     )
     rows = []
     with (output / "raw-likelihoods.jsonl").open("x", encoding="utf-8") as stream:
-        for wording, question, prompt, target in prompts:
+        for wording, question, prompt, target, original_id, count in prompts:
             for arm in ARMS:
                 for kind in COMPLETIONS:
                     value = target if kind == "target" else REFUSAL
@@ -188,6 +207,8 @@ def probe(reader, documents, output, *,
                         target_digest=digest(target),
                         delivered_evidence=[],
                         teacher_forced_not_generated=True,
+                        training_question_id=original_id,
+                        source_example_optimizer_visits=count,
                     )
                     try:
                         receipt = scorer(reader, prompt, value, arm)
@@ -205,6 +226,16 @@ def probe(reader, documents, output, *,
                     rows.append(row)
     reader.verify_frozen()
     summary = summarize(rows, scopes)
+    by_exposure = {}
+    for category in ("visited", "unvisited", "unknown"):
+        scoped = tuple(
+            scope for scope, count in zip(scopes, visits, strict=True)
+            if (("unknown" if count is None else "visited" if count > 0 else "unvisited") == category)
+        )
+        scoped_set = set(scoped)
+        by_exposure[category] = summarize(
+            [row for row in rows if row["scope"] in scoped_set], scoped
+        )
     report = dict(
         schema="hepta.source-recall-likelihood.diagnostic.v1",
         source_commit=source_commit,
@@ -218,6 +249,11 @@ def probe(reader, documents, output, *,
         planned_records=len(rows),
         completed_records=sum(r["status"] == "succeeded" for r in rows),
         score_comparisons=summary,
+        training_exposure_verified=exposure is not None,
+        training_schedule_sha256=exposure_digest,
+        visited_source_questions=sum(v > 0 for v in visits if v is not None),
+        unvisited_source_questions=sum(v == 0 for v in visits if v is not None),
+        by_exposure=by_exposure,
         experiment_scores_source_training_facts_only=True,
         all_input_evidence_empty=True,
         prediction_did_not_generate_answers=True,
@@ -283,6 +319,7 @@ def main():
         writer_source=ready["writer_source"],
         source_commit=args.source_commit,
         maximum=args.maximum,
+        training=ready["training"],
     )
 
 
