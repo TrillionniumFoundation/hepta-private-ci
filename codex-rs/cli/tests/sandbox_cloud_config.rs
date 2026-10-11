@@ -1,3 +1,7 @@
+#[cfg(windows)]
+use std::io::Write;
+#[cfg(windows)]
+use std::path::Path;
 use std::process::Command;
 
 use anyhow::Context;
@@ -18,6 +22,41 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::header;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
+
+#[cfg(windows)]
+fn stage_windows_sandbox_fixture(codex: &Path) -> Result<TempDir> {
+    // The Bazel-built CLI directory can be shared by concurrent tests. Keep
+    // the executable and both helpers in a fixture-owned directory instead
+    // of publishing helper files into shared build outputs or runfiles.
+    let fixture = TempDir::new()?;
+    for (name, source) in [
+        ("codex", codex.to_path_buf()),
+        (
+            "codex-windows-sandbox-setup",
+            codex_utils_cargo_bin::cargo_bin("codex-windows-sandbox-setup")?,
+        ),
+        (
+            "codex-command-runner",
+            codex_utils_cargo_bin::cargo_bin("codex-command-runner")?,
+        ),
+    ] {
+        let destination = fixture.path().join(Path::new(name).with_extension("exe"));
+        let expected = std::fs::read(&source)
+            .with_context(|| format!("read built fixture binary {}", source.display()))?;
+        let mut staged = std::fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&destination)?;
+        staged.write_all(&expected)?;
+        staged.flush()?;
+        anyhow::ensure!(
+            std::fs::read(&destination)? == expected,
+            "staged fixture differs from the current build: {}",
+            destination.display()
+        );
+    }
+    Ok(fixture)
+}
 
 const CLOUD_MANAGED_PERMISSION_PROFILE_REQUIREMENTS: &str = r#"
 default_permissions = "managed-cloud"
@@ -99,6 +138,10 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .await;
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    #[cfg(windows)]
+    let sandbox_fixture = stage_windows_sandbox_fixture(&codex)?;
+    #[cfg(windows)]
+    let codex = sandbox_fixture.path().join("codex.exe");
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())
