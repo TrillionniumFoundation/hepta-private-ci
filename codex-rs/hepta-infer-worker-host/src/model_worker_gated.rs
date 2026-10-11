@@ -191,12 +191,13 @@ impl GatedHeadCpuDriverV2 {
         let extra_values = head
             .candidate
             .rank
-            .checked_add(
+            .checked_mul(2)
+            .and_then(|ranks| {
                 head.candidate
                     .groups
                     .checked_mul(2)
-                    .ok_or(Error::ArithmeticOverflow)?,
-            )
+                    .and_then(|groups| ranks.checked_add(groups))
+            })
             .ok_or(Error::ArithmeticOverflow)?;
         let extra_bytes = extra_values
             .checked_mul(std::mem::size_of::<i64>())
