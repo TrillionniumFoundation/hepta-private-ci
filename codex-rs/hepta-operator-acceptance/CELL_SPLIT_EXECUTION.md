@@ -18,7 +18,7 @@ must belong to independently controlled effect owners.
 ## Trusted configuration
 
 The deployment owner must prepare a **private**, canonical, absolute-path JSON
-file (Unix mode `0600`). Its exact SHA-256 must be supplied *out of band* by
+file (Unix mode `0600`, one physical link; hard-linked aliases are rejected). Its exact SHA-256 must be supplied *out of band* by
 the independently controlled deployment selector. Deriving a fresh "trusted"
 hash from a possibly tampered local file does not establish trust.
 
