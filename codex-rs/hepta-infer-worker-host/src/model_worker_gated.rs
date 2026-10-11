@@ -283,7 +283,12 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
         requests: &[NeuronFeatureRequest],
     ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
         self.verify_loaded(handle)?;
-        self.batch_calls = self
+        // The low-level driver is still bounded even when called without the
+        // Worker admission wrapper. Count only fully completed batches.
+        if requests.is_empty() || requests.len() > 32 {
+            return Err(Error::RequestCapacity);
+        }
+        let next_batch_calls = self
             .batch_calls
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
@@ -315,6 +320,7 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
         for item in &mut observed {
             item.feature.latency_micros = batch_micros;
         }
+        self.batch_calls = next_batch_calls;
         Ok(observed)
     }
 }
@@ -326,7 +332,12 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
         requests: &[SharedNeuronFeatureRequestV2],
     ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
         self.verify_loaded(handle)?;
-        self.batch_calls = self
+        // The low-level driver is still bounded even when called without the
+        // Worker admission wrapper. Count only fully completed batches.
+        if requests.is_empty() || requests.len() > 32 {
+            return Err(Error::RequestCapacity);
+        }
+        let next_batch_calls = self
             .batch_calls
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
@@ -367,6 +378,7 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
         for item in &mut observations {
             item.feature.latency_micros = elapsed;
         }
+        self.batch_calls = next_batch_calls;
         Ok(observations)
     }
 }
