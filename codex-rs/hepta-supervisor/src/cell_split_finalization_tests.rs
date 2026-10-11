@@ -157,6 +157,65 @@ fn prepare(
 }
 
 #[test]
+fn externally_tampered_open_journal_cannot_sign_a_cached_terminal_checkpoint() {
+    let root = tempfile::tempdir().expect("dir");
+    let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
+    let mut owner = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root),
+        &minimum,
+        binding(),
+        LiveAuthority::allowed(),
+    )
+    .expect("original fsynced handoff");
+    owner.finalize_once().expect("real terminal record");
+
+    let path = root.path().join("writer-handoff.log");
+    let original = fs::read(&path).expect("original journal");
+    let marker = b"\"phase\":\"prepared\"";
+    let start = original.windows(marker.len())
+        .position(|part| part == marker)
+        .expect("original prepared phase");
+    let mut corrupted = original.clone();
+    // Preserve the byte count so a length-only check cannot hide this edit.
+    corrupted[start + 9] = b'x';
+    fs::write(&path, corrupted).expect("out-of-band corruption");
+    assert!(matches!(
+        owner.read_retired_receipt_bytes(),
+        Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Corrupt)),
+    ));
+    fs::write(&path, original).expect("restore original journal");
+    assert!(matches!(
+        owner.finalize_once(),
+        Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Poisoned)),
+    ));
+}
+
+#[test]
+fn externally_appended_uncommitted_tail_cannot_reuse_a_signed_checkpoint() {
+    let root = tempfile::tempdir().expect("dir");
+    let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
+    let mut owner = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root),
+        &minimum,
+        binding(),
+        LiveAuthority::allowed(),
+    )
+    .expect("original handoff");
+    let path = root.path().join("writer-handoff.log");
+    let mut bytes = fs::read(&path).expect("original");
+    bytes.extend_from_slice(b"{\"unacknowledged\":");
+    fs::write(&path, bytes).expect("interrupted external append");
+    assert!(matches!(
+        owner.read_retired(),
+        Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Corrupt)),
+    ));
+    assert!(matches!(
+        owner.finalize_once(),
+        Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Poisoned)),
+    ));
+}
+
+#[test]
 fn actually_appends_retired_checkpoint_and_reopens_identical_receipt() {
     let root = tempfile::tempdir().expect("dir");
     let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
@@ -363,7 +422,9 @@ fn independent_writer_lock_blocks_second_owner() {
             WriterHandoffErrorV1::Busy
         ))
     ));
-}#[test]
+}
+
+#[test]
 fn schema_rollback_and_writer_identity_are_frozen_for_retirement() {
     let root = tempfile::tempdir().expect("dir");
     let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
