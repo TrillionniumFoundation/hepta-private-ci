@@ -4,14 +4,19 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 
 use codex_hepta_infer_core::durable_control::Assignment;
+use codex_hepta_infer_core::durable_control::RequestState;
+use codex_hepta_infer_core::durable_control::TerminalObservation;
 use codex_hepta_infer_core::durable_control::InferenceRequest;
 use codex_hepta_infer_core::durable_control::Reservation;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use codex_hepta_neuron::NeuronInferenceControlPort;
 
 use crate::model_worker::DriverModelHandle;
+use crate::model_worker::DriverNeuronFeatureObservation;
 use crate::model_worker::DriverRunObservation;
 use crate::model_worker::ModelManifest;
+use crate::model_worker::NeuronFeatureDriver;
 use crate::model_worker::ResourceGrant;
 
 struct FixtureDriver {
@@ -39,6 +44,29 @@ impl ModelDriver for FixtureDriver {
     }
 }
 
+
+impl NeuronFeatureDriver for FixtureDriver {
+    fn run_neuron_features(
+        &mut self,
+        _handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, WorkerError> {
+        self._calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        Ok(DriverNeuronFeatureObservation {
+            terminal_observed: true,
+            succeeded: true,
+            encoder_digest: request.encoder_digest.clone(),
+            head_digest: request.head_digest.clone(),
+            drive_q24: vec![1 << 24; request.expected_output_width],
+            prediction_q24: vec![0; request.expected_output_width],
+            observed_memory_bytes: 4096,
+            transient_allocation_bytes: 256,
+            queue_age_micros: 3,
+            latency_micros: 10,
+        })
+    }
+}
+
 fn typed_request() -> NeuronFeatureRequestV1 {
     NeuronFeatureRequestV1 {
         request_id: StableId::new("tick.1").unwrap(),
@@ -54,6 +82,10 @@ fn typed_request() -> NeuronFeatureRequestV1 {
 }
 
 fn worker() -> InferenceWorker<FixtureDriver> {
+    worker_with_calls(Arc::new(AtomicUsize::new(0)))
+}
+
+fn worker_with_calls(calls: Arc<AtomicUsize>) -> InferenceWorker<FixtureDriver> {
     let mut value = InferenceWorker::new(
         100,
         "worker.1".to_owned(),
@@ -69,9 +101,7 @@ fn worker() -> InferenceWorker<FixtureDriver> {
             maximum_memory_bytes: 8192,
             semantic_digest: "1".repeat(64),
         },
-        FixtureDriver {
-            _calls: Arc::new(AtomicUsize::new(0)),
-        },
+        FixtureDriver { _calls: calls },
     )
     .unwrap();
     value
@@ -311,4 +341,83 @@ fn assigned_durable_owner_must_not_report_a_consumed_worker_attempt_as_unused() 
             WorkerError::NeuronReservationReplay
         ))
     );
+}
+
+#[test]
+fn fsynced_dispatch_precedes_real_worker_model_port_and_survives_crash_restart() {
+    let directory = tempfile::tempdir().unwrap();
+    let request = typed_request();
+    let mut control = control(&directory, &request);
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker_with_calls(calls.clone());
+    let (claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &request, 100).unwrap();
+    assert_eq!(claim.revision, 4);
+    assert_eq!(claim.state, RequestState::Dispatching);
+    assert!(!claim.idempotent);
+    assert_eq!(control.get("tick.1").unwrap().state, RequestState::Dispatching);
+    let result = port.execute_feature(&request).unwrap();
+    assert_eq!(
+        result.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
+    drop(port);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    drop(control);
+
+    // The in-memory Worker tombstone set disappears on process death. The
+    // pre-call fsynced Dispatching event must still block any replay.
+    let mut recovered =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    assert_eq!(recovered.get("tick.1").unwrap().state, RequestState::Dispatching);
+    let mut restarted_worker = worker_with_calls(calls.clone());
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(&mut recovered, &mut restarted_worker, &request, 100),
+        Err(NeuronDurableAssignmentErrorV1::NotAssigned)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    let observation = TerminalObservation {
+        request_id: "tick.1".to_owned(),
+        reservation_id: "reservation.1".to_owned(),
+        worker_id: "worker.1".to_owned(),
+        worker_generation: 3,
+        model_digest: "2".repeat(64),
+        payload_digest: recovered.get("tick.1").unwrap().request.payload_digest.clone(),
+        terminal_observed: true,
+        terminal_status: Some(RequestState::Completed),
+        output_digest: Some(result.receipt_digest.to_string()),
+        consumed_tokens: 0,
+        usage_units: 0,
+    };
+    let terminal = recovered
+        .settle("tick.1", 4, "9".repeat(64), observation)
+        .unwrap();
+    assert_eq!(terminal.state, RequestState::Completed);
+    drop(recovered);
+    let opened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    assert_eq!(opened.get("tick.1").unwrap().state, RequestState::Completed);
+}
+
+#[test]
+fn durable_claim_rejects_replayed_or_expired_worker_admission_without_dispatch() {
+    let directory = tempfile::tempdir().unwrap();
+    let request = typed_request();
+    let mut control = control(&directory, &request);
+    let mut worker = worker();
+
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &request, 8_000),
+        Err(NeuronDurableAssignmentErrorV1::Expired)
+    ));
+    assert_eq!(control.get("tick.1").unwrap().state, RequestState::Assigned);
+    let (claim, port) =
+        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &request, 100).unwrap();
+    assert_eq!(claim.state, RequestState::Dispatching);
+    drop(port);
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &request, 100),
+        Err(NeuronDurableAssignmentErrorV1::NotAssigned)
+    ));
+    assert_eq!(control.get("tick.1").unwrap().revision, 4);
 }

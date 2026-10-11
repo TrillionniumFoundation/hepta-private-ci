@@ -26,6 +26,8 @@ pub enum RequestState {
     Pending,
     Reserved,
     Assigned,
+    /// Fsynced single-use pre-Worker claim. Never replay after process death.
+    Dispatching,
     Cancelling,
     Completed,
     Failed,
@@ -39,6 +41,7 @@ impl RequestState {
             Self::Pending => "pending",
             Self::Reserved => "reserved",
             Self::Assigned => "assigned",
+            Self::Dispatching => "dispatching",
             Self::Cancelling => "cancelling",
             Self::Completed => "completed",
             Self::Failed => "failed",
@@ -52,6 +55,7 @@ impl RequestState {
             "pending" => Ok(Self::Pending),
             "reserved" => Ok(Self::Reserved),
             "assigned" => Ok(Self::Assigned),
+            "dispatching" => Ok(Self::Dispatching),
             "cancelling" => Ok(Self::Cancelling),
             "completed" => Ok(Self::Completed),
             "failed" => Ok(Self::Failed),
@@ -335,6 +339,49 @@ impl DurableInferenceControl {
         })
     }
 
+    /// Commit a crash-durable, non-idempotent pre-execution claim on the
+    /// EXISTING control WAL, before allowing the Worker to invoke a driver.
+    ///
+    /// A process restart MUST treat Dispatching as potentially executed:
+    /// replay cannot recreate an unused reservation, even if no result arrived.
+    /// This is not a signed lease, final-use authorization or effect permission.
+    /// The trusted host authenticates time, lease, assignment and route.
+    pub fn claim_dispatch(
+        &mut self,
+        now_ms: u64,
+        request_id: &str,
+        expected_revision: u64,
+        reservation_id: &str,
+        assignment: &Assignment,
+    ) -> Result<ControlReceipt, Error> {
+        validate_identity(request_id, "request")?;
+        validate_identity(reservation_id, "reservation")?;
+        validate_assignment(assignment)?;
+        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+        if record.revision != expected_revision {
+            return Err(Error::StaleRevision);
+        }
+        if record.state != RequestState::Assigned {
+            return Err(Error::InvalidTransition);
+        }
+        let reservation = record.reservation.as_ref().ok_or(Error::ReservationMismatch)?;
+        if reservation.reservation_id != reservation_id {
+            return Err(Error::ReservationMismatch);
+        }
+        if record.assignment.as_ref() != Some(assignment) {
+            return Err(Error::AssignmentMismatch);
+        }
+        if now_ms >= record.request.deadline_ms || now_ms >= reservation.valid_until_ms {
+            return Err(Error::InvalidTime);
+        }
+        self.commit(Event::Dispatch {
+            request_id: request_id.to_string(),
+            expected_revision,
+            reservation_id: reservation_id.to_string(),
+            assignment: assignment.clone(),
+        })
+    }
+
     pub fn cancel(
         &mut self,
         request_id: &str,
@@ -488,6 +535,12 @@ enum Event {
         expected_revision: u64,
         assignment: Assignment,
     },
+    Dispatch {
+        request_id: String,
+        expected_revision: u64,
+        reservation_id: String,
+        assignment: Assignment,
+    },
     Cancel {
         request_id: String,
         expected_revision: u64,
@@ -506,6 +559,7 @@ impl Event {
             Self::Submit(request) => &request.request_id,
             Self::Reserve { request_id, .. }
             | Self::Assign { request_id, .. }
+            | Self::Dispatch { request_id, .. }
             | Self::Cancel { request_id, .. }
             | Self::Settle { request_id, .. } => request_id,
         }
@@ -567,6 +621,28 @@ fn apply_event(
             record.state = RequestState::Assigned;
             record.revision = next_revision(record.revision)?;
         }
+        Event::Dispatch {
+            request_id,
+            expected_revision,
+            reservation_id,
+            assignment,
+        } => {
+            let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
+            require_revision(record, *expected_revision, replay)?;
+            if record.state != RequestState::Assigned {
+                return Err(Error::InvalidTransition);
+            }
+            if record.reservation.as_ref().map(|value| value.reservation_id.as_str())
+                != Some(reservation_id.as_str())
+            {
+                return Err(Error::ReservationMismatch);
+            }
+            if record.assignment.as_ref() != Some(assignment) {
+                return Err(Error::AssignmentMismatch);
+            }
+            record.state = RequestState::Dispatching;
+            record.revision = next_revision(record.revision)?;
+        }
         Event::Cancel {
             request_id,
             expected_revision,
@@ -575,7 +651,7 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             record.state = match record.state {
                 RequestState::Pending | RequestState::Reserved => RequestState::Cancelled,
-                RequestState::Assigned => RequestState::Cancelling,
+                RequestState::Assigned | RequestState::Dispatching => RequestState::Cancelling,
                 _ => return Err(Error::InvalidTransition),
             };
             record.revision = next_revision(record.revision)?;
@@ -590,7 +666,7 @@ fn apply_event(
             require_revision(record, *expected_revision, replay)?;
             if !matches!(
                 record.state,
-                RequestState::Assigned | RequestState::Cancelling
+                RequestState::Assigned | RequestState::Dispatching | RequestState::Cancelling
             ) {
                 return Err(Error::InvalidTransition);
             }
@@ -742,6 +818,15 @@ fn encode_event(event: &Event) -> String {
             "assign|{request_id}|{expected_revision}|{}|{}|{}",
             assignment.worker_id, assignment.worker_generation, assignment.assignment_digest
         ),
+        Event::Dispatch {
+            request_id,
+            expected_revision,
+            reservation_id,
+            assignment,
+        } => format!(
+            "dispatch|{request_id}|{expected_revision}|{reservation_id}|{}|{}|{}",
+            assignment.worker_id, assignment.worker_generation, assignment.assignment_digest
+        ),
         Event::Cancel {
             request_id,
             expected_revision,
@@ -821,6 +906,24 @@ fn decode_event(line: &str) -> Result<Event, Error> {
         ] => Ok(Event::Assign {
             request_id: (*request_id).to_string(),
             expected_revision: parse_u64(revision)?,
+            assignment: Assignment {
+                worker_id: (*worker_id).to_string(),
+                worker_generation: parse_u64(generation)?,
+                assignment_digest: (*assignment_digest).to_string(),
+            },
+        }),
+        [
+            "dispatch",
+            request_id,
+            revision,
+            reservation_id,
+            worker_id,
+            generation,
+            assignment_digest,
+        ] => Ok(Event::Dispatch {
+            request_id: (*request_id).to_string(),
+            expected_revision: parse_u64(revision)?,
+            reservation_id: (*reservation_id).to_string(),
             assignment: Assignment {
                 worker_id: (*worker_id).to_string(),
                 worker_generation: parse_u64(generation)?,

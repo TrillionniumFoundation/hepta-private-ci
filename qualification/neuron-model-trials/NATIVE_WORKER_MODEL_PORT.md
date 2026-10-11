@@ -98,3 +98,33 @@ Worker, then reopen the journal to verify exact source continuity. Negative
 cases cover expired reservation, mismatched feature bytes, changed weights and
 an owner-recorded cancellation. This is not production inference or NDU.
 
+
+## Crash-durable pre-Worker execution intent (same owner, fail closed)
+
+The existing `DurableInferenceControl` now offers an additive fsynced
+`claim_dispatch` transition: Assigned -> Dispatching. A matching Worker ID,
+process generation, assignment digest and reservation ID, current deadline,
+and exact expected revision are mandatory before append; every rejected
+preflight leaves the journal unchanged. Claim is deliberately NOT idempotent:
+reopening a Dispatching request after process death cannot authorize the
+same physical execution again. Cancellation after a claim enters Cancelling;
+unknown terminal observations remain Indeterminate, never implied success.
+Preexisting historical Assigned/Settle replay semantics stay decodable.
+
+`claim_neuron_durable_dispatch_v1` is the strict Neuron bridge: it reads
+both the actual durable inference.control owner and loaded Worker, builds
+its reservation from that owner (not untrusted caller-supplied DTO), then
+fsyncs the Dispatching event BEFORE releasing a `WorkerNeuronControlPort`.
+A failed/unknown fsync cannot return an executable port. The Worker continues
+to enforce its in-generation tombstones, model binding and resource grant.
+Crash recovery from Dispatching forbids re-dispatch even when in-memory
+Worker tombstones have disappeared. Existing direct WorkerPort constructors
+remain lower-level compatibility APIs, not production dispatch admission.
+
+This is **not** a signed final-use token or authoritative model activation.
+The owner must still obtain independently authenticated current host time,
+resource grant, selected model/route, physical CAS load, generation fence,
+and reconcile terminal outcomes through the same journal. It cannot infer
+that a committed claim proves the Worker actually ran. Tests use a fixture
+NeuronFeatureDriver, real Worker/ModelPort, and the real on-disk control WAL;
+there are no real Laya weights or selected production Cells.

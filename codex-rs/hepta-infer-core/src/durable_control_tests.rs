@@ -170,3 +170,115 @@ fn invalid_event_is_rejected_before_append() {
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }
+
+#[test]
+fn fsynced_neuron_dispatch_claim_survives_reopen_and_blocks_reexecution() {
+    let path = path("single-use-dispatch");
+    let mut control = DurableInferenceControl::open(&path, 32).expect("owner");
+    control.submit(100, request()).expect("submit");
+    control.reserve(100, "request.1", 1, reservation()).expect("reserve");
+    control.assign("request.1", 2, assignment()).expect("assign");
+    let before = fs::metadata(&path).expect("before").len();
+    let claimed = control
+        .claim_dispatch(100, "request.1", 3, "reservation.1", &assignment())
+        .expect("fsynced claim");
+    assert_eq!(claimed.state, RequestState::Dispatching);
+    assert_eq!(claimed.revision, 4);
+    assert!(!claimed.idempotent);
+    let after = fs::metadata(&path).expect("after").len();
+    assert!(after > before, "claim must be present in the same durable WAL");
+    assert_eq!(
+        control.claim_dispatch(100, "request.1", 4, "reservation.1", &assignment()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(fs::metadata(&path).unwrap().len(), after);
+    drop(control);
+    let mut recovered = DurableInferenceControl::open(&path, 32).expect("reopen");
+    assert_eq!(recovered.get("request.1").unwrap().state, RequestState::Dispatching);
+    assert_eq!(
+        recovered.claim_dispatch(100, "request.1", 4, "reservation.1", &assignment()),
+        Err(Error::InvalidTransition),
+        "reopened Assigned must never be reconstructed from a Dispatching WAL"
+    );
+    assert_eq!(
+        recovered.cancel("request.1", 4).unwrap().state,
+        RequestState::Cancelling
+    );
+    let unobserved = TerminalObservation {
+        request_id: "request.1".to_string(),
+        reservation_id: "reservation.1".to_string(),
+        worker_id: "worker.1".to_string(),
+        worker_generation: 2,
+        model_digest: "1".repeat(64),
+        payload_digest: "2".repeat(64),
+        terminal_observed: false,
+        terminal_status: None,
+        output_digest: None,
+        consumed_tokens: 0,
+        usage_units: 0,
+    };
+    let receipt = recovered
+        .settle("request.1", 5, "9".repeat(64), unobserved)
+        .expect("record uncertain terminal without false success");
+    assert_eq!(receipt.state, RequestState::Indeterminate);
+    drop(recovered);
+    let opened = DurableInferenceControl::open(&path, 32).expect("reopen terminal");
+    assert_eq!(opened.get("request.1").unwrap().state, RequestState::Indeterminate);
+    drop(opened);
+    fs::remove_file(path).expect("cleanup");
+}
+
+#[test]
+fn dispatch_claim_rejects_mismatched_or_expired_inputs_without_appending() {
+    let path = path("dispatch-preflight");
+    let mut owner = DurableInferenceControl::open(&path, 32).unwrap();
+    owner.submit(100, request()).unwrap();
+    owner.reserve(100, "request.1", 1, reservation()).unwrap();
+    owner.assign("request.1", 2, assignment()).unwrap();
+    let before = fs::metadata(&path).unwrap().len();
+
+    assert_eq!(
+        owner.claim_dispatch(9_000, "request.1", 3, "reservation.1", &assignment()),
+        Err(Error::InvalidTime)
+    );
+    assert_eq!(
+        owner.claim_dispatch(100, "request.1", 3, "different", &assignment()),
+        Err(Error::ReservationMismatch)
+    );
+    let mut wrong_worker = assignment();
+    wrong_worker.worker_generation += 1;
+    assert_eq!(
+        owner.claim_dispatch(100, "request.1", 3, "reservation.1", &wrong_worker),
+        Err(Error::AssignmentMismatch)
+    );
+    assert_eq!(
+        owner.claim_dispatch(100, "request.1", 2, "reservation.1", &assignment()),
+        Err(Error::StaleRevision)
+    );
+    assert_eq!(fs::metadata(&path).unwrap().len(), before);
+    assert_eq!(owner.get("request.1").unwrap().state, RequestState::Assigned);
+    drop(owner);
+    fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn forged_dispatch_record_is_rejected_on_journal_replay() {
+    let path = path("dispatch-forgery");
+    let mut owner = DurableInferenceControl::open(&path, 32).unwrap();
+    owner.submit(100, request()).unwrap();
+    owner.reserve(100, "request.1", 1, reservation()).unwrap();
+    owner.assign("request.1", 2, assignment()).unwrap();
+    drop(owner);
+    let mut file = OpenOptions::new().append(true).open(&path).unwrap();
+    file.write_all(format!(
+        "dispatch|request.1|3|not-the-reservation|worker.1|2|{}\n",
+        "4".repeat(64)
+    ).as_bytes()).unwrap();
+    file.sync_all().unwrap();
+    drop(file);
+    assert!(matches!(
+        DurableInferenceControl::open(&path, 32),
+        Err(Error::ReservationMismatch)
+    ));
+    fs::remove_file(path).unwrap();
+}

@@ -11,7 +11,10 @@ use std::fmt;
 use std::str::FromStr;
 
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
+use codex_hepta_infer_core::durable_control::Assignment;
+use codex_hepta_infer_core::durable_control::ControlReceipt;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::Error as ControlError;
 use codex_hepta_infer_core::durable_control::RequestState;
 use codex_hepta_infer_core::neuron_feature_request_digest_v1;
 use codex_hepta_types::AuthorityPosture;
@@ -20,9 +23,11 @@ use codex_hepta_types::Digest32;
 use crate::model_worker::Error as WorkerError;
 use crate::model_worker::InferenceWorker;
 use crate::model_worker::ModelDriver;
+use crate::model_worker::NeuronFeatureDriver;
 use crate::model_worker::NeuronFeatureRequest;
 use crate::model_worker::WorkerRequest;
 use crate::model_worker::canonical_neuron_feature_payload_digest;
+use crate::neuron_worker_control::WorkerNeuronControlPort;
 
 const DOMAIN: &[u8] = b"hepta.infer-worker.neuron-assigned-source.diagnostic.v1\0";
 
@@ -100,6 +105,7 @@ pub enum NeuronDurableAssignmentErrorV1 {
     Stale,
     Expired,
     Worker(WorkerError),
+    Control(ControlError),
 }
 
 impl fmt::Display for NeuronDurableAssignmentErrorV1 {
@@ -113,6 +119,13 @@ impl StdError for NeuronDurableAssignmentErrorV1 {}
 impl From<WorkerError> for NeuronDurableAssignmentErrorV1 {
     fn from(value: WorkerError) -> Self {
         Self::Worker(value)
+    }
+}
+
+
+impl From<ControlError> for NeuronDurableAssignmentErrorV1 {
+    fn from(value: ControlError) -> Self {
+        Self::Control(value)
     }
 }
 
@@ -233,6 +246,74 @@ pub fn read_neuron_durable_assignment_v1<D: ModelDriver>(
     Ok(report)
 }
 
+
+/// The strict same-host pre-Worker path: first inspect the actual fsynced
+/// inference.control Assigned state and actual in-memory loaded Worker, then
+/// fsync a SINGLE-USE Dispatching transition on the SAME inference journal.
+/// Only after that durable commit can a WorkerNeuronControlPort be returned.
+///
+/// On crash, Dispatching cannot be reclaimed, even with a fresh Worker whose
+/// process-local tombstones were lost. Unknown outcomes require independent
+/// reconciliation; this does not sign a final-use grant, authenticate time,
+/// prove that Laya weights were loaded or authorize production CNS selection.
+pub fn claim_neuron_durable_dispatch_v1<'a, D: ModelDriver + NeuronFeatureDriver>(
+    owner: &mut DurableInferenceControl,
+    worker: &'a mut InferenceWorker<D>,
+    request: &NeuronFeatureRequestV1,
+    now_ms: u64,
+) -> Result<(ControlReceipt, WorkerNeuronControlPort<'a, D>), NeuronDurableAssignmentErrorV1> {
+    // This reads BOTH source owners before any durable or physical side effect.
+    let matched = read_neuron_durable_assignment_v1(owner, worker, request, now_ms)?;
+    let record = owner
+        .get(&matched.request_id)
+        .ok_or(NeuronDurableAssignmentErrorV1::Missing)?;
+    let reservation = record
+        .reservation
+        .as_ref()
+        .ok_or(NeuronDurableAssignmentErrorV1::Mismatch)?;
+    let assignment: Assignment = record
+        .assignment
+        .clone()
+        .ok_or(NeuronDurableAssignmentErrorV1::Mismatch)?;
+    let authorization = WorkerRequest {
+        request_id: record.request.request_id.clone(),
+        reservation_id: reservation.reservation_id.clone(),
+        model_digest: record.request.model_digest.clone(),
+        payload_digest: record.request.payload_digest.clone(),
+        maximum_tokens: record.request.maximum_tokens,
+        deadline_ms: record.request.deadline_ms.min(reservation.valid_until_ms),
+        lease_payload_digest: record.request.payload_digest.clone(),
+        reservation_model_digest: record.request.model_digest.clone(),
+        reservation_maximum_tokens: reservation.maximum_tokens,
+        cancelled: false,
+    };
+
+    // Owner mutex/File lock spans the comparison and fsynced transition. If
+    // the journal write/sync fails, the port is NEVER returned. Reopening an
+    // ambiguous owner requires external reconciliation, not a blind retry.
+    let claim = owner.claim_dispatch(
+        now_ms,
+        &matched.request_id,
+        matched.control_revision,
+        &matched.reservation_id,
+        &assignment,
+    )?;
+    if claim.state != RequestState::Dispatching
+        || claim.idempotent
+        || claim.revision != matched.control_revision + 1
+    {
+        return Err(NeuronDurableAssignmentErrorV1::Stale);
+    }
+    Ok((
+        claim,
+        WorkerNeuronControlPort::from_reserved_worker(
+            worker,
+            request.model_id.to_string(),
+            authorization,
+            now_ms,
+        ),
+    ))
+}
 
 /// Verify that a previously read diagnostic still equals the current *real*
 /// durable inference.control assignment and this Worker instance's loaded
