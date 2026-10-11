@@ -522,3 +522,11 @@ files and exact revision/dataset approval. No dynamic network downloads,
 remote code, unknown-pickle unpickling or automatic conversion are
 permitted in this shadow runner. This explicit format gate is separate
 from model accuracy, NDU or production authorization.
+
+
+**Original Laya provenance correction:** the 421M original weight artifact
+is published as convaiinnovations/laya on Hugging Face; NandhaKishorM/laya
+is its separate software repository. Experiment A uses the former as the
+pinned checkpoint source and requires independent review of the latter as
+the executable adapter. Neither weight SHA nor Git commit alone attests
+which decision Python package actually ran. Do not conflate them.
