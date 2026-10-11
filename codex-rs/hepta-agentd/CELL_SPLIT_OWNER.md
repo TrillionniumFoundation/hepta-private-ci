@@ -57,8 +57,12 @@ merely because a candidate graph digest exists.
 The host MUST supply a fresh read/write regular file under a trusted private
 root, with an exclusive OS lock for the owner lifetime, and must retain a
 **signed/authenticated anchor in a separate rollback domain**. The file cannot
-self-certify its recovery checkpoint. Bootstrap requires an empty file;
-recovery requires the exact plan and an external anchored ledger prefix.
+self-certify its recovery checkpoint. Bootstrap requires an empty file and explicitly resets its cursor to the
+header start; recovery requires the exact plan and an external anchored ledger
+prefix. The only public recovery entrypoint is `recover_from_observer`, which
+queries a `CellSplitRecoveryObserverV1` for an independently verified anchor.
+A raw journal-derived `CellSplitLedgerAnchorV1` is never accepted directly by
+product callers.
 Valid suffixes past an earlier anchor survive lost-ACK recovery. Incomplete
 crash tails can be trimmed after verifying every complete predecessor frame.
 Complete invalid frames, mixed scopes or lost anchored history block recovery.
