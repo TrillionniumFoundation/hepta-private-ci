@@ -64,6 +64,26 @@ The `executionRoot` must already exist as a private real directory;
 `CellSplitExecutionOwnerV1::open` verifies its filesystem identity, locks it,
 and refuses conflicting frozen-plan or journal data.
 
+### Frozen owner trust continuity
+
+The coordinator writes `cell-split-owner-trust-pins.json` once under the
+same exclusive execution-root lock as the frozen plan. This record binds the
+plan digest, four exact owner IDs and four independently configured Ed25519
+verifying keys. Every `advance` and `transcript` checks the exact canonical
+bytes again, including after reopening the process.
+
+Missing or modified pins **never trigger automatic rekeying** after a prepared
+intent or committed effect exists. A mismatched key, missing file, noncanonical
+committed receipt or dangling journal frame blocks execution and requires
+independent recovery review. Do not delete the affected history, regenerate a
+new trust pin from local inputs, rename the same effect under a new Split ID,
+or replay a possibly executed mutation to bypass the block.
+
+The locally frozen pins only prevent unnoticed changes to this coordinator's
+trust identity. They do **not** establish independent custody or authorization:
+the selector must still supply the externally pinned config hash and each
+effect owner must prove current signed state on every readback.
+
 ## Commands
 
 Use the externally supplied pin; do **not** synthesize it from the file at
