@@ -170,7 +170,6 @@ mod tests {
         }
     }
 
-
     struct CurrentScope {
         expected_scope: StableId,
         current_digest: Digest32,
