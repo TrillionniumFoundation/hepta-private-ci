@@ -78,13 +78,13 @@ pub fn run_pinned_cell_split_execution_v1(
     if config.schema != CONFIG_SCHEMA {
         return Err("unknown execution configuration schema".to_string());
     }
-    if config.timeout_millis == 0 || config.timeout_millis > 30_000 {
+    if !(1..=30_000).contains(&config.timeout_millis) {
         return Err("RPC timeout must be between 1 and 30000 ms".to_string());
     }
     let parsed_keys = config
         .owner_verifying_keys_hex
         .iter()
-        .map(|key| parse_verifying_key(key))
+        .map(parse_verifying_key)
         .collect::<Result<Vec<_>, _>>()?;
     let keys: [VerifyingKey; 4] = parsed_keys
         .try_into()
