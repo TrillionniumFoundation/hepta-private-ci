@@ -489,3 +489,28 @@ authenticated prediction producers, signed NDU/outcome receipts, verified
 actual model inference, native Worker admission and target hardware
 acceptance are implemented by the respective production owners.
 `prequential_trial.py` does NOT fabricate the external no-change arm.
+
+
+### Real frozen/learned model-produced OOD sidecar (no no-change impersonation)
+
+On a *genuine* pinned Jina v5 local-weight `prequential_trial.py` run,
+`--emit-ood-model-receipts` can now emit two and **only two** per-Cell model
+prediction arms to `<output>.ood-model-receipts.jsonl`. Before any future
+label update, it snapshots learned/frozen historical-calibration predictions
+and exact initial Head weight digests. After both future learning windows, it
+runs the actually loaded Jina Encoder and the final learned/frozen Heads on
+the OOD input cohort, requires OOD to occur later than every future event,
+and binds the final per-Cell digest without using OOD labels. The sidecar
+is created exclusively, flushed and fsynced; its byte SHA is recorded in
+the shadow trial. The output explicitly records
+`production_no_change_ood_receipts_present=false`.
+
+The independent production no-change owner must separately emit its own
+calibration/OOD predictions with the same immutable revision, weights and
+generation as the future baseline. Combine only after auditing all producer
+and dataset identities, then provide the full three-arm JSONL to
+`prequential_threeway_review.py --ood-receipts`.
+
+Synthetic tests check the output contract, NOT pretrained model learning.
+No automatic completion of the no-change arm, independent signature
+verification, production authorization, artifact CAS or release occurs.
