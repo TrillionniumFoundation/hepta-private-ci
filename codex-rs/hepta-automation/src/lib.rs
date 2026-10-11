@@ -46,6 +46,7 @@ pub use authorized_effect::AuthorizedEffectRecoveryResult;
 pub use authorized_effect::AuthorizedEffectRequest;
 pub use authorized_effect::AuthorizedProviderEffectLookup;
 pub use authorized_effect::AuthorizedProviderEffectRequest;
+pub use authorized_effect::AuthorizedTaskflowEffectInvocation;
 pub use authorized_effect::ProviderEffectTaskFlowDriver;
 pub use automation_taskflow::AutomationTaskFlowDispatch;
 pub use automation_taskflow::admission_receipt_digest;
