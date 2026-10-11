@@ -534,3 +534,20 @@ blocked pending a separately reviewed Windows Owner with private ACL and
 owner-token verification, reparse-point/hard-link rejection, handle-relative
 safe opens, atomic replacement, directory durability and real crash recovery.
 Keep all source/merge and cargo-deny gates unchanged.
+
+
+### Encoder/generation binding on the paired OOD evidence (2026-10-11)
+
+The optional Frozen/Learned model-side OOD receipts now bind the exact
+`feature_manifest_digest` of the physically executed pinned Jina Stem,
+together with `generation` and the per-Cell Head digest. The prequential
+trial and its offline run manifest record the source generation, and the
+independent three-way offline reviewer fails closed if a Head receipt belongs
+to a different Stem manifest or generation, even when its Q24 Head bytes
+happen to match. The diagnostic also reports those two frozen identities.
+
+The production no-change arm retains its independent model revision,
+weights digest and generation. These are *research-only, unsigned local
+integrity checks*: neither a manifest SHA nor a generation number authenticates
+the source process, attests the device, proves OOD utility or satisfies
+signed independent NDU / production final-use.
