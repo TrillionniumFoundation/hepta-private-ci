@@ -171,6 +171,36 @@ class A0ProtocolTests(unittest.TestCase):
         with self.assertRaises((a0.EvidenceError, FileNotFoundError)):
             self.check()
 
+    def test_duplicate_json_keys_are_rejected_before_signature_use(self) -> None:
+        envelope_path = self.root / "registry.json"
+        original = envelope_path.read_text()
+        self.assertTrue(original.startswith("{"))
+        # Even if a parser would accept last-write-wins, no ambiguous
+        # signed registry object is accepted into the deployment census.
+        envelope_path.write_text(original[:-1] + ',"signer_key_id":"evil"}')
+        with self.assertRaisesRegex(a0.EvidenceError, "duplicate JSON key"):
+            self.check()
+
+    def test_symlinked_model_artifacts_are_not_accepted(self) -> None:
+        link = self.root / "artifacts" / "linked-weights.bin"
+        link.symlink_to(self.root / self.weights_path)
+        self.cell["weights_path"] = "artifacts/linked-weights.bin"
+        self.write_signed()
+        with self.assertRaisesRegex(a0.EvidenceError, "symlinks are not evidence"):
+            self.check()
+
+    def test_traversal_even_if_remaining_inside_root_is_rejected(self) -> None:
+        self.cell["weights_path"] = "cells/../artifacts/weights.bin"
+        self.write_signed()
+        with self.assertRaisesRegex(a0.EvidenceError, "traversal components rejected"):
+            self.check()
+
+    def test_dot_cell_id_rejected_before_resolving_a_path(self) -> None:
+        self.registry["active_cells"][0]["cell_id"] = ".."
+        self.write_signed()
+        with self.assertRaisesRegex(a0.EvidenceError, "invalid Cell identifier"):
+            self.check()
+
     def test_model_manifest_drift_is_detected(self) -> None:
         self.cell["parameter_count"] += 1
         self.write_signed()
