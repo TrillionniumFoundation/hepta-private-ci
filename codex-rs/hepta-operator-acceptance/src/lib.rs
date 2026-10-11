@@ -8,6 +8,8 @@ mod cell_split_cns_cutover;
 mod cell_split_effect_rpc;
 #[cfg(unix)]
 mod cell_split_effect_service;
+#[cfg(unix)]
+mod cell_split_execution_cli;
 mod cell_split_execution_owner;
 #[cfg(unix)]
 mod cell_split_supervisor_fence;
@@ -108,6 +110,10 @@ pub use cell_split_effect_service::CellSplitDurableEffectBackendV1;
 pub use cell_split_effect_service::CellSplitEffectServiceV1;
 #[cfg(unix)]
 pub use cell_split_effect_service::CellSplitOwnedEffectV1;
+#[cfg(unix)]
+pub use cell_split_execution_cli::CellSplitExecutionCliOutcomeV1;
+#[cfg(unix)]
+pub use cell_split_execution_cli::run_pinned_cell_split_execution_v1;
 pub use cell_split_execution_owner::CellSplitExecutionErrorV1;
 pub use cell_split_execution_owner::CellSplitExecutionIntentV1;
 pub use cell_split_execution_owner::CellSplitExecutionOwnerV1;
