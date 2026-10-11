@@ -169,6 +169,9 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
         binding: CellSplitCnsRouteBindingV1,
         port: P,
     ) -> Result<Self, CellSplitCnsCutoverErrorV1> {
+        // Require the coordinator's complete frozen-plan contract even when
+        // this effect owner is opened independently of Agentd.
+        let plan_digest = plan.digest().map_err(|_| CellSplitCnsCutoverErrorV1::Invalid)?;
         if binding.cns_id.is_empty()
             || binding.cns_id.len() > 256
             || !digest_shape(&plan.scope_digest)
@@ -198,7 +201,7 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             }
             Err(error) => return Err(error.into()),
         }
-        let plan_digest = sha256(&canonical_json(&plan)?);
+
         Ok(Self {
             root,
             plan,
