@@ -592,3 +592,25 @@ held-out source choices, fixed Reader answers and actual citations. Neither
 a train-set rank flip nor a loss decrease establishes unseen-family transfer.
 The report is `comparison/within-head-train-fit.json`, retained in the
 complete trial artifact and explicitly marked `production_accepted=false`.
+
+## Separate null-confidence fitting from weak-source rank improvement
+
+The revised `stem_head_fit_dynamics.py` receipt now measures the **same
+admitted TRAIN sample** three ways before and after each persistent Head fit:
+the original multi-positive-vs-null training loss; the maximum labelled
+native-support logit relative to the best unlabelled candidate; and the
+null-vs-best-candidate logit difference. Each retains its own denominator.
+
+A lower cross-entropy from suppressing the null logit can leave forced-top1
+evidence ranking **completely unchanged**. The audit therefore reports
+weakly-supported top-1 gains/losses and positive-versus-negative margin changes
+separately from lower training loss, and explicitly distinguishes
+native-document weak supervision from independent semantic entailment.
+Unanswerable/all-positive pools are not miscounted as meaningful
+positive-negative contrastive evidence. Nonfinite margins or deltas
+fail closed. Prototype Head remains a diagnostic, not SGD optimization.
+
+These measurements are in-sample, require only the *existing* saved Head and
+frozen Encoder feature rows, and cannot establish held-out answer or citation
+benefit without an independent fixed-Reader evaluation. No training
+hyperparameter or model-selection policy is changed by this instrumentation.
