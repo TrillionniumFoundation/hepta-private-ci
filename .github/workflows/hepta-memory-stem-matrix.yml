@@ -102,6 +102,8 @@ jobs:
           git rev-parse HEAD > /tmp/stem-native/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/stem-native/tested-tree.txt
           cp scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py /tmp/stem-native/source/
+          cp scripts/memory_cell/stem_reader_*.py scripts/memory_cell/test_stem_reader_*.py /tmp/stem-native/source/
+          cp scripts/memory_cell/stem_audit_candidate.py scripts/memory_cell/test_stem_audit_candidate.py /tmp/stem-native/source/
           cp .github/workflows/hepta-memory-stem-matrix.yml /tmp/stem-native/source/
           /tmp/stem-python/bin/ruff format --diff scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py > /tmp/stem-native/format.patch || true
           (cd /tmp/stem-native && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)

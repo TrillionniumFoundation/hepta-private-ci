@@ -421,3 +421,22 @@ evidence. The previously registered privileged literal-answer Oracle is
 neither human-certified entailment nor a production gold source. A stronger
 reference Reader, real ablation review, authenticated prospective sources and
 blinded semantic citation judgment remain separate follow-up requirements.
+
+## Reader evidence exposure is not the same as merely answering twice
+
+The blinded zero-evidence control is now accounted in two distinct cohorts.
+Every one of the 32 preregistered frozen-policy/empty-Reader pairs remains
+in the full denominator, including baseline failures and unscorable answers.
+Within that census, a separately marked **observed source-exposed cohort**
+contains only successful baseline answers whose original Reader receipt
+confirms that one actual evidence window was delivered. Baseline empty-prompt
+answers and failed baselines with unknown exposure are not silently counted
+as evidence-derived gains.
+
+Separate conditional delta means and worst-case bounds are reported for
+the observed exposed cohort; the unselected and failed cases remain visible
+under the original 32-question all-planned bounds. The exposed cohort is a
+post-hoc *diagnostic* subset, not a newly preregistered independent test. Both
+Reader receipts must identify exactly the same pinned model and prompt,
+even when the two executions used separate model instances. No source
+entailment, semantic citation precision or production gate is inferred.
