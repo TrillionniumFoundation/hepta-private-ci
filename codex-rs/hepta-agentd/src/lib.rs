@@ -50,6 +50,9 @@ pub use shared_terminal_cell::SharedTerminalCellError;
 pub use shared_terminal_cell::SharedTerminalModelV1;
 #[doc(hidden)]
 pub mod test_support;
+#[cfg(test)]
+#[path = "transitive_resource_tests.rs"]
+mod transitive_resource_tests;
 mod topology_plasticity_host;
 
 pub use authbus_ingress::authbus_text_claims;
@@ -185,6 +188,7 @@ pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
+pub use plasticity_host::AgentdPlasticityHostContextV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
 pub use plasticity_host::PlasticityOwnerEvidenceErrorV1;
 pub use plasticity_host::PlasticityOwnerEvidenceKindV1;

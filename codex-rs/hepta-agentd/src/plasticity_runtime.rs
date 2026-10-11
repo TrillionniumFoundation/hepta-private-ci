@@ -24,6 +24,7 @@ use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
 use crate::AgentdPlasticityAnchorStoreV1;
+use crate::AgentdPlasticityHostContextV1;
 use crate::AgentdPlasticityHostErrorV1;
 use crate::AgentdState;
 use crate::AgentdTopologyAnchorStoreV1;
@@ -298,13 +299,15 @@ impl PlasticityRuntimeOwnerV1 {
                     }
                     let result = propose_agentd_plasticity_v1(
                         *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
-                        &self.verifier,
-                        &mut self.parameter_writer,
-                        &mut self.parameter_anchor_store,
+                        AgentdPlasticityHostContextV1 {
+                            artifacts: &self.artifacts,
+                            ledger: &self.ledger,
+                            owner_evidence_resolver: self.owner_evidence_resolver.as_ref(),
+                            owner_evidence_policy: &self.owner_evidence_policy,
+                            verifier: &self.verifier,
+                            writer: &mut self.parameter_writer,
+                            anchor_store: &mut self.parameter_anchor_store,
+                        },
                         now,
                     )
                     .map_err(PlasticityRuntimeCallErrorV1::Parameter);
