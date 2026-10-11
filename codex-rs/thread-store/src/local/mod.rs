@@ -613,6 +613,13 @@ impl ThreadStore for LocalThreadStore {
         Box::pin(LocalThreadStore::list_turns(self, params))
     }
 
+    fn list_full_turns_bounded(
+        &self,
+        params: ListTurnsParams,
+    ) -> ThreadStoreFuture<'_, crate::FullTurnPage> {
+        Box::pin(thread_history::list_full_turns_bounded(self, params))
+    }
+
     fn list_items(&self, params: ListItemsParams) -> ThreadStoreFuture<'_, ItemPage> {
         Box::pin(LocalThreadStore::list_items(self, params))
     }

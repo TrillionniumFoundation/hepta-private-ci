@@ -433,7 +433,7 @@ fn remaining_limit(page_size: usize, row_count: usize) -> ThreadStoreResult<i64>
     i64::try_from(limit).map_err(|_| page_size_too_large())
 }
 
-fn finish_page<T: HasPosition>(
+pub(super) fn finish_page<T: HasPosition>(
     requested_thread_id: ThreadId,
     scope: CursorScope,
     mut rows: Vec<T>,
@@ -473,7 +473,7 @@ fn finish_page<T: HasPosition>(
     })
 }
 
-trait HasPosition {
+pub(super) trait HasPosition {
     fn position(&self) -> RolloutHistoryPosition;
 }
 

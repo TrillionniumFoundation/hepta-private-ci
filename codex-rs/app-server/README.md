@@ -2708,3 +2708,30 @@ For server-initiated request payloads, annotate the field the same way so schema
    ```bash
    just test -p codex-app-server-protocol
    ```
+
+### Bounded complete turn history
+
+Recovery clients may request `thread/turns/list` with `itemsView: "boundedFull"`.
+This opt-in mode reads only indexed, plain JSONL, paginated histories without a
+`history_base`. Legacy, compressed, and fork/revert lineage histories are currently
+refused; it never falls back to replaying a rollout. The existing `full` mode is unchanged.
+`boundedFull` is not supported by `thread/resume`.
+
+Each request permits at most 100 turns, 1,024 combined turn/item rows (including
+pagination lookahead), 256 KiB per stored row, 4 MiB of cumulative stored fields,
+and 4 MiB of serialized response data. The session header is capped at 64 KiB.
+The budget is shared across every turn and its complete item set. Oversized rows
+are detected before their payloads cross from SQLite into Rust. Success returns
+`itemsView: "full"`; no partial items are returned on refusal.
+
+Refusals use JSON-RPC code `-32002` and data
+`{"kind":"historyReadUnavailable","reason":"budgetExceeded"}`. Other reasons
+are `responseBudgetExceeded` and `unsupportedHistory`. Clients must retain their
+recovery cursor and pending dispatch, report the reason, and continue unrelated
+work. They must not infer completion from refusal or retry with unbounded `full`.
+Matrix uses this contract; unsupported histories can remain pending until bounded
+support is available. This behavior is not production acceptance of Matrix recovery.
+
+Bounded reads retain raw persisted turn status. A crashed `inProgress` turn is not
+synthetically completed or interrupted; it remains pending. Projection freshness
+and authoritative terminal fencing remain separate requirements.

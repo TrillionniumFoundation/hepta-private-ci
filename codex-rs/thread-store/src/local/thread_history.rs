@@ -8,11 +8,13 @@ use super::LocalThreadStore;
 use crate::ThreadStoreError;
 use crate::ThreadStoreResult;
 
+mod bounded;
 mod read;
 mod search;
 mod segment_paging;
 mod turn_lookup;
 
+pub(super) use bounded::list_full_turns_bounded;
 pub(super) use read::list_items;
 pub(super) use read::list_turns;
 pub(super) use search::search_thread_occurrences;
