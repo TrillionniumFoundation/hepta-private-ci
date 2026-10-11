@@ -4,11 +4,15 @@ The executable comparison is intentionally **not** a Cell production activation,
 selector, an independent evaluator, or an NDU receipt. It never replaces a serving
 model. Synthetic CI cases prove only protocol and negative-path behavior.
 
+## Current production no-change and real Ledger data are independent prerequisites
+
+`laya` is an upstream experimental arm, **not evidence of the currently deployed Hepta Cell**. Production no-change must be supplied by the real selected artifact/policy/route owner, including its current generation and checkpoint. An approved data owner must first use `LedgerWriter::freeze_dataset` and `read_dataset_records` to join active authenticated decisions and terminal outcomes with permitted model input; digests alone do not contain prompts, options or correct labels. Our signed structural preflight does not issue Hepta serving/selection authority. See [REAL_LEDGER_COHORT_PRECHECK.md](REAL_LEDGER_COHORT_PRECHECK.md). No actual private Hepta dataset is shipped here.
+
 ## Three frozen arms
 
-- `decisions`: `laya` (no-change) vs `typed`, actual ~421M family; require actual
+- `decisions`: `laya` (frozen external A/B control, **not product no-change**) vs `typed`, actual ~421M family; require actual
   parameter counts within 1% and one common 512-token / 192-option-token cap.
-- `multilingual`: `laya` (no-change) vs `multilingual` (~322M); measure English,
+- `multilingual`: `laya` (frozen external A/B control, **not product no-change**) vs `multilingual` (~322M); measure English,
   Chinese and cross-language cases in **each** holdout/future window. This is a
   *same-maximum-budget*, not an equal-parameter-count comparison.
 - `heads`: `linear` (no-change) vs `mlp` vs `swiglu`, same frozen feature vectors,
