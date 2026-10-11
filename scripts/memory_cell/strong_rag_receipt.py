@@ -286,6 +286,7 @@ def audit(archive, original, *, expected_commit):
         or len(set(calib_ids) | set(test_ids)) != 16
         or len({row["identity"] for row in calib_sources}) != len(calib_sources)
         or set(x["scope"] for x in calib_sources) != set(calib_ids)
+        or set(cal_plan["frozen_indices"]) != set(calib_ids)
         or any(row not in originals for row in calib_sources)
         or set(x["id"] for x in calib_labels) != set(calib_ids)
         or any(x != original_labels[x["id"]] for x in calib_labels)
