@@ -86,6 +86,7 @@ pub(crate) struct CheckedShadowStemRow {
 
 #[derive(Clone, Debug)]
 pub(crate) struct CheckedShadowStemBatch {
+    pub pipeline_digest: Digest32,
     pub rows: Vec<CheckedShadowStemRow>,
     pub unique_inputs: usize,
     pub actual_forward_calls_reported: usize,
@@ -364,6 +365,8 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         });
     }
     Ok(CheckedShadowStemBatch {
+        pipeline_digest: Digest32::from_str(&config.expected_pipeline_digest)
+            .map_err(|_| Error::FeatureContract)?,
         rows: checked,
         unique_inputs: response.distinct_inputs,
         actual_forward_calls_reported: response.actual_pretrained_forward_calls,
@@ -404,6 +407,7 @@ pub(crate) fn stage_shadow_feature_snapshots(
         || expires_at_ms <= now_ms
         || expires_at_ms.saturating_sub(now_ms) > MAX_SHADOW_SNAPSHOT_TTL_MS
         || batch.authority.grants_any()
+        || batch.pipeline_digest != pipeline.encoder_digest
         || [
             pipeline.encoder_digest,
             pipeline.tokenizer_digest,
