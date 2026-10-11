@@ -40,3 +40,18 @@ fn agentd_neuron_owner_is_a_compiled_product_surface() {
     let name = std::any::type_name::<AgentdNeuronOwner<StubWitness, StubInferenceControl>>();
     assert!(name.contains("AgentdNeuronOwner"));
 }
+
+#[test]
+fn agentd_local_baseline_exposes_only_witnessed_neuron_state() {
+    use codex_hepta_neuron::NeuronLocalCheckpointBindingV1;
+    use codex_hepta_neuron::NeuronRuntimeError;
+
+    // This type-checks the exact, non-mutating Agentd owner ingress against
+    // the real generic NeuronRuntime. The native runtime tests separately
+    // prove a committed checkpoint, witness mismatch and pending write cases.
+    let read: fn(
+        &AgentdNeuronOwner<StubWitness, StubInferenceControl>,
+    ) -> Result<NeuronLocalCheckpointBindingV1, NeuronRuntimeError> =
+        AgentdNeuronOwner::read_local_checkpoint_binding_v1;
+    let _ = read;
+}

@@ -17,6 +17,13 @@ current route and policy, current weight/Artifact CAS, source-use permission,
 host identity and final-use fence. The actual current owner must be queried;
 calling this API on a fixture or unselected runtime grants no authority.
 
+The Agentd product wrapper now exposes the same read-only operation as
+AgentdNeuronOwner::read_local_checkpoint_binding_v1(). This is only a pass-through
+to its existing, exclusively owned NeuronRuntime; it does not construct a
+replacement model, infer a route, or bypass the Journal/Witness checks.
+The Agentd type-check test pins the concrete owner API. The native runtime
+tests exercise real checkpoint and witness behavior.
+
 No model is invoked and no state, authority or production route is mutated.
 Tests cover initial missing checkpoint, correct local tuple, mutation of
 immutable fields, witness regression/false advance and pending post-commit

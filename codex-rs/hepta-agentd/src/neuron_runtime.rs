@@ -9,6 +9,7 @@
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
+use codex_hepta_neuron::NeuronLocalCheckpointBindingV1;
 use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_neuron::NeuronRuntimeError;
 use codex_hepta_neuron::NeuronRuntimeOutputV1;
@@ -41,6 +42,16 @@ where
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         self.runtime.tick(&mut model, input)
+    }
+
+    /// Return the exact locally loaded model configuration and a checkpoint
+    /// independently acknowledged by this runtime's Witness store. This does
+    /// not prove the current production CNS route selected this runtime.
+    /// No inference, mutation or promotion occurs during the read.
+    pub fn read_local_checkpoint_binding_v1(
+        &self,
+    ) -> Result<NeuronLocalCheckpointBindingV1, NeuronRuntimeError> {
+        self.runtime.read_local_checkpoint_binding_v1()
     }
 
     pub fn runtime(&self) -> &NeuronRuntime<W> {
