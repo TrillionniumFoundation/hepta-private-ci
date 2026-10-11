@@ -196,7 +196,7 @@ def metrics(rows, indexed, threshold):
         conf = max(p)
         ok = int(p.index(conf) == y)
         correct.append(ok)
-        br.append(sum((v - float(i == y)) ** 2 for i, v in enumerate(p)))
+        br.append(sum((v - float(i == y)) ** 2 for i, v in enumerate(p)) / len(p))
         nl.append(-math.log(max(p[y], 1e-15)))
         bin_rows[min(14, int(conf * 15))].append((conf, ok))
         if indexed[r["sample_id"]]["split"] == "ood":
@@ -227,7 +227,7 @@ def grouped_pair(indexed, candidate, baseline, split):
         def correct(x):
             return float(x.index(max(x)) == y)
         def brier(x):
-            return sum((v - float(i == y)) ** 2 for i, v in enumerate(x))
+            return sum((v - float(i == y)) ** 2 for i, v in enumerate(x)) / len(x)
         groups[row["source_group"]].append((correct(p) - correct(b),
                                            brier(p) - brier(b)))
     return [tuple(sum(pair[k] for pair in items) / len(items) for k in (0, 1))
@@ -361,6 +361,7 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *, replicates=2000):
         "model_weights_executed_by_this_script": False,
         "full_comparison_present": True,
         "checkpoint_is_not_proven_zero_shot": True,
+        "brier_definition": "sum_squared_class_error_divided_by_number_of_options",
         "trainable_parameter_ratio": min(budgets) / max(budgets),
         "arm_metrics": reports, "paired_future_vs_original_laya": pairs,
         "limitations": [
