@@ -74,8 +74,14 @@ class StemContracts(unittest.TestCase):
         self.assertEqual(result["distinct_inputs"], 1)
         self.assertEqual(result["actual_pretrained_forward_calls"], 1)  # stub-only
         self.assertEqual(result["rows"][0]["authority"], "DENY_ALL")
-        result2 = stub.encode_fanout([request("cell.c"), request("cell.d", scope="scope.b")])
-        self.assertEqual(result2["distinct_inputs"], 2)
+        with self.assertRaises(StemQualificationError):
+            stub.encode_fanout([request("cell.c"), request("cell.d", scope="scope.b")])
+        with self.assertRaises(StemQualificationError):
+            stub.encode_fanout([request("cell.c"), request("cell.d", principal="another")])
+        with self.assertRaises(StemQualificationError):
+            differing = request("cell.d")
+            differing["authority_epoch"] = 4
+            stub.encode_fanout([request("cell.c"), differing])
 
     def test_q24_rejects_wide_nonfinite_and_out_of_range(self):
         self.assertEqual(quantize_q24([0.5, -0.25]), [Q24 // 2, -Q24 // 4])
