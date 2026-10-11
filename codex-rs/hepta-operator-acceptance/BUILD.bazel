@@ -24,14 +24,6 @@ rust_library(
     }),
 )
 
-# Conventional crate label for codex_rust_crate dependency resolution.
-# Only the actual Supervisor owner may directly consume this effect protocol.
-alias(
-    name = "hepta-operator-acceptance",
-    actual = ":hepta-operator-acceptance-lib",
-    visibility = ["//codex-rs/hepta-supervisor:__pkg__"],
-)
-
 rust_test(
     name = "hepta-operator-acceptance-tests",
     crate = ":hepta-operator-acceptance-lib",
