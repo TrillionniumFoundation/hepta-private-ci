@@ -39,7 +39,9 @@ def clone_features(batch):
 
 
 class StemHead(nn.Module):
-    def __init__(self, dimension, encoder_identity, *, kind="gated", rank=16, seed=1837):
+    def __init__(
+        self, dimension, encoder_identity, *, kind="gated", rank=16, seed=1837
+    ):
         super().__init__()
         if (
             kind not in KINDS
@@ -171,7 +173,9 @@ class StemHead(nn.Module):
         started, losses, consumed = time.perf_counter(), [], 0
         parameters = list(self.parameters())
         optimizer = torch.optim.SGD(parameters, lr=lr) if parameters else None
-        ordered = sorted(rows, key=lambda r: (r.features.family, r.features.question_id))
+        ordered = sorted(
+            rows, key=lambda r: (r.features.family, r.features.question_id)
+        )
         batches = [ordered[(self.steps + i) % len(ordered)] for i in range(steps)]
         if self.kind == "prototype":
             batches = [r for r in ordered if r.features.question_id not in self.seen]
@@ -194,11 +198,15 @@ class StemHead(nn.Module):
                     optimizer.zero_grad(set_to_none=True)
                     logits = self(f)
                     positive = list(row.positive_indices) or [pairs]
-                    loss = torch.logsumexp(logits, 0) - torch.logsumexp(logits[positive], 0)
+                    loss = torch.logsumexp(logits, 0) - torch.logsumexp(
+                        logits[positive], 0
+                    )
                     if not torch.isfinite(loss):
                         raise ValueError("nonfinite stem loss")
                     loss.backward()
-                    torch.nn.utils.clip_grad_norm_(parameters, 1.0, error_if_nonfinite=True)
+                    torch.nn.utils.clip_grad_norm_(
+                        parameters, 1.0, error_if_nonfinite=True
+                    )
                     optimizer.step()
                     losses.append(float(loss.detach()))
                 self.steps += 1
@@ -234,10 +242,13 @@ class StemHead(nn.Module):
             buffer_bytes=sum(b.numel() * b.element_size() for b in self.buffers()),
             gradient_bytes=sum(
                 p.grad.numel() * p.grad.element_size()
-                for p in parameters if p.grad is not None
+                for p in parameters
+                if p.grad is not None
             ),
             persistent_optimizer_bytes=0,
-            optimizer="sufficient-statistics" if self.kind == "prototype" else "SGD-no-momentum",
+            optimizer="sufficient-statistics"
+            if self.kind == "prototype"
+            else "SGD-no-momentum",
             tensor_delta_squared_norm=delta,
             state_changed=delta > 0,
             encoder_updates=0,
@@ -262,11 +273,15 @@ class StemHead(nn.Module):
                 state={k: v.detach().tolist() for k, v in self.state_dict().items()},
                 production_accepted=False,
             ),
-            sort_keys=True, allow_nan=False, separators=(",", ":"),
+            sort_keys=True,
+            allow_nan=False,
+            separators=(",", ":"),
         ).encode()
 
     @classmethod
-    def restore(cls, payload, *, expected_sha256, encoder_identity, allowed_roots, revoked):
+    def restore(
+        cls, payload, *, expected_sha256, encoder_identity, allowed_roots, revoked
+    ):
         if len(payload) > 4 * 1024 * 1024 or sha256(payload) != expected_sha256:
             raise ValueError("head artifact byte bound or hash")
 
@@ -280,8 +295,18 @@ class StemHead(nn.Module):
 
         obj = json.loads(payload, object_pairs_hook=unique)
         keys = {
-            "schema", "dimension", "encoder_identity", "kind", "rank", "seed",
-            "roots", "seen", "steps", "pair_evaluations", "state", "production_accepted",
+            "schema",
+            "dimension",
+            "encoder_identity",
+            "kind",
+            "rank",
+            "seed",
+            "roots",
+            "seen",
+            "steps",
+            "pair_evaluations",
+            "state",
+            "production_accepted",
         }
         if (
             set(obj) != keys
@@ -289,7 +314,8 @@ class StemHead(nn.Module):
             or obj["production_accepted"] is not False
             or obj["encoder_identity"] != encoder_identity
             or any(
-                not isinstance(v, list) or len(v) != len(set(v))
+                not isinstance(v, list)
+                or len(v) != len(set(v))
                 or any(not isinstance(s, str) or not s for s in v)
                 for v in (obj["roots"], obj["seen"])
             )
@@ -304,13 +330,18 @@ class StemHead(nn.Module):
         ):
             raise ValueError("head artifact identity, lineage or counter mismatch")
         head = cls(
-            obj["dimension"], encoder_identity, kind=obj["kind"],
-            rank=obj["rank"], seed=obj["seed"],
+            obj["dimension"],
+            encoder_identity,
+            kind=obj["kind"],
+            rank=obj["rank"],
+            seed=obj["seed"],
         )
         expected = head.state_dict()
         if set(obj["state"]) != set(expected):
             raise ValueError("head tensor inventory")
-        tensors = {k: torch.tensor(v, dtype=torch.float32) for k, v in obj["state"].items()}
+        tensors = {
+            k: torch.tensor(v, dtype=torch.float32) for k, v in obj["state"].items()
+        }
         if any(
             tensors[k].shape != v.shape or not torch.isfinite(tensors[k]).all()
             for k, v in expected.items()
