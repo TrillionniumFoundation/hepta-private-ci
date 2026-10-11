@@ -119,3 +119,39 @@ Global cargo-deny is separately blocked by `RUSTSEC-2026-0318` for
 for the unmaintained `anymap2` crate. Matrix SDK 0.19.1 still depends on
 `anymap2`, so bumping the SDK without migrating that dependency cannot
 make the security gate green. Neither advisory may be ignored for release.
+
+
+## Independent Observer join of real owner and host evidence (source gate)
+
+The new CellSplitSignedObserverJoinV1 addresses a distinct evidence-laundering
+failure mode: four independently signed CellSplitExecutionTranscriptV1
+receipts and a host/observer-signed target lifecycle report can each be
+valid yet concern unrelated actual operations.
+
+The verification-only verify_cell_split_observer_join_v1 therefore:
+
+1. Validates all four original effect signatures against independently pinned
+   keys, their exact coordinator predecessor chain and transcript digest.
+2. Verifies the host's canonical lifecycle evidence and independent Observer
+   signatures under externally supplied trust keys.
+3. Requires the real host and an Observer to sign the same domain-separated
+   join of the frozen plan, target host ID, NDU/route fence, all four original
+   effect receipt digests, target evidence digest, and actual artifact-load
+   and route-cutover event digests.
+4. Refuses shared signing keys across the host, Observer and all four
+   effect owners, and refuses any mutated lineage before contacting owners.
+5. Revalidates each original operation against its current external owner.
+   There is no execution, prepared intent, recovery mutation or promotion
+   API in the join verifier.
+
+The returned CellSplitObserverJoinReceiptV1 explicitly sets
+productionActivationAuthorized=false. Independent real-world host
+observation, atomic or witnessed multi-owner freshness, independently
+retained anti-rollback frontiers, NDU/Selector final-use and target-machine
+resource/fault measurements still require separate production gate evidence.
+
+The new exact-source regression gate invokes the operator-acceptance
+observer_join tests, including valid binding, refused revoked CNS owner,
+false host/owner combinations, tampered Observer signature and host/owner
+key reuse. These tests use synthetic signing keys and do not claim
+production evidence. Their exact-HEAD CI status is not yet verified.
