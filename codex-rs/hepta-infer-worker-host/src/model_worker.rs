@@ -735,6 +735,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     }
 }
 
+/// A complete caller-bound proposal consumed at a signed final-use effect
+/// boundary. The caller cannot manufacture `VerifiedUseToken` merely by
+/// populating this structure. Every field is revalidated against current
+/// loaded Head/ResourceGrant state immediately before effect entry.
+pub struct VerifiedStemFeatureDispatchV1<'a> {
+    pub source: &'a StemFeatureRefV1,
+    pub access: &'a StemAccessContextV1,
+    pub selected_head: StemHeadBindingV1,
+    pub feature_vector_q24: &'a [i64],
+    pub authorization: WorkerRequest,
+}
+
 /// Canonical exact source/request payload digest used by the existing Worker
 /// path. A final-use issuer must sign the resulting expected binding, not
 /// replace a missing or mismatched lease payload.
@@ -870,12 +882,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         trusted_authority: &FinalUseAuthority,
         verified_use: VerifiedUseToken,
         now_ms: u64,
-        source: &StemFeatureRefV1,
-        access: &StemAccessContextV1,
-        selected_head: StemHeadBindingV1,
-        feature_vector_q24: &[i64],
-        authorization: WorkerRequest,
+        proposed: VerifiedStemFeatureDispatchV1<'_>,
     ) -> Result<BoundStemFeatureExecutionV1, Error> {
+        let VerifiedStemFeatureDispatchV1 {
+            source,
+            access,
+            selected_head,
+            feature_vector_q24,
+            authorization,
+        } = proposed;
         let binding = self.expected_stem_final_use_binding_v1(
             now_ms,
             source,
