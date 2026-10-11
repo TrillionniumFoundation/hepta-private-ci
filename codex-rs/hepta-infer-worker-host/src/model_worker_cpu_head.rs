@@ -203,6 +203,9 @@ pub struct CpuGatedHeadDriver {
     heads: BTreeMap<String, CpuGatedHead>,
     tracked_weights_bytes: u64,
     loaded: bool,
+    // In-process diagnostic count of actual native Head batch dispatches.
+    // Not a signed hardware measurement or evidence of an Encoder batch.
+    backend_batch_invocations: u64,
 }
 
 impl CpuGatedHeadDriver {
@@ -230,7 +233,13 @@ impl CpuGatedHeadDriver {
             heads,
             tracked_weights_bytes: weight_bytes,
             loaded: false,
+            backend_batch_invocations: 0,
         })
+    }
+
+    #[must_use]
+    pub const fn observed_backend_batch_invocations(&self) -> u64 {
+        self.backend_batch_invocations
     }
 
     fn validate_selected(
@@ -346,6 +355,11 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
             }
             contiguous.extend_from_slice(&request.feature_vector_q24);
         }
+        // Count only a fully validated dispatch, not an invalid input batch.
+        self.backend_batch_invocations = self
+            .backend_batch_invocations
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
         let mut members = Vec::with_capacity(requests.len());
         let mut tracked_outputs = 0u64;
         for (index, request) in requests.iter().enumerate() {
