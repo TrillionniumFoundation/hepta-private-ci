@@ -101,7 +101,10 @@ fn second_batch_grant(
     signed.grant.grant_id = format!("batch-{nonce}");
     signed.grant.nonce = [nonce; 32];
     signed.grant.binding.request_sha256 = [nonce; 32];
-    signed.signature = issuer.sign(&signed.grant.signing_bytes()?).to_bytes().to_vec();
+    signed.signature = issuer
+        .sign(&signed.grant.signing_bytes()?)
+        .to_bytes()
+        .to_vec();
     Ok(signed)
 }
 
