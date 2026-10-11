@@ -71,7 +71,7 @@ def actual_generate(reader, prompt, mode):
 
 def probe(reader, documents, output, *, snapshot_sha, writer_source, source_commit,
           revision=2, maximum=MAX_SCOPES, generate=actual_generate,
-          question_mode="training"):
+          question_mode="training", training=None):
     if (
         question_mode not in ("training", "paraphrase")
         or output.exists()
@@ -85,6 +85,22 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
     selected, unknown = source_probe_plan(
         documents, revision=revision, roots=reader.roots, maximum=maximum
     )
+    # A source-derived writer question may never have received an optimizer
+    # update. Recompute its exact schedule from the committed source and tokens.
+    # Missing training metadata in fixture-only uses means exposure is UNKNOWN.
+    from source_probe_exposure import verified_visits
+
+    exposure, schedule_digest = (
+        verified_visits(documents, reader.tokenizer, training)
+        if training is not None else (None, None)
+    )
+    source_ids = tuple(item["query"]["identity"] for item in selected)
+    if exposure is not None and not set(source_ids).issubset(exposure):
+        raise ValueError("selected source question absent from writer schedule")
+    visit_counts = tuple(
+        exposure[q] if exposure is not None else None for q in source_ids
+    )
+    all_visited = exposure is not None and all(count > 0 for count in visit_counts)
     questions = tuple(
         paraphrase_writer_question(item)
         if question_mode == "paraphrase"
@@ -108,7 +124,12 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
         source_derived_untrained_question_wording=question_mode == "paraphrase",
         unresolved_source_dispositions=len(unknown),
         task_plan_or_test_labels_loaded=False,
-        in_sample_training_recall=question_mode == "training",
+        in_sample_training_recall=question_mode == "training" and all_visited,
+        training_exposure_verified=exposure is not None,
+        training_schedule_sha256=schedule_digest,
+        source_training_question_ids=list(source_ids),
+        source_example_optimizer_visits=list(visit_counts),
+        unvisited_question_is_not_independent_holdout=True,
         production_accepted=False,
     )
     (output / "plan.json").write_text(
@@ -116,7 +137,9 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
     )
     records = []
     with (output / "raw-answers.jsonl").open("x", encoding="utf-8") as journal:
-        for q in questions:
+        for q, training_question_id, visits in zip(
+            questions, source_ids, visit_counts, strict=True
+        ):
             prompt = render(reader.tokenizer, q, [], [])
             for arm in ARMS:
                 row = dict(
@@ -126,7 +149,12 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
                     prompt_sha256=digest(prompt),
                     input_tokens=len(prompt),
                     delivered_evidence=[],
-                    result_is_in_sample_training_recall=question_mode == "training",
+                    source_training_question_id=training_question_id,
+                    source_example_optimizer_visits=visits,
+                    result_is_in_sample_training_recall=(
+                        question_mode == "training" and visits > 0
+                        if visits is not None else None
+                    ),
                 )
                 try:
                     answer, generated, seconds = generate(reader, prompt, arm)
@@ -161,14 +189,29 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
                   output_tokens=0, observed_seconds=0.0)
         for arm in ARMS
     }
+    # Keep answer quality split by actual optimizer exposure; an unvisited
+    # target is not an independent future task or a failed memorization test.
+    by_exposure = {
+        arm: {
+            category: dict(planned=0, succeeded=0, failed=0, exact_targets=0)
+            for category in ("visited", "unvisited", "unknown")
+        }
+        for arm in ARMS
+    }
     results = {}
     for row in records:
+        visits = row["source_example_optimizer_visits"]
+        category = "unknown" if visits is None else "visited" if visits > 0 else "unvisited"
+        cohort = by_exposure[row["arm"]][category]
+        cohort["planned"] += 1
         arm = row["arm"]
         item = stats[arm]
         if row["status"] == "failed":
             item["failed"] += 1
+            cohort["failed"] += 1
             continue
         item["succeeded"] += 1
+        cohort["succeeded"] += 1
         item["output_tokens"] += row["generated_tokens"]
         item["observed_seconds"] += row["seconds"]
         cites = len(CITE.findall(row["answer"]))
@@ -176,6 +219,7 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
         # Strict writer target: no fabricated citation or post-hoc rewriting.
         correct = row["answer"].strip() == targets[row["question_id"]]
         item["exact_targets"] += int(correct)
+        cohort["exact_targets"] += int(correct)
         results[(row["question_id"], arm)] = correct
     wins = losses = paired = 0
     for q in questions:
@@ -194,6 +238,11 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
         plan_sha256=hashlib.sha256((output / "plan.json").read_bytes()).hexdigest(),
         raw_sha256=hashlib.sha256(raw).hexdigest(),
         selected_train_facts=len(questions),
+        training_exposure_verified=exposure is not None,
+        training_schedule_sha256=schedule_digest,
+        visited_source_questions=sum(count > 0 for count in visit_counts if count is not None),
+        unvisited_source_questions=sum(count == 0 for count in visit_counts if count is not None),
+        by_exposure=by_exposure,
         model_calls=len(records) - sum(s["failed"] for s in stats.values()),
         arms=stats,
         compared_pairs=paired,
@@ -201,7 +250,7 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
         memory_losses=losses,
         unknown_pair_bounds=[(wins-losses-(len(questions)-paired))/len(questions),
                              (wins-losses+(len(questions)-paired))/len(questions)],
-        input_is_trained_source_question=question_mode == "training",
+        input_is_trained_source_question=question_mode == "training" and all_visited,
         source_derived_untrained_query_paraphrase=question_mode == "paraphrase",
         zero_task_questions_or_labels_consumed=True,
         new_independent_holdout_observations=0,
@@ -264,7 +313,8 @@ def main():
         snapshot_sha=args.ready_sha,
         writer_source=ready["writer_source"],
         source_commit=args.source_commit,
-        question_mode=args.question_mode
+        question_mode=args.question_mode,
+        training=ready["training"],
     )
 
 
