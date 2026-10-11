@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import copy
 import hashlib
+from datetime import datetime, timezone
 import importlib.util
 import json
 from pathlib import Path
@@ -200,6 +201,44 @@ class A0ProtocolTests(unittest.TestCase):
         self.write_signed()
         with self.assertRaisesRegex(a0.EvidenceError, "invalid Cell identifier"):
             self.check()
+
+    def test_fresh_explicit_host_snapshot_is_accepted_but_not_qualified(self) -> None:
+        result = a0.evaluate(
+            self.root, self.public_key,
+            expected_host_id="host-1", max_age_seconds=300,
+            evaluation_asof_utc=datetime(2026, 10, 11, 1, 2, tzinfo=timezone.utc),
+        )
+        self.assertEqual(result["host_id"], "host-1")
+        self.assertFalse(result["production_qualification"])
+
+    def test_stale_or_future_dated_signed_registry_is_rejected(self) -> None:
+        with self.assertRaisesRegex(a0.EvidenceError, "stale"):
+            a0.evaluate(
+                self.root, self.public_key,
+                expected_host_id="host-1", max_age_seconds=300,
+                evaluation_asof_utc=datetime(2026, 10, 11, 2, 0, tzinfo=timezone.utc),
+            )
+        with self.assertRaisesRegex(a0.EvidenceError, "future"):
+            a0.evaluate(
+                self.root, self.public_key,
+                expected_host_id="host-1", max_age_seconds=300,
+                evaluation_asof_utc=datetime(2026, 10, 11, 0, 50, tzinfo=timezone.utc),
+            )
+
+    def test_wrong_expected_host_and_unbounded_age_are_rejected(self) -> None:
+        asof = datetime(2026, 10, 11, 1, 2, tzinfo=timezone.utc)
+        with self.assertRaisesRegex(a0.EvidenceError, "independently expected host"):
+            a0.evaluate(
+                self.root, self.public_key,
+                expected_host_id="host-rogue", max_age_seconds=300,
+                evaluation_asof_utc=asof,
+            )
+        with self.assertRaisesRegex(a0.EvidenceError, "maximum snapshot age"):
+            a0.evaluate(
+                self.root, self.public_key,
+                expected_host_id="host-1", max_age_seconds=1_000_000,
+                evaluation_asof_utc=asof,
+            )
 
     def test_model_manifest_drift_is_detected(self) -> None:
         self.cell["parameter_count"] += 1
