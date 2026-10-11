@@ -134,12 +134,14 @@ def observation_digest(row, family):
 def validate_payload(payload, sealed_rows):
     require(isinstance(payload, dict) and set(payload) ==
             {"schema", "family", "source", "dataset", "no_change", "frozen_plan_digest",
-             "source_current_revalidated_at_unix_micros", "rows"}, "cohort schema mismatch")
+             "sealed_dataset_sha256", "source_current_revalidated_at_unix_micros", "rows"}, "cohort schema mismatch")
     require(payload["schema"] == COHORT_SCHEMA
             and payload["source"] == "hepta.learning-ledger.LedgerWriter"
             and payload["family"] in ("decisions", "multilingual", "heads"),
             "cohort origin/family not recognized")
-    require(check_sha(payload["frozen_plan_digest"]), "missing frozen plan identity")
+    require(check_sha(payload["frozen_plan_digest"]) and
+            check_sha(payload["sealed_dataset_sha256"]),
+            "missing frozen plan or signed sealed-label byte commitment")
     d = payload["dataset"]
     require(isinstance(d, dict) and set(d) ==
             {"receipt_schema", "snapshot_id", "dataset_digest", "ledger_head_digest",
@@ -193,6 +195,7 @@ def validate_payload(payload, sealed_rows):
     require(len(rows) == len(sealed), "sealed/source membership mismatch")
     ids, decisions, outcomes, groups = set(), set(), set(), {s: set() for s in SPLITS}
     episode_windows = {}
+    observation_windows = {}
     times = {s: [] for s in SPLITS}
     terminals = {s: [] for s in SPLITS}
     latest_terminal = 0
@@ -229,6 +232,9 @@ def validate_payload(payload, sealed_rows):
             require(start < b["frozen_at_unix_micros"], "training/calibration/holdout leaked post-freeze")
         previous = episode_windows.setdefault(r["episode_id"], r["split"])
         require(previous == r["split"], "correlated episode crosses dataset windows")
+        previous_observation = observation_windows.setdefault(r["observation_sha256"], r["split"])
+        require(previous_observation == r["split"],
+                "identical model input leaks across split boundaries")
         groups[r["split"]].add(r["source_group"])
         times[r["split"]].append(start)
         terminals[r["split"]].append(end)
@@ -320,6 +326,8 @@ def verify(cohort_path:Path, sealed_path:Path, trust_path:Path, expected_trust_s
     require(isinstance(packet,dict) and set(packet)=={"schema","payload","attestations"}
             and packet["schema"]==COHORT_SCHEMA,"invalid cohort envelope")
     rows=read_sealed(sealed_path)
+    require(packet["payload"].get("sealed_dataset_sha256") == sha_bytes(sealed_path.read_bytes()),
+            "sealed labels or row bytes changed after signed freeze")
     counts,latest_terminal=validate_payload(packet["payload"],rows)
     signers=verify_attestations(packet,trust,latest_terminal,
             packet["payload"]["source_current_revalidated_at_unix_micros"])

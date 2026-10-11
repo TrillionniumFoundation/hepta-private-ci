@@ -28,7 +28,7 @@ def object_fixture(family="decisions", kind="deployed_learned"):
         row={"id":f"row-{i}","split":split,"source_group":f"group-{i}",
              "observed_at_ms":micros//1000}
         if family=="heads":
-            row.update({"features_q24":[10000,20000],"target_q24":[500,600,700,800]})
+            row.update({"features_q24":[10000+i,20000+i],"target_q24":[500,600,700,800]})
         else:
             row.update({"state":f"approved-view-{i}",
                         "question":{"type":"choice","instructions":"Select the route","criteria":{"a":"A","b":"B"}},
@@ -80,6 +80,8 @@ class RealCohortGateTests(unittest.TestCase):
           for role in ROLES}}
 
     def build(self):
+        self.paths["sealed.jsonl"].write_text("".join(json.dumps(row)+"\n" for row in self.sealed))
+        self.payload["sealed_dataset_sha256"] = sha_bytes(self.paths["sealed.jsonl"].read_bytes())
         packet={"schema":COHORT_SCHEMA,"payload":self.payload,"attestations":{}}
         h=sha_bytes(canonical(self.payload))
         for role in ROLES:
@@ -176,6 +178,23 @@ class RealCohortGateTests(unittest.TestCase):
     def test_sealed_input_changed_after_attested_join_denied(self):
         self.sealed[2]["state"]="forged-raw-input"
         self.must_block()
+
+    def test_identical_input_reappearing_in_future_window_is_denied(self):
+        original=self.sealed[0]
+        future=self.sealed[4]
+        for key in ("state", "question", "option_order", "language", "domain"):
+            future[key]=copy.deepcopy(original[key])
+        self.payload["rows"][4]["observation_sha256"] = observation_digest(future, "decisions")
+        self.must_block()
+
+    def test_sealed_gold_modified_after_independent_signatures_denied(self):
+        trust_digest=self.build()
+        edited=[dict(row) for row in self.sealed]
+        edited[2]["gold"] = "b"
+        self.paths["sealed.jsonl"].write_text("".join(json.dumps(row)+"\n" for row in edited))
+        with self.assertRaises(InvalidCohort):
+            verify(self.paths["cohort.json"],self.paths["sealed.jsonl"],
+                   self.paths["trust.json"],trust_digest)
 
     def test_millisecond_microsecond_confusion_denied(self):
         self.sealed[3]["observed_at_ms"]+=1000

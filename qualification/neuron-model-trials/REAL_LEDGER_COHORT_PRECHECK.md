@@ -49,7 +49,10 @@ inputs, all kept outside the Git repository:
   `DatasetSnapshotReceiptV3`-named source fields, active sorted source event
   digests, terminal Decision/Outcome joins, immutable observed text/features
   digests, split, source group/episode and actual selected no-change descriptor.
-  `attestations` signs that *one complete* payload using distinct ledger,
+  The complete payload also includes `sealed_dataset_sha256`, computed from
+  **exact original sealed JSONL bytes** before anyone signs; modifying even
+  one `gold` label invalidates the five signatures. `attestations` signs that
+  *one complete* payload using distinct ledger,
   observation, baseline, evaluator and observer roles. This is an exported
   **claim**, not a native LedgerWriter object.
 * `--sealed` — evaluator-only JSONL. Rows use the same `id`, `split`,
@@ -79,7 +82,8 @@ python3 scripts/hepta_neuron_real_cohort_preflight.py \
 ```
 
 The tool fails closed on mismatched or duplicate source events, repeated
-Episode across splits, source-group leakage, nonterminal outcomes, unavailable
+Episode across splits, source-group leakage, identical input across splits,
+nonterminal outcomes, sealed-label tampering, unavailable
 future windows, incomplete currently selected baseline identities, invalid
 role signatures, unbound raw observations, JSON ambiguity and clock unit
 mismatch. It writes no raw prompts/labels or private signing keys to the
