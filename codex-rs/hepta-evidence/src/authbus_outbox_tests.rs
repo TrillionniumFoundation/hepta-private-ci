@@ -423,12 +423,18 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .bind(id.as_array().as_slice())
         .execute(&store.pool).await.unwrap();
     let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox")
-        .fetch_one(&store.pool).await.unwrap();
+        .fetch_one(&store.pool)
+        .await
+        .unwrap();
     assert_eq!(total, AUTHBUS_OUTBOX_MAX_ROWS);
-    let largest_issuer: i64 = sqlx::query_scalar("SELECT MAX(active_count) FROM
+    let largest_issuer: i64 = sqlx::query_scalar(
+        "SELECT MAX(active_count) FROM
         (SELECT COUNT(*) AS active_count FROM authbus_outbox
-         WHERE state IN ('queued', 'leased') GROUP BY issuer_id)")
-        .fetch_one(&store.pool).await.unwrap();
+         WHERE state IN ('queued', 'leased') GROUP BY issuer_id)",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
     assert_eq!(largest_issuer, AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(
