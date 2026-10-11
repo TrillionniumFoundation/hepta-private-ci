@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: d33267e4a7457784070a5bb512827876d7f9b2e2
+      CHAIN_SOURCE_SHA: 25d806087a74778262edddee5fcb48ef651e9265
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'd33267e4a7457784070a5bb512827876d7f9b2e2' || '145c974f88fe16b5acfad0cd0be518c8a0279216' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '25d806087a74778262edddee5fcb48ef651e9265' || 'ddeb7a08d31e1791e1da37dc61e7fdd0d224548d' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -98,7 +98,7 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/model-generation-context.json" --minimum-tests 8 -- "$RUNNER_TEMP/pon-model-env/bin/python" ../chain/formal/pon-nakamoto-v1/test_model_generation_sequence_context.py -v
       - name: Require complete bounded native input and original pipe controls
         run: |
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 15 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 26 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
       - name: Require complete CI observer and recent-window regressions
         run: |
           set -euo pipefail
