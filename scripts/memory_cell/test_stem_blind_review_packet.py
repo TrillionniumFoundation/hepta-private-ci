@@ -109,6 +109,18 @@ class BlindReviewPacketTests(unittest.TestCase):
             self.assertEqual(slot["structurally_unbound_markers"], 1)
         self.assertIsNone(packet["semantic_citation_precision"])
 
+    def test_original_utf8_answer_bytes_are_cryptographically_bound(self):
+        import hashlib
+        packet, meta = make_blind_review_packet(*sample())
+        entry = meta["blinded_case_mapping"][0]
+        original = next(v for v in entry["opaque_slots"].values()
+                        if v["role"] == "fixed")
+        expected = hashlib.sha256(
+            "Source-backed answer [E1]".encode("utf-8")
+        ).hexdigest()
+        self.assertEqual(original["answer_digest"], expected)
+        self.assertEqual(len(packet["reviewer_packets"]), 32)
+
     def test_emitted_e0_marker_is_invalid_not_ignored(self):
         plan, rows, empty = sample()
         empty[0]["answer"] = "Unsupported marker [E0] and [E1]"

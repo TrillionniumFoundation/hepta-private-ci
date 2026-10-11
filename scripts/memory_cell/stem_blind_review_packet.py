@@ -7,6 +7,7 @@ Oracle. This is a worklist, NOT an independent review or an approval.
 """
 
 from collections import Counter
+import hashlib
 import re
 
 from native import digest
@@ -91,7 +92,7 @@ def _verify_reader(row, qid, *, require_empty=False):
         evidence_count=len(evidence),
         request_digest=canonical,
         source_payload_digest=digest(evidence),
-        raw_answer_digest=digest(answer),
+        raw_answer_digest=hashlib.sha256(answer.encode('utf-8', 'strict')).hexdigest(),
         generator_identity=receipt["generator_identity"],
         generator_profile=receipt["generator_profile"],
         citation_markers=markers,
