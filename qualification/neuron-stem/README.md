@@ -338,3 +338,53 @@ verification, does not approve the research budget, and unconditionally
 denies production promotion. Separate independent signature validation,
 signed real NDU, real production Worker, crash recovery and final-use gate
 remain mandatory.
+
+
+## Experiment C: prequential + genuine no-change three-way review
+
+prequential_threeway_review.py is a **consumer of the existing
+prequential_trial.py journal, qualified_eval dataset, and resource_gate.py
+paired research receipts**, not a new trainer, worker or authority owner.
+
+It joins a chronological two-window, test-then-learn output with an
+**externally captured** production no-change prediction stream. The required
+future source rows carry an extra preregistered future_window field
+(future_1 or future_2); train/calibration/test/future/ood split semantics
+remain unchanged. The matched frozen Head is the existing post-historical-
+pretrain, same-initialization copy. The reporter checks that the first
+prediction of each Cell agrees with that frozen copy *before* any future
+learning, and that all subsequent trained logits match an exact fsynced,
+label-free prediction precommit record and input/Head digest.
+
+The no-change JSONL includes case_id, scope_id, model_id=no-change,
+status=Succeeded, immutable model_revision (40 hex), weights_digest,
+generation, dataset_digest, input_digest and probabilities (in the
+registered option order). It must be produced **outside the candidate
+trainer** by the current canonical serving/evaluation owner. An inline
+JSON field that claims authentication cannot grant independence.
+This offline script checks identity and complete exact paired coverage
+but cannot itself verify the owner signature or live revocation.
+
+Run only after authentic pretrained weights and approved data exist:
+
+    python3 qualification/neuron-stem/prequential_threeway_review.py \
+      --dataset /approved/episodes.jsonl \
+      --trial /scratch/actual-prequential.json \
+      --prelabel-journal /scratch/actual-prequential.json.prediction-journal.jsonl \
+      --no-change /approved/frozen-production-nochange.jsonl \
+      --resources /scratch/four-paired-scale-gates.json \
+      --output /scratch/threeway-offline-review.json
+
+The optional --resources JSON array must contain the **four separately
+measured** paired resource gate results at 64/256/1024/4096 logical Cells,
+all including actual active and distinct ticked Cell counts and matching
+model revision. Resource reporting needs true Jina execution on the named
+research hardware; mock or fabricated summaries cannot count. The script
+requires both future windows to show Bonferroni-corrected grouped gains
+against *both* the frozen Head and production no-change, respects per-Cell
+historical Brier retention caps, and refuses missing or mismatched evidence.
+
+Outputs are always offline-only, unsigned research diagnostics with
+production_promotion_permitted=false. Even a pass is NOT independent NDU,
+a real native shared Encoder, a production final-use grant, a physical 4096
+Cell throughput measurement, unclean WAL recovery, or a release decision.
