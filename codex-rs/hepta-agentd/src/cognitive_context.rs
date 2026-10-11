@@ -97,9 +97,11 @@ pub(crate) async fn read_with_retrieval_context(
         query,
         limit,
         ranker,
-        current_retrieval,
-        None,
-        None,
+        CognitiveReadOwnerPorts {
+            retrieval: current_retrieval,
+            learning: None,
+            request_id: None,
+        },
     )
     .await
 }
