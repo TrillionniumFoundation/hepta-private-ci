@@ -36,6 +36,7 @@ struct DiskCns {
     signer: SigningKey,
     migration_ready: Arc<AtomicBool>,
     replay_old_readback: bool,
+    stale_durable_sequence: bool,
 }
 
 impl DiskCns {
@@ -45,7 +46,12 @@ impl DiskCns {
             signer,
             migration_ready: ready,
             replay_old_readback: false,
+            stale_durable_sequence: false,
         }
+    }
+    fn with_stale_sequence(mut self) -> Self {
+        self.stale_durable_sequence = true;
+        self
     }
     fn with_stale_readback(mut self) -> Self {
         self.replay_old_readback = true;
@@ -211,7 +217,13 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
     }
 
     fn committed_sequence(&mut self, _cns_id: &str) -> Result<u64, Self::Error> {
-        Ok(if self.route().generation == 4 { 11 } else { 1 })
+        Ok(if self.stale_durable_sequence {
+            1
+        } else if self.route().generation == 4 {
+            11
+        } else {
+            1
+        })
     }
 }
 
@@ -295,6 +307,43 @@ fn owner(root: &Path, ready: Arc<AtomicBool>) -> CellSplitCnsCutoverOwnerV1<Disk
         DiskCns::open(root.to_path_buf(), SigningKey::from_bytes(&[9; 32]), ready),
     )
     .expect("owner")
+}
+
+#[test]
+fn direct_cns_readback_rejects_original_receipt_ahead_of_durable_frontier() {
+    let root = private_root();
+    let ready = Arc::new(AtomicBool::new(true));
+    let request = intent();
+    {
+        let mut original = owner(root.path(), ready.clone());
+        original
+            .commit_once(&request)
+            .expect("real signed CNS cutover");
+        assert!(original
+            .read_committed(&request)
+            .expect("current frontier")
+            .is_some());
+    }
+
+    // Retain both the valid original signature and the actually serving child
+    // route, but make the independent CNS durability frontier lag behind.
+    let stale = DiskCns::open(
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
+        ready,
+    )
+    .with_stale_sequence();
+    let mut recovered =
+        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), stale)
+            .expect("same frozen CNS owner");
+    assert!(matches!(
+        recovered.read_committed(&request),
+        Err(CellSplitCnsCutoverErrorV1::Invalid)
+    ));
+    assert!(matches!(
+        recovered.authorize_execute(&request),
+        Err(CellSplitCnsCutoverErrorV1::Invalid)
+    ));
 }
 
 #[test]
