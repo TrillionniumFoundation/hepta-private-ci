@@ -439,3 +439,15 @@ silently to the last value. The immutable journal byte SHA alone is not
 sufficient to prohibit ambiguous physical input. This change is a research
 integrity requirement and adds no cryptographic signatures, independent
 NDU permissions or production capability.
+
+
+### Immutable three-way review output
+
+The prequential_threeway_review.py CLI now writes its evaluation report with
+exclusive-create file semantics. It refuses to overwrite a prior report,
+including a prior non-authorizing diagnostic whose no-change or frozen
+results differ. Nonfinite/invalid JSON serialization is rejected before a
+file is created. Source-run prediction journals and output reports remain
+operator-supplied or local unsigned evidence; exclusive-create protects
+audit history but is not CAS, a signed evaluator receipt, durable crash
+transaction, or a production final-use grant.
