@@ -63,6 +63,21 @@ impl FixturePort {
 impl CellSplitExecutionPortV1 for FixturePort {
     type Error = &'static str;
 
+    fn preflight_uncommitted(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        if self
+            .observed
+            .borrow()
+            .commits
+            .contains_key(&intent.idempotency_key)
+        {
+            return Err("effect already exists");
+        }
+        Ok(())
+    }
+
     fn execute(
         &mut self,
         intent: &CellSplitExecutionIntentV1,
