@@ -588,5 +588,30 @@ fn live_owner_rejects_same_length_accepted_frame_tampering_before_resume() {
     actors.install(&owner.plan, CellSplitStepV1::IndependentSelection);
     assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
     assert_eq!(actors.attempts.len(), 3);
-    assert!(owner.progress().accepted_steps == 3);
+    assert_eq!(owner.progress().accepted_steps, 3);
+}
+
+#[test]
+fn recovery_rejects_oversized_journal_without_mutating_it() {
+    let file = NamedTempFile::new().expect("temp ledger");
+    let p = plan();
+    let owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
+        .expect("bootstrap");
+    let anchor = owner.anchor();
+    drop(owner);
+
+    let oversized = reopen(&file);
+    oversized
+        .set_len(MAX_LEDGER_SIZE as u64 + 1)
+        .expect("simulate oversized backing file");
+    oversized.sync_all().expect("sync oversized file");
+    drop(oversized);
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::recover(reopen(&file), p, anchor),
+        Err(CellSplitErrorV1::Corrupt)
+    ));
+    assert_eq!(
+        reopen(&file).metadata().expect("metadata").len(),
+        MAX_LEDGER_SIZE as u64 + 1
+    );
 }
