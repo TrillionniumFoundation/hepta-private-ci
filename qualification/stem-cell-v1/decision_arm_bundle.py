@@ -142,6 +142,19 @@ def assemble(plan, evidence_root, entries, dataset, scope):
         if model in ("deberta_v3_large", "modernbert_large") and phase == "equal_budget":
             local_runner = Path(__file__).with_name("hf_joint_decision_runner.py")
             loading = run.get("verified_encoder_loading")
+            materialized = run.get("verified_exact_tensor_materialization")
+            checked_tensors = (type(materialized) is dict and
+                               materialized.get("schema") ==
+                               "hepta.local-hf-exact-tensor-materialization.v1" and
+                               materialized.get("complete") is True and
+                               materialized.get("all_state_dict_tensors_compared") is True and
+                               materialized.get("production_authorization") is False and
+                               type(materialized.get("tensor_count")) is int and
+                               materialized["tensor_count"] > 0 and
+                               type(materialized.get("tensor_elements")) is int and
+                               materialized["tensor_elements"] >= materialized["tensor_count"] and
+                               type(materialized.get("safetensors_shards")) is int and
+                               1 <= materialized["safetensors_shards"] <= 64)
             if (run.get("schema") != "hepta.stem-cell-actual-hf-joint-decision.v1" or
                     run.get("runner_source_sha256") != sha256_file(local_runner) or
                     type(loading) is not dict or loading != {
@@ -149,7 +162,7 @@ def assemble(plan, evidence_root, entries, dataset, scope):
                         "complete": True,
                         "missing_keys": 0, "unexpected_keys": 0,
                         "mismatched_keys": 0, "error_msgs": 0,
-                    } or
+                    } or not checked_tensors or
                     run.get("pretrained_typed_decision_head_existed") is not False or
                     run.get("checkpoint_zero_shot_score_emitted") is not False):
                 raise ValueError("HF arm lacks complete audited safetensors loading/runner evidence")
