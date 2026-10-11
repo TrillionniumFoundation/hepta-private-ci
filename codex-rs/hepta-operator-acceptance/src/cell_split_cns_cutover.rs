@@ -26,6 +26,7 @@ use crate::CellSplitExecutionIntentV1;
 use crate::CellSplitExecutionPlanV1;
 use crate::CellSplitExecutionStepV1;
 use crate::CellSplitOwnedEffectV1;
+use crate::durable::SIDECAR_LOCK_FILE;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
@@ -194,7 +195,7 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
         // a fresh observation of the old route cannot prove that the caller
         // supplied the same plan and independent owner trust as before.
         let initialized_before = match fs::symlink_metadata(
-            root.join(".operator-acceptance.lock"),
+            root.join(SIDECAR_LOCK_FILE),
         ) {
             Ok(_) => true,
             Err(error) if error.kind() == ErrorKind::NotFound => false,
