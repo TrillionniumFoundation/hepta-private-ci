@@ -6,7 +6,7 @@ on:
     paths:
       - "qualification/neuron-stem/fbsde*.py"
       - "qualification/neuron-stem/test_fbsde*.py"
-      - "qualification/neuron-stem/FBSDE_STUDY.md"
+      - "qualification/neuron-stem/FBSDE*.md"
       - ".github/workflows/hepta-neuron-fbsde-study.yml"
 
 permissions:
@@ -35,6 +35,8 @@ jobs:
             -s qualification/neuron-stem -p 'test_*.py' -v 2>&1 | tee exact-tests.log
           PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
             --output exact-study 2>&1 | tee exact-study.log
+          PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
+            --profile coupled_nonlinear_v1 --output nonlinear-study 2>&1 | tee nonlinear-study.log
           git diff --exit-code
       - name: Retain original source, measurements and failures
         if: always()
@@ -47,6 +49,8 @@ jobs:
             exact-tests.log
             exact-study.log
             exact-study/
+            nonlinear-study.log
+            nonlinear-study/
           if-no-files-found: error
           retention-days: 30
 
@@ -99,5 +103,46 @@ jobs:
             tensor-tests.log
             real-study.log
             real-study/
+          if-no-files-found: error
+          retention-days: 30
+
+
+  learned-coupled-field:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin source and isolated actual CPU learning environment
+        run: |
+          git rev-parse HEAD > coupled-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > coupled-source.tar.gz
+          python3 -m venv /tmp/coupled-venv
+          /tmp/coupled-venv/bin/pip install numpy==2.2.6
+          /tmp/coupled-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/coupled-venv/bin/pip freeze > coupled-environment.txt
+      - name: Learn field proposals and correct the original discrete problem
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/coupled-venv/bin/python -m unittest fbsde_coupled_tensor_checks -v 2>&1 | tee coupled-tests.log
+          /tmp/coupled-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile learned_coupled_v1 --output learned-coupled 2>&1 | tee coupled-study.log
+          git diff --exit-code
+      - name: Retain numerical training evidence, not pretrained weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fbsde-learned-coupled-${{ github.run_id }}
+          path: |
+            coupled-source.txt
+            coupled-source.tar.gz
+            coupled-environment.txt
+            coupled-tests.log
+            coupled-study.log
+            learned-coupled/
           if-no-files-found: error
           retention-days: 30

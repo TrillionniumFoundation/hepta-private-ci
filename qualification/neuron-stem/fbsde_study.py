@@ -11,10 +11,13 @@ import fbsde_tree
 
 
 def run(output, profile="exact_v1"):
-    require(profile in ("exact_v1", "coupled_nonlinear_v1"), "study profile")
+    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1"), "study profile")
     if profile == "coupled_nonlinear_v1":
         from fbsde_coupled_study import run as run_coupled
         return run_coupled(output)
+    if profile == "learned_coupled_v1":
+        from fbsde_coupled_learning import experiment
+        return experiment(output)
     output.mkdir(parents=True,exist_ok=False)
     sources={name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
              for name in ('fbsde_local.py','fbsde_tree.py','fbsde_study.py','four_gate_common.py')}
@@ -46,6 +49,6 @@ def run(output, profile="exact_v1"):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1"), default="exact_v1")
+    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1"), default="exact_v1")
     args = parser.parse_args()
     run(args.output, args.profile)
