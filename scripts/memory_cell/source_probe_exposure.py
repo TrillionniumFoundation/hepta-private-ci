@@ -27,7 +27,7 @@ def verified_visits(documents, tokenizer, training):
     if (
         not documents
         or len({doc.identity for doc in documents}) != len(documents)
-        or set(training.get("roots", ())) != {doc.root for doc in documents}
+        or training.get("roots") != sorted({doc.root for doc in documents})
         or not set(training.get("scopes", ())) <= {doc.scope for doc in documents}
     ):
         raise ValueError("source training view or ancestry drift")
@@ -66,8 +66,10 @@ def verified_visits(documents, tokenizer, training):
     prepared, expected = prepare(
         tokenizer, examples, maximum_steps=maximum, token_ceiling=ceiling
     )
-    if existing != expected or training.get("training_digest") != digest(
-        (examples, prepared)
+    if (
+        existing != expected
+        or training.get("scopes") != expected["scopes"]
+        or training.get("training_digest") != digest((examples, prepared))
     ):
         raise ValueError("writer schedule or exact token exposure changed")
     coverage = audit_coverage(
@@ -81,7 +83,10 @@ def verified_visits(documents, tokenizer, training):
         or training.get("supervised_tokens") != existing["planned_supervised_tokens"]
         or not isinstance(training.get("losses"), list)
         or len(training["losses"]) != training["steps"]
-        or any(type(x) not in (int, float) or not math.isfinite(x) for x in training["losses"])
+        or any(
+            type(x) not in (int, float) or not math.isfinite(x)
+            for x in training["losses"]
+        )
     ):
         raise ValueError("completed training does not match the claimed source visits")
     identities = [item["query"]["identity"] for item in examples]
