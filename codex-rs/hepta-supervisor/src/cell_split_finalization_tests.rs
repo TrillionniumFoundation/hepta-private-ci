@@ -459,3 +459,158 @@ fn lost_ack_after_real_journal_fsync_recovers_without_second_retirement() {
     assert_eq!(original.revision, minimum.revision + 1);
     assert_eq!(owner.finalize_once().expect("never append twice"), original);
 }
+
+
+#[cfg(unix)]
+fn real_supervisor_effect_inputs() -> (
+    codex_hepta_operator_acceptance::CellSplitExecutionPlanV1,
+    codex_hepta_operator_acceptance::CellSplitSupervisorFenceBindingV1,
+    codex_hepta_operator_acceptance::CellSplitExecutionIntentV1,
+    Digest32,
+) {
+    use codex_hepta_operator_acceptance::{
+        CellSplitExecutionIntentV1, CellSplitExecutionPlanV1, CellSplitExecutionStepV1,
+        CellSplitSupervisorFenceBindingV1,
+    };
+    use sha2::Digest as _;
+
+    let real = binding();
+    let accepted_handoff = digest("independently signed handoff plan");
+    let execution = CellSplitExecutionPlanV1 {
+        split_id: real.operation_id.to_string(),
+        scope_digest: digest("journal scope").to_string(),
+        parent_generation: real.old_generation.get(),
+        child_generation: real.new_generation.get(),
+        parent_artifact_digest: digest("parent immutable artifact").to_string(),
+        child_artifact_digest: digest("selected immutable artifact").to_string(),
+        ndu_snapshot_digest: digest("independent NDU selection").to_string(),
+        route_fence_digest: digest("current real result fence").to_string(),
+        owner_ids: [
+            "artifact.owner".into(),
+            "migration.owner".into(),
+            "cns.owner".into(),
+            "supervisor.owner".into(),
+        ],
+    };
+    let outer = CellSplitSupervisorFenceBindingV1 {
+        supervisor_id: "supervisor.real".into(),
+        domain_id: real.domain_id.to_string(),
+        authority_epoch: real.authority_epoch,
+        handoff_plan_digest: accepted_handoff.to_string(),
+        successor_route_digest: real.successor_route_digest.to_string(),
+    };
+    let plan_digest = execution.digest().expect("frozen plan digest");
+    let previous = real.cns_cutover_receipt_digest.to_string();
+    let idempotency_key = format!(
+        "{:x}",
+        sha2::Sha256::digest(
+            format!(
+                "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
+                plan_digest,
+                CellSplitExecutionStepV1::SupervisorGenerationFence.index(),
+                previous,
+            )
+            .as_bytes()
+        )
+    );
+    let intent = CellSplitExecutionIntentV1 {
+        schema: "hepta.learning.cell-split.execution-owner.v1".into(),
+        plan_digest,
+        step: CellSplitExecutionStepV1::SupervisorGenerationFence,
+        owner_id: execution.owner_ids[3].clone(),
+        idempotency_key,
+        previous_receipt_digest: previous,
+    };
+    (execution, outer, intent, accepted_handoff)
+}
+
+#[cfg(unix)]
+#[test]
+fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
+    use codex_hepta_operator_acceptance::{
+        CellSplitDurableEffectBackendV1, CellSplitSupervisorFenceOwnerV1,
+    };
+    use ed25519_dalek::SigningKey;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let root = tempfile::tempdir().expect("private owner");
+    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
+        .expect("private root");
+    let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
+    let authority = LiveAuthority::allowed();
+    let (plan, fence, intent, accepted) = real_supervisor_effect_inputs();
+    let signer = SigningKey::from_bytes(&[21; 32]);
+
+    let original;
+    {
+        let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+            file(&root), &minimum, binding(), authority.clone(),
+        ).expect("real locked journal");
+        let port = crate::CellSplitSupervisorJournalRuntimePortV1::new(
+            plan.clone(), fence.clone(), intent.clone(), accepted,
+            finalizer, signer.clone(),
+        ).expect("pinned source of truth");
+        let mut owner = CellSplitSupervisorFenceOwnerV1::open(
+            root.path(), plan.clone(), fence.clone(), port,
+        ).expect("real protocol owner");
+        assert!(owner.read_committed(&intent).expect("published").is_none());
+        owner.commit_once(&intent).expect("actual fsynced journal retirement");
+        original = owner.read_committed(&intent).expect("read").expect("commit");
+        assert_eq!(original.owner_sequence, minimum.revision + 1);
+        assert!(owner.verify_current(&intent, &original).expect("live journal"));
+        owner.commit_once(&intent).expect("no second append");
+    }
+
+    let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root), &minimum, binding(), authority.clone(),
+    ).expect("authenticated original journal recovery");
+    let port = crate::CellSplitSupervisorJournalRuntimePortV1::new(
+        plan.clone(), fence.clone(), intent.clone(), accepted,
+        finalizer, signer,
+    ).expect("trusted replay");
+    let mut reopened = CellSplitSupervisorFenceOwnerV1::open(
+        root.path(), plan, fence, port,
+    ).expect("reopen frozen effect");
+    assert_eq!(reopened.read_committed(&intent).expect("fresh readback"), Some(original.clone()));
+    assert!(reopened.verify_current(&intent, &original).expect("authenticated original"));
+    authority.final_use_live.store(false, Ordering::Release);
+    assert!(reopened.verify_current(&intent, &original).is_err());
+}
+
+#[cfg(unix)]
+#[test]
+fn real_journal_port_rejects_forged_nonce_and_unpinned_cutover() {
+    use codex_hepta_operator_acceptance::CellSplitSupervisorRuntimePortV1;
+    use ed25519_dalek::SigningKey;
+
+    let root = tempfile::tempdir().expect("private owner");
+    let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
+    let authority = LiveAuthority::allowed();
+    let (plan, fence, intent, accepted) = real_supervisor_effect_inputs();
+    let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root), &minimum, binding(), authority,
+    ).expect("original journal");
+    let mut port = crate::CellSplitSupervisorJournalRuntimePortV1::new(
+        plan.clone(), fence.clone(), intent.clone(), accepted,
+        finalizer, SigningKey::from_bytes(&[23; 32]),
+    ).expect("pinned journal port");
+
+    let live = port.read_live(
+        &fence.supervisor_id, &fence.domain_id, &"aa".repeat(32),
+    ).expect("authenticated live read");
+    port.verify_live(&live).expect("original signed challenge");
+    let mut stale = live.clone();
+    stale.challenge_nonce = "bb".repeat(32);
+    assert!(port.verify_live(&stale).is_err());
+
+    let mut unbound = intent.clone();
+    unbound.previous_receipt_digest = digest("different cutover").to_string();
+    assert!(port.verify_preconditions(&plan, &unbound, &fence).is_err());
+
+    port.finalize_once(&plan, &intent, &fence).expect("actual durable retirement");
+    let mut original = port.read_original_commit(&intent.idempotency_key)
+        .expect("source record").expect("durable receipt");
+    port.verify_original_commit(&original).expect("pinned original record");
+    original.original_checkpoint_bytes[0] ^= 1;
+    assert!(port.verify_original_commit(&original).is_err());
+}
