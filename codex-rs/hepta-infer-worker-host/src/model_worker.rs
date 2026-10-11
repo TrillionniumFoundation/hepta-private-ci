@@ -126,6 +126,9 @@ pub enum Error {
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
+    /// Driver release failed: keep the handle accounted and block every use.
+    /// Restart under a new generation only after independent reconciliation.
+    ModelUnloadIndeterminate,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -164,6 +167,7 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    unload_indeterminate: bool,
 }
 
 #[derive(Debug)]
@@ -236,6 +240,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                unload_indeterminate: false,
             },
         );
         Ok(observation)
@@ -258,6 +263,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -340,12 +348,21 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelUnloadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if loaded.unload_indeterminate {
+            // A failed driver release may have partially freed the model.
+            // Never re-run a possibly non-idempotent release or reopen it.
+            return Err(Error::ModelUnloadIndeterminate);
+        }
+        // Keep the exact handle in the model registry until driver release is
+        // observed. Failed release retains the capacity claim permanently
+        // within this generation, forbidding duplicate load and every run.
+        loaded.unload_indeterminate = true;
+        self.driver.unload(loaded.handle.clone())?;
+        self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -518,6 +535,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest

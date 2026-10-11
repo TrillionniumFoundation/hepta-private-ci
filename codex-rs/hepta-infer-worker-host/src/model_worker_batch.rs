@@ -102,6 +102,9 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         let exemplar = &requests[0];
         let encoder = &exemplar.encoder_digest;
         let input_width = exemplar.feature_vector_q24.len();

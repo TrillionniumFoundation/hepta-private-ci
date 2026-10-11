@@ -5,6 +5,8 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    fail_unload: bool,
+    unload_calls: usize,
     loaded: usize,
 }
 
@@ -41,6 +43,10 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        self.unload_calls += 1;
+        if self.fail_unload {
+            return Err(Error::DriverFailure("injected unload failure".to_string()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -179,6 +185,64 @@ fn lost_driver_terminality_is_indeterminate() {
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
     assert_eq!(observed.output_digest, None);
+}
+
+#[test]
+fn uncertain_unload_remains_accounted_and_rejects_all_future_use() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.unload-failed".to_string(),
+        3,
+        grant(),
+        Driver {
+            fail_unload: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::DriverFailure("injected unload failure".to_string()))
+    );
+    assert_eq!(worker.models.len(), 1, "model capacity remains occupied");
+    assert_eq!(worker.driver.loaded, 1, "driver resource is not claimed freed");
+    assert_eq!(worker.driver.unload_calls, 1);
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelUnloadIndeterminate)
+    );
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelUnloadIndeterminate)
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::ModelUnloadIndeterminate),
+        "potentially non-idempotent release is never retried in this generation"
+    );
+    assert_eq!(worker.driver.unload_calls, 1);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::ModelAlreadyLoaded),
+        "unresolved model cannot be replaced with a fresh handle"
+    );
+}
+
+#[test]
+fn observed_unload_releases_the_registered_handle_once() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.unload-ok".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert!(worker.unload_model(100, "model.1").expect("unload").terminal_observed);
+    assert_eq!(worker.driver.loaded, 0);
+    assert_eq!(worker.driver.unload_calls, 1);
+    assert_eq!(worker.models.len(), 0);
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelNotLoaded)
+    );
 }
 
 fn neuron_feature_request() -> NeuronFeatureRequest {
@@ -513,3 +577,21 @@ fn batch_capacity_and_cancelled_requests_fail_closed() {
     assert_eq!(worker.driver.backend_calls, 0);
     worker.unload_model(100, "model.1").expect("released");
 }
+
+#[test]
+fn failed_release_blocks_native_backend_batch_without_dispatch() {
+    let mut worker = batch_worker(BatchFault::None);
+    worker.driver.inner.fail_unload = true;
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::DriverFailure("injected unload failure".to_string()))
+    );
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+        Err(Error::ModelUnloadIndeterminate)
+    );
+    assert_eq!(worker.driver.backend_calls, 0);
+    assert_eq!(worker.driver.inner.unload_calls, 1);
+    assert_eq!(worker.models.len(), 1);
+}
+
