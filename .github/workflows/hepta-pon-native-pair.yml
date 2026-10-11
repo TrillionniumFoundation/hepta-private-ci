@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 127ccdf03a6967ed102d77f040f381ed44ee8fa8
+      CHAIN_SOURCE_SHA: a6b8a72eabc32c8e26df53194f6ed9179483ea66
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '127ccdf03a6967ed102d77f040f381ed44ee8fa8' || '013be30861f91ee1258298dafc3ba20b3185e1d7' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'a6b8a72eabc32c8e26df53194f6ed9179483ea66' || '828f1ca8421469fd4389f2c7a860d4adb120e1dd' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -115,6 +115,13 @@ jobs:
           set -euo pipefail
           for selector in native_empty_constants_match_wire_and_keep_owned_copy_isolation native_empty_constants_parallel_callers_keep_independent_values; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "account_archive_prototype::native_store::tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require exact cumulative-work arithmetic and every differential selector
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-work-arithmetic.json" --minimum-tests 6 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib consensus::tests:: -- --show-output --test-threads=1
+          for selector in aligned_division_preserves_all_512_shift_and_limb_boundaries aligned_division_matches_original_for_wide_arbitrary_operands aligned_required_work_and_retarget_match_original_arithmetic; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "consensus::tests::$selector" -- --exact --show-output --test-threads=1
           done
       - name: Require complete authenticated snapshot retention and rollback controls
         run: |
