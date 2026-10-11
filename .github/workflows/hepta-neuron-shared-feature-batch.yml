@@ -84,6 +84,18 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence --lib outcome_credit_v2::tests:: -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Reopen actual Windows SQLite schema and historical migration databases
+        shell: pwsh
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --lib migration_convergence_tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib cognitive_schema_tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Enforce canonical SQLite owner API on Windows tests
+        shell: pwsh
+        run: |
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory -p codex-hepta-automation --all-targets -- -D clippy::disallowed_methods -D clippy::correctness
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify exact source was not changed by conformance tests
         if: always()
         shell: pwsh
