@@ -184,6 +184,67 @@ fn trust_policy_json_rejects_unknown_fields_and_malformed_keys() {
 }
 
 #[test]
+fn host_observer_keys_must_be_independent_and_signer_aliases_unique() {
+    let host = key(41);
+    let observer = key(43);
+    let shared = policy(&host, &host);
+    assert!(shared.to_json_bytes().is_err());
+
+    let mut file = CellSplitTargetHostEvidenceTrustPolicyFileV1 {
+        schema: CELL_SPLIT_TARGET_HOST_TRUST_POLICY_SCHEMA_V1.to_string(),
+        schema_version: 1,
+        host_keys: BTreeMap::from([(
+            "host-signer".to_string(),
+            BASE64.encode(host.verifying_key().to_bytes()),
+        )]),
+        observer_keys: BTreeMap::from([(
+            "observer-signer".to_string(),
+            BASE64.encode(observer.verifying_key().to_bytes()),
+        )]),
+    };
+    assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
+        &canonical_json(&file).expect("independent canonical keys"),
+    )
+    .is_ok());
+    file.observer_keys.insert(
+        "observer-alias".to_string(),
+        BASE64.encode(observer.verifying_key().to_bytes()),
+    );
+    assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
+        &canonical_json(&file).expect("duplicate observer key"),
+    )
+    .is_err());
+    file.observer_keys.clear();
+    file.observer_keys.insert(
+        "observer-signer".to_string(),
+        BASE64.encode(host.verifying_key().to_bytes()),
+    );
+    assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
+        &canonical_json(&file).expect("shared host and observer key"),
+    )
+    .is_err());
+    file.observer_keys.insert(
+        "observer-signer".to_string(),
+        BASE64.encode([0_u8; 32]),
+    );
+    assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
+        &canonical_json(&file).expect("invalid or weak observer key"),
+    )
+    .is_err());
+}
+
+#[test]
+fn target_host_gate_rejects_zero_and_noncanonical_digests() {
+    let mut zero = complete_recorder();
+    zero.target_host_attestation_digest = ZERO_DIGEST.to_string();
+    assert!(replay_payload(&zero).is_err());
+
+    let mut noncanonical = complete_recorder();
+    noncanonical.child_artifact_digest = CHILD.to_uppercase();
+    assert!(replay_payload(&noncanonical).is_err());
+}
+
+#[test]
 fn signed_production_evidence_replays_and_measures_cpu_and_gpu() {
     let payload = complete_recorder();
     let host = key(3);
