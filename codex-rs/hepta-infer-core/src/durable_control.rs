@@ -238,6 +238,11 @@ impl DurableInferenceControl {
                 native.replay(json)?;
             } else {
                 let event = decode_event(line)?;
+                // Replayed legacy events must satisfy the same non-temporal
+                // field constraints as live writes. An on-disk WAL line is
+                // never trusted merely because its state transition parses.
+                validate_replayed_legacy_event(&event)
+                    .map_err(|_| Error::CorruptJournal("invalid legacy event fields"))?;
                 apply_event(
                     &mut records,
                     &reservation_owners,
@@ -447,42 +452,7 @@ impl DurableInferenceControl {
         if record.state.terminal() {
             return Err(Error::Conflict);
         }
-        let reservation = record
-            .reservation
-            .as_ref()
-            .ok_or(Error::ReservationMismatch)?;
-        let assignment = record
-            .assignment
-            .as_ref()
-            .ok_or(Error::AssignmentMismatch)?;
-        if observation.request_id != record.request.request_id
-            || observation.reservation_id != reservation.reservation_id
-            || observation.worker_id != assignment.worker_id
-            || observation.worker_generation != assignment.worker_generation
-            || observation.model_digest != record.request.model_digest
-            || observation.payload_digest != record.request.payload_digest
-        {
-            return Err(Error::AssignmentMismatch);
-        }
-        if observation.consumed_tokens > reservation.maximum_tokens {
-            return Err(Error::UsageExceeded);
-        }
-        if observation.terminal_observed {
-            let status = observation
-                .terminal_status
-                .ok_or(Error::TerminalObservationMissing)?;
-            if !matches!(
-                status,
-                RequestState::Completed | RequestState::Failed | RequestState::Cancelled
-            ) {
-                return Err(Error::InvalidTransition);
-            }
-            if matches!(status, RequestState::Completed) && observation.output_digest.is_none() {
-                return Err(Error::TerminalObservationMissing);
-            }
-        } else if observation.terminal_status.is_some() || observation.output_digest.is_some() {
-            return Err(Error::TerminalObservationMissing);
-        }
+        validate_terminal_for_record(record, &observation)?;
         self.commit(Event::Settle {
             request_id: request_id.to_string(),
             expected_revision,
@@ -663,6 +633,9 @@ fn apply_event(
             if record.state != RequestState::Pending {
                 return Err(Error::InvalidTransition);
             }
+            if reservation.maximum_tokens < record.request.maximum_tokens {
+                return Err(Error::UsageExceeded);
+            }
             record.reservation = Some(reservation.clone());
             record.state = RequestState::Reserved;
             record.revision = next_revision(record.revision)?;
@@ -733,6 +706,7 @@ fn apply_event(
             ) {
                 return Err(Error::InvalidTransition);
             }
+            validate_terminal_for_record(record, observation)?;
             record.state = if observation.terminal_observed {
                 observation
                     .terminal_status
@@ -761,6 +735,99 @@ fn require_revision(record: &RequestRecord, expected: u64, replay: bool) -> Resu
 
 fn next_revision(value: u64) -> Result<u64, Error> {
     value.checked_add(1).ok_or(Error::ArithmeticOverflow)
+}
+
+/// Validate all legacy WAL fields before reconstructing durable state. The
+/// timestamps are historical, so replay checks their nonzero/bounded structure
+/// without comparing them to the process's current wall clock. Currentness is
+/// still checked by the claim owner immediately before any new dispatch.
+fn validate_replayed_legacy_event(event: &Event) -> Result<(), Error> {
+    match event {
+        Event::Submit(value) => validate_request(0, value),
+        Event::Reserve {
+            request_id,
+            reservation,
+            ..
+        } => {
+            validate_identity(request_id, "request")?;
+            validate_reservation(0, reservation)
+        }
+        Event::Assign {
+            request_id,
+            assignment,
+            ..
+        } => {
+            validate_identity(request_id, "request")?;
+            validate_assignment(assignment)
+        }
+        Event::Dispatch {
+            request_id,
+            reservation_id,
+            assignment,
+            ..
+        } => {
+            validate_identity(request_id, "request")?;
+            validate_identity(reservation_id, "reservation")?;
+            validate_assignment(assignment)
+        }
+        Event::Cancel { request_id, .. } => validate_identity(request_id, "request"),
+        Event::Settle {
+            request_id,
+            observation_digest,
+            observation,
+            ..
+        } => {
+            validate_identity(request_id, "request")?;
+            validate_digest(observation_digest, "observation")?;
+            validate_observation(observation)
+        }
+    }
+}
+
+/// The same immutable request/reservation/worker/terminal checks apply to
+/// admission and WAL replay. A forged legacy Settle line must not manufacture
+/// a completed request or an arbitrary resource accounting outcome on reopen.
+fn validate_terminal_for_record(
+    record: &RequestRecord,
+    observation: &TerminalObservation,
+) -> Result<(), Error> {
+    let reservation = record
+        .reservation
+        .as_ref()
+        .ok_or(Error::ReservationMismatch)?;
+    let assignment = record
+        .assignment
+        .as_ref()
+        .ok_or(Error::AssignmentMismatch)?;
+    if observation.request_id != record.request.request_id
+        || observation.reservation_id != reservation.reservation_id
+        || observation.worker_id != assignment.worker_id
+        || observation.worker_generation != assignment.worker_generation
+        || observation.model_digest != record.request.model_digest
+        || observation.payload_digest != record.request.payload_digest
+    {
+        return Err(Error::AssignmentMismatch);
+    }
+    if observation.consumed_tokens > reservation.maximum_tokens {
+        return Err(Error::UsageExceeded);
+    }
+    if observation.terminal_observed {
+        let status = observation
+            .terminal_status
+            .ok_or(Error::TerminalObservationMissing)?;
+        if !matches!(
+            status,
+            RequestState::Completed | RequestState::Failed | RequestState::Cancelled
+        ) {
+            return Err(Error::InvalidTransition);
+        }
+        if status == RequestState::Completed && observation.output_digest.is_none() {
+            return Err(Error::TerminalObservationMissing);
+        }
+    } else if observation.terminal_status.is_some() || observation.output_digest.is_some() {
+        return Err(Error::TerminalObservationMissing);
+    }
+    Ok(())
 }
 
 fn validate_request(now_ms: u64, request: &InferenceRequest) -> Result<(), Error> {

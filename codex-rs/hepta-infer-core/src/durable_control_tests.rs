@@ -437,3 +437,71 @@ fn large_request_table_updates_one_record_and_replays_exactly() {
     drop(reopened);
     fs::remove_file(&journal).unwrap();
 }
+
+#[test]
+fn malformed_legacy_submit_and_short_reservation_wal_fail_closed_on_replay() {
+    let forged_submit = path("invalid-legacy-submit");
+    fs::write(
+        &forged_submit,
+        format!(
+            "submit|bad!request|principal.1|{}|{}|128|10000|{}\n",
+            "1".repeat(64),
+            "2".repeat(64),
+            "3".repeat(64)
+        ),
+    )
+    .unwrap();
+    assert!(matches!(
+        DurableInferenceControl::open(&forged_submit, 32),
+        Err(Error::CorruptJournal("invalid legacy event fields"))
+    ));
+    fs::remove_file(&forged_submit).unwrap();
+
+    let short = path("forged-short-reservation");
+    let mut owner = DurableInferenceControl::open(&short, 32).unwrap();
+    owner.submit(100, request()).unwrap();
+    drop(owner);
+    let mut wal = OpenOptions::new().append(true).open(&short).unwrap();
+    wal.write_all(b"reserve|request.1|1|reservation.1|100|1|4|9000\n")
+        .unwrap();
+    wal.sync_all().unwrap();
+    drop(wal);
+    assert!(matches!(
+        DurableInferenceControl::open(&short, 32),
+        Err(Error::UsageExceeded)
+    ));
+    fs::remove_file(&short).unwrap();
+}
+
+#[test]
+fn forged_legacy_terminal_wal_cannot_relabel_or_overcharge_on_recovery() {
+    for (case, observed_request, tokens, terminal, status, output) in [
+        ("wrong-request", "request.2", 1, "1", "completed", "5".repeat(64)),
+        ("over-quota", "request.1", 129, "1", "completed", "5".repeat(64)),
+        ("invalid-terminal", "request.1", 1, "0", "completed", "none".to_string()),
+        ("missing-output", "request.1", 1, "1", "completed", "none".to_string()),
+    ] {
+        let journal = path(case);
+        let mut owner = DurableInferenceControl::open(&journal, 32).unwrap();
+        owner.submit(100, request()).unwrap();
+        owner.reserve(100, "request.1", 1, reservation()).unwrap();
+        owner.assign("request.1", 2, assignment()).unwrap();
+        drop(owner);
+
+        let line = format!(
+            "settle|request.1|3|{}|reservation.1|worker.1|2|{}|{}|{terminal}|{status}|{output}|{tokens}|1|{observed_request}\n",
+            "6".repeat(64),
+            "1".repeat(64),
+            "2".repeat(64)
+        );
+        let mut wal = OpenOptions::new().append(true).open(&journal).unwrap();
+        wal.write_all(line.as_bytes()).unwrap();
+        wal.sync_all().unwrap();
+        drop(wal);
+        assert!(
+            DurableInferenceControl::open(&journal, 32).is_err(),
+            "forged historical terminal must be rejected: {case}"
+        );
+        fs::remove_file(&journal).unwrap();
+    }
+}

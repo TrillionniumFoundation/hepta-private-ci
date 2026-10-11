@@ -155,3 +155,28 @@ uses a separate in-flight-slot model, not this legacy reservation ID field.
 This is identity safety, not quota-authority authentication or an actual
 production resource grant. Physical grants and selected-route evidence remain
 independently owned.
+
+## Harden historical inference.control WAL replay before dispatch admission
+
+The legacy durable-control journal can retain requests from older profiles,
+alongside the new fsynced `Assigned -> Dispatching` claim. On reopen it must
+not accept structurally decoded but semantically impossible legacy events.
+The native owner now rechecks legacy Submit/Reserve/Assign/Dispatch/Cancel/Settle
+field constraints during journal recovery, without comparing historical
+deadlines to the *new* process wall clock. It also enforces original request
+token bounds and exact Request/Reservation/Worker/Model/Payload identity plus
+terminal status/output coherence when applying a recovered Settle.
+
+The regression tests append deliberately forged WAL records **after closing
+the legitimate writer**, then assert that reopening fails closed for an
+invalid request identity, an under-budget reservation, a terminal observation
+for the wrong request, tokens exceeding the reserved maximum, contradictory
+terminality, and a claimed completion without output.
+
+This change intentionally preserves existing legacy journal serialization and
+does not introduce a fake new owner, remote attestation or deployment grant.
+It detects inconsistent event semantics; the historical text WAL is **not**
+cryptographically tamper-evident. Production rollout still needs a separately
+retained journal-head witness, trusted file access and full current authority
+verification. On partial write/unknown sync, the writer remains poisoned and
+does not allow a second physical dispatch.
