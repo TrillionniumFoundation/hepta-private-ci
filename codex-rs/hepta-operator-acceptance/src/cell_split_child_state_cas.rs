@@ -129,6 +129,9 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
         migration: CellStateMigrationV1,
         authority: A,
     ) -> Result<Self, CellSplitChildStateCasErrorV1> {
+        // Require the coordinator's complete frozen-plan contract even when
+        // this effect owner is opened independently of Agentd.
+        let plan_digest = plan.digest().map_err(|_| CellSplitChildStateCasErrorV1::Invalid)?;
         if migration.phase() != CellStateMigrationPhaseV1::Prepared
             || migration.operation_id().as_str() != plan.split_id
             || migration.parent_anchor().sequence == 0
@@ -158,7 +161,7 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
         }
         let root = secure_root(root, "child migration CAS root")?;
         let lock = lock_sidecar(&root)?;
-        let plan_digest = sha256(&canonical_json(&plan)?);
+
         let frozen_path = root.join(FROZEN);
         let frozen_bytes = canonical_json(&plan)?;
         let frozen_input_bytes = frozen_migration_bytes(&migration, &plan_digest)?;
