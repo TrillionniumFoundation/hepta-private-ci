@@ -255,6 +255,9 @@ def audit(archive, original, *, expected_commit):
     labels = read(
         original / "observations/labels.json", collection["files"]["labels.json"]
     )
+    public_questions = read(
+        original / "observations/questions.json", collection["files"]["questions.json"]
+    )
     documents = {row["identity"]: row for row in originals}
     if len(documents) != len(originals) or len(originals) != 108:
         raise ValueError("original event source changed")
@@ -435,8 +438,24 @@ def audit(archive, original, *, expected_commit):
             from strong_rag_repeatability import audit_repeats
 
             same_prompt_consistency = audit_repeats(replay, questions, arms)
+            from historical_event_citation_chain import audit_evaluation
+
+            formal_citation_chain = audit_evaluation(
+                replay,
+                public_questions,
+                target,
+                documents,
+                expected_qids=questions,
+                arms=arms,
+            )
             if (
-                report["success_by_arm"] != summary
+                report["formal_citation_chain"] != formal_citation_chain
+                or any(
+                    formal_citation_chain["by_arm"][arm]["strict_task_success"]
+                    != summary[arm]["strict_success"]
+                    for arm in arms
+                )
+                or report["success_by_arm"] != summary
                 or report["same_prompt_consistency"] != same_prompt_consistency
                 or report["paired_contrasts"] != paired_results
                 or report["selected_k"] != frozen["selected_k"]
@@ -472,6 +491,7 @@ def audit(archive, original, *, expected_commit):
                         )
             result["paired_contrasts"] = paired_results
             result["same_prompt_consistency"] = same_prompt_consistency
+            result["formal_citation_chain"] = formal_citation_chain
         result[stage] = dict(
             attempts=len(raw),
             all_model_calls_succeeded=all(r["status"] == "succeeded" for r in raw),

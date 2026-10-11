@@ -5,6 +5,9 @@ on:
       - codex/memory-cell-evidence-20261008
     paths:
       - "scripts/memory_cell/strong_rag_trial.py"
+      - "scripts/memory_cell/historical_event_citation_chain.py"
+      - "scripts/memory_cell/test_historical_event_citation_chain.py"
+      - "scripts/memory_cell/test_strong_rag_citation_bridge.py"
       - "scripts/memory_cell/test_strong_rag_trial.py"
       - "scripts/memory_cell/strong_rag_hop_control.py"
       - "scripts/memory_cell/test_strong_rag_hop_control.py"
@@ -50,7 +53,7 @@ jobs:
           cat /tmp/strong-rag-format/check.log
           if [ "$code" -ne 0 ]; then
             just fmt --base "$BASE_COMMIT"
-            cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_hop_control.py scripts/memory_cell/test_strong_rag_hop_control.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py scripts/memory_cell/strong_rag_repeatability.py scripts/memory_cell/test_strong_rag_repeatability.py scripts/memory_cell/strong_rag_stability.py scripts/memory_cell/test_strong_rag_stability.py /tmp/strong-rag-format/
+            cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_hop_control.py scripts/memory_cell/test_strong_rag_hop_control.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py scripts/memory_cell/strong_rag_repeatability.py scripts/memory_cell/test_strong_rag_repeatability.py scripts/memory_cell/strong_rag_stability.py scripts/memory_cell/test_strong_rag_stability.py scripts/memory_cell/historical_event_citation_chain.py scripts/memory_cell/test_historical_event_citation_chain.py scripts/memory_cell/test_strong_rag_citation_bridge.py /tmp/strong-rag-format/
           fi
           git rev-parse HEAD > /tmp/strong-rag-format/tested-commit.txt
           exit "$code"
@@ -80,6 +83,7 @@ jobs:
             scripts/memory_cell/test_strong_rag*.py
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_workflow_scheduling.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag*.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_historical_event_citation_chain.py' -v
           python3 -m py_compile \
             scripts/memory_cell/strong_rag*.py \
             scripts/memory_cell/test_strong_rag*.py
@@ -204,7 +208,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/strong-rag-evidence/source
-          cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_hop_control.py scripts/memory_cell/test_strong_rag_hop_control.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py scripts/memory_cell/strong_rag_repeatability.py scripts/memory_cell/test_strong_rag_repeatability.py scripts/memory_cell/strong_rag_stability.py scripts/memory_cell/test_strong_rag_stability.py /tmp/strong-rag-evidence/source/
+          cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_hop_control.py scripts/memory_cell/test_strong_rag_hop_control.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py scripts/memory_cell/strong_rag_repeatability.py scripts/memory_cell/test_strong_rag_repeatability.py scripts/memory_cell/strong_rag_stability.py scripts/memory_cell/test_strong_rag_stability.py scripts/memory_cell/historical_event_citation_chain.py scripts/memory_cell/test_historical_event_citation_chain.py scripts/memory_cell/test_strong_rag_citation_bridge.py /tmp/strong-rag-evidence/source/
           git rev-parse HEAD > /tmp/strong-rag-evidence/tested-commit.txt
           (cd /tmp/strong-rag-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -278,6 +282,8 @@ jobs:
           set -euo pipefail
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_r*.py' -v 2>&1 | tee /tmp/strong-rag-replay/tests.log
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_stability.py' -v 2>&1 | tee /tmp/strong-rag-replay/stability-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_historical_event_citation_chain.py' -v 2>&1 | tee /tmp/strong-rag-replay/historical-citation-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_citation_bridge.py' -v 2>&1 | tee /tmp/strong-rag-replay/citation-bridge-tests.log
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_hop_control.py' -v 2>&1 | tee /tmp/strong-rag-replay/hop-tests.log
           python3 scripts/memory_cell/strong_rag_receipt.py \
             /tmp/strong-rag-evidence /tmp/strong-rag-original \

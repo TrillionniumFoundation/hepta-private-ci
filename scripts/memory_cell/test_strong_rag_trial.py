@@ -212,6 +212,10 @@ class StrongRagPolicyTests(unittest.TestCase):
                     )
                 )
             trial.dump(root / "inputs/labels.json", answer_labels)
+            trial.dump(
+                root / "inputs/questions.json",
+                [dict(id=qid, kind="new_fact") for qid in qids],
+            )
             trial.dump(root / "model/stage.json", dict(tier="qwen-3b"))
             trial.dump(
                 root / "calibration/frozen-policy.json",
@@ -280,6 +284,13 @@ class StrongRagPolicyTests(unittest.TestCase):
                     )
                 return enriched, dict(schema="fixture-single-hop", qualified=False)
 
+            def fake_formal(rows, specs, labels, documents, *, expected_qids, arms):
+                chronological.append("citation_audit_after_labels")
+                self.assertEqual(len(rows), 8 * len(arms))
+                self.assertEqual(len(labels), 8)
+                self.assertEqual(len(expected_qids), 8)
+                return dict(schema="test-fixture-citation", production_accepted=False)
+
             model = object()
             inventory = dict(inventory_digest="reader")
             with (
@@ -293,11 +304,21 @@ class StrongRagPolicyTests(unittest.TestCase):
                         dict(
                             cases=cases,
                             labels_sha=trial.file_sha(root / "inputs/labels.json"),
-                            extraction={},
+                            extraction={
+                                "files": {
+                                    "questions.json": trial.file_sha(
+                                        root / "inputs/questions.json"
+                                    ),
+                                },
+                            },
                             frozen=dict(costs={}),
                         ),
                         docs,
                     ),
+                ),
+                patch(
+                    "historical_event_citation_chain.audit_evaluation",
+                    side_effect=fake_formal,
                 ),
                 patch.dict("os.environ", {"HEPTA_MEMORY_TESTED_COMMIT": "b" * 40}),
             ):
@@ -313,9 +334,17 @@ class StrongRagPolicyTests(unittest.TestCase):
                 )
             self.assertEqual(
                 chronological,
-                ["start_generation", "all_answers_durable", "opened_test_labels"],
+                [
+                    "start_generation",
+                    "all_answers_durable",
+                    "opened_test_labels",
+                    "citation_audit_after_labels",
+                ],
             )
             self.assertEqual(result["total_attempts"], 72)
+            self.assertEqual(
+                result["formal_citation_chain"]["schema"], "test-fixture-citation"
+            )
             self.assertIn("entity_time_minus_single_hop", result["paired_contrasts"])
             self.assertIn("single_hop_minus_hybrid4", result["paired_contrasts"])
             self.assertIn("entity_time_minus_hybrid4", result["paired_contrasts"])

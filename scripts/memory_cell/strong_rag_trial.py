@@ -665,6 +665,21 @@ def evaluate(
     expected = [case["query"]["identity"] for case in locked["cases"]]
     test_labels = [row for row in labels if row["id"] in set(expected)]
     rows = _score(rows, test_labels, expected=expected, arms=EVAL_ARMS)
+    # Citation quality is measured separately after ALL raw model answers
+    # have been synced. Neither the scorer nor this audit repairs an answer.
+    from historical_event_citation_chain import audit_evaluation
+
+    public_questions = read(
+        inputs / "questions.json", locked["extraction"]["files"]["questions.json"]
+    )
+    formal_citation_chain = audit_evaluation(
+        rows,
+        public_questions,
+        test_labels,
+        originals,
+        expected_qids=expected,
+        arms=EVAL_ARMS,
+    )
     dump(output / "scored-answers.json", rows)
     stats, group = _stats(rows, EVAL_ARMS, expected)
     from strong_rag_repeatability import audit_repeats
@@ -691,6 +706,7 @@ def evaluate(
         success_by_arm=stats,
         paired_contrasts=pairs,
         same_prompt_consistency=same_prompt_consistency,
+        formal_citation_chain=formal_citation_chain,
         single_hop_control_sha256=file_sha(output / "single-hop-control.json"),
         source_and_index_costs=locked["frozen"]["costs"],
         extraction_costs=locked["extraction"],

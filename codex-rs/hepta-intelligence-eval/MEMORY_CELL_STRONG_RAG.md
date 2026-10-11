@@ -320,3 +320,38 @@ This removes the workflow's own cross-SHA scheduling dependency; it cannot
 guarantee GitHub runner capacity or completion. Previously queued runs are
 not relabelled or treated as the latest model result. Production admission
 and parameter memory advantage remain unestablished.
+
+## Formal citation-chain fidelity as a separate research axis (2026-10-11)
+
+The original Qwen frozen-reader archive had **8/8 strict answers** in each of
+`entity_time` and `organized`, but only **4/8** of those answers cited
+all program-declared sources; the other four two-hop composition/procedure
+answers omitted the first-hop citation. SmolLM2's three correct organized
+answers cited none of their sources. Those counts are from previously generated,
+eight-case authored development outputs, **not** independent semantic
+citation precision, new model inference or generalization evidence.
+
+The new nine-arm evaluation now reuses the pinned
+`historical_event_citation_chain.audit_evaluation` rule on its **own 72
+original answers**, after they have all been durably journaled and scored.
+Every planned attempt remains in the denominator. The report keeps these
+three outcomes distinct: strict answer correctness, full citation of the
+author-program-declared support IDs, and whether **only the actually cited
+original event JSON** forms the public question's specified path to the
+parsed answer under the declared revision cut. A formally connected path is
+not a human-certified entailment judgement or a necessity/sufficiency proof.
+
+The separate `independent-replay` job retrieves original pinned source
+questions and labels, reexecutes the bounded worker, recalculates all
+per-arm citation-chain totals and case-level details from the original
+unmodified saved answers and exact delivered evidence, and rejects a
+changed report or mismatch with the strict task totals. It cannot modify
+answers or sign for an independent reviewer. The original citation
+entailment precision remains `null`, and
+`independent_semantic_adjudication=false` and
+`production_accepted=false` remain explicit.
+
+The model-free historical audit's 10 existing tests and the new six nine-arm
+bridge regressions run before real Qwen staging; both are rerun by the
+separate replay job. They do not replace the frozen-model experiment or
+any PR-wide quality checks.
