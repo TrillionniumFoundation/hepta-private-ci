@@ -194,9 +194,10 @@ fn decode_descriptor(
             "Model descriptor size",
         ));
     }
-    let descriptor: NeuronSelectedModelDescriptorV1 = serde_json::from_slice(bytes).map_err(|_| {
-        NeuronCandidateModelArtifactErrorV1::Descriptor("non-JSON/unknown descriptor fields")
-    })?;
+    let descriptor: NeuronSelectedModelDescriptorV1 =
+        serde_json::from_slice(bytes).map_err(|_| {
+            NeuronCandidateModelArtifactErrorV1::Descriptor("non-JSON/unknown descriptor fields")
+        })?;
     let expected = serde_json::to_vec(&descriptor).map_err(|_| {
         NeuronCandidateModelArtifactErrorV1::Descriptor("Model descriptor serialization")
     })?;
