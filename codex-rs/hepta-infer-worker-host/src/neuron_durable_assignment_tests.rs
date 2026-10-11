@@ -237,7 +237,6 @@ fn assigned_durable_owner_and_loaded_worker_match_exact_neuron_features() {
     );
 }
 
-
 #[test]
 fn forged_semantic_digest_cannot_claim_dispatch_even_if_payload_and_worker_match() {
     let directory = tempfile::tempdir().unwrap();
