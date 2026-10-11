@@ -97,10 +97,16 @@ hepta-operator-acceptance cell-split-execution transcript \
   /private/canonical/cell-split-config.json "$PIN_FROM_INDEPENDENT_OWNER"
 ```
 
-An `advance` invocation calls at most one effect. It persists the exact
-prepared intent before entering the physical owner. On an unknown or lost
-acknowledgement, it returns a non-success result. A later invocation reads
-the original owner state via `reconcile`, never retransmits that effect.
+An `advance` invocation calls at most one effect. For a new step,
+it first requires a fresh, nonce-bound, signed **negative readback** from the
+original effect owner. Missing/unreachable owners or an already committed
+effect cannot cause an otherwise new `prepared` intent to be written. This
+read-only preflight is not a final-use authorization, nor proof that a future
+mutation will succeed. After that preflight, the coordinator durably writes
+the exact `prepared` intent **before** entering the physical mutation. On an
+unknown or lost acknowledgement, it returns a non-success result. A later
+invocation reads the original owner state via `reconcile`, never retransmits
+that effect or repeats the new-effect preflight.
 The CLI cannot bypass the coordinator's journal lock, predecessor binding,
 or verification of original owner signatures.
 
