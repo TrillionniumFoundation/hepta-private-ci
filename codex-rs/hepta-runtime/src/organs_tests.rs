@@ -765,7 +765,7 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     use std::os::unix::fs::OpenOptionsExt as _;
     use std::path::PathBuf;
 
-    use codex_hepta_contracts::{FinalUseAuthority, SignedFinalUseGrant};
+    use codex_hepta_contracts::SignedFinalUseGrant;
     use codex_hepta_operator_acceptance::{
         CellSplitCnsLiveRouteV1, CellSplitCnsRouteBindingV1,
         CellSplitCnsRuntimeAttestationV1, CellSplitCnsRuntimeCommitV1,
@@ -784,11 +784,7 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         signer: SigningKey,
         original_path: PathBuf,
         _authority_dir: tempfile::TempDir,
-        successor: Option<(
-            Arc<FinalUseAuthority>,
-            SignedFinalUseGrant,
-            RuntimeTopologyApplyRequestV1,
-        )>,
+        successor: Option<(SignedFinalUseGrant, RuntimeTopologyApplyRequestV1)>,
     }
 
     impl CellSplitCnsKernelWitnessV1 for DurableTestCnsWitness {
@@ -842,7 +838,7 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
             _binding: &CellSplitCnsRouteBindingV1,
             _intent: &CellSplitExecutionIntentV1,
         ) -> std::result::Result<
-            (Arc<FinalUseAuthority>, SignedFinalUseGrant, RuntimeTopologyApplyRequestV1),
+            (SignedFinalUseGrant, RuntimeTopologyApplyRequestV1),
             String,
         > {
             self.successor.take().ok_or_else(|| "signed successor consumed".into())
@@ -986,14 +982,16 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     let witness_directory = tempfile::tempdir()?;
     let runtime_signer = SigningKey::from_bytes(&[0x6b; 32]);
     let original_path = witness_directory.path().join("original-cns-runtime.json");
+    let pinned_authority = Arc::new(authority);
     let witness = DurableTestCnsWitness {
         signer: runtime_signer.clone(),
         original_path: original_path.clone(),
         _authority_dir: authority_dir,
-        successor: Some((Arc::new(authority), signed_grant, request)),
+        successor: Some((signed_grant, request)),
     };
     let mut port = CellSplitCnsKernelRuntimePortV1::new(
-        runtime.clone(), plan.clone(), binding.clone(), intent.clone(),
+        runtime.clone(), Arc::clone(&pinned_authority),
+        plan.clone(), binding.clone(), intent.clone(),
         runtime_signer.verifying_key(), witness,
     ).map_err(|e| anyhow::anyhow!("{e}"))?;
     port.publish_once(&plan, &binding, &intent)
@@ -1025,7 +1023,8 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         successor: None,
     };
     let restarted_port = CellSplitCnsKernelRuntimePortV1::new(
-        after_restart, plan.clone(), binding.clone(), intent.clone(),
+        after_restart, pinned_authority,
+        plan.clone(), binding.clone(), intent.clone(),
         runtime_signer.verifying_key(), restarted_witness,
     ).map_err(|e| anyhow::anyhow!("{e}"))?;
     let owner_root = tempfile::tempdir()?;
