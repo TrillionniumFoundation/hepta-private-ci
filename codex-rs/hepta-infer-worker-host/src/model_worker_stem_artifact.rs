@@ -398,7 +398,7 @@ impl SelectedStemProjectionReaderV1 {
     /// run a generic provider. The *production* owner must still serialize
     /// CURRENT publication, revocation and this dispatch under its own fence;
     /// a stored CURRENT object is not proof of absolute present-time freshness.
-    pub fn run_selected_cpu_head(
+    pub(crate) fn run_selected_cpu_head(
         &mut self,
         worker: &mut super::InferenceWorker<super::CpuGatedHeadDriver>,
         use_request: StemCpuHeadUseV1<'_>,
