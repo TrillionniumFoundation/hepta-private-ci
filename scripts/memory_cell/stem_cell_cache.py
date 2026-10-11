@@ -10,7 +10,10 @@ from stem_cell import clone_features
 
 class SharedFeatureCache:
     def __init__(self, encoder, *, maximum_bytes=64 * 1024 * 1024):
-        if type(maximum_bytes) is not int or not 1 <= maximum_bytes <= 256 * 1024 * 1024:
+        if (
+            type(maximum_bytes) is not int
+            or not 1 <= maximum_bytes <= 256 * 1024 * 1024
+        ):
             raise ValueError("bounded feature cache required")
         self.encoder = encoder
         self.maximum_bytes = maximum_bytes
@@ -20,11 +23,19 @@ class SharedFeatureCache:
     def encode(self, query, family, pool, *, revoked):
         # Both observed sources AND the encoder's training lineage matter on hits.
         pool.revalidate(query, revoked)
-        if (getattr(self.encoder, "quarantined", False)
-                or set(getattr(self.encoder, "roots", ())).intersection(revoked)):
+        if getattr(self.encoder, "quarantined", False) or set(
+            getattr(self.encoder, "roots", ())
+        ).intersection(revoked):
             raise ValueError("unavailable or training-revoked cached encoder")
-        key = digest(("stem-pair-cache-v1", self.encoder.identity,
-                      asdict(query), family, pool.seal()))
+        key = digest(
+            (
+                "stem-pair-cache-v1",
+                self.encoder.identity,
+                asdict(query),
+                family,
+                pool.seal(),
+            )
+        )
         started = time.perf_counter()
         if key in self.entries:
             batch, seal, size = self.entries.pop(key)
@@ -35,7 +46,9 @@ class SharedFeatureCache:
             self.entries[key] = (batch, seal, size)
             self.hits += 1
             return clone_features(batch), dict(
-                cache_hit=True, key=key, incremental_encoder_seconds=0.0,
+                cache_hit=True,
+                key=key,
+                incremental_encoder_seconds=0.0,
                 cache_lookup_seconds=time.perf_counter() - started,
                 tensor_bytes=batch.paired.numel() * 4 + batch.frozen_scores.numel() * 4,
             )
@@ -62,8 +75,13 @@ class SharedFeatureCache:
             stored = clone_features(batch)
             self.entries[key] = (stored, stored.seal(), size)
             self.bytes += size
-        cost = dict(cache_hit=False, key=key, incremental_encoder_seconds=receipt["seconds"],
-                    extraction=receipt, retained_estimated_bytes=self.bytes)
+        cost = dict(
+            cache_hit=False,
+            key=key,
+            incremental_encoder_seconds=receipt["seconds"],
+            extraction=receipt,
+            retained_estimated_bytes=self.bytes,
+        )
         return clone_features(batch), cost
 
     def clear(self):
@@ -71,6 +89,11 @@ class SharedFeatureCache:
         self.bytes = 0
 
     def summary(self):
-        return dict(hits=self.hits, misses=self.misses, evictions=self.evictions,
-                    retained_estimated_bytes=self.bytes, maximum_bytes=self.maximum_bytes,
-                    python_allocator_overhead_measured=False)
+        return dict(
+            hits=self.hits,
+            misses=self.misses,
+            evictions=self.evictions,
+            retained_estimated_bytes=self.bytes,
+            maximum_bytes=self.maximum_bytes,
+            python_allocator_overhead_measured=False,
+        )
