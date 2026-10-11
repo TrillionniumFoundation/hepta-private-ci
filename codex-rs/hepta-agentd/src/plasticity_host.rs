@@ -701,12 +701,18 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
+/// Borrowed admission dependencies. The trusted production owner retains
+/// custody of these exact registries and independent evidence policy.
+pub struct AgentdPlasticityAdmissionDependenciesV1<'a> {
+    pub artifacts: &'a ArtifactRegistry,
+    pub ledger: &'a DurableLedger,
+    pub owner_evidence_resolver: &'a dyn PlasticityOwnerEvidenceResolverV1,
+    pub owner_evidence_policy: &'a PlasticityOwnerEvidencePolicyV1,
+}
+
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
-    artifacts: &ArtifactRegistry,
-    ledger: &DurableLedger,
-    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
-    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
+    admission: AgentdPlasticityAdmissionDependenciesV1<'_>,
     verifier: &LearningEvidenceVerifierV1,
     writer: &mut AnchoredPlasticityWriterV1,
     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
@@ -726,10 +732,10 @@ pub fn propose_agentd_plasticity_v1(
             modulator_broadcast_digest: request.admission.modulator_broadcast_digest,
             eligibility_digest: request.admission.eligibility_digest,
         },
-        artifacts,
-        ledger,
-        owner_evidence_resolver,
-        owner_evidence_policy,
+        admission.artifacts,
+        admission.ledger,
+        admission.owner_evidence_resolver,
+        admission.owner_evidence_policy,
         now,
     )?;
     if resolved != request.admission {

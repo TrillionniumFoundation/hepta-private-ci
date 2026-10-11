@@ -1,0 +1,32 @@
+name: Hepta Agentd Transitive Strict Clippy Shadow
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - '.github/workflows/hepta-agentd-transitive-clippy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-agentd-and-worker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact Rust 1.95 toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Exact formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Compile native Agentd and Worker library tests
+        run: cargo +1.95.0 test --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --lib --no-run
+      - name: Strict Clippy Agentd and Worker all targets
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
