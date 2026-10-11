@@ -38,6 +38,29 @@ def write_jsonl(path, rows):
             ) + "\n")
 
 
+
+def verify_pinned_replay_question(question, benchmark, registered_ids,
+                                  declared_families):
+    """Bind a replayed native question to its ORIGINAL frozen cohort.
+
+    Do not call Benchmark.partition here: this is a verification of a
+    preregistered question, not a new split of this evaluation dataset.
+    Source-file SHA-256 and phase identity are already externally pinned.
+    """
+    require(
+        isinstance(question.identity, str) and bool(question.identity)
+        and question.identity in registered_ids
+        and question.identity in declared_families
+        and isinstance(question.scope, str) and bool(question.scope)
+        and isinstance(question.family, str) and bool(question.family)
+        and question.family in benchmark.families
+        and benchmark.families[question.family] ==
+            declared_families[question.identity],
+        "native question/Cell source family differs from frozen original plan",
+    )
+    return question.identity
+
+
 def replay_pinned(artifact, staged, output):
     from index import PersistentIndex, RetrievalPolicy
     from pretrained import Encoder, file_inventory
@@ -84,9 +107,11 @@ def replay_pinned(artifact, staged, output):
         for kind, benchmark in sources.items():
             for q in benchmark.questions:
                 if q.identity in original_ids:
-                    require(q.identity not in queries
-                            and benchmark.partition(q) in PHASES,
-                            "duplicate or missing native benchmark question")
+                    require(q.identity not in queries,
+                            "duplicate native benchmark question")
+                    verify_pinned_replay_question(
+                        q, benchmark, original_ids, plan["question_families"]
+                    )
                     queries[q.identity] = q
                     source_for[q.identity] = benchmark
         require(set(queries) == original_ids, "original native question identity drift")

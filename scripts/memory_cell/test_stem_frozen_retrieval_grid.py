@@ -7,6 +7,7 @@ from stem_frozen_retrieval_grid import (
     GRID, BASELINE, PHASES, evaluate_fixed, label_key,
     select_from_train, validate_unlabelled,
 )
+from stem_frozen_retrieval_grid_trial import verify_pinned_replay_question
 
 
 def fixture():
@@ -55,6 +56,35 @@ def fixture():
 
 
 class FrozenGridTests(unittest.TestCase):
+    def test_replay_must_use_frozen_registered_family_not_repartition(self):
+        # Public native LongMemEval can have fewer than three source families
+        # when its historical source partitioner is invoked out of context.
+        # The original 80-question trial already pinned the partitions.
+        question = Obj(identity="q0", scope="scope-0", family="native-kind")
+        class OneFamily:
+            families = {"native-kind": "pinned-source-family"}
+            def partition(self, ignored):
+                raise AssertionError("would re-split a frozen test cohort")
+        self.assertEqual(
+            verify_pinned_replay_question(
+                question, OneFamily(), {"q0"},
+                {"q0": "pinned-source-family"},
+            ), "q0",
+        )
+
+    def test_pinned_replay_rejects_other_native_question_and_source_family(self):
+        question = Obj(identity="q0", scope="scope-0", family="native-kind")
+        benchmark = Obj(families={"native-kind": "registered-family"})
+        for ids, declared in (
+            ({"other"}, {"q0": "registered-family"}),
+            ({"q0"}, {"q0": "forged-family"}),
+            ({"q0"}, {}),
+        ):
+            with self.subTest(ids=ids, declared=declared), self.assertRaises(
+                ValueError
+            ):
+                verify_pinned_replay_question(question, benchmark, ids, declared)
+
     def test_labels_enter_only_after_original_candidate_census(self):
         plan, rows, targets = fixture()
         records = validate_unlabelled(plan, rows)
