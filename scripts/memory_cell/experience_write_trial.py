@@ -59,13 +59,15 @@ def model_inputs(model_dir, stage_sha):
 
 def write_memory(
     sources, model_dir, output, *, source_sha, stage_sha, loss_backend="full",
-    parity_receipt=None, parity_sha=None,
+    parity_receipt=None, parity_sha=None, curriculum="single_hop",
 ):
     from pretrained import LoRAReader
     from source_completion_loss import BACKENDS
 
     if loss_backend not in BACKENDS:
         raise ValueError("unregistered source loss backend")
+    if curriculum not in ("single_hop", "source_two_hop"):
+        raise ValueError("unregistered source-only curriculum")
 
     commit = exact_source()
     documents = original_documents(sources, source_sha)
@@ -90,6 +92,7 @@ def write_memory(
             maximum_steps=STEPS,
             token_ceiling=TOKEN_CEILING,
             loss_backend=loss_backend,
+            curriculum=curriculum,
             source_loss_parity_sha256=parity_binding,
             evaluation_query_input=False,
             source_documents_digest=digest([asdict(d) for d in documents]),
@@ -109,6 +112,7 @@ def write_memory(
         allowed_roots={d.root for d in documents},
         revoked=set(),
         loss_backend=loss_backend,
+        curriculum=curriculum,
     )
     manifest = LoRAReader.save(reader, output / "adapter", training)
     reader.verify_frozen()
@@ -516,6 +520,7 @@ if __name__ == "__main__":
     )
     p.add_argument("--parity-receipt", type=Path)
     p.add_argument("--parity-sha")
+    p.add_argument("--curriculum", choices=("single_hop", "source_two_hop"), default="single_hop")
     p = sub.add_parser("read")
     for name in ("plan", "inputs", "model", "snapshot", "output"):
         p.add_argument(name, type=Path)
@@ -534,6 +539,7 @@ if __name__ == "__main__":
             loss_backend=a.loss_backend,
             parity_receipt=a.parity_receipt,
             parity_sha=a.parity_sha,
+            curriculum=a.curriculum,
         )
     else:
         read_memory(

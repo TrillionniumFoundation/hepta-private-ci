@@ -166,7 +166,8 @@ class ExperienceReader(ReferenceReader):
         self.quarantined = False
 
     def fit_sources(
-        self, documents, *, revision, allowed_roots, revoked, loss_backend="full"
+        self, documents, *, revision, allowed_roots, revoked, loss_backend="full",
+        curriculum="single_hop",
     ):
         import torch
         from peft import get_peft_model_state_dict
@@ -176,12 +177,25 @@ class ExperienceReader(ReferenceReader):
 
         if loss_backend not in BACKENDS:
             raise ValueError("unregistered source loss backend")
-        examples, dispositions = source_examples(
-            documents,
-            revision=revision,
-            allowed_roots=allowed_roots,
-            revoked=revoked,
-        )
+        if curriculum not in ("single_hop", "source_two_hop"):
+            raise ValueError("unregistered source-only curriculum")
+        if curriculum == "source_two_hop":
+            from source_composition_curriculum import combine_source_examples
+
+            examples, dispositions, curriculum_receipt = combine_source_examples(
+                documents,
+                revision=revision,
+                allowed_roots=allowed_roots,
+                revoked=revoked,
+            )
+        else:
+            examples, dispositions = source_examples(
+                documents,
+                revision=revision,
+                allowed_roots=allowed_roots,
+                revoked=revoked,
+            )
+            curriculum_receipt = None
         if self.quarantined or self.roots:
             raise ValueError("writer must start with a fresh adapter")
         self.scopes = {d.scope for d in documents}
@@ -265,6 +279,8 @@ class ExperienceReader(ReferenceReader):
                 examples=len(examples),
                 source_supervision=examples,
                 dispositions=dispositions,
+                curriculum=curriculum,
+                curriculum_receipt=curriculum_receipt,
                 training_digest=digest((examples, prepared)),
                 write_schedule=plan,
                 schedule_sha256=digest(plan),

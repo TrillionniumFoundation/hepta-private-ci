@@ -1,0 +1,98 @@
+name: MemoryCell source-only two-hop curriculum contracts
+
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/source_composition_curriculum.py"
+      - "scripts/memory_cell/test_source_composition_curriculum.py"
+      - "scripts/memory_cell/experience_memory.py"
+      - "scripts/memory_cell/experience_write_trial.py"
+      - ".github/workflows/hepta-memory-source-composition.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  source-only-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Run source-only question, correction and scope regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-two-hop
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_composition_curriculum.py' -v 2>&1 | tee /tmp/source-two-hop/tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_experience_memory.py' -v 2>&1 | tee -a /tmp/source-two-hop/tests.log
+      - name: Verify original source archive and full source-only opportunity census
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/source-two-hop/input.zip
+          python3 - <<'PY'
+          import hashlib, json, os, zipfile
+          from pathlib import Path
+          from native import Document, digest
+          from source_composition_curriculum import combine_source_examples
+          archive = Path("/tmp/source-two-hop/input.zip").read_bytes()
+          assert len(archive) <= 64 * 1024 * 1024
+          assert hashlib.sha256(archive).hexdigest() == "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b"
+          with zipfile.ZipFile("/tmp/source-two-hop/input.zip") as z:
+              rows = z.read("observations/sources.json")
+          assert hashlib.sha256(rows).hexdigest() == "35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24"
+          docs = tuple(Document(**(d | {"assets": tuple(d["assets"])})) for d in json.loads(rows))
+          examples, unresolved, receipt = combine_source_examples(
+              docs, revision=2, allowed_roots={d.root for d in docs}, revoked=set()
+          )
+          if len(docs) != 108 or len(examples) != 112 or receipt["direct_examples"] != 88 or receipt["composition_examples"] != 24 or unresolved:
+              raise ValueError("original source-only opportunity cohort changed")
+          receipt.update(
+              schema="hepta.source-only.two-hop-preflight.v1",
+              source_sha256=hashlib.sha256(rows).hexdigest(),
+              exact_tested_commit=os.environ["GITHUB_SHA"],
+              complete_curriculum_digest=digest(examples),
+              planned_optimizer_steps=128,
+              actual_optimizer_steps=0,
+              task_labels_consumed=False,
+              independent_semantic_citation_precision=None,
+              production_accepted=False,
+          )
+          Path("/tmp/source-two-hop/census.json").write_text(
+              json.dumps(receipt, indent=2, allow_nan=False) + "\n"
+          )
+          print(json.dumps(receipt, allow_nan=False))
+          PY
+      - name: Pinned Python formatting check (does not waive global CI)
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/source_composition_curriculum.py \
+            scripts/memory_cell/test_source_composition_curriculum.py \
+            scripts/memory_cell/experience_memory.py \
+            scripts/memory_cell/experience_write_trial.py 2>&1 | tee /tmp/source-two-hop/format.log
+      - name: Preserve unchanged source, logs and measurements
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-two-hop/source
+          cp scripts/memory_cell/source_composition_curriculum.py scripts/memory_cell/test_source_composition_curriculum.py /tmp/source-two-hop/source/
+          git rev-parse HEAD > /tmp/source-two-hop/tested-commit.txt
+          (cd /tmp/source-two-hop && find . -type f ! -name SHA256SUMS ! -name input.zip -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          rm -f /tmp/source-two-hop/input.zip
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-two-hop-contracts
+          path: /tmp/source-two-hop
+          if-no-files-found: error
