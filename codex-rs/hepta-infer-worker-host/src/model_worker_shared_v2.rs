@@ -197,6 +197,22 @@ fn validate_item(
     Ok(())
 }
 
+/// The shared-feature identity does not yet carry an independently attested
+/// Scope ID. Until the producer/owner binds that Scope explicitly, a physical
+/// batch must never mix different principal/purpose partitions. Each member
+/// also undergoes its own signed-admission-independent V2 request validation.
+fn validate_batch_partition_v2(
+    requests: &[SharedNeuronFeatureRequestV2],
+) -> Result<(), Error> {
+    let first = requests.first().ok_or(Error::FeatureLimit)?;
+    if requests.iter().any(|item| {
+        item.principal_id != first.principal_id || item.purpose_id != first.purpose_id
+    }) {
+        return Err(Error::FeatureContract);
+    }
+    Ok(())
+}
+
 impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
     /// Admits and executes an immutable-feature batch without ever expanding
     /// Arc<[i64]> into the old per-request Vec. Returns all rows or an error.
@@ -214,6 +230,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         if requests.is_empty() || requests.len() > MAX_BATCH_ITEMS_V2 {
             return Err(Error::FeatureLimit);
         }
+        validate_batch_partition_v2(&requests)?;
         let maximum = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
         if self
             .active_requests
@@ -473,6 +490,32 @@ mod tests {
             maximum_tokens: 64,
         };
         assert!(validate_item(&a, 10, 3, 2, &manifest).is_ok());
+        let same_partition = req("cell.b", "req.2", frame(2));
+        assert!(validate_batch_partition_v2(&[a.clone(), same_partition.clone()]).is_ok());
+        // Both members below have individually valid content and lease
+        // payload digests. Only the cross-principal/purpose *cohort* is
+        // forbidden: an untrusted Caller must not use a CPU/GPU batch to
+        // coalesce two independently scoped feature identities.
+        for other_principal in [true, false] {
+            let mut mixed = same_partition.clone();
+            let mut other_snapshot = (*mixed.snapshot).clone();
+            if other_principal {
+                mixed.principal_id = id("principal.other");
+                other_snapshot.identity.principal_id = mixed.principal_id.clone();
+            } else {
+                mixed.purpose_id = id("purpose.other");
+                other_snapshot.identity.purpose_id = mixed.purpose_id.clone();
+            }
+            mixed.snapshot = Arc::new(other_snapshot);
+            let payload = canonical_shared_neuron_payload_digest_v2(&mixed).expect("mixed payload");
+            mixed.authorization.payload_digest = payload.clone();
+            mixed.authorization.lease_payload_digest = payload;
+            assert!(validate_item(&mixed, 10, 3, 2, &manifest).is_ok());
+            assert_eq!(
+                validate_batch_partition_v2(&[a.clone(), mixed]),
+                Err(Error::FeatureContract)
+            );
+        }
         assert_eq!(
             validate_item(&a, 1000, 3, 2, &manifest),
             Err(Error::FeatureContract)
