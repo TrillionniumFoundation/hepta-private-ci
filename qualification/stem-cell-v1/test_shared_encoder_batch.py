@@ -257,6 +257,29 @@ class RealTorchBatchPathTests(unittest.TestCase):
         self.assertEqual(result.receipts[0].feature_digest, result.receipts[2].feature_digest)
         self.assertNotEqual(result.receipts[0].feature_digest, result.receipts[1].feature_digest)
 
+    def test_real_torch_forward_feeds_versioned_q24_projection(self):
+        # Torch executes an actual tensor batch over synthetic local weights.
+        # This is not evidence of a downloaded or audited pretrained Encoder.
+        from stem_projection import Q, LowRankProjectionQ24, ProjectedStemEngine
+        model = self.make_backend()
+        engine = SharedStemEngine(model, max_cache_bytes=0)
+        projector = LowRankProjectionQ24(
+            D("a"), D("b"), D("c"), D("d"), "mean",
+            4, 2, 1, (0, 0, 0, Q), (Q, Q), (0, 0),
+        )
+        bridge = ProjectedStemEngine(engine, projector)
+        result = bridge.run([
+            req(1, "1 2"), req(2, "3 4 5"), req(3, "1 2"),
+        ])
+        self.assertEqual(model.model.calls, 1)
+        self.assertEqual(result.encoder_observation.backend_batch_widths, (2,))
+        self.assertEqual(len(result.refs), 3)
+        self.assertEqual(len(result.refs[0].vector_q24), 2)
+        self.assertEqual(result.refs[0].vector_q24, result.refs[2].vector_q24)
+        self.assertEqual(result.refs[0].projected_input_digest,
+                         result.refs[2].projected_input_digest)
+        self.assertFalse(result.production_authorized)
+
     def test_left_padded_batch_matches_unpadded_solo(self):
         model = self.make_backend(left_padding=True)
         batched = SharedStemEngine(model).run([
