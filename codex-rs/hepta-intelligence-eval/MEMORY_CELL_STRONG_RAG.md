@@ -186,3 +186,21 @@ A later committed verifier cannot retroactively change the identity or scoring
 of an earlier generating commit. Failure of the separate replay **blocks any
 positive research claim**; a successful replay establishes faithful execution
 and bookkeeping only, and must not be relabeled as production qualification.
+
+## Frozen-reader repeatability on exactly matched evidence
+
+When two arms deliver the same **ordered original evidence** to the same
+frozen reader, the source/prompt identity must match, including full rendered
+input token digest, complete delivered excerpts, reader profile and token
+budget. These comparisons are now written to `same_prompt_consistency` in the
+actual evaluation report and recomputed by the separate read-only replay.
+An output/decoded-answer/task-result disagreement is retained as instability,
+not counted as a memory gain; missing executions stay in the planned paired
+denominator. There is no promotion from this diagnostic to semantic or
+statistical acceptance, even when all observed repeats agree.
+
+A model-free audit of the already executed Qwen 48-answer event-reader archive
+(`11674741321`, source `59f9eadd`) found **24 matched ordered-evidence
+pairs and zero disagreements** in answer bytes, output-token digests or task
+success. This is historical generated evidence checked read-only, not new
+inference or independent future sampling.

@@ -249,7 +249,15 @@ class StrongRagPolicyTests(unittest.TestCase):
                                 selected=list(selections(case, arm)),
                                 candidate_digest=case["candidate_digest"],
                                 receipt=dict(
-                                    input_tokens=4, generated_tokens=2, seconds=0.1
+                                    input_tokens=4,
+                                    generated_tokens=2,
+                                    seconds=0.1,
+                                    reader_identity="reader",
+                                    reader_profile="profile",
+                                    token_limit=2048,
+                                    input_ids_digest="same-input",
+                                    generated_ids_digest="same-output",
+                                    delivered_evidence=[],
                                 ),
                             )
                             f.write(json.dumps(row) + "\n")

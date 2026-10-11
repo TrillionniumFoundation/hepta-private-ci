@@ -363,8 +363,12 @@ def audit(archive, original, *, expected_commit):
                 "hybrid6_minus_hybrid4": paired(groups, "hybrid_k4", "hybrid_k6"),
             }
             report = _json_file(path / "report.json")
+            from strong_rag_repeatability import audit_repeats
+
+            same_prompt_consistency = audit_repeats(replay, questions, arms)
             if (
                 report["success_by_arm"] != summary
+                or report["same_prompt_consistency"] != same_prompt_consistency
                 or report["paired_contrasts"] != paired_results
                 or report["selected_k"] != frozen["selected_k"]
                 or report["raw_answers_sha256"] != file_sha(path / "raw-answers.jsonl")
@@ -383,6 +387,7 @@ def audit(archive, original, *, expected_commit):
                     ):
                         raise ValueError("identical control sources produced different prompt token IDs")
             result["paired_contrasts"] = paired_results
+            result["same_prompt_consistency"] = same_prompt_consistency
         result[stage] = dict(
             attempts=len(raw), all_model_calls_succeeded=all(r["status"] == "succeeded" for r in raw),
             strict_success={arm: summary[arm]["strict_success"] for arm in arms},

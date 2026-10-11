@@ -641,6 +641,9 @@ def evaluate(
     rows = _score(rows, test_labels, expected=expected, arms=EVAL_ARMS)
     dump(output / "scored-answers.json", rows)
     stats, group = _stats(rows, EVAL_ARMS, expected)
+    from strong_rag_repeatability import audit_repeats
+
+    same_prompt_consistency = audit_repeats(rows, expected, EVAL_ARMS)
     pairs = {
         "selected_minus_hybrid4": paired(group, "hybrid_k4", "selected_k"),
         "organized_minus_selected": paired(group, "selected_k", "organized"),
@@ -657,6 +660,7 @@ def evaluate(
         total_attempts=len(rows),
         success_by_arm=stats,
         paired_contrasts=pairs,
+        same_prompt_consistency=same_prompt_consistency,
         source_and_index_costs=locked["frozen"]["costs"],
         extraction_costs=locked["extraction"],
         retained_original_source_bytes=sum(
