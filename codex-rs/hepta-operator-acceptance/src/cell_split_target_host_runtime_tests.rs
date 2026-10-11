@@ -52,7 +52,7 @@ impl FakeRuntime {
                 _ => String::new(),
             },
             predecessor_digest: match name {
-                "route" => crate::durable::sha256(b"route-parent-fence"),
+                "route" => crate::durable::sha256(b"route-parent"),
                 "rollback" => crate::durable::sha256(b"route-child"),
                 "tombstone" | "resurrection" => crate::durable::sha256(b"route-parent"),
                 _ => String::new(),
