@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 7837d7d65acb80a67f900f7b0bad050420e0d722
+      CHAIN_SOURCE_SHA: d33267e4a7457784070a5bb512827876d7f9b2e2
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '7837d7d65acb80a67f900f7b0bad050420e0d722' || 'b017eb64815a9ceaa42f4124dd88aae7a9a5f2a4' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'd33267e4a7457784070a5bb512827876d7f9b2e2' || '145c974f88fe16b5acfad0cd0be518c8a0279216' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -109,6 +109,16 @@ jobs:
           set -euo pipefail
           for selector in native_branch_single_buffer_matches_original_wire native_branch_single_buffer_preserves_every_lift_depth; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "account_archive_prototype::native_primitive_tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require shared account-branch equivalence in both native build profiles
+        run: |
+          set -euo pipefail
+          for profile in test release; do
+            mode=()
+            if test "$profile" = release; then mode=(--release); fi
+            for selector in shared_branch_kernel_matches_storage_local_vectors shared_branch_kernel_preserves_complete_account_roots shared_branch_kernel_complete_call_cost; do
+              python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$profile-$selector.json" --minimum-tests 1 -- cargo +1.95.0 test "${mode[@]}" --locked --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "account_archive_prototype::native_primitive_tests::$selector" -- --exact --include-ignored --show-output --test-threads=1
+            done
           done
       - name: Require immutable account constants and concurrent copy isolation
         run: |
