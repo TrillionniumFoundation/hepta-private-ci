@@ -44,6 +44,10 @@ const PRODUCTION_ORIGIN: &str = "production-target-host";
 const SIMULATION_ORIGIN: &str = "source-simulation";
 const SIGNATURE_ALGORITHM: &str = CELL_SPLIT_TARGET_HOST_EVIDENCE_SIGNATURE_ALGORITHM_V1;
 const MAX_EVENTS: usize = 4_096;
+const MAX_OBSERVER_SIGNATURES: usize = 16;
+const MAX_ID_BYTES: usize = 256;
+const MAX_NONCE_BYTES: usize = 256;
+const MAX_EVIDENCE_BYTES: usize = crate::durable::MAX_SMALL_FILE_BYTES;
 const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
 
 /// The host class that produced a resource sample.  A production receipt must
@@ -494,8 +498,11 @@ impl CellSplitTargetHostEvidenceRecorderV1 {
             || p.schema_version != 1
             || p.origin != PRODUCTION_ORIGIN
             || p.split_id.is_empty()
+            || p.split_id.len() > MAX_ID_BYTES
             || p.target_host_id.is_empty()
+            || p.target_host_id.len() > MAX_ID_BYTES
             || p.target_host_nonce.is_empty()
+            || p.target_host_nonce.len() > MAX_NONCE_BYTES
             || !digest_shape(&p.target_host_attestation_digest)
             || p.parent_generation == 0
             || p.parent_generation.checked_add(1) != Some(p.child_generation)
@@ -550,6 +557,9 @@ pub fn verify_cell_split_target_host_evidence_json(
     bytes: &[u8],
     policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
 ) -> Result<CellSplitTargetHostProductionReceiptV1, CellSplitTargetHostEvidenceErrorV1> {
+    if bytes.is_empty() || bytes.len() > MAX_EVIDENCE_BYTES {
+        return Err(invalid("target-host evidence exceeds bounded input"));
+    }
     let envelope: CellSplitSignedTargetHostEvidenceV1 = serde_json::from_slice(bytes)?;
     verify_cell_split_target_host_evidence(&envelope, policy)
 }
@@ -574,8 +584,10 @@ pub fn verify_cell_split_target_host_evidence(
         .get(&envelope.host_signature.signer_id)
         .ok_or_else(|| invalid("host signer is not trusted"))?;
     verify_signature(&envelope.host_signature, host_key, &payload_bytes)?;
-    if envelope.observer_signatures.is_empty() {
-        return Err(invalid("independent observer signature is required"));
+    if envelope.observer_signatures.is_empty()
+        || envelope.observer_signatures.len() > MAX_OBSERVER_SIGNATURES
+    {
+        return Err(invalid("bounded independent observer signatures are required"));
     }
     let mut observer_ids = BTreeSet::new();
     let mut observer_signature_digests = Vec::with_capacity(envelope.observer_signatures.len());
@@ -702,8 +714,11 @@ fn replay_payload(
         || payload.schema_version != 1
         || payload.origin != PRODUCTION_ORIGIN
         || payload.split_id.is_empty()
+        || payload.split_id.len() > MAX_ID_BYTES
         || payload.target_host_id.is_empty()
+        || payload.target_host_id.len() > MAX_ID_BYTES
         || payload.target_host_nonce.is_empty()
+        || payload.target_host_nonce.len() > MAX_NONCE_BYTES
         || !digest_shape(&payload.target_host_attestation_digest)
         || payload.parent_generation == 0
         || payload.parent_generation.checked_add(1) != Some(payload.child_generation)
@@ -743,6 +758,7 @@ fn replay_payload(
             || event.child_generation != payload.child_generation
             || event.previous_event_digest != previous_digest
             || event.operation_id.is_empty()
+            || event.operation_id.len() > MAX_ID_BYTES
             || !digest_shape(&event.receipt_digest)
             || event.occurred_at_unix_nanos <= previous_timestamp
             || !operation_ids.insert(event.operation_id.clone())
@@ -890,10 +906,14 @@ fn validate_event_payload(
 fn validate_resource(
     resource: &CellSplitTargetResourceSampleV1,
 ) -> Result<(), CellSplitTargetHostEvidenceErrorV1> {
+    let source = resource.measurement_source.to_ascii_lowercase();
     if resource.hardware_model.is_empty()
+        || resource.hardware_model.len() > MAX_ID_BYTES
         || resource.measurement_source.is_empty()
-        || resource.measurement_source.contains("simulation")
-        || resource.measurement_source.contains("fixture")
+        || resource.measurement_source.len() > MAX_ID_BYTES
+        || ["simulation", "fixture", "synthetic", "mock"]
+            .iter()
+            .any(|marker| source.contains(marker))
         || !digest_shape(&resource.hardware_attestation_digest)
         || resource.sample_count == 0
         || resource.latency_micros == 0
