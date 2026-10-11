@@ -78,11 +78,16 @@ product callers.
 Valid suffixes past an earlier anchor survive lost-ACK recovery. Incomplete
 crash tails can be trimmed after verifying every complete predecessor frame.
 Complete invalid frames, mixed scopes or lost anchored history block recovery.
-A live owner's cached durable byte length is checked against the locked file
-before driving or appending further events. Out-of-band truncation or unexpected
-extension poisons the owner and prevents any new effect; a separate trusted
-recovery decision is required. Advisory locks are NOT protection against a
-hostile writer who can bypass the trusted filesystem boundary.
+A live owner rereads the complete bounded, hash-chained ledger before
+dispatching any effect, retaining an observer anchor, or appending a receipt.
+It compares the actual header, every complete frame boundary, and every frame
+digest against the previously authenticated in-memory chain. Out-of-band
+truncation, extension, **or same-length byte replacement** poisons the owner
+and prevents further effects; a separate trusted recovery decision is required.
+Recovery allocates and reads only the previously validated <=256 KiB physical
+length and rejects an inode that grows during read. No read-to-EOF allocation
+is permitted on untrusted recovery input. Advisory locks are NOT protection
+against a hostile writer who can bypass the trusted filesystem boundary.
 
 Each frame commits the full bounded raw external receipt, the deterministic
 operation key and generation, a predecessor frame head, and a checksum.
