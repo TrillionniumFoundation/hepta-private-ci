@@ -167,7 +167,9 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<NeuronTrialLedgerSourceV1, NeuronTrialSourceError> {
         if dataset.snapshot.source_record_digests.len() > MAX_SOURCE_ROWS {
-            return Err(NeuronTrialSourceError::Invalid("source materialization limit"));
+            return Err(NeuronTrialSourceError::Invalid(
+                "source materialization limit",
+            ));
         }
         let current = self.snapshot()?;
         let frozen_len = frozen_ledger.records().len();
@@ -181,7 +183,9 @@ impl LedgerWriter {
             || frozen_last.chain_digest != prefix_last.chain_digest
             || frozen_last.sequence != prefix_last.sequence
         {
-            return Err(NeuronTrialSourceError::Invalid("frozen ledger is not live prefix"));
+            return Err(NeuronTrialSourceError::Invalid(
+                "frozen ledger is not live prefix",
+            ));
         }
         let Some(current_last) = current.records().last() else {
             return Err(NeuronTrialSourceError::Invalid("empty live ledger"));
@@ -191,7 +195,9 @@ impl LedgerWriter {
             || witness.anchor.sequence != current_last.sequence.get()
             || witness.anchor.chain_digest != current.head_digest
         {
-            return Err(NeuronTrialSourceError::Invalid("unacknowledged ledger frontier"));
+            return Err(NeuronTrialSourceError::Invalid(
+                "unacknowledged ledger frontier",
+            ));
         }
 
         // Verify exactly the native bytes signed at freeze, not a signature
@@ -210,7 +216,9 @@ impl LedgerWriter {
             now,
         )?;
         if &expected != dataset {
-            return Err(NeuronTrialSourceError::Invalid("freeze receipt/evaluator mismatch"));
+            return Err(NeuronTrialSourceError::Invalid(
+                "freeze receipt/evaluator mismatch",
+            ));
         }
         verify_dataset_snapshot_receipt_against_ledger_v3(dataset, frozen_ledger, now)?;
         let records = self.read_dataset_records(dataset, now)?;
@@ -236,7 +244,8 @@ fn pair_current_events(
     records: &[&LedgerRecord],
     dataset: &DatasetSnapshotReceiptV3,
 ) -> Result<(Vec<NeuronTrialTerminalJoinV1>, u32, u32), NeuronTrialSourceError> {
-    let mut decisions = BTreeMap::<StableId, (&LedgerRecord, &AuthenticatedDecisionRecordV2)>::new();
+    let mut decisions =
+        BTreeMap::<StableId, (&LedgerRecord, &AuthenticatedDecisionRecordV2)>::new();
     let mut outcomes = BTreeMap::<StableId, (&LedgerRecord, &AuthenticatedOutcomeRecordV2)>::new();
     for record in records {
         match &record.event {
@@ -247,7 +256,9 @@ fn pair_current_events(
                     || value.policy_digest.is_zero()
                     || value.support_digest.is_zero()
                     || !value.candidate_ids.contains(&value.selected_candidate_id)
-                    || decisions.insert(value.episode_id.clone(), (*record, value)).is_some()
+                    || decisions
+                        .insert(value.episode_id.clone(), (*record, value))
+                        .is_some()
                 {
                     return Err(NeuronTrialSourceError::Invalid("invalid active decision"));
                 }
@@ -256,7 +267,9 @@ fn pair_current_events(
                 if value.authentication_digest.is_zero()
                     || value.support_digest.is_zero()
                     || value.unit_profile_digest.is_zero()
-                    || outcomes.insert(value.episode_id.clone(), (*record, value)).is_some()
+                    || outcomes
+                        .insert(value.episode_id.clone(), (*record, value))
+                        .is_some()
                 {
                     return Err(NeuronTrialSourceError::Invalid("ambiguous active outcome"));
                 }
@@ -270,10 +283,14 @@ fn pair_current_events(
     for (episode, (decision_record, decision)) in decisions {
         match outcomes.remove(&episode) {
             None => pending += 1,
-            Some((_, outcome)) if outcome.terminality == AuthenticatedOutcomeTerminality::Pending => {
+            Some((_, outcome))
+                if outcome.terminality == AuthenticatedOutcomeTerminality::Pending =>
+            {
                 pending += 1;
             }
-            Some((_, outcome)) if outcome.terminality == AuthenticatedOutcomeTerminality::Censored => {
+            Some((_, outcome))
+                if outcome.terminality == AuthenticatedOutcomeTerminality::Censored =>
+            {
                 censored += 1;
             }
             Some((outcome_record, outcome)) => {
@@ -288,7 +305,9 @@ fn pair_current_events(
                         == decision.generator_credential_chain_digest
                     || outcome.observer_signing_key_digest == decision.generator_signing_key_digest
                 {
-                    return Err(NeuronTrialSourceError::Invalid("unqualified terminal outcome"));
+                    return Err(NeuronTrialSourceError::Invalid(
+                        "unqualified terminal outcome",
+                    ));
                 }
                 joins.push(NeuronTrialTerminalJoinV1 {
                     episode_id: episode,

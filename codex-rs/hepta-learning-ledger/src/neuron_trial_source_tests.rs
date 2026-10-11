@@ -9,12 +9,11 @@ use ed25519_dalek::{Signer, SigningKey};
 
 use crate::{
     ActivatedLearningTrustV1, AuthenticatedOutcomeV1, AuthenticatedPrincipalV1,
-    CandidateSetCompletenessReceiptV1, DatasetFreezePlanV2, DurableLedger,
-    LearningEvidenceTrustV1, LearningTrustDistributionV1, LearningTrustRootV1,
-    LedgerWitnessStore, OutcomeTerminalityV1, OutcomeWatermarkV1,
-    ProductionDecisionV2, SignedLearningTrustDistributionV1, TrustedLearningSignerV1,
-    activate_learning_trust, candidate_ids_digest_v2, candidate_order_digest_v2,
-    decision_signing_payload_v2, outcome_signing_payload_v2,
+    CandidateSetCompletenessReceiptV1, DatasetFreezePlanV2, DurableLedger, LearningEvidenceTrustV1,
+    LearningTrustDistributionV1, LearningTrustRootV1, LedgerWitnessStore, OutcomeTerminalityV1,
+    OutcomeWatermarkV1, ProductionDecisionV2, SignedLearningTrustDistributionV1,
+    TrustedLearningSignerV1, activate_learning_trust, candidate_ids_digest_v2,
+    candidate_order_digest_v2, decision_signing_payload_v2, outcome_signing_payload_v2,
 };
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
@@ -110,25 +109,43 @@ fn signed(
     evidence
 }
 
-struct Fixture { root: PathBuf }
+struct Fixture {
+    root: PathBuf,
+}
 impl Fixture {
     fn new() -> Self {
         let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let root = std::env::temp_dir().join(format!("hepta-neuron-ledger-source-{}-{n}", std::process::id()));
+        let root = std::env::temp_dir().join(format!(
+            "hepta-neuron-ledger-source-{}-{n}",
+            std::process::id()
+        ));
         fs::create_dir(&root).unwrap();
         File::create(root.join("ledger")).unwrap();
         File::create(root.join("witness")).unwrap();
         Self { root }
     }
     fn file(&self, name: &str) -> File {
-        OpenOptions::new().read(true).write(true).open(self.root.join(name)).unwrap()
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(self.root.join(name))
+            .unwrap()
     }
     fn directory(&self) -> File {
-        #[cfg(windows)] {
+        #[cfg(windows)]
+        {
             use std::os::windows::fs::OpenOptionsExt;
-            OpenOptions::new().read(true).write(true).custom_flags(0x0200_0000).open(&self.root).unwrap()
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(0x0200_0000)
+                .open(&self.root)
+                .unwrap()
         }
-        #[cfg(not(windows))] { File::open(&self.root).unwrap() }
+        #[cfg(not(windows))]
+        {
+            File::open(&self.root).unwrap()
+        }
     }
     fn writer(&self) -> LedgerWriter {
         let ledger = DurableLedger::create(self.file("ledger"), digest("binding"), 64).unwrap();
@@ -138,7 +155,9 @@ impl Fixture {
     }
 }
 impl Drop for Fixture {
-    fn drop(&mut self) { let _ = fs::remove_dir_all(&self.root); }
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.root);
+    }
 }
 
 fn append_decision(writer: &mut LedgerWriter) -> Digest32 {
@@ -169,8 +188,16 @@ fn append_decision(writer: &mut LedgerWriter) -> Digest32 {
         support_digest: digest("decision-support"),
     };
     let payload = decision_signing_payload_v2(&request).unwrap();
-    let evidence = signed(writer, "generator", LearningEvidenceRoleV1::Generator, &payload);
-    writer.append_decision(Digest32::ZERO, request, &evidence, 50).unwrap().chain_digest
+    let evidence = signed(
+        writer,
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &payload,
+    );
+    writer
+        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .unwrap()
+        .chain_digest
 }
 fn append_terminal(writer: &mut LedgerWriter, predecessor: Digest32) {
     let request = AuthenticatedOutcomeV1 {
@@ -192,10 +219,24 @@ fn append_terminal(writer: &mut LedgerWriter, predecessor: Digest32) {
         },
     };
     let payload = outcome_signing_payload_v2(&request);
-    let evidence = signed(writer, "observer", LearningEvidenceRoleV1::Observer, &payload);
-    writer.append_outcome(predecessor, request, &evidence, 50).unwrap();
+    let evidence = signed(
+        writer,
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        &payload,
+    );
+    writer
+        .append_outcome(predecessor, request, &evidence, 50)
+        .unwrap();
 }
-fn freeze(writer: &LedgerWriter) -> (LedgerSnapshot, DatasetFreezePlanV2, SignedLearningEvidenceV1, DatasetSnapshotReceiptV3) {
+fn freeze(
+    writer: &LedgerWriter,
+) -> (
+    LedgerSnapshot,
+    DatasetFreezePlanV2,
+    SignedLearningEvidenceV1,
+    DatasetSnapshotReceiptV3,
+) {
     let snapshot = writer.snapshot().unwrap();
     let plan = DatasetFreezePlanV2 {
         snapshot_id: id("dataset"),
@@ -203,7 +244,12 @@ fn freeze(writer: &LedgerWriter) -> (LedgerSnapshot, DatasetFreezePlanV2, Signed
         inclusion_policy_digest: digest("inclusion"),
     };
     let payload = dataset_freeze_signing_payload_v2(&snapshot, &plan).unwrap();
-    let evidence = signed(writer, "evaluator", LearningEvidenceRoleV1::Evaluator, &payload);
+    let evidence = signed(
+        writer,
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        &payload,
+    );
     let receipt = writer.freeze_dataset(plan.clone(), &evidence, 50).unwrap();
     (snapshot, plan, evidence, receipt)
 }
@@ -215,9 +261,14 @@ fn native_owner_pairs_actual_durable_decision_and_terminal_without_labels() {
     let head = append_decision(&mut writer);
     append_terminal(&mut writer, head);
     let (snapshot, plan, signed_freeze, dataset) = freeze(&writer);
-    let report = writer.read_neuron_trial_source_v1(&snapshot, &plan, &signed_freeze, &dataset, 50).unwrap();
+    let report = writer
+        .read_neuron_trial_source_v1(&snapshot, &plan, &signed_freeze, &dataset, 50)
+        .unwrap();
     assert_eq!(report.terminal_joins.len(), 1);
-    assert_eq!(report.terminal_joins[0].decision_record_id, id("decision-1"));
+    assert_eq!(
+        report.terminal_joins[0].decision_record_id,
+        id("decision-1")
+    );
     assert_eq!(report.terminal_joins[0].outcome_record_id, id("outcome-1"));
     assert_eq!(report.pending_episodes, 0);
     assert_eq!(report.censored_episodes, 0);
@@ -235,7 +286,9 @@ fn native_owner_keeps_missing_outcomes_as_pending_not_zero_reward() {
     let mut writer = fixture.writer();
     append_decision(&mut writer);
     let (snapshot, plan, signed_freeze, dataset) = freeze(&writer);
-    let report = writer.read_neuron_trial_source_v1(&snapshot, &plan, &signed_freeze, &dataset, 50).unwrap();
+    let report = writer
+        .read_neuron_trial_source_v1(&snapshot, &plan, &signed_freeze, &dataset, 50)
+        .unwrap();
     assert!(report.terminal_joins.is_empty());
     assert_eq!(report.pending_episodes, 1);
     assert!(report.validate_integrity());
@@ -249,10 +302,18 @@ fn native_owner_rejects_changed_signed_freeze_and_forged_dataset() {
     let (snapshot, plan, signature, dataset) = freeze(&writer);
     let mut tampered = signature.clone();
     tampered.signature[0] ^= 1;
-    assert!(writer.read_neuron_trial_source_v1(&snapshot, &plan, &tampered, &dataset, 50).is_err());
+    assert!(
+        writer
+            .read_neuron_trial_source_v1(&snapshot, &plan, &tampered, &dataset, 50)
+            .is_err()
+    );
     let mut forged = dataset.clone();
     forged.snapshot.objective_digest = digest("wrong-objective");
-    assert!(writer.read_neuron_trial_source_v1(&snapshot, &plan, &signature, &forged, 50).is_err());
+    assert!(
+        writer
+            .read_neuron_trial_source_v1(&snapshot, &plan, &signature, &forged, 50)
+            .is_err()
+    );
 }
 
 #[test]
@@ -262,5 +323,9 @@ fn native_owner_rejects_frozen_ledger_that_is_not_current_prefix() {
     append_decision(&mut writer);
     let (mut snapshot, plan, signature, dataset) = freeze(&writer);
     snapshot.head_digest = digest("wrong-chain-head");
-    assert!(writer.read_neuron_trial_source_v1(&snapshot, &plan, &signature, &dataset, 50).is_err());
+    assert!(
+        writer
+            .read_neuron_trial_source_v1(&snapshot, &plan, &signature, &dataset, 50)
+            .is_err()
+    );
 }
