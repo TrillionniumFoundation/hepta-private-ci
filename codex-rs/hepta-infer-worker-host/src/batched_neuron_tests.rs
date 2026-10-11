@@ -16,6 +16,33 @@ use std::collections::BTreeSet;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+
+#[derive(Debug)]
+struct FixtureMetricSink {
+    reject_records: bool,
+}
+
+impl codex_hepta_types::PhaseMetricSinkV1 for FixtureMetricSink {
+    fn record(
+        &self,
+        _sample: codex_hepta_types::PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if self.reject_records {
+            Err(codex_hepta_types::PhaseMetricSinkErrorV1::Backpressure)
+        } else {
+            Ok(())
+        }
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
 struct Driver {
     batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
 }
@@ -177,6 +204,9 @@ fn runner_with_counter(
         },
     )
     .unwrap()
+    .with_metric_sink(std::sync::Arc::new(FixtureMetricSink {
+        reject_records: false,
+    }))
 }
 
 fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseGrant {
@@ -497,4 +527,30 @@ fn physical_backend_coalesces_three_scopes_without_merging_final_use_authority()
         )
     }));
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+
+#[test]
+fn telemetry_commit_error_preserves_result_and_fences_future_physical_batches() {
+    let temp = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[43; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut owner = runner(&signer, temp.path(), model).with_metric_sink(
+        std::sync::Arc::new(FixtureMetricSink {
+            reject_records: true,
+        }),
+    );
+    owner
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let first = owner.poll_and_execute_physical(101).unwrap();
+    assert_eq!(first.outcomes.len(), 1);
+    assert!(first.outcomes[0].result.is_ok());
+    // The completed external effect must not be retried just because the
+    // metric writer failed. Instead, the next physical attempt is denied.
+    assert!(matches!(
+        owner.poll_and_execute_physical(102),
+        Err(BatchWorkerErrorV1::TelemetryUnavailable)
+    ));
 }
