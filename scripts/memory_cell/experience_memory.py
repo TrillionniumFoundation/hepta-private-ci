@@ -165,12 +165,17 @@ class ExperienceReader(ReferenceReader):
         self.scopes, self.roots = set(), set()
         self.quarantined = False
 
-    def fit_sources(self, documents, *, revision, allowed_roots, revoked):
+    def fit_sources(
+        self, documents, *, revision, allowed_roots, revoked, loss_backend="full"
+    ):
         import torch
         from peft import get_peft_model_state_dict
         from pretrained import frozen_digest
         from source_write_schedule import prepare
+        from source_completion_loss import BACKENDS, completion_loss
 
+        if loss_backend not in BACKENDS:
+            raise ValueError("unregistered source loss backend")
         examples, dispositions = source_examples(
             documents,
             revision=revision,
@@ -189,19 +194,28 @@ class ExperienceReader(ReferenceReader):
         }
         optimizer = torch.optim.AdamW(params, lr=0.0002)
         started, tokens, supervised, losses = time.perf_counter(), 0, 0, []
+        projected = 0
         self.model.train()
         try:
             print(json.dumps(dict(event="source-write-plan", plan=plan)), flush=True)
             for index in plan["entries"]:
                 ids, labels = prepared[index]
-                x = torch.tensor([ids], dtype=torch.long)
                 optimizer.zero_grad(set_to_none=True)
-                loss = self.model(
-                    input_ids=x,
-                    attention_mask=torch.ones_like(x),
-                    labels=torch.tensor([labels], dtype=torch.long),
-                    use_cache=False,
-                ).loss
+                if loss_backend == "full":
+                    # Keep the original model-owned loss as the default control.
+                    x = torch.tensor([ids], dtype=torch.long)
+                    loss = self.model(
+                        input_ids=x,
+                        attention_mask=torch.ones_like(x),
+                        labels=torch.tensor([labels], dtype=torch.long),
+                        use_cache=False,
+                    ).loss
+                    projection_positions = len(ids)
+                else:
+                    loss, projection = completion_loss(
+                        self.model, ids, labels, backend=loss_backend
+                    )
+                    projection_positions = projection["actual_projection_positions"]
                 if not torch.isfinite(loss):
                     raise ValueError("nonfinite source-writing loss")
                 loss.backward()
@@ -209,6 +223,7 @@ class ExperienceReader(ReferenceReader):
                 optimizer.step()
                 if any(not torch.isfinite(p).all() for p in params):
                     raise ValueError("nonfinite source-writing parameters")
+                projected += projection_positions
                 tokens += len(ids)
                 supervised += sum(i != -100 for i in labels)
                 losses.append(float(loss.detach()))
@@ -260,6 +275,9 @@ class ExperienceReader(ReferenceReader):
                 input_tokens=tokens,
                 supervised_tokens=supervised,
                 token_ceiling=TOKEN_CEILING,
+                loss_backend=loss_backend,
+                full_projection_positions=tokens,
+                actual_projection_positions=projected,
                 losses=losses,
                 adapter_delta_squared_norm=delta,
                 trainable_parameters=self.trainable_parameters,
