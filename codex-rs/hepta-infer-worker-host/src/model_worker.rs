@@ -742,6 +742,14 @@ pub use cpu_head::cpu_gated_bundle_weights_digest;
 #[path = "model_worker_stem_projection.rs"]
 pub mod stem_projection;
 
+#[path = "model_worker_stem_artifact.rs"]
+mod stem_artifact;
+
+pub use stem_artifact::SelectedStemProjectionReaderV1;
+pub use stem_artifact::StemProjectionArtifactError;
+pub use stem_artifact::StemProjectionOwnerFenceV1;
+pub use stem_artifact::StemProjectionReadObservationV1;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
