@@ -12,6 +12,39 @@ on:
 permissions:
   contents: read
 jobs:
+  dependency-advisory-audit:
+    name: Matrix exact-head cargo-deny (no advisory waivers)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact Matrix source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify locked source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          test -s codex-rs/Cargo.lock
+          git diff --check
+      - uses: ./.github/actions/setup-ci-build
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - name: Check live advisories and exact locked dependency graph
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.96.0
+          manifest-path: ./codex-rs/Cargo.toml
+      - name: Verify cargo-deny did not alter tracked sources
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+
   sdk-protocol:
     name: Matrix SDK (${{ matrix.qualification }})
     strategy:
