@@ -527,10 +527,7 @@ pub(crate) struct CognitiveSnapshotProof<'a> {
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
+    proof: CognitiveSnapshotProof<'_>,
     plan: Option<&CognitiveContextPlan>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     body_generation: u64,
