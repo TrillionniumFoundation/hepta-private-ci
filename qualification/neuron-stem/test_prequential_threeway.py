@@ -6,7 +6,7 @@ import unittest
 
 from jina_v5 import sha256_record
 from prequential_trial import prediction_precommit
-from prequential_threeway_review import review
+from prequential_threeway_review import future_calibration_metrics, review
 from qualified_eval import audit_dataset
 
 
@@ -124,6 +124,40 @@ class PrequentialThreeWayTests(unittest.TestCase):
                          ["frozen"]["groups"], 32)
         self.assertEqual(result["future_grouped_paired"]["future_2"]
                          ["no_change"]["groups"], 32)
+
+    def test_future_ece_brier_are_descriptive_for_all_three_arms(self):
+        summary = self.run_report()
+        windows = summary["future_window_calibration_descriptive"]
+        self.assertEqual(set(windows), {"future_1", "future_2"})
+        for window in windows.values():
+            self.assertEqual(set(window), {"no_change", "frozen", "trained"})
+            for arm in window.values():
+                self.assertEqual(arm["events"], 32)
+                self.assertTrue(0 <= arm["accuracy"] <= 1)
+                self.assertTrue(0 <= arm["normalized_multiclass_brier"] <= 1)
+                self.assertTrue(0 <= arm["ece_15"] <= 1)
+                self.assertIn("unattested", arm["outcomes"])
+        self.assertLess(windows["future_2"]["trained"]["ece_15"],
+                        windows["future_2"]["no_change"]["ece_15"])
+        self.assertTrue(summary["ece_15_calculated_for_all_three_controls"])
+        self.assertFalse(summary["ood_threeway_model_evidence_present"])
+        self.assertFalse(summary["full_quality_and_ood_gate_passed"])
+        self.assertFalse(summary["production_promotion_permitted"])
+
+    def test_calibration_refuses_unknown_arms_or_nonnormalized_predictions(self):
+        example = {
+            "dataset": {"label": 0, "options": ["left", "right"]},
+            "trained": [.9, .1], "frozen": [.3, .7], "no_change": [.2, .8],
+        }
+        stats = future_calibration_metrics([example], "trained")
+        self.assertAlmostEqual(stats["normalized_multiclass_brier"], .01)
+        with self.assertRaisesRegex(ValueError, "unknown or empty"):
+            future_calibration_metrics([example], "unregistered")
+        with self.assertRaisesRegex(ValueError, "fixed 15-bin"):
+            future_calibration_metrics([example], "trained", bins=2)
+        example["trained"] = [.8, .8]
+        with self.assertRaisesRegex(ValueError, "probability distribution"):
+            future_calibration_metrics([example], "trained")
 
     def test_missing_unbound_nochange_blocks_comparison(self):
         with self.assertRaisesRegex(ValueError, "coverage"):
