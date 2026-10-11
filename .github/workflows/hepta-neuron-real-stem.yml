@@ -1,0 +1,64 @@
+name: Hepta Real mmBERT Stem Capture
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/four_gate_pretrained.py"
+      - "qualification/neuron-stem/four_gate_capture.py"
+      - "qualification/neuron-stem/test_four_gate_pretrained.py"
+      - ".github/workflows/hepta-neuron-real-stem.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  real-mmbert:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact source and install CPU runtime
+        run: |
+          git rev-parse HEAD > real-stem-source.txt
+          python3 -m venv /tmp/real-stem-venv
+          /tmp/real-stem-venv/bin/pip install numpy==2.2.6 psutil==7.0.0 transformers==4.57.3 huggingface-hub==0.36.0
+          /tmp/real-stem-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/real-stem-venv/bin/pip freeze > real-stem-environment.txt
+      - name: Execute physical fixed-revision weights, not a fixture Driver
+        shell: bash
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          set -euo pipefail
+          mkdir -p real-stem-evidence
+          failed=0
+          for repeat in 0 5000 9000; do
+            for arm in joint_batch feature_reuse; do
+              PYTHONPATH=qualification/neuron-stem /tmp/real-stem-venv/bin/python \
+                qualification/neuron-stem/four_gate_pretrained.py \
+                --source-root "$PWD" --model-dir "/tmp/real-mmbert-$repeat-$arm" \
+                --output "real-stem-evidence/$repeat-$arm" \
+                --cells 64 --active-bps 10000 --repeat-bps "$repeat" --arm "$arm" \
+                2>&1 | tee "real-stem-evidence/$repeat-$arm.log" || failed=1
+            done
+          done
+          git diff --exit-code
+          exit "$failed"
+      - name: Retain original observations and failures, never weights or credentials
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: real-mmbert-${{ github.run_id }}
+          path: |
+            real-stem-source.txt
+            real-stem-environment.txt
+            real-stem-evidence/
+          if-no-files-found: error
+          retention-days: 14
