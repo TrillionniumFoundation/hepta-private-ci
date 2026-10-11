@@ -544,3 +544,49 @@ fn live_owner_rejects_a_truncated_ledger_before_any_side_effect() {
     assert!(actors.attempts.is_empty());
     assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
 }
+
+#[test]
+fn live_owner_rejects_same_length_header_tampering_before_any_external_effect() {
+    let file = NamedTempFile::new().expect("temp ledger");
+    let p = plan();
+    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p)
+        .expect("bootstrap");
+    let original_length = reopen(&file).metadata().expect("metadata").len();
+
+    let mut tamper = reopen(&file);
+    tamper.seek(SeekFrom::Start(12)).expect("seek header");
+    tamper.write_all(&[0xf5]).expect("change scope bytes");
+    tamper.sync_all().expect("sync same-length corruption");
+    drop(tamper);
+    assert_eq!(reopen(&file).metadata().expect("metadata").len(), original_length);
+
+    let mut actors = MockOwners::default();
+    assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
+    assert!(actors.attempts.is_empty());
+    assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
+}
+
+#[test]
+fn live_owner_rejects_same_length_accepted_frame_tampering_before_resume() {
+    let file = NamedTempFile::new().expect("temp ledger");
+    let p = plan();
+    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p)
+        .expect("bootstrap");
+    let mut actors = MockOwners::default();
+    assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Unapproved));
+    assert_eq!(actors.attempts.len(), 3);
+
+    let frame_boundary = HEADER_SIZE as u64 + 4 + FRAME_FIXED_SIZE as u64 - 1;
+    let original_length = reopen(&file).metadata().expect("metadata").len();
+    let mut tamper = reopen(&file);
+    tamper.seek(SeekFrom::Start(frame_boundary)).expect("seek frame");
+    tamper.write_all(&[0x5a]).expect("corrupt same-size frame checksum");
+    tamper.sync_all().expect("sync frame corruption");
+    drop(tamper);
+    assert_eq!(reopen(&file).metadata().expect("metadata").len(), original_length);
+
+    actors.install(&owner.plan, CellSplitStepV1::IndependentSelection);
+    assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Poisoned));
+    assert_eq!(actors.attempts.len(), 3);
+    assert!(owner.progress().accepted_steps == 3);
+}
