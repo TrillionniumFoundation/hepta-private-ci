@@ -323,23 +323,26 @@ impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
         &mut self,
         _handle: &DriverModelHandle,
         requests: &[NeuronFeatureRequest],
-    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
-        // Conformance-only fixture: an actual backend must prove a single
-        // physical forward independently; this asserts just the driver API.
+    ) -> Result<Vec<crate::model_worker::PhysicalBatchItemObservationV1>, Error> {
+        // Conformance fixture only; physical forward evidence requires hardware.
         PHYSICAL_BATCH_BACKEND_CALLS.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         Ok(requests
             .iter()
-            .map(|request| DriverNeuronFeatureObservation {
-                terminal_observed: true,
-                succeeded: true,
-                encoder_digest: request.encoder_digest.clone(),
-                head_digest: request.head_digest.clone(),
-                drive_q24: vec![1 << 24; request.expected_output_width],
-                prediction_q24: vec![0; request.expected_output_width],
-                observed_memory_bytes: 1024,
-                transient_allocation_bytes: 2048,
-                queue_age_micros: 8,
-                latency_micros: 13,
+            .map(|request| crate::model_worker::PhysicalBatchItemObservationV1 {
+                request_id: request.authorization.request_id.clone(),
+                payload_digest: request.authorization.payload_digest.clone(),
+                observation: DriverNeuronFeatureObservation {
+                    terminal_observed: true,
+                    succeeded: true,
+                    encoder_digest: request.encoder_digest.clone(),
+                    head_digest: request.head_digest.clone(),
+                    drive_q24: vec![1 << 24; request.expected_output_width],
+                    prediction_q24: vec![0; request.expected_output_width],
+                    observed_memory_bytes: 1024,
+                    transient_allocation_bytes: 2048,
+                    queue_age_micros: 8,
+                    latency_micros: 13,
+                },
             })
             .collect())
     }
