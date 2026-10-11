@@ -381,8 +381,8 @@ fn persisted_owner_keys_cannot_drift_after_a_committed_effect() {
     }
     let mut replacement_keys = [0, 1, 2, 3].map(|index| signing_key(index).verifying_key());
     replacement_keys[1] = SigningKey::from_bytes(&[91; 32]).verifying_key();
-    let replacement = CellSplitOwnerTrustV1::new(&plan(), replacement_keys)
-        .expect("distinct replacement keys");
+    let replacement =
+        CellSplitOwnerTrustV1::new(&plan(), replacement_keys).expect("distinct replacement keys");
     assert!(matches!(
         CellSplitExecutionOwnerV1::open(
             root.path(),
@@ -390,7 +390,9 @@ fn persisted_owner_keys_cannot_drift_after_a_committed_effect() {
             replacement,
             FixturePort::new(state.clone())
         ),
-        Err(CellSplitExecutionErrorV1::Invalid("persisted effect owner keys changed"))
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "persisted effect owner keys changed"
+        ))
     ));
     assert_eq!(state.borrow().executions, 1);
 }
@@ -438,7 +440,9 @@ fn erased_trust_pins_reject_recovery_after_effect_history() {
             trust(),
             FixturePort::new(state.clone())
         ),
-        Err(CellSplitExecutionErrorV1::Invalid("effect history lost trust pins"))
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "effect history lost trust pins"
+        ))
     ));
     assert_eq!(state.borrow().executions, 1);
 }
@@ -461,17 +465,16 @@ fn receipt_whitespace_rewrite_fails_closed_before_successor() {
     fs::write(&path, bytes).expect("noncanonical rewrite");
     assert!(matches!(
         owner.advance(),
-        Err(CellSplitExecutionErrorV1::Invalid("noncanonical committed receipt bytes"))
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "noncanonical committed receipt bytes"
+        ))
     ));
     assert_eq!(state.borrow().executions, 1);
     drop(owner);
-    assert!(CellSplitExecutionOwnerV1::open(
-        root.path(),
-        plan(),
-        trust(),
-        FixturePort::new(state),
-    )
-    .is_err());
+    assert!(
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), FixturePort::new(state),)
+            .is_err()
+    );
 }
 
 #[test]
