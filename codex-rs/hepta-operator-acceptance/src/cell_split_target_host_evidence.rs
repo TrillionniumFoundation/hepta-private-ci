@@ -743,7 +743,7 @@ fn replay_payload(
             || event.child_generation != payload.child_generation
             || event.previous_event_digest != previous_digest
             || event.operation_id.is_empty()
-            || event.receipt_digest.is_empty()
+            || !digest_shape(&event.receipt_digest)
             || event.occurred_at_unix_nanos <= previous_timestamp
             || !operation_ids.insert(event.operation_id.clone())
             || !receipt_digests.insert(event.receipt_digest.clone())
@@ -835,32 +835,44 @@ fn validate_event_payload(
     match event.event_kind {
         CellSplitTargetHostEventKindV1::ArtifactLoaded => {}
         CellSplitTargetHostEventKindV1::RouteCutover => {
-            if event.route_digest.is_empty() || event.predecessor_digest.is_empty() {
+            if !digest_shape(&event.route_digest)
+                || !digest_shape(&event.predecessor_digest)
+            {
                 return Err(invalid("route cutover receipt is incomplete"));
             }
         }
         CellSplitTargetHostEventKindV1::RestartRecovered => {
-            if event.receipt_digest.is_empty() {
-                return Err(invalid("restart recovery receipt is incomplete"));
+            if !digest_shape(&event.route_digest) {
+                return Err(invalid("restart recovery route is not a digest"));
             }
         }
         CellSplitTargetHostEventKindV1::PowerLossRecovered => {
-            if event.receipt_digest.is_empty() || !digest_shape(&event.fault_injection_digest) {
+            if !digest_shape(&event.route_digest)
+                || !digest_shape(&event.fault_injection_digest)
+            {
                 return Err(invalid("power-loss witness is incomplete"));
             }
         }
         CellSplitTargetHostEventKindV1::RollbackCompleted => {
-            if event.predecessor_digest.is_empty() {
+            if !digest_shape(&event.predecessor_digest)
+                || !digest_shape(&event.route_digest)
+            {
                 return Err(invalid("rollback predecessor is missing"));
             }
         }
         CellSplitTargetHostEventKindV1::TombstoneCommitted => {
-            if !digest_shape(&event.tombstone_digest) {
+            if !digest_shape(&event.tombstone_digest)
+                || !digest_shape(&event.route_digest)
+                || !digest_shape(&event.predecessor_digest)
+            {
                 return Err(invalid("tombstone digest is malformed"));
             }
         }
         CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
-            if event.tombstone_digest.is_empty() || event.predecessor_digest.is_empty() {
+            if !digest_shape(&event.tombstone_digest)
+                || !digest_shape(&event.predecessor_digest)
+                || !digest_shape(&event.route_digest)
+            {
                 return Err(invalid("no-resurrection witness is incomplete"));
             }
         }
