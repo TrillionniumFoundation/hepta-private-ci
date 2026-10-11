@@ -149,7 +149,13 @@ class MaterializationTests(unittest.TestCase):
                         InvalidTrial, "absolute, physical directory"
                     ):
                         run_laya(
-                            manifest, [], "laya", path, "model.safetensors", "cpu", "d" * 64
+                            manifest,
+                            [],
+                            "laya",
+                            path,
+                            "model.safetensors",
+                            "cpu",
+                            "d" * 64,
                         )
 
     def test_offline_hub_fetch_never_implies_network_permission(self):
