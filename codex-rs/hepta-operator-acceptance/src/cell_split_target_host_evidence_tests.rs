@@ -530,7 +530,7 @@ fn independent_observer_join_requires_all_four_current_owners() {
     let target_policy = policy(&host, &observer);
     let mut current = CurrentEffectFixture::new(&transcript);
 
-    let receipt = crate::verify_cell_split_observer_join_v1(
+    let receipt = crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
         &signed_join, &transcript, &trust,
         &envelope, &target_policy, &mut current,
     ).expect("four original effect owners + independently signed target-host pairing");
@@ -542,7 +542,7 @@ fn independent_observer_join_requires_all_four_current_owners() {
     // An unrelated or revoked external owner invalidates the joined proof,
     // even though the earlier host and observer signatures are unchanged.
     assert!(current.committed.remove(&transcript.receipts[2].intent.idempotency_key).is_some());
-    assert!(crate::verify_cell_split_observer_join_v1(
+    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
         &signed_join, &transcript, &trust,
         &envelope, &target_policy, &mut current,
     ).is_err());
@@ -565,7 +565,7 @@ fn observer_join_rejects_mixed_host_and_effect_lineage_before_remote_reads() {
     let mut current = CurrentEffectFixture::new(&transcript);
 
     signed_join.payload.owner_receipt_digests[1] = "ff".repeat(32);
-    assert!(crate::verify_cell_split_observer_join_v1(
+    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
         &signed_join, &transcript, &trust,
         &envelope, &target_policy, &mut current,
     ).is_err());
@@ -575,7 +575,7 @@ fn observer_join_rejects_mixed_host_and_effect_lineage_before_remote_reads() {
         &envelope, &transcript, &host, &observer,
     );
     signed_join.observer_signature.signature_base64 = BASE64.encode([0_u8; 64]);
-    assert!(crate::verify_cell_split_observer_join_v1(
+    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
         &signed_join, &transcript, &trust,
         &envelope, &target_policy, &mut current,
     ).is_err());
@@ -583,7 +583,7 @@ fn observer_join_rejects_mixed_host_and_effect_lineage_before_remote_reads() {
 
     let mut changed = transcript.clone();
     changed.plan.child_artifact_digest = "99".repeat(32);
-    assert!(crate::verify_cell_split_observer_join_v1(
+    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
         &signed_join, &changed, &trust,
         &envelope, &target_policy, &mut current,
     ).is_err());
@@ -612,7 +612,7 @@ fn observer_join_rejects_reused_effect_owner_as_host_signer() {
         &observer,
     );
     let mut current = CurrentEffectFixture::new(&transcript);
-    assert!(crate::verify_cell_split_observer_join_v1(
+    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
         &join,
         &transcript,
         &trust,
