@@ -125,6 +125,12 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Mirror the production Agentd startup owner barrier. Until the
+        // already-attached critical cognitive store and revocation baseline
+        // are explicitly marked ready, mark_app_server_ready() cannot open
+        // admission and HealthSnapshot.ready stays false forever.
+        // Never force readiness by changing the timeout or skipping health.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
