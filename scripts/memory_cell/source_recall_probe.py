@@ -1,4 +1,4 @@
-"""Bounded, in-sample source recall probe before opening any future task plan.
+"""Bounded source recall: in-training wording or source-derived paraphrase.
 
 Checks whether a committed source-written adapter can recall its OWN training
 facts in the exact writer prompt format. This is not generalization, QA gain,
@@ -19,6 +19,7 @@ from bundle_reader import GENERATION
 from experience_inference import frozen_adapter_mode
 from experience_memory import render, source_examples
 from native import Question, digest
+from source_paraphrase_probe import paraphrase_writer_question
 
 ARMS = ("base", "memory")
 MAX_SCOPES = 16
@@ -69,9 +70,11 @@ def actual_generate(reader, prompt, mode):
 
 
 def probe(reader, documents, output, *, snapshot_sha, writer_source, source_commit,
-          revision=2, maximum=MAX_SCOPES, generate=actual_generate):
+          revision=2, maximum=MAX_SCOPES, generate=actual_generate,
+          question_mode="training"):
     if (
-        output.exists()
+        question_mode not in ("training", "paraphrase")
+        or output.exists()
         or not re.fullmatch(r"[0-9a-f]{64}", snapshot_sha)
         or not re.fullmatch(r"[0-9a-f]{40}", writer_source)
         or not re.fullmatch(r"[0-9a-f]{40}", source_commit)
@@ -82,7 +85,12 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
     selected, unknown = source_probe_plan(
         documents, revision=revision, roots=reader.roots, maximum=maximum
     )
-    questions = tuple(Question(**item["query"]) for item in selected)
+    questions = tuple(
+        paraphrase_writer_question(item)
+        if question_mode == "paraphrase"
+        else Question(**item["query"])
+        for item in selected
+    )
     # No target or evaluation-plan value is handed to generation. Each scope
     # contributes its first fixed training example, regardless of outcomes.
     output.mkdir()
@@ -95,10 +103,12 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
         reader_identity=reader.identity,
         reader_profile=reader.profile,
         source_questions=[asdict(q) for q in questions],
-        selection="first-unambiguous-training-question-per-sorted-scope",
+        selection="first-unambiguous-training-fact-per-sorted-scope",
+        question_mode=question_mode,
+        source_derived_untrained_question_wording=question_mode == "paraphrase",
         unresolved_source_dispositions=len(unknown),
         task_plan_or_test_labels_loaded=False,
-        in_sample_training_recall=True,
+        in_sample_training_recall=question_mode == "training",
         production_accepted=False,
     )
     (output / "plan.json").write_text(
@@ -116,7 +126,7 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
                     prompt_sha256=digest(prompt),
                     input_tokens=len(prompt),
                     delivered_evidence=[],
-                    result_is_in_sample_training_recall=True,
+                    result_is_in_sample_training_recall=question_mode == "training",
                 )
                 try:
                     answer, generated, seconds = generate(reader, prompt, arm)
@@ -141,7 +151,7 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
                 os.fsync(journal.fileno())
                 records.append(row)
     reader.verify_frozen()
-    targets = {item["query"]["identity"]: item["target"] for item in selected}
+    targets = {q.identity: item["target"] for q, item in zip(questions, selected, strict=True)}
     seen = {(r["question_id"], r["arm"]) for r in records}
     if len(seen) != len(records) or len(records) != len(questions) * len(ARMS):
         raise ValueError("incomplete probe census")
@@ -191,7 +201,8 @@ def probe(reader, documents, output, *, snapshot_sha, writer_source, source_comm
         memory_losses=losses,
         unknown_pair_bounds=[(wins-losses-(len(questions)-paired))/len(questions),
                              (wins-losses+(len(questions)-paired))/len(questions)],
-        input_is_trained_source_question=True,
+        input_is_trained_source_question=question_mode == "training",
+        source_derived_untrained_query_paraphrase=question_mode == "paraphrase",
         zero_task_questions_or_labels_consumed=True,
         new_independent_holdout_observations=0,
         semantic_citation_precision=None,
@@ -218,6 +229,7 @@ def main():
         parser.add_argument(name, type=Path)
     for name in ("source-sha", "stage-sha", "ready-sha", "source-commit"):
         parser.add_argument("--" + name, required=True)
+    parser.add_argument("--question-mode", choices=("training", "paraphrase"), default="training")
     args = parser.parse_args()
     ready = read(args.snapshot / "READY.json", args.ready_sha)
     if (
@@ -251,7 +263,8 @@ def main():
         reader, docs, args.output,
         snapshot_sha=args.ready_sha,
         writer_source=ready["writer_source"],
-        source_commit=args.source_commit
+        source_commit=args.source_commit,
+        question_mode=args.question_mode
     )
 
 
