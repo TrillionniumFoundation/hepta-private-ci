@@ -11,6 +11,7 @@ mod cell_split_effect_service;
 #[cfg(unix)]
 mod cell_split_execution_cli;
 mod cell_split_execution_owner;
+mod cell_split_observer_join;
 #[cfg(unix)]
 mod cell_split_supervisor_fence;
 mod cell_split_target_host;
@@ -128,6 +129,14 @@ pub use cell_split_execution_owner::CellSplitExecutionPortV1;
 pub use cell_split_execution_owner::CellSplitExecutionReceiptV1;
 pub use cell_split_execution_owner::CellSplitExecutionStepV1;
 pub use cell_split_execution_owner::CellSplitExecutionTranscriptV1;
+pub use cell_split_observer_join::CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1;
+pub use cell_split_observer_join::CellSplitObserverJoinErrorV1;
+pub use cell_split_observer_join::CellSplitObserverJoinPayloadV1;
+pub use cell_split_observer_join::CellSplitObserverJoinReceiptV1;
+pub use cell_split_observer_join::CellSplitSignedObserverJoinV1;
+pub use cell_split_observer_join::cell_split_observer_join_payload_v1;
+pub use cell_split_observer_join::cell_split_observer_join_signing_payload_v1;
+pub use cell_split_observer_join::verify_cell_split_observer_join_v1;
 pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
 pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
 pub use cell_split_execution_owner::verify_cell_split_execution_transcript_signatures_v1;
