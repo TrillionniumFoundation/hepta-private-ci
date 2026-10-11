@@ -16,7 +16,9 @@ use std::collections::BTreeSet;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-struct Driver;
+struct Driver {
+    batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+}
 
 impl ModelDriver for Driver {
     fn load(&mut self, _manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
@@ -121,6 +123,22 @@ fn runner_with_batch_size(
     model: ModelManifest,
     batch_size: usize,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    runner_with_counter(
+        signing_key,
+        directory,
+        model,
+        batch_size,
+        std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0)),
+    )
+}
+
+fn runner_with_counter(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+    batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
@@ -144,7 +162,9 @@ fn runner_with_batch_size(
         maximum_memory_bytes: 4096,
         semantic_digest: digest(b"resource-grant").to_string(),
     };
-    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver).unwrap();
+    let mut worker = InferenceWorker::new(
+        100, "worker-one".into(), 3, grant, Driver { batch_calls }
+    ).unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
@@ -315,9 +335,6 @@ fn same_lane_three_item_group_preserves_independent_final_use_nonces() {
 }
 
 
-static PHYSICAL_BATCH_BACKEND_CALLS: std::sync::atomic::AtomicUsize =
-    std::sync::atomic::AtomicUsize::new(0);
-
 impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
     fn run_neuron_feature_batch(
         &mut self,
@@ -325,7 +342,7 @@ impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
         requests: &[NeuronFeatureRequest],
     ) -> Result<crate::model_worker::PhysicalBatchRunObservationV1, Error> {
         // Conformance fixture only; physical forward evidence requires hardware.
-        PHYSICAL_BATCH_BACKEND_CALLS.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        self.batch_calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         let items = requests
             .iter()
             .map(|request| crate::model_worker::PhysicalBatchItemObservationV1 {
@@ -359,8 +376,9 @@ fn one_backend_batch_call_requires_three_independent_signed_claims() {
     let temp = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[27; 32]);
     let (model, fixture, key) = fixture_request();
-    let mut owner = runner_with_batch_size(&signer, temp.path(), model, 3);
-    let before = PHYSICAL_BATCH_BACKEND_CALLS.load(std::sync::atomic::Ordering::SeqCst);
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = runner_with_counter(&signer, temp.path(), model, 3, calls.clone());
+    let before = calls.load(std::sync::atomic::Ordering::SeqCst);
     for index in 0_u8..3 {
         let mut request = fixture.clone();
         request.authorization.request_id = format!("physical-req-{index}");
@@ -388,7 +406,7 @@ fn one_backend_batch_call_requires_three_independent_signed_claims() {
         )
     }));
     assert_eq!(
-        PHYSICAL_BATCH_BACKEND_CALLS.load(std::sync::atomic::Ordering::SeqCst),
+        calls.load(std::sync::atomic::Ordering::SeqCst),
         before + 1
     );
 }
@@ -398,8 +416,9 @@ fn one_invalid_signature_fences_entire_physical_group_before_backend() {
     let temp = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[29; 32]);
     let (model, fixture, key) = fixture_request();
-    let mut owner = runner_with_batch_size(&signer, temp.path(), model, 3);
-    let before = PHYSICAL_BATCH_BACKEND_CALLS.load(std::sync::atomic::Ordering::SeqCst);
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = runner_with_counter(&signer, temp.path(), model, 3, calls.clone());
+    let before = calls.load(std::sync::atomic::Ordering::SeqCst);
     for index in 0_u8..3 {
         let mut request = fixture.clone();
         request.authorization.request_id = format!("denied-req-{index}");
@@ -427,7 +446,7 @@ fn one_invalid_signature_fences_entire_physical_group_before_backend() {
     }));
     assert_eq!(result.pending, 0);
     assert_eq!(
-        PHYSICAL_BATCH_BACKEND_CALLS.load(std::sync::atomic::Ordering::SeqCst),
+        calls.load(std::sync::atomic::Ordering::SeqCst),
         before
     );
 }
