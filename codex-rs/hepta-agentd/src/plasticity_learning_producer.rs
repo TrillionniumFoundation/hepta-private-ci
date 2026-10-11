@@ -20,7 +20,7 @@ use crate::PlasticityRuntimeHandleV1;
 /// It contains only the bounded runtime handle and cannot access proposal
 /// writers, anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
-pub(crate) struct AgentdLearningPlasticityProducerV1 {
+pub struct AgentdLearningPlasticityProducerV1 {
     handle: PlasticityRuntimeHandleV1,
 }
 
@@ -29,7 +29,7 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
-    pub(crate) async fn submit_parameter(
+    pub async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
         now: u64,
@@ -37,7 +37,7 @@ impl AgentdLearningPlasticityProducerV1 {
         self.handle.propose_parameter(request, now).await
     }
 
-    pub(crate) async fn submit_topology(
+    pub async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
         now: u64,

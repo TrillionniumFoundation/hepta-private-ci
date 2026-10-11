@@ -701,17 +701,33 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
+/// Cohesive, non-cloneable set of *live* owner frontiers used immediately
+/// before a governed plasticity proposal. The caller cannot substitute
+/// a stale digest for a current owner/store reference.
+pub struct AgentdParameterPlasticityHostContext<'a> {
+    pub artifacts: &'a ArtifactRegistry,
+    pub ledger: &'a DurableLedger,
+    pub owner_evidence_resolver: &'a dyn PlasticityOwnerEvidenceResolverV1,
+    pub owner_evidence_policy: &'a PlasticityOwnerEvidencePolicyV1,
+    pub verifier: &'a LearningEvidenceVerifierV1,
+    pub writer: &'a mut AnchoredPlasticityWriterV1,
+    pub anchor_store: &'a mut AgentdPlasticityAnchorStoreV1,
+}
+
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
-    artifacts: &ArtifactRegistry,
-    ledger: &DurableLedger,
-    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
-    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
-    verifier: &LearningEvidenceVerifierV1,
-    writer: &mut AnchoredPlasticityWriterV1,
-    anchor_store: &mut AgentdPlasticityAnchorStoreV1,
+    context: AgentdParameterPlasticityHostContext<'_>,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    let AgentdParameterPlasticityHostContext {
+        artifacts,
+        ledger,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+        verifier,
+        writer,
+        anchor_store,
+    } = context;
     let resolved = resolve_agentd_plasticity_admission_v1(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),
