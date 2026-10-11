@@ -530,3 +530,22 @@ is its separate software repository. Experiment A uses the former as the
 pinned checkpoint source and requires independent review of the latter as
 the executable adapter. Neither weight SHA nor Git commit alone attests
 which decision Python package actually ran. Do not conflate them.
+
+
+### Pretrained safetensors must load completely, not merely exist
+
+The local HF Decision Head runner now requests output_loading_info from the
+actual Transformers AutoModel loader. It rejects missing, unexpected, mismatched
+pretrained tensor keys, loader error messages, or a backend that fails to provide
+a complete report. A converted safetensors file with omitted layers is NOT a
+qualifying pretrained checkpoint even if its SHA matches an approved tree.
+The run manifest records verified_encoder_loading, and decision_arm_bundle.py
+requires the exact complete-load receipt and matching pinned local runner-source
+SHA for both DeBERTa-v3-large and ModernBERT-large equal-budget arms.
+
+To use a model with an intentional architecture-specific extra head, the
+independent operator must first prepare/review a base-model-only safetensors
+artifact and pin its content. Do not add an ignore list of missing or
+unexpected tensor keys to make an incomplete checkpoint look green. This
+loading receipt is local technical evidence, NOT cryptographic attestation
+of the operator, upstream revision or NDU outcomes.
