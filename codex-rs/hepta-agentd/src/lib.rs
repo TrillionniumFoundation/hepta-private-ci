@@ -33,7 +33,6 @@ mod neuron_runtime;
 mod objective_runtime;
 mod plasticity_anchor_journal;
 mod plasticity_host;
-mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
