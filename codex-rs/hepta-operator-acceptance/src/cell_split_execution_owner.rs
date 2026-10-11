@@ -438,6 +438,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     ) -> Result<Self, CellSplitExecutionErrorV1> {
         plan.validate()?;
         let root = secure_root(root, "cell split owner root")?;
+        verify_split_frame_namespace(&root)?;
         // The shared sidecar lock is created before the frozen plan on first
         // initialization. If both immutable owner frames later vanish, the
         // surviving lock is a local continuity marker: do not silently
@@ -636,6 +637,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         &mut self,
         collect_receipts: bool,
     ) -> Result<Vec<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
+        verify_split_frame_namespace(&self.root)?;
         let frozen = read_frame(&self.root.join("cell-split-frozen-plan.json"))?.ok_or(
             CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"),
         )?;
@@ -846,6 +848,49 @@ fn frame_path(root: &Path, index: usize, phase: &str) -> PathBuf {
 /// A broken symlink is still a persisted path, never evidence of absence.
 /// Do not use Path::exists here: it follows symlinks and can return false for
 /// malicious/dangling successors, allowing a non-prefix history to advance.
+/// Every split owns a deliberately small, write-once namespace. Unknown
+/// cell-split frames (including a fifth step, alternative receipt suffix or
+/// replay marker) are evidence of a corrupted ledger, never ignorable files.
+/// Bound the scan itself so a hostile directory cannot make a global owner
+/// lock perform unbounded work.
+fn verify_split_frame_namespace(root: &Path) -> Result<(), CellSplitExecutionErrorV1> {
+    const MAX_ENTRIES: usize = 32;
+    let mut count = 0_usize;
+    for entry in fs::read_dir(root)? {
+        let entry = entry?;
+        count += 1;
+        if count > MAX_ENTRIES {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "split ledger namespace exceeds bounded entry limit",
+            ));
+        }
+        let filename = entry.file_name();
+        let Some(name) = filename.to_str() else {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "split ledger contains an invalid filename",
+            ));
+        };
+        if !name.starts_with("cell-split-") {
+            continue;
+        }
+        if name == "cell-split-frozen-plan.json"
+            || name == "cell-split-owner-trust-pins.json"
+        {
+            continue;
+        }
+        let known = (0..STEP_COUNT).any(|index| {
+            name == format!("cell-split-{index:02}-prepared.json")
+                || name == format!("cell-split-{index:02}-committed.json")
+        });
+        if !known {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "unknown cell split durable frame",
+            ));
+        }
+    }
+    Ok(())
+}
+
 fn has_successor_frame(root: &Path, from_index: usize) -> Result<bool, CellSplitExecutionErrorV1> {
     for index in from_index..STEP_COUNT {
         if read_frame(&frame_path(root, index, "prepared"))?.is_some()
