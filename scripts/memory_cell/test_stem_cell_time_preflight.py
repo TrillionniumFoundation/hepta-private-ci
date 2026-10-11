@@ -80,6 +80,30 @@ class NativeTimePreflightTests(unittest.TestCase):
         self.assertEqual(res["datasets"]["corpus"]["source_observation_checks"], 1)
         self.assertEqual(res["actual_future_window_count"], 0)
 
+    def test_longmemeval_native_weekday_census_does_not_hide_future(self):
+        docs = (
+            Document("a", "a", "scope", "2023/04/10 (Mon) 14:47"),
+            Document("b", "b", "scope", "2023/04/10 (Mon) 21:04"),
+            Document("c", "c", "scope", "2023/04/10 (Tue) 10:00"),
+        )
+        qs = (Question("q", "scope", "2023/04/10 (Mon) 17:50"),)
+        result = native_chronology({"longmemeval": Corpus("sha", docs, qs)})
+        summary = result["datasets"]["longmemeval"]
+        self.assertEqual(summary["accepted"], 1)
+        self.assertEqual(summary["future"], 1)
+        self.assertEqual(summary["unknown"], 1)
+        self.assertFalse(result["all_observations_comparable_and_nonfuture"])
+        self.assertEqual(result["actual_future_window_count"], 0)
+
+    def test_longmemeval_original_minute_grammar_is_comparable(self):
+        doc = (Document("a", "root", "scope",
+                        "2023/05/20 (Sat) 02:21"),)
+        q = (Question("q", "scope", "2023/05/30 (Tue) 23:40"),)
+        report = native_chronology({"longmemeval": Corpus("sha", doc, q)})
+        self.assertEqual(report["datasets"]["longmemeval"]["accepted"], 1)
+        self.assertEqual(report["datasets"]["longmemeval"]["unknown"], 0)
+
+
 
 if __name__ == "__main__":
     unittest.main()

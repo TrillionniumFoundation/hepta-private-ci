@@ -33,6 +33,65 @@ class NativeChronologyTests(unittest.TestCase):
         self.assertFalse(source_not_after_question("2025", "2024"))
         self.assertTrue(source_not_after_question("2023/10/01", "2023-10-01"))
 
+    def test_longmemeval_native_weekday_and_minute_chronology(self):
+        self.assertTrue(source_not_after_question(
+            "2023/04/10 (Mon) 17:50",
+            "2023/04/10 (Mon) 23:07",
+        ))
+        self.assertTrue(source_not_after_question(
+            "2023/04/10 (Mon) 23:59",
+            "2023/04/11 (Tue) 00:00",
+        ))
+        self.assertFalse(source_not_after_question(
+            "2023/04/10 (Mon) 23:07",
+            "2023/04/10 (Mon) 17:50",
+        ))
+
+    def test_longmemeval_weekday_drift_and_invalid_calendar_reject(self):
+        for native in (
+            "2023/04/10 (Tue) 17:50",
+            "2023/02/30 (Thu) 10:00",
+            "2023/04/10 (Mon) 24:00",
+            "2023/04/10 (Mon) 17:99",
+            "2023/04/10 (Xyz) 17:50",
+            "2023/04/10 Mon 17:50",
+        ):
+            with self.subTest(native=native), self.assertRaises(ValueError):
+                source_not_after_question(
+                    native, "2023/04/10 (Mon) 23:07"
+                )
+
+    def test_longmemeval_precision_conflict_and_future_fail_closed(self):
+        with self.assertRaisesRegex(ValueError, "incomparable"):
+            source_not_after_question(
+                "2023/04/10 (Mon) 17:50", "2023/04/10"
+            )
+        reader = Reader()
+        cache = ExactReaderCache(reader)
+        q = replace(query(), observed_at="2023/05/28 (Sun) 06:47")
+        too_late = (dict(
+            evidence()[0],
+            observed_at="2023/05/28 (Sun) 07:17",
+        ),)
+        with self.assertRaisesRegex(ValueError, "future evidence"):
+            cache.answer(q, too_late, "denied", revoked=set())
+        self.assertEqual(reader.calls, 0)
+
+    def test_longmemeval_exact_reader_request_and_reuse(self):
+        reader = Reader()
+        cache = ExactReaderCache(reader)
+        q = replace(query(), observed_at="2023/04/10 (Mon) 23:07")
+        valid = (dict(evidence()[0],
+                      observed_at="2023/04/10 (Mon) 17:50"),)
+        first, receipt = cache.answer(q, valid, "first", revoked=set())
+        self.assertTrue(receipt["actual_reader_execution"])
+        self.assertEqual(receipt["delivered_evidence"], list(valid))
+        self.assertEqual(reader.calls, 1)
+        second, reused = cache.answer(q, valid, "repeat", revoked=set())
+        self.assertEqual(first, second)
+        self.assertEqual(reused["reused_from"], "first")
+        self.assertEqual(reader.calls, 1)
+
     def test_utc_offsets_use_same_instant_not_text_order(self):
         self.assertTrue(source_not_after_question(
             "2024-01-01T01:00:00+01:00", "2024-01-01T00:30:00Z"

@@ -360,3 +360,15 @@ This is **label-free analysis only**: a rank flip is not evidence of correct
 source choice, transferable memory, independent semantic citation support or
 a positive task-level Reader outcome. The fixed forced-top1 policy, Reader,
 prompt, training/evaluation cuts and candidate pools remain unchanged.
+
+## Native LongMemEval weekday-time compatibility
+
+The source-only chronology preflight of the original pinned data at
+`683c02f5` reported **0 comparable and 23,867 unknown LongMemEval
+source/question timestamp pairs**, while its LoCoMo pairs were comparable.
+The native LongMemEval grammar is `YYYY/MM/DD (Ddd) HH:MM`, e.g.
+`2023/04/10 (Mon) 23:07`. The time parser now explicitly validates
+calendar date, 24-hour time and the supplied weekday. Inconsistent weekday,
+invalid calendar, unknown format, mixed precision and real future sources
+still fail closed. This compatibility repair does not retroactively change
+the original 576-record experiment; the new run must produce its own result.

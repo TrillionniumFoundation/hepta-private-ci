@@ -27,6 +27,24 @@ def _parse_observation(value):
             except ValueError:
                 pass
         raise ValueError("invalid native LoCoMo timestamp")
+    # Pinned LongMemEval native chronology: YYYY/MM/DD (Ddd) HH:MM.
+    # The weekday is evidence provenance metadata; validate it rather than
+    # silently accepting a contradictory day label.
+    native = re.fullmatch(
+        r"(\d{4})/(\d{2})/(\d{2}) "
+        r"\((Mon|Tue|Wed|Thu|Fri|Sat|Sun)\) (\d{2}):(\d{2})",
+        value,
+    )
+    if native:
+        year, month, day, weekday, hour, minute = native.groups()
+        parsed = datetime(
+            int(year), int(month), int(day), int(hour), int(minute)
+        )
+        if ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")[
+            parsed.weekday()
+        ] != weekday:
+            raise ValueError("LongMemEval weekday/date mismatch")
+        return parsed, "minute", False
     match = re.fullmatch(
         r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}"
         r"(?::\d{2}(?:\.\d{1,6})?)?(?:Z|[+-]\d{2}:\d{2})?",
