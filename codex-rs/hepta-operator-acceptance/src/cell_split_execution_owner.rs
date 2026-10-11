@@ -109,7 +109,9 @@ impl CellSplitExecutionPlanV1 {
         Ok(())
     }
 
-    fn digest(&self) -> Result<String, CellSplitExecutionErrorV1> {
+    /// Canonical plan digest used to bind external owner ports to the exact
+    /// coordinator intent. This is an identity, never an authorization grant.
+    pub fn digest(&self) -> Result<String, CellSplitExecutionErrorV1> {
         Ok(sha256(&canonical_json(self)?))
     }
 }
