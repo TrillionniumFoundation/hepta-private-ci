@@ -11,7 +11,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from cell_learning import DynamicCell, LearningContractError, paired_future_score
+from cell_learning import DynamicCell, LearningContractError, paired_future_score, rust_candidate_digest
 
 ROLES = ("MemoryRead", "Predictor", "Decision", "Value")
 
@@ -123,8 +123,8 @@ def compare_organ(
         "with_organ": with_transfer,
         "future_bce_delta": with_transfer["trained_bce"] - without["trained_bce"],
         "negative_transfer": with_transfer["trained_bce"] > without["trained_bce"],
-        "trained_without_digest": plain.export_q24(),
-        "trained_with_digest": with_organ.export_q24(),
+        "trained_without_digest": rust_candidate_digest(plain.export_q24()),
+        "trained_with_digest": rust_candidate_digest(with_organ.export_q24()),
         "production_promotion": "DENY_ALL",
         "evidence_type": "offline_shadow_not_signed",
     }
