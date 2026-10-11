@@ -79,6 +79,7 @@ jobs:
             scripts/memory_cell/strong_rag*.py \
             scripts/memory_cell/test_strong_rag*.py
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_workflow_scheduling.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag*.py' -v
           python3 -m py_compile \
             scripts/memory_cell/strong_rag*.py \
             scripts/memory_cell/test_strong_rag*.py
