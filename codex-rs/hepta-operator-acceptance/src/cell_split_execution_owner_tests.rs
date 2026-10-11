@@ -394,13 +394,15 @@ fn dangling_later_frame_is_not_treated_as_absent_during_recovery() {
         root.path().join("cell-split-02-prepared.json"),
     )
     .expect("inject dangling successor");
-    assert!(CellSplitExecutionOwnerV1::open(
-        root.path(),
-        plan(),
-        trust(),
-        FixturePort::new(state.clone()),
-    )
-    .is_err());
+    assert!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .is_err()
+    );
     assert_eq!(state.borrow().executions, 0);
 }
 
@@ -423,13 +425,15 @@ fn pending_step_recovery_rejects_dangling_successor_frame() {
         root.path().join("cell-split-03-committed.json"),
     )
     .expect("inject dangling successor");
-    assert!(CellSplitExecutionOwnerV1::open(
-        root.path(),
-        plan(),
-        trust(),
-        FixturePort::new(state.clone()),
-    )
-    .is_err());
+    assert!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .is_err()
+    );
     assert_eq!(state.borrow().executions, 1);
 }
 
