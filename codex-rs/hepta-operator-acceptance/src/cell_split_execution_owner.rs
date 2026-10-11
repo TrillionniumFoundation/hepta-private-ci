@@ -455,7 +455,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         let has_effect_history = has_successor_frame(&root, 0)?;
         let persisted_pins = read_frame(&pins_path)?;
         let bytes = canonical_json(&plan)?;
-        match read_frame(&path)? {
+        let persisted_plan = read_frame(&path)?;
+        // Once the plan exists, its independently pinned owner keys may not
+        // be regenerated, even if no external effect has started. Otherwise
+        // a deleted pins frame could silently rebind a frozen split to
+        // caller-supplied signer keys before the first prepared intent.
+        let plan_was_frozen = persisted_plan.is_some();
+        match persisted_plan {
             Some(persisted) if persisted != bytes => {
                 return Err(CellSplitExecutionErrorV1::Invalid("frozen plan changed"));
             }
@@ -486,6 +492,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             None if has_effect_history => {
                 return Err(CellSplitExecutionErrorV1::Invalid(
                     "effect history lost trust pins",
+                ));
+            }
+            None if plan_was_frozen => {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "frozen plan lost owner trust pins",
                 ));
             }
             None if existing_only => {
