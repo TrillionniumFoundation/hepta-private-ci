@@ -276,7 +276,7 @@ fn validate_original_input(
         input.input_digest,
     ]
     .iter()
-    .any(Digest32::is_zero)
+    .any(|digest| digest.is_zero())
         || input.temporal_drive_q24.len() != config.base.temporal_width
         || input.prediction_q24.len() != config.base.activation_width
         || input
