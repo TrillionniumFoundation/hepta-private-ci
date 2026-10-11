@@ -153,17 +153,19 @@ def reference_reader_capacity(
                     "literal-answer privileged reference not source-bound",
                 )
                 source = provided[0]
-                a, z, excerpt = (
+                source_start, source_end, excerpt = (
                     source.get("source_start"),
                     source.get("source_end"),
                     source.get("excerpt"),
                 )
                 require(
-                    type(a) is int and type(z) is int
-                    and 0 <= a < z <= 100_000_000
+                    type(source_start) is int and type(source_end) is int
+                    and 0 <= source_start < source_end <= 100_000_000
                     and isinstance(excerpt, str)
                     and 0 < len(excerpt.encode("utf-8", "strict")) <= 4096
-                    and z - a == len(excerpt.encode("utf-8", "strict"))
+                    and source_end - source_start == len(
+                        excerpt.encode("utf-8", "strict")
+                    )
                     and isinstance(source.get("root"), str)
                     and bool(source["root"])
                     and isinstance(source.get("id"), str)

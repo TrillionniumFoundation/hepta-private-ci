@@ -125,6 +125,26 @@ class OracleCapacityTests(unittest.TestCase):
         self.assertFalse(receipt["independently_reviewed_sufficient_context"])
         self.assertFalse(receipt["production_accepted"])
 
+    def test_source_end_offset_cannot_shadow_no_evidence_receipt(self):
+        # Literal spans include a numeric UTF-8 end byte offset. That is
+        # *not* the zero-evidence Reader's scored-row object.
+        args = fixture()
+        literal = next(
+            row for row in args[2] if row["oracle_kind"] == "native-source-literal-span"
+        )
+        span = literal["receipt"]["delivered_evidence"][0]
+        span["source_start"] += 7
+        span["source_end"] += 7
+        report = reference_reader_capacity(*args)
+        row = next(
+            item for item in report["rows"]
+            if item["question_id"] == literal["question_id"]
+        )
+        self.assertEqual(row["no_evidence_token_f1"], 0.0)
+        self.assertAlmostEqual(row["oracle_minus_empty"], 0.7)
+        self.assertAlmostEqual(row["oracle_minus_frozen"], 0.6)
+        self.assertFalse(report["production_accepted"])
+
     def test_oracle_f1_is_observed_only_where_reference_was_found(self):
         receipt = reference_reader_capacity(*fixture())
         row = receipt["per_original_native_source_coverage"][
