@@ -1,6 +1,7 @@
 use super::*;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicUsize, Ordering};
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 #[derive(Clone, Copy)]
 enum Fault {
@@ -80,10 +81,8 @@ impl NeuronPhysicalBatchDriver for FixtureBackend {
             submission_digest: if matches!(self.fault, Fault::WrongSubmission) {
                 Digest32::of_bytes(b"foreign-request-order").to_string()
             } else {
-                canonical_physical_batch_submission_digest_v1(
-                    "worker", "model", 3, requests,
-                )
-                .to_string()
+                canonical_physical_batch_submission_digest_v1("worker", "model", 3, requests)
+                    .to_string()
             },
             batch_execution_digest: Digest32::of_bytes(b"test-batch").to_string(),
             claimed_encoder_forward_count: if matches!(self.fault, Fault::TooManyForwards) {
@@ -136,9 +135,16 @@ fn fixture(
     };
     let calls = Arc::new(AtomicUsize::new(0));
     let mut worker = InferenceWorker::new(
-        100, "worker".into(), 3, grant,
-        FixtureBackend { fault, calls: Arc::clone(&calls) },
-    ).unwrap();
+        100,
+        "worker".into(),
+        3,
+        grant,
+        FixtureBackend {
+            fault,
+            calls: Arc::clone(&calls),
+        },
+    )
+    .unwrap();
     worker.load_model(100, manifest.clone()).unwrap();
 
     let requests = (0..2)
@@ -175,7 +181,9 @@ fn fixture(
 #[test]
 fn verified_one_call_batch_emits_one_bound_receipt_per_item() {
     let (mut worker, calls, requests) = fixture(Fault::None);
-    let receipts = worker.run_physical_batch_receipts(100, "model", requests).unwrap();
+    let receipts = worker
+        .run_physical_batch_receipts(100, "model", requests)
+        .unwrap();
     assert_eq!(receipts.len(), 2);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }

@@ -16,7 +16,6 @@ use std::collections::BTreeSet;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-
 #[derive(Debug)]
 struct FixtureMetricSink {
     reject_records: bool,
@@ -189,9 +188,8 @@ fn runner_with_counter(
         maximum_memory_bytes: 4096,
         semantic_digest: digest(b"resource-grant").to_string(),
     };
-    let mut worker = InferenceWorker::new(
-        100, "worker-one".into(), 3, grant, Driver { batch_calls }
-    ).unwrap();
+    let mut worker =
+        InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver { batch_calls }).unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
@@ -364,7 +362,6 @@ fn same_lane_three_item_group_preserves_independent_final_use_nonces() {
     // This verifies admission grouping, not physical backend batching.
 }
 
-
 impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
     fn run_neuron_feature_batch(
         &mut self,
@@ -372,29 +369,35 @@ impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
         requests: &[NeuronFeatureRequest],
     ) -> Result<crate::model_worker::PhysicalBatchRunObservationV1, Error> {
         // Conformance fixture only; physical forward evidence requires hardware.
-        self.batch_calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        self.batch_calls
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         let items = requests
             .iter()
-            .map(|request| crate::model_worker::PhysicalBatchItemObservationV1 {
-                request_id: request.authorization.request_id.clone(),
-                payload_digest: request.authorization.payload_digest.clone(),
-                observation: DriverNeuronFeatureObservation {
-                    terminal_observed: true,
-                    succeeded: true,
-                    encoder_digest: request.encoder_digest.clone(),
-                    head_digest: request.head_digest.clone(),
-                    drive_q24: vec![1 << 24; request.expected_output_width],
-                    prediction_q24: vec![0; request.expected_output_width],
-                    observed_memory_bytes: 1024,
-                    transient_allocation_bytes: 2048,
-                    queue_age_micros: 8,
-                    latency_micros: 13,
+            .map(
+                |request| crate::model_worker::PhysicalBatchItemObservationV1 {
+                    request_id: request.authorization.request_id.clone(),
+                    payload_digest: request.authorization.payload_digest.clone(),
+                    observation: DriverNeuronFeatureObservation {
+                        terminal_observed: true,
+                        succeeded: true,
+                        encoder_digest: request.encoder_digest.clone(),
+                        head_digest: request.head_digest.clone(),
+                        drive_q24: vec![1 << 24; request.expected_output_width],
+                        prediction_q24: vec![0; request.expected_output_width],
+                        observed_memory_bytes: 1024,
+                        transient_allocation_bytes: 2048,
+                        queue_age_micros: 8,
+                        latency_micros: 13,
+                    },
                 },
-            })
+            )
             .collect();
         Ok(crate::model_worker::PhysicalBatchRunObservationV1 {
             submission_digest: crate::model_worker::canonical_physical_batch_submission_digest_v1(
-                "worker-one", "model", 3, requests,
+                "worker-one",
+                "model",
+                3,
+                requests,
             )
             .to_string(),
             batch_execution_digest: digest(b"mock-batch-call").to_string(),
@@ -428,7 +431,9 @@ fn one_backend_batch_call_requires_three_independent_signed_claims() {
             .sign(&signed_grant.grant.signing_bytes().unwrap())
             .to_bytes()
             .to_vec();
-        owner.enqueue(100, "model".into(), request, key.clone(), signed_grant).unwrap();
+        owner
+            .enqueue(100, "model".into(), request, key.clone(), signed_grant)
+            .unwrap();
     }
     let result = owner.poll_and_execute_physical(101).unwrap();
     assert_eq!(result.outcomes.len(), 3);
@@ -439,10 +444,7 @@ fn one_backend_batch_call_requires_three_independent_signed_claims() {
             Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
         )
     }));
-    assert_eq!(
-        calls.load(std::sync::atomic::Ordering::SeqCst),
-        before + 1
-    );
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), before + 1);
 }
 
 #[test]
@@ -471,20 +473,21 @@ fn one_invalid_signature_fences_entire_physical_group_before_backend() {
         if index == 2 {
             signed_grant.signature[0] ^= 1;
         }
-        owner.enqueue(100, "model".into(), request, key.clone(), signed_grant).unwrap();
+        owner
+            .enqueue(100, "model".into(), request, key.clone(), signed_grant)
+            .unwrap();
     }
     let result = owner.poll_and_execute_physical(101).unwrap();
     assert_eq!(result.outcomes.len(), 3);
-    assert!(result.outcomes.iter().all(|item| {
-        item.result.as_ref().err() == Some(&BatchWorkerErrorV1::Authority)
-    }));
-    assert_eq!(result.pending, 0);
-    assert_eq!(
-        calls.load(std::sync::atomic::Ordering::SeqCst),
-        before
+    assert!(
+        result
+            .outcomes
+            .iter()
+            .all(|item| { item.result.as_ref().err() == Some(&BatchWorkerErrorV1::Authority) })
     );
+    assert_eq!(result.pending, 0);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), before);
 }
-
 
 #[test]
 fn physical_backend_coalesces_three_scopes_without_merging_final_use_authority() {
@@ -529,18 +532,17 @@ fn physical_backend_coalesces_three_scopes_without_merging_final_use_authority()
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
 
-
 #[test]
 fn telemetry_commit_error_preserves_result_and_fences_future_physical_batches() {
     let temp = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[43; 32]);
     let (model, request, key) = fixture_request();
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
-    let mut owner = runner(&signer, temp.path(), model).with_metric_sink(
-        std::sync::Arc::new(FixtureMetricSink {
+    let mut owner = runner(&signer, temp.path(), model).with_metric_sink(std::sync::Arc::new(
+        FixtureMetricSink {
             reject_records: true,
-        }),
-    );
+        },
+    ));
     owner
         .enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();

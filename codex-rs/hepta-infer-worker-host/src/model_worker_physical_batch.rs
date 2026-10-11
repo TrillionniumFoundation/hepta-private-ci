@@ -87,10 +87,7 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
         validate_identity(model_id, "model")?;
         let size = requests.len();
         let limit = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
-        if size == 0
-            || size > limit
-            || self.active_requests.len().saturating_add(size) > limit
-        {
+        if size == 0 || size > limit || self.active_requests.len().saturating_add(size) > limit {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
@@ -122,13 +119,12 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
                 return Err(Error::PayloadMismatch);
             }
         }
-        let expected_submission_digest =
-            canonical_physical_batch_submission_digest_v1(
-                &self.worker_id,
-                model_id,
-                self.generation,
-                &requests,
-            );
+        let expected_submission_digest = canonical_physical_batch_submission_digest_v1(
+            &self.worker_id,
+            model_id,
+            self.generation,
+            &requests,
+        );
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.active_requests = loaded
             .active_requests
@@ -141,9 +137,12 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
             );
         }
         // A single driver method call; no sequential fallback is available.
-        let result = self.driver.run_neuron_feature_batch(&loaded.handle, &requests);
+        let result = self
+            .driver
+            .run_neuron_feature_batch(&loaded.handle, &requests);
         for request in &requests {
-            self.active_requests.remove(&request.authorization.request_id);
+            self.active_requests
+                .remove(&request.authorization.request_id);
         }
         loaded.active_requests = loaded.active_requests.saturating_sub(size);
         let batch = result?;
@@ -177,8 +176,7 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
             let control_request = NeuronFeatureRequestV1 {
                 request_id: StableId::new(request.authorization.request_id)
                     .map_err(|_| Error::FeatureContract)?,
-                generation: Generation::new(self.generation)
-                    .map_err(|_| Error::FeatureContract)?,
+                generation: Generation::new(self.generation).map_err(|_| Error::FeatureContract)?,
                 model_id: StableId::new(manifest.model_id.clone())
                     .map_err(|_| Error::FeatureContract)?,
                 encoder_digest: parse_digest32(&request.encoder_digest)?,

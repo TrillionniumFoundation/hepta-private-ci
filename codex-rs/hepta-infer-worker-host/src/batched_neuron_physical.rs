@@ -20,9 +20,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
         // Physical serving requires a healthy evidence-owned metric sink.
         // Failed persistence cannot justify retrying a completed model call;
         // subsequent admissions are fenced instead.
-        if self.metrics_poisoned
-            || self.metric_sink.as_ref().is_none_or(|sink| !sink.healthy())
-        {
+        if self.metrics_poisoned || self.metric_sink.as_ref().is_none_or(|sink| !sink.healthy()) {
             return Err(BatchWorkerErrorV1::TelemetryUnavailable);
         }
         let poll = self
@@ -107,11 +105,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
         // claims remain spent but NO physical batch is submitted.
         let mut claims = Vec::with_capacity(items.len());
         for pending in &items {
-            match FinalUseAuthority::claim(
-                &self.authority,
-                &pending.signed,
-                &pending.binding,
-            ) {
+            match FinalUseAuthority::claim(&self.authority, &pending.signed, &pending.binding) {
                 Ok(token) => claims.push((token, pending.binding.clone())),
                 Err(_) => {
                     return Ok(failed_poll(
@@ -132,18 +126,17 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
             })
             .collect();
         let start = Instant::now();
-        let execution = FinalUseAuthority::with_verified_batch_effect(
-            &self.authority,
-            claims,
-            || self.worker.run_physical_batch_receipts(now_ms, &model_id, requests),
-        );
+        let execution =
+            FinalUseAuthority::with_verified_batch_effect(&self.authority, claims, || {
+                self.worker
+                    .run_physical_batch_receipts(now_ms, &model_id, requests)
+            });
         let completed = match execution {
-            Ok(Ok(receipts)) if receipts.len() == ids.len() => {
-                ids.into_iter()
-                    .zip(receipts.into_iter().map(Ok))
-                    .map(|(request_id, result)| BatchWorkerItemOutcomeV1 { request_id, result })
-                    .collect::<Vec<_>>()
-            }
+            Ok(Ok(receipts)) if receipts.len() == ids.len() => ids
+                .into_iter()
+                .zip(receipts.into_iter().map(Ok))
+                .map(|(request_id, result)| BatchWorkerItemOutcomeV1 { request_id, result })
+                .collect::<Vec<_>>(),
             Ok(_) => failed_outcomes(ids, BatchWorkerErrorV1::Worker),
             Err(_) => failed_outcomes(ids, BatchWorkerErrorV1::Authority),
         };
@@ -177,12 +170,12 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
     }
 }
 
-fn failed_outcomes(
-    ids: Vec<StableId>,
-    error: BatchWorkerErrorV1,
-) -> Vec<BatchWorkerItemOutcomeV1> {
+fn failed_outcomes(ids: Vec<StableId>, error: BatchWorkerErrorV1) -> Vec<BatchWorkerItemOutcomeV1> {
     ids.into_iter()
-        .map(|request_id| BatchWorkerItemOutcomeV1 { request_id, result: Err(error) })
+        .map(|request_id| BatchWorkerItemOutcomeV1 {
+            request_id,
+            result: Err(error),
+        })
         .collect()
 }
 
