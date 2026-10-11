@@ -321,10 +321,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             let committed = read_frame(&frame_path(&root, index, "committed"))?;
             match (prepared, committed) {
                 (None, None) => {
-                    if (index + 1..STEP_COUNT).any(|later| {
-                        frame_path(&root, later, "prepared").exists()
-                            || frame_path(&root, later, "committed").exists()
-                    }) {
+                    if has_successor_frame(&root, index + 1)? {
                         return Err(CellSplitExecutionErrorV1::Invalid("non-prefix history"));
                     }
                     break;
@@ -349,10 +346,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                         cursor += 1;
                     } else {
                         pending = true;
-                        if (index + 1..STEP_COUNT).any(|later| {
-                            frame_path(&root, later, "prepared").exists()
-                                || frame_path(&root, later, "committed").exists()
-                        }) {
+                        if has_successor_frame(&root, index + 1)? {
                             return Err(CellSplitExecutionErrorV1::Invalid(
                                 "pending step has successors",
                             ));
@@ -558,6 +552,23 @@ fn validate_receipt(
 
 fn frame_path(root: &Path, index: usize, phase: &str) -> PathBuf {
     root.join(format!("cell-split-{index:02}-{phase}.json"))
+}
+
+/// A broken symlink is still a persisted path, never evidence of absence.
+/// Do not use Path::exists here: it follows symlinks and can return false for
+/// malicious/dangling successors, allowing a non-prefix history to advance.
+fn has_successor_frame(
+    root: &Path,
+    from_index: usize,
+) -> Result<bool, CellSplitExecutionErrorV1> {
+    for index in from_index..STEP_COUNT {
+        if read_frame(&frame_path(root, index, "prepared"))?.is_some()
+            || read_frame(&frame_path(root, index, "committed"))?.is_some()
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 fn read_frame(path: &Path) -> Result<Option<Vec<u8>>, CellSplitExecutionErrorV1> {
