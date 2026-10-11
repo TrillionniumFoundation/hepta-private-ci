@@ -710,7 +710,6 @@ fn neuron_driver_total_reported_peak_cannot_bypass_memory_resource_grant() {
     );
 }
 
-
 #[cfg(unix)]
 fn signed_stem_final_use_fixture(
     binding: codex_hepta_contracts::FinalUseBinding,
@@ -747,11 +746,8 @@ fn signed_stem_final_use_fixture(
         .to_bytes()
         .to_vec();
     let directory = tempfile::tempdir().expect("test final-use home");
-    std::fs::set_permissions(
-        directory.path(),
-        std::fs::Permissions::from_mode(0o700),
-    )
-    .expect("protected test authority directory");
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("protected test authority directory");
     let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(
         directory.path(),
         grant.signer_id.clone(),
@@ -781,11 +777,18 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
         Driver::default(),
     )
     .expect("worker");
-    worker.load_model(100, manifest()).expect("load real Head fixture");
+    worker
+        .load_model(100, manifest())
+        .expect("load real Head fixture");
     let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
     let expected = worker
         .expected_stem_final_use_binding_v1(
-            100, &source, &access, head.clone(), &features, &authorization,
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &authorization,
         )
         .expect("a complete unsigned proposal");
     assert_eq!(expected.subject_id, "principal.1");
@@ -830,18 +833,22 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
 #[test]
 fn final_use_different_signed_request_or_authority_is_rejected() {
     let mut worker = InferenceWorker::new(
-        100, "worker.signed-replay".into(), 3, grant(), Driver::default(),
+        100,
+        "worker.signed-replay".into(),
+        3,
+        grant(),
+        Driver::default(),
     )
     .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
     let binding = worker
-        .expected_stem_final_use_binding_v1(
-            100, &source, &access, head.clone(), &features, &auth,
-        )
+        .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
         .expect("frozen request proposal");
     let (authority, signed, _directory) = signed_stem_final_use_fixture(binding.clone());
-    let token = authority.claim(&signed, &binding).expect("trusted test claim");
+    let token = authority
+        .claim(&signed, &binding)
+        .expect("trusted test claim");
     let mut amended_auth = auth.clone();
     amended_auth.maximum_tokens -= 1;
     // The Worker payload remains the same but the request/Reservation tuple
@@ -890,26 +897,23 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
 #[cfg(unix)]
 #[test]
 fn final_use_revocation_after_claim_fences_worker_effect_entry() {
-    let mut worker = InferenceWorker::new(
-        100, "worker.revoked".into(), 3, grant(), Driver::default(),
-    )
-    .expect("worker");
+    let mut worker =
+        InferenceWorker::new(100, "worker.revoked".into(), 3, grant(), Driver::default())
+            .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
     let binding = worker
-        .expected_stem_final_use_binding_v1(
-            100, &source, &access, head.clone(), &features, &auth,
-        )
+        .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
         .expect("frozen binding");
     let (authority, signed, _directory) = signed_stem_final_use_fixture(binding.clone());
-    let token = authority.claim(&signed, &binding).expect("valid signed claim");
+    let token = authority
+        .claim(&signed, &binding)
+        .expect("valid signed claim");
     authority
         .update_revocations(codex_hepta_contracts::FinalUseRevocations {
             authority_epoch: 2,
             revision: 2,
-            revoked_grant_ids: std::collections::BTreeSet::from([
-                signed.grant.grant_id.clone(),
-            ]),
+            revoked_grant_ids: std::collections::BTreeSet::from([signed.grant.grant_id.clone()]),
         })
         .expect("trusted revocation update");
     assert_eq!(
