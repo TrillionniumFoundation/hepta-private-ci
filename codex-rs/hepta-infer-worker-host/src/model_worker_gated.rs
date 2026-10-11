@@ -741,8 +741,8 @@ mod tests {
         worker.load_model(1, selected).expect("load");
         let mut aliased = b.clone();
         aliased.authorization.reservation_id = a.authorization.reservation_id.clone();
-        let alias_digest =
-            super::super::canonical_shared_neuron_payload_digest_v2(&aliased).expect("alias digest");
+        let alias_digest = super::super::canonical_shared_neuron_payload_digest_v2(&aliased)
+            .expect("alias digest");
         aliased.authorization.payload_digest = alias_digest.clone();
         aliased.authorization.lease_payload_digest = alias_digest;
         assert!(matches!(
