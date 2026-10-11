@@ -52,9 +52,9 @@ pub(super) fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
 
 fn map_error(error: io::Error) -> FinalUseError {
     match error.kind() {
-        io::ErrorKind::InvalidData | io::ErrorKind::InvalidInput | io::ErrorKind::PermissionDenied => {
-            FinalUseError::UnsafeStateDirectory
-        }
+        io::ErrorKind::InvalidData
+        | io::ErrorKind::InvalidInput
+        | io::ErrorKind::PermissionDenied => FinalUseError::UnsafeStateDirectory,
         _ => FinalUseError::Unavailable,
     }
 }
@@ -79,18 +79,16 @@ mod tests {
         let temporary = tempfile::tempdir().expect("private state fixture");
         let root = temporary.path().join("final-use-state");
         let key = [17_u8; 32];
-        let (store, before) =
-            Store::open(&root, "windows-final-use-owner", key, head())
-                .expect("create Windows private final-use owner");
+        let (store, before) = Store::open(&root, "windows-final-use-owner", key, head())
+            .expect("create Windows private final-use owner");
         assert!(before.used_nonces.is_empty());
         store
             .append_claim(11, [29_u8; 32])
             .expect("fsync first replay-protection claim");
         drop(store);
 
-        let (reopened, after) =
-            Store::open_exact(&root, "windows-final-use-owner", key, head())
-                .expect("reopen exact original snapshot and nonce journal");
+        let (reopened, after) = Store::open_exact(&root, "windows-final-use-owner", key, head())
+            .expect("reopen exact original snapshot and nonce journal");
         assert_eq!(after.head, head());
         assert_eq!(after.used_nonces, BTreeSet::from([[29_u8; 32]]));
         drop(reopened);
