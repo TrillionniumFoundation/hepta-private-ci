@@ -177,6 +177,18 @@ of a nonempty journal **requires an independently retained anchor**.
 The journal uses neither V1 wire bytes nor a V1 checkpoint; a V1 consumer
 cannot interpret it as a V1 replay.
 
+To avoid keeping full activation/gate history for thousands of Cells, the V3
+journal retains only one 32-byte successor digest per Tick in its history
+index. For a historical idempotent retry, the owner rereads and validates the
+exact frame prefix, reconstructs the same signal receipt, and checks the
+submitted input and predecessor. Corruption poisons that owner. This
+exchanges bounded rare-retry work (at most 1,024 kernel replays) for
+much lower long-lived in-memory journal history. The retained-index-size
+accessor is a deterministic allocation **estimate**, not RSS; the real
+checkpoint, Vec capacities, runtime worker, page cache and WAL still count
+toward total resource envelopes. Capacity, complete-frame corruption and
+historical retry tests are in `gated_journal_v3_tests.rs`.
+
 The standalone `replay_gated_sparse_v3` is an in-memory reconstruction API,
 not a journal. The new shadow journal is real file I/O at source level,
 but still **not** a signed Artifact CAS, trusted witness implementation,
