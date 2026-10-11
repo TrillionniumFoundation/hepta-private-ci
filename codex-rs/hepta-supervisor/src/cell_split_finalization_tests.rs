@@ -643,11 +643,10 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     // outer envelope after corrupting only the original runtime signature.
     let mut forged_cns = cns_receipt.clone();
     let mut forged_original: CellSplitCnsRuntimeCommitV1 =
-        serde_json::from_slice(&forged_cns.owner_receipt_bytes)
-            .expect("typed original");
+        serde_json::from_slice(&forged_cns.owner_receipt_bytes).expect("typed original");
     forged_original.original_runtime_signature_bytes[0] ^= 0x80;
-    forged_cns.owner_receipt_bytes = serde_json::to_vec(&forged_original)
-        .expect("outer envelope bytes");
+    forged_cns.owner_receipt_bytes =
+        serde_json::to_vec(&forged_original).expect("outer envelope bytes");
     forged_cns.output_digest = format!(
         "{:x}",
         sha2::Sha256::digest(&forged_cns.owner_receipt_bytes),
@@ -670,7 +669,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
                 forged_intent.previous_receipt_digest,
             )
             .as_bytes()
-        ),
+        )
     );
     let root_inner_denied = tempfile::tempdir().expect("independent original journal");
     let minimum_inner_denied = prepare(&root_inner_denied, WriterHandoffPhaseV1::RoutePublished);
