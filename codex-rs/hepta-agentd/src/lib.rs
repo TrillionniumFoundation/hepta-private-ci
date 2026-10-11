@@ -211,6 +211,7 @@ pub use plasticity_owner_evidence::plasticity_modulator_broadcast_digest_v1;
 pub use plasticity_owner_evidence::plasticity_modulator_digest_v1;
 pub use plasticity_owner_evidence::plasticity_parameter_signal_digest_v1;
 pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v1;
+pub use plasticity_learning_producer::AgentdLearningPlasticityProducerV1;
 pub use plasticity_runtime::PlasticityRuntimeBootstrapV1;
 pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;
 pub use plasticity_runtime::PlasticityRuntimeHandleV1;
