@@ -74,9 +74,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    # Bazel V8 source builds repeatedly reached the old 30-minute budget before completing.
-    # Match the 60-minute budget used by the repository's Bazel build and release jobs.
-    timeout-minutes: 60
+    # Cold cross-platform V8 builds reached the 60-minute budget before completion.
+    # Allow a bounded 120 minutes for the full source build without changing any gate.
+    timeout-minutes: 120
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -338,8 +338,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    # Source-built Windows V8 pairs share the same long compile budget as Bazel builds.
-    timeout-minutes: 60
+    # Source-built Windows V8 pairs also exceeded 60 minutes before compile completion.
+    # Keep the same bounded 120-minute source-build budget across platforms.
+    timeout-minutes: 120
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
