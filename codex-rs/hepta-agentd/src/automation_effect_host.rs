@@ -57,7 +57,7 @@ const MAX_PROVIDER_HEADERS: usize = 64;
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
     Indeterminate,
     ProvenAbsent,
 }
@@ -261,13 +261,13 @@ impl AgentdAutomationEffectHost {
                 &self.authority,
                 &mut driver,
                 AuthorizedTaskflowEffectInvocation {
-                    intent: intent,
-                    wire_payload: wire_payload,
+                    intent,
+                    wire_payload,
                     fence: &fence,
-                    signed_grant: signed_grant,
+                    signed_grant,
                     expected_binding: &binding,
-                    command_id: command_id,
-                    now_ms: now_ms,
+                    command_id,
+                    now_ms,
                 },
             )
             .await
@@ -319,7 +319,7 @@ impl AgentdAutomationEffectHost {
                 AuthorizedEffectRecoveryResult::Observed(receipt)
                     if receipt.observation != Some(TaskFlowStepObservation::Indeterminate) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -349,7 +349,7 @@ impl AgentdAutomationEffectHost {
                         ))
                     })? {
                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt))
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
                     }
                     AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
