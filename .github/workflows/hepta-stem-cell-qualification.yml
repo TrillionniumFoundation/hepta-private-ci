@@ -146,6 +146,34 @@ jobs:
           git diff --check
           git diff --exit-code
 
+  global-python-ruff-diagnostic:
+    name: Capture global Ruff formatting patch (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@b75a909f75acd358c2196fb9a5f1299a9a8868a4
+      - name: Capture formatter's exact one-file diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          uv run --frozen --project scripts ruff format .github/scripts/test_run_bazel_ci.py
+          git diff --binary -- .github/scripts/test_run_bazel_ci.py > "$RUNNER_TEMP/stem-global-python-ruff.patch"
+          git restore --worktree -- .github/scripts/test_run_bazel_ci.py
+          git diff --check
+          git diff --exit-code
+      - name: Export patch; no source mutation
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-global-python-ruff-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-global-python-ruff.patch
+          if-no-files-found: warn
+          retention-days: 7
+
   native-worker-batch:
     name: Native Neuron Head/batch and final-use ordering contracts (L1 only)
     runs-on: ubuntu-24.04
