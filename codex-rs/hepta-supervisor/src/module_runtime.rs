@@ -1173,7 +1173,9 @@ mod tests {
         ));
 
         let mut bootstrap = RuntimeModuleSupervisorV1::new();
-        bootstrap.register_bootstrap(abi.clone()).expect("bootstrap");
+        bootstrap
+            .register_bootstrap(abi.clone())
+            .expect("bootstrap");
         assert!(matches!(
             bootstrap.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
             Err(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection)
@@ -1221,7 +1223,8 @@ mod tests {
             Err(RuntimeModuleSupervisorErrorV1::GenerationMismatch)
         ));
         assert!(matches!(
-            supervisor.read_neuron_active_candidate_v1(selected_generation, digest("other-artifact")),
+            supervisor
+                .read_neuron_active_candidate_v1(selected_generation, digest("other-artifact")),
             Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch)
         ));
         assert!(matches!(
@@ -1246,7 +1249,6 @@ mod tests {
         altered.diagnostic_digest = altered.computed_digest();
         assert!(!altered.validate_integrity());
     }
-
 }
 
 #[cfg(test)]
