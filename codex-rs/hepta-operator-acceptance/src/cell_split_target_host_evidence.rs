@@ -561,6 +561,12 @@ pub fn verify_cell_split_target_host_evidence_json(
         return Err(invalid("target-host evidence exceeds bounded input"));
     }
     let envelope: CellSplitSignedTargetHostEvidenceV1 = serde_json::from_slice(bytes)?;
+    // Verify signatures over one unambiguous transport representation.
+    // Otherwise equivalent pretty/reordered JSON can produce distinct audit
+    // objects while reusing the exact same signed evidence payload.
+    if envelope.canonical_bytes()? != bytes {
+        return Err(invalid("signed evidence input is not canonical JSON"));
+    }
     verify_cell_split_target_host_evidence(&envelope, policy)
 }
 
