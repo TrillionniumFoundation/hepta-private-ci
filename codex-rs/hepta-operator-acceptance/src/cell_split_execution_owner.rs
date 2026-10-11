@@ -302,6 +302,45 @@ pub fn verify_cell_split_execution_transcript_signatures_v1(
     Ok(())
 }
 
+/// Validate one signed CNS predecessor receipt against the frozen CellSplit
+/// plan and its independently pinned CNS effect-owner key. This checks the
+/// outer coordinator receipt; the original CNS runtime receipt and current
+/// serving route must additionally be verified by the live CNS/Supervisor
+/// owner before a successor effect is authorized.
+pub fn verify_cell_split_cns_step_receipt_v1(
+    plan: &CellSplitExecutionPlanV1,
+    receipt: &CellSplitExecutionReceiptV1,
+    pinned_cns_key: &VerifyingKey,
+) -> Result<(), CellSplitExecutionErrorV1> {
+    let plan_digest = plan.digest()?;
+    let predecessor = &receipt.intent.previous_receipt_digest;
+    if !valid_digest(predecessor) || pinned_cns_key.is_weak() {
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "untrusted CNS predecessor receipt",
+        ));
+    }
+    let expected = make_intent(
+        plan,
+        &plan_digest,
+        CellSplitExecutionStepV1::CnsRouteCutover,
+        predecessor,
+    );
+    validate_receipt(&expected, receipt)?;
+    let signature = Signature::from_slice(&receipt.owner_signature_bytes)
+        .map_err(|_| CellSplitExecutionErrorV1::Invalid("invalid CNS owner signature"))?;
+    pinned_cns_key
+        .verify_strict(&cell_split_execution_signing_payload_v1(receipt)?, &signature)
+        .map_err(|_| CellSplitExecutionErrorV1::Invalid("untrusted CNS owner signature"))
+}
+
+/// The digest used for the durable coordinator chain commits the signed outer
+/// receipt, not the original CNS runtime's independently signed inner bytes.
+pub fn cell_split_execution_receipt_digest_v1(
+    receipt: &CellSplitExecutionReceiptV1,
+) -> Result<String, CellSplitExecutionErrorV1> {
+    receipt_digest(receipt)
+}
+
 /// The deployment's *real* CAS, child migration, CNS and Supervisor owners.
 /// execute must use intent.idempotency_key as its durable effect key. reconcile
 /// must read back an already committed result, not re-execute an uncertain
