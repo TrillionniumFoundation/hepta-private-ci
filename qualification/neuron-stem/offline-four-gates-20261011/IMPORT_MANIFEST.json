@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.four-gate.offline-import-manifest.v1",
+  "source_commit": "88d248277e853b96613f6b442386c25921ad2372",
+  "source_tree": "9b07952db9ffe0194ac3d047df2feadb4414ac3b",
+  "parent_commit": "6f7e3e1040fd26ddef6600d6440572c58de1de6e",
+  "branch": "experiment/neuron-four-gate-offline-import-20261011",
+  "source_files_added": 9,
+  "source_blobs": {
+    ".github/workflows/hepta-neuron-four-gates.yml": "c51514b3630d90745058414d01f1bde7cf91b3b0",
+    "docs/learning/FOUR_GATE_ACCEPTANCE.md": "c71f0d5f83527f515902262813fc3cb2e06ecbea",
+    "qualification/neuron-stem/four_gate_base_check.py": "b3b103d9f9b7e8722ebea4a917d6154b9b5cad73",
+    "qualification/neuron-stem/four_gate_compute_probe.py": "9d46113efdeb02a4496276ed5bf3d14d7bef12fd",
+    "qualification/neuron-stem/four_gate_core.py": "7fe2f27d75808b626b37a082f7783adcc6461a3b",
+    "qualification/neuron-stem/four_gate_learning_probe.py": "7fbbc38b66c1059d9db434ff19d3d537abe11601",
+    "qualification/neuron-stem/four_gate_review.py": "dd34bce161f316615514793e82bcbf89e2404820",
+    "qualification/neuron-stem/four_gate_tensor_tests.py": "fc5eff84794fd6069cfb05bbe11eab4e770793ef",
+    "qualification/neuron-stem/test_four_gate_core.py": "4d21e06f59b5d0452dc819a702dee984f114a100"
+  },
+  "conversation_artifacts_sha256": {
+    "hepta-four-gates-delivery.zip": "69c0565e3e3a260f0ff6c0ee49a7864a8961fa97d75cb03d004e012920abc3b8",
+    "hepta-four-gates.patch": "bd350c7acaaccd7622367b2e29c68034f278baff400b1c8d4660f2dbc087ffda",
+    "hepta_four_gate_results.md": "0a39d0c300f97d01d2d336278503b490d09dd3086e44422590957a5341decf3a",
+    "hepta_four_gate_results.json": "6d3b854973617f1e00f3187546e190739e1a050bf0bd49f8644dfe99496e48f7"
+  },
+  "complete_raw_archive_uploaded_to_github": false,
+  "archive_revalidation": {
+    "entries_verified": 188,
+    "complete_inventory": true,
+    "all_sha256_match": true,
+    "independent_attestation": false
+  },
+  "local_source_recheck": {
+    "protocol_tests_passed": 62,
+    "tensor_tests_passed": 13,
+    "skipped_tests": 0,
+    "protocol_log_sha256": "61e4bdc92eb5e573d975440743ca4cfc39da1d1afe9b2d300a40a123613f59fb",
+    "tensor_log_sha256": "30e2ba255f4ab3178df4a8156d71e097a2b15d160abc370730ebee1d18aba8b4",
+    "complete_parent_checkout_tested": false,
+    "remote_ci_for_import_verified": false
+  },
+  "post_import_depth_census": {
+    "raw_archive_member": "evidence/final-source-learning-full/ndu-observations.jsonl",
+    "raw_member_sha256": "d461aa3828691e8e8b9e91c6e717daa6f4522268ffecc3a10c5d2d56a623025b",
+    "depth_counts": {
+      "fixed_budget": {"16": 240},
+      "confidence": {"1": 240},
+      "deterministic_ndu": {"12": 240},
+      "recursive_risk_ndu": {"12": 240},
+      "generic_nested_risk": {"12": 240}
+    },
+    "new_model_execution": false,
+    "input_dependent_depth_demonstrated_on_this_sample": false
+  },
+  "existing_acceptance_track": {
+    "pr": 1526,
+    "observed_head": "6c4b6d562f2d818bfdffc2b3e26bcf65a0d0b5bf",
+    "dedicated_run": 38119429179,
+    "dedicated_run_conclusion": "success",
+    "dedicated_jobs_verified": ["offline (head)", "offline (merge)", "actual-cpu-mechanisms"],
+    "this_receipt_applies_to_import_commit": false,
+    "whole_repository_blocking_ci_verified": false,
+    "overwritten": false
+  },
+  "production_promotion_permitted": false,
+  "merge_or_activation_authorized_by_this_manifest": false
+}
