@@ -1344,7 +1344,10 @@ mod tests {
             supervisor.read_neuron_active_candidate_v1(selected_generation, expected_artifact),
             Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch)
         ));
-        assert!(current.validate_integrity(), "stale integrity is not currency");
+        assert!(
+            current.validate_integrity(),
+            "stale integrity is not currency"
+        );
     }
 }
 
