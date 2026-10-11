@@ -589,3 +589,36 @@ fn observer_join_rejects_mixed_host_and_effect_lineage_before_remote_reads() {
     ).is_err());
     assert_eq!(current.verification_count, 0);
 }
+
+
+#[test]
+fn observer_join_rejects_reused_effect_owner_as_host_signer() {
+    let payload = complete_recorder();
+    // Signing key 51 also belongs to the first CellSplit effect owner.
+    // Trusting the key as a host signer as well must not create an
+    // independently observed production cross-attestation.
+    let duplicated_host = key(51);
+    let observer = key(7);
+    let envelope = payload.sign(
+        "host-signer",
+        &duplicated_host,
+        [("observer-signer".to_string(), observer.clone())],
+    ).expect("host report can be signed independently of trust role");
+    let (transcript, trust) = signed_owner_transcript_for_host(&envelope.payload);
+    let join = signed_observer_join_fixture(
+        &envelope,
+        &transcript,
+        &duplicated_host,
+        &observer,
+    );
+    let mut current = CurrentEffectFixture::new(&transcript);
+    assert!(crate::verify_cell_split_observer_join_v1(
+        &join,
+        &transcript,
+        &trust,
+        &envelope,
+        &policy(&duplicated_host, &observer),
+        &mut current,
+    ).is_err());
+    assert_eq!(current.verification_count, 0);
+}
