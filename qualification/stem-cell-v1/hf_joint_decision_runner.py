@@ -122,6 +122,14 @@ def snapshot_validation(args):
     path = Path(args.snapshot).resolve()
     if snapshot_digest(path) != args.expected_snapshot_sha256:
         raise ValueError("checkpoint snapshot changed from reviewed artifact")
+    # Microsoft's official DeBERTa-v3-large checkpoint currently distributes
+    # legacy pytorch_model.bin. This research runner NEVER unpickles it.
+    # Approved model operators must first produce and content-pin a reviewed,
+    # self-contained safetensors conversion in an isolated trust boundary.
+    if not any(item.is_file() for item in path.rglob("*.safetensors")):
+        raise ValueError(
+            "reviewed local safetensors weights missing; raw PyTorch .bin "
+            "may not be loaded or automatically converted in this runner")
     if sha256_file(args.dataset) != args.expected_dataset_sha256:
         raise ValueError("approved dataset content changed")
     if Path(args.output).exists() or Path(str(args.output) + ".run.json").exists():
