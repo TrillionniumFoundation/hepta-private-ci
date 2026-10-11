@@ -388,3 +388,21 @@ Outputs are always offline-only, unsigned research diagnostics with
 production_promotion_permitted=false. Even a pass is NOT independent NDU,
 a real native shared Encoder, a production final-use grant, a physical 4096
 Cell throughput measurement, unclean WAL recovery, or a release decision.
+
+
+### Frozen-Head evidence is immutable across all future events
+
+The prequential runner now places frozen_control_head_digest and
+frozen_control_probabilities into the fsynced, label-free prediction journal
+BEFORE revealing a future event label. The same frozen weights digest must
+equal the post-historical-pretrain initial_head_digests entry for each
+Cell/event. Its final frozen_final_head_digests must exactly equal the same
+initial snapshot, including dormant historical-only Cells.
+
+The offline prequential_threeway_review.py verifies the sealed record,
+actual per-event frozen-Head identity/probabilities and final frozen Head
+inventory; it rejects a freshly rehashed journal with substituted control
+predictions. This validates a *self-reported local research execution trace*,
+not a signed independent evaluator receipt or proof that a malicious trial
+executor never read a label beforehand. Production learning and promotion
+remain blocked until independently authenticated sources and NDU outcomes.
