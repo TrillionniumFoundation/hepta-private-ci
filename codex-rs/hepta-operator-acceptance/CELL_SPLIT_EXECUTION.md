@@ -84,9 +84,13 @@ the original owner state via `reconcile`, never retransmits that effect.
 The CLI cannot bypass the coordinator's journal lock, predecessor binding,
 or verification of original owner signatures.
 
-`transcript` performs no mutations. It reports a complete four-receipt
-transcript only after re-reading the current original state and verifying
-each pinned owner; otherwise the transcript is absent or the command fails.
+`transcript` performs no mutations: it requires the existing locked
+execution directory and frozen plan and never initializes missing state. A
+query against an uninitialized split root fails instead of creating a plan or
+lock. It reports a complete four-receipt transcript only after re-reading the
+current original state and verifying each pinned owner; otherwise the
+transcript is absent or the command fails. A pending prepared intent is
+rechecked for drift even when there are no completed receipts.
 
 The output always sets `productionActivationAuthorized: false`. Completion
 does not constitute an independent host attestation, real CNS/Agentd
