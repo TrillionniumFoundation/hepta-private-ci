@@ -190,14 +190,14 @@ impl AgentdIntelligenceProductRunnerV1 {
                     compilation_receipt_digest: envelope.envelope_digest.to_string(),
                 };
                 Ok(AgentdIntelligenceProductOutcomeV1::Ready(
-                    PreparedAgentdIntelligenceRunV1 {
+                    Box::new(PreparedAgentdIntelligenceRunV1 {
                         envelope: *envelope,
                         dispatch_proposal_digest,
                         snapshot,
                         candidate_ids,
                         run_snapshot,
                         context_attachment,
-                    },
+                    }),
                 ))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
@@ -357,11 +357,11 @@ impl AgentdIntelligenceProductRunnerV1 {
         match journal.append_qualification(expected_predecessor, event.clone()) {
             Ok(receipt) => Ok(receipt),
             Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
-                AgentdIntelligenceLedgerError::Indeterminate(PendingIntelligenceLedgerAppendV1 {
+                AgentdIntelligenceLedgerError::Indeterminate(Box::new(PendingIntelligenceLedgerAppendV1 {
                     expected_predecessor,
                     snapshot,
                     event,
-                }),
+                })),
             ),
             Err(error) => Err(AgentdIntelligenceLedgerError::Ledger(error)),
         }
