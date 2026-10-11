@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: ce7a96769218ffec142b4fa70c2eb83eda10918f
+      CHAIN_SOURCE_SHA: 51abba9ce9ec16ca7f28bbcb9611897e5c32e8a5
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'ce7a96769218ffec142b4fa70c2eb83eda10918f' || '31e2d84c8685ce36d50759504c9894f7ddc09b2d' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '51abba9ce9ec16ca7f28bbcb9611897e5c32e8a5' || '13c999d86c6b1b2869d92ceabd19cd4f3a484764' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -99,6 +99,11 @@ jobs:
       - name: Require complete bounded native input and original pipe controls
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 26 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
+      - name: Require complete bounded W1 collector and cross-architecture report controls
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-work-collector.json" --minimum-tests 87 -- python3 ../chain/scripts/ci/test_work_rejection_report.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-cross-arch-report.json" --minimum-tests 47 -- python3 ../chain/scripts/ci/test_cross_arch_cost.py -v
       - name: Require complete CI observer and recent-window regressions
         run: |
           set -euo pipefail
