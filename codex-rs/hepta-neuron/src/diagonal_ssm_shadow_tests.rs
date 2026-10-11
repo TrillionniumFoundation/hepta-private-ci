@@ -1,8 +1,8 @@
 use super::*;
 use codex_hepta_types::Generation;
-use crate::population_v2::{
-    ActivationPopulationV2, PopulationSparseError, TemporalProjectionEdgeV2,
-};
+use crate::population_v2::ActivationPopulationV2;
+use crate::population_v2::PopulationSparseError;
+use crate::population_v2::TemporalProjectionEdgeV2;
 
 fn checked<T, E: fmt::Debug>(result: Result<T, E>) -> T {
     result.unwrap_or_else(|error| panic!("SSM shadow fixture failed: {error:?}"))
