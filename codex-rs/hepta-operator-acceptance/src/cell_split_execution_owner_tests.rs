@@ -347,6 +347,24 @@ fn post_open_ledger_tampering_cannot_dispatch_a_successor() {
 }
 
 #[test]
+fn read_only_transcript_rejects_post_open_pending_intent_tampering() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(state.clone());
+    port.drop_ack = true;
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+    assert!(owner.advance().is_err());
+    let prepared = root.path().join("cell-split-00-prepared.json");
+    fs::write(&prepared, b"{}").expect("tamper pending");
+    assert!(matches!(
+        owner.verified_transcript(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn post_open_frozen_plan_tampering_fences_first_effect() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
