@@ -64,28 +64,36 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_INCREMENTAL: "0"
-      MAIN_SHA: c6f90d48c40f7b5267db587bb3c3f4934f1414a8
-      CANDIDATE_SHA: a21a33c9718152ad58867bfc7a35903f359758c0
+      EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      EXPECTED_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      REQUIRED_MATRIX_PARENT: 326ffd2a66c9f6a6948d8df7958be2569793a244
+      REQUIRED_NEURON_PARENT: 38ae93fa9b9dc495702c525729ad4c57f8a09882
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: a21a33c9718152ad58867bfc7a35903f359758c0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 0
-      - name: Verify immutable candidate and current main
+      - name: Verify exact candidate, live main and both source ancestors
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
-          test "$(git rev-parse HEAD^{tree})" = 4951cf27e617f21cbdd9d5f93dbaff52f9def540
-          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$MAIN_SHA"
-          git merge-base --is-ancestor "$MAIN_SHA" HEAD
-          git merge-base --is-ancestor 209eacd902cb93b8bd94f21814e5c9342f215422 HEAD
+          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
+          CURRENT_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
+          [[ "$CURRENT_MAIN" =~ ^[0-9a-f]{40}$ ]]
+          if [ -n "$EXPECTED_EVENT_BASE_SHA" ]; then
+            test "$EXPECTED_EVENT_BASE_SHA" = "$CURRENT_MAIN"
+          fi
+          git merge-base --is-ancestor "$CURRENT_MAIN" "$EXPECTED_HEAD_SHA"
+          git merge-base --is-ancestor "$REQUIRED_MATRIX_PARENT" "$EXPECTED_HEAD_SHA"
+          git merge-base --is-ancestor "$REQUIRED_NEURON_PARENT" "$EXPECTED_HEAD_SHA"
+          git diff --check
       - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Run Matrix source regressions on the pinned main integration
+      - name: Run Matrix source regressions on this exact combined head
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
       - name: Verify tracked candidate remains unchanged
