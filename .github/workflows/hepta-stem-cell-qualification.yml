@@ -73,6 +73,26 @@ jobs:
         if: always()
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-infer-worker-host -- --check
+      # Retain the deterministic formatter's exact proposed diff on the tested
+      # SHA.  CI has only contents:read and never commits a formatting result.
+      # This step runs even when compile/test fails; source is then restored so
+      # the final clean-tree guard still exercises the checked-out candidate.
+      - name: Capture candidate rustfmt patch (diagnostic only)
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src > "$RUNNER_TEMP/stem-worker-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src
+      - name: Upload rustfmt diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-worker-rustfmt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-worker-rustfmt.patch
+          if-no-files-found: warn
+          retention-days: 7
       - name: Verify read-only source
         if: always()
         run: |
