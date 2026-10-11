@@ -722,7 +722,9 @@ fn validate_neuron_feature_output(
 
 #[path = "model_worker_physical_batch.rs"]
 mod physical_batch;
-pub use physical_batch::{NeuronPhysicalBatchDriver, PhysicalBatchItemObservationV1};
+pub use physical_batch::{
+    NeuronPhysicalBatchDriver, PhysicalBatchItemObservationV1, PhysicalBatchRunObservationV1,
+};
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
