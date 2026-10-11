@@ -227,6 +227,20 @@ pub struct CellSplitLedgerAnchorV1 {
     pub head_digest: Digest32,
 }
 
+/// Recovery anchor source owned by an independent observer, not the split
+/// journal itself. Implementations must authenticate the observer and verify
+/// the exact split plan, monotonic high-watermark and integrity chain.
+///
+/// A digest computed by reading the suspect journal does not satisfy this
+/// contract. If the observer is missing, unreachable or inconsistent, recovery
+/// MUST fail closed without repairing or replaying the ledger.
+pub trait CellSplitRecoveryObserverV1 {
+    fn verified_anchor(
+        &mut self,
+        plan: &CellSplitPlanV1,
+    ) -> Result<CellSplitLedgerAnchorV1, CellSplitErrorV1>;
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellSplitProgressV1 {
     pub completed: bool,
@@ -324,10 +338,22 @@ impl CellSplitExecutionOwnerV1 {
         })
     }
 
-    /// Requires an anchor retained OUTSIDE this file by a trusted observer.
-    /// A valid tail after the externally acknowledged anchor is retained for
-    /// lost-ack reconciliation, but a missing acknowledged prefix is fatal.
-    pub fn recover(
+    /// Recover only from the independently authenticated observer high-watermark.
+    /// A caller cannot turn bytes found in this file into recovery authority.
+    pub fn recover_from_observer<O: CellSplitRecoveryObserverV1>(
+        file: File,
+        plan: CellSplitPlanV1,
+        observer: &mut O,
+    ) -> Result<Self, CellSplitErrorV1> {
+        let anchor = observer.verified_anchor(&plan)?;
+        Self::recover(file, plan, anchor)
+    }
+
+    /// Verify a trusted external anchor against the journal's full committed
+    /// prefix. A valid tail beyond that anchor is retained for lost-ack
+    /// reconciliation; a missing anchored predecessor is fatal. This primitive
+    /// is private so product callers must use recover_from_observer.
+    fn recover(
         file: File,
         plan: CellSplitPlanV1,
         external_anchor: CellSplitLedgerAnchorV1,
