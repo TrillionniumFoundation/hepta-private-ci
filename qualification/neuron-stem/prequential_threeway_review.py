@@ -221,6 +221,7 @@ def validate_resource_reports(reports, trial):
     if not isinstance(reports, list) or len(reports) != len(SCALES):
         raise ValueError("64/256/1024/4096 paired scale receipts required")
     observed = set()
+    all_coverage = True
     for receipt in reports:
         if (receipt.get("schema") != "hepta.neuron-research-paired-resource-gate.v1" or
                 receipt.get("candidate_model") != trial["model"] or
@@ -242,9 +243,17 @@ def validate_resource_reports(reports, trial):
             value = receipt.get("metrics", {}).get(metric)
             if type(value) not in (float, int) or not math.isfinite(value) or value <= 0:
                 raise ValueError("missing measured resource cost")
-        if scale.get("measured_active_cell_coverage") is not True:
-            return False
-    return all(r["research_resource_gate_passed"] for r in reports)
+        active = scale.get("active_heads")
+        covered = scale.get("distinct_ticked_cells")
+        if (type(active) is not int or type(covered) is not int or
+                not 1 <= covered <= active <= n):
+            raise ValueError("missing physically ticked active Cell coverage")
+        all_coverage = (all_coverage and
+                        scale.get("measured_active_cell_coverage") is True and
+                        covered == active)
+    if observed != set(SCALES):
+        raise ValueError("full 64/256/1024/4096 scale matrix missing")
+    return all_coverage and all(r["research_resource_gate_passed"] for r in reports)
 
 
 def review(dataset, trial, journal_bytes, nochange, *,
