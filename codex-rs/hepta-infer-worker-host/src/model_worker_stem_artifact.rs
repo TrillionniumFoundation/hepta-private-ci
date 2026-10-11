@@ -248,10 +248,25 @@ impl SelectedStemProjectionReaderV1 {
         Ok((projected, observation))
     }
 
-    /// Check that the separate inference owner admitted exactly these Q24
-    /// values and their source binding; does not execute or create a grant.
+    /// Check one already-admitted Worker request with a NEW authenticated
+    /// CURRENT view and independently signed exact artifact selection.
+    ///
+    /// A retained `ProjectedStemFeatureV1` is public data, not a durable
+    /// capability: it must not be replayed after the projection was revoked.
+    /// Unlike the old check, this entrypoint cannot succeed on cached
+    /// provenance and a static generation fence alone.
+    ///
+    /// The owner still MUST acquire CURRENT from its trusted source and
+    /// serialize that acquisition with native inference dispatch. Merely
+    /// passing a previously retained `VerifiedCurrentRegistryViewV1`
+    /// cannot prove that no newer revocation was published.
+    #[allow(clippy::too_many_arguments)]
     pub fn check_worker_request(
-        &self,
+        &mut self,
+        selector: &ArtifactSelectionVerifierV1,
+        signed_selection: &SignedArtifactSelectionV1,
+        current: VerifiedCurrentRegistryViewV1,
+        now: u64,
         binding: &StemProjectionBindingV1,
         projected: &ProjectedStemFeatureV1,
         request: &super::NeuronFeatureRequest,
@@ -259,10 +274,32 @@ impl SelectedStemProjectionReaderV1 {
         if self.sealed {
             return Err(StemProjectionArtifactError::ConsumerSealed);
         }
-        // Public data-only feature references are never sufficient authority to
-        // switch scope, generation or revocation epoch at the Worker boundary.
-        // This repeats the fence check even if project_with_current was called
-        // previously; a caller cannot bypass it with a fabricated feature ref.
+        let result = self.check_worker_request_current(
+            selector,
+            signed_selection,
+            current,
+            now,
+            binding,
+            projected,
+            request,
+        );
+        if result.is_err() {
+            self.sealed = true;
+        }
+        result
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn check_worker_request_current(
+        &mut self,
+        selector: &ArtifactSelectionVerifierV1,
+        signed_selection: &SignedArtifactSelectionV1,
+        current: VerifiedCurrentRegistryViewV1,
+        now: u64,
+        binding: &StemProjectionBindingV1,
+        projected: &ProjectedStemFeatureV1,
+        request: &super::NeuronFeatureRequest,
+    ) -> Result<(), StemProjectionArtifactError> {
         if projected.projection_digest != self.projection_digest
             || binding.scope_digest != self.fence.scope_digest.to_string()
             || binding.generation != self.fence.worker_generation
@@ -274,7 +311,20 @@ impl SelectedStemProjectionReaderV1 {
         {
             return Err(StemProjectionArtifactError::InvalidBinding);
         }
-        verify_neuron_projected_request(binding, projected, request, self.fence.worker_generation)
+        let verified = selector
+            .verify(signed_selection, &current, now)
+            .map_err(|error| StemProjectionArtifactError::Selection(error.to_string()))?;
+        if verified.selection_digest() != self.selected_digest
+            || verified.artifact_id() != &self.artifact_id
+        {
+            return Err(StemProjectionArtifactError::StaleOrUnselected);
+        }
+        let generation = self.fence.worker_generation;
+        self.candidate
+            .with_current(current, |_payload| {
+                verify_neuron_projected_request(binding, projected, request, generation)
+            })
+            .map_err(|error| StemProjectionArtifactError::Storage(error.to_string()))?
             .map_err(StemProjectionArtifactError::Numeric)
     }
 
