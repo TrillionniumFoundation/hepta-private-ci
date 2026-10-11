@@ -722,7 +722,7 @@ pub struct PendingIntelligenceLedgerAppendV1 {
 pub enum AgentdIntelligenceLedgerError {
     Currentness(CanonicalIntelligenceError),
     Ledger(DurableLedgerError),
-    Indeterminate(Box<PendingIntelligenceLedgerAppendV1>),
+    Indeterminate(PendingIntelligenceLedgerAppendV1),
     NotSelected,
     InvalidOutcome,
 }
