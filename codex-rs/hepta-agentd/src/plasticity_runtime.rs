@@ -23,6 +23,7 @@ use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
+use crate::AgentdParameterPlasticityHostContext;
 use crate::AgentdPlasticityAnchorStoreV1;
 use crate::AgentdPlasticityHostErrorV1;
 use crate::AgentdState;
@@ -32,7 +33,6 @@ use crate::AgentdTopologyWriterV1;
 use crate::PlasticityOwnerEvidencePolicyV1;
 use crate::PlasticityOwnerEvidenceResolverV1;
 use crate::propose_agentd_plasticity_v1;
-use crate::AgentdParameterPlasticityHostContext;
 use crate::propose_agentd_topology_plasticity_v1;
 
 const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
