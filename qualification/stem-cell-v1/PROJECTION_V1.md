@@ -104,7 +104,12 @@ create-only CAS files, signed CURRENT snapshots and an independent selector.
 The separate typed `StemCpuHeadUseV1` route can execute the **actual local
 Q24 CPU Head** inside `RevalidatingCandidate::with_current`, after the exact
 independent signed selection, current registry view, source feature binding and
-pre-existing Worker request have passed their checks. Its non-authoritative
+pre-existing Worker request have passed their checks. This path accepts the
+**original full-width f32 feature**, not an externally constructible projected
+vector. It re-executes the selected CAS projection **within** the CURRENT guard
+and compares the complete Q24 output and binding against the pre-authorized
+Worker request. Caller-forged Q24 values fail even if the caller recomputes
+its own matching request and lease payload digests. Its non-authoritative
 `NeuronFeatureReceiptV1` proves observed **model-only CPU math** in the Rust
 test, not pretrained text encoding or permission to use tools. No signature,
 cache lease, or Final-use right is manufactured by this route. A failure seals
