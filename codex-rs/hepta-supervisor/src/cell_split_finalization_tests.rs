@@ -765,6 +765,80 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         "a valid outer CNS signature must never launder a forged runtime signature"
     );
 
+
+    // Both signatures may be mathematically valid while the independently
+    // signed runtime statement belongs to another scope. The Supervisor
+    // must reject this provenance substitution before opening an effect.
+    let mut cross_scope_cns = cns_receipt.clone();
+    let mut cross_scope_original: CellSplitCnsRuntimeCommitV1 =
+        serde_json::from_slice(&cross_scope_cns.owner_receipt_bytes)
+            .expect("signed outer CNS receipt");
+    let mut cross_scope_attestation:
+        codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1 =
+        serde_json::from_slice(&cross_scope_original.original_runtime_receipt_bytes)
+            .expect("canonical original CNS runtime statement");
+    cross_scope_attestation.scope_digest = "aa".repeat(32);
+    let unrelated = serde_json::to_vec(&cross_scope_attestation)
+        .expect("canonical unrelated CNS runtime statement");
+    cross_scope_original.original_runtime_signature_bytes = cns_runtime_signer
+        .sign(&unrelated)
+        .to_bytes()
+        .to_vec();
+    cross_scope_original.original_runtime_receipt_bytes = unrelated;
+    cross_scope_cns.owner_receipt_bytes =
+        serde_json::to_vec(&cross_scope_original).expect("outer CNS receipt");
+    cross_scope_cns.output_digest =
+        format!("{:x}", sha2::Sha256::digest(&cross_scope_cns.owner_receipt_bytes));
+    cross_scope_cns.owner_signature_bytes = cns_signer
+        .sign(
+            &cell_split_execution_signing_payload_v1(&cross_scope_cns)
+                .expect("outer CNS signing bytes"),
+        )
+        .to_bytes()
+        .to_vec();
+    cross_scope_cns.receipt_digest =
+        cell_split_execution_receipt_digest_v1(&cross_scope_cns)
+            .expect("authentic outer signed receipt");
+    let mut cross_scope_intent = supervisor_intent.clone();
+    cross_scope_intent.previous_receipt_digest = cross_scope_cns.receipt_digest.clone();
+    cross_scope_intent.idempotency_key = format!(
+        "{:x}",
+        sha2::Sha256::digest(
+            format!(
+                "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
+                cross_scope_intent.plan_digest,
+                cross_scope_intent.step.index(),
+                cross_scope_intent.previous_receipt_digest,
+            )
+            .as_bytes(),
+        ),
+    );
+    let root_cross_scope = tempfile::tempdir().expect("separate journal for wrong scope");
+    let minimum_cross_scope =
+        prepare(&root_cross_scope, WriterHandoffPhaseV1::RoutePublished);
+    let finalizer_cross_scope = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root_cross_scope),
+        &minimum_cross_scope,
+        binding(),
+        authority.clone(),
+    )
+    .expect("real Supervisor journal");
+    assert!(
+        crate::CellSplitSupervisorJournalRuntimePortV1::new_with_signed_cns_predecessor(
+            plan.clone(),
+            fence.clone(),
+            cross_scope_intent,
+            accepted,
+            finalizer_cross_scope,
+            SigningKey::from_bytes(&[22; 32]),
+            &cross_scope_cns,
+            &cns_signer.verifying_key(),
+            &cns_runtime_signer.verifying_key(),
+        )
+        .is_err(),
+        "valid signatures from another scope do not authorize this split"
+    );
+
     let root_denied = tempfile::tempdir().expect("independent journal");
     let minimum_denied = prepare(&root_denied, WriterHandoffPhaseV1::RoutePublished);
     let denied_finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
