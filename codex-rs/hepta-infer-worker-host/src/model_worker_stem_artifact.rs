@@ -63,13 +63,48 @@ struct ProjectionPayloadV1 {
     projection: LowRankStemProjectionV1,
 }
 
+/// Exactly matches the Python `encode_cas_projection_candidate` JSON:
+/// sorted ASCII keys, compact separators, integers and ONE final newline.
+/// Payload bytes are not a signature, signed selection, or CURRENT witness.
+fn canonical_projection_payload(
+    projection: &LowRankStemProjectionV1,
+) -> Result<Vec<u8>, StemProjectionArtifactError> {
+    projection
+        .validate()
+        .map_err(|_| StemProjectionArtifactError::InvalidPayload)?;
+    let mut fields = std::collections::BTreeMap::new();
+    fields.insert("a_q24", serde_json::json!(&projection.a_q24));
+    fields.insert("b_q24", serde_json::json!(&projection.b_q24));
+    fields.insert("bias_q24", serde_json::json!(&projection.bias_q24));
+    fields.insert("encoder_digest", serde_json::json!(&projection.encoder_digest));
+    fields.insert("input_width", serde_json::json!(projection.input_width));
+    fields.insert("normalizer_digest", serde_json::json!(&projection.normalizer_digest));
+    fields.insert("output_width", serde_json::json!(projection.output_width));
+    fields.insert("preprocessor_digest", serde_json::json!(&projection.preprocessor_digest));
+    fields.insert("rank", serde_json::json!(projection.rank));
+    fields.insert("representation", serde_json::json!(&projection.representation));
+    fields.insert("runtime_digest", serde_json::json!(&projection.runtime_digest));
+    let mut payload = std::collections::BTreeMap::new();
+    payload.insert("projection", serde_json::json!(fields));
+    payload.insert("schema", serde_json::json!(STEM_PROJECTION_SCHEMA));
+    let mut bytes =
+        serde_json::to_vec(&payload).map_err(|_| StemProjectionArtifactError::InvalidPayload)?;
+    bytes.push(b'\n');
+    if bytes.len() > MAX_STEM_PROJECTION_JSON_BYTES {
+        return Err(StemProjectionArtifactError::InvalidPayload);
+    }
+    Ok(bytes)
+}
+
 fn decode_projection(bytes: &[u8]) -> Result<LowRankStemProjectionV1, StemProjectionArtifactError> {
     if bytes.is_empty() || bytes.len() > MAX_STEM_PROJECTION_JSON_BYTES {
         return Err(StemProjectionArtifactError::InvalidPayload);
     }
     let value: ProjectionPayloadV1 =
         serde_json::from_slice(bytes).map_err(|_| StemProjectionArtifactError::InvalidPayload)?;
-    if value.schema != STEM_PROJECTION_SCHEMA || value.projection.validate().is_err() {
+    if value.schema != STEM_PROJECTION_SCHEMA
+        || canonical_projection_payload(&value.projection)?.as_slice() != bytes
+    {
         return Err(StemProjectionArtifactError::InvalidPayload);
     }
     Ok(value.projection)
