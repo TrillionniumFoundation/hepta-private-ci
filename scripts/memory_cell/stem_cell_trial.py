@@ -32,6 +32,11 @@ from selector_windows import WindowBudget, candidate_windows
 from stem_cell import StemHead, route_text, sha256
 from stem_cell_adapter import DifferentiatedEncoder
 from stem_cell_temporal import build_as_of_index
+from stem_reader_zero_evidence import (
+    generate_empty_evidence_controls,
+    evaluate_empty_evidence_controls,
+)
+from stem_reader_paired_control import compare_frozen_to_no_evidence
 from stem_cell_geometry import inspect_selection, summarize_geometry
 from stem_cell_training_probe import train_probe, summarize_train_probes
 from stem_cell_cache import SharedFeatureCache
@@ -162,6 +167,11 @@ def run(staged, ranker_dir, output):
         generator_template_digest=digest(SYSTEM),
         primary_policy="same-forced-top1-except-empty-for-all-six-arms",
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
+        no_evidence_reader_diagnostic=(
+            "32 post-policy/post-oracle fixed-Reader requests; "
+            "no evidence or annotation enters the prompt; "
+            "diagnostic separate from the six learned policies"
+        ),
         score_geometry_policy="frozen-native-logits-versus-head; forced-top1; label-free",
         training_probe_policy="three-way frozen Encoder vs adapted Encoder vs saved Head; only train cut",
         calibration_or_final_label_hyperparameter_search=False,
@@ -702,6 +712,59 @@ def run(staged, ranker_dir, output):
         for backend in backends.values():
             backend.verify_frozen()
         generator.verify_frozen()
+        # A separate instance of the SAME pinned model and exact prompt is
+        # required: oracle Reader quarantine/cache state may not contaminate
+        # the no-evidence Reader-capacity measurement or policy outcomes.
+        reader_before_controls = reader_session.summary()
+        control_load_start = time.perf_counter()
+        control_generator = FrozenAnswerGenerator(
+            staged / "reader", expected_inventory=READER
+        )
+        control_load_seconds = time.perf_counter() - control_load_start
+        if (
+            control_generator.identity != generator.identity
+            or control_generator.profile != generator.profile
+        ):
+            raise ValueError("no-evidence Reader model/prompt identity drift")
+        control_session = ExactReaderCache(control_generator)
+
+        def generate_empty(q, evidence, record_key):
+            return control_session.answer(
+                q, evidence, record_key, revoked=set()
+            )
+
+        control_queries = [
+            (phase, q) for phase in PHASES for q in qs[phase]
+        ]
+        empty_controls = generate_empty_evidence_controls(
+            control_queries, generate_empty,
+            reader_identity=generator.identity,
+            reader_profile=generator.profile,
+            family_by_question={
+                q.identity: source_for[q.identity].families[q.family]
+                for _, q in control_queries
+            },
+        )
+        for item in empty_controls:
+            append(output / "reader-no-evidence.jsonl", item)
+        no_evidence_report = evaluate_empty_evidence_controls(
+            empty_controls,
+            {q.identity: source_for[q.identity].targets[q.identity]
+             for _, q in control_queries},
+            diagnose,
+        )
+        write(output / "reader-no-evidence-report.json", no_evidence_report)
+        paired_reader_controls = compare_frozen_to_no_evidence(
+            scored, empty_controls,
+            {q.identity: source_for[q.identity].targets[q.identity]
+             for _, q in control_queries},
+            diagnose,
+        )
+        write(output / "reader-paired-no-evidence.json", paired_reader_controls)
+        no_evidence_reader_after = control_session.summary()
+        # The diagnostic is nonqualifying if its isolated Reader quarantined.
+        if not control_generator.quarantined:
+            control_generator.verify_frozen()
         result = dict(
             plan=plan,
             selection_geometry=summarize_geometry(attempts),
@@ -721,7 +784,20 @@ def run(staged, ranker_dir, output):
             reader_weight_bytes=sum(
                 p.numel() * p.element_size() for p in generator.model.parameters()
             ),
-            reader=reader_session.summary(),
+            reader=reader_before_controls,
+            no_evidence_reader_report=no_evidence_report,
+            matched_frozen_vs_no_evidence=paired_reader_controls,
+            no_evidence_reader_call_accounting=dict(
+                same_pinned_reader_identity=generator.identity,
+                same_pinned_reader_profile=generator.profile,
+                independent_diagnostic_model_instance=True,
+                model_cold_load_seconds=control_load_seconds,
+                policy_and_oracle_reader=reader_before_controls,
+                isolated_no_evidence_reader=no_evidence_reader_after,
+                isolated_reader_quarantined=control_generator.quarantined,
+                outside_six_arm_policy_matrix=True,
+                independent_gold_evidence_verified=False,
+            ),
             logical_policy_attempts=len(attempts),
             oracle_succeeded=sum(o["status"] == "succeeded" for o in oracles),
             oracle_unavailable=sum(o["status"] == "unavailable" for o in oracles),

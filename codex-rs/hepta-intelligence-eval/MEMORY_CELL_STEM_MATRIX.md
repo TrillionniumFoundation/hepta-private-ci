@@ -393,3 +393,31 @@ A future support annotation does not justify recovering the unseen source.
 This benchmark filtering does **not** replace the authenticated production
 source-authorization owner, real future-window observation, or semantic
 entailment admission.
+
+## No-evidence Reader capacity diagnostic (separate from all six Heads)
+
+The native trial now runs a second, isolated copy of the **identical pinned
+frozen Reader weights and generation prompt** after completing the planned
+six-arm answers and privileged source-literal diagnostics. For each of the
+32 preregistered held-out questions it supplies **no evidence**. The control
+cannot consult the train, selection or answer targets when generating and it
+cannot alter a previous policy answer or poison the main Reader's cache/state.
+The separate instance's cold load, real generation attempts, success/failure
+census and cache accounting are charged to this *diagnostic*, not to a
+learned Head.
+
+The post-generation review then matches each zero-evidence question with the
+same question's **final-checkpoint frozen-rerank + original Reader** answer.
+Source family, requested Reader profile, original candidate and delivered
+evidence receipts remain explicit. Answer diagnostic token-F1 deltas are
+computed only when both original answers exist and are scorable. Missing,
+failed and unanswerable labels are retained in conservative all-planned
+delta bounds. Any evidence marker emitted with no evidence is structurally
+unsupported; semantic citation precision is **null**, not 100% or 99%.
+
+These controls separate some Reader-capacity failures from source-selection
+failures, but they do **not** manufacture independently reviewed sufficient
+evidence. The previously registered privileged literal-answer Oracle is
+neither human-certified entailment nor a production gold source. A stronger
+reference Reader, real ablation review, authenticated prospective sources and
+blinded semantic citation judgment remain separate follow-up requirements.
