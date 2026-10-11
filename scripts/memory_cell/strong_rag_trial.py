@@ -97,6 +97,22 @@ def eval_selections(case, chosen_k):
     }
 
 
+def assert_calibration_publication(cases, sources, index_hashes):
+    """Fail closed if an evaluation scope is exposed to the k calibrator."""
+    calib_scopes = {case["query"]["scope"] for case in cases}
+    if (
+        len(cases) != 8
+        or len(calib_scopes) != 8
+        or calib_scopes != set(index_hashes)
+        or calib_scopes != {d["scope"] for d in sources}
+        or any(
+            case["query"]["identity"] != case["query"]["scope"]
+            for case in cases
+        )
+    ):
+        raise ValueError("calibration artifact exposed a held-out scope or index")
+
+
 def prepare(inputs, plan_dir, encoder_dir, output, *, plan_sha):
     """Read pinned source/index; export ONLY calibration scopes to calibrator."""
     from event_experience import question
@@ -173,7 +189,6 @@ def prepare(inputs, plan_dir, encoder_dir, output, *, plan_sha):
         finally:
             index.close()
         candidate_ids = tuple(d.identity for d in selected)
-        index_hashes[q.scope] = info["index_digest"]
         if spec["phase"] == "test":
             # No test label is consulted; replay must reproduce exactly the
             # historical calibrated hybrid pool and its query/prompt bytes.
@@ -188,6 +203,8 @@ def prepare(inputs, plan_dir, encoder_dir, output, *, plan_sha):
             continue
         if q.identity not in calibration_ids or len(candidate_ids) < 4:
             raise ValueError("calibration isolation/candidate count")
+        # Only calibration-scope indices may be published to the calibrator.
+        index_hashes[q.scope] = info["index_digest"]
         sources.extend(asdict(d) for d in scoped)
         cases.append(
             dict(
@@ -202,6 +219,7 @@ def prepare(inputs, plan_dir, encoder_dir, output, *, plan_sha):
         )
     if len(cases) != 8 or len({d["identity"] for d in sources}) != len(sources):
         raise ValueError("incomplete/overlapping calibration sources")
+    assert_calibration_publication(cases, sources, index_hashes)
     calibration_labels = [labels_by_id[c["query"]["identity"]] for c in cases]
     output.mkdir()
     dump(output / "calibration-sources.json", sources)
