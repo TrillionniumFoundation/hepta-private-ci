@@ -640,3 +640,21 @@ fn independent_transcript_signature_verifier_rejects_mutations_without_live_effe
     assert_eq!(observed.borrow().verifications, reads);
     assert_eq!(observed.borrow().executions, 4);
 }
+
+
+#[test]
+fn weak_effect_owner_public_key_fails_before_any_coordinator_io() {
+    let mut keys = [0, 1, 2, 3].map(|index| signing_key(index).verifying_key());
+    let mut identity_bytes = [0_u8; 32];
+    identity_bytes[0] = 1;
+    let weak = ed25519_dalek::VerifyingKey::from_bytes(&identity_bytes)
+        .expect("valid compressed identity point");
+    assert!(weak.is_weak());
+    keys[2] = weak;
+    assert!(matches!(
+        CellSplitOwnerTrustV1::new(&plan(), keys),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "effect owner has a weak signing key"
+        )),
+    ));
+}
