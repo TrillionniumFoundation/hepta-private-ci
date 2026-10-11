@@ -349,3 +349,72 @@ fn historical_idempotent_read_refuses_corrupted_frame_and_poisoned_owner() {
         Some(GatedJournalErrorV3::Corrupt),
     );
 }
+
+#[test]
+fn v3_child_commit_then_hard_exit() {
+    // Helper invoked by the dedicated parent recovery test. In ordinary
+    // test enumeration it does nothing, so it cannot commit to production.
+    let Ok(path) = std::env::var("HEPTA_V3_SHADOW_JOURNAL_CHILD") else {
+        return;
+    };
+    let file = checked(OpenOptions::new().read(true).write(true).open(path));
+    let anchor = JournalAnchor {
+        sequence: 1,
+        checkpoint_digest: {
+            // Independent host witness is given as 64 lowercase hex in the
+            // child environment; never reconstructed from journal contents.
+            let raw = std::env::var("HEPTA_V3_SHADOW_JOURNAL_ANCHOR")
+                .expect("child needs an independently supplied anchor");
+            raw.parse::<Digest32>().expect("valid independently supplied anchor")
+        },
+    };
+    let mut journal = checked(GatedSparseJournalV3::open_anchored(
+        file, config(), scope(), 16, anchor
+    ));
+    let second = checked(journal.commit(anchor.checkpoint_digest, &tick(2)));
+    assert_eq!(second.checkpoint_before, anchor.checkpoint_digest);
+    assert_eq!(checked(journal.current_anchor()).unwrap().sequence, 2);
+    // Deliberately bypass Rust destructors. The completed sync_data is the
+    // durability boundary; this is NOT physical power loss certification.
+    std::process::exit(0);
+}
+
+#[test]
+fn independent_anchor_recovers_synced_child_commit_after_process_exit() {
+    let fixture = Fixture::new();
+    let mut journal = checked(GatedSparseJournalV3::open(
+        fixture.create(), config(), scope(), 16
+    ));
+    let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
+    let anchor = checked(journal.current_anchor()).expect("first committed tick");
+    assert_eq!(anchor.checkpoint_digest, first.checkpoint_after);
+    drop(journal);
+
+    let output = checked(
+        std::process::Command::new(checked(std::env::current_exe()))
+            .arg("--nocapture")
+            .arg("v3_child_commit_then_hard_exit")
+            .env("HEPTA_V3_SHADOW_JOURNAL_CHILD", &fixture.file)
+            .env(
+                "HEPTA_V3_SHADOW_JOURNAL_ANCHOR",
+                anchor.checkpoint_digest.to_string(),
+            )
+            .output(),
+    );
+    assert!(
+        output.status.success(),
+        "child failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let reopened = checked(fixture.open_anchored(anchor));
+    let recovered = checked(reopened.current_anchor()).expect("recovered second tick");
+    assert_eq!(recovered.sequence, 2);
+    assert_ne!(recovered.checkpoint_digest, anchor.checkpoint_digest);
+    assert!(checked(reopened.contains_anchor(anchor)));
+    drop(reopened);
+    // Existing nonempty V3 history still cannot reopen unanchored.
+    assert_eq!(
+        GatedSparseJournalV3::open(fixture.reopen(), config(), scope(), 16).err(),
+        Some(GatedJournalErrorV3::ExistingJournalRequiresAnchor)
+    );
+}
