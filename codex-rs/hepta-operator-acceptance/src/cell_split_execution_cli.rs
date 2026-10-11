@@ -269,7 +269,7 @@ mod tests {
     }
 
     #[test]
-    fn pinned_read_only_open_and_lost_ack_never_dispatch_twice() {
+    fn missing_live_owner_does_not_create_prepared_intent() {
         let dir = tempfile::tempdir().expect("private directory");
         let execution_root = dir.path().join("split-execution");
         std::fs::create_dir(&execution_root).expect("execution root");
@@ -344,8 +344,9 @@ mod tests {
         assert!(!execution_root.join("cell-split-frozen-plan.json").exists());
         assert!(!execution_root.join(".operator-acceptance.lock").exists());
 
-        // This is a fixture-only admitted call against absent, non-effectful
-        // sockets. Product calls must use independently verified selection.
+        // A pinned hash and independently admitted fixture cannot turn a
+        // missing owner socket into an ambiguous effect. The coordinator may
+        // freeze its plan, but must never write a prepared intent.
         assert!(
             run_pinned_cell_split_execution_with_admission_v1(
                 "advance",
@@ -355,25 +356,21 @@ mod tests {
             )
             .is_err()
         );
+        let pending = execution_root.join("cell-split-00-prepared.json");
+        let committed = execution_root.join("cell-split-00-committed.json");
+        assert!(!pending.exists());
+        assert!(!committed.exists());
+
         let read_only = run_pinned_cell_split_execution_v1("transcript", &config_path, &pin)
-            .expect("read-only reopen of prepared intent");
+            .expect("read-only reopen of frozen plan without effects");
         assert_eq!(read_only.completed_steps, 0);
         assert!(!read_only.complete);
         assert!(read_only.transcript.is_none());
         assert!(!read_only.production_activation_authorized);
-        let pending = dir
-            .path()
-            .join("split-execution")
-            .join("cell-split-00-prepared.json");
-        let terminal = dir
-            .path()
-            .join("split-execution")
-            .join("cell-split-00-committed.json");
-        let original = std::fs::read(&pending).expect("durable prepared intent");
-        assert!(!terminal.exists());
 
-        // Reopen may only consult the original owner. A missing socket cannot
-        // turn a prepared intent into a second execution or terminal receipt.
+        // A retry also performs only the signed readiness preflight. It may
+        // later execute once a real service is deployed, without an orphaned
+        // local prepared intent forcing an unwarranted reconciliation.
         assert!(
             run_pinned_cell_split_execution_with_admission_v1(
                 "advance",
@@ -383,8 +380,8 @@ mod tests {
             )
             .is_err()
         );
-        assert_eq!(std::fs::read(&pending).expect("same intent"), original);
-        assert!(!terminal.exists());
+        assert!(!pending.exists());
+        assert!(!committed.exists());
     }
 
     #[test]
