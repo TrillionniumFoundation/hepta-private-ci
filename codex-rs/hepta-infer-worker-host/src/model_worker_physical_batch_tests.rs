@@ -77,8 +77,16 @@ impl NeuronPhysicalBatchDriver for FixtureBackend {
         }
         Ok(PhysicalBatchRunObservationV1 {
             batch_execution_digest: Digest32::of_bytes(b"test-batch").to_string(),
-            claimed_encoder_forward_count: if matches!(self.fault, Fault::TooManyForwards) { 2 } else { 1 },
-            observed_peak_memory_bytes: if matches!(self.fault, Fault::ExcessPeak) { 5000 } else { 3000 },
+            claimed_encoder_forward_count: if matches!(self.fault, Fault::TooManyForwards) {
+                2
+            } else {
+                1
+            },
+            observed_peak_memory_bytes: if matches!(self.fault, Fault::ExcessPeak) {
+                5000
+            } else {
+                3000
+            },
             items,
         })
     }
@@ -88,7 +96,13 @@ fn digest(name: &[u8]) -> String {
     Digest32::of_bytes(name).to_string()
 }
 
-fn fixture(fault: Fault) -> (InferenceWorker<FixtureBackend>, Arc<AtomicUsize>, Vec<NeuronFeatureRequest>) {
+fn fixture(
+    fault: Fault,
+) -> (
+    InferenceWorker<FixtureBackend>,
+    Arc<AtomicUsize>,
+    Vec<NeuronFeatureRequest>,
+) {
     let manifest = ModelManifest {
         model_id: "model".into(),
         model_digest: digest(b"model"),

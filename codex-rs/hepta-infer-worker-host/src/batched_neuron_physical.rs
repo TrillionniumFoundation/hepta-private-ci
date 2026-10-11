@@ -6,6 +6,7 @@
 
 use super::*;
 use crate::model_worker::NeuronPhysicalBatchDriver;
+use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 
 impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
     AuthenticatedNeuronMicrobatchWorkerV1<D>
@@ -53,14 +54,32 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
             }
         }
         if let Some(error) = failure {
-            return Ok(failed_poll(ids, error, poll.expired_request_ids, poll.scanned_lanes, self.pending.len()));
+            return Ok(failed_poll(
+                ids,
+                error,
+                poll.expired_request_ids,
+                poll.scanned_lanes,
+                self.pending.len(),
+            ));
         }
         let Some(first) = items.first() else {
-            return Ok(failed_poll(ids, BatchWorkerErrorV1::NoAdmission, poll.expired_request_ids, poll.scanned_lanes, self.pending.len()));
+            return Ok(failed_poll(
+                ids,
+                BatchWorkerErrorV1::NoAdmission,
+                poll.expired_request_ids,
+                poll.scanned_lanes,
+                self.pending.len(),
+            ));
         };
         let model_id = first.model_id.clone();
         if items.iter().any(|item| item.model_id != model_id) {
-            return Ok(failed_poll(ids, BatchWorkerErrorV1::InvalidBinding, poll.expired_request_ids, poll.scanned_lanes, self.pending.len()));
+            return Ok(failed_poll(
+                ids,
+                BatchWorkerErrorV1::InvalidBinding,
+                poll.expired_request_ids,
+                poll.scanned_lanes,
+                self.pending.len(),
+            ));
         }
 
         // Claims consume durable nonces independently. If one fails, earlier
@@ -74,7 +93,13 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
             ) {
                 Ok(token) => claims.push((token, pending.binding.clone())),
                 Err(_) => {
-                    return Ok(failed_poll(ids, BatchWorkerErrorV1::Authority, poll.expired_request_ids, poll.scanned_lanes, self.pending.len()));
+                    return Ok(failed_poll(
+                        ids,
+                        BatchWorkerErrorV1::Authority,
+                        poll.expired_request_ids,
+                        poll.scanned_lanes,
+                        self.pending.len(),
+                    ));
                 }
             }
         }
@@ -115,7 +140,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
                 succeeded: completed.iter().all(|item| {
                     matches!(
                         &item.result,
-                        Ok(receipt) if receipt.status == codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+                        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
                     )
                 }),
             });
