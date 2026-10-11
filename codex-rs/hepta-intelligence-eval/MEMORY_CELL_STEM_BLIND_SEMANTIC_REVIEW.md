@@ -29,13 +29,20 @@ Visibility of an evidence excerpt is inherent and cannot be blinded: this is
 
 The separate **owner-only mapping** binds original question IDs, phase and
 source family to slot A/B, original canonical Reader request, exact evidence
-bytes and original answer digests. Reviewers should only receive the
-`blind-question-answer-worklist.jsonl` and the blank
-`unsigned-reviewer-return-template.jsonl`, **not**
-`private-owner-case-mapping.json`. GitHub Actions stores a short-retention
-private owner handoff; **repository artifact access is not per-file access
-control**. A data owner must authorize reviewers and export/share only the
-reviewer-visible files.
+bytes and original answer digests. The workflow now emits **two distinct
+private Actions artifacts**, each retained for seven days: one contains only
+`blind-question-answer-worklist.jsonl`, the unsigned return template and
+their SHA-256 manifest; the other contains
+`private-owner-case-mapping.json`, original archive pins and audit source.
+**No owner mapping is included in the reviewer-facing archive.**
+GitHub repository artifact access is still shared by the same repository
+readers; this is workflow-level accidental-disclosure separation, not a
+separate reviewer-access control. The data owner must authorize reviewers,
+send only the reviewer-facing archive and keep the owner mapping private.
+
+Reviewers must treat source excerpts, question text and model answers as
+**untrusted data**, not operational instructions. The reviewer-visible
+artifact is for authorized independent evaluation only, not a public release.
 
 ## Evaluation rubric to be filled by genuinely independent reviewers
 

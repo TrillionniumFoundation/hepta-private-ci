@@ -18,7 +18,7 @@ ARMS = (
     "frozen_rerank", "prototype", "linear", "gated",
     "lineage_lora_gated", "independent_lora_gated",
 )
-MARKERS = re.compile(r"\[E[1-9][0-9]*\]")
+MARKERS = re.compile(r"\[E[0-9]+\]")
 
 
 def _verify_reader(row, qid, *, require_empty=False):

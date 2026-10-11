@@ -109,6 +109,22 @@ class BlindReviewPacketTests(unittest.TestCase):
             self.assertEqual(slot["structurally_unbound_markers"], 1)
         self.assertIsNone(packet["semantic_citation_precision"])
 
+    def test_emitted_e0_marker_is_invalid_not_ignored(self):
+        plan, rows, empty = sample()
+        empty[0]["answer"] = "Unsupported marker [E0] and [E1]"
+        packet, mapping = make_blind_review_packet(plan, rows, empty)
+        blank_slot = next(
+            slot for slot, info in
+            mapping["blinded_case_mapping"][0]["opaque_slots"].items()
+            if info["role"] == "empty"
+        )
+        condition = next(
+            x for x in packet["reviewer_packets"][0]["conditions"]
+            if x["slot"] == blank_slot
+        )
+        self.assertEqual(condition["structurally_unbound_markers"], 2)
+        self.assertFalse(condition["independent_semantic_review_completed"])
+
     def test_raw_answer_and_evidence_digest_tampering_rejects(self):
         for mode in ("request", "evidence", "reader-question"):
             plan, rows, empty = sample()
