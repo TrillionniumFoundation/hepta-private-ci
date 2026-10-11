@@ -130,6 +130,24 @@ class ConditionalReaderTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaises(AuditError):
                 stratify_original_reader(*data)
 
+    def test_forged_paired_f1_cannot_override_saved_original_answer_score(self):
+        plan, raw, ceiling, empty, receipt = example()
+        original = next(
+            x for x in raw if x["stage"] == 48
+            and x["arm"] == "frozen_rerank"
+            and x["question_id"] == empty[0]["question_id"]
+        )
+        paired = next(
+            x for x in receipt["pairs"]
+            if x["phase"] == empty[0]["phase"]
+            and x["question_id"] == empty[0]["question_id"]
+        )
+        original["diagnostic_answer_f1"] = paired["frozen_reader_f1"]
+        stratify_original_reader(plan, raw, ceiling, empty, receipt)
+        original["diagnostic_answer_f1"] = 1.0 - paired["frozen_reader_f1"]
+        with self.assertRaisesRegex(AuditError, "original F1"):
+            stratify_original_reader(plan, raw, ceiling, empty, receipt)
+
     def test_changed_source_family_or_exposure_fails_closed(self):
         for name in ("family", "evidence_exposure", "actual_frozen_evidence_count"):
             data = example()

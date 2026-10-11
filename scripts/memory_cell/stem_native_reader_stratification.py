@@ -113,6 +113,28 @@ def stratify_original_reader(
             )
         if p["scored_pair"]:
             require(empty_ok, "failed empty Reader cannot be scored")
+            require(
+                f.get("status") == "succeeded"
+                and isinstance(f.get("receipt"), dict)
+                and f["receipt"].get("observable_query", {}).get("identity") == key[1],
+                "scored frozen policy has no original pinned Reader question",
+            )
+            # A paired report must not manufacture a different baseline score.
+            # Older synthetic inputs may not carry post-hoc F1; when available,
+            # bind it directly to the already saved frozen policy score.
+            original_f1 = f.get("diagnostic_answer_f1")
+            if original_f1 is not None:
+                require(
+                    type(original_f1) in (int, float)
+                    and math.isfinite(original_f1)
+                    and math.isclose(original_f1, p["frozen_reader_f1"], abs_tol=1e-10),
+                    "paired Reader original F1 differs from saved original score",
+                )
+            require(
+                p["phase"] == key[0] and p["question_id"] == key[1],
+                "wrong-question paired Reader report",
+            )
+
             values = (
                 p["frozen_reader_f1"],
                 p["zero_evidence_reader_f1"],
@@ -126,6 +148,10 @@ def stratify_original_reader(
                 "invalid source-conditional Reader F1 delta",
             )
         else:
+            require(
+                not empty_ok or p["scored_pair"] is False,
+                "unscored Reader control falsely marked complete",
+            )
             values = (None, None, None)
         out[_bucket(n)].append(dict(
             phase=key[0], question_id=key[1],
