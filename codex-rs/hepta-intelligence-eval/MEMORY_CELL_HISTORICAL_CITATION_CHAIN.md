@@ -89,3 +89,29 @@ The separate 40-call calibration and 72-call nine-arm trial remains queued in
 GitHub Actions. Its reader gain, longitudinal performance, cost of deployed
 retention/revocation/recovery, any parametric-memory advantage, and production
 qualification are still unverified.
+
+## Byte-identical compact report reproduction
+
+The full read-only CLI output above includes all 96 per-attempt case records.
+The checked-in `historical-event-citation-chain-20261011.json` is instead a
+**lossless-for-aggregates compact view**: it preserves each reader's task
+and formal-citation totals, source pins and all correct answers with missing
+program-declared citations, but deliberately omits other per-answer details.
+These two file shapes should not be compared byte-for-byte directly.
+
+Generate the full report with the command above, then reproduce the exact
+published compact file by running:
+
+```sh
+PYTHONPATH=scripts/memory_cell python3 scripts/memory_cell/historical_event_citation_compact.py \
+  NEW_REPORT.json NEW_COMPACT_REPORT.json
+sha256sum NEW_COMPACT_REPORT.json
+```
+
+Expected compact SHA-256:
+`39e41b03d3bdb2a41c64b904fab4fb02ab1cd4a12d4973a04adbda11f7d71d49`
+(16,301 bytes, final newline). Independently replayed from the original
+Qwen/Smol ZIPs and the pinned eight-question plan. Six model-free conversion
+tests check incomplete, duplicate, conflicting and falsely promoted receipts.
+The converter neither revises the original citation audit nor claims a
+semantic-entailment certificate, prospective outcome or production admission.
