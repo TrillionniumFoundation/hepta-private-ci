@@ -6,6 +6,8 @@ on:
     paths:
       - "scripts/memory_cell/strong_rag_shards.py"
       - "scripts/memory_cell/test_strong_rag_shards.py"
+      - "scripts/memory_cell/canonical_model_stage.py"
+      - "scripts/memory_cell/test_canonical_model_stage.py"
       - ".github/workflows/hepta-memory-strong-rag-cpu-shards.yml"
 permissions:
   contents: read
@@ -32,6 +34,7 @@ jobs:
           set -euo pipefail
           python3 -m py_compile scripts/memory_cell/strong_rag_shards.py scripts/memory_cell/test_strong_rag_shards.py
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_shards.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_canonical_model_stage.py' -v
       - name: Restore and authenticate the original observed event experiment
         env:
           GH_TOKEN: ${{ github.token }}
@@ -142,6 +145,7 @@ jobs:
           /tmp/python-model/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/python-model/bin/pip install -r /tmp/python-lock/environment.txt
           /tmp/python-model/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/model
+          /tmp/python-model/bin/python scripts/memory_cell/canonical_model_stage.py normalize /tmp/model
       - name: Read exactly one calibration case and one precommitted arm group
         env:
           HF_HUB_OFFLINE: "1"
@@ -149,6 +153,7 @@ jobs:
         run: |
           set -euo pipefail
           /tmp/python-model/bin/python scripts/memory_cell/strong_rag_shards.py calibration-shard /tmp/prepared /tmp/absent-plan /tmp/absent-inputs /tmp/model /tmp/not-yet-frozen /tmp/one-shard --case ${{ matrix.case }} --part ${{ matrix.part }} --prep-sha "$(sha256sum /tmp/prepared/calibration-plan.json | cut -d' ' -f1)" --stage-sha "$(sha256sum /tmp/model/stage.json | cut -d' ' -f1)"
+          cp /tmp/model/stage-observation.json /tmp/one-shard/stage-observation.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -229,6 +234,7 @@ jobs:
           /tmp/python-model/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/python-model/bin/pip install -r /tmp/original/environment.txt
           /tmp/python-model/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/model
+          /tmp/python-model/bin/python scripts/memory_cell/canonical_model_stage.py normalize /tmp/model
       - name: Generate one preregistered evaluation case/arm group with frozen k
         env:
           HF_HUB_OFFLINE: "1"
@@ -236,6 +242,7 @@ jobs:
         run: |
           set -euo pipefail
           /tmp/python-model/bin/python scripts/memory_cell/strong_rag_shards.py evaluation-shard /tmp/no-prep /tmp/original/plan /tmp/original/observations /tmp/model /tmp/calibration /tmp/one-shard --case ${{ matrix.case }} --part ${{ matrix.part }} --plan-sha 9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897 --stage-sha "$(sha256sum /tmp/model/stage.json | cut -d' ' -f1)" --policy-sha "$(sha256sum /tmp/calibration/frozen-policy.json | cut -d' ' -f1)"
+          cp /tmp/model/stage-observation.json /tmp/one-shard/stage-observation.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -292,6 +299,7 @@ jobs:
           cp /tmp/calibration/stage.json /tmp/calibration/inventory.json /tmp/calibration/publisher.json /tmp/finished/
           cp -a /tmp/cal-shards /tmp/finished/shards/calibration
           cp -a /tmp/eval-shards /tmp/finished/shards/evaluation
+          python3 scripts/memory_cell/canonical_model_stage.py verify /tmp/finished --output /tmp/finished/staging-costs.json
           printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > /tmp/finished/tested-commit.txt
           (cd /tmp/finished && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -324,6 +332,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/memory_cell/strong_rag_shards.py verify-release /tmp/finished /tmp/original
+          python3 scripts/memory_cell/canonical_model_stage.py verify /tmp/finished --expected /tmp/finished/staging-costs.json
           python3 scripts/memory_cell/strong_rag_receipt.py /tmp/finished /tmp/original --generating-commit "$HEPTA_MEMORY_TESTED_COMMIT" --output /tmp/shard-replay.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
