@@ -99,16 +99,30 @@ fn invalid_numeric_range_and_extra_coefficients_rejected() {
     ));
 }
 
-use codex_hepta_learning_artifacts::{
-    ArtifactEvent, ArtifactKind, ArtifactManifest, ArtifactOwnerTrustV1, ArtifactOwnerVerifierV1,
-    ArtifactRegistry, ArtifactSelectionTrustV1, ArtifactSelectionVerifierV1,
-    CreateOnlyArtifactFile, RegistryHeadRequirementV1, RegistryHeadWitnessV1,
-    SignedArtifactSelectionV1, SignedCurrentArtifactHeadV1, StateChange, TrustedArtifactSelectorV1,
-    TrustedArtifactSignerV1, VerifiedCurrentRegistryViewV1, write_candidate_payload,
-    write_registry_snapshot,
-};
-use codex_hepta_types::{Digest32, Generation, StableId};
-use ed25519_dalek::{Signer, SigningKey};
+use codex_hepta_learning_artifacts::ArtifactEvent;
+use codex_hepta_learning_artifacts::ArtifactKind;
+use codex_hepta_learning_artifacts::ArtifactManifest;
+use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
+use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
+use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_artifacts::ArtifactSelectionTrustV1;
+use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
+use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
+use codex_hepta_learning_artifacts::RegistryHeadRequirementV1;
+use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
+use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
+use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
+use codex_hepta_learning_artifacts::StateChange;
+use codex_hepta_learning_artifacts::TrustedArtifactSelectorV1;
+use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
+use codex_hepta_learning_artifacts::write_candidate_payload;
+use codex_hepta_learning_artifacts::write_registry_snapshot;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use std::fs::File;
 use tempfile::TempDir;
 
