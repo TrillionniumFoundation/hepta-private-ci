@@ -57,8 +57,14 @@ def load_pinned_snapshot(manifest_path: Path) -> tuple[dict[str, Any], Path, str
     manifest_path = manifest_path.resolve(strict=True)
     root = manifest_path.parent
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if set(manifest) != {"model_id", "revision", "snapshot", "files", "max_tokens"}:
+    if set(manifest) != {"model_id", "revision", "snapshot", "files", "max_tokens", "runtime"}:
         raise StemQualificationError("unexpected manifest fields")
+    runtime = manifest["runtime"]
+    if not isinstance(runtime, dict) or set(runtime) != {"torch", "transformers", "tokenizers", "safetensors"}:
+        raise StemQualificationError("complete pinned Python inference runtime is required")
+    if any(not isinstance(v, str) or not 1 <= len(v) <= 64
+           or not re.fullmatch(r"[a-zA-Z0-9.+_-]+", v) for v in runtime.values()):
+        raise StemQualificationError("invalid Python package revision")
     if manifest["model_id"] not in ALLOWLIST:
         raise StemQualificationError("model architecture not approved")
     if not isinstance(manifest["revision"], str) or not re.fullmatch("[0-9a-f]{40}", manifest["revision"]):
@@ -112,6 +118,7 @@ def load_pinned_snapshot(manifest_path: Path) -> tuple[dict[str, Any], Path, str
             "revision": manifest["revision"],
             "files": files,
             "max_tokens": manifest["max_tokens"],
+            "runtime": runtime,
             "pooling": "attention-mask-mean-v1",
             "quantization": "ties-even-q24-v1",
         })
@@ -180,10 +187,14 @@ class OfflineSharedStem:
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
         try:
+            from importlib import metadata
+            for package, expected in self.manifest["runtime"].items():
+                if metadata.version(package) != expected:
+                    raise StemQualificationError(f"unapproved {package} runtime version")
             import torch
             from transformers import AutoModel, AutoTokenizer
-        except ImportError as exc:
-            raise StemQualificationError("torch and transformers required, no download fallback") from exc
+        except (ImportError, metadata.PackageNotFoundError) as exc:
+            raise StemQualificationError("pinned offline Torch/Transformers runtime unavailable") from exc
         self.torch = torch
         self.tokenizer = AutoTokenizer.from_pretrained(
             str(self.snapshot), local_files_only=True, trust_remote_code=False
