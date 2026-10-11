@@ -79,6 +79,7 @@ def write_memory(
         source_sha=source_sha, source_commit=commit,
         model_identity=inventory["inventory_digest"],
         repository=stage["repository"], revision=stage["revision"],
+        curriculum=curriculum,
     )
     output.mkdir()
     write(

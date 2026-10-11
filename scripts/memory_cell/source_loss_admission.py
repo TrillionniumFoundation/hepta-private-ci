@@ -12,7 +12,7 @@ from event_memory_trial import read
 
 _HEX40 = re.compile(r"[0-9a-f]{40}\Z")
 _HEX64 = re.compile(r"[0-9a-f]{64}\Z")
-_SCHEMA = "hepta.source-only.pretrained-loss-parity.v1"
+_SCHEMA = "hepta.source-only.pretrained-loss-parity.v2"
 
 
 def require_parity(
@@ -25,7 +25,12 @@ def require_parity(
     model_identity,
     repository,
     revision,
+    curriculum="single_hop",
 ):
+    if curriculum not in ("single_hop", "source_two_hop"):
+        raise ValueError("unregistered source write curriculum")
+    if backend == "supervised_positions" and curriculum != "single_hop":
+        raise ValueError("source-two-hop optimization requires its own pretrained parity")
     if backend == "full":
         if receipt_path is not None or receipt_sha is not None:
             raise ValueError("full source loss must not absorb an unrelated parity proof")
@@ -50,6 +55,8 @@ def require_parity(
         "model_inventory_digest": model_identity,
         "model_repository": repository,
         "model_revision": revision,
+        "curriculum": curriculum,
+        "source_example_selected_from_write_schedule": True,
         "frozen_pretrained_base_unchanged": True,
         "matched_optimization_step": True,
         "original_task_plan_opened": False,

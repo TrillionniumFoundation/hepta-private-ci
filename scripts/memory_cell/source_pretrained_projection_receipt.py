@@ -51,7 +51,10 @@ def compare(sources, model_dir, output, *, source_sha, stage_sha, commit):
     )
     # A source-only minimum-length example controls CPU memory; no test query
     # or answer labels are opened or used to choose this comparison input.
-    chosen = min(range(len(prepared)), key=lambda i: (len(prepared[i][0]), i))
+    scheduled = schedule["entries"]
+    if not scheduled:
+        raise ValueError("no scheduled source-writing example for pretrained parity")
+    chosen = min(set(scheduled), key=lambda i: (len(prepared[i][0]), i))
     ids, labels = prepared[chosen]
     if len(ids) > 768:
         raise ValueError("no bounded original source-only example for CPU proof")
@@ -135,7 +138,7 @@ def compare(sources, model_dir, output, *, source_sha, stage_sha, commit):
     )):
         raise ValueError("nonfinite comparison")
     report = dict(
-        schema="hepta.source-only.pretrained-loss-parity.v1",
+        schema="hepta.source-only.pretrained-loss-parity.v2",
         generating_commit=commit,
         source_sha256=source_sha,
         source_document_digest=digest([d.identity for d in docs]),
@@ -143,6 +146,9 @@ def compare(sources, model_dir, output, *, source_sha, stage_sha, commit):
         model_revision=stage["revision"],
         model_repository=stage["repository"],
         model_profile=reader.profile,
+        curriculum="single_hop",
+        source_example_selected_from_write_schedule=True,
+        source_example_schedule_visits=scheduled.count(chosen),
         dependency_versions=dict(
             torch=torch.__version__,
             transformers=transformers.__version__,

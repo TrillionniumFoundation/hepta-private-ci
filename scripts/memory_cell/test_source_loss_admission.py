@@ -12,12 +12,14 @@ from source_loss_admission import require_parity
 
 def sample():
     return {
-        "schema": "hepta.source-only.pretrained-loss-parity.v1",
+        "schema": "hepta.source-only.pretrained-loss-parity.v2",
         "generating_commit": "a" * 40,
         "source_sha256": "b" * 64,
         "model_inventory_digest": "c" * 64,
         "model_repository": "Qwen/Qwen2.5-3B-Instruct",
         "model_revision": "d" * 40,
+        "curriculum": "single_hop",
+        "source_example_selected_from_write_schedule": True,
         "frozen_pretrained_base_unchanged": True,
         "matched_optimization_step": True,
         "original_task_plan_opened": False,
@@ -81,6 +83,8 @@ class SourceLossAdmissionTests(unittest.TestCase):
             ("model_revision", "e" * 40),
             ("generating_commit", "e" * 40),
             ("model_repository", "other"),
+            ("curriculum", "source_two_hop"),
+            ("source_example_selected_from_write_schedule", False),
         ):
             row = deepcopy(sample())
             row[key] = wrong
@@ -126,6 +130,21 @@ class SourceLossAdmissionTests(unittest.TestCase):
                 hashlib.sha256(self.file.read_bytes()).hexdigest(),
                 **self.arguments,
             )
+
+
+    def test_source_two_hop_requires_a_separate_actual_parity_receipt(self):
+        with self.assertRaisesRegex(ValueError, "source-two-hop optimization"):
+            require_parity(
+                "supervised_positions", None, None,
+                curriculum="source_two_hop", **self.arguments
+            )
+        self.assertIsNone(
+            require_parity(
+                "full", None, None, curriculum="source_two_hop", **self.arguments
+            )
+        )
+        with self.assertRaisesRegex(ValueError, "unregistered source write curriculum"):
+            require_parity("full", None, None, curriculum="unknown", **self.arguments)
 
 
 if __name__ == "__main__":
