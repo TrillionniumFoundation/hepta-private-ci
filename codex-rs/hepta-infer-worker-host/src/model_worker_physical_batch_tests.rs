@@ -6,6 +6,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 enum Fault {
     None,
     SwappedItem,
+    WrongSubmission,
     TooManyForwards,
     ExcessPeak,
 }
@@ -76,6 +77,14 @@ impl NeuronPhysicalBatchDriver for FixtureBackend {
             items.swap(0, 1);
         }
         Ok(PhysicalBatchRunObservationV1 {
+            submission_digest: if matches!(self.fault, Fault::WrongSubmission) {
+                Digest32::of_bytes(b"foreign-request-order").to_string()
+            } else {
+                canonical_physical_batch_submission_digest_v1(
+                    "worker", "model", 3, requests,
+                )
+                .to_string()
+            },
             batch_execution_digest: Digest32::of_bytes(b"test-batch").to_string(),
             claimed_encoder_forward_count: if matches!(self.fault, Fault::TooManyForwards) {
                 2
@@ -173,7 +182,12 @@ fn verified_one_call_batch_emits_one_bound_receipt_per_item() {
 
 #[test]
 fn no_receipts_on_item_swap_or_untrusted_batch_envelope() {
-    for fault in [Fault::SwappedItem, Fault::TooManyForwards, Fault::ExcessPeak] {
+    for fault in [
+        Fault::SwappedItem,
+        Fault::WrongSubmission,
+        Fault::TooManyForwards,
+        Fault::ExcessPeak,
+    ] {
         let (mut worker, calls, requests) = fixture(fault);
         assert_eq!(
             worker.run_physical_batch_receipts(100, "model", requests),
