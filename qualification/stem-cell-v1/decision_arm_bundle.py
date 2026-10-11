@@ -12,7 +12,8 @@ import math
 from pathlib import Path
 
 from decision_421m import (
-    PHASES, SCORING, SOURCES, audit_dataset, check_sha, load_plan, sha256_file,
+    PHASES, SCORING, SOURCES, audit_dataset, check_sha,
+    input_fingerprint, load_plan, sha256_file,
 )
 from study import load_jsonl
 
@@ -45,7 +46,7 @@ def inside(root, relative):
     return resolved
 
 
-def load_predictions(path, expected_arm, run, scored_ids, classes):
+def load_predictions(path, expected_arm, run, scored_index, classes):
     if path.stat().st_size > MAX_PREDICTION_BYTES:
         raise ValueError("prediction file exceeds capped byte budget")
     declared = run.get("output_predictions_sha256")
@@ -63,7 +64,7 @@ def load_predictions(path, expected_arm, run, scored_ids, classes):
             if type(row) is not dict or row.get("arm") != expected_arm:
                 raise ValueError("model arm identity mismatch")
             sid = row.get("sample_id")
-            if not isinstance(sid, str) or sid not in scored_ids or sid in seen:
+            if not isinstance(sid, str) or sid not in scored_index or sid in seen:
                 raise ValueError("duplicate/unknown/incomplete model sample")
             if any(k in row for k in ("label", "external_ndu_utility",
                                        "total_cost", "observer_digest")):
@@ -75,6 +76,8 @@ def load_predictions(path, expected_arm, run, scored_ids, classes):
                 raise ValueError("malformed aligned legal-action logits")
             if row.get("weights_sha256") != run.get("weights_sha256"):
                 raise ValueError("predicted Head weights differ from run manifest")
+            if row.get("input_digest") != input_fingerprint(scored_index[sid]):
+                raise ValueError("predicted sample source/options digest mismatch")
             if "token_count" in row:
                 limit = run["runtime_profile"]["context_tokens"]
                 if (type(row["token_count"]) is not int or
@@ -85,7 +88,7 @@ def load_predictions(path, expected_arm, run, scored_ids, classes):
                 raise ValueError("missing measured per-sample latency")
             seen.add(sid)
             result.append(row)
-    if seen != scored_ids:
+    if seen != set(scored_index):
         raise ValueError("missing paired scored sample in source model arm")
     return result
 
@@ -97,7 +100,7 @@ def assemble(plan, evidence_root, entries, dataset, scope):
     required = {f"{model}:{phase}" for model in SOURCES for phase in phases}
     if not isinstance(entries, list) or len(entries) != len(required):
         raise ValueError("one execution receipt is required per planned arm")
-    scored = {sid for sid, row in dataset.items() if row["split"] in SCORING}
+    scored = {sid: row for sid, row in dataset.items() if row["split"] in SCORING}
     if not scored or len(scored) > MAX_ROWS:
         raise ValueError("scored dataset is empty or exceeds research bound")
     manifests, predictions, references = [], [], []
