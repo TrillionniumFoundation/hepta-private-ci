@@ -285,7 +285,10 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
         Err(NeuronModelError::Indeterminate),
         "driver identity drift after invocation has an unknown effect outcome"
     );
-    assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+    assert_eq!(
+        port.execute_feature(&typed),
+        Err(NeuronModelError::Rejected)
+    );
     assert_eq!(calls.load(Ordering::SeqCst), 2);
 }
 

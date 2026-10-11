@@ -220,6 +220,17 @@ fn missing_reserved_cancelling_expired_and_drifted_requests_are_rejected() {
             .control_revision,
         3
     );
+
+    // Even a durable journal entry with a matching canonical payload digest
+    // cannot admit Neuron features outside the typed Q24 contract.
+    let another = tempfile::tempdir().unwrap();
+    let mut outside = typed_request();
+    outside.feature_vector_q24[0] = 9 * (1_i64 << 24);
+    let invalid_owner = control(&another, &outside);
+    assert_eq!(
+        read_neuron_durable_assignment_v1(&invalid_owner, &worker, &outside, 100),
+        Err(NeuronDurableAssignmentErrorV1::Mismatch)
+    );
     durable.cancel("tick.1", 3).unwrap();
     assert_eq!(
         read_neuron_durable_assignment_v1(&durable, &worker, &typed, 100),

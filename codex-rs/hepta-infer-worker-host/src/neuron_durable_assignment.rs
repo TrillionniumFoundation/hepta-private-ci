@@ -11,6 +11,7 @@ use std::fmt;
 use std::str::FromStr;
 
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
+use codex_hepta_infer_core::neuron_feature_request_digest_v1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::RequestState;
 use codex_hepta_types::AuthorityPosture;
@@ -132,6 +133,11 @@ pub fn read_neuron_durable_assignment_v1<D: ModelDriver>(
     request: &NeuronFeatureRequestV1,
     now_ms: u64,
 ) -> Result<NeuronDurableAssignmentDiagnosticV1, NeuronDurableAssignmentErrorV1> {
+    // The control journal authenticates assignment identity, but it does
+    // not validate Neuron Q24 feature bounds. Check the typed source contract
+    // before accepting a digest that happens to match malformed data.
+    neuron_feature_request_digest_v1(request)
+        .map_err(|_| NeuronDurableAssignmentErrorV1::Mismatch)?;
     let record = owner
         .get(request.request_id.as_str())
         .ok_or(NeuronDurableAssignmentErrorV1::Missing)?;

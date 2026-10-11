@@ -72,7 +72,8 @@ Reserve and Assign transitions. The additive
 caller-provided claimed state: it reads the owner handle and the actual
 `InferenceWorker`, refuses every state except Assigned, verifies Worker
 ID/generation, deadline and reservation expiry, checks current Worker grant
-and actually loaded model, and recomputes the entire canonical Neuron payload.
+and actually loaded model, validates typed Q24 bounds, and recomputes the
+entire canonical Neuron payload.
 
 This only returns `NeuronDurableAssignmentDiagnosticV1`: a bounded, data-free,
 domain-separated integrity commitment with `AuthorityPosture::DENY_ALL`.
