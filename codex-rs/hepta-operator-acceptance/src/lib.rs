@@ -136,6 +136,7 @@ pub use cell_split_observer_join::CellSplitObserverJoinReceiptV1;
 pub use cell_split_observer_join::CellSplitSignedObserverJoinV1;
 pub use cell_split_observer_join::cell_split_observer_join_payload_v1;
 pub use cell_split_observer_join::cell_split_observer_join_signing_payload_v1;
+#[cfg(unix)]
 pub use cell_split_observer_join::verify_cell_split_observer_join_v1;
 pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
 pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
