@@ -23,7 +23,13 @@ driver outcome is Indeterminate; malformed feature and identity mismatches
 are rejected. This removes a previously missing source-level execution port.
 
 The qualification tests run the actual Worker and the actual Neuron ModelPort,
-with a **fixture ModelDriver** that produces deterministic Q24 vectors. This is
+with a **fixture ModelDriver** that produces deterministic Q24 vectors.
+A separate integration test now composes a real AgentdNeuronOwner,
+InferenceWorker, NeuronRuntime, on-disk sparse Journal and independent
+on-disk FileAnchorWitnessStore. It confirms the Q24 receipt is durably
+committed, a repeated reservation cannot create a successor, then destroys
+the owner objects and reopens BOTH files to recover the exact checkpoint.
+Its model driver is still a test backend rather than real Laya weights. This is
 not proof of physical Laya safetensors, target CPU/GPU resources, signed
 final-use or an observed NDU gain. No user text, labels or production CNS route
 are used. The caller must separately authenticate and retain the resource

@@ -40,7 +40,9 @@ impl ModelDriver for FixtureDriver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, WorkerError> {
-        Err(WorkerError::DriverFailure("ordinary output disabled".to_owned()))
+        Err(WorkerError::DriverFailure(
+            "ordinary output disabled".to_owned(),
+        ))
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), WorkerError> {
@@ -266,10 +268,7 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
         100,
     );
     let receipt = port.execute_feature(&typed).unwrap();
-    assert_eq!(
-        receipt.status,
-        NeuronFeatureTerminalStatusV1::Indeterminate
-    );
+    assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Indeterminate);
     assert!(receipt.drive_q24.is_empty());
     assert!(receipt.prediction_q24.is_empty());
     assert!(!port.reservation_unconsumed());
@@ -308,7 +307,226 @@ fn native_worker_port_rejects_cancelled_or_expired_worker_reservation() {
             reservation,
             now_ms,
         );
-        assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+        assert_eq!(
+            port.execute_feature(&typed),
+            Err(NeuronModelError::Rejected)
+        );
         assert_eq!(calls.load(Ordering::SeqCst), 0);
     }
+}
+
+#[test]
+fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal_and_witness() {
+    use std::fs::OpenOptions;
+
+    use codex_hepta_agentd::AgentdNeuronOwner;
+    use codex_hepta_neuron::AnchorWitnessStore;
+    use codex_hepta_neuron::FileAnchorWitnessStore;
+    use codex_hepta_neuron::JournalScope;
+    use codex_hepta_neuron::NeuronCalibrationProfileV1;
+    use codex_hepta_neuron::NeuronResourceEnvelopeV1;
+    use codex_hepta_neuron::NeuronRuntime;
+    use codex_hepta_neuron::NeuronRuntimeConfigV1;
+    use codex_hepta_neuron::NeuronRuntimeError;
+    use codex_hepta_neuron::NeuronTickInputV1;
+    use codex_hepta_neuron::SparseConfig;
+    use codex_hepta_neuron::canonical_feature_vector_digest_v1;
+
+    let generation = Generation::new(3).unwrap();
+    let q24 = Q;
+    let native = SparseConfig {
+        model_digest: digest("b"),
+        normalization_digest: Digest32::of_bytes(b"frozen-normalization"),
+        generation,
+        width: 5,
+        top_k: 1,
+        temporal_decay_q24: q24 / 2,
+        inhibition_gain_q24: q24,
+        inhibition: vec![],
+        activity_decay_q24: 0,
+        target_activity_q24: q24 / 8,
+        threshold_rate_q24: q24 / 8,
+        threshold_min_q24: -q24,
+        threshold_max_q24: q24,
+        eligibility_decay_q24: q24 / 2,
+    };
+    let config = NeuronRuntimeConfigV1 {
+        config_id: StableId::new("neuron.config.1").unwrap(),
+        generation,
+        model_id: StableId::new("model.1").unwrap(),
+        model_manifest_digest: digest("2"),
+        encoder_digest: digest("a"),
+        head_digest: native.model_digest,
+        weights_digest: digest("3"),
+        tokenizer_digest: digest("4"),
+        preprocessor_digest: digest("5"),
+        quantization_digest: digest("6"),
+        runtime_digest: digest("7"),
+        device_digest: digest("8"),
+        normalization_digest: native.normalization_digest,
+        native_config_digest: native.digest().unwrap(),
+        input_feature_dimension: 2,
+        state_width: native.width,
+        modulator_dimension: 4,
+        calibration: NeuronCalibrationProfileV1 {
+            calibration_artifact_digest: Digest32::of_bytes(b"calibration-artifact"),
+            ood_artifact_digest: Digest32::of_bytes(b"ood-artifact"),
+            generation,
+            valid_from_sequence: 1,
+            expires_after_sequence: 32,
+            zero_confidence_error_q24: 16 * q24,
+            maximum_in_domain_error_q24: 8 * q24,
+            minimum_confidence_ppm: 500_000,
+            maximum_ood_ppm: 500_000,
+            minimum_active_ppm: 100_000,
+            maximum_active_ppm: 300_000,
+            maximum_projection_count: 8,
+            measured_ece_ppm: 10_000,
+            maximum_ece_ppm: 50_000,
+            measured_false_acceptance_ppm: 5_000,
+            maximum_false_acceptance_ppm: 20_000,
+        },
+        resource_envelope: NeuronResourceEnvelopeV1 {
+            p95_latency_micros: 1_000_000,
+            p99_latency_micros: 10_000_000,
+            transient_allocation_bytes: 1 << 20,
+            checkpoint_bytes: 1 << 20,
+            write_amplification_ppm: 4_000_000,
+        },
+    };
+    let subject = StableId::new("subject.1").unwrap();
+    let objective = Digest32::of_bytes(b"objective");
+    // Match the canonical Neuron subject-scope framing exactly: the owner
+    // does not take a caller-provided scope checksum as evidence.
+    let mut scope_bytes = b"hepta.neuron.subject-scope.v1".to_vec();
+    let raw_subject = subject.as_str().as_bytes();
+    scope_bytes.extend_from_slice(&(raw_subject.len() as u32).to_be_bytes());
+    scope_bytes.extend_from_slice(raw_subject);
+    let scope = JournalScope {
+        scope_digest: Digest32::of_bytes(&scope_bytes),
+        objective_digest: objective,
+    };
+    let features = vec![q24 / 4, -(q24 / 8)];
+    let input = NeuronTickInputV1 {
+        tick_id: StableId::new("tick.1").unwrap(),
+        subject_id: subject,
+        logical_sequence: 1,
+        monotonic_time_micros: 1000,
+        checkpoint_digest: Digest32::ZERO,
+        input_feature_digest: canonical_feature_vector_digest_v1(&features),
+        feature_vector_q24: features.clone(),
+        objective_digest: objective,
+        ndu_snapshot_digest: Digest32::of_bytes(b"frozen-ndu"),
+        body_generation: Some(3),
+        modulator_digest: None,
+    };
+    let temp = tempfile::tempdir().unwrap();
+    let journal_path = temp.path().join("neuron.journal");
+    let witness_path = temp.path().join("neuron.witness");
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create_new(true)
+        .open(&journal_path)
+        .unwrap();
+    let witness_file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create_new(true)
+        .open(&witness_path)
+        .unwrap();
+    let witness = FileAnchorWitnessStore::open(witness_file, scope, generation, 16).unwrap();
+    let runtime = NeuronRuntime::bootstrap(
+        file,
+        native.clone(),
+        scope,
+        16,
+        config.clone(),
+        witness,
+    )
+    .unwrap();
+    let actual_request = runtime.model_request(&input).unwrap();
+    let control_request = NeuronFeatureRequestV1 {
+        request_id: actual_request.request_id,
+        generation: actual_request.generation,
+        model_id: actual_request.model_id,
+        encoder_digest: actual_request.encoder_digest,
+        head_digest: actual_request.head_digest,
+        weights_digest: actual_request.weights_digest,
+        input_digest: actual_request.input_digest,
+        feature_vector_q24: actual_request.feature_vector_q24,
+        expected_output_width: actual_request.expected_output_width,
+    };
+    let authorized = preadmitted_reservation(&control_request);
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker(Arc::clone(&calls), false, false);
+    let worker_port = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        authorized,
+        100,
+    );
+    let mut agentd = AgentdNeuronOwner::new(runtime, worker_port);
+    assert!(agentd.read_local_checkpoint_binding_v1().is_err());
+    let first = agentd.tick(input.clone()).unwrap();
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(first.model_runtime.weights_digest, digest("3"));
+    assert_eq!(first.model_runtime.tokenizer_digest, digest("4"));
+    assert_eq!(first.model_runtime.runtime_digest, digest("7"));
+    let pinned = agentd.read_local_checkpoint_binding_v1().unwrap();
+    assert!(pinned.validate_integrity());
+    assert_eq!(pinned.anchor.checkpoint_digest, first.tick.checkpoint_after);
+    // The committed anchor is stored in a separate fsynced file, not derived
+    // from the mutable Journal that the model updated.
+
+    // A second tick cannot fabricate a new reservation. The state owner must
+    // not commit a successor checkpoint after the Worker refused reuse.
+    let mut second = input;
+    second.tick_id = StableId::new("tick.2").unwrap();
+    second.logical_sequence = 2;
+    second.monotonic_time_micros = 2000;
+    second.checkpoint_digest = first.tick.checkpoint_after;
+    assert!(matches!(
+        agentd.tick(second),
+        Err(NeuronRuntimeError::Model(NeuronModelError::Rejected))
+    ));
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(
+        agentd.read_local_checkpoint_binding_v1().unwrap().anchor,
+        pinned.anchor
+    );
+
+    // Simulate process-object death. Reopen the separately durable witness
+    // and journal, then verify the full generation-bound checkpoint recovery.
+    drop(agentd);
+    let recovered_witness = FileAnchorWitnessStore::open(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&witness_path)
+            .unwrap(),
+        scope,
+        generation,
+        16,
+    )
+    .unwrap();
+    assert_eq!(recovered_witness.current().unwrap(), Some(pinned.anchor));
+    let recovered = NeuronRuntime::recover(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&journal_path)
+            .unwrap(),
+        native,
+        scope,
+        16,
+        config,
+        pinned.anchor,
+        recovered_witness,
+    )
+    .unwrap();
+    assert_eq!(
+        recovered.read_local_checkpoint_binding_v1().unwrap().anchor,
+        pinned.anchor
+    );
 }
