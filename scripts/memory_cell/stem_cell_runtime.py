@@ -6,6 +6,7 @@ import json
 import time
 
 from native import digest
+from stem_cell_time import source_not_after_question
 
 
 def healthy_peer_snapshots(heads, current, failures):
@@ -35,17 +36,13 @@ class ExactReaderCache:
         self.call_seconds = 0.0
 
     def answer(self, query, evidence, record_key, *, revoked):
-        if (
-            getattr(self.generator, "quarantined", False)
-            or len(evidence) > 1
-            or any(
-                s["root"] in revoked
-                or s["scope"] != query.scope
-                or s["observed_at"] > query.observed_at
-                for s in evidence
-            )
-        ):
-            raise ValueError("unavailable Reader or inadmissible cached evidence")
+        if getattr(self.generator, "quarantined", False) or len(evidence) > 1:
+            raise ValueError("unavailable Reader or too many cached evidence sources")
+        for item in evidence:
+            if item["root"] in revoked or item["scope"] != query.scope:
+                raise ValueError("withdrawn or cross-scope Reader evidence")
+            if not source_not_after_question(item["observed_at"], query.observed_at):
+                raise ValueError("future evidence outside query chronology")
         key = digest(
             (self.generator.identity, self.generator.profile, asdict(query), evidence)
         )
