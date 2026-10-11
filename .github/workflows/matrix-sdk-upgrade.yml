@@ -12,6 +12,39 @@ on:
 permissions:
   contents: read
 jobs:
+  dependency-advisory-audit:
+    name: Matrix exact-head cargo-deny (no advisory waivers)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact Matrix source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify locked source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          test -s codex-rs/Cargo.lock
+          git diff --check
+      - uses: ./.github/actions/setup-ci-build
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - name: Check live advisories and exact locked dependency graph
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.96.0
+          manifest-path: ./codex-rs/Cargo.toml
+      - name: Verify cargo-deny did not alter tracked sources
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+
   sdk-protocol:
     name: Matrix SDK (${{ matrix.qualification }})
     strategy:
@@ -56,7 +89,8 @@ jobs:
           path: sdk-qualification-artifacts
 
   current-main:
-    name: Matrix immutable current-main regression
+    name: Matrix exact-current-main merge regression
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -64,37 +98,84 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: "0"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_INCREMENTAL: "0"
-      EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      EXPECTED_EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
-      REQUIRED_MATRIX_PARENT: 326ffd2a66c9f6a6948d8df7958be2569793a244
-      REQUIRED_NEURON_PARENT: 38ae93fa9b9dc495702c525729ad4c57f8a09882
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - name: Checkout exact source with complete history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
-      - name: Verify exact candidate, live main and both source ancestors
+          persist-credentials: false
+      - name: Authenticate GitHub prospective merge tree and current main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         shell: bash
         run: |
           set -euo pipefail
-          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-f]{40}$ ]]
-          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD_SHA"
-          CURRENT_MAIN="$(git ls-remote origin refs/heads/main | cut -f1)"
-          [[ "$CURRENT_MAIN" =~ ^[0-9a-f]{40}$ ]]
-          if [ -n "$EXPECTED_EVENT_BASE_SHA" ]; then
-            test "$EXPECTED_EVENT_BASE_SHA" = "$CURRENT_MAIN"
+          test -n "$SOURCE_SHA" && test -n "$PR_NUMBER"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          # Event base SHA is a historical snapshot. GitHub's live main,
+          # not an old webhook value, is the base we must actually qualify.
+          current_main="$(gh api "repos/$REPO/branches/main" --jq '.commit.sha')"
+          [[ "$current_main" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$BASE_SHA" != "$current_main" ]]; then
+            echo "::notice::PR event base SHA is stale; require a newly verified current-main merge"
           fi
-          git merge-base --is-ancestor "$CURRENT_MAIN" "$EXPECTED_HEAD_SHA"
-          git merge-base --is-ancestor "$REQUIRED_MATRIX_PARENT" "$EXPECTED_HEAD_SHA"
-          git merge-base --is-ancestor "$REQUIRED_NEURON_PARENT" "$EXPECTED_HEAD_SHA"
+          BASE_SHA="$current_main"
+          git cat-file -e "$BASE_SHA^{commit}"
+          gh_ref="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
+          merge_sha="$(jq -er '.object.sha' <<<"$gh_ref")"
+          merge_commit="$(gh api "repos/$REPO/git/commits/$merge_sha")"
+          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$merge_commit")
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          test "$expected_tree" = "$(jq -er '.tree.sha' <<<"$merge_commit")"
+          # Carry forward the *proved current* parent, never the stale event
+          # SHA, into the synthetic merge action and post-test verification.
+          printf 'BASE_SHA=%s\n' "$BASE_SHA" >> "$GITHUB_ENV"
+          printf 'EXPECTED_MERGE_TREE=%s\n' "$expected_tree" >> "$GITHUB_ENV"
+      - name: Construct locally verified exact prospective merge
+        id: candidate
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Matrix CI
+          author-email: hepta-matrix-ci@users.noreply.github.com
+          message: Matrix prospective merge
+      - name: Bind regression test to exact two-parent merge
+        env:
+          TESTED_SHA: ${{ steps.candidate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_MERGE_TREE"
+          test "$(git rev-list --parents -n 1 HEAD)" = "$TESTED_SHA $BASE_SHA $SOURCE_SHA"
           git diff --check
       - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Run Matrix source regressions on this exact combined head
+      - name: Run real locked Matrix regressions on exact main merge
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
-      - name: Verify tracked candidate remains unchanged
-        run: test -z "$(git status --porcelain --untracked-files=no)"
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
+      - name: Verify tested source tree remains unchanged
+        env:
+          TESTED_SHA: ${{ steps.candidate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_MERGE_TREE"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
