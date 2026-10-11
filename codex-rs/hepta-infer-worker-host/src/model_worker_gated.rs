@@ -739,6 +739,21 @@ mod tests {
         let mut worker =
             InferenceWorker::new(1, "worker.reference".into(), 3, grant, driver).expect("worker");
         worker.load_model(1, selected).expect("load");
+        let mut aliased = b.clone();
+        aliased.authorization.reservation_id = a.authorization.reservation_id.clone();
+        let alias_digest = super::super::canonical_shared_neuron_payload_digest_v2(&aliased)
+            .expect("alias digest");
+        aliased.authorization.payload_digest = alias_digest.clone();
+        aliased.authorization.lease_payload_digest = alias_digest;
+        assert!(matches!(
+            worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![a.clone(), aliased],
+            ),
+            Err(Error::FeatureContract)
+        ));
+        assert_eq!(worker.driver.batch_calls(), 0);
         let results = worker
             .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
             .expect("batched references");
