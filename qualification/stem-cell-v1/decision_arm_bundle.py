@@ -130,6 +130,8 @@ def assemble(plan, evidence_root, entries, dataset, scope):
                     "batch_size": plan["batch_size"],
                     "context_tokens": plan["context_tokens"]} or
                 run.get("seed") != plan["seed"] or
+                run.get("physical_encoder_microbatch_ceiling", 1) !=
+                plan.get("encoder_microbatch_size", 1) or
                 run.get("truncated_input_count") != 0 or
                 run.get("input_contract") != plan["input_contract"] or
                 run.get("production_promotion_permitted") is not False or
