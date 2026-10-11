@@ -175,9 +175,10 @@ fn disk_backed_owner_signs_only_current_state_and_detects_external_revocation() 
             DiskEffect::new(owner_root, "cas-owner"),
         )
         .expect("service");
-        // Negative signed lookup, execution, positive verification, recovery,
-        // and verification after the actual live state has disappeared.
-        for _ in 0..5 {
+        // Signed negative preflight and lookup, execution, positive
+        // verification and recovery, duplicate-preflight denial, then live
+        // state revocation. Every read uses a distinct challenge nonce.
+        for _ in 0..7 {
             let (mut stream, _) = listener.accept().expect("accept");
             let _ = service.serve_connection(&mut stream);
         }
@@ -191,6 +192,9 @@ fn disk_backed_owner_signs_only_current_state_and_detects_external_revocation() 
             .expect("negative signed readback")
             .is_none()
     );
+    client
+        .preflight_uncommitted(&operation)
+        .expect("signed uncommitted owner preflight");
     let receipt = client.execute(&operation).expect("disk-backed commit");
     assert_eq!(receipt.owner_sequence, 7);
     client
@@ -200,6 +204,12 @@ fn disk_backed_owner_signs_only_current_state_and_detects_external_revocation() 
         client.reconcile(&operation).expect("idempotent recovery"),
         Some(receipt.clone())
     );
+    assert!(matches!(
+        client.preflight_uncommitted(&operation),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect exists before coordinator prepared intent"
+        ))
+    ));
     fs::remove_file(root.path().join("live-owner-state")).expect("external revocation");
     assert!(client.verify_committed(&operation, &receipt).is_err());
     assert_eq!(server.join().expect("server completion"), 1);
