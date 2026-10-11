@@ -62,8 +62,7 @@ pub(crate) struct CognitiveContextReadOptions<'a> {
     pub(crate) ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) current_retrieval:
         Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-    pub(crate) learning_sink:
-        Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    pub(crate) learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     pub(crate) request_id: Option<u64>,
 }
 
