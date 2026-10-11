@@ -10,7 +10,7 @@ on:
       - 'codex-rs/Cargo.lock'
       - 'MODULE.bazel.lock'
       - 'codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs'
-      - 'codex-rs/hepta-fleet/src/authority_port.rs'
+      - 'codex-rs/hepta-fleet/src/**'
       - '.github/workflows/hepta-stem-cell-qualification.yml'
 
 permissions:
@@ -65,8 +65,8 @@ jobs:
         run: |
           set -euo pipefail
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host --package codex-hepta-fleet -- --config imports_granularity=Item
-          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src/authority_port.rs > "$RUNNER_TEMP/stem-rustfmt.patch"
-          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src/authority_port.rs
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src > "$RUNNER_TEMP/stem-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src
           git diff --check
           git diff --exit-code
       - name: Upload proposed formatting only
@@ -106,7 +106,7 @@ jobs:
           git diff --exit-code
 
   fleet-authority-lint:
-    name: Fleet authority fixture Clippy and tests (strict, read-only)
+    name: Fleet strict Clippy and complete library tests (read-only)
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
@@ -126,10 +126,9 @@ jobs:
       - name: Compile fleet authority tests
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-fleet --all-targets
-      - name: Fleet test suite
+      - name: Fleet full library test suite
         working-directory: codex-rs
-        run: |
-          cargo test --locked -p codex-hepta-fleet --lib authority_port::tests::
+        run: cargo test --locked -p codex-hepta-fleet --lib authority_port::tests::
       - name: Strict fleet Clippy including tests
         working-directory: codex-rs
         run: >
@@ -193,8 +192,8 @@ jobs:
         run: |
           set -euo pipefail
           cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host --package codex-hepta-fleet -- --config imports_granularity=Item
-          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src/authority_port.rs > "$RUNNER_TEMP/stem-worker-rustfmt.patch"
-          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src/authority_port.rs
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src > "$RUNNER_TEMP/stem-worker-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src
       - name: Upload rustfmt diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
