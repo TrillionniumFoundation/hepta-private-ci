@@ -54,7 +54,7 @@ class SourceWriteExecutionGateTests(unittest.TestCase):
     def test_format_job_does_not_claim_a_model_success(self):
         self.assertNotIn("write-and-read", self.jobs["repository-format"])
         self.assertNotIn("source-contracts", self.jobs["repository-format"])
-        self.assertIn("fail", str(self.jobs["repository-format"]).lower())
+        self.assertIn("exit \"$status\"", str(self.jobs["repository-format"]))
 
 
 if __name__ == "__main__":
