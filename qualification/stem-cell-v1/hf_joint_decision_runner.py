@@ -18,9 +18,9 @@ import time
 from collections.abc import Mapping
 from pathlib import Path
 
-from decision_421m import SOURCES, audit_dataset, check_sha, input_fingerprint, sha256_file
+from decision_421m import (SOURCES, audit_dataset, check_sha,
+                           input_fingerprint, read_strict_jsonl, sha256_file)
 from model_runner import snapshot_digest
-from study import load_jsonl
 
 HF_KEYS = frozenset(("deberta_v3_large", "modernbert_large"))
 MAX_FEATURE_BYTES = 1 << 28  # explicit 256 MiB cache/feature budget
@@ -155,7 +155,7 @@ def vectorize_case(torch, model, tokenizer, row, device, *, max_tokens):
 
 def run(args):
     checkpoint = snapshot_validation(args)
-    rows = list(load_jsonl(args.dataset))
+    rows = list(read_strict_jsonl(args.dataset))
     indexed, classes, groups_digest = audit_dataset(rows)
     import torch
     import transformers
