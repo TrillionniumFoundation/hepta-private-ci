@@ -5,7 +5,6 @@ encoders. Adapters learn only at the first registered curriculum checkpoint,
 then freeze so continuing heads retain one stable representation identity.
 """
 
-from dataclasses import asdict
 import json
 import time
 
