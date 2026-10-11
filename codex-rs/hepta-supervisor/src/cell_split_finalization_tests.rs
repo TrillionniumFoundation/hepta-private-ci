@@ -541,6 +541,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     let authority = LiveAuthority::allowed();
     let (plan, fence, mut supervisor_intent, accepted) = real_supervisor_effect_inputs();
     let cns_signer = SigningKey::from_bytes(&[31; 32]);
+    let cns_runtime_signer = SigningKey::from_bytes(&[41; 32]);
     let cns_previous = digest("separately committed child migration").to_string();
     let cns_key = format!(
         "{:x}",
@@ -572,7 +573,10 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         authority_epoch: fence.authority_epoch,
         committed_sequence: 3,
         original_runtime_receipt_bytes: b"original signed cns cutover".to_vec(),
-        original_runtime_signature_bytes: vec![1; 64],
+        original_runtime_signature_bytes: cns_runtime_signer
+            .sign(b"original signed cns cutover")
+            .to_bytes()
+            .to_vec(),
     };
     let original_bytes = serde_json::to_vec(&original_cns).expect("CNS original bytes");
     let mut cns_receipt = CellSplitExecutionReceiptV1 {
@@ -623,6 +627,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         SigningKey::from_bytes(&[22; 32]),
         &cns_receipt,
         &cns_signer.verifying_key(),
+        &cns_runtime_signer.verifying_key(),
     )
     .expect("independent CNS/Coordinator digest bridge");
     port.finalize_once(&plan, &supervisor_intent, &fence)
@@ -652,6 +657,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
             SigningKey::from_bytes(&[22; 32]),
             &cns_receipt,
             &SigningKey::from_bytes(&[32; 32]).verifying_key(),
+            &cns_runtime_signer.verifying_key(),
         )
         .is_err(),
         "wrong independent CNS signer must not authorize retirement"
