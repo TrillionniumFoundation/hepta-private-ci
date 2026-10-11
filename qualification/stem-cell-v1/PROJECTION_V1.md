@@ -74,6 +74,42 @@ tensor fields, reviewed training lineage, `shadow_only=true` and
 `production_authorized=false`. The strict loader denies unknown, missing,
 duplicate or mutated fields; it does not write Artifact CAS.
 
+## Signed CAS use, canonical bytes and replay restrictions
+
+The research-only Rust selected projection reader is now loaded through the
+**existing** independently verified artifact selection and `load_selected_candidate`
+CAS path. Its cache uses `RevalidatingCandidate::with_current`; the loader does
+not mint a signed artifact, an inference grant, an authority lease, or a
+production Final-use token.
+
+CAS projection candidate bytes must match the Python
+`encode_cas_projection_candidate` canonical encoding **exactly**: compact
+ASCII JSON, lexicographically sorted fields, no extra keys or whitespace,
+integer-only Q24 tensors and exactly one final newline. The Rust decoder checks
+these exact bytes after bounded parsing, not just a structurally equivalent
+JSON object. Test vector: the 3→2, rank-1 constant-gate fixture has **548
+bytes** and SHA-256
+`542fe1a25af049d36e2aa2a92aac0513535f5828761812112888a2d88bcaec93`.
+That digest is an integrity check and never constitutes selection authority.
+
+`SelectedStemProjectionReaderV1::check_worker_request` no longer accepts only
+a cached projected feature plus static Fence. Every Worker-use check requires
+a separately authenticated `VerifiedCurrentRegistryViewV1`, the independent
+signed selection, their trusted verifier, matching Scope, worker Generation,
+revocation frontier and exact already-authorized Q24 payload. Any failed check
+**seals the reader**, so reusing a previously valid feature after an observed
+revocation fails closed. The Rust regression uses an actual Ed25519 fixture,
+create-only CAS files, signed CURRENT snapshots and an independent selector.
+
+**Not a production atomicity claim:** a caller can retain an old already
+verified CURRENT value. A *production* owner must acquire the newest signed
+CURRENT from its authority service immediately before each use and serialize
+verification with the downstream execution/Final-use boundary, or arrange an
+equivalent generation/revocation fence. The read-only research adapter neither
+obtains a global owner lock nor signs a terminal model execution receipt. The
+first P1 gate remains blocked until native product Owner startup, independent
+Final-use and WAL/restart recovery are exercised on the target host.
+
 ## Reproducible qualifications
 
 ```sh
