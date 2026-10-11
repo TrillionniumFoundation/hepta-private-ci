@@ -19,7 +19,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
         let poll = self
             .scheduler
-            .poll(now_ms)
+            .poll_physical_compatible(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
         for id in &poll.expired_request_ids {
             self.pending.remove(id);
@@ -35,16 +35,29 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
         };
         let mut ids = Vec::with_capacity(batch.requests.len());
         let mut items = Vec::with_capacity(batch.requests.len());
+        let mut scope_bytes = b"hepta.worker.physical-batch-scopes.v1".to_vec();
+        scope_bytes.extend_from_slice(&(batch.requests.len() as u64).to_be_bytes());
         let mut failure = None;
         for intent in batch.requests {
+            let scope = intent.key.scope_id.as_str().as_bytes();
+            scope_bytes.extend_from_slice(&(scope.len() as u64).to_be_bytes());
+            scope_bytes.extend_from_slice(scope);
+            let expected_encoder = batch.compatibility.encoder_digest.to_string();
+            let incompatible = intent.key.model_digest != batch.compatibility.model_digest
+                || intent.key.generation != batch.compatibility.generation
+                || intent.key.authority_epoch != batch.compatibility.authority_epoch
+                || intent.encoder_digest != Some(batch.compatibility.encoder_digest);
             let id = intent.request_id;
             self.retired.insert(id.clone());
             ids.push(id.clone());
             match self.pending.remove(&id) {
                 None => failure = Some(BatchWorkerErrorV1::NoAdmission),
                 Some(pending) => {
-                    if pending.feature.digest() != intent.feature_digest
-                        || pending.signed.grant.authority_epoch != batch.key.authority_epoch
+                    if incompatible
+                        || pending.feature.digest() != intent.feature_digest
+                        || pending.signed.grant.authority_epoch != intent.key.authority_epoch
+                        || pending.request.encoder_digest != expected_encoder
+                        || pending.binding.subject_id != intent.key.scope_id.to_string()
                         || pending.request.authorization.cancelled
                     {
                         failure = Some(BatchWorkerErrorV1::InvalidBinding);
@@ -133,7 +146,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
                 group_digest.push(0);
             }
             let _ = sink.record(PhaseMetricEventV1 {
-                scope_digest: Digest32::of_bytes(batch.key.scope_id.as_str().as_bytes()),
+                scope_digest: Digest32::of_bytes(&scope_bytes),
                 operation_digest: Digest32::of_bytes(&group_digest),
                 phase: PhaseMetricKindV1::NeuronFeature,
                 latency_micros: u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX),
