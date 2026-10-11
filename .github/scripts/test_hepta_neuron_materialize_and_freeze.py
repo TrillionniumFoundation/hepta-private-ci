@@ -101,6 +101,51 @@ class MaterializationTests(unittest.TestCase):
             self.assertTrue((root / "model").is_dir())
             self.assertFalse((root / "model/rl_agent_config.json").exists())
 
+    def test_artifact_destination_rejects_linked_ancestor_before_creating_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            real = root / "real"
+            real.mkdir()
+            inner = real / "inner"
+            inner.mkdir()
+            alias = root / "alias"
+            alias.symlink_to(real, target_is_directory=True)
+            catalog, _ = self._catalog_and_cache(root)
+            dest = alias / "inner" / "new-model"
+            with patch.object(material, "verify_catalog", side_effect=lambda c: c):
+                with self.assertRaisesRegex(InvalidTrial, "destination parent ancestry"):
+                    material.materialize(catalog, "typed", dest, fetcher=lambda *args: None)
+            self.assertFalse(dest.exists())
+
+    def test_laya_runner_rejects_linked_root_and_ancestor_before_model_io(self):
+        from hepta_neuron_model_trials import MODEL_IDS, run_laya
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            physical = root / "physical"
+            physical.mkdir()
+            (physical / "child").mkdir()
+            alias = root / "alias"
+            alias.symlink_to(physical, target_is_directory=True)
+            manifest = {
+                "family": "decisions",
+                "models": {
+                    "laya": {
+                        "model_id": MODEL_IDS["laya"],
+                        "revision": "a" * 40,
+                        "weights_sha256": "b" * 64,
+                        "artifact_tree_sha256": "c" * 64,
+                    }
+                },
+                "sdk_tree_sha256": "d" * 64,
+            }
+            for path in (alias, alias / "child"):
+                with self.subTest(path=path):
+                    with self.assertRaisesRegex(InvalidTrial, "absolute, physical directory"):
+                        run_laya(
+                            manifest, [], "laya", path, "model.safetensors", "cpu", "d" * 64
+                        )
+
     def test_offline_hub_fetch_never_implies_network_permission(self):
         with patch.dict(sys.modules, {"huggingface_hub": MagicMock()}):
             module = sys.modules["huggingface_hub"]

@@ -18,6 +18,7 @@ from pathlib import Path
 from hepta_neuron_artifact_preflight import REQUIRED, inspect_local, verify_catalog
 from hepta_neuron_model_trials import (
     InvalidTrial,
+    physical_absolute_directory,
     read_json,
     require,
     sha_file,
@@ -120,7 +121,9 @@ def materialize(
         "destination must be a new absolute directory",
     )
     parent = destination.parent
-    require(parent.is_dir() and not parent.is_symlink(), "untrusted destination parent")
+    require(
+        physical_absolute_directory(parent), "untrusted destination parent ancestry"
+    )
     checkout_root = Path(__file__).resolve().parents[1]
     require(
         not destination.resolve().is_relative_to(checkout_root),
@@ -129,7 +132,7 @@ def materialize(
     if cache_dir is not None:
         cache = Path(cache_dir)
         require(
-            cache.is_absolute() and cache.is_dir() and not cache.is_symlink(),
+            physical_absolute_directory(cache),
             "HF cache must be an existing physical absolute directory",
         )
         cache_dir = str(cache)

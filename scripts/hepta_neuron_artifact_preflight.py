@@ -18,6 +18,7 @@ from hepta_neuron_model_trials import (
     InvalidTrial,
     MODEL_IDS,
     is_sha,
+    physical_absolute_directory,
     read_json,
     require,
     sha_file,
@@ -174,7 +175,7 @@ def inspect_local(catalog, arm, artifact_dir):
     require(arm in PUBLISHED_WEIGHTS, "unknown model arm")
     root = Path(artifact_dir)
     require(
-        root.is_absolute() and root.is_dir() and not root.is_symlink(),
+        physical_absolute_directory(root),
         "artifact directory must be a real absolute local directory",
     )
     # Do not resolve paths before checking links. A linked model root would

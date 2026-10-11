@@ -53,6 +53,16 @@ def is_sha(value, length=64):
     )
 
 
+def physical_absolute_directory(path):
+    """Reject symlinked roots and ancestors before resolving trusted artifacts."""
+    root = Path(path)
+    return (
+        root.is_absolute()
+        and root.is_dir()
+        and all(not parent.is_symlink() for parent in (root, *root.parents))
+    )
+
+
 def sha_file(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -442,6 +452,10 @@ def run_laya(manifest, rows, arm, artifact_dir, weights_file, device, sdk_digest
         and is_sha(sdk_digest)
         and sdk_digest == manifest.get("sdk_tree_sha256"),
         "weight/artifact/SDK pin absent or not frozen in manifest",
+    )
+    require(
+        physical_absolute_directory(artifact_dir),
+        "model artifact requires an absolute, physical directory with no linked ancestors",
     )
     root = Path(artifact_dir).resolve(strict=True)
     weight = (root / weights_file).resolve(strict=True)
