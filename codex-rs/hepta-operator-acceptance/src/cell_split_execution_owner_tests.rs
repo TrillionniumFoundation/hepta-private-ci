@@ -14,6 +14,7 @@ use super::CellSplitExecutionReceiptV1;
 use super::CellSplitOwnerTrustV1;
 use super::cell_split_execution_signing_payload_v1;
 use super::receipt_digest;
+use super::verify_cell_split_execution_transcript_signatures_v1;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 
@@ -580,4 +581,62 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
         recovered.verified_transcript(),
         Err(CellSplitExecutionErrorV1::External(_)),
     ));
+}
+
+#[test]
+fn independent_transcript_signature_verifier_rejects_mutations_without_live_effects() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(observed.clone()),
+    )
+    .expect("owner");
+    for _ in 0..4 {
+        owner.advance().expect("step").expect("receipt");
+    }
+    let original = owner
+        .verified_transcript()
+        .expect("live original-owner verification")
+        .expect("four-step transcript");
+    let reads = observed.borrow().verifications;
+    verify_cell_split_execution_transcript_signatures_v1(&original, &trust())
+        .expect("independent signature and predecessor-chain verification");
+    assert_eq!(observed.borrow().verifications, reads);
+    assert_eq!(observed.borrow().executions, 4);
+
+    let mut swapped = original.clone();
+    swapped.receipts.swap(0, 1);
+    assert!(verify_cell_split_execution_transcript_signatures_v1(&swapped, &trust()).is_err());
+
+    let mut modified = original.clone();
+    modified.receipts[0].owner_receipt_bytes.push(0);
+    assert!(verify_cell_split_execution_transcript_signatures_v1(&modified, &trust()).is_err());
+
+    let mut missing = original.clone();
+    missing.receipts.pop();
+    assert!(verify_cell_split_execution_transcript_signatures_v1(&missing, &trust()).is_err());
+
+    let mut forged = original.clone();
+    forged.receipts[3].owner_signature_bytes[0] ^= 0x80;
+    assert!(verify_cell_split_execution_transcript_signatures_v1(&forged, &trust()).is_err());
+
+    let mut wrong_digest = original.clone();
+    wrong_digest.transcript_digest = "11".repeat(32);
+    assert!(verify_cell_split_execution_transcript_signatures_v1(&wrong_digest, &trust()).is_err());
+
+    let mut different_plan = plan();
+    different_plan.scope_digest = "aa".repeat(32);
+    assert!(
+        verify_cell_split_execution_transcript_signatures_v1(
+            &original,
+            &trust_for(&different_plan),
+        )
+        .is_err()
+    );
+    // An offline digest/signature check cannot mint or exercise effect authority.
+    assert_eq!(observed.borrow().verifications, reads);
+    assert_eq!(observed.borrow().executions, 4);
 }
