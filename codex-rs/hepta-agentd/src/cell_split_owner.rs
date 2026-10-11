@@ -406,10 +406,16 @@ impl CellSplitExecutionOwnerV1 {
         if !(HEADER_SIZE..=MAX_LEDGER_SIZE).contains(&length) {
             return Err(CellSplitErrorV1::Corrupt);
         }
-        let mut bytes = Vec::with_capacity(length);
+        // Read the exact bounded length captured from the locked descriptor.
+        // read_to_end could otherwise allocate without bound if a hostile
+        // descriptor grows the inode while recovery is in progress.
+        let mut bytes = vec![0_u8; length];
         file.0.seek(SeekFrom::Start(0))?;
-        file.0.read_to_end(&mut bytes)?;
-        if bytes.len() != length || bytes[..HEADER_SIZE] != encode_header(&plan) {
+        file.0.read_exact(&mut bytes)?;
+        if file.0.metadata()?.len() != length as u64 {
+            return Err(CellSplitErrorV1::Indeterminate);
+        }
+        if bytes[..HEADER_SIZE] != encode_header(&plan) {
             return Err(CellSplitErrorV1::ScopeMismatch);
         }
 
