@@ -813,10 +813,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::InvalidGrant);
         }
-        let bound = bind_stem_feature_request_v1(
-            source, access, selected_head, feature_vector_q24,
-        )
-        .map_err(|_| Error::FeatureContract)?;
+        let bound = bind_stem_feature_request_v1(source, access, selected_head, feature_vector_q24)
+            .map_err(|_| Error::FeatureContract)?;
         if bound.authority.grants_any()
             || authorization.request_id != bound.request.request_id.to_string()
         {
@@ -850,8 +848,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::FinalUseDenied);
         }
         let payload = canonical_neuron_feature_payload_digest(&request);
-        if authorization.payload_digest != payload
-            || authorization.lease_payload_digest != payload
+        if authorization.payload_digest != payload || authorization.lease_payload_digest != payload
         {
             return Err(Error::PayloadMismatch);
         }
@@ -902,9 +899,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if verified_use.claimed_authority_epoch() != self.grant.authority_epoch {
             return Err(Error::FinalUseDenied);
         }
-        let binding_digest = Digest32::of_bytes(
-            &serde_json::to_vec(&binding).map_err(|_| Error::FinalUseDenied)?,
-        );
+        let binding_digest =
+            Digest32::of_bytes(&serde_json::to_vec(&binding).map_err(|_| Error::FinalUseDenied)?);
         let outcome = trusted_authority
             .with_verified_effect(verified_use, &binding, || {
                 self.run_bound_stem_feature_receipt_v1(
