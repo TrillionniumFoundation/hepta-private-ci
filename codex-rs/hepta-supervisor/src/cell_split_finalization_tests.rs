@@ -42,10 +42,12 @@ impl CellSplitFinalizationAuthorityV1 for LiveAuthority {
         binding: &CellSplitFinalizationBindingV1,
         checkpoint: &WriterHandoffCheckpointV1,
     ) -> Result<(), Self::Error> {
+        let expected_cns_digest = self
+            .expected_cns_digest
+            .unwrap_or_else(|| digest("original signed cns cutover"));
         if self.cns_live.load(Ordering::Acquire)
             && checkpoint.phase != WriterHandoffPhaseV1::Prepared
-            && binding.cns_cutover_receipt_digest
-                == self.expected_cns_digest.unwrap_or_else(|| digest("original signed cns cutover"))
+            && binding.cns_cutover_receipt_digest == expected_cns_digest
             && binding.successor_route_digest == digest("live published successor")
         {
             Ok(())
@@ -777,7 +779,6 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         .is_err(),
         "a valid outer CNS signature must never launder a forged runtime signature"
     );
-
 
     // Both signatures may be mathematically valid while the independently
     // signed runtime statement belongs to another scope. The Supervisor
