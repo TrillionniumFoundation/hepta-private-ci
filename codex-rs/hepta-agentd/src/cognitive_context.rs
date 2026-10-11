@@ -102,6 +102,12 @@ pub(crate) async fn read_with_retrieval_context(
     .await
 }
 
+pub(crate) struct CognitiveReadOwnerPorts<'a> {
+    pub retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub learning: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    pub request_id: Option<u64>,
+}
+
 pub(crate) async fn read_with_retrieval_context_and_learning(
     store: &CognitiveStore,
     owner: &AgentId,
