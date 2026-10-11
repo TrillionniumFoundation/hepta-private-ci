@@ -348,3 +348,7 @@ fn signed_route_payload(route: &CellSplitCnsLiveRouteV1) -> Result<Vec<u8>, Stri
     output.extend_from_slice(&encoded);
     Ok(output)
 }
+
+#[cfg(test)]
+#[path = "cell_split_cns_runtime_port_tests.rs"]
+mod tests;
