@@ -54,8 +54,30 @@ jobs:
           name: memory-strong-rag-format
           path: /tmp/strong-rag-format
           if-no-files-found: error
+  # Research execution prerequisite only; the PR-wide format gate remains intact.
+  # A Stem formatting failure must not suppress an otherwise valid reader trial.
+  experiment-format:
+    if: github.event_name == 'pull_request' && github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Check frozen-RAG source formatting and syntax independently
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/strong_rag*.py \
+            scripts/memory_cell/test_strong_rag*.py
+          python3 -m py_compile \
+            scripts/memory_cell/strong_rag*.py \
+            scripts/memory_cell/test_strong_rag*.py
+          git rev-parse HEAD
   reader:
-    needs: format
+    needs: experiment-format
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
