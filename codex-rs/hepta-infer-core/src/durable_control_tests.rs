@@ -320,10 +320,7 @@ fn reservation_id_cannot_move_between_requests_even_after_recovery() {
         Err(Error::Conflict)
     );
     assert_eq!(fs::metadata(&journal).unwrap().len(), journal_before);
-    assert_eq!(
-        owner.get("request.2").unwrap().state,
-        RequestState::Pending
-    );
+    assert_eq!(owner.get("request.2").unwrap().state, RequestState::Pending);
     let replay = owner.reserve(100, "request.1", 2, reservation()).unwrap();
     assert!(replay.idempotent);
 
