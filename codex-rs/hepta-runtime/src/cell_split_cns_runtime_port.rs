@@ -11,6 +11,7 @@
 //! This module does not activate the default runtime or supply an issuer.
 
 use std::fmt;
+use std::io::Read as _;
 use std::sync::Arc;
 
 use codex_hepta_contracts::{FinalUseAuthority, SignedFinalUseGrant};
@@ -170,6 +171,22 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         {
             return Err("authenticated CNS route does not match actual serving host".into());
         }
+        // Cryptographically authenticated metadata alone is insufficient:
+        // it must name exactly one of the two frozen Artifact/route states.
+        // Old route fences may legitimately differ from the new plan fence.
+        let valid_generation = if signed.generation == self.plan.parent_generation {
+            signed.artifact_digest == self.plan.parent_artifact_digest
+                && signed.route_digest == self.binding.predecessor_route_digest
+        } else if signed.generation == self.plan.child_generation {
+            signed.artifact_digest == self.plan.child_artifact_digest
+                && signed.route_digest == self.binding.successor_route_digest
+                && signed.route_fence_digest == self.plan.route_fence_digest
+        } else {
+            false
+        };
+        if !valid_generation {
+            return Err("signed CNS state does not match frozen Artifact and route".into());
+        }
         self.verify_route_signature(&signed)?;
         Ok(signed)
     }
@@ -234,8 +251,12 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
             return Err("CNS cutover binding changed".into());
         }
         self.verify_preconditions(plan, intent)?;
+        // A direct kernel caller must enforce the same fresh independent
+        // old-writer fence as the outer CellSplit RPC owner.
+        let pinned_predecessor = self.signed_route(&secure_cns_nonce()?)?;
         let before = self.live_runtime()?;
-        if before.generation().get() != plan.parent_generation
+        if pinned_predecessor.generation != plan.parent_generation
+            || before.generation().get() != plan.parent_generation
             || before.hierarchy_digest().to_string() != binding.predecessor_route_digest
         {
             return Err("predecessor CNS host no longer serves the frozen route".into());
@@ -259,7 +280,9 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         // concurrent route writer changes the runtime. Recheck both sources
         // immediately before consuming the signed final-use grant.
         self.verify_preconditions(plan, intent)?;
-        if self.live_runtime()? != before {
+        let refreshed = self.signed_route(&secure_cns_nonce()?)?;
+        if refreshed.generation != plan.parent_generation
+            || self.live_runtime()? != before {
             return Err("CNS route changed after admitted successor preparation".into());
         }
         let actual = self.runtime.apply_governed_topology(
@@ -275,8 +298,10 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         {
             return Err("runtime reported a different topology effect".into());
         }
+        let observed_successor = self.signed_route(&secure_cns_nonce()?)?;
         let after = self.live_runtime()?;
-        if after.generation().get() != plan.child_generation
+        if observed_successor.generation != plan.child_generation
+            || after.generation().get() != plan.child_generation
             || after.hierarchy_digest().to_string() != binding.successor_route_digest
         {
             return Err("runtime cutover is not serving the admitted successor".into());
@@ -322,6 +347,11 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         if readback.as_ref() != Some(commit) {
             return Err("original CNS commit no longer exists in durable owner".into());
         }
+        let frontier = self.witness.current_durable_sequence(&self.binding.cns_id)
+            .map_err(|e| e.to_string())?;
+        if frontier == 0 || frontier < commit.committed_sequence {
+            return Err("signed CNS receipt exceeds independently retained frontier".into());
+        }
         Ok(())
     }
 
@@ -332,6 +362,16 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         self.witness.current_durable_sequence(cns_id)
             .map_err(|e| e.to_string())
     }
+}
+
+fn secure_cns_nonce() -> Result<String, String> {
+    // This feature is Unix-only; read the host CSPRNG and never derive
+    // freshness from a timestamp, generation, PID or cached effect digest.
+    let mut bytes = [0_u8; 32];
+    std::fs::File::open("/dev/urandom")
+        .and_then(|mut source| source.read_exact(&mut bytes))
+        .map_err(|e| format!("CNS challenge entropy unavailable: {e}"))?;
+    Ok(bytes.iter().map(|value| format!("{value:02x}")).collect())
 }
 
 /// Domain-separated signing payload for a fresh, runtime-bound route
