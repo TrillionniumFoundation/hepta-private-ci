@@ -77,7 +77,7 @@ class TrialTests(unittest.TestCase):
             identity="source",
             root="root",
             scope="scope",
-            observed_at="2023",
+            observed_at="2023-01-01",
             content=text,
         )
         source = SimpleNamespace(history=lambda q: [doc])
@@ -87,7 +87,7 @@ class TrialTests(unittest.TestCase):
             evidence=("source",),
             answer="东京",
         )
-        q = Question("q", "family", "scope", "目的地是哪儿？", "2024")
+        q = Question("q", "family", "scope", "目的地是哪儿？", "2024-01-01")
         evidence, kind = oracle_sources(source, q, target)
         self.assertEqual(kind, "native-source-literal-span")
         item = evidence[0]
