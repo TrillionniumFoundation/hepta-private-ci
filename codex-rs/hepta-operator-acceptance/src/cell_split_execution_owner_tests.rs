@@ -497,6 +497,68 @@ fn rewritten_trust_pins_fence_live_dispatch_and_transcript() {
 }
 
 #[test]
+fn missing_frozen_plan_after_initialization_is_not_recreated() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("initial owner");
+        assert_eq!(owner.completed_steps(), 0);
+    }
+    let frozen = root.path().join("cell-split-frozen-plan.json");
+    fs::remove_file(&frozen).expect("remove frozen plan");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "frozen plan lost after initialization"
+        ))
+    ));
+    assert!(!frozen.exists());
+    assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
+fn missing_frozen_plan_after_committed_effect_fences_recovery() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("initial owner");
+        owner.advance().expect("first commit").expect("receipt");
+    }
+    let frozen = root.path().join("cell-split-frozen-plan.json");
+    fs::remove_file(&frozen).expect("remove frozen plan");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "frozen plan lost after initialization"
+        ))
+    ));
+    assert!(!frozen.exists());
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn missing_trust_pins_reject_recovery_after_effect_history() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
