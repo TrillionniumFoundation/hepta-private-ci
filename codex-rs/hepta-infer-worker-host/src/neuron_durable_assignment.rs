@@ -149,7 +149,7 @@ pub fn read_neuron_durable_assignment_v1<D: ModelDriver>(
     // The control journal authenticates assignment identity, but it does
     // not validate Neuron Q24 feature bounds. Check the typed source contract
     // before accepting a digest that happens to match malformed data.
-    neuron_feature_request_digest_v1(request)
+    let typed_request_digest = neuron_feature_request_digest_v1(request)
         .map_err(|_| NeuronDurableAssignmentErrorV1::Mismatch)?;
     let record = owner
         .get(request.request_id.as_str())
@@ -167,6 +167,11 @@ pub fn read_neuron_durable_assignment_v1<D: ModelDriver>(
         .ok_or(NeuronDurableAssignmentErrorV1::Mismatch)?;
     if record.revision < 3
         || record.request.request_id != request.request_id.as_str()
+        // The durable semantic identity must be the exact typed request,
+        // not an arbitrary valid SHA-256 supplied alongside a payload hash.
+        // This also binds request ID, generation and selected model identity,
+        // which the feature-payload digest alone does not cover.
+        || record.request.semantic_digest != typed_request_digest.to_string()
         || assignment.worker_id != worker.worker_id()
         || assignment.worker_generation != worker.worker_generation()
         || assignment.worker_generation != request.generation.get()

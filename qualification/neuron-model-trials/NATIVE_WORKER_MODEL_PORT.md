@@ -195,3 +195,25 @@ both legacy and Native owner regression modules.
 
 This does not invent resource usage or stop late observed token overruns being
 recorded, and does not provide production selection/final-use authority.
+
+## Canonical semantic identity enforced before durable Neuron dispatch
+
+The strict Neuron bridge now requires the actual fsynced
+\`InferenceRequest.semantic_digest\` to equal
+\`neuron_feature_request_digest_v1(&NeuronFeatureRequestV1)\` for the
+exact typed request. The feature-payload digest alone does not commit
+request ID, Worker generation and selected model ID, so it cannot
+substitute for that semantic identity. The existing generic inference.control
+WAL format remains unchanged for legacy/non-Neuron callers.
+
+A new native regression preserves a valid worker, assigned reservation and
+correct feature payload but supplies a different, structurally valid semantic
+digest. Both diagnostic revalidation and \`claim_neuron_durable_dispatch_v1\`
+must reject it **before** appending Dispatching or invoking the model driver.
+The test closes and reopens the actual journal to verify that persistent
+mismatch is not converted into a replayable grant. The existing deliberately
+out-of-Q24-range fixture still tests typed request validation and is never
+mistaken for a valid semantic identity.
+
+This closes an identity-binding gap but is not host-authenticated production
+selection, a signed physical model-load receipt or an NDU advancement.

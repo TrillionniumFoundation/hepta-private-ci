@@ -127,6 +127,21 @@ fn control(
     directory: &tempfile::TempDir,
     request: &NeuronFeatureRequestV1,
 ) -> DurableInferenceControl {
+    control_with_semantic(directory, request, None)
+}
+
+fn control_with_semantic(
+    directory: &tempfile::TempDir,
+    request: &NeuronFeatureRequestV1,
+    override_semantic_digest: Option<String>,
+) -> DurableInferenceControl {
+    // Only explicitly malformed contract fixtures can be admitted to this
+    // legacy WAL with a fallback digest; valid Neuron requests are always
+    // bound to the complete canonical NeuronFeatureRequestV1 identity.
+    let semantic_digest = override_semantic_digest.unwrap_or_else(|| {
+        neuron_feature_request_digest_v1(request)
+            .map_or_else(|_| "d".repeat(64), |value| value.to_string())
+    });
     let mut feature = NeuronFeatureRequest {
         authorization: WorkerRequest {
             request_id: request.request_id.to_string(),
@@ -163,7 +178,7 @@ fn control(
                 payload_digest: payload,
                 maximum_tokens: 64,
                 deadline_ms: 9_000,
-                semantic_digest: "d".repeat(64),
+                semantic_digest,
             },
         )
         .unwrap();
@@ -220,6 +235,46 @@ fn assigned_durable_owner_and_loaded_worker_match_exact_neuron_features() {
         read_neuron_durable_assignment_v1(&recovered, &worker, &typed, 100).unwrap(),
         diag
     );
+}
+
+
+#[test]
+fn forged_semantic_digest_cannot_claim_dispatch_even_if_payload_and_worker_match() {
+    let directory = tempfile::tempdir().unwrap();
+    let typed = typed_request();
+    // The WAL accepts a generic well-formed legacy semantic digest, but
+    // the strict Neuron gateway must reject it as a different request.
+    let mut owner = control_with_semantic(&directory, &typed, Some("d".repeat(64)));
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker_with_calls(calls.clone());
+    assert_eq!(
+        read_neuron_durable_assignment_v1(&owner, &worker, &typed, 100),
+        Err(NeuronDurableAssignmentErrorV1::Mismatch)
+    );
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &typed, 100),
+        Err(NeuronDurableAssignmentErrorV1::Mismatch)
+    ));
+    let record = owner.get(typed.request_id.as_str()).unwrap();
+    assert_eq!(record.revision, 3);
+    assert_eq!(record.state, RequestState::Assigned);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    drop(owner);
+
+    // An ordinary close/reopen cannot turn the forged semantic identity
+    // into a usable Worker admission or a fresh Dispatching claim.
+    let mut reopened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    assert_eq!(
+        read_neuron_durable_assignment_v1(&reopened, &worker, &typed, 100),
+        Err(NeuronDurableAssignmentErrorV1::Mismatch)
+    );
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(&mut reopened, &mut worker, &typed, 100),
+        Err(NeuronDurableAssignmentErrorV1::Mismatch)
+    ));
+    assert_eq!(reopened.get(typed.request_id.as_str()).unwrap().revision, 3);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
 
 #[test]
