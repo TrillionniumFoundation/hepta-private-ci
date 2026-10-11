@@ -76,5 +76,89 @@ class Q24TorchTests(unittest.TestCase):
                             [torch.tensor([9.0, 0.0])])
 
 
+
+class SignedCasHeadBankBytesTests(unittest.TestCase):
+    """Pure Q24 fixture tests, NOT authenticated owner or production evidence."""
+
+    @staticmethod
+    def candidate(negative=False):
+        from native_bridge import tensor_digest, bundle_digest
+        encoder = "a" * 64
+        tensors = [
+            [-Q24 if negative else Q24, 0, 0, -Q24 if negative else Q24],
+            [], [], [0, 0], [0, 0], [Q24, Q24],
+        ]
+        identity = tensor_digest(2, 2, tensors)
+        return {
+            "schema": "hepta.stem.q24-cpu-head-candidate.v1",
+            "shadow_only": True, "production_authorized": False,
+            "encoder_digest": encoder, "head_digest": identity,
+            "weights_digest": bundle_digest(encoder, identity),
+            "input_width": 2, "output_width": 2,
+            **dict(zip((
+                "drive_weights_q24", "prediction_weights_q24",
+                "gate_weights_q24", "drive_bias_q24",
+                "prediction_bias_q24", "gate_bias_q24",
+            ), tensors)),
+        }
+
+    def test_multi_head_digest_and_canonical_content_are_order_independent(self):
+        from native_bridge import encode_cpu_head_bank_candidate, bundle_digest_many
+        first, second = self.candidate(), self.candidate(True)
+        raw = encode_cpu_head_bank_candidate([first, second])
+        self.assertEqual(raw, encode_cpu_head_bank_candidate([second, first]))
+        self.assertTrue(raw.endswith(b"\n"))
+        obj = json.loads(raw)
+        self.assertEqual(obj["schema"], "hepta.stem.q24-cpu-head-bank-candidate.v1")
+        self.assertEqual(
+            obj["weights_digest"],
+            bundle_digest_many("a" * 64, [first["head_digest"], second["head_digest"]]),
+        )
+        self.assertEqual(list(obj["heads"][0]), sorted(obj["heads"][0]))
+        self.assertEqual(len(obj["heads"]), 2)
+        self.assertNotIn(b"production_authorized", raw)
+
+    def test_single_head_bank_matches_registered_rust_bundle_golden(self):
+        from native_bridge import encode_cpu_head_bank_candidate
+        obj = json.loads(encode_cpu_head_bank_candidate([self.candidate()]))
+        self.assertEqual(obj["weights_digest"], 
+                         "277d9ebc5a6066bcf29e846081cd771578b05e570fd3dbad8785cc3ce05162df")
+
+    def test_tampered_or_duplicate_banks_fail_closed(self):
+        import copy
+        from native_bridge import encode_cpu_head_bank_candidate
+        candidate = self.candidate()
+        bad = copy.deepcopy(candidate)
+        bad["drive_weights_q24"][0] += 1
+        with self.assertRaisesRegex(ValueError, "digest"):
+            encode_cpu_head_bank_candidate([bad])
+        with self.assertRaisesRegex(ValueError, "duplicate"):
+            encode_cpu_head_bank_candidate([candidate, candidate])
+        other = self.candidate(True)
+        other["encoder_digest"] = "b" * 64
+        with self.assertRaisesRegex(ValueError, "mixed Encoder"):
+            encode_cpu_head_bank_candidate([candidate, other])
+        bad = copy.deepcopy(candidate)
+        bad["production_authorized"] = True
+        with self.assertRaisesRegex(ValueError, "non-shadow"):
+            encode_cpu_head_bank_candidate([bad])
+        bad = copy.deepcopy(candidate)
+        bad["drive_weights_q24"][0] = True
+        with self.assertRaisesRegex(ValueError, "invalid Head"):
+            encode_cpu_head_bank_candidate([bad])
+        with self.assertRaises(ValueError):
+            encode_cpu_head_bank_candidate([])
+
+    def test_create_only_signed_cas_input_remains_not_selection(self):
+        from native_bridge import write_cpu_head_bank_candidate
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td, "candidate.bank.json")
+            identity = write_cpu_head_bank_candidate(path, [self.candidate()])
+            self.assertEqual(len(identity), 64)
+            self.assertFalse(json.loads(path.read_text()).get("production_authorized", False))
+            with self.assertRaises(FileExistsError):
+                write_cpu_head_bank_candidate(path, [self.candidate()])
+
+
 if __name__ == "__main__":
     unittest.main()
