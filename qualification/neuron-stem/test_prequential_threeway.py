@@ -6,7 +6,7 @@ import unittest
 
 from jina_v5 import sha256_record
 from prequential_trial import prediction_precommit
-from prequential_threeway_review import future_calibration_metrics, review
+from prequential_threeway_review import future_calibration_metrics, read_journal, review
 from qualified_eval import audit_dataset
 
 
@@ -172,6 +172,23 @@ class PrequentialThreeWayTests(unittest.TestCase):
         forged[-1]["generation"] = 2
         with self.assertRaisesRegex(ValueError, "changed"):
             review(self.rows, self.trial, self.journal, forged, replicates=1000)
+
+    def test_rehashed_duplicate_field_journal_never_passes(self):
+        # Without strict decoding, Python's json.loads silently keeps the
+        # LAST of two case_id fields; the canonical record digest still
+        # verifies, allowing an ambiguously represented precommit.
+        lines = self.journal.decode("utf-8").splitlines()
+        lines[0] = lines[0].replace(
+            '"case_id":', '"case_id":"forged","case_id":', 1)
+        content = ("\\n".join(lines) + "\\n").encode("utf-8")
+        forged = copy.deepcopy(self.trial)
+        forged["pre_label_prediction_journal_sha256"] = hashlib.sha256(content).hexdigest()
+        with self.assertRaisesRegex(ValueError, "malformed immutable prediction journal"):
+            review(self.rows, forged, content, self.nochange, replicates=1000)
+        with self.assertRaisesRegex(ValueError, "malformed immutable prediction journal"):
+            read_journal(self.journal + b"\\n")
+        with self.assertRaisesRegex(ValueError, "malformed immutable prediction journal"):
+            read_journal(b'{"case_id":"x","probabilities":[NaN,1]}\\n')
 
     def test_prediction_fsynced_digest_and_precommit_evidence_are_required(self):
         with self.assertRaisesRegex(ValueError, "byte digest mismatch"):
