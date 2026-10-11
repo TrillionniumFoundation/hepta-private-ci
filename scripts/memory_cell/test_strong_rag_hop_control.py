@@ -14,8 +14,12 @@ from strong_rag_hop_control import derive_single_hop
 def fixture(kind, path, *, correction=False):
     qid = "scope_1"
     spec = dict(
-        id=qid, phase="test", kind=kind, entity="service_1",
-        path=list(path), revision=2,
+        id=qid,
+        phase="test",
+        kind=kind,
+        entity="service_1",
+        path=list(path),
+        revision=2,
     )
     q, _ = question(spec, "2026-10-11T00:00:00Z")
     events = [
@@ -29,22 +33,33 @@ def fixture(kind, path, *, correction=False):
             events.append(("event_4", "component_2", path[1], "site_22222222", 2, []))
     docs = []
     for name, entity, attr, value, rev, replaced in events:
-        content = json.dumps(dict(
-            schema="hepta.controlled-event.v1", id=name, entity=entity,
-            attribute=attr, value=value, revision=rev, supersedes=replaced,
-        ))
+        content = json.dumps(
+            dict(
+                schema="hepta.controlled-event.v1",
+                id=name,
+                entity=entity,
+                attribute=attr,
+                value=value,
+                revision=rev,
+                supersedes=replaced,
+            )
+        )
         docs.append(Document(name, "root_" + name, qid, qid, q.observed_at, content))
     projection = EventProjection(tuple(docs))
     candidates = tuple(d.identity for d in docs)
     from native import digest
+
     _, lookup = question(spec, q.observed_at)
     full, _ = projection.select(lookup, candidates, mode="entity_time", revoked=set())
     organized, _ = projection.select(
         lookup, candidates, mode="organized", revoked=set()
     )
     case = dict(
-        query=asdict(q), kind=kind, frontier=projection.frontier,
-        candidate_ids=candidates, candidate_digest=digest(candidates),
+        query=asdict(q),
+        kind=kind,
+        frontier=projection.frontier,
+        candidate_ids=candidates,
+        candidate_digest=digest(candidates),
         controls=dict(
             entity_time=dict(selected=list(full)),
             organized=dict(selected=list(organized)),

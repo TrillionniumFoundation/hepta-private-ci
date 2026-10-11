@@ -200,7 +200,9 @@ class CalibrationSensitivityTests(unittest.TestCase):
                     trial,
                     "_reader",
                     return_value=(
-                        object(), {}, dict(inventory_digest="frozen-reference")
+                        object(),
+                        {},
+                        dict(inventory_digest="frozen-reference"),
                     ),
                 ),
                 patch.object(trial, "_journal_answers", side_effect=journal),

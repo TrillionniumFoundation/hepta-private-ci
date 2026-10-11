@@ -13,22 +13,35 @@ import strong_rag_receipt as audit
 
 def source_case():
     event = dict(
-        schema="hepta.controlled-event.v1", id="event_1", entity="service_1",
-        attribute="location", value="site_11111111", revision=1,
+        schema="hepta.controlled-event.v1",
+        id="event_1",
+        entity="service_1",
+        attribute="location",
+        value="site_11111111",
+        revision=1,
         supersedes=[],
     )
     content = json.dumps(event, sort_keys=True)
     q = dict(
-        identity="q1", family="f1", scope="scope1",
-        content="Which site?", observed_at="2026-01-01T00:00:00+00:00",
+        identity="q1",
+        family="f1",
+        scope="scope1",
+        content="Which site?",
+        observed_at="2026-01-01T00:00:00+00:00",
     )
     doc = dict(
-        identity="event_1", root="root_1", scope="scope1",
-        session="scope1", observed_at=q["observed_at"], content=content,
+        identity="event_1",
+        root="root_1",
+        scope="scope1",
+        session="scope1",
+        observed_at=q["observed_at"],
+        content=content,
         assets=[],
     )
     derivation = dict(
-        label="E1", original_id="event_1", original_digest=digest(content),
+        label="E1",
+        original_id="event_1",
+        original_digest=digest(content),
         text=(
             "Event event_1: at logical revision 1, entity service_1 has attribute "
             "location with value site_11111111. Superseded event IDs: none "
@@ -37,9 +50,14 @@ def source_case():
         derivation_profile=audit.VIEW,
     )
     delivered = dict(
-        label="E1", original_id="event_1", root="root_1", scope="scope1",
-        observed_at=q["observed_at"], source_start=0,
-        source_end=len(content.encode()), excerpt=content,
+        label="E1",
+        original_id="event_1",
+        root="root_1",
+        scope="scope1",
+        observed_at=q["observed_at"],
+        source_start=0,
+        source_end=len(content.encode()),
+        excerpt=content,
         source_digest=digest(content),
     )
     receipt = dict(
@@ -61,16 +79,25 @@ def source_case():
     )
     answer = "site_11111111 [E1]"
     row = dict(
-        question_id="q1", kind="new_fact", arm="k1",
-        selected=["event_1"], candidate_digest="pool1", status="succeeded",
-        answer=answer, receipt=receipt,
+        question_id="q1",
+        kind="new_fact",
+        arm="k1",
+        selected=["event_1"],
+        candidate_digest="pool1",
+        status="succeeded",
+        answer=answer,
+        receipt=receipt,
         citation_audit=dict(
             request=dict(
-                query_id="q1", scope="scope1", question=q["content"],
-                question_time=q["observed_at"], answer=answer,
+                query_id="q1",
+                scope="scope1",
+                question=q["content"],
+                question_time=q["observed_at"],
+                answer=answer,
                 prompt_digest="b" * 64,
             ),
-            judgement=None, production_accepted=False,
+            judgement=None,
+            production_accepted=False,
         ),
     )
     case = dict(query=q, kind="new_fact", candidate_digest="pool1")
@@ -92,7 +119,9 @@ class ReceiptValidationTests(unittest.TestCase):
     def test_exact_pinned_original_and_derived_source_in_historical_profile(self):
         row, case, doc = source_case()
         profiles = set()
-        audit._check_row(row, case, ("event_1",), {doc["identity"]: doc}, "r" * 64, profiles=profiles)
+        audit._check_row(
+            row, case, ("event_1",), {doc["identity"]: doc}, "r" * 64, profiles=profiles
+        )
         self.assertEqual(profiles, {"a" * 64})
 
     def test_rejects_source_replacement_or_fake_derived_value(self):
@@ -105,7 +134,14 @@ class ReceiptValidationTests(unittest.TestCase):
             bad = deepcopy(row)
             bad["receipt"][target][0][field] = replacement
             with self.assertRaises(ValueError):
-                audit._check_row(bad, case, ("event_1",), {doc["identity"]: doc}, "r" * 64, profiles=set())
+                audit._check_row(
+                    bad,
+                    case,
+                    ("event_1",),
+                    {doc["identity"]: doc},
+                    "r" * 64,
+                    profiles=set(),
+                )
 
     def test_rejects_changed_reader_generation_and_citation_trace(self):
         row, case, doc = source_case()
@@ -120,16 +156,32 @@ class ReceiptValidationTests(unittest.TestCase):
             bad = deepcopy(row)
             bad[target][field] = replacement
             with self.assertRaises(ValueError):
-                audit._check_row(bad, case, ("event_1",), {doc["identity"]: doc}, "r" * 64, profiles=set())
+                audit._check_row(
+                    bad,
+                    case,
+                    ("event_1",),
+                    {doc["identity"]: doc},
+                    "r" * 64,
+                    profiles=set(),
+                )
 
     def test_failed_generation_may_not_supply_oracle_answer(self):
         row, case, doc = source_case()
         row["status"] = "failed"
         with self.assertRaises(ValueError):
-            audit._check_row(row, case, ("event_1",), {doc["identity"]: doc}, "r" * 64, profiles=set())
+            audit._check_row(
+                row,
+                case,
+                ("event_1",),
+                {doc["identity"]: doc},
+                "r" * 64,
+                profiles=set(),
+            )
         for key in ("answer", "receipt", "citation_audit"):
             row.pop(key)
-        audit._check_row(row, case, ("event_1",), {doc["identity"]: doc}, "r" * 64, profiles=set())
+        audit._check_row(
+            row, case, ("event_1",), {doc["identity"]: doc}, "r" * 64, profiles=set()
+        )
 
     def test_archive_manifest_detects_replacements_additions_and_symlinks(self):
         with tempfile.TemporaryDirectory() as td:
@@ -165,10 +217,14 @@ class ReceiptValidationTests(unittest.TestCase):
 
     def test_scorer_does_not_rewrite_original_answer_or_hide_wrong_answer(self):
         row, _, _ = source_case()
-        labels = [dict(
-            id="q1", kind="new_fact", expected="site_11111111",
-            support=["event_1"],
-        )]
+        labels = [
+            dict(
+                id="q1",
+                kind="new_fact",
+                expected="site_11111111",
+                support=["event_1"],
+            )
+        ]
         raw = [row]
         scored = deepcopy(raw)
         audit._score(scored, labels, expected=["q1"], arms=("k1",))

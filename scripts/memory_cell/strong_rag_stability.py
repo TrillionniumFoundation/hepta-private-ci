@@ -98,9 +98,7 @@ def leave_one_out(scored, expected):
         chosen_k_counts={str(k): choices[k] for k in KS},
         distinct_choices=sum(count > 0 for count in choices.values()),
         all_folds_qualified=unobserved == 0,
-        stable_to_one_calibration_case_removal=(
-            unobserved == 0 and len(choices) == 1
-        ),
+        stable_to_one_calibration_case_removal=(unobserved == 0 and len(choices) == 1),
         selected_wins_over_fixed_k4=selected_wins,
         selected_losses_to_fixed_k4=selected_losses,
         selected_ties_with_fixed_k4=selected_ties,

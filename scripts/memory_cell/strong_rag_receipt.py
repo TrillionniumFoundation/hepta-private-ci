@@ -37,7 +37,12 @@ from strong_rag_trial import (
 MAX_RESEARCH_BYTES = 128 * 1024 * 1024
 VIEW = "hepta.controlled-event.schema-expansion.v1"
 SCORER_ONLY = frozenset(
-    ("parsed_identifier", "strict_task_success", "required_sources_covered", "procedure_verification")
+    (
+        "parsed_identifier",
+        "strict_task_success",
+        "required_sources_covered",
+        "procedure_verification",
+    )
 )
 
 
@@ -103,7 +108,11 @@ def _json_file(path, *, bound=8 * 1024 * 1024):
 
 
 def _raw_lines(path, *, expected):
-    if path.is_symlink() or not path.is_file() or path.stat().st_size > 16 * 1024 * 1024:
+    if (
+        path.is_symlink()
+        or not path.is_file()
+        or path.stat().st_size > 16 * 1024 * 1024
+    ):
         raise ValueError("invalid answer journal")
     raw = path.read_text(encoding="utf-8")
     if not raw.endswith("\n"):
@@ -156,7 +165,9 @@ def _check_row(row, case, selected, originals, reader_identity, *, profiles):
         or not re.fullmatch(r"[0-9a-f]{64}", receipt["input_ids_digest"])
         or not re.fullmatch(r"[0-9a-f]{64}", receipt["reader_profile"])
     ):
-        raise ValueError("reader/input identity, budget or immutable-base evidence drift")
+        raise ValueError(
+            "reader/input identity, budget or immutable-base evidence drift"
+        )
     profiles.add(receipt["reader_profile"])
     delivered = receipt["delivered_evidence"]
     expanded = receipt["derived_evidence"]
@@ -219,7 +230,9 @@ def _check_scored(raw, scored, labels, expected, arms):
         base = {k: v for k, v in fresh.items() if k != "procedure_verification"}
         archive = {k: v for k, v in recorded.items() if k != "procedure_verification"}
         if base != archive:
-            raise ValueError("published score differs from independent raw-answer replay")
+            raise ValueError(
+                "published score differs from independent raw-answer replay"
+            )
         if "procedure_verification" in recorded:
             a, b = fresh["procedure_verification"], recorded["procedure_verification"]
             for key in ("request", "stdout", "stderr", "exit_code"):
@@ -235,9 +248,13 @@ def audit(archive, original, *, expected_commit):
     if (archive / "tested-commit.txt").read_text().strip() != expected_commit:
         raise ValueError("archived source does not match generating commit")
     plan = read(original / "plan/plan.json", HISTORIC_PLAN_SHA)
-    collection = read(original / "observations/collection.json", HISTORIC_COLLECTION_SHA)
+    collection = read(
+        original / "observations/collection.json", HISTORIC_COLLECTION_SHA
+    )
     originals = read(original / "plan/source-view.json", plan["source_view_sha"])
-    labels = read(original / "observations/labels.json", collection["files"]["labels.json"])
+    labels = read(
+        original / "observations/labels.json", collection["files"]["labels.json"]
+    )
     documents = {row["identity"]: row for row in originals}
     if len(documents) != len(originals) or len(originals) != 108:
         raise ValueError("original event source changed")
@@ -266,7 +283,8 @@ def audit(archive, original, *, expected_commit):
         or frozen["original_test_plan_sha256"] != HISTORIC_PLAN_SHA
         or frozen["stage_sha256"] != run_cal["model_stage_sha256"]
         or run_eval["stage_sha256"] != frozen["stage_sha256"]
-        or run_eval["policy_sha256"] != file_sha(archive / "calibration/frozen-policy.json")
+        or run_eval["policy_sha256"]
+        != file_sha(archive / "calibration/frozen-policy.json")
         or run_cal["source_commit"] != expected_commit
         or run_eval["source_commit"] != expected_commit
         or frozen["reader_identity"] != inv["inventory_digest"]
@@ -291,7 +309,8 @@ def audit(archive, original, *, expected_commit):
     calib_ids = [row["query"]["identity"] for row in calib_cases]
     test_ids = [row["query"]["identity"] for row in test_cases]
     if (
-        len(calib_ids) != 8 or len(test_ids) != 8
+        len(calib_ids) != 8
+        or len(test_ids) != 8
         or len(set(calib_ids) | set(test_ids)) != 16
         or len({row["identity"] for row in calib_sources}) != len(calib_sources)
         or set(x["scope"] for x in calib_sources) != set(calib_ids)
@@ -304,8 +323,20 @@ def audit(archive, original, *, expected_commit):
         raise ValueError("calibrator had a held-out scope or mismatched labels")
     calib_docs = {row["identity"]: row for row in calib_sources}
     phases = (
-        ("calibration", calib_cases, calib_docs, calib_labels, tuple(f"k{k}" for k in KS)),
-        ("evaluation", test_cases, documents, [original_labels[q] for q in test_ids], EVAL_ARMS),
+        (
+            "calibration",
+            calib_cases,
+            calib_docs,
+            calib_labels,
+            tuple(f"k{k}" for k in KS),
+        ),
+        (
+            "evaluation",
+            test_cases,
+            documents,
+            [original_labels[q] for q in test_ids],
+            EVAL_ARMS,
+        ),
     )
     result = {}
     profiles = set()
@@ -316,32 +347,41 @@ def audit(archive, original, *, expected_commit):
         questions = [case["query"]["identity"] for case in cases]
         raw = _raw_lines(path / "raw-answers.jsonl", expected=len(cases) * len(arms))
         scored = _json_file(path / "scored-answers.json")
-        if (
-            len(scored) != len(raw)
-            or {(r["question_id"], r["arm"]) for r in raw}
-            != {(qid, arm) for qid in questions for arm in arms}
-        ):
+        if len(scored) != len(raw) or {(r["question_id"], r["arm"]) for r in raw} != {
+            (qid, arm) for qid in questions for arm in arms
+        }:
             raise ValueError("missing, duplicate or changed raw attempts")
         for case in cases:
             qid = case["query"]["identity"]
             selected = (
                 {f"k{k}": chosen_prefix(case["candidate_ids"], k) for k in KS}
-                if stage == "calibration" else eval_selections(case, frozen["selected_k"])
+                if stage == "calibration"
+                else eval_selections(case, frozen["selected_k"])
             )
             scope_docs = _doc_scope(list(source_pool.values()), case["query"]["scope"])
             for row in (r for r in raw if r["question_id"] == qid):
                 _check_row(
-                    row, case, selected[row["arm"]], scope_docs,
-                    inv["inventory_digest"], profiles=profiles,
+                    row,
+                    case,
+                    selected[row["arm"]],
+                    scope_docs,
+                    inv["inventory_digest"],
+                    profiles=profiles,
                 )
                 if row["status"] == "succeeded":
                     seed = (
                         file_sha(cal_plan_path)
                         if stage == "calibration"
-                        else digest((HISTORIC_PLAN_SHA, file_sha(archive / "calibration/frozen-policy.json")))
+                        else digest(
+                            (
+                                HISTORIC_PLAN_SHA,
+                                file_sha(archive / "calibration/frozen-policy.json"),
+                            )
+                        )
                     )
                     canonical = capture_native(
-                        Question(**case["query"]), row["answer"],
+                        Question(**case["query"]),
+                        row["answer"],
                         dict(
                             input_ids_sha256=row["receipt"]["input_ids_digest"],
                             delivered_evidence=row["receipt"]["delivered_evidence"],
@@ -350,41 +390,45 @@ def audit(archive, original, *, expected_commit):
                         family_digest=digest(case["query"]["family"]),
                     )
                     if canonical != row["citation_audit"]:
-                        raise ValueError("citation queue does not match original answer and evidence")
+                        raise ValueError(
+                            "citation queue does not match original answer and evidence"
+                        )
         replay = _check_scored(raw, scored, target, questions, arms)
         summary, groups = _stats(replay, arms, questions)
         if stage == "calibration":
             choice, derived = choose_k(deepcopy(raw), target, questions)
             sensitivity = leave_one_out(replay, questions)
             if (
-                choice is None or choice != frozen["selected_k"]
+                choice is None
+                or choice != frozen["selected_k"]
                 or summary != derived
                 or file_sha(path / "raw-answers.jsonl") != frozen["raw_answers_sha256"]
-                or file_sha(path / "scored-answers.json") != frozen["scored_answers_sha256"]
+                or file_sha(path / "scored-answers.json")
+                != frozen["scored_answers_sha256"]
                 or _json_file(path / "report.json")["arms"] != summary
                 or _json_file(path / "report.json").get("calibration_sensitivity")
                 != sensitivity
                 or frozen.get("calibration_sensitivity_digest") != digest(sensitivity)
             ):
-                raise ValueError("frozen k is not derived from original calibration answers")
+                raise ValueError(
+                    "frozen k is not derived from original calibration answers"
+                )
         else:
             paired_results = {
                 "selected_minus_hybrid4": paired(groups, "hybrid_k4", "selected_k"),
                 "organized_minus_selected": paired(groups, "selected_k", "organized"),
-                "single_hop_minus_hybrid4": paired(
-                    groups, "hybrid_k4", "single_hop"
-                ),
+                "single_hop_minus_hybrid4": paired(groups, "hybrid_k4", "single_hop"),
                 "entity_time_minus_single_hop": paired(
                     groups, "single_hop", "entity_time"
                 ),
-                "entity_time_minus_hybrid4": paired(
-                    groups, "hybrid_k4", "entity_time"
-                ),
+                "entity_time_minus_hybrid4": paired(groups, "hybrid_k4", "entity_time"),
                 "organized_minus_entity_time": paired(
                     groups, "entity_time", "organized"
                 ),
                 "organized_minus_hybrid4": paired(groups, "hybrid_k4", "organized"),
-                "reversed_minus_hybrid4": paired(groups, "hybrid_k4", "hybrid_k4_reversed"),
+                "reversed_minus_hybrid4": paired(
+                    groups, "hybrid_k4", "hybrid_k4_reversed"
+                ),
                 "hybrid6_minus_hybrid4": paired(groups, "hybrid_k4", "hybrid_k6"),
             }
             report = _json_file(path / "report.json")
@@ -396,13 +440,14 @@ def audit(archive, original, *, expected_commit):
                 or report["same_prompt_consistency"] != same_prompt_consistency
                 or report["paired_contrasts"] != paired_results
                 or report["selected_k"] != frozen["selected_k"]
-                or report["single_hop_control_sha256"] != file_sha(
-                    archive / "evaluation/single-hop-control.json"
-                )
+                or report["single_hop_control_sha256"]
+                != file_sha(archive / "evaluation/single-hop-control.json")
                 or report["raw_answers_sha256"] != file_sha(path / "raw-answers.jsonl")
                 or report["production_accepted"] is not False
             ):
-                raise ValueError("test effects are not reproducible from original outputs")
+                raise ValueError(
+                    "test effects are not reproducible from original outputs"
+                )
             # Same original evidence and question -> same deterministic prompt IDs.
             for answers in groups.values():
                 baseline = answers["hybrid_k4"]
@@ -419,18 +464,24 @@ def audit(archive, original, *, expected_commit):
                     if (
                         other["selected"] == baseline["selected"]
                         and other["status"] == baseline["status"] == "succeeded"
-                        and other["receipt"]["input_ids_digest"] != baseline["receipt"]["input_ids_digest"]
+                        and other["receipt"]["input_ids_digest"]
+                        != baseline["receipt"]["input_ids_digest"]
                     ):
-                        raise ValueError("identical control sources produced different prompt token IDs")
+                        raise ValueError(
+                            "identical control sources produced different prompt token IDs"
+                        )
             result["paired_contrasts"] = paired_results
             result["same_prompt_consistency"] = same_prompt_consistency
         result[stage] = dict(
-            attempts=len(raw), all_model_calls_succeeded=all(r["status"] == "succeeded" for r in raw),
+            attempts=len(raw),
+            all_model_calls_succeeded=all(r["status"] == "succeeded" for r in raw),
             strict_success={arm: summary[arm]["strict_success"] for arm in arms},
             original_raw_sha256=file_sha(path / "raw-answers.jsonl"),
         )
     if len(profiles) != 1:
-        raise ValueError("model prompt/profile differs across calibration and evaluation")
+        raise ValueError(
+            "model prompt/profile differs across calibration and evaluation"
+        )
     return dict(
         schema="hepta.memory-strong-rag-independent-replay.v1",
         generating_commit=expected_commit,

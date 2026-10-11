@@ -39,14 +39,23 @@ class IdenticalEvidenceTests(unittest.TestCase):
         self.assertFalse(out["production_accepted"])
 
     def test_identical_prompt_answer_drift_is_observed_not_a_memory_gain(self):
-        rows = [arm("organized"), arm("program_support", answer="site_22222222", success=False)]
+        rows = [
+            arm("organized"),
+            arm("program_support", answer="site_22222222", success=False),
+        ]
         out = audit_repeats(rows, ["q1"], ("organized", "program_support"))
         self.assertEqual(len(out["answer_disagreements"]), 1)
         self.assertEqual(len(out["task_result_disagreements"]), 1)
         self.assertFalse(out["deterministic_repeatability_established"])
 
     def test_identical_evidence_changed_prompt_or_reader_rejects(self):
-        for field in ("reader_identity", "reader_profile", "input_ids_digest", "input_tokens", "delivered_evidence"):
+        for field in (
+            "reader_identity",
+            "reader_profile",
+            "input_ids_digest",
+            "input_tokens",
+            "delivered_evidence",
+        ):
             rows = [arm("organized"), arm("program_support")]
             rows[1]["receipt"][field] = "changed"
             with self.subTest(field=field), self.assertRaises(ValueError):
@@ -62,8 +71,12 @@ class IdenticalEvidenceTests(unittest.TestCase):
     def test_incomplete_generation_remains_in_denominator(self):
         rows = [arm("organized"), arm("program_support")]
         rows[1] = dict(
-            question_id="q1", arm="program_support", kind="correction",
-            candidate_digest="pool_sha", selected=["source_1"], status="failed",
+            question_id="q1",
+            arm="program_support",
+            kind="correction",
+            candidate_digest="pool_sha",
+            selected=["source_1"],
+            status="failed",
         )
         out = audit_repeats(rows, ["q1"], ("organized", "program_support"))
         self.assertEqual(out["unavailable_pairs"], 1)
@@ -71,8 +84,10 @@ class IdenticalEvidenceTests(unittest.TestCase):
         self.assertFalse(out["deterministic_repeatability_established"])
 
     def test_different_order_is_not_silently_treated_as_same_prompt(self):
-        rows = [arm("organized", selected=["source_1", "source_2"]),
-                arm("program_support", selected=["source_2", "source_1"])]
+        rows = [
+            arm("organized", selected=["source_1", "source_2"]),
+            arm("program_support", selected=["source_2", "source_1"]),
+        ]
         out = audit_repeats(rows, ["q1"], ("organized", "program_support"))
         self.assertEqual(out["identical_ordered_evidence_pairs"], 0)
         self.assertFalse(out["deterministic_repeatability_established"])

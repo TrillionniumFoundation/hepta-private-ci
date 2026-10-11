@@ -619,9 +619,7 @@ def evaluate(
     ):
         raise ValueError("policy not frozen or not bound to original test source")
     locked, originals = preflight(plan_dir, inputs, plan_sha)
-    active_cases, first_hop_plan = freeze_single_hop(
-        locked["cases"], inputs, originals
-    )
+    active_cases, first_hop_plan = freeze_single_hop(locked["cases"], inputs, originals)
     reader, stage, inventory = _reader(model_dir, stage_sha)
     if inventory["inventory_digest"] != locked_policy["reader_identity"]:
         raise ValueError("different reader between calibration and evaluation")
