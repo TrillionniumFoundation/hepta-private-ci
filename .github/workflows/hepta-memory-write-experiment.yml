@@ -14,6 +14,8 @@ on:
       - "scripts/memory_cell/source_composition_curriculum.py"
       - "scripts/memory_cell/source_recall_probe.py"
       - "scripts/memory_cell/source_recall_likelihood.py"
+      - "scripts/memory_cell/source_confusion_probe.py"
+      - "scripts/memory_cell/test_source_confusion_probe.py"
       - "scripts/memory_cell/test_source_completion*.py"
       - "scripts/memory_cell/test_source_write_execution_gate.py"
       - "scripts/memory_cell/test_source_write_coverage.py"
@@ -200,6 +202,13 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/likelihood-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/source_recall_likelihood.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/source-likelihood --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" --maximum 8 2>&1 | tee /tmp/experience-result/likelihood.log
+      - name: Distinguish source association from generic value memorization
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/experience-result/confusion-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/source_confusion_probe.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/source-confusion --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" --maximum 2 2>&1 | tee /tmp/experience-result/confusion.log
       - name: Train a small read policy only from the declared calibration sources
         run: |
           set -euo pipefail
@@ -230,7 +239,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/experience-result/source
-          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_recall_likelihood.py scripts/memory_cell/test_source_recall_likelihood.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_loss_admission.py scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/experience-result/source/
+          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_recall_likelihood.py scripts/memory_cell/test_source_recall_likelihood.py scripts/memory_cell/source_confusion_probe.py scripts/memory_cell/test_source_confusion_probe.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_loss_admission.py scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/experience-result/source/
           git rev-parse HEAD > /tmp/experience-result/tested-commit.txt
           # Base and research-derived model weights are not redistributed.
           find /tmp/experience-result -name '*.safetensors' -delete
