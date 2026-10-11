@@ -158,7 +158,7 @@ fn verify_join_signature(
     if trusted_key.is_weak()
         || BASE64.decode(&signature.verifying_key_base64)
             .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("unreadable signer key"))?
-            != trusted_key.to_bytes()
+            != trusted_key.to_bytes().to_vec()
     {
         return Err(CellSplitObserverJoinErrorV1::Invalid(
             "join signer is not independently trusted",
