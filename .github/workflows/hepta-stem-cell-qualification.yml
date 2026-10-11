@@ -10,6 +10,7 @@ on:
       - 'codex-rs/Cargo.lock'
       - 'MODULE.bazel.lock'
       - 'codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs'
+      - 'codex-rs/hepta-fleet/src/authority_port.rs'
       - '.github/workflows/hepta-stem-cell-qualification.yml'
 
 permissions:
@@ -63,9 +64,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host -- --config imports_granularity=Item
-          git diff --binary -- codex-rs/hepta-infer-worker-host/src > "$RUNNER_TEMP/stem-rustfmt.patch"
-          git restore --worktree -- codex-rs/hepta-infer-worker-host/src
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host --package codex-hepta-fleet -- --config imports_granularity=Item
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src/authority_port.rs > "$RUNNER_TEMP/stem-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src/authority_port.rs
           git diff --check
           git diff --exit-code
       - name: Upload proposed formatting only
@@ -99,6 +100,41 @@ jobs:
       - name: Check generated Bazel lock without modification
         run: ./scripts/check-module-bazel-lock.sh
       - name: Verify clean checkout
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  fleet-authority-lint:
+    name: Fleet authority fixture Clippy and tests (strict, read-only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind exact candidate SHA
+        run: |
+          git rev-parse HEAD HEAD^{tree}
+          rustc --version
+      - name: Check fleet Cargo formatting
+        working-directory: codex-rs
+        run: |
+          cargo fmt --package codex-hepta-fleet -- --check
+          cargo fmt --package codex-hepta-fleet -- --config imports_granularity=Item --check
+      - name: Compile fleet authority tests
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-fleet --all-targets
+      - name: Fleet test suite
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-fleet --lib authority_port::tests::
+      - name: Strict fleet Clippy including tests
+        working-directory: codex-rs
+        run: >
+          cargo clippy --locked -p codex-hepta-fleet --all-targets --
+          -D clippy::unwrap_used -D clippy::expect_used -D clippy::correctness
+      - name: No changes to source
         if: always()
         run: |
           git diff --check
@@ -155,9 +191,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host -- --config imports_granularity=Item
-          git diff --binary -- codex-rs/hepta-infer-worker-host/src > "$RUNNER_TEMP/stem-worker-rustfmt.patch"
-          git restore --worktree -- codex-rs/hepta-infer-worker-host/src
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host --package codex-hepta-fleet -- --config imports_granularity=Item
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src/authority_port.rs > "$RUNNER_TEMP/stem-worker-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src/authority_port.rs
       - name: Upload rustfmt diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
