@@ -1,14 +1,18 @@
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
-async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+// Every historical migration replay uses an isolated disposable database
+// created via codex-state's SQLite shim. It is NEVER the active AutomationStore.
+async fn historical_pool(displaced: bool, reference_root: &std::path::Path) -> SqlitePool {
+    let home = AbsolutePathBuf::try_from(reference_root.to_path_buf())
+        .expect("absolute private SQLite fixture root");
+    let pool = SqliteConfig::new_for_testing(home)
+        .open_durable_evidence_pool(&reference_root.join("historical-snapshot.sqlite3"))
         .await
-        .expect("SQLite owner");
+        .expect("SQLite owner fixture through codex-state shim");
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
@@ -52,7 +56,8 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
 #[tokio::test]
 async fn both_historical_branches_converge_without_rewriting_checksums() {
     for displaced in [false, true] {
-        let pool = historical_pool(displaced).await;
+        let temp = tempfile::tempdir().expect("private historical SQLite fixture root");
+        let pool = historical_pool(displaced, temp.path()).await;
         let before: Vec<Vec<u8>> =
             sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
                 .fetch_all(&pool)
@@ -106,7 +111,8 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
         "UPDATE _sqlx_migrations SET checksum = x'00' WHERE version=4",
         "UPDATE _sqlx_migrations SET success=0 WHERE version=5",
     ] {
-        let pool = historical_pool(true).await;
+        let temp = tempfile::tempdir().expect("private malformed SQLite fixture root");
+        let pool = historical_pool(true, temp.path()).await;
         sqlx::query(mutation)
             .execute(&pool)
             .await
@@ -129,7 +135,10 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     let temp = tempfile::tempdir().expect("private owner root");
     let root = temp.path().join("owner");
     std::fs::create_dir(&root).expect("owner directory");
-    let pool = historical_pool(displaced).await;
+    // open_root requires the real canonical private owner root. Windows may
+    // add an extended-length path prefix during canonicalization.
+    let root = root.canonicalize().expect("canonical private owner root");
+    let pool = historical_pool(displaced, temp.path()).await;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
             .fetch_all(&pool)
@@ -191,7 +200,8 @@ async fn displaced_cut_after_rebind_reopens() {
 
 #[tokio::test]
 async fn occupied_relocation_rolls_back_all_history_rebinding() {
-    let pool = historical_pool(/*displaced*/ true).await;
+    let temp = tempfile::tempdir().expect("private collision SQLite fixture root");
+    let pool = historical_pool(/*displaced*/ true, temp.path()).await;
     sqlx::query("INSERT INTO _sqlx_migrations(version,description,installed_on,success,checksum,execution_time) SELECT 17,description,installed_on,success,checksum,execution_time FROM _sqlx_migrations WHERE version=4")
         .execute(&pool).await.expect("inject conflicting target identity");
     let before: Vec<(i64, Vec<u8>)> =
