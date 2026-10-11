@@ -273,10 +273,8 @@ impl SelectedStemProjectionReaderV1 {
         {
             return Err(StemProjectionArtifactError::InvalidBinding);
         }
-        verify_neuron_projected_request(
-            binding, projected, request, self.fence.worker_generation,
-        )
-        .map_err(StemProjectionArtifactError::Numeric)
+        verify_neuron_projected_request(binding, projected, request, self.fence.worker_generation)
+            .map_err(StemProjectionArtifactError::Numeric)
     }
 
     pub fn is_sealed(&self) -> bool {
