@@ -256,11 +256,18 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         let _ = sender.send((read_ok, bytes));
     });
     let deadline = Instant::now() + MAX_SHADOW_RUNTIME;
+    let mut write_complete = false;
     let status = loop {
-        if let Ok(false) | Err(mpsc::TryRecvError::Disconnected) = write_receiver.try_recv() {
-            let _ = child.kill();
-            let _ = child.wait();
-            return Err(Error::FeatureContract);
+        if !write_complete {
+            match write_receiver.try_recv() {
+                Ok(true) => write_complete = true,
+                Ok(false) | Err(mpsc::TryRecvError::Disconnected) => {
+                    let _ = child.kill();
+                    let _ = child.wait();
+                    return Err(Error::FeatureContract);
+                }
+                Err(mpsc::TryRecvError::Empty) => {}
+            }
         }
         match child.try_wait() {
             Ok(Some(status)) => break status,
@@ -278,6 +285,14 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         }
         thread::sleep(Duration::from_millis(10));
     };
+    if !write_complete
+        && !matches!(
+            write_receiver.recv_timeout(deadline.saturating_duration_since(Instant::now())),
+            Ok(true)
+        )
+    {
+        return Err(Error::FeatureContract);
+    }
     let time_left = deadline.saturating_duration_since(Instant::now());
     let (read_ok, response_bytes) = receiver
         .recv_timeout(time_left)
