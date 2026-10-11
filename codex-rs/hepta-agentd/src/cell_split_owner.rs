@@ -492,12 +492,10 @@ impl CellSplitExecutionOwnerV1 {
         if self.poisoned {
             return Err(CellSplitErrorV1::Poisoned);
         }
-        // A live owner must never run an effect on a ledger whose durable
-        // prefix was rolled back or extended behind its exclusive lock.
-        if self.file.0.metadata()?.len() != self.durable_bytes {
-            self.poisoned = true;
-            return Err(CellSplitErrorV1::Poisoned);
-        }
+        // The exact in-memory hash chain, not merely the file size, is the
+        // expected live prefix. Detect same-length in-place corruption before
+        // any external operation is permitted.
+        self.verify_live_ledger()?;
         for (index, step) in STEPS.into_iter().enumerate() {
             if let Some(committed) = self.accepted.get(index) {
                 validate_receipt(&self.plan, step, committed)?;
@@ -531,6 +529,9 @@ impl CellSplitExecutionOwnerV1 {
                     CellSplitObservationV1::Applied(receipt)
                 }
                 CellSplitObservationV1::Missing => {
+                    // An owner/observer callback may itself touch the backing
+                    // file. Recheck immediately before dispatching an effect.
+                    self.verify_live_ledger()?;
                     let key = self.plan.operation_key(step);
                     match step {
                         CellSplitStepV1::ArtifactCas => ports.publish_artifact(&self.plan, key)?,
@@ -587,9 +588,68 @@ impl CellSplitExecutionOwnerV1 {
         &mut self,
         ports: &mut P,
     ) -> Result<(), CellSplitErrorV1> {
+        // Never send an anchor derived from a stale in-memory prefix when the
+        // underlying bytes have been changed behind the owner's lock.
+        self.verify_live_ledger()?;
         let anchor = self.anchor();
         ports.retain_ledger_anchor(&self.plan, anchor)?;
         self.witnessed_sequence = Some(anchor.sequence);
+        Ok(())
+    }
+
+    /// The file lock excludes cooperative writers, but not a compromised
+    /// holder of another descriptor to the same inode. Verify every recorded
+    /// frame against the owner's already authenticated hash chain, including
+    /// its boundaries. This is deliberately bounded to MAX_LEDGER_SIZE.
+    ///
+    /// Any read, length, framing, or digest mismatch irreversibly poisons the
+    /// live owner. Recovery requires a *new* file handle and independently
+    /// authenticated observer high-watermark; never re-seed from these bytes.
+    fn verify_live_ledger(&mut self) -> Result<(), CellSplitErrorV1> {
+        if self.poisoned {
+            return Err(CellSplitErrorV1::Poisoned);
+        }
+        let checked = (|| -> Result<(), CellSplitErrorV1> {
+            let length = usize::try_from(self.durable_bytes)
+                .map_err(|_| CellSplitErrorV1::Capacity)?;
+            if !(HEADER_SIZE..=MAX_LEDGER_SIZE).contains(&length)
+                || self.file.0.metadata()?.len() != self.durable_bytes
+            {
+                return Err(CellSplitErrorV1::Corrupt);
+            }
+            let mut bytes = vec![0_u8; length];
+            self.file.0.seek(SeekFrom::Start(0))?;
+            self.file.0.read_exact(&mut bytes)?;
+            let first = self.heads.first().ok_or(CellSplitErrorV1::Corrupt)?;
+            if Digest32::of_bytes(&bytes[..HEADER_SIZE]) != *first {
+                return Err(CellSplitErrorV1::Corrupt);
+            }
+            let mut offset = HEADER_SIZE;
+            for expected in self.heads.iter().skip(1) {
+                if length - offset < 4 {
+                    return Err(CellSplitErrorV1::Corrupt);
+                }
+                let body_len = read_u32(&bytes[offset..offset + 4])? as usize;
+                if !(FRAME_FIXED_SIZE..=MAX_FRAME_SIZE).contains(&body_len)
+                    || length - offset - 4 < body_len
+                {
+                    return Err(CellSplitErrorV1::Corrupt);
+                }
+                let end = offset + 4 + body_len;
+                if Digest32::of_bytes(&bytes[offset..end]) != *expected {
+                    return Err(CellSplitErrorV1::Corrupt);
+                }
+                offset = end;
+            }
+            if offset != length || self.file.0.metadata()?.len() != self.durable_bytes {
+                return Err(CellSplitErrorV1::Corrupt);
+            }
+            Ok(())
+        })();
+        if checked.is_err() {
+            self.poisoned = true;
+            return Err(CellSplitErrorV1::Poisoned);
+        }
         Ok(())
     }
 
@@ -598,9 +658,9 @@ impl CellSplitExecutionOwnerV1 {
     }
 
     fn append(&mut self, frame: LedgerFrame) -> Result<(), CellSplitErrorV1> {
-        if self.poisoned {
-            return Err(CellSplitErrorV1::Poisoned);
-        }
+        // Validate the exact persisted prefix even if a previous external
+        // operation returned successfully but changed the ledger in place.
+        self.verify_live_ledger()?;
         // Reject noncanonical transitions before touching the durable file.
         let mut accepted = self.accepted.clone();
         let mut pending = self.pending;
