@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
+import math
 import json
 from pathlib import Path
 import sys
@@ -68,10 +69,47 @@ def nearest_rank(values: list[int], percentile: int) -> int:
     return ordered[(len(ordered) * percentile + 99) // 100 - 1]
 
 
-def metrics(baseline: list[dict], candidate: list[dict]) -> dict:
-    n = len(baseline)
-    need(n > 0 and len(candidate) == n, "paired metric sample count mismatch")
+def clustered_mean_ci(delta_by_cell: dict[str, list[int]]) -> dict[str, Any]:
+    # Cases sharing a Cell are correlated; never treat their count as the
+    # number of independent observations. Equal-weight one Cell = one unit.
+    values = [sum(samples) / len(samples)
+              for _, samples in sorted(delta_by_cell.items())]
+    count = len(values)
+    if count < 2:
+        return {
+            "independent_cell_count": count,
+            "cluster_mean_delta_micro": values[0] if values else None,
+            "cluster_mean_95ci_micro": None,
+            "uncertainty": "INSUFFICIENT_INDEPENDENT_CELLS",
+        }
+    mean = math.fsum(values) / count
+    variance = math.fsum((value - mean) ** 2 for value in values) / (count - 1)
+    # Conservative fixed t critical values for 1..30 df; 1.96 beyond 30.
+    # This is an approximate unadjusted interval, NOT proof of causal effect.
+    critical = (
+        12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262,
+        2.228, 2.201, 2.179, 2.160, 2.145, 2.131, 2.120, 2.110, 2.101,
+        2.093, 2.086, 2.080, 2.074, 2.069, 2.064, 2.060, 2.056, 2.052,
+        2.048, 2.045, 2.042
+    )[(count - 2)] if count <= 31 else 1.96
+    margin = critical * math.sqrt(variance / count)
     return {
+        "independent_cell_count": count,
+        "cluster_mean_delta_micro": mean,
+        "cluster_mean_95ci_micro": [mean - margin, mean + margin],
+        "uncertainty": "UNADJUSTED_CELL_CLUSTER_T_APPROX",
+    }
+
+
+def metrics(baseline: list[dict], candidate: list[dict],
+            cell_ids: list[str]) -> dict:
+    n = len(baseline)
+    need(n > 0 and len(candidate) == n and len(cell_ids) == n,
+         "paired metric sample count mismatch")
+    delta_by_cell = defaultdict(list)
+    for cell, b, c in zip(cell_ids, baseline, candidate):
+        delta_by_cell[cell].append(c["utility_micro"] - b["utility_micro"])
+    return {**clustered_mean_ci(delta_by_cell),
         "paired_count": n,
         "mean_utility_delta_micro": sum(
             c["utility_micro"] - b["utility_micro"] for b, c in zip(baseline, candidate)
@@ -100,6 +138,7 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
     exact(payload, {
         "schema", "experiment_id", "phase", "evaluator_key_id", "executor_key_id",
         "selector_key_id", "preregistered_at_utc", "training_cutoff_utc",
+        "evaluation_asof_utc",
         "host_profile_digest", "a0_registry_sha256", "frozen_baseline",
         "no_change_arm", "arms", "total_parameter_ceiling",
         "total_state_bytes_ceiling", "samples", "scale_receipts",
@@ -117,7 +156,9 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
          "Evaluator, Selector and Executor must have different owners")
     registration = utc(payload["preregistered_at_utc"], "preregistration")
     cutoff = utc(payload["training_cutoff_utc"], "train cutoff")
-    need(registration < cutoff, "preregistration must precede train cutoff")
+    asof = utc(payload["evaluation_asof_utc"], "evaluation as-of")
+    need(registration < cutoff < asof,
+         "preregistration, train cutoff and evaluation as-of must be ordered")
     hex_digest(payload["host_profile_digest"], "host profile")
     hex_digest(payload["a0_registry_sha256"], "frozen A0 registry")
     need(payload["frozen_baseline"] is True, "no-change baseline was not frozen")
@@ -128,7 +169,7 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
     need(isinstance(arms, dict) and 2 <= len(arms) <= 8, "require 2-8 comparator arms")
     no_change = payload["no_change_arm"]
     need(no_change in arms, "missing no-change baseline arm")
-    encoder_set, train_set, training_steps = set(), set(), set()
+    encoder_set, candidate_train_set, candidate_training_steps = set(), set(), set()
     for name, arm in arms.items():
         need(isinstance(name, str) and bool(name), "invalid arm name")
         exact(arm, {
@@ -145,16 +186,22 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
         need(arm["state_bytes"] <= payload["total_state_bytes_ceiling"],
              f"{name}: exceeds equal state budget")
         encoder_set.add(arm["encoder_digest"])
-        train_set.add(arm["training_data_digest"])
-        training_steps.add(arm["optimizer_steps"])
-    need(len(encoder_set) == len(train_set) == len(training_steps) == 1,
+        if name == no_change:
+            need(arm["optimizer_steps"] == 0,
+                 "no-change baseline must be frozen with zero experimental training steps")
+        else:
+            need(arm["optimizer_steps"] > 0,
+                 "candidate needs a nonzero preregistered training budget")
+            candidate_train_set.add(arm["training_data_digest"])
+            candidate_training_steps.add(arm["optimizer_steps"])
+    need(len(encoder_set) == len(candidate_train_set) == len(candidate_training_steps) == 1,
          "candidate arms have different Encoder, training data or optimizer budget")
 
     samples = payload["samples"]
     need(isinstance(samples, list) and 0 < len(samples) <= MAX_SAMPLES,
          "missing or excessive paired samples")
     seen = set()
-    pairs = defaultdict(lambda: defaultdict(lambda: [[], []]))
+    pairs = defaultdict(lambda: defaultdict(lambda: [[], [], []]))
     split_counts = defaultdict(int)
     for sample in samples:
         exact(sample, {
@@ -174,6 +221,7 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
         event = utc(sample["event_time_utc"], "event time")
         label = utc(sample["label_available_at_utc"], "label availability")
         need(label >= event, "label before event")
+        need(label <= asof, "label unavailable at signed evaluation as-of")
         if split == "future":
             need(event > cutoff and label > cutoff, "future example leaks into training window")
         else:
@@ -181,13 +229,16 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
         rows = sample["outcomes"]
         need(isinstance(rows, dict) and set(rows) == set(arms),
              "every arm must have a joined outcome on every paired input")
-        for name, value in rows.items():
-            rows[name] = outcome(value, f"{name} outcome")
+        validated_rows = {
+            name: outcome(value, f"{name} outcome")
+            for name, value in rows.items()
+        }
         for arm in arms:
             if arm == no_change:
                 continue
-            pairs[arm][split][0].append(rows[no_change])
-            pairs[arm][split][1].append(rows[arm])
+            pairs[arm][split][0].append(validated_rows[no_change])
+            pairs[arm][split][1].append(validated_rows[arm])
+            pairs[arm][split][2].append(sample["cell_id"])
         split_counts[split] += 1
 
     need(split_counts["future"] > 0 and split_counts["ood"] > 0,
@@ -203,6 +254,7 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
             "arm", "cell_count", "host_profile_digest", "cpu_micros",
             "peak_rss_bytes", "p95_micros", "p99_micros",
             "throughput_tasks_per_second_milli",
+            "measurement_kind", "execution_receipt_digest", "recovery_receipt_digest",
         }, "scale receipt")
         need(receipt["arm"] in arms and receipt["cell_count"] in SCALE_CELLS,
              "unknown arm or Cell scale")
@@ -211,6 +263,10 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
         scale_seen.add((receipt["arm"], receipt["cell_count"]))
         need(receipt["host_profile_digest"] == payload["host_profile_digest"],
              "scale host mismatch")
+        need(receipt["measurement_kind"] == "target-host-observed",
+             "scale receipt is synthetic or projected, not host observed")
+        hex_digest(receipt["execution_receipt_digest"], "signed target-host execution receipt")
+        hex_digest(receipt["recovery_receipt_digest"], "signed target-host recovery receipt")
         for field in ("cpu_micros", "peak_rss_bytes", "p95_micros",
                       "p99_micros", "throughput_tasks_per_second_milli"):
             positive_int(receipt[field], field)
@@ -224,8 +280,8 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
 
     results = {
         arm: {
-            split: metrics(base, candidate)
-            for split, (base, candidate) in sorted(splits.items())
+            split: metrics(base, candidate, cells)
+            for split, (base, candidate, cells) in sorted(splits.items())
         }
         for arm, splits in sorted(pairs.items())
     }
@@ -237,14 +293,17 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
         "a0_registry_sha256": payload["a0_registry_sha256"],
         "source_claim": "signed-evaluator-shadow-evidence",
         "split_counts": dict(sorted(split_counts.items())),
-        "same_encoder_data_training_budget": True,
+        "candidate_same_encoder_data_training_budget": True,
+        "no_change_frozen_with_zero_experimental_steps": True,
+        "role_identifiers_distinct_but_not_independently_authenticated": True,
         "all_arms_within_registered_parameter_and_state_ceiling": True,
         "all_scale_slots_observed": complete_scale,
         "comparisons_vs_frozen_no_change": results,
         "decision": "NO_PRODUCTION_PROMOTION",
         "limitations": [
             "Trusted key validation authenticates claimed evaluator input, not real host execution.",
-            "Uncertainty estimates, statistical testing, independent NDU final-use and CAS migration are not implemented.",
+            "Clustered t intervals are unadjusted descriptive approximations, not causal or multiple-testing-adjusted inference.",
+            "Evaluator-signed role IDs alone do not authenticate Selector/Executor ownership; NDU final-use, CAS and migration remain external.",
             "A4 size slots do not alone prove resource claims without host attestation and replay.",
         ],
     }
