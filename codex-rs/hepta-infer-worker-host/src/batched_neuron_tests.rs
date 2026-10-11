@@ -323,10 +323,10 @@ impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
         &mut self,
         _handle: &DriverModelHandle,
         requests: &[NeuronFeatureRequest],
-    ) -> Result<Vec<crate::model_worker::PhysicalBatchItemObservationV1>, Error> {
+    ) -> Result<crate::model_worker::PhysicalBatchRunObservationV1, Error> {
         // Conformance fixture only; physical forward evidence requires hardware.
         PHYSICAL_BATCH_BACKEND_CALLS.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-        Ok(requests
+        let items = requests
             .iter()
             .map(|request| crate::model_worker::PhysicalBatchItemObservationV1 {
                 request_id: request.authorization.request_id.clone(),
