@@ -221,6 +221,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         let input_width = requests[0].snapshot.features_q24.len();
         let output_width = requests[0].expected_output_width;
         let mut request_ids = BTreeSet::new();
+        let mut reservation_ids = BTreeSet::new();
         for item in &requests {
             validate_item(
                 item,
@@ -241,6 +242,10 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                     .contains_key(&item.authorization.request_id)
             {
                 return Err(Error::RequestCapacity);
+            }
+            // Separate Cell uses need distinct, independently admitted reservations.
+            if !reservation_ids.insert(item.authorization.reservation_id.as_str()) {
+                return Err(Error::FeatureContract);
             }
         }
 
