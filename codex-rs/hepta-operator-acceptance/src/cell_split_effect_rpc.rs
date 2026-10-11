@@ -270,6 +270,22 @@ impl CellSplitUnixEffectPortV1 {
 impl CellSplitExecutionPortV1 for CellSplitUnixEffectPortV1 {
     type Error = CellSplitEffectRpcErrorV1;
 
+    fn preflight_uncommitted(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        // A fresh nonce-bound signed negative readback proves the owner is
+        // reachable before the coordinator writes a one-shot prepared intent.
+        // An existing original commit without that prepared intent is an
+        // inconsistent execution history, never permission to adopt it.
+        match self.lookup(intent)? {
+            None => Ok(()),
+            Some(_) => Err(CellSplitEffectRpcErrorV1::Invalid(
+                "effect exists before coordinator prepared intent",
+            )),
+        }
+    }
+
     fn execute(
         &mut self,
         intent: &CellSplitExecutionIntentV1,
