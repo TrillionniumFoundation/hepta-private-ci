@@ -126,7 +126,7 @@ symbol = "RevalidatingCandidate::with_current"
 call_pattern = '\bcandidate\s*\.\s*with_current\s*\('
 definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
 definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
-product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs", "codex-rs/hepta-learning-artifacts/src/selected.rs"]
 caller_markers = ["VerifiedCurrentRegistryViewV1", "with_current"]
 
 [[boundary]]

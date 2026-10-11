@@ -135,6 +135,10 @@ pub struct VerifiedArtifactSelectionV1 {
 }
 
 impl VerifiedArtifactSelectionV1 {
+    pub(crate) fn pin(&self) -> &PinnedCandidateSpec {
+        &self.pin
+    }
+
     #[must_use]
     pub fn artifact_id(&self) -> &StableId {
         &self.pin.manifest.artifact_id
@@ -776,3 +780,6 @@ mod tests {
         assert_eq!(last.actor.role, LifecycleActorRoleV2::Selector);
     }
 }
+
+#[path = "selection_guard.rs"]
+mod guard;

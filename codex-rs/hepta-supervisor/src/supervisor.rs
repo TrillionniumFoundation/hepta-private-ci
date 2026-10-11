@@ -38,9 +38,12 @@ use crate::signed_authority::ProductionMutationReceipt;
 use crate::signed_authority::ProductionMutationState;
 use crate::signed_authority::ProductionRecoveryDecision;
 use crate::signed_authority::ProductionRecoveryOutcome;
+use crate::signed_intent::SignedIntentRecoveryAction;
 use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
+use crate::signed_intent::clear_recovery_directive;
 use crate::signed_intent::read_intent;
+use crate::signed_intent::read_recovery_directive;
 use crate::signed_intent::write_intent;
 
 /// Lifecycle-only controller with one process handle and bounded buffers per agent.
@@ -85,6 +88,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
+                supervisor.restore_matrix_restart_budget(&agent_id, slot, &record, now)?;
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
@@ -697,13 +701,47 @@ impl<D: ProcessDriver> Supervisor<D> {
                 "signed supervisor intent agent binding mismatch".to_string(),
             ));
         }
+        let (recovery_directive, directive_read_error) =
+            match read_recovery_directive(record.layout.run_root()) {
+                Ok(directive) => (directive, None),
+                Err(error) => (None, Some(error.to_string())),
+            };
         slot.signed_intent = Some(intent.clone());
         if matches!(
             intent.status,
             SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
         ) {
+            // A terminal intent is already authoritative. A stale directive
+            // must not resurrect or alter it; clear only an exact match.
+            if recovery_directive
+                .as_ref()
+                .is_some_and(|directive| directive.intent_sha256 == intent.intent_sha256)
+            {
+                crate::restart_budget::complete_restart(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                clear_recovery_directive(record.layout.run_root())
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            }
+            if let Some(message) = directive_read_error.as_ref() {
+                return Err(SupervisorError::Invalid(message.clone()));
+            }
             return Ok(());
         }
+
+        let directive_error = directive_read_error.or_else(|| {
+            recovery_directive.as_ref().and_then(|directive| {
+                if directive.intent_sha256 != intent.intent_sha256 {
+                    Some(
+                        "signed intent recovery directive does not match current intent"
+                            .to_string(),
+                    )
+                } else if !matches!(directive.action, SignedIntentRecoveryAction::Abort) {
+                    Some("signed intent recovery directive has an unsupported action".to_string())
+                } else {
+                    None
+                }
+            })
+        });
 
         // A terminal release transaction is the durable owner witness that the
         // exact signed transition crossed its lifecycle boundary. This closes
@@ -761,15 +799,64 @@ impl<D: ProcessDriver> Supervisor<D> {
             } else {
                 None
             };
-            if let Some(status) = terminal_status {
+            if let Some(status) = terminal_status.filter(|_| directive_error.is_none()) {
                 let terminal = intent
                     .with_status(status)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 write_intent(record.layout.run_root(), &terminal)
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.signed_intent = Some(terminal);
+                if recovery_directive.is_some() {
+                    crate::restart_budget::complete_restart(record.layout.run_root())
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                    clear_recovery_directive(record.layout.run_root())
+                        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                }
                 return Ok(());
             }
+        }
+
+        // An explicit abort is only consumable after the exact intent digest
+        // has been verified above and no ambiguous process remains. Publish
+        // the terminal intent before unlinking the directive so a crash leaves
+        // a harmless, replayable directive rather than an unresolved intent
+        // without its operator authorization.
+        if directive_error.is_none()
+            && recovery_directive.is_some()
+            && slot.runtime.is_none()
+            && slot.matrix.runtime.is_none()
+        {
+            let lifecycle = self.record(agent_id)?.lifecycle;
+            if matches!(
+                lifecycle.lifecycle,
+                AgentLifecycle::Starting | AgentLifecycle::Running | AgentLifecycle::Draining
+            ) {
+                self.transition_without_runtime(
+                    agent_id,
+                    slot,
+                    lifecycle.generation,
+                    AgentLifecycle::Failed,
+                )?;
+            }
+            let aborted = intent
+                .with_status(SignedIntentStatus::Aborted)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            write_intent(record.layout.run_root(), &aborted)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            crate::restart_budget::complete_restart(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            clear_recovery_directive(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.restart_pending = false;
+            slot.restart_not_before = None;
+            slot.signed_intent = Some(aborted);
+            return Ok(());
+        }
+
+        if (recovery_directive.is_some() || directive_error.is_some())
+            && slot.matrix.runtime.is_some()
+        {
+            self.kill_matrix_now(agent_id, slot)?;
         }
 
         // Keep the daemon reachable for the status/recovery ceremony while
@@ -811,6 +898,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .map_err(|error| crate::runtime::driver_error(agent_id, error))?;
                 runtime.phase = RuntimePhase::Killing;
             }
+        }
+        if let Some(message) = directive_error {
+            return Err(SupervisorError::Invalid(message.to_string()));
         }
         Ok(())
     }

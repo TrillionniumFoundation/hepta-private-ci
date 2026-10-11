@@ -1,13 +1,17 @@
 //! Independently derive the schema from compiled migrations, never owner bytes.
-use sqlx::sqlite::SqlitePoolOptions;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 
 use super::*;
 
 #[tokio::test]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    let directory = tempfile::tempdir().expect("private schema oracle directory");
+    let sqlite = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(directory.path().to_path_buf()).expect("absolute oracle root"),
+    );
+    let pool = sqlite
+        .open_durable_evidence_pool(&directory.path().join("schema-oracle.sqlite3"))
         .await
         .expect("reference SQLite");
     MIGRATOR.run(&pool).await.expect("compiled migration chain");
