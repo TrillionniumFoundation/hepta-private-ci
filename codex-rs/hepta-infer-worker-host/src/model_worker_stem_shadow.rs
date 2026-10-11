@@ -158,6 +158,7 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         return Err(Error::FeatureContract);
     }
 
+    let first = &requests[0];
     let mut identities = BTreeSet::new();
     let mut input_keys = BTreeSet::new();
     let mut hashes = Vec::with_capacity(requests.len());
@@ -170,7 +171,12 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         ] {
             super::validate_identity(value, "Stem identity")?;
         }
-        if request.generation == 0
+        if request.scope_id != first.scope_id
+            || request.principal_id != first.principal_id
+            || request.purpose_id != first.purpose_id
+            || request.generation != first.generation
+            || request.authority_epoch != first.authority_epoch
+            || request.generation == 0
             || request.authority_epoch == 0
             || request.input.question.is_empty()
             || request.input.question.len() > 30_000
