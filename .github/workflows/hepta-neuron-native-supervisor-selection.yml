@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-supervisor/src/module_runtime.rs"
+      - "codex-rs/hepta-supervisor/src/neuron_process_correlation.rs"
+      - "codex-rs/hepta-supervisor/src/supervisor_tests.rs"
       - "codex-rs/hepta-supervisor/src/lib.rs"
       - "qualification/neuron-model-trials/NATIVE_SUPERVISOR_SELECTION.md"
       - ".github/workflows/hepta-neuron-native-supervisor-selection.yml"
@@ -35,6 +37,8 @@ jobs:
         run: cargo check --locked -p codex-hepta-supervisor --lib
       - name: Test read-only selected Neuron module lifecycle
         run: cargo test --locked -p codex-hepta-supervisor --lib read_neuron_active_candidate_v1
+      - name: Test real Agentd process generation plus selected Neuron module
+        run: cargo test --locked -p codex-hepta-supervisor --lib read_current_neuron_agent_process_v1
       - name: Check strict Supervisor correctness
         run: cargo clippy --locked -p codex-hepta-supervisor --lib -- -D clippy::correctness
       - name: Ensure clean tracked source

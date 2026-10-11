@@ -571,7 +571,7 @@ impl RuntimeModuleSupervisorV1 {
     }
 
     #[cfg(test)]
-    fn register_shadow_for_test(
+    pub(crate) fn register_shadow_for_test(
         &mut self,
         abi: RuntimeModuleAbiV1,
         selection_digest: Digest32,
