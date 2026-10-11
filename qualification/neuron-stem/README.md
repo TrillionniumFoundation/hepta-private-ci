@@ -406,3 +406,21 @@ predictions. This validates a *self-reported local research execution trace*,
 not a signed independent evaluator receipt or proof that a malicious trial
 executor never read a label beforehand. Production learning and promotion
 remain blocked until independently authenticated sources and NDU outcomes.
+
+
+### C: per-future-window calibration and the remaining OOD gap
+
+The existing prequential_threeway_review.py now includes separately
+descriptive 15-bin ECE, normalized multiclass Brier and accuracy for
+**no-change**, **frozen matched Head** and **learned Cell Head** in
+future_1 and future_2. They use exactly the same paired event IDs, option
+order and offline future labels; calibration is descriptive and does NOT
+adjust a candidate's temperature or other parameters using future labels.
+
+The prequential replay does **not** emit the three matched OOD decision
+streams with an independently calibrated acceptance threshold. Therefore
+the offline report explicitly sets ood_threeway_model_evidence_present=false
+and full_quality_and_ood_gate_passed=false, even if the future predictive
+gain precheck passes. An offline ECE value, even with paired bootstrap,
+cannot substitute for real OOD false-acceptance evidence, external NDU
+outcome signatures or production model promotion authorization.
