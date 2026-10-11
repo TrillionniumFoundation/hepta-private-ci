@@ -25,6 +25,19 @@ enforces its current grant, loaded model tuple and memory envelope. Unknown
 driver outcome is Indeterminate; malformed feature and identity mismatches
 are rejected. This removes a previously missing source-level execution port.
 
+The Agentd product host now exposes `tick_with_observation_v1`, which consumes
+the actual Worker/ModelPort once and checks the separately acknowledged
+Journal/Witness after the call. It emits a compact, recomputable
+`AgentdNeuronTickObservationV1` binding the exact input feature digest,
+tick ID, objective/NDU context, model runtime tuple, output signals, observed
+resource costs, committed checkpoint and complete local model configuration.
+It never exports Q24 features, activation vectors, raw observations or labels.
+The actual Worker-to-Agentd recovery test exercises this method and refuses
+tampered input, output and stale witness observations. This is NOT yet a
+selected production no-change baseline; the independent evaluator must map the
+event to the authoritative selected-route/cell identity and Ledger Episode,
+retain a historical signed receipt, and revalidate source/route final-use.
+
 The qualification tests run the actual Worker and the actual Neuron ModelPort,
 with a **fixture ModelDriver** that produces deterministic Q24 vectors.
 A separate integration test now composes a real AgentdNeuronOwner,

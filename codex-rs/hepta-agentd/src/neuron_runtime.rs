@@ -22,6 +22,8 @@ use std::fs::File;
 use crate::neuron_selected_artifact::NeuronCandidateModelArtifactErrorV1;
 use crate::neuron_selected_artifact::NeuronCandidateModelArtifactV1;
 use crate::neuron_selected_artifact::verify_pinned_neuron_model_descriptor_v1;
+use crate::neuron_tick_observation::AgentdNeuronTickObservationV1;
+use crate::neuron_tick_observation::from_actual_committed_tick;
 
 pub struct AgentdNeuronOwner<W, P>
 where
@@ -50,6 +52,44 @@ where
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         self.runtime.tick(&mut model, input)
+    }
+
+    /// Observe one real inference.control -> Neuron -> acknowledged Journal
+    /// execution without copying features, state vectors or private labels
+    /// into a diagnostic. This is not a selected production no-change claim.
+    pub fn tick_with_observation_v1(
+        &mut self,
+        input: NeuronTickInputV1,
+    ) -> Result<(NeuronRuntimeOutputV1, AgentdNeuronTickObservationV1), NeuronRuntimeError> {
+        let input_digest = input.semantic_digest()?;
+        // The native Runtime rejects stale checkpoints before calling the
+        // Worker. Do not duplicate that check here: a post-commit Witness
+        // failure is reconciled idempotently by tick() using the OLD input.
+        let output = self.tick(input.clone())?;
+        // The separately durable Witness is checked AFTER the model ran.
+        // A failed post-commit acknowledgement cannot create a success report.
+        let binding = self.read_local_checkpoint_binding_v1()?;
+        let observation =
+            from_actual_committed_tick(&input, input_digest, &output, &binding)?;
+        Ok((output, observation))
+    }
+
+    /// The observed tick is current only while this very owner retains the
+    /// same witnessed checkpoint. This cannot authenticate an old event after
+    /// another tick, and cannot replace an independent historical evidence log.
+    pub fn revalidate_current_tick_observation_v1(
+        &self,
+        prior: &AgentdNeuronTickObservationV1,
+    ) -> Result<(), NeuronRuntimeError> {
+        let current = self.read_local_checkpoint_binding_v1()?;
+        if !prior.validate_integrity()
+            || prior.local_checkpoint_binding_digest != current.binding_digest
+            || prior.checkpoint_after != current.anchor.checkpoint_digest
+            || prior.logical_sequence != current.anchor.sequence
+        {
+            return Err(NeuronRuntimeError::ModelBindingMismatch);
+        }
+        Ok(())
     }
 
     /// Return the exact locally loaded model configuration and a checkpoint

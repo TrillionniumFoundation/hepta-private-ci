@@ -55,3 +55,22 @@ fn agentd_local_baseline_exposes_only_witnessed_neuron_state() {
         AgentdNeuronOwner::read_local_checkpoint_binding_v1;
     let _ = read;
 }
+
+#[test]
+fn agentd_observed_tick_api_requires_real_owner_and_strict_final_witness() {
+    use crate::AgentdNeuronTickObservationV1;
+
+    let execute: fn(
+        &mut AgentdNeuronOwner<StubWitness, StubInferenceControl>,
+        codex_hepta_neuron::NeuronTickInputV1,
+    ) -> Result<
+        (codex_hepta_neuron::NeuronRuntimeOutputV1, AgentdNeuronTickObservationV1),
+        codex_hepta_neuron::NeuronRuntimeError,
+    > = AgentdNeuronOwner::tick_with_observation_v1;
+    let current: fn(
+        &AgentdNeuronOwner<StubWitness, StubInferenceControl>,
+        &AgentdNeuronTickObservationV1,
+    ) -> Result<(), codex_hepta_neuron::NeuronRuntimeError> =
+        AgentdNeuronOwner::revalidate_current_tick_observation_v1;
+    let _ = (execute, current);
+}

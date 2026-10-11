@@ -466,12 +466,31 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
     );
     let mut agentd = AgentdNeuronOwner::new(runtime, worker_port);
     assert!(agentd.read_local_checkpoint_binding_v1().is_err());
-    let first = agentd.tick(input.clone()).unwrap();
+    let (first, observation) = agentd.tick_with_observation_v1(input.clone()).unwrap();
+    assert!(observation.validate_integrity());
+    assert_eq!(observation.tick_id, input.tick_id);
+    assert_eq!(observation.input_digest, input.semantic_digest().unwrap());
+    assert_eq!(observation.checkpoint_before, Digest32::ZERO);
+    assert_eq!(observation.checkpoint_after, first.tick.checkpoint_after);
+    assert_eq!(observation.logical_sequence, 1);
+    assert_eq!(observation.model_runtime_digest, first.model_runtime.semantic_digest().unwrap());
+    assert_eq!(observation.observed_memory_bytes, first.model_runtime.resident_bytes);
+    assert_eq!(observation.abstain, first.tick.abstain);
+    agentd.revalidate_current_tick_observation_v1(&observation).unwrap();
+    let mut tampered = observation.clone();
+    tampered.observed_output_digest = digest("forged-output");
+    assert!(!tampered.validate_integrity());
+    assert!(agentd.revalidate_current_tick_observation_v1(&tampered).is_err());
+    let mut tampered = observation.clone();
+    tampered.checkpoint_before = digest("different-predecessor");
+    assert!(!tampered.validate_integrity());
+
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     assert_eq!(first.model_runtime.weights_digest, digest("3"));
     assert_eq!(first.model_runtime.tokenizer_digest, digest("4"));
     assert_eq!(first.model_runtime.runtime_digest, digest("7"));
     let pinned = agentd.read_local_checkpoint_binding_v1().unwrap();
+    assert_eq!(observation.local_checkpoint_binding_digest, pinned.binding_digest);
     assert!(pinned.validate_integrity());
     assert_eq!(pinned.anchor.checkpoint_digest, first.tick.checkpoint_after);
     // The committed anchor is stored in a separate fsynced file, not derived
@@ -485,7 +504,7 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
     second.monotonic_time_micros = 2000;
     second.checkpoint_digest = first.tick.checkpoint_after;
     assert!(matches!(
-        agentd.tick(second),
+        agentd.tick_with_observation_v1(second),
         Err(NeuronRuntimeError::Model(NeuronModelError::Rejected))
     ));
     assert_eq!(calls.load(Ordering::SeqCst), 1);
