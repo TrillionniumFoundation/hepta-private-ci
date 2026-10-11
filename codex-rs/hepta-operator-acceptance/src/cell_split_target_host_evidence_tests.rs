@@ -885,6 +885,31 @@ fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
 
 
 #[test]
+fn target_host_ingest_rejects_noncanonical_json_even_if_signatures_verify() {
+    let payload = complete_recorder();
+    let host = key(109);
+    let observer = key(113);
+    let envelope = payload
+        .sign(
+            "host-signer",
+            &host,
+            [("observer-signer".to_string(), observer.clone())],
+        )
+        .expect("properly signed evidence");
+    let policy = policy(&host, &observer);
+    let canonical = envelope.canonical_bytes().expect("canonical transport");
+    assert!(verify_cell_split_target_host_evidence_json(&canonical, &policy).is_ok());
+    let pretty = serde_json::to_vec_pretty(&envelope).expect("equivalent pretty JSON");
+    assert_ne!(pretty, canonical);
+    assert!(
+        verify_cell_split_target_host_evidence_json(&pretty, &policy)
+            .expect_err("noncanonical transport must not be ingested")
+            .to_string()
+            .contains("not canonical"),
+    );
+}
+
+#[test]
 fn bounded_target_host_envelope_refuses_synthetic_and_excessive_observers() {
     let host = key(73);
     let observer = key(79);
