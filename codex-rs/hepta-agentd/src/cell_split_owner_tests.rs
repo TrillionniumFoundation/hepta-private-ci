@@ -200,7 +200,6 @@ fn lost_ack_recovers_from_authoritative_readback_without_repeating_effect() {
     let p = plan();
     let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
         .expect("bootstrap");
-    let initial_trusted_anchor = ledger.anchor();
     let mut owners = MockOwners {
         fail_observe_once: Some(CellSplitStepV1::ArtifactCas),
         ..Default::default()
@@ -208,12 +207,18 @@ fn lost_ack_recovers_from_authoritative_readback_without_repeating_effect() {
 
     assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Indeterminate));
     assert_eq!(owners.attempts, vec![CellSplitStepV1::ArtifactCas]);
+    // The independently retained witness must cover the pending intent
+    // BEFORE the external CAS call. No effect is allowed on an unwitnessed intent.
+    let independent_witness = ledger.anchor();
+    assert_eq!(
+        owners.anchors.get(&independent_witness.sequence),
+        Some(&independent_witness.head_digest),
+    );
     drop(ledger);
 
-    // The external witness may lag a complete unacknowledged journal suffix.
     let mut recovered = CellSplitExecutionOwnerV1::recover(
-        reopen(&file), p.clone(), initial_trusted_anchor,
-    ).expect("reconcile unacknowledged tail");
+        reopen(&file), p.clone(), independent_witness,
+    ).expect("reconcile unacknowledged effect");
     owners.install(&p, CellSplitStepV1::IndependentSelection);
     owners.install(&p, CellSplitStepV1::FinalUseReady);
     assert!(recovered.drive(&mut owners).expect("resume").completed);
