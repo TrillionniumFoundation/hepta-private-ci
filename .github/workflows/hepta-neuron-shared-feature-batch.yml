@@ -6,6 +6,8 @@ on:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-agentd/src/test_support.rs"
+      - "codex-rs/hepta-memory/src/cognitive_schema_tests.rs"
+      - "codex-rs/hepta-automation/src/migration_convergence_tests.rs"
       - ".github/workflows/hepta-neuron-shared-feature-batch.yml"
   workflow_dispatch:
 
@@ -23,6 +25,40 @@ env:
   CARGO_PROFILE_DEV_DEBUG: "0"
 
 jobs:
+  sqlite-owner-shim-regression:
+    name: SQLite owner shim tests and disallowed-method lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact PR source without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Check exact candidate and immutable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Verify isolated schema and historical migration tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib cognitive_schema_tests::
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --lib migration_convergence_tests::
+      - name: Prove canonical SQLite method restrictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory -p codex-hepta-automation --all-targets -- -D clippy::disallowed_methods -D clippy::correctness
+      - name: Verify no source mutations
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+
   native-qualification:
     name: Scope-fenced feature cache and true batch seam (no promotion)
     runs-on: ubuntu-24.04
