@@ -1,9 +1,8 @@
-use std::process::Command;
-
 #[cfg(windows)]
 use std::io::Write;
 #[cfg(windows)]
 use std::path::Path;
+use std::process::Command;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -23,7 +22,6 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::header;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
-
 
 #[cfg(windows)]
 fn stage_windows_helpers(test_executable: &Path) -> Result<()> {
