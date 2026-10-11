@@ -4,7 +4,6 @@ use anyhow::Context;
 use anyhow::Result;
 use std::io;
 use std::os::windows::ffi::OsStrExt;
-use std::path::PathBuf;
 use windows_sys::Win32::Foundation::FreeLibrary;
 use windows_sys::Win32::System::LibraryLoader::FindResourceW;
 use windows_sys::Win32::System::LibraryLoader::LOAD_LIBRARY_AS_DATAFILE;
