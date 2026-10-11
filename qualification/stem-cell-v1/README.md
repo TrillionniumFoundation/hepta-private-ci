@@ -449,3 +449,37 @@ small learned Head through the complete runner with a synthetic/mocked
 Transformer and source-grouped fixture; no real 435M weights are claimed.
 CI without optional PyTorch skips that test and does not certify model
 inference.
+
+
+### Exact per-arm evidence bundle: no unchecked manual JSON merge
+
+decision_arm_bundle.py now joins actual separately executed model-arm predictions
+and their existing .run.json sidecars before calling decision_421m.py.
+It extends the same Experiment A qualification directory and does not
+introduce any runtime or learning owner.
+
+The source JSON descriptor contains a single arms array; each entry has
+arm (for example, deberta_v3_large:equal_budget), prediction_path, and
+run_manifest_path relative to an approved evidence-root directory.
+The current manifest must include output_predictions_sha256, exact
+checkpoint/data/weights SHA, matching train groups, runtime, seed,
+optimizer/steps/parameters and no production authorization.
+Each JSONL record is checked against the frozen dataset's exact scored
+sample IDs and ordered-logit width; duplicate keys, gold labels,
+unexpected arms, missing samples, altered bytes, symlink escapes,
+unbounded files and source revision mismatches are denied.
+
+    python3 qualification/stem-cell-v1/decision_arm_bundle.py \
+      --plan /scratch/decision-frozen-plan.json \
+      --evidence-root /approved/actual-model-runs \
+      --descriptor /approved/actual-four-arm-file-manifest.json \
+      --comparison-scope equal_budget \
+      --output-prefix /scratch/review-input
+
+This creates append-only review-input.runs.json,
+review-input.predictions.jsonl and review-input.bundle.json. Feed the first
+two to decision_421m.py evaluate with the **same scope**.
+A file SHA binds bytes, not an independent execution or NDU signature;
+therefore neither the assembler nor subsequent offline scorecard is a
+production acceptance receipt. A small all-synthetic no-model unit suite
+tests digest tampering, duplicate arms, gold-label leakage and path escapes.
