@@ -39,6 +39,8 @@ struct MockOwners {
     attempts: Vec<CellSplitStepV1>,
     fail_observe_once: Option<CellSplitStepV1>,
     fail_cutover: bool,
+    fail_anchor_once: bool,
+    anchors: BTreeMap<u64, Digest32>,
 }
 
 impl MockOwners {
@@ -99,6 +101,24 @@ impl CellSplitExecutionPortsV1 for MockOwners {
             Err(CellSplitErrorV1::Conflict)
         }
     }
+    fn retain_ledger_anchor(
+        &mut self,
+        _plan: &CellSplitPlanV1,
+        anchor: CellSplitLedgerAnchorV1,
+    ) -> Result<(), CellSplitErrorV1> {
+        if self.fail_anchor_once {
+            self.fail_anchor_once = false;
+            return Err(CellSplitErrorV1::Indeterminate);
+        }
+        if let Some(previous) = self.anchors.get(&anchor.sequence)
+            && *previous != anchor.head_digest
+        {
+            return Err(CellSplitErrorV1::Conflict);
+        }
+        self.anchors.insert(anchor.sequence, anchor.head_digest);
+        Ok(())
+    }
+
     fn publish_artifact(
         &mut self, p: &CellSplitPlanV1, k: Digest32,
     ) -> Result<(), CellSplitErrorV1> {
@@ -326,3 +346,24 @@ fn route_cas_failure_keeps_predecessor_fenced_and_cutover_pending() {
     assert_eq!(recovered.drive(&mut owners), Err(CellSplitErrorV1::Conflict));
     assert_eq!(recovered.progress().accepted_steps, 6);
 }
+
+#[test]
+fn observer_ack_is_required_before_first_external_mutation() {
+    let file = NamedTempFile::new().expect("temp ledger");
+    let p = plan();
+    let mut ledger = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p)
+        .expect("bootstrap");
+    let mut owners = MockOwners {
+        fail_anchor_once: true,
+        ..Default::default()
+    };
+    assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Indeterminate));
+    assert!(owners.attempts.is_empty());
+    assert_eq!(ledger.progress().accepted_steps, 0);
+    // The intent survived; the next attempt starts with an independently
+    // acknowledged anchor and one idempotent effect, never duplicate intents.
+    assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Unapproved));
+    assert_eq!(owners.attempts.len(), 3);
+    assert!(owners.anchors.contains_key(&ledger.anchor().sequence));
+}
+
