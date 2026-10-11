@@ -72,10 +72,14 @@ def oracle_sources(source, query, target):
             continue
         start = max(0, match.start() - 192)
         end = min(len(doc.content), match.end() + 192)
+        # All other MemoryCell source positions refer to original UTF-8 bytes.
+        byte_start = len(doc.content[:start].encode("utf-8"))
+        byte_end = len(doc.content[:end].encode("utf-8"))
         evidence = dict(
             label="E1", id=doc.identity, original_id=doc.identity,
             root=doc.root, scope=doc.scope, excerpt=doc.content[start:end],
-            source_start=start, source_end=end, observed_at=doc.observed_at,
+            source_start=byte_start, source_end=byte_end, observed_at=doc.observed_at,
+            offset_encoding="original-utf8-bytes",
         )
         return (evidence,), "native-source-literal-span"
     return None, "no-admitted-literal-reference-span"

@@ -30,6 +30,7 @@ from stem_cell_protocol import (
     ARMS, CURVE, PHASES, append, oracle_sources, score_attempt,
     summarize, validate_census, write,
 )
+from stem_cell_runtime import ExactReaderCache, healthy_peer_snapshots
 
 READER = "afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c"
 RETRIEVER = "5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a"
@@ -108,7 +109,7 @@ def run(staged, ranker_dir, output):
         primary_policy="same-forced-top1-except-empty-for-all-six-arms",
         calibration_or_final_label_hyperparameter_search=False,
         reference_oracle="post-policy answer-dependent source span; NOT independently verified gold evidence",
-        reader_cache="exact canonical request reuse; unique executions counted separately",
+        reader_cache="exact canonical request reuse; failed and successful actual executions counted separately",
         candidate_encoder_screen="existing pinned MiniLM only; other candidate encoders not executed",
         independent_model_control="separate MiniLM cross-encoder copies, not 421M replicas",
         evidence_status="previously exposed public development corpora; not an untouched test",
@@ -123,7 +124,6 @@ def run(staged, ranker_dir, output):
     backends, caches = {"frozen": frozen_encoder}, {"frozen": SharedFeatureCache(frozen_encoder)}
     adapter_receipts, adapter_errors, index_costs = {}, {}, []
     heads, head_errors, learning, snapshots, attempts = {}, {}, [], {}, []
-    reader_cache, reader_executions = {}, 0
     try:
         for group in qs.values():
             for q in group:
@@ -219,19 +219,10 @@ def run(staged, ranker_dir, output):
         stamp = time.perf_counter()
         generator = FrozenAnswerGenerator(staged / "reader", expected_inventory=READER)
         cold["frozen_reader_seconds"] = time.perf_counter() - stamp
+        reader_session = ExactReaderCache(generator)
 
         def generate(q, evidence, record_key):
-            nonlocal reader_executions
-            cache_key = digest((generator.identity, generator.profile, asdict(q), evidence))
-            if cache_key in reader_cache:
-                raw, receipt, original_key = reader_cache[cache_key]
-                return raw, dict(receipt, reused_from=original_key, actual_reader_execution=False,
-                                 incremental_generation_seconds=0.0)
-            raw, receipt = generator.answer(q, evidence, revoked=set())
-            reader_executions += 1
-            reader_cache[cache_key] = (raw, receipt, record_key)
-            return raw, dict(receipt, reused_from=None, actual_reader_execution=True,
-                             incremental_generation_seconds=receipt["generation_seconds"])
+            return reader_session.answer(q, evidence, record_key, revoked=set())
 
         for stage in CURVE:
             admitted_ids = {q.identity for q in qs["train"][:stage]}
@@ -244,7 +235,7 @@ def run(staged, ranker_dir, output):
                     try:
                         head = heads[hkey]
                         old_digest = sha256(head.export())
-                        other_states = {k: h.export() for k, h in heads.items() if k != hkey}
+                        other_states = healthy_peer_snapshots(heads, hkey, head_errors)
                         if arm != "frozen_rerank":
                             current = tuple(Supervision(get_features(arm, queries[r.features.question_id]),
                                                         r.positive_indices, r.negative_kinds)
@@ -302,9 +293,9 @@ def run(staged, ranker_dir, output):
                         attempts.append(item)
             write(output / f"checkpoint-{stage}.json", dict(learning=learning,
                 head_failures={"/".join(k): v for k, v in head_errors.items()},
-                logical_policy_attempts=len(attempts), actual_reader_executions=reader_executions))
+                logical_policy_attempts=len(attempts), reader=reader_session.summary()))
             print(json.dumps(dict(checkpoint=stage, logical_attempts=len(attempts),
-                actual_reader_executions=reader_executions,
+                reader=reader_session.summary(),
                 failures=sum(a["status"] != "succeeded" for a in attempts))), flush=True)
 
         census = validate_census(attempts, plan)
@@ -348,7 +339,7 @@ def run(staged, ranker_dir, output):
             backend_resident_weight_bytes={k: sum(p.numel() * p.element_size() for p in v.model.parameters())
                                            for k, v in backends.items()},
             reader_weight_bytes=sum(p.numel() * p.element_size() for p in generator.model.parameters()),
-            reader_executions=reader_executions, logical_policy_attempts=len(attempts),
+            reader=reader_session.summary(), logical_policy_attempts=len(attempts),
             oracle_succeeded=sum(o["status"] == "succeeded" for o in oracles),
             oracle_unavailable=sum(o["status"] == "unavailable" for o in oracles),
             corpus_and_model_file_bytes=sum(p.stat().st_size for p in staged.rglob("*") if p.is_file()),
@@ -359,7 +350,7 @@ def run(staged, ranker_dir, output):
             actual_future_windows=0, encoder_candidate_winner=None,
             production_accepted=False, superiority_claim=False)
         write(output / "report.json", result)
-        print(json.dumps(dict(metrics=result["metrics"], actual_reader_executions=reader_executions,
+        print(json.dumps(dict(metrics=result["metrics"], reader=reader_session.summary(),
             logical_policy_attempts=len(attempts), production_accepted=False), indent=2), flush=True)
         if any(a["status"] != "succeeded" for a in attempts):
             raise RuntimeError("incomplete policy matrix; all failed attempts retained")
