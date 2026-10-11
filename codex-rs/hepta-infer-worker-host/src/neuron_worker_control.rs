@@ -16,7 +16,6 @@ use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronModelError;
 
-use crate::model_worker::Error as WorkerError;
 use crate::model_worker::InferenceWorker;
 use crate::model_worker::ModelDriver;
 use crate::model_worker::NeuronFeatureDriver;
@@ -78,6 +77,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
             || authorization.request_id != request.request_id.as_str()
             || authorization.reservation_id.is_empty()
             || authorization.cancelled
+            || self.observed_now_ms >= authorization.deadline_ms
+            || authorization.maximum_tokens == 0
+            || authorization.maximum_tokens > authorization.reservation_maximum_tokens
+            || authorization.reservation_model_digest != authorization.model_digest
+            || authorization.lease_payload_digest != authorization.payload_digest
         {
             return Err(NeuronModelError::Rejected);
         }
@@ -97,20 +101,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
             return Err(NeuronModelError::Rejected);
         }
 
-        // This goes through the *loaded* worker instance and its existing
-        // grant/manifest/lease/cancellation/resource/terminality logic.
+        // The adapter has now crossed into the Worker. Once we may have
+        // invoked a backend, no error (including invalid output, memory
+        // overrun or terminal receipt corruption) proves that no work ran.
+        // Preserve unknown outcome instead of authorizing an unsafe retry.
         let receipt = self
             .worker
             .run_neuron_features_receipt_consumed(self.observed_now_ms, &self.model_id, feature)
-            .map_err(|error| match error {
-                WorkerError::DriverFailure(_) | WorkerError::MissingTerminalOutput => {
-                    NeuronModelError::Indeterminate
-                }
-                _ => NeuronModelError::Rejected,
-            })?;
+            .map_err(|_| NeuronModelError::Indeterminate)?;
 
         verify_neuron_feature_receipt_v1(request, &receipt)
-            .map_err(|_| NeuronModelError::Rejected)?;
+            .map_err(|_| NeuronModelError::Indeterminate)?;
         Ok(receipt)
     }
 }

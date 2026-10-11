@@ -41,6 +41,16 @@ than forgetting an old identity. A supervised generation rollover and an
 throughput and restart-safe exactly-once claims; an in-memory set cannot prove
 deduplication across process death.
 
+Error classification at the actual ModelPort boundary is conservative:
+provably pre-Worker failures (wrong binding, cancelled/expired request, bad
+reservation model or lease payload) return Rejected. Once the Worker may have
+invoked the driver, **all** backend, validation and receipt failures become
+Indeterminate, even when the returned Q24 head identity was malformed; the
+already consumed reservation cannot be reissued inside the same Worker.
+A prior error that used Rejected for a post-driver model mismatch has been
+corrected with a regression test. This does not yet give crash-durable replay
+protection: that still belongs to inference.control's durable dispatch owner.
+
 Its model driver is still a test backend rather than real Laya weights. This is
 not proof of physical Laya safetensors, target CPU/GPU resources, signed
 final-use or an observed NDU gain. No user text, labels or production CNS route

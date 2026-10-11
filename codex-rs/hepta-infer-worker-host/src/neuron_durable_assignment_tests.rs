@@ -121,8 +121,8 @@ fn control(
     feature.authorization.payload_digest = payload.clone();
     feature.authorization.lease_payload_digest = payload.clone();
 
-    let mut owner = DurableInferenceControl::open(directory.path().join("inference.journal"), 32)
-        .unwrap();
+    let mut owner =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
     owner
         .submit(
             100,
@@ -176,13 +176,16 @@ fn assigned_durable_owner_and_loaded_worker_match_exact_neuron_features() {
     assert_eq!(diag.authority, AuthorityPosture::DENY_ALL);
     assert_eq!(diag.control_revision, 3);
     assert_eq!(diag.worker_generation, worker.worker_generation());
-    assert_eq!(diag.payload_digest.to_string(), durable.get("tick.1").unwrap().request.payload_digest);
+    assert_eq!(
+        diag.payload_digest.to_string(),
+        durable.get("tick.1").unwrap().request.payload_digest
+    );
     let mut forged = diag.clone();
     forged.control_revision += 1;
     assert!(!forged.validate_integrity());
     drop(durable);
-    let recovered = DurableInferenceControl::open(temporary.path().join("inference.journal"), 32)
-        .unwrap();
+    let recovered =
+        DurableInferenceControl::open(temporary.path().join("inference.journal"), 32).unwrap();
     assert_eq!(
         read_neuron_durable_assignment_v1(&recovered, &worker, &typed, 100).unwrap(),
         diag

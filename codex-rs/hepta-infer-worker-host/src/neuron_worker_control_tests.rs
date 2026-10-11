@@ -282,9 +282,10 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
     );
     assert_eq!(
         port.execute_feature(&typed),
-        Err(NeuronModelError::Rejected),
-        "an incorrect driver head cannot produce an accepted receipt"
+        Err(NeuronModelError::Indeterminate),
+        "driver identity drift after invocation has an unknown effect outcome"
     );
+    assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
     assert_eq!(calls.load(Ordering::SeqCst), 2);
 }
 
