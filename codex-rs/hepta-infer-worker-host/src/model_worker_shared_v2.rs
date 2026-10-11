@@ -36,6 +36,7 @@ const MAX_FEATURE_ABS_Q24: i64 = 8 * (1_i64 << 24);
 #[derive(Clone, Debug)]
 pub struct SharedNeuronFeatureRequestV2 {
     pub authorization: WorkerRequest,
+    pub scope_id: StableId,
     pub principal_id: StableId,
     pub purpose_id: StableId,
     pub cell_id: StableId,
@@ -52,6 +53,7 @@ pub struct SharedNeuronFeatureResultV2 {
     pub request_id: String,
     pub reservation_id: String,
     pub cell_id: StableId,
+    pub scope_id: StableId,
     pub principal_id: StableId,
     pub purpose_id: StableId,
     pub feature_identity_digest: Digest32,
@@ -94,6 +96,7 @@ pub fn canonical_shared_neuron_payload_digest_v2(
         req.authorization.request_id.as_str(),
         req.authorization.reservation_id.as_str(),
         req.authorization.model_digest.as_str(),
+        req.scope_id.as_str(),
         req.principal_id.as_str(),
         req.purpose_id.as_str(),
         req.cell_id.as_str(),
@@ -142,7 +145,8 @@ fn validate_item(
         return Err(Error::TokenLimit);
     }
     let identity = &req.snapshot.identity;
-    if req.principal_id != identity.principal_id
+    if req.scope_id != identity.scope_id
+        || req.principal_id != identity.principal_id
         || req.purpose_id != identity.purpose_id
         || identity.generation.get() != worker_generation
         || identity.authority_epoch != authority_epoch
@@ -311,6 +315,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 request_id: request.authorization.request_id.clone(),
                 reservation_id: request.authorization.reservation_id.clone(),
                 cell_id: request.cell_id.clone(),
+                scope_id: request.scope_id.clone(),
                 principal_id: request.principal_id.clone(),
                 purpose_id: request.purpose_id.clone(),
                 feature_identity_digest: identity_digest,
@@ -380,6 +385,7 @@ mod tests {
 
     fn frame(epoch: u64) -> Arc<ImmutableFeatureSnapshotV2> {
         let identity = codex_hepta_infer_core::shared_feature_v2::SharedFeatureIdentityV2 {
+            scope_id: id("scope.a"),
             principal_id: id("principal.a"),
             purpose_id: id("purpose.prediction"),
             generation: Generation::new(3).expect("generation"),
@@ -414,6 +420,7 @@ mod tests {
                 reservation_maximum_tokens: 32,
                 cancelled: false,
             },
+            scope_id: id("scope.a"),
             principal_id: id("principal.a"),
             purpose_id: id("purpose.prediction"),
             cell_id: id(cell),
@@ -486,6 +493,12 @@ mod tests {
         assert_eq!(
             validate_item(&changed, 10, 3, 2, &manifest),
             Err(Error::PayloadMismatch)
+        );
+        changed = a.clone();
+        changed.scope_id = id("scope.other");
+        assert_eq!(
+            validate_item(&changed, 10, 3, 2, &manifest),
+            Err(Error::FeatureContract)
         );
         changed = a.clone();
         changed.principal_id = id("other");
