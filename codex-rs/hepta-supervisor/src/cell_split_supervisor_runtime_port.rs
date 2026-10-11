@@ -101,7 +101,9 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
             || original.original_runtime_receipt_bytes.len() > 32 * 1024
             || original.original_runtime_signature_bytes.len() != 64
         {
-            return Err("signed CNS predecessor contains inconsistent original runtime evidence".into());
+            return Err(
+                "signed CNS predecessor contains inconsistent original runtime evidence".into(),
+            );
         }
         // The source signature covers the full typed CNS commit record. The
         // journal binding covers the exact *inner* original runtime bytes.
@@ -152,7 +154,7 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
             || original.old_generation.get() != plan.parent_generation
             || original.new_generation.get() != plan.child_generation
             || original.authority_epoch != binding.authority_epoch
-            || match verified_original_cns_digest {
+            || (match verified_original_cns_digest {
                 Some(digest) => original.cns_cutover_receipt_digest != digest,
                 None => {
                     // Source-only compatibility. A real cross-owner cutover
@@ -161,7 +163,7 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
                     original.cns_cutover_receipt_digest.to_string()
                         != intent.previous_receipt_digest
                 }
-            }
+            })
             || original.successor_route_digest.to_string() != binding.successor_route_digest
             || accepted_handoff_plan_digest.to_string() != binding.handoff_plan_digest
             || binding.supervisor_id.is_empty()
