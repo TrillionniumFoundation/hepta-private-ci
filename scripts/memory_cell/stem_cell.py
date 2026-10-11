@@ -136,7 +136,8 @@ class StemHead(nn.Module):
         labels are weak supervision, not entailment verdicts.
         """
         if (
-            self.quarantined
+            torch.is_inference_mode_enabled()
+            or self.quarantined
             or not 1 <= len(rows) <= 256
             or type(steps) is not int
             or not 1 <= steps <= 2048
