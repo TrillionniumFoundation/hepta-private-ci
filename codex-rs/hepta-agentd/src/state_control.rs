@@ -276,9 +276,11 @@ impl AgentdState {
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
+                    crate::cognitive_context::CognitiveReadOwnerPorts {
+                        retrieval: self.cognitive_retrieval_context.get(),
+                        learning: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
                 )
                 .await;
                 self.refresh_generation()?;
