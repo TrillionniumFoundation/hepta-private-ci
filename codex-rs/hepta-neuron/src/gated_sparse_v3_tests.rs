@@ -258,3 +258,41 @@ fn independent_python_q24_golden_temporal_sequence_matches_bit_exactly() {
         previous = Some(next);
     }
 }
+
+fn v3_fuzz_splitmix64(state: &mut u64) -> u64 {
+    *state = state.wrapping_add(0x9e37_79b9_7f4a_7c15);
+    let mut value = *state;
+    value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
+    value = (value ^ (value >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
+    value ^ (value >> 31)
+}
+
+#[test]
+fn independent_4096_event_v3_temporal_q24_digest_is_bit_exact() {
+    // Source: qualification/neuron-gated-sparse-v3/q24_temporal_fuzz.py
+    // Seed and digest are fixed. This proves Q24 arithmetic conformance only.
+    let cfg = config();
+    let mut prior = None;
+    let mut seed = 0x1337_babe_dead_beef_u64;
+    let mut micros = 0_u64;
+    let mut stream = Vec::with_capacity(4_096 * 16);
+    for sequence in 1..=4_096_u64 {
+        let drive = (v3_fuzz_splitmix64(&mut seed) % (2 * H + 1) as u64) as i64 - H;
+        let delta = (v3_fuzz_splitmix64(&mut seed) % 3_000) + 1;
+        micros += delta;
+        let mut input = tick(sequence, micros);
+        input.temporal_drive_q24[0] = drive;
+        let (next, receipt) = checked(gated_sparse_tick_v3(
+            &cfg, &input, prior.as_ref(),
+        ));
+        stream.extend_from_slice(&receipt.gate_q24[0].to_be_bytes());
+        stream.extend_from_slice(&next.temporal_q24()[0].to_be_bytes());
+        prior = Some(next);
+    }
+    let last = prior.expect("4096 evaluated ticks");
+    assert_eq!(last.temporal_q24()[0], -98_565_713);
+    assert_eq!(
+        Digest32::of_bytes(&stream).to_string(),
+        "d92a35f9f9415b62a4eb4ac60ad3614c605a9796d1ffc46084b205e8399d29ac"
+    );
+}
