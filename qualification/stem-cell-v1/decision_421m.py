@@ -128,6 +128,7 @@ def build_plan(dataset_path, descriptors, *, train_steps, trainable_budget,
         "production_promotion_permitted": False, "model_execution_performed": False,
         "dataset_path": str(dataset_path),
         "dataset_sha256": sha256_file(dataset_path),
+        "evaluator_source_sha256": sha256_file(__file__),
         "training_sample_groups_sha256": train_group_digest,
         "classes": width, "checkpoints": pinned,
         "input_contract": "state_question_all_ordered_options",
@@ -142,8 +143,9 @@ def build_plan(dataset_path, descriptors, *, train_steps, trainable_budget,
 
 def write_frozen(path, payload):
     path = Path(path)
+    key = "plan_sha256" if payload.get("schema") == SCHEMA else "report_sha256"
     with path.open("x", encoding="utf-8") as handle:
-        handle.write(json.dumps({**payload, "plan_sha256": digest(payload)},
+        handle.write(json.dumps({**payload, key: digest(payload)},
                                 ensure_ascii=False, indent=2, sort_keys=True) + "\n")
 
 
@@ -156,6 +158,8 @@ def load_plan(path):
         raise ValueError("modified or non-shadow plan")
     if sha256_file(payload["dataset_path"]) != payload["dataset_sha256"]:
         raise ValueError("dataset contents changed since freeze")
+    if sha256_file(__file__) != payload.get("evaluator_source_sha256"):
+        raise ValueError("evaluator source changed since freeze")
     for item in payload["checkpoints"].values():
         if snapshot_digest(item["snapshot_path"]) != item["sha256"]:
             raise ValueError("checkpoint contents changed since freeze")
@@ -230,7 +234,7 @@ def grouped_pair(indexed, candidate, baseline, split):
             for _, items in sorted(groups.items())]
 
 
-def bootstrap(groups, seed, *, replicates=2000, alpha=.05 / 12):
+def bootstrap(groups, seed, *, replicates=2000, alpha=.05 / 24):
     if not groups:
         raise ValueError("no independent paired groups")
     rng = random.Random(seed)
