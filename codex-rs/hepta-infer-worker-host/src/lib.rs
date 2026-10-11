@@ -10,6 +10,7 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 pub mod neuron_worker_control;
+pub mod neuron_durable_assignment;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;

@@ -219,6 +219,20 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.generation
     }
 
+    /// Read only the actual in-memory loaded model and require a current
+    /// resource grant. This does not prove a physical CAS load or selection.
+    pub(crate) fn inspected_neuron_manifest(
+        &self,
+        now_ms: u64,
+        model_id: &str,
+    ) -> Result<&ModelManifest, Error> {
+        self.validate_current_grant(now_ms)?;
+        self.models
+            .get(model_id)
+            .map(|model| &model.manifest)
+            .ok_or(Error::ModelNotLoaded)
+    }
+
     pub fn load_model(
         &mut self,
         now_ms: u64,

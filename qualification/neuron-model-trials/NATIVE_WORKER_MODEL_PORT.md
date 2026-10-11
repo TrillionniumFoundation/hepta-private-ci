@@ -53,3 +53,28 @@ The product Worker crate already depends on Agentd, which owns the Neuron
 runtime. The new direct dependency on codex-hepta-neuron is downstream:
 no reverse Agentd -> Worker runtime import and no second execution owner.
 Shadow-only PR #1494 remains Draft. Production selection/NDU remain DENY_ALL.
+
+## Durable inference.control assignment observation (read-only)
+
+The existing `DurableInferenceControl` journal owns real (fsynced) Submit,
+Reserve and Assign transitions. The additive
+`read_neuron_durable_assignment_v1` does not create another owner or accept
+caller-provided claimed state: it reads the owner handle and the actual
+`InferenceWorker`, refuses every state except Assigned, verifies Worker
+ID/generation, deadline and reservation expiry, checks current Worker grant
+and actually loaded model, and recomputes the entire canonical Neuron payload.
+
+This only returns `NeuronDurableAssignmentDiagnosticV1`: a bounded, data-free,
+domain-separated integrity commitment with `AuthorityPosture::DENY_ALL`.
+The read neither consumes nor executes a reservation and **does not imply
+crash-safe exactly-once or final-use authority**. In particular, reopening
+a durable Assigned record after a process death does not prove the request
+was never executed. Final-use requires the authoritative control owner to
+durably claim/dispatch and reconcile uncertain results, independent signed
+resource/route grants and a current physical model-load receipt.
+
+Tests use the **actual** fsynced control journal, an actually loaded in-memory
+Worker, then reopen the journal to verify exact source continuity. Negative
+cases cover expired reservation, mismatched feature bytes, changed weights and
+an owner-recorded cancellation. This is not production inference or NDU.
+

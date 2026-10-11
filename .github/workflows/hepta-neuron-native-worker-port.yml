@@ -9,6 +9,7 @@ on:
       - ".github/scripts/test_hepta_neuron_lock_dependency_check.py"
       - "codex-rs/hepta-infer-worker-host/src/neuron_worker_control.rs"
       - "codex-rs/hepta-infer-worker-host/src/neuron_worker_control_tests.rs"
+      - "codex-rs/hepta-infer-worker-host/src/neuron_durable_assignment.rs"
       - "codex-rs/hepta-infer-worker-host/src/lib.rs"
       - "codex-rs/hepta-infer-worker-host/src/model_worker.rs"
       - "qualification/neuron-model-trials/NATIVE_WORKER_MODEL_PORT.md"
@@ -47,6 +48,8 @@ jobs:
         run: cargo test --locked -p codex-hepta-infer-worker-host --lib neuron_worker_control::tests
       - name: Native Worker lifecycle regression
         run: cargo test --locked -p codex-hepta-infer-worker-host --lib model_worker::tests
+      - name: Verify durable inference-control assigned Worker source
+        run: cargo test --locked -p codex-hepta-infer-worker-host --lib neuron_durable_assignment::tests
       - name: Strict correctness Clippy
         run: cargo clippy --locked -p codex-hepta-infer-worker-host --lib -- -D clippy::correctness
       - name: Reject worktree changes
