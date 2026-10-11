@@ -5,6 +5,9 @@ on:
   pull_request:
     paths:
       - "qualification/neuron-stem/four_gate_pretrained.py"
+      - "qualification/neuron-stem/four_gate_public_replay.py"
+      - "qualification/neuron-stem/prequential_trial.py"
+      - "qualification/neuron-stem/hf_trial.py"
       - "qualification/neuron-stem/four_gate_capture.py"
       - "qualification/neuron-stem/test_four_gate_pretrained.py"
       - ".github/workflows/hepta-neuron-real-stem.yml"
@@ -60,5 +63,47 @@ jobs:
             real-stem-source.txt
             real-stem-environment.txt
             real-stem-evidence/
+          if-no-files-found: error
+          retention-days: 14
+
+  real-public-learning:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact source and install pinned CPU runtime
+        run: |
+          git rev-parse HEAD > public-learning-source.txt
+          python3 -m venv /tmp/public-learning-venv
+          /tmp/public-learning-venv/bin/pip install numpy==2.2.6 psutil==7.0.0 transformers==4.57.3 huggingface-hub==0.36.0
+          /tmp/public-learning-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/public-learning-venv/bin/pip freeze > public-learning-environment.txt
+      - name: Execute real human-labelled replay without manufacturing future observations
+        shell: bash
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          set -euo pipefail
+          PYTHONPATH=qualification/neuron-stem /tmp/public-learning-venv/bin/python \
+            qualification/neuron-stem/four_gate_public_replay.py \
+            --source-root "$PWD" --model-dir /tmp/public-learning-mmbert \
+            --output public-learning-evidence 2>&1 | tee public-learning.log
+          git diff --exit-code
+      - name: Retain original outputs, candidate Heads and publisher attribution
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: real-public-learning-${{ github.run_id }}
+          path: |
+            public-learning-source.txt
+            public-learning-environment.txt
+            public-learning.log
+            public-learning-evidence/
           if-no-files-found: error
           retention-days: 14
