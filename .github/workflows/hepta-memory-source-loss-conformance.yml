@@ -59,7 +59,7 @@ jobs:
       - name: Check source formatting without skipping other repository gates
         run: |
           set -euo pipefail
-          /tmp/source-loss-env/bin/pip install 'ruff==0.15.8'
+          /tmp/source-loss-env/bin/pip install 'ruff==0.15.13'
           /tmp/source-loss-env/bin/ruff format --check scripts/memory_cell/source_completion_loss.py scripts/memory_cell/test_source_completion_loss.py scripts/memory_cell/test_source_completion_hf.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/test_source_completion_writer.py 2>&1 | tee /tmp/source-loss-receipt/format.log
       - name: Preserve exact SHA, source, failures and environment
         if: always()

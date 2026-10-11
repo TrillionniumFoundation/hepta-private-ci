@@ -22,7 +22,7 @@ jobs:
       - name: Format only three test modules into an isolated review branch
         run: |
           set -euo pipefail
-          python3 -m pip install 'ruff==0.15.8'
+          python3 -m pip install 'ruff==0.15.13'
           python3 - <<'PY'
           import ast, json
           from pathlib import Path
