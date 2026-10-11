@@ -17,7 +17,7 @@ from pathlib import Path
 import random
 
 from model_runner import snapshot_digest
-from study import load_jsonl, quantile, validate_dataset
+from study import quantile, validate_dataset
 
 SOURCES = {
     "laya_original": ("NandhaKishorM/laya", 421_000_000),
@@ -30,6 +30,30 @@ SPLITS = ("train", "calibration", "held_out", "future_1", "future_2", "ood")
 SCORING = SPLITS[1:]
 TEMPERATURES = (.5, .75, 1., 1.5, 2., 3., 5.)
 SCHEMA = "hepta.stem-cell-decision-421m-shadow.v1"
+
+
+def no_duplicate_json_keys(pairs):
+    record = {}
+    for key, value in pairs:
+        if key in record:
+            raise ValueError("duplicate field in pinned Decision evidence")
+        record[key] = value
+    return record
+
+
+def read_strict_jsonl(path):
+    """Reject duplicate keys and non-object rows in frozen case/prediction data."""
+    with Path(path).open(encoding="utf-8") as handle:
+        for number, line in enumerate(handle, 1):
+            if not line.strip():
+                raise ValueError(f"empty Decision JSONL row at line {number}")
+            try:
+                record = json.loads(line, object_pairs_hook=no_duplicate_json_keys)
+            except (ValueError, TypeError) as exc:
+                raise ValueError(f"invalid/duplicate Decision JSONL at line {number}") from exc
+            if type(record) is not dict:
+                raise ValueError("Decision JSONL rows must be objects")
+            yield record
 
 
 def canonical(value):
@@ -101,7 +125,7 @@ def audit_dataset(rows):
 def build_plan(dataset_path, descriptors, *, train_steps, trainable_budget,
                batch_size, context_tokens, seed, device, dtype):
     dataset_path = Path(dataset_path).resolve()
-    data = list(load_jsonl(dataset_path))
+    data = list(read_strict_jsonl(dataset_path))
     _, width, train_group_digest = audit_dataset(data)
     if set(descriptors) != set(SOURCES):
         raise ValueError("all four registered decision checkpoints required")
@@ -160,7 +184,7 @@ def write_frozen(path, payload):
 
 
 def load_plan(path):
-    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    payload = json.loads(Path(path).read_text(encoding="utf-8"), object_pairs_hook=no_duplicate_json_keys)
     token = payload.pop("plan_sha256", None)
     if (not check_sha(token) or digest(payload) != token or
             payload.get("schema") != SCHEMA or payload.get("stage") != "shadow_only" or
@@ -438,7 +462,7 @@ def main():
                    help="equal_budget never fabricates HF pretrained Decision Heads")
     a = parser.parse_args()
     if a.command == "plan":
-        records = json.loads(Path(a.descriptors).read_text(encoding="utf-8"))
+        records = json.loads(Path(a.descriptors).read_text(encoding="utf-8"), object_pairs_hook=no_duplicate_json_keys)
         write_frozen(a.output, build_plan(
             a.dataset, records, train_steps=a.train_steps,
             trainable_budget=a.trainable_budget, batch_size=a.batch_size,
@@ -446,12 +470,12 @@ def main():
             dtype=a.dtype))
     else:
         plan, token = load_plan(a.plan)
-        indexed, _, groups = audit_dataset(list(load_jsonl(plan["dataset_path"])))
+        indexed, _, groups = audit_dataset(list(read_strict_jsonl(plan["dataset_path"])))
         if groups != plan["training_sample_groups_sha256"]:
             raise ValueError("training group lineage changed")
         report = evaluate(
-            plan, json.loads(Path(a.runs).read_text(encoding="utf-8")),
-            list(load_jsonl(a.predictions)), indexed,
+            plan, json.loads(Path(a.runs).read_text(encoding="utf-8"), object_pairs_hook=no_duplicate_json_keys),
+            list(read_strict_jsonl(a.predictions)), indexed,
             replicates=a.bootstrap_replicates,
             comparison_scope=a.comparison_scope)
         report.update({
