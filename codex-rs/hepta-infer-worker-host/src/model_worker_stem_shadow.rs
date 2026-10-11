@@ -10,15 +10,15 @@ use std::collections::BTreeSet;
 use std::fs;
 use std::io::Read;
 use std::io::Write;
+use std::path::PathBuf;
+use std::process::Command;
+use std::process::Stdio;
+use std::str::FromStr;
+use std::sync::Arc;
 use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 use std::time::Instant;
-use std::path::PathBuf;
-use std::str::FromStr;
-use std::sync::Arc;
-use std::process::Command;
-use std::process::Stdio;
 
 use codex_hepta_infer_core::shared_feature_v2::ImmutableFeatureSnapshotV2;
 use codex_hepta_infer_core::shared_feature_v2::SharedFeatureCacheV2;
@@ -370,7 +370,6 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         authority: NonAuthorizingPosture::DENY_ALL,
     })
 }
-
 
 const MAX_SHADOW_SNAPSHOT_TTL_MS: u64 = 5 * 60 * 1000;
 
