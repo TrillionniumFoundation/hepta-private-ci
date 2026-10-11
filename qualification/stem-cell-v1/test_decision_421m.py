@@ -106,6 +106,32 @@ class FourWayDecisionTests(unittest.TestCase):
         self.assertEqual(result["arm_metrics"]["laya_original:checkpoint"]
                          ["by_split"]["future_1"]["count"], 8)
 
+    def test_equal_budget_only_is_comparable_without_fake_checkpoint(self):
+        runs = [r for r in self.runs if r["arm"].endswith(":equal_budget")]
+        predictions = [r for r in self.predictions
+                       if r["arm"].endswith(":equal_budget")]
+        review = evaluate(self.plan, runs, predictions, self.indexed,
+                          comparison_scope="equal_budget", replicates=1000)
+        self.assertEqual(len(review["arm_metrics"]), 4)
+        self.assertEqual(len(review["paired_future_vs_original_laya"]), 3)
+        self.assertFalse(review["full_comparison_present"])
+        self.assertEqual(review["comparison_scope"], "equal_budget")
+        self.assertEqual(len(review["excluded_checkpoint_arms"]), 4)
+        self.assertIn("NOT_COMPARABLE", review["checkpoint_comparison_status"])
+        self.assertFalse(review["production_promotion_permitted"])
+        with self.assertRaisesRegex(ValueError, "all four equal-budget"):
+            evaluate(self.plan, runs[:-1], predictions, self.indexed,
+                     comparison_scope="equal_budget", replicates=1000)
+        with self.assertRaisesRegex(ValueError, "unknown run arm"):
+            evaluate(self.plan, self.runs, self.predictions, self.indexed,
+                     comparison_scope="equal_budget", replicates=1000)
+        with self.assertRaisesRegex(ValueError, "full four-model"):
+            evaluate(self.plan, runs, predictions, self.indexed,
+                     comparison_scope="full", replicates=1000)
+        with self.assertRaisesRegex(ValueError, "unknown preregistered"):
+            evaluate(self.plan, runs, predictions, self.indexed,
+                     comparison_scope="invalid", replicates=1000)
+
     def test_calibration_never_uses_future_labels(self):
         baseline = self.run_report()["arm_metrics"]["deberta_v3_large:checkpoint"]
         altered = copy.deepcopy(self.predictions)
