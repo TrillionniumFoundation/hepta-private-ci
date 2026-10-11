@@ -32,8 +32,8 @@ use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::FederationConsumerAccess;
 use codex_hepta_memory::SharedExperiencePurposeV1;
-use codex_hepta_memory::StableMemoryId;
 use codex_hepta_memory::SharedExperienceUseV1;
+use codex_hepta_memory::StableMemoryId;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -234,7 +234,9 @@ impl AgentdSharedReplayHostV1 {
         };
         binding.diagnostic_digest = binding.computed_digest();
         if !binding.validate_integrity() {
-            return Err(SharedTerminalCellError::Binding("Neuron source diagnostic integrity"));
+            return Err(SharedTerminalCellError::Binding(
+                "Neuron source diagnostic integrity",
+            ));
         }
         Ok(binding)
     }
