@@ -807,3 +807,28 @@ fn weak_effect_owner_public_key_fails_before_any_coordinator_io() {
         )),
     ));
 }
+
+#[test]
+fn invalid_frozen_plans_cannot_derive_a_trusted_effect_digest() {
+    let original = plan();
+    assert_eq!(
+        original.digest().expect("validated plan"),
+        sha256(&canonical_json(&original).expect("canonical plan"))
+    );
+
+    let mut invalid = original.clone();
+    invalid.owner_ids[1] = invalid.owner_ids[0].clone();
+    assert!(invalid.digest().is_err());
+
+    invalid = original.clone();
+    invalid.scope_digest = "00".repeat(32);
+    assert!(invalid.digest().is_err());
+
+    invalid = original.clone();
+    invalid.child_generation = invalid.parent_generation;
+    assert!(invalid.digest().is_err());
+
+    invalid = original;
+    invalid.split_id.clear();
+    assert!(invalid.digest().is_err());
+}
