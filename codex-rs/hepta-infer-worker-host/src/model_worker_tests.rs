@@ -799,8 +799,16 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
         .expect("cryptographically verified one-use test token");
     let observed = worker
         .run_verified_stem_feature_receipt_v1(
-            &authority, token, 100, &source, &access,
-            head, &features, authorization,
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization,
+            },
         )
         .expect("signed and scoped native driver path");
     assert_eq!(
@@ -840,8 +848,16 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
     // changed. The independent signature must still reject this mutation.
     assert_eq!(
         worker.run_verified_stem_feature_receipt_v1(
-            &authority, token, 100, &source, &access, head.clone(),
-            &features, amended_auth,
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head.clone(),
+                feature_vector_q24: &features,
+                authorization: amended_auth,
+            },
         ),
         Err(Error::FinalUseDenied),
     );
@@ -856,8 +872,16 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
         .expect("valid token issued by other verifier instance");
     assert_eq!(
         worker.run_verified_stem_feature_receipt_v1(
-            &authority, foreign_token, 100, &source, &access,
-            head, &features, auth,
+            &authority,
+            foreign_token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: auth,
+            },
         ),
         Err(Error::FinalUseDenied),
     );
@@ -890,8 +914,16 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
         .expect("trusted revocation update");
     assert_eq!(
         worker.run_verified_stem_feature_receipt_v1(
-            &authority, token, 100, &source, &access, head,
-            &features, auth,
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: auth,
+            },
         ),
         Err(Error::FinalUseDenied),
     );
