@@ -134,11 +134,11 @@ class ProtocolTests(unittest.TestCase):
             identity="source",
             root="root",
             scope="scope",
-            observed_at=1,
+            observed_at="2023-01-01",
             content="The planned destination was Paris. Keep the original statement.",
         )
         source = SimpleNamespace(history=lambda q: [doc])
-        query = SimpleNamespace(observed_at=2)
+        query = SimpleNamespace(observed_at="2023-01-02")
         target = SimpleNamespace(
             unanswerable=False,
             unresolved_evidence=(),
@@ -157,7 +157,7 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(kind, "no-admitted-literal-reference-span")
 
     def test_future_source_cannot_be_privileged_reference(self):
-        doc = SimpleNamespace(identity="source", observed_at=3, content="Paris")
+        doc = SimpleNamespace(identity="source", observed_at="2023-01-03", content="Paris")
         source = SimpleNamespace(history=lambda q: [doc])
         query = SimpleNamespace(observed_at=2)
         target = SimpleNamespace(
@@ -168,6 +168,28 @@ class ProtocolTests(unittest.TestCase):
         )
         self.assertIsNone(oracle_sources(source, query, target)[0])
 
+
+    def test_privileged_reference_uses_native_calendar_order(self):
+        # Lexical ordering of the native LoCoMo grammar would reject April
+        # before May because "9" compares greater than "1".
+        doc = SimpleNamespace(
+            identity="source",
+            root="root",
+            scope="scope",
+            observed_at="9:36 am on 2 April, 2023",
+            content="The planned destination was Paris.",
+        )
+        source = SimpleNamespace(history=lambda q: [doc])
+        query = SimpleNamespace(observed_at="1:56 pm on 8 May, 2023")
+        target = SimpleNamespace(
+            unanswerable=False,
+            unresolved_evidence=(),
+            evidence=("source",),
+            answer="Paris",
+        )
+        evidence, kind = oracle_sources(source, query, target)
+        self.assertEqual(kind, "native-source-literal-span")
+        self.assertIsNotNone(evidence)
 
 if __name__ == "__main__":
     unittest.main()

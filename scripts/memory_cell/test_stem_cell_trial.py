@@ -23,7 +23,7 @@ class NativeFixture:
 
 def corpus():
     train = [
-        Question(f"train-{kind}-{i}", "train", f"scope-{i}", text, "2024")
+        Question(f"train-{kind}-{i}", "train", f"scope-{i}", text, "2024-01-01")
         for kind, text in (
             ("general", "What happened?"),
             ("temporal", "When did it happen?"),
@@ -77,7 +77,7 @@ class TrialTests(unittest.TestCase):
             identity="source",
             root="root",
             scope="scope",
-            observed_at="2023",
+            observed_at="2023-01-01",
             content=text,
         )
         source = SimpleNamespace(history=lambda q: [doc])
