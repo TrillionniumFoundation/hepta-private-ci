@@ -340,10 +340,10 @@ fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
     assert_eq!(fs::metadata(&path).unwrap().len(), original_length);
     let reopened = DurableLedger::recover(
         OpenOptions::new()
-                .read(true)
-                .write(true)
-                .open(&path)
-                .unwrap(),
+            .read(true)
+            .write(true)
+            .open(&path)
+            .unwrap(),
         digest("host-authorized-ledger"),
         1,
         LedgerRecovery::Unacknowledged,
