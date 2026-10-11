@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'qualification/neuron-stem/**'
-      - 'codex-rs/hepta-infer-core/**'
-      - '.github/workflows/hepta-neuron-stem-qualification.yml'
+      - "qualification/neuron-stem/**"
+      - "codex-rs/hepta-infer-core/**"
+      - ".github/workflows/hepta-neuron-stem-qualification.yml"
 
 permissions:
   contents: read
