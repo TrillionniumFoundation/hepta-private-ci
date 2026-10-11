@@ -115,3 +115,23 @@ Qwen/Smol ZIPs and the pinned eight-question plan. Six model-free conversion
 tests check incomplete, duplicate, conflicting and falsely promoted receipts.
 The converter neither revises the original citation audit nor claims a
 semantic-entailment certificate, prospective outcome or production admission.
+
+## Logical-revision correction in citation-path verification (2026-10-11)
+
+A historical formal-path checker previously treated any cited path of matching
+event attributes as active, even when the original source scope also contained
+a **visible explicit `supersedes` correction** to one of those cited edges.
+This could produce a false-positive "connected" formal citation from revoked
+history. The read-only path check now uses cited evidence exclusively for
+positive edges but consults all original, same-scope events at or before the
+public query's logical revision to invalidate explicitly replaced edges.
+Future revisions cannot retroactively revoke historical claims, and sources
+from different scopes cannot form one accepted chain.
+
+Three added regression tests establish obsolete-path rejection, revision-as-of
+preservation and cross-scope isolation. Local source-pinned replay of both
+historical model ZIPs (96 genuine answers; 42 checked manifest members) found
+**zero changed per-answer formal path results** and identical historical
+by-arm metrics. The fix strengthens future counterexample behavior without
+rewriting original model outputs, changing task scores, human-certifying
+support, claiming >=99% semantic precision, or qualifying production.

@@ -92,6 +92,35 @@ class FormalCitationTests(unittest.TestCase):
             spec, ["first", "second", "another"], docs, "site_good"
         ))
 
+    def test_superseded_first_hop_cannot_prove_current_event_chain(self):
+        _, spec, docs = case()
+        newer = event("new_first", "service_1", "component", "component_2", revision=2)
+        source = json.loads(newer["content"])
+        source["supersedes"] = ["first"]
+        newer["content"] = json.dumps(source, sort_keys=True)
+        docs["new_first"] = newer
+        docs["new_second"] = event(
+            "new_second", "component_2", "location", "site_good", revision=2
+        )
+        self.assertFalse(trace_cited_chain(spec, ["first", "second"], docs, "site_good"))
+        self.assertTrue(trace_cited_chain(
+            spec, ["new_first", "new_second"], docs, "site_good"
+        ))
+
+    def test_superseder_after_query_revision_is_not_retroactive(self):
+        _, spec, docs = case()
+        newer = event("future_first", "service_1", "component", "component_2", revision=3)
+        source = json.loads(newer["content"])
+        source["supersedes"] = ["first"]
+        newer["content"] = json.dumps(source, sort_keys=True)
+        docs["future_first"] = newer
+        self.assertTrue(trace_cited_chain(spec, ["first", "second"], docs, "site_good"))
+
+    def test_unrelated_scopes_cannot_form_a_citation_path(self):
+        _, spec, docs = case()
+        docs["second"]["scope"] = "other_scope"
+        self.assertFalse(trace_cited_chain(spec, ["first", "second"], docs, "site_good"))
+
     def test_unlabelled_correct_generation_fails_provenance_not_task_score(self):
         row, spec, docs = case()
         row["answer"] = row["citation_audit"]["request"]["answer"] = "site_good"

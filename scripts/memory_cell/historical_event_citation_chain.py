@@ -108,30 +108,44 @@ def bounded_source(path, expected):
 
 
 def trace_cited_chain(spec, cited_sources, original_docs, identifier):
-    """Check public entity/path connectivity using ONLY actually cited events.
+    """Find a current query path using exclusively cited positive source edges.
 
-    A positive result is not general-language entailment, source necessity,
-    or program-result correctness; it is a bounded synthetic graph check.
+    An uncited later event may still invalidate a superseded cited edge when
+    that explicit correction is visible at the same logical revision and scope.
+    Mere newer dates or unexpressed conflicts never revoke prior evidence.
     """
     if not identifier or not cited_sources or len(set(cited_sources)) != len(cited_sources):
         return False
+    scope = original_docs[cited_sources[0]]["scope"]
+    if any(original_docs[key]["scope"] != scope for key in cited_sources):
+        return False
+    if spec.get("id") is not None and spec["id"] != scope:
+        return False
+    visible = {}
+    for key, source in original_docs.items():
+        if source["scope"] == scope:
+            event = strict_json(source["content"])
+            if event["revision"] <= spec["revision"]:
+                visible[key] = event
     entities = {spec["entity"]}
     for attribute in spec["path"]:
+        replaced = {
+            ancestor
+            for event in visible.values()
+            if event["entity"] in entities and event["attribute"] == attribute
+            for ancestor in event["supersedes"]
+        }
         next_entities = set()
         for source_id in cited_sources:
-            event = strict_json(original_docs[source_id]["content"])
-            if (
-                event["revision"] <= spec["revision"]
-                and event["entity"] in entities
-                and event["attribute"] == attribute
-            ):
+            if source_id in replaced or source_id not in visible:
+                continue
+            event = visible[source_id]
+            if event["entity"] in entities and event["attribute"] == attribute:
                 next_entities.add(event["value"])
         if not next_entities:
             return False
         entities = next_entities
-    # Conflicting answers are not sufficient to prove a single-valued claim.
     return entities == {identifier}
-
 
 def trace_row(row, spec, declared_support, original_docs):
     if row["status"] == "failed":
