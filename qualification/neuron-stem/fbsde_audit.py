@@ -8,6 +8,7 @@ import hashlib
 import itertools
 import json
 import math
+import struct
 from pathlib import Path
 from four_gate_common import require, strict_loads
 
@@ -43,6 +44,19 @@ def _ns(value):
     return value
 
 
+
+def _cell_value(formula, probabilities, tables):
+    if type(formula) is int:
+        return probabilities[formula], 0., 0, 0
+    left, el, dl, nl = _cell_value(formula[1], probabilities, tables)
+    right, er, dr, nr = _cell_value(formula[2], probabilities, tables)
+    op = int(formula[0]=='or')
+    value = sum(tables[op][2*a+b]*(left if a else 1-left)*(right if b else 1-right)
+                for a,b in itertools.product((0,1),repeat=2))
+    exact_local = left+right-left*right if op else left*right
+    return value, min(1., el+er+abs(value-exact_local)), 1+max(dl,dr), 1+nl+nr
+
+
 def recompute_comparison(root, partitions):
     """Partitions are unchanged publisher rows (or explicitly labelled test fixtures)."""
     public=_read(root,'public-cases.json'); design=_read(root,'design.json')
@@ -50,7 +64,7 @@ def recompute_comparison(root, partitions):
     require(set(public)=={'train','validation','calibration','test'}, 'complete splits')
     require(design['public_input_digests']=={k:_digest(v) for k,v in public.items()}, 'public input digest mismatch')
     require(design['question_profile']==comparison['question_profile'], 'question profile drift')
-    require(comparison['question_profile'] in ('label_balanced_v1','independent_targets_v2'), 'unknown profile')
+    require(comparison['question_profile'] in ('label_balanced_v1','independent_targets_v2','independent_targets_composition_v3'), 'unknown profile')
     labels={r['id']:r['intent'] for r in partitions['test']}
     test=public['test']; truth={}; source_sets={}
     require(len({r['case_id'] for r in test})==len(test), 'duplicate test case')
@@ -84,8 +98,26 @@ def recompute_comparison(root, partitions):
     arms=set(comparison['metrics'])
     required={'light_head','recurrent_1','recurrent_4','recurrent_12','best_fixed',
               'simple_stop','fbsde_tree','exact_formula'}
-    require(arms==(required|{'syntax_prior'} if comparison['question_profile']=='independent_targets_v2' else required),
-            'missing or extra comparison arm')
+    expected_arms = required | ({'syntax_prior'} if comparison['question_profile'] != 'label_balanced_v1' else set())
+    learned = None
+    if comparison['question_profile'] == 'independent_targets_composition_v3':
+        expected_arms |= {'composition_frozen','composition_cell','composition_guarded'}
+        learned = _read(root,'composition-corners.json')
+        job = next(j for j in comparison['jobs_once'] if j['job_id']=='composition_cell')
+        require(learned['weights_sha256']==job['weights_sha256'] and learned['parameters']==job['parameters']==8,
+                'composition artifact identity drift')
+        require(learned['initial']==[[.5]*4,[.5]*4], 'informative unregistered cell initialization')
+        for table in (learned['initial'],learned['fitted']):
+            require(len(table)==2 and all(len(row)==4 for row in table), 'corner dimensions')
+            for row in table:
+                for value in row: _probability(value)
+        require(learned['corner_dtype']=='torch.float32' and learned['corner_byte_order'] in ('little','big'),
+                'corner numeric profile')
+        raw=struct.pack(('<' if learned['corner_byte_order']=='little' else '>')+'8f',
+                        *(p for row in learned['fitted'] for p in row))
+        th=hashlib.sha256(str(('torch.float32',(2,4))).encode('ascii')+raw).hexdigest()
+        require(_digest({'corners':th})==learned['weights_sha256'], 'composition tensor bytes drift')
+    require(arms==expected_arms, 'missing or extra comparison arm')
     result={}; inference={}
     for arm in sorted(arms):
         rows=_read(root,arm+'-predictions.json'); by_id={r['case_id']:r for r in rows}
@@ -98,6 +130,30 @@ def recompute_comparison(root, partitions):
                   'No, the stated condition is not satisfied.')
             require(row['text']==text,'decoded answer is not faithful')
             correct+=int((p>=.5)==truth[cid]); brier+=(p-truth[cid])**2
+            if arm.startswith('composition_'):
+                table = learned['initial'] if arm=='composition_frozen' else learned['fitted']
+                value,error,depth,nodes = _cell_value(public_row['formula'],beliefs[cid]['leaf_probabilities'],table)
+                meta = row['composition']
+                require(meta['float_roundoff_rigorously_enclosed'] is False and
+                        meta['semantic_truth_certified'] is False, 'unsupported composition certification')
+                require(abs(meta['proposal_probability']-value)<1e-12, 'composition proposal differs from frozen cells')
+                require(row['selected_depth']==depth and meta['learned_operator_calls']==nodes
+                        and row['actual_recurrent_steps']==0, 'composition compute/depth mismatch')
+                target = value
+                if arm=='composition_guarded':
+                    require(abs(meta['root_error_bound_exact_arithmetic']-error)<1e-12
+                            and abs(value-expected[cid]) <= error+1e-12, 'original-law error bound mismatch')
+                    stable = value-error > .5+1e-12 or value+error < .5-1e-12
+                    require(meta['decision_stable_under_model']==stable and meta['exact_fallback']==(not stable),
+                            'original-law fallback omitted or fabricated')
+                    target = value if stable else expected[cid]
+                    require(meta['guard_operator_calls']==nodes and
+                            meta['fallback_operator_calls']==(0 if stable else nodes), 'hidden guard/fallback work')
+                    require((p>=.5)==(expected[cid]>=.5), 'guard changed original-law decision')
+                else:
+                    require(meta['root_error_bound_exact_arithmetic'] is None and not meta['exact_fallback'],
+                            'unguarded cell claiming correction')
+                require(abs(p-target)<1e-12, 'composition output not reproduced')
             if arm == 'syntax_prior':
                 require(abs(p-prior_expected[cid])<1e-12, 'syntax prior differs from no-text law')
             if arm in ('fbsde_tree','exact_formula'):

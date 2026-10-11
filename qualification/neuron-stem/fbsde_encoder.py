@@ -12,6 +12,7 @@ from pathlib import Path
 import random
 import resource
 import subprocess
+import sys
 import time
 
 from four_gate_common import digest, require, sha, write_once
@@ -19,8 +20,10 @@ from four_gate_capture import tensor_digest
 from fbsde_encoder_cases import (INTENTS, DEPTHS, partition_utterances, cases, formula_vector,
                                   decode_probability, score_decoded, checked_probability)
 from fbsde_tree import belief_bsde, polynomial_probability
-from fbsde_design import (LEGACY, INDEPENDENT, PROFILES, independent_cases, label_cases,
+from fbsde_design import (LEGACY, INDEPENDENT, COMPOSITION, PROFILES, independent_cases, label_cases,
                          source_census, stratified_metrics)
+
+from fbsde_composition import make_cell, compile_batch, evaluate as evaluate_composition
 
 
 def models(torch):
@@ -85,6 +88,7 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
         'task_kind':'generated_read_once_formulas_over_human_labelled_utterances',
         'decoder':'fixed_shared_two_sentence_grammar', 'real_future_windows':False,
         'question_profile':profile, 'target_generation_reads_labels':profile == LEGACY,
+        'composition_trainable_parameters':8 if profile == COMPOSITION else None,
         'truth_and_predictor_same_process_not_authenticated':True})
     write_once(output/'public-cases.json', public)
     xy = {k:tensors(torch,v,features) for k,v in public.items()}
@@ -94,7 +98,7 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
     leaf_x = torch.stack([features[r['id']] for r in partitions['train']])
     leaf_y = torch.tensor([r['intent'] for r in partitions['train']])
     jobs = []
-    def fit(name, model, loss_fn):
+    def fit(name, model, loss_fn, *, project=None):
         optimizer = torch.optim.AdamW(model.parameters(), lr=.003)
         cpu, wall = time.process_time_ns(), time.perf_counter_ns()
         for step in range(96):
@@ -103,6 +107,7 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
             loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(),1.)
             optimizer.step()
+            if project is not None: project()
             require(time.process_time_ns()-cpu <= 15_000_000_000, 'training CPU budget exhausted')
         model.eval().requires_grad_(False)
         jobs.append({'job_id':name, 'phase':'training', 'steps':96,
@@ -120,6 +125,23 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
     fit('light_head',head,lambda _:nn.functional.binary_cross_entropy_with_logits(head(*xy['train']),train_y))
     fit('shared_recurrent',recurrent,lambda step:nn.functional.binary_cross_entropy_with_logits(
         recurrent(*xy['train'],DEPTHS[step%len(DEPTHS)]),train_y))
+    composition = None
+    if profile == COMPOSITION:
+        composition = make_cell(torch)
+        groups = compile_batch(torch, public['train'])
+        before_fit = composition.corners.detach().tolist()
+        initial_loss = float(nn.functional.binary_cross_entropy(
+            composition(xy['train'][0][:, :, 388], groups), train_y).item())
+        fit('composition_cell', composition, lambda _: nn.functional.binary_cross_entropy(
+            composition(xy['train'][0][:, :, 388], groups), train_y), project=composition.project)
+        fitted_corners = composition.corners.detach().tolist()
+        write_once(output/'composition-corners.json', {'initial':before_fit, 'fitted':fitted_corners,
+            'initial_training_bce':initial_loss, 'final_training_bce':float(
+                nn.functional.binary_cross_entropy(composition(xy['train'][0][:, :, 388], groups), train_y).item()),
+            'weights_sha256':state_digest(composition), 'parameters':8, 'steps':96,
+            'corner_dtype':'torch.float32', 'corner_byte_order':sys.byteorder,
+            'supervision':'same original training root labels only; no operator truth-table labels',
+            'frozen_during_inference':True, 'production_promotion_permitted':False})
     common_semantic_id = state_digest(semantic)
     cpu, wall = time.process_time_ns(), time.perf_counter_ns()
     validation = []
@@ -157,8 +179,10 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
         'calibration_thresholds':threshold_scores,'selected_threshold':threshold,
         'test_labels_used':False,'common_semantic_sha256':common_semantic_id,'jobs':jobs})
     arms=('light_head','recurrent_1','recurrent_4','recurrent_12','best_fixed','simple_stop','fbsde_tree','exact_formula')
-    if profile == INDEPENDENT:
+    if profile != LEGACY:
         arms += ('syntax_prior',)
+    if profile == COMPOSITION:
+        arms += ('composition_frozen', 'composition_cell', 'composition_guarded')
     records={a:[] for a in arms}; actual_cost={a:0 for a in arms}
     belief_inputs = {}
     cpu_eval=time.process_time_ns()
@@ -168,7 +192,7 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
         order=list(arms);random.Random(seed+i).shuffle(order)
         for arm in order:
             cpu,wall=time.process_time_ns(),time.perf_counter_ns()
-            residual=None; nodes=0; depth=1; executed=1
+            residual=None; nodes=0; depth=1; executed=1; composition_record=None
             with torch.inference_mode():
                 # Charge the same semantic forward for every arm; the root
                 # consumes exactly these probabilities plus identical features.
@@ -180,7 +204,12 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
                     qs=semantic(torch.stack([features[u] for u in uids])).softmax(-1)
                     ps=[float(qs[j,t].item()) for j,t in enumerate(targets)]
                     x[0, :len(ps), 388] = torch.tensor(ps)
-                if arm=='light_head':p=float(head(x,s).sigmoid().item())
+                if arm.startswith('composition_'):
+                    composition_record=evaluate_composition(row['formula'],ps,
+                        before_fit if arm=='composition_frozen' else fitted_corners,
+                        correct=arm=='composition_guarded')
+                    p=composition_record['probability'];depth=composition_record['learned_operator_depth'];executed=0
+                elif arm=='light_head':p=float(head(x,s).sigmoid().item())
                 elif arm.startswith('recurrent_') or arm=='best_fixed':
                     depth=best if arm=='best_fixed' else int(arm.split('_')[-1]);executed=depth
                     p=float(recurrent(x,s,depth).sigmoid().item())
@@ -204,21 +233,26 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
                 'probability':p,'text':text,'selected_depth':depth,'actual_recurrent_steps':executed,
                 'bsde_interface_residual':residual,'scenario_nodes':nodes,
                 'cpu_ns':elapsed,'wall_ns':time.perf_counter_ns()-wall})
+            if composition_record is not None: records[arm][-1]['composition'] = composition_record
     # Seal ALL predictions before this code reads test truths for evaluation.
     for arm in arms:write_once(output/(arm+'-predictions.json'),records[arm])
     write_once(output/'belief-inputs.json', belief_inputs)
     require(state_digest(semantic)==common_semantic_id,'shared semantic Head mutated at inference')
+    if composition is not None:
+        require(composition.corners.detach().tolist()==fitted_corners,'composition cell mutated at inference')
     metrics={arm:score_decoded(records[arm],truths['test']) for arm in arms}
     equality=max(abs(a['probability']-b['probability']) for a,b in zip(records['fbsde_tree'],records['exact_formula']))
     require(equality<1e-12,'finite BSDE diverged from algebraic control on identical beliefs')
     fits={j['job_id']:j['cpu_ns'] for j in jobs}
     root_cost={a:(fits['light_head'] if a=='light_head' else fits['shared_recurrent']
-                  if a not in ('fbsde_tree','exact_formula','syntax_prior') else 0) for a in arms}
+                  if a not in ('fbsde_tree','exact_formula','syntax_prior') and not a.startswith('composition_') else 0) for a in arms}
+    if profile == COMPOSITION:
+        root_cost.update({a:fits['composition_cell'] for a in ('composition_cell','composition_guarded')})
     # Standalone accounting: each arm includes the same available semantic fit.
     # Physical ledger counts each actual common job once, not eight times.
     lifecycle={a:actual_cost[a]+root_cost[a]+fits['common_semantic']+semantic_annotation_cpu+
                (fits['shared_controller_selection'] if a in ('best_fixed','simple_stop') else 0) for a in arms}
-    if profile == INDEPENDENT:
+    if profile != LEGACY:
         lifecycle['syntax_prior'] = actual_cost['syntax_prior']
         lifecycle['best_fixed'] -= jobs[-1]['stop_selection_cpu_ns']
         # Simple stop actually consumes the calibration grid, not best-fixed validation.
@@ -231,7 +265,8 @@ def train_and_compare(torch, partitions, features, output, seed=104729, *, profi
     classified=sum(j['cpu_ns'] for j in jobs)+semantic_annotation_cpu+sum(actual_cost.values())+evaluated_cost
     require(envelope >= classified, 'overlapping CPU accounting')
     report={'schema':('hepta.fbsde.encoder-study.results.v1' if profile == LEGACY else
-                      'hepta.fbsde.encoder-study.results.v2'),
+                      'hepta.fbsde.encoder-study.results.v2' if profile == INDEPENDENT else
+                      'hepta.fbsde.encoder-study.results.v3'),
             'question_profile':profile, 'strata':strata, 'source_census':census,
             'metrics':metrics,'inference_cpu_ns':actual_cost,
             'adaptation_plus_inference_cpu_ns':lifecycle,'jobs_once':jobs,'semantic_annotation_cpu_ns':semantic_annotation_cpu,

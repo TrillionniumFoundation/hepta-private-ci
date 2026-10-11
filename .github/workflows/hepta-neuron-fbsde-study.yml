@@ -61,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [label_balanced_v1, independent_targets_v2]
+        profile: [label_balanced_v1, independent_targets_v2, independent_targets_composition_v3]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -85,7 +85,7 @@ jobs:
         run: |
           set -euo pipefail
           export PYTHONPATH=qualification/neuron-stem
-          /tmp/fbsde-venv/bin/python -m unittest fbsde_tensor_checks fbsde_v2_tensor_checks -v 2>&1 | tee tensor-tests.log
+          /tmp/fbsde-venv/bin/python -m unittest fbsde_tensor_checks fbsde_v2_tensor_checks fbsde_composition_tensor_checks -v 2>&1 | tee tensor-tests.log
           /tmp/fbsde-venv/bin/python qualification/neuron-stem/fbsde_encoder.py \
             --source-root "$PWD" --model-dir /tmp/fbsde-mmbert --output real-study \
             --question-profile "$QUESTION_PROFILE" \

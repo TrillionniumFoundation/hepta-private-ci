@@ -12,7 +12,8 @@ import random
 
 LEGACY = 'label_balanced_v1'
 INDEPENDENT = 'independent_targets_v2'
-PROFILES = (LEGACY, INDEPENDENT)
+from fbsde_composition import PROFILE as COMPOSITION
+PROFILES = (LEGACY, INDEPENDENT, COMPOSITION)
 
 
 def independent_cases(inputs, split, count, seed):
