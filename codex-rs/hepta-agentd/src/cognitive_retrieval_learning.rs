@@ -29,6 +29,10 @@ impl CognitiveRetrievalLearningSink {
         }
     }
 
+    /// Simple append adapter used only by the legacy identity/replay tests.
+    /// The production read path uses append_with_delivery_policy and carries
+    /// the complete enumerated/delivered set and propensity binding.
+    #[cfg(test)]
     pub(crate) fn append(
         &self,
         owner: &AgentId,
@@ -44,29 +48,6 @@ impl CognitiveRetrievalLearningSink {
             &[],
             false,
             None,
-            None,
-            ProbabilityQ32::ONE,
-        )
-    }
-
-    pub(crate) fn append_with_delivery(
-        &self,
-        owner: &AgentId,
-        body_generation: u64,
-        request_id: u64,
-        observation: &RetrievalAssignmentObservationV1,
-        delivered_candidates: &[RetrievalCandidateIdentityV1],
-        context_exposed: bool,
-        published_context_digest: Option<Digest32>,
-    ) -> Result<AppendReceipt, String> {
-        self.append_with_delivery_policy(
-            owner,
-            body_generation,
-            request_id,
-            observation,
-            delivered_candidates,
-            context_exposed,
-            published_context_digest,
             None,
             ProbabilityQ32::ONE,
         )
