@@ -1,0 +1,181 @@
+name: Hepta Neuron shared feature batch native (qualification only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-agentd/src/test_support.rs"
+      - "codex-rs/git-utils/src/git_process_tests.rs"
+      - "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
+      - "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      - "codex-rs/hepta-memory/src/cognitive_schema_tests.rs"
+      - "codex-rs/hepta-automation/src/migration_convergence_tests.rs"
+      - "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+      - "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs"
+      - "codex-rs/hepta-memory/src/production_writer.rs"
+      - "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs"
+      - ".github/workflows/hepta-neuron-shared-feature-batch.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-shared-feature-batch-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  sqlite-owner-shim-regression:
+    name: SQLite owner shim tests and disallowed-method lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact PR source without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Check exact candidate and immutable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Verify isolated schema and historical migration tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib cognitive_schema_tests::
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --lib migration_convergence_tests::
+      - name: Prove canonical SQLite method restrictions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory -p codex-hepta-automation --all-targets -- -D clippy::disallowed_methods -D clippy::correctness
+      - name: Verify no source mutations
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  windows-ledger-durability:
+    name: Native Windows evaluated-shadow and Outcome Credit durable-ledger regressions
+    runs-on: windows-latest
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact PR head without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prove Windows qualification candidate identity
+        shell: pwsh
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne "${{ github.event.pull_request.head.sha || github.sha }}") { throw "SHA changed" }
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Exercise actual Windows durable parent handles and append/recovery
+        shell: pwsh
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence --lib evaluated_shadow::tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence --lib outcome_credit_v2::tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove Windows process-tree cleanup and durable supervisor restart budget
+        shell: pwsh
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-git-utils --lib git_process::tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor --test restart_budget_recovery -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove Windows federated final-use invalidation before physical provider send
+        shell: pwsh
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory-extension --lib cognitive::federation::tests::revoke_removes_prepared_federated_context_from_next_physical_send -- --exact --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Reopen actual Windows SQLite schema and historical migration databases
+        shell: pwsh
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --lib migration_convergence_tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib cognitive_schema_tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Enforce canonical SQLite owner API on Windows tests
+        shell: pwsh
+        run: |
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory -p codex-hepta-automation --all-targets -- -D clippy::disallowed_methods -D clippy::correctness
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify exact source was not changed by conformance tests
+        if: always()
+        shell: pwsh
+        run: |
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+  native-qualification:
+    name: Scope-fenced feature cache and true batch seam (no promotion)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact PR head without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Prove exact tested candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+          cd codex-rs
+          rustc --version --verbose
+          cargo --version
+      - name: Locked all-target compilation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets
+      - name: Build real Codex executable for Agentd E2E
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo build --locked --manifest-path codex-rs/Cargo.toml -p codex-cli --bin codex
+          test -x codex-rs/target/debug/codex
+      - name: Run original and V2 owner regression tests
+        shell: bash
+        env:
+          HEPTA_TEST_CODEX_EXECUTABLE: ${{ github.workspace }}/codex-rs/target/debug/codex
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
+      - name: Strict owner safety lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+      - name: Check formatting on selected owner crates
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd -- --check
+      - name: Verify no test checkout mutation
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
