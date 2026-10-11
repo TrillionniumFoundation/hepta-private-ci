@@ -16,7 +16,7 @@ from pathlib import Path
 import random
 
 from jina_v5 import sha256_record
-from qualified_eval import audit_dataset, percentile, read_jsonl, strict_json_loads, write_json
+from qualified_eval import audit_dataset, percentile, read_jsonl, strict_json_loads
 
 WINDOWS = ("future_1", "future_2")
 SCALES = (64, 256, 1024, 4096)
@@ -413,6 +413,15 @@ def review(dataset, trial, journal_bytes, nochange, *,
     }
 
 
+def write_frozen_report(path, report):
+    """No replay may silently overwrite previously reviewed outcomes."""
+    destination = Path(path)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with destination.open("x", encoding="utf-8") as stream:
+        stream.write(json.dumps(report, sort_keys=True, ensure_ascii=False,
+                                separators=(",", ":"), allow_nan=False) + "\n")
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--dataset", required=True)
@@ -432,7 +441,7 @@ def main():
     result = review(dataset, trial, Path(a.prelabel_journal).read_bytes(),
                     nochange, resources=resource, min_future_groups=a.min_future_groups,
                     replicates=a.bootstrap_replicates, seed=a.seed)
-    write_json(a.output, result)
+    write_frozen_report(a.output, result)
 
 
 if __name__ == "__main__":
