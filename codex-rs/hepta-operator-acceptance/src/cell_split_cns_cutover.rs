@@ -87,6 +87,77 @@ pub struct CellSplitCnsRuntimeCommitV1 {
     pub original_runtime_signature_bytes: Vec<u8>,
 }
 
+/// Runtime-origin proof with every security-critical field bound directly
+/// inside the bytes signed by the independent CNS runtime key. A valid
+/// signature on unrelated opaque bytes is NOT evidence of this cutover.
+pub const CELL_SPLIT_CNS_RUNTIME_ATTESTATION_SCHEMA_V1: &str =
+    "hepta.learning.cell-split.cns-runtime-attestation.v1";
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitCnsRuntimeAttestationV1 {
+    pub schema: String,
+    pub idempotency_key: String,
+    pub cns_id: String,
+    pub scope_digest: String,
+    pub predecessor_route_digest: String,
+    pub successor_route_digest: String,
+    pub predecessor_generation: u64,
+    pub successor_generation: u64,
+    pub predecessor_artifact_digest: String,
+    pub successor_artifact_digest: String,
+    pub route_fence_digest: String,
+    pub authority_epoch: u64,
+    pub committed_sequence: u64,
+}
+
+impl CellSplitCnsRuntimeAttestationV1 {
+    /// Canonical projection for the actual CNS runtime to sign after it has
+    /// durably committed the route. This constructor grants no authority.
+    pub fn for_commit(
+        plan: &CellSplitExecutionPlanV1,
+        commit: &CellSplitCnsRuntimeCommitV1,
+    ) -> Self {
+        Self {
+            schema: CELL_SPLIT_CNS_RUNTIME_ATTESTATION_SCHEMA_V1.into(),
+            idempotency_key: commit.idempotency_key.clone(),
+            cns_id: commit.cns_id.clone(),
+            scope_digest: plan.scope_digest.clone(),
+            predecessor_route_digest: commit.predecessor_route_digest.clone(),
+            successor_route_digest: commit.successor_route_digest.clone(),
+            predecessor_generation: commit.predecessor_generation,
+            successor_generation: commit.successor_generation,
+            predecessor_artifact_digest: plan.parent_artifact_digest.clone(),
+            successor_artifact_digest: plan.child_artifact_digest.clone(),
+            route_fence_digest: plan.route_fence_digest.clone(),
+            authority_epoch: commit.authority_epoch,
+            committed_sequence: commit.committed_sequence,
+        }
+    }
+
+    /// Check signed inner bytes and typed outer claims against the exact
+    /// frozen plan. The caller MUST additionally verify the original runtime
+    /// signature against a separately pinned key and inspect the live CNS.
+    pub fn verify_original_bytes(
+        plan: &CellSplitExecutionPlanV1,
+        commit: &CellSplitCnsRuntimeCommitV1,
+    ) -> Result<(), &'static str> {
+        let attested: Self = serde_json::from_slice(&commit.original_runtime_receipt_bytes)
+            .map_err(|_| "original CNS runtime attestation is not typed JSON")?;
+        if attested != Self::for_commit(plan, commit)
+            || serde_json::to_vec(&attested)
+                .map_err(|_| "cannot canonicalize original CNS runtime attestation")?
+                != commit.original_runtime_receipt_bytes
+            || commit.predecessor_generation != plan.parent_generation
+            || commit.successor_generation != plan.child_generation
+            || commit.committed_sequence == 0
+        {
+            return Err("signed CNS runtime bytes do not bind the exact cutover");
+        }
+        Ok(())
+    }
+}
+
 /// Implementations MUST issue a real CNS runtime cutover using exact
 /// generation/fence-bound authority, durably retain its original operation
 /// receipt, and inspect the *serving* route on readback. Neither a local
