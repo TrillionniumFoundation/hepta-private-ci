@@ -29,6 +29,11 @@
       "source": "BAAI/bge-small-zh-v1.5",
       "parameter_count_estimate": 24000000,
       "max_tokens": 512
+    },
+    "mmbert_base": {
+      "source": "jhu-clsp/mmBERT-base",
+      "parameter_count_estimate": 307000000,
+      "max_tokens": 8192
     }
   },
   "teacher_baselines": [
@@ -67,7 +72,8 @@
       "total_cpu_seconds",
       "external_ndu_utility"
     ],
-    "shot_count_unit": "independent_train_source_groups_per_class"
+    "shot_count_unit": "independent_train_source_groups_per_class",
+    "additional_external_full_decision_study": "decision_421m.py: checkpoint vs equal-budget 395M-435M; Laya original/typed, DeBERTa-v3-large, ModernBERT-large"
   },
   "experiment_2": {
     "representations": [
@@ -108,7 +114,8 @@
       "max_calibration_abs_logit_error": 0.02,
       "no_future_time_tuning": true,
       "unverified_export_never_promotes": true
-    }
+    },
+    "cross_pr_qualified_jina_v5": "PR #1499 supplies frozen Jina v5 Nano; do not pretend the generic HF loader executes Jina custom model code"
   },
   "experiment_3": {
     "logical_cells": [
