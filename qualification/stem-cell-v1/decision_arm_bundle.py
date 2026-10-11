@@ -59,7 +59,7 @@ def load_predictions(path, expected_arm, run, scored_index, classes):
             try:
                 row = json.loads(line, object_pairs_hook=strict_json_pairs)
             except (ValueError, TypeError) as exc:
-                raise ValueError("unparseable prediction/duplicate field") from exc
+                raise ValueError("unparsable prediction/duplicate field") from exc
             if type(row) is not dict or row.get("arm") != expected_arm:
                 raise ValueError("model arm identity mismatch")
             sid = row.get("sample_id")
