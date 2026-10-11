@@ -28,16 +28,25 @@ def validate_selective_plan(cfg):
     require(cfg["min_answerable_coverage"] > 0, "reject-all is not a successful policy")
 
 
-def _metrics(rows):
-    """rows contain answerable, benign, accepted, wrong; no pseudo-label for unknowns."""
-    answerable = sum(r[0] for r in rows)
-    accepted = sum(r[0] and r[2] for r in rows)
-    unknown = len(rows) - answerable
-    benign = sum(r[1] for r in rows)
-    return {"accepted_error": sum(r[0] and r[2] and r[3] for r in rows) / accepted if accepted else None,
+def _counts(rows):
+    """Seven exact integers are sufficient for all four episode-ratio metrics."""
+    return (len(rows), sum(r[0] for r in rows), sum(r[0] and r[2] for r in rows),
+            sum(r[1] for r in rows), sum(r[0] and r[2] and r[3] for r in rows),
+            sum(not r[0] and r[2] for r in rows), sum(r[1] and not r[2] for r in rows))
+
+
+def _ratios(counts):
+    total, answerable, accepted, benign, errors, unknown_accepted, benign_rejected = counts
+    unknown = total - answerable
+    return {"accepted_error": errors / accepted if accepted else None,
             "answerable_coverage": accepted / answerable if answerable else None,
-            "unknown_acceptance": sum(not r[0] and r[2] for r in rows) / unknown if unknown else None,
-            "benign_rejection": sum(r[1] and not r[2] for r in rows) / benign if benign else None}
+            "unknown_acceptance": unknown_accepted / unknown if unknown else None,
+            "benign_rejection": benign_rejected / benign if benign else None}
+
+
+def _metrics(rows):
+    """No pseudo-label for unknowns and no zero-risk interpretation of reject-all."""
+    return _ratios(_counts(rows))
 
 
 def clustered_metrics(rows, plan):
@@ -47,11 +56,25 @@ def clustered_metrics(rows, plan):
     ordered = [clusters[g] for g in sorted(clusters)]
     n = len(ordered)
     require(n > 0 and n * plan["bootstrap_replicates"] <= 20_000_000, "selective bootstrap budget")
+    # Match the original cluster draws exactly, without expanding every sampled
+    # cluster into Cell rows. Work is now O(rows + groups * replicates), consistent
+    # with the budget above; many correlated Cells do not amplify each draw.
+    sufficient = [_counts(cluster) for cluster in ordered]
     rng = random.Random(plan["seed"])
     draws = defaultdict(list)
     for _ in range(plan["bootstrap_replicates"]):
-        sampled = [r for _ in range(n) for r in ordered[rng.randrange(n)]]
-        for name, value in _metrics(sampled).items():
+        total = answerable = accepted = benign = errors = unknown = rejected = 0
+        for _ in range(n):
+            c = sufficient[rng.randrange(n)]
+            total += c[0]
+            answerable += c[1]
+            accepted += c[2]
+            benign += c[3]
+            errors += c[4]
+            unknown += c[5]
+            rejected += c[6]
+        for name, value in _ratios((total, answerable, accepted, benign,
+                                   errors, unknown, rejected)).items():
             # A draw without its denominator cannot certify low error or coverage.
             draws[name].append(value if value is not None else
                                (0.0 if name == "answerable_coverage" else 1.0))
