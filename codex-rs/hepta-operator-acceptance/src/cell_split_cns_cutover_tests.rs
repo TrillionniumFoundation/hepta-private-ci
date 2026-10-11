@@ -702,3 +702,47 @@ fn genuinely_signed_but_wrong_scope_runtime_cutover_is_denied() {
     );
     assert!(cns.read_committed(&request).is_err());
 }
+
+#[test]
+fn re_signed_noncanonical_runtime_statement_cannot_be_replayed() {
+    let root = private_root();
+    let request = intent();
+    let mut cns = owner(root.path(), Arc::new(AtomicBool::new(true)));
+    cns.commit_once(&request).expect("authentic CNS route publication");
+    let committed = cns
+        .read_committed(&request)
+        .expect("authenticated readback")
+        .expect("original commit");
+    let path = root
+        .path()
+        .join(format!("runtime-cutover-{}.json", request.idempotency_key));
+    let original: CellSplitCnsRuntimeCommitV1 =
+        serde_json::from_slice(&fs::read(&path).expect("original receipt"))
+            .expect("typed commit");
+    let typed: CellSplitCnsRuntimeAttestationV1 =
+        serde_json::from_slice(&original.original_runtime_receipt_bytes)
+            .expect("typed runtime statement");
+    let noncanonical = serde_json::to_vec(&typed).expect("struct-order encoding");
+    assert_ne!(
+        noncanonical,
+        typed.canonical_bytes().expect("sorted-key encoding"),
+        "fixture must exercise two distinct encodings"
+    );
+
+    // The runtime signer is genuine, but the payload is not the mandated
+    // canonical envelope. Reject it rather than accepting two byte encodings
+    // for the same cutover identity across the owner and Supervisor.
+    let mut forged = original;
+    forged.original_runtime_signature_bytes = SigningKey::from_bytes(&[9; 32])
+        .sign(&noncanonical)
+        .to_bytes()
+        .to_vec();
+    forged.original_runtime_receipt_bytes = noncanonical;
+    fs::write(
+        &path,
+        canonical_json(&forged).expect("mutated original commit"),
+    )
+    .expect("out-of-band source replacement");
+    assert!(cns.verify_current(&request, &committed).is_err());
+    assert!(cns.read_committed(&request).is_err());
+}
