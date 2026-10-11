@@ -16,7 +16,7 @@ from pathlib import Path
 import random
 
 from jina_v5 import sha256_record
-from qualified_eval import audit_dataset, percentile, read_jsonl, write_json
+from qualified_eval import audit_dataset, percentile, read_jsonl, strict_json_loads, write_json
 
 WINDOWS = ("future_1", "future_2")
 SCALES = (64, 256, 1024, 4096)
@@ -49,8 +49,14 @@ def valid_probs(probs, classes):
 
 def read_journal(raw):
     try:
-        return [json.loads(line) for line in raw.decode("utf-8").splitlines() if line.strip()]
-    except (UnicodeError, ValueError) as exc:
+        lines = raw.decode("utf-8").splitlines()
+        if not lines or any(not line.strip() for line in lines):
+            raise ValueError("blank or missing prediction journal row")
+        records = [strict_json_loads(line) for line in lines]
+        if any(type(record) is not dict for record in records):
+            raise ValueError("prediction journal requires object records")
+        return records
+    except (UnicodeError, ValueError, TypeError) as exc:
         raise ValueError("malformed immutable prediction journal") from exc
 
 
@@ -420,9 +426,9 @@ def main():
     p.add_argument("--seed", type=int, default=20261011)
     a = p.parse_args()
     dataset = read_jsonl(a.dataset)
-    trial = json.loads(Path(a.trial).read_text(encoding="utf-8"))
+    trial = strict_json_loads(Path(a.trial).read_text(encoding="utf-8"))
     nochange = read_jsonl(a.no_change)
-    resource = json.loads(Path(a.resources).read_text(encoding="utf-8")) if a.resources else None
+    resource = strict_json_loads(Path(a.resources).read_text(encoding="utf-8")) if a.resources else None
     result = review(dataset, trial, Path(a.prelabel_journal).read_bytes(),
                     nochange, resources=resource, min_future_groups=a.min_future_groups,
                     replicates=a.bootstrap_replicates, seed=a.seed)
