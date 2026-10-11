@@ -384,6 +384,7 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
         CellStateMigrationV1::child_payload_digest(&migration.children()[0]),
     );
     fs::write(path, b"tampered child Q24").expect("external corruption");
+    assert!(reopened.read_committed(&intent).is_err());
     assert!(reopened.verify_current(&intent, &signed).is_err());
 }
 
