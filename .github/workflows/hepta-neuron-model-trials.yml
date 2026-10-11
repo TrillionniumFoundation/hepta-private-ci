@@ -3,18 +3,18 @@ name: Hepta Neuron model trial protocol
 on:
   pull_request:
     paths:
-      - 'scripts/hepta_neuron_model_trials.py'
-      - 'scripts/hepta_neuron_trial_evidence_gate.py'
-      - 'scripts/hepta_neuron_artifact_preflight.py'
-      - 'scripts/hepta_neuron_materialize_weights.py'
-      - 'scripts/hepta_neuron_freeze_dataset.py'
-      - 'scripts/hepta_neuron_physical_smoke.py'
-      - '.github/scripts/test_hepta_neuron_physical_smoke.py'
-      - '.github/scripts/test_hepta_neuron_model_trials.py'
-      - '.github/scripts/test_hepta_neuron_materialize_and_freeze.py'
-      - '.github/scripts/test_hepta_neuron_trial_evidence_gate.py'
-      - '.github/workflows/hepta-neuron-model-trials.yml'
-      - 'qualification/neuron-model-trials/**'
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
+      - "${1}"
   workflow_dispatch:
 
 permissions:
