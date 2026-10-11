@@ -201,6 +201,12 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
         if before.mode() & 0o077 != 0 {
             return Err("configuration file must not be accessible by group or others".to_string());
         }
+        // A writable alias to these externally pinned trust inputs is not an
+        // acceptable configuration path, even if this read has the right hash.
+        // Require one physical link both before and after reading.
+        if before.nlink() != 1 {
+            return Err("configuration file must not be hard-linked".to_string());
+        }
     }
     let mut bytes = Vec::new();
     (&mut file)
@@ -222,6 +228,9 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
             || before.dev() != after_path.dev()
             || before.ino() != after_path.ino()
             || before.len() != after_path.len()
+            || before.nlink() != 1
+            || after_fd.nlink() != 1
+            || after_path.nlink() != 1
             || after_path.mode() & 0o077 != 0
         {
             return Err("configuration changed while being read".to_string());
@@ -392,6 +401,25 @@ mod tests {
                 .count(),
             0
         );
+    }
+
+    #[test]
+    fn rejects_hardlinked_config_even_if_exact_hash_is_pinned() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let file = dir.path().join("config.json");
+        let alias = dir.path().join("config-alias.json");
+        std::fs::write(&file, b"{}").expect("fixture");
+        use std::os::unix::fs::PermissionsExt as _;
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600))
+            .expect("private config");
+        std::fs::hard_link(&file, &alias).expect("same inode");
+        let error = run_pinned_cell_split_execution_v1(
+            "transcript",
+            &file,
+            &format!("{:x}", Sha256::digest(b"{}")),
+        )
+        .expect_err("hardlinked configuration must fail");
+        assert!(error.contains("hard-linked"));
     }
 
     #[test]
