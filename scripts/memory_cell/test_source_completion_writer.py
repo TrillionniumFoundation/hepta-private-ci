@@ -27,8 +27,11 @@ def source_only_fixture_examples():
     return [
         dict(
             query=dict(
-                identity="fixture-source-q", family="source-only", scope="s",
-                content="What happened?", observed_at="2024-01-01",
+                identity="fixture-source-q",
+                family="source-only",
+                scope="s",
+                content="What happened?",
+                observed_at="2024-01-01",
             ),
             sources=["original-source-root"],
             source_digest="fixture-original-source-digest",
@@ -44,9 +47,7 @@ def mock_source_schedule(*args, **kwargs):
     # Use the current immutable production scheduler rather than a stale
     # hand-authored partial plan. 8×5 tokens exceeds the 39-token ceiling:
     # precisely seven real steps (35 input, 14 supervised tokens).
-    return prepared, schedule(
-        prepared, {"s": [0]}, maximum_steps=8, token_ceiling=39
-    )
+    return prepared, schedule(prepared, {"s": [0]}, maximum_steps=8, token_ceiling=39)
 
 
 def writer_loop():
@@ -57,9 +58,7 @@ def writer_loop():
         if isinstance(n, ast.FunctionDef) and n.name == "fit_sources"
     )
     ns = dict(
-        source_examples=lambda *a, **kw: (
-            source_only_fixture_examples(), []
-        ),
+        source_examples=lambda *a, **kw: (source_only_fixture_examples(), []),
         Question=lambda **kw: SimpleNamespace(**kw),
         render=lambda *a: [1, 2, 3],
         STEPS=8,
@@ -109,21 +108,15 @@ class SourceWriterLoopTests(unittest.TestCase):
         self.assertEqual(plan["planned_supervised_tokens"], 14)
         self.assertEqual(plan["visits_per_example"], [7])
         self.assertEqual(receipt["by_kind"]["direct"]["planned_updates"], 7)
-        self.assertEqual(
-            receipt["by_kind"]["direct"]["unique_training_source_ids"], 1
-        )
+        self.assertEqual(receipt["by_kind"]["direct"]["unique_training_source_ids"], 1)
         for corruption in ("identity", "sources", "source_digest"):
-            damaged = [
-                dict(examples[0], query=dict(examples[0]["query"]))
-            ]
+            damaged = [dict(examples[0], query=dict(examples[0]["query"]))]
             if corruption == "identity":
                 damaged[0]["query"].pop("identity")
             else:
                 damaged[0].pop(corruption)
             with self.subTest(corruption=corruption), self.assertRaises(ValueError):
-                audit_coverage(
-                    damaged, prepared, plan, curriculum="single_hop"
-                )
+                audit_coverage(damaged, prepared, plan, curriculum="single_hop")
 
     def test_same_schedule_full_token_budget_roots_and_frozen_state(self):
         results = []
