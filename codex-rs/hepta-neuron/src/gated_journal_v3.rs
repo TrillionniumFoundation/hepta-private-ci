@@ -9,11 +9,11 @@
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
+use std::io;
 use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
-use std::io;
 
 use codex_hepta_types::Digest32;
 
@@ -123,8 +123,7 @@ impl GatedSparseJournalV3 {
         }
         let digest = config.digest().map_err(GatedJournalErrorV3::Mechanism)?;
         let header = encode_header(digest, scope);
-        let mut file = LockedFile::acquire(file)
-            .map_err(GatedJournalErrorV3::BusyOrInvalidFile)?;
+        let mut file = LockedFile::acquire(file).map_err(GatedJournalErrorV3::BusyOrInvalidFile)?;
         let length = file.metadata()?.len();
         if length == 0 {
             if anchor.is_some() {
@@ -152,7 +151,8 @@ impl GatedSparseJournalV3 {
 
         let frame_len = frame_length(&config);
         let length = file.metadata()?.len();
-        let available = length.checked_sub(HEADER_BYTES as u64)
+        let available = length
+            .checked_sub(HEADER_BYTES as u64)
             .ok_or(GatedJournalErrorV3::Corrupt)?;
         let frame_len_u64 = frame_len as u64;
         // An interrupted extra append may leave an incomplete final frame.
@@ -164,9 +164,13 @@ impl GatedSparseJournalV3 {
             return Err(GatedJournalErrorV3::Capacity);
         }
         let mut result = Self {
-            file, config, scope, limit: max_records,
+            file,
+            config,
+            scope,
+            limit: max_records,
             entries: Vec::with_capacity(complete),
-            current: None, poisoned: false,
+            current: None,
+            poisoned: false,
         };
         result.file.seek(SeekFrom::Start(HEADER_BYTES as u64))?;
         let mut frame = vec![0_u8; frame_len];
@@ -186,9 +190,9 @@ impl GatedSparseJournalV3 {
             {
                 return Err(GatedJournalErrorV3::Corrupt);
             }
-            let (next, receipt) = gated_sparse_tick_v3(
-                &result.config, &tick, result.current.as_ref()
-            ).map_err(|_| GatedJournalErrorV3::Corrupt)?;
+            let (next, receipt) =
+                gated_sparse_tick_v3(&result.config, &tick, result.current.as_ref())
+                    .map_err(|_| GatedJournalErrorV3::Corrupt)?;
             if encode_frame(&tick, &receipt) != frame {
                 return Err(GatedJournalErrorV3::Corrupt);
             }
@@ -204,14 +208,19 @@ impl GatedSparseJournalV3 {
             }
         }
         if available % frame_len_u64 != 0 {
-            result.file.set_len(
-                HEADER_BYTES as u64 + (complete as u64) * frame_len_u64
-            ).map_err(|_| GatedJournalErrorV3::Indeterminate)?;
-            result.file.sync_all()
+            result
+                .file
+                .set_len(HEADER_BYTES as u64 + (complete as u64) * frame_len_u64)
+                .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
+            result
+                .file
+                .sync_all()
                 .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
         }
         // Recovered complete unacknowledged frames might follow failed sync.
-        result.file.sync_data()
+        result
+            .file
+            .sync_data()
             .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
         Ok(result)
     }
@@ -235,9 +244,13 @@ impl GatedSparseJournalV3 {
         if tick.temporal_drive_q24.len() != self.config.base.temporal_width
             || tick.prediction_q24.len() != self.config.base.activation_width
         {
-            return Err(GatedJournalErrorV3::Mechanism(GatedSparseErrorV3::InvalidInput));
+            return Err(GatedJournalErrorV3::Mechanism(
+                GatedSparseErrorV3::InvalidInput,
+            ));
         }
-        if let Some(index) = tick.sequence.checked_sub(1)
+        if let Some(index) = tick
+            .sequence
+            .checked_sub(1)
             .and_then(|seq| usize::try_from(seq).ok())
             && index < self.entries.len()
         {
@@ -265,29 +278,30 @@ impl GatedSparseJournalV3 {
                 Err(GatedJournalErrorV3::Conflict)
             };
         }
-        let before = self.current.as_ref().map_or(
-            Digest32::ZERO,
-            GatedSparseCheckpointV3::digest
-        );
+        let before = self
+            .current
+            .as_ref()
+            .map_or(Digest32::ZERO, GatedSparseCheckpointV3::digest);
         if before != expected_predecessor {
             return Err(GatedJournalErrorV3::Conflict);
         }
         if self.entries.len() == self.limit {
             return Err(GatedJournalErrorV3::Capacity);
         }
-        let (next, receipt) = gated_sparse_tick_v3(
-            &self.config, tick, self.current.as_ref()
-        ).map_err(GatedJournalErrorV3::Mechanism)?;
+        let (next, receipt) = gated_sparse_tick_v3(&self.config, tick, self.current.as_ref())
+            .map_err(GatedJournalErrorV3::Mechanism)?;
         let frame = encode_frame(tick, &receipt);
-        let expected_length = HEADER_BYTES as u64
-            + (self.entries.len() as u64) * (frame.len() as u64);
+        let expected_length =
+            HEADER_BYTES as u64 + (self.entries.len() as u64) * (frame.len() as u64);
         self.poisoned = true;
         if self.file.seek(SeekFrom::End(0))? != expected_length {
             return Err(GatedJournalErrorV3::Corrupt);
         }
-        self.file.write_all(&frame)
+        self.file
+            .write_all(&frame)
             .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
-        self.file.sync_data()
+        self.file
+            .sync_data()
             .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
         self.entries.push(receipt.checkpoint_after);
         self.current = Some(next);
@@ -337,9 +351,8 @@ impl GatedSparseJournalV3 {
             {
                 return Err(GatedJournalErrorV3::Corrupt);
             }
-            let (next, receipt) =
-                gated_sparse_tick_v3(&self.config, &tick, previous.as_ref())
-                    .map_err(|_| GatedJournalErrorV3::Corrupt)?;
+            let (next, receipt) = gated_sparse_tick_v3(&self.config, &tick, previous.as_ref())
+                .map_err(|_| GatedJournalErrorV3::Corrupt)?;
             if receipt.checkpoint_after != self.entries[frame_index]
                 || encode_frame(&tick, &receipt) != bytes
             {
@@ -388,7 +401,8 @@ impl GatedSparseJournalV3 {
     }
 
     fn anchor_at(&self, sequence: u64) -> Option<JournalAnchor> {
-        let index = sequence.checked_sub(1)
+        let index = sequence
+            .checked_sub(1)
             .and_then(|n| usize::try_from(n).ok())?;
         let checkpoint_digest = *self.entries.get(index)?;
         Some(JournalAnchor {
@@ -399,9 +413,9 @@ impl GatedSparseJournalV3 {
 }
 
 fn frame_length(config: &GatedSparseConfigV3) -> usize {
-    FIXED_TICK_BYTES + 8 * (
-        config.base.temporal_width + config.base.activation_width
-    ) + FRAME_EXTRA_BYTES
+    FIXED_TICK_BYTES
+        + 8 * (config.base.temporal_width + config.base.activation_width)
+        + FRAME_EXTRA_BYTES
 }
 
 fn encode_header(digest: Digest32, scope: JournalScope) -> Vec<u8> {
@@ -417,8 +431,11 @@ fn encode_header(digest: Digest32, scope: JournalScope) -> Vec<u8> {
 fn encode_tick(tick: &PopulationSparseTickV2) -> Vec<u8> {
     let mut bytes = Vec::new();
     for digest in [
-        tick.scope_digest, tick.objective_digest, tick.ndu_digest,
-        tick.body_digest, tick.input_digest,
+        tick.scope_digest,
+        tick.objective_digest,
+        tick.ndu_digest,
+        tick.body_digest,
+        tick.input_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -433,8 +450,10 @@ fn encode_tick(tick: &PopulationSparseTickV2) -> Vec<u8> {
 fn signal_digest(receipt: &GatedSparseSignalReceiptV3) -> Digest32 {
     let mut bytes = b"hepta.neuron.gated-sparse-journal-signal.q24.v3".to_vec();
     for digest in [
-        receipt.config_digest, receipt.original_input_digest,
-        receipt.checkpoint_before, receipt.checkpoint_after,
+        receipt.config_digest,
+        receipt.original_input_digest,
+        receipt.checkpoint_before,
+        receipt.checkpoint_after,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -449,7 +468,8 @@ fn signal_digest(receipt: &GatedSparseSignalReceiptV3) -> Digest32 {
         bytes.extend_from_slice(&count.to_be_bytes());
     }
     for value in [
-        receipt.gate_saturation_count, receipt.active_fraction_ppm,
+        receipt.gate_saturation_count,
+        receipt.active_fraction_ppm,
         receipt.projection_count,
     ] {
         bytes.extend_from_slice(&value.to_be_bytes());
@@ -460,14 +480,13 @@ fn signal_digest(receipt: &GatedSparseSignalReceiptV3) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
-fn encode_frame(
-    tick: &PopulationSparseTickV2,
-    receipt: &GatedSparseSignalReceiptV3,
-) -> Vec<u8> {
+fn encode_frame(tick: &PopulationSparseTickV2, receipt: &GatedSparseSignalReceiptV3) -> Vec<u8> {
     let mut bytes = encode_tick(tick);
     for value in [
-        receipt.checkpoint_before, receipt.checkpoint_after,
-        receipt.original_input_digest, signal_digest(receipt),
+        receipt.checkpoint_before,
+        receipt.checkpoint_after,
+        receipt.original_input_digest,
+        signal_digest(receipt),
     ] {
         bytes.extend_from_slice(value.as_array());
     }
@@ -512,8 +531,15 @@ fn decode_tick(
         .map(|_| number() as i64)
         .collect::<Vec<_>>();
     Ok(PopulationSparseTickV2 {
-        scope_digest, objective_digest, ndu_digest, body_digest, input_digest,
-        sequence, monotonic_micros, temporal_drive_q24, prediction_q24,
+        scope_digest,
+        objective_digest,
+        ndu_digest,
+        body_digest,
+        input_digest,
+        sequence,
+        monotonic_micros,
+        temporal_drive_q24,
+        prediction_q24,
     })
 }
 

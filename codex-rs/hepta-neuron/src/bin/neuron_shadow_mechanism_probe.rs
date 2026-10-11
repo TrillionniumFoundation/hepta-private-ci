@@ -205,16 +205,20 @@ fn make_configs(width: usize) -> Result<Configs, String> {
         input_gain_q24: vec![Q / 2; width],
         time_quantum_micros: 100,
     };
-    v1.digest().map_err(|error| format!("V1 config: {error:?}"))?;
-    v2.digest().map_err(|error| format!("V2 config: {error:?}"))?;
-    v3.digest().map_err(|error| format!("V3 config: {error:?}"))?;
-    ssm.digest().map_err(|error| format!("SSM config: {error:?}"))?;
+    v1.digest()
+        .map_err(|error| format!("V1 config: {error:?}"))?;
+    v2.digest()
+        .map_err(|error| format!("V2 config: {error:?}"))?;
+    v3.digest()
+        .map_err(|error| format!("V3 config: {error:?}"))?;
+    ssm.digest()
+        .map_err(|error| format!("SSM config: {error:?}"))?;
     Ok(Configs { v1, v2, v3, ssm })
 }
 
 fn parse_trace(bytes: &[u8]) -> Result<MechanismTraceV1, String> {
-    let trace: MechanismTraceV1 = serde_json::from_slice(bytes)
-        .map_err(|error| format!("invalid trace JSON: {error}"))?;
+    let trace: MechanismTraceV1 =
+        serde_json::from_slice(bytes).map_err(|error| format!("invalid trace JSON: {error}"))?;
     if trace.schema != "hepta.neuron.mechanism-probe-trace.q24.v1"
         || !(5..=256).contains(&trace.width)
         || trace.events.is_empty()
@@ -228,20 +232,22 @@ fn parse_trace(bytes: &[u8]) -> Result<MechanismTraceV1, String> {
             || row.monotonic_micros <= previous_micros
             || row.drive_q24.len() != trace.width
             || row.prediction_q24.len() != trace.width
-            || row.drive_q24.iter().chain(&row.prediction_q24)
+            || row
+                .drive_q24
+                .iter()
+                .chain(&row.prediction_q24)
                 .any(|value| !(-H..=H).contains(value))
         {
-            return Err(format!("invalid sequence, clock, Q24 bounds or dimensions at event {index}"));
+            return Err(format!(
+                "invalid sequence, clock, Q24 bounds or dimensions at event {index}"
+            ));
         }
         previous_micros = row.monotonic_micros;
     }
     Ok(trace)
 }
 
-fn request_for(
-    row: &TraceEvent,
-    cell: usize,
-) -> PopulationSparseTickV2 {
+fn request_for(row: &TraceEvent, cell: usize) -> PopulationSparseTickV2 {
     let mut event_bytes = Vec::with_capacity(16 + (row.drive_q24.len() * 16));
     event_bytes.extend_from_slice(&row.sequence.to_be_bytes());
     event_bytes.extend_from_slice(&row.monotonic_micros.to_be_bytes());
@@ -273,7 +279,12 @@ fn process_peak_rss_bytes() -> Option<u64> {
     let status = fs::read_to_string("/proc/self/status").ok()?;
     status.lines().find_map(|line| {
         let value = line.strip_prefix("VmHWM:")?;
-        value.split_whitespace().next()?.parse::<u64>().ok()?.checked_mul(1_024)
+        value
+            .split_whitespace()
+            .next()?
+            .parse::<u64>()
+            .ok()?
+            .checked_mul(1_024)
     })
 }
 
@@ -283,12 +294,17 @@ fn run() -> Result<(), String> {
     let mut trace_path = None;
     let mut args = env::args().skip(1);
     while let Some(flag) = args.next() {
-        let value = args.next().ok_or_else(|| format!("missing value for {flag}"))?;
+        let value = args
+            .next()
+            .ok_or_else(|| format!("missing value for {flag}"))?;
         match flag.as_str() {
             "--arm" => arm = Some(value),
             "--cells" => {
-                cells = Some(value.parse::<usize>()
-                    .map_err(|_| "cells must be an integer".to_owned())?)
+                cells = Some(
+                    value
+                        .parse::<usize>()
+                        .map_err(|_| "cells must be an integer".to_owned())?,
+                )
             }
             "--trace" => trace_path = Some(value),
             _ => return Err(format!("unrecognized parameter {flag}")),
@@ -314,14 +330,12 @@ fn run() -> Result<(), String> {
             let input = request_for(row, cell);
             let started = Instant::now();
             let digest = states.apply(cell, &input, &configs)?;
-            let nanos = u64::try_from(started.elapsed().as_nanos())
-                .unwrap_or(u64::MAX);
+            let nanos = u64::try_from(started.elapsed().as_nanos()).unwrap_or(u64::MAX);
             samples.push(nanos);
             *frontier = digest;
         }
     }
-    let wall_ns = u64::try_from(whole_start.elapsed().as_nanos())
-        .unwrap_or(u64::MAX);
+    let wall_ns = u64::try_from(whole_start.elapsed().as_nanos()).unwrap_or(u64::MAX);
     samples.sort_unstable();
     let mut bound = b"hepta.neuron.mechanism-probe-frontiers.v1".to_vec();
     for digest in &frontiers {
@@ -393,23 +407,29 @@ mod tests {
     }
 
     fn bytes(trace: &MechanismTraceV1) -> Vec<u8> {
-        let events = trace.events.iter().map(|event| json!({
-            "sequence": event.sequence,
-            "monotonic_micros": event.monotonic_micros,
-            "drive_q24": event.drive_q24,
-            "prediction_q24": event.prediction_q24,
-        })).collect::<Vec<_>>();
+        let events = trace
+            .events
+            .iter()
+            .map(|event| {
+                json!({
+                    "sequence": event.sequence,
+                    "monotonic_micros": event.monotonic_micros,
+                    "drive_q24": event.drive_q24,
+                    "prediction_q24": event.prediction_q24,
+                })
+            })
+            .collect::<Vec<_>>();
         serde_json::to_vec(&json!({
             "schema": trace.schema,
             "width": trace.width,
             "events": events,
-        })).expect("test trace serialization")
+        }))
+        .expect("test trace serialization")
     }
 
     #[test]
     fn every_arm_accepts_the_exact_same_32_dimensional_trace() {
-        let trace = parse_trace(&bytes(&sample_trace()))
-            .expect("valid 32D two-tick trace");
+        let trace = parse_trace(&bytes(&sample_trace())).expect("valid 32D two-tick trace");
         let configs = make_configs(trace.width).expect("valid mechanisms");
         let v1 = configs.v1.digest().expect("v1 config digest");
         let v2 = configs.v2.digest().expect("v2 config digest");
@@ -421,7 +441,8 @@ mod tests {
             let mut frontier = Digest32::ZERO;
             for row in &trace.events {
                 let input = request_for(row, 7);
-                frontier = states.apply(7, &input, &configs)
+                frontier = states
+                    .apply(7, &input, &configs)
                     .expect("arm must process same Q24 trace");
                 assert!(!frontier.is_zero());
             }

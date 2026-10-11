@@ -5,11 +5,11 @@ use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
-use codex_hepta_types::Generation;
 use crate::gated_sparse_v3::TemporalGateV3;
 use crate::population_v2::ActivationPopulationV2;
 use crate::population_v2::PopulationSparseConfigV2;
 use crate::population_v2::TemporalProjectionEdgeV2;
+use codex_hepta_types::Generation;
 
 const Q: i64 = 1 << 24;
 static NEXT: AtomicU64 = AtomicU64::new(0);
@@ -38,8 +38,16 @@ fn config() -> GatedSparseConfigV3 {
             inhibition_gain_q24: Q / 2,
             inhibition: Vec::new(),
             populations: vec![
-                ActivationPopulationV2 { start: 0, len: 3, top_k: 1 },
-                ActivationPopulationV2 { start: 3, len: 3, top_k: 1 },
+                ActivationPopulationV2 {
+                    start: 0,
+                    len: 3,
+                    top_k: 1,
+                },
+                ActivationPopulationV2 {
+                    start: 3,
+                    len: 3,
+                    top_k: 1,
+                },
             ],
             activity_decay_q24: Q / 2,
             target_activity_q24: Q / 2,
@@ -48,11 +56,14 @@ fn config() -> GatedSparseConfigV3 {
             threshold_max_q24: Q,
             eligibility_decay_q24: Q / 2,
         },
-        gates: vec![TemporalGateV3 {
-            bias_q24: Q / 2,
-            input_gain_q24: Q / 4,
-            change_gain_q24: Q / 4,
-        }; 2],
+        gates: vec![
+            TemporalGateV3 {
+                bias_q24: Q / 2,
+                input_gain_q24: Q / 4,
+                change_gain_q24: Q / 4,
+            };
+            2
+        ],
     }
 }
 
@@ -86,7 +97,8 @@ impl Fixture {
     fn new() -> Self {
         let serial = NEXT.fetch_add(1, Ordering::Relaxed);
         let root = std::env::temp_dir().join(format!(
-            "hepta-gated-v3-journal-{}-{serial}", std::process::id()
+            "hepta-gated-v3-journal-{}-{serial}",
+            std::process::id()
         ));
         checked(fs::create_dir(&root));
         let file = root.join("shadow-v3");
@@ -94,19 +106,24 @@ impl Fixture {
     }
 
     fn create(&self) -> File {
-        checked(OpenOptions::new().read(true).write(true).create_new(true).open(&self.file))
+        checked(
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create_new(true)
+                .open(&self.file),
+        )
     }
 
     fn reopen(&self) -> File {
         checked(OpenOptions::new().read(true).write(true).open(&self.file))
     }
 
-    fn open_anchored(&self, anchor: JournalAnchor)
-        -> Result<GatedSparseJournalV3, GatedJournalErrorV3>
-    {
-        GatedSparseJournalV3::open_anchored(
-            self.reopen(), config(), scope(), 16, anchor
-        )
+    fn open_anchored(
+        &self,
+        anchor: JournalAnchor,
+    ) -> Result<GatedSparseJournalV3, GatedJournalErrorV3> {
+        GatedSparseJournalV3::open_anchored(self.reopen(), config(), scope(), 16, anchor)
     }
 }
 
@@ -116,10 +133,18 @@ impl Drop for Fixture {
     }
 }
 
-fn committed_fixture() -> (Fixture, JournalAnchor, JournalAnchor, GatedSparseSignalReceiptV3) {
+fn committed_fixture() -> (
+    Fixture,
+    JournalAnchor,
+    JournalAnchor,
+    GatedSparseSignalReceiptV3,
+) {
     let fixture = Fixture::new();
     let mut journal = checked(GatedSparseJournalV3::open(
-        fixture.create(), config(), scope(), 16
+        fixture.create(),
+        config(),
+        scope(),
+        16,
     ));
     let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
     let second = checked(journal.commit(first.checkpoint_after, &tick(2)));
@@ -141,8 +166,14 @@ fn exact_recovery_and_old_retry_preserve_committed_bytes() {
     let mut journal = checked(fixture.open_anchored(ack2));
     assert_eq!(checked(journal.current_anchor()), Some(ack3));
     assert!(checked(journal.contains_anchor(ack2)));
-    assert_eq!(checked(journal.commit(ack2.checkpoint_digest, &tick(3))), third);
-    assert_eq!(checked(journal.current()).unwrap().digest(), ack3.checkpoint_digest);
+    assert_eq!(
+        checked(journal.commit(ack2.checkpoint_digest, &tick(3))),
+        third
+    );
+    assert_eq!(
+        checked(journal.current()).unwrap().digest(),
+        ack3.checkpoint_digest
+    );
     drop(journal);
     assert_eq!(checked(fs::read(&fixture.file)), before);
 }
@@ -152,7 +183,10 @@ fn loss_of_acknowledged_prefix_or_empty_replacement_is_rejected() {
     let (fixture, _, ack3, _) = committed_fixture();
     let bytes = checked(fs::read(&fixture.file));
     let first_frame = frame_length(&config());
-    checked(fs::write(&fixture.file, &bytes[..HEADER_BYTES + first_frame * 2]));
+    checked(fs::write(
+        &fixture.file,
+        &bytes[..HEADER_BYTES + first_frame * 2],
+    ));
     assert_eq!(
         fixture.open_anchored(ack3).err(),
         Some(GatedJournalErrorV3::AcknowledgedHistoryMissing)
@@ -222,7 +256,10 @@ fn config_generation_drift_and_v1_header_are_rejected() {
 fn conflicting_retries_and_missing_sequences_cannot_write() {
     let fixture = Fixture::new();
     let mut journal = checked(GatedSparseJournalV3::open(
-        fixture.create(), config(), scope(), 16
+        fixture.create(),
+        config(),
+        scope(),
+        16,
     ));
     let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
     let before = checked(fs::read(&fixture.file));
@@ -235,9 +272,7 @@ fn conflicting_retries_and_missing_sequences_cannot_write() {
     assert_eq!(
         journal.commit(first.checkpoint_after, &tick(3)).err(),
         Some(GatedJournalErrorV3::Mechanism(
-            GatedSparseErrorV3::Mechanism(
-                crate::population_v2::PopulationSparseError::Sequence
-            )
+            GatedSparseErrorV3::Mechanism(crate::population_v2::PopulationSparseError::Sequence)
         ))
     );
     assert_eq!(checked(fs::read(&fixture.file)), before);
@@ -267,7 +302,10 @@ fn external_witness_is_required_to_detect_full_valid_suffix_loss() {
 fn rejects_external_scope_and_bad_capacity_without_writes() {
     let fixture = Fixture::new();
     let mut journal = checked(GatedSparseJournalV3::open(
-        fixture.create(), config(), scope(), 1
+        fixture.create(),
+        config(),
+        scope(),
+        1,
     ));
     let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
     assert_eq!(
@@ -292,7 +330,10 @@ fn rejects_external_scope_and_bad_capacity_without_writes() {
 fn bounded_digest_only_history_reconstructs_exact_old_receipt_after_later_ticks() {
     let fixture = Fixture::new();
     let mut journal = checked(GatedSparseJournalV3::open(
-        fixture.create(), config(), scope(), 1_024,
+        fixture.create(),
+        config(),
+        scope(),
+        1_024,
     ));
     let mut predecessor = Digest32::ZERO;
     let mut original_receipt = None;
@@ -309,15 +350,13 @@ fn bounded_digest_only_history_reconstructs_exact_old_receipt_after_later_ticks(
         256 * std::mem::size_of::<Digest32>()
     );
     let before = checked(fs::read(&fixture.file));
-    let earliest = checked(journal.commit(
-        Digest32::ZERO, &tick(1),
-    ));
-    let second = checked(journal.commit(
-        earliest.checkpoint_after, &tick(2),
-    ));
+    let earliest = checked(journal.commit(Digest32::ZERO, &tick(1)));
+    let second = checked(journal.commit(earliest.checkpoint_after, &tick(2)));
     assert_eq!(Some(second), original_receipt);
     assert_eq!(
-        checked(journal.current_anchor()).expect("latest anchor").checkpoint_digest,
+        checked(journal.current_anchor())
+            .expect("latest anchor")
+            .checkpoint_digest,
         predecessor
     );
     assert_eq!(checked(fs::read(&fixture.file)), before);
@@ -365,11 +404,16 @@ fn v3_child_commit_then_hard_exit() {
             // child environment; never reconstructed from journal contents.
             let raw = std::env::var("HEPTA_V3_SHADOW_JOURNAL_ANCHOR")
                 .expect("child needs an independently supplied anchor");
-            raw.parse::<Digest32>().expect("valid independently supplied anchor")
+            raw.parse::<Digest32>()
+                .expect("valid independently supplied anchor")
         },
     };
     let mut journal = checked(GatedSparseJournalV3::open_anchored(
-        file, config(), scope(), 16, anchor
+        file,
+        config(),
+        scope(),
+        16,
+        anchor,
     ));
     let second = checked(journal.commit(anchor.checkpoint_digest, &tick(2)));
     assert_eq!(second.checkpoint_before, anchor.checkpoint_digest);
@@ -383,7 +427,10 @@ fn v3_child_commit_then_hard_exit() {
 fn independent_anchor_recovers_synced_child_commit_after_process_exit() {
     let fixture = Fixture::new();
     let mut journal = checked(GatedSparseJournalV3::open(
-        fixture.create(), config(), scope(), 16
+        fixture.create(),
+        config(),
+        scope(),
+        16,
     ));
     let first = checked(journal.commit(Digest32::ZERO, &tick(1)));
     let anchor = checked(journal.current_anchor()).expect("first committed tick");

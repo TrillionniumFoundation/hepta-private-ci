@@ -1,5 +1,6 @@
 use super::*;
-use crate::population_v2::{ActivationPopulationV2, TemporalProjectionEdgeV2};
+use crate::population_v2::ActivationPopulationV2;
+use crate::population_v2::TemporalProjectionEdgeV2;
 use codex_hepta_types::Generation;
 
 fn checked<T, E: fmt::Debug>(value: Result<T, E>) -> T {
@@ -15,16 +16,26 @@ fn config() -> GatedSparseConfigV3 {
         activation_width: 6,
         global_top_k: 1,
         temporal_decay_q24: Q / 2,
-        projection: (0..6).map(|target_activation| TemporalProjectionEdgeV2 {
-            source_temporal: target_activation % 2,
-            target_activation,
-            weight_q24: Q / 2,
-        }).collect(),
+        projection: (0..6)
+            .map(|target_activation| TemporalProjectionEdgeV2 {
+                source_temporal: target_activation % 2,
+                target_activation,
+                weight_q24: Q / 2,
+            })
+            .collect(),
         inhibition_gain_q24: Q / 2,
         inhibition: Vec::new(),
         populations: vec![
-            ActivationPopulationV2 { start: 0, len: 3, top_k: 1 },
-            ActivationPopulationV2 { start: 3, len: 3, top_k: 1 },
+            ActivationPopulationV2 {
+                start: 0,
+                len: 3,
+                top_k: 1,
+            },
+            ActivationPopulationV2 {
+                start: 3,
+                len: 3,
+                top_k: 1,
+            },
         ],
         activity_decay_q24: Q / 2,
         target_activity_q24: Q / 2,
@@ -156,10 +167,16 @@ fn rejects_invalid_input_weights_and_replay_order() {
     let cfg = config();
     let mut invalid = cfg.clone();
     invalid.gates.pop();
-    assert_eq!(invalid.digest().err(), Some(GatedSparseErrorV3::InvalidGates));
+    assert_eq!(
+        invalid.digest().err(),
+        Some(GatedSparseErrorV3::InvalidGates)
+    );
     invalid = cfg.clone();
     invalid.gates[0].bias_q24 = Q + 1;
-    assert_eq!(invalid.digest().err(), Some(GatedSparseErrorV3::InvalidGates));
+    assert_eq!(
+        invalid.digest().err(),
+        Some(GatedSparseErrorV3::InvalidGates)
+    );
     let mut out_of_bounds = tick(1, 10);
     out_of_bounds.temporal_drive_q24[0] = H + 1;
     assert_eq!(
@@ -171,11 +188,15 @@ fn rejects_invalid_input_weights_and_replay_order() {
     drift.scope_digest = Digest32::of_bytes(b"wrong-scope");
     assert_eq!(
         gated_sparse_tick_v3(&cfg, &drift, Some(&first.0)).err(),
-        Some(GatedSparseErrorV3::Mechanism(PopulationSparseError::ScopeDrift))
+        Some(GatedSparseErrorV3::Mechanism(
+            PopulationSparseError::ScopeDrift
+        ))
     );
     assert_eq!(
         gated_sparse_tick_v3(&cfg, &tick(3, 20), Some(&first.0)).err(),
-        Some(GatedSparseErrorV3::Mechanism(PopulationSparseError::Sequence))
+        Some(GatedSparseErrorV3::Mechanism(
+            PopulationSparseError::Sequence
+        ))
     );
     assert_eq!(
         gated_sparse_tick_v3(&cfg, &tick(2, 10), Some(&first.0)).err(),
@@ -205,7 +226,10 @@ fn cold_replay_recovers_exact_v3_checkpoint_and_rejects_gaps() {
     }
     assert_eq!(Some(recovered.clone()), previous);
     assert_eq!(recovered.sequence(), 32);
-    assert_eq!(replay_gated_sparse_v3(&cfg, &[]).err(), Some(GatedSparseErrorV3::ReplayLength));
+    assert_eq!(
+        replay_gated_sparse_v3(&cfg, &[]).err(),
+        Some(GatedSparseErrorV3::ReplayLength)
+    );
     assert_eq!(
         replay_gated_sparse_v3(&cfg, &vec![tick(1, 1); 1_025]).err(),
         Some(GatedSparseErrorV3::ReplayLength)
@@ -214,7 +238,9 @@ fn cold_replay_recovers_exact_v3_checkpoint_and_rejects_gaps() {
     missing_tick.remove(2);
     assert_eq!(
         replay_gated_sparse_v3(&cfg, &missing_tick).err(),
-        Some(GatedSparseErrorV3::Mechanism(PopulationSparseError::Sequence))
+        Some(GatedSparseErrorV3::Mechanism(
+            PopulationSparseError::Sequence
+        ))
     );
 }
 
@@ -250,9 +276,7 @@ fn independent_python_q24_golden_temporal_sequence_matches_bit_exactly() {
     for (index, (sequence, micros, drive)) in inputs.into_iter().enumerate() {
         let mut input = tick(sequence, micros);
         input.temporal_drive_q24[0] = drive;
-        let (next, receipt) = checked(gated_sparse_tick_v3(
-            &cfg, &input, previous.as_ref()
-        ));
+        let (next, receipt) = checked(gated_sparse_tick_v3(&cfg, &input, previous.as_ref()));
         assert_eq!(receipt.gate_q24[0], expected_gate[index]);
         assert_eq!(next.temporal_q24()[0], expected_state[index]);
         previous = Some(next);
@@ -282,9 +306,7 @@ fn independent_4096_event_v3_temporal_q24_digest_is_bit_exact() {
         micros += delta;
         let mut input = tick(sequence, micros);
         input.temporal_drive_q24[0] = drive;
-        let (next, receipt) = checked(gated_sparse_tick_v3(
-            &cfg, &input, prior.as_ref(),
-        ));
+        let (next, receipt) = checked(gated_sparse_tick_v3(&cfg, &input, prior.as_ref()));
         stream.extend_from_slice(&receipt.gate_q24[0].to_be_bytes());
         stream.extend_from_slice(&next.temporal_q24()[0].to_be_bytes());
         prior = Some(next);

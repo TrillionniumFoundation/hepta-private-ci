@@ -216,7 +216,9 @@ class PairedShadowTests(unittest.TestCase):
 
     def test_training_budget_equality_required(self) -> None:
         self.payload["arms"]["v2"]["optimizer_steps"] = 101
-        with self.assertRaisesRegex(a0.EvidenceError, "different Encoder"):
+        with self.assertRaisesRegex(
+            a0.EvidenceError, "candidate optimizer steps differ from preregistered budget"
+        ):
             self.verify()
 
     def test_frozen_shared_encoder_required(self) -> None:

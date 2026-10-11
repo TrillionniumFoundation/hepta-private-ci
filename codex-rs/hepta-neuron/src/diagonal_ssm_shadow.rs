@@ -92,8 +92,14 @@ impl DiagonalSsmConfigV1 {
             || self.input_gain_q24.len() != width
             || self.time_quantum_micros == 0
             || self.time_quantum_micros > 1_000_000_000
-            || self.decay_per_step_q24.iter().any(|value| !(0..=Q).contains(value))
-            || self.input_gain_q24.iter().any(|value| !(-Q..=Q).contains(value))
+            || self
+                .decay_per_step_q24
+                .iter()
+                .any(|value| !(0..=Q).contains(value))
+            || self
+                .input_gain_q24
+                .iter()
+                .any(|value| !(-Q..=Q).contains(value))
         {
             return Err(DiagonalSsmErrorV1::InvalidConfig);
         }
@@ -128,7 +134,10 @@ impl DiagonalSsmCheckpointV1 {
     fn calculate_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.neuron.diagonal-ssm-checkpoint.q24.v1".to_vec();
         for digest in [
-            self.config, self.predecessor, self.original_input, self.inner.digest(),
+            self.config,
+            self.predecessor,
+            self.original_input,
+            self.inner.digest(),
         ] {
             bytes.extend_from_slice(digest.as_array());
         }
@@ -147,10 +156,18 @@ pub fn diagonal_ssm_tick_v1(
     if input.temporal_drive_q24.len() != config.base.temporal_width
         || input.prediction_q24.len() != config.base.activation_width
         || [
-            input.scope_digest, input.objective_digest, input.ndu_digest,
-            input.body_digest, input.input_digest,
-        ].iter().any(|digest| digest.is_zero())
-        || input.temporal_drive_q24.iter().chain(&input.prediction_q24)
+            input.scope_digest,
+            input.objective_digest,
+            input.ndu_digest,
+            input.body_digest,
+            input.input_digest,
+        ]
+        .iter()
+        .any(|digest| digest.is_zero())
+        || input
+            .temporal_drive_q24
+            .iter()
+            .chain(&input.prediction_q24)
             .any(|value| !(-H..=H).contains(value))
     {
         return Err(DiagonalSsmErrorV1::InvalidInput);
@@ -163,13 +180,14 @@ pub fn diagonal_ssm_tick_v1(
         if prior.config != config_digest {
             return Err(DiagonalSsmErrorV1::ConfigDrift);
         }
-        let delta = input.monotonic_micros.checked_sub(prior.monotonic_micros)
+        let delta = input
+            .monotonic_micros
+            .checked_sub(prior.monotonic_micros)
             .filter(|delta| *delta > 0)
             .ok_or(DiagonalSsmErrorV1::InvalidElapsedTime)?;
         // Ceiling converts positive sub-quantum gaps to one step rather
         // than silently treating them as zero decay.
-        delta / config.time_quantum_micros
-            + u64::from(delta % config.time_quantum_micros != 0)
+        delta / config.time_quantum_micros + u64::from(delta % config.time_quantum_micros != 0)
     } else {
         1
     };
@@ -193,9 +211,8 @@ pub fn diagonal_ssm_tick_v1(
     v2_config.temporal_decay_q24 = 0;
     let mut v2_input = input.clone();
     v2_input.temporal_drive_q24 = effective;
-    let (inner, receipt) = population_sparse_tick_v2(
-        &v2_config, &v2_input, previous.map(|prior| &prior.inner),
-    )?;
+    let (inner, receipt) =
+        population_sparse_tick_v2(&v2_config, &v2_input, previous.map(|prior| &prior.inner))?;
     let original_input = input_digest(input);
     let mut next = DiagonalSsmCheckpointV1 {
         config: config_digest,
@@ -242,8 +259,11 @@ pub fn replay_diagonal_ssm_v1(
 fn input_digest(input: &PopulationSparseTickV2) -> Digest32 {
     let mut bytes = b"hepta.neuron.diagonal-ssm-input.q24.v1".to_vec();
     for digest in [
-        input.scope_digest, input.objective_digest, input.ndu_digest,
-        input.body_digest, input.input_digest,
+        input.scope_digest,
+        input.objective_digest,
+        input.ndu_digest,
+        input.body_digest,
+        input.input_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -277,8 +297,8 @@ fn mul_q24(left: i64, right: i64) -> i64 {
     let magnitude = product.abs();
     let quotient = magnitude / i128::from(Q);
     let remainder = magnitude % i128::from(Q);
-    let round_up = remainder * 2 > i128::from(Q)
-        || (remainder * 2 == i128::from(Q) && quotient % 2 != 0);
+    let round_up =
+        remainder * 2 > i128::from(Q) || (remainder * 2 == i128::from(Q) && quotient % 2 != 0);
     ((quotient + i128::from(round_up)) * product.signum()) as i64
 }
 

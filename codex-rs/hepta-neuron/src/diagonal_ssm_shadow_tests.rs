@@ -1,8 +1,8 @@
 use super::*;
-use codex_hepta_types::Generation;
 use crate::population_v2::ActivationPopulationV2;
 use crate::population_v2::PopulationSparseError;
 use crate::population_v2::TemporalProjectionEdgeV2;
+use codex_hepta_types::Generation;
 
 fn checked<T, E: fmt::Debug>(result: Result<T, E>) -> T {
     result.unwrap_or_else(|error| panic!("SSM shadow fixture failed: {error:?}"))
@@ -28,8 +28,16 @@ fn config() -> DiagonalSsmConfigV1 {
             inhibition_gain_q24: Q / 2,
             inhibition: vec![],
             populations: vec![
-                ActivationPopulationV2 { start: 0, len: 3, top_k: 1 },
-                ActivationPopulationV2 { start: 3, len: 3, top_k: 1 },
+                ActivationPopulationV2 {
+                    start: 0,
+                    len: 3,
+                    top_k: 1,
+                },
+                ActivationPopulationV2 {
+                    start: 3,
+                    len: 3,
+                    top_k: 1,
+                },
             ],
             activity_decay_q24: Q / 2,
             target_activity_q24: Q / 2,
@@ -102,9 +110,8 @@ fn zero_retention_unit_gain_matches_exact_v2_downstream() {
     let (state, receipt) = checked(diagonal_ssm_tick_v1(&cfg, &input, None));
     let mut baseline = cfg.base.clone();
     baseline.temporal_decay_q24 = 0;
-    let (reference, reference_receipt) = checked(
-        population_sparse_tick_v2(&baseline, &input, None)
-    );
+    let (reference, reference_receipt) =
+        checked(population_sparse_tick_v2(&baseline, &input, None));
     assert_eq!(state.inner, reference);
     assert_eq!(receipt.activation_q24, reference_receipt.activation_q24);
 }
@@ -131,7 +138,10 @@ fn scope_sequence_config_generation_and_checkpoint_tampering_reject() {
     let first = checked(diagonal_ssm_tick_v1(&cfg, &tick(1, 100), None));
     let mut invalid = cfg.clone();
     invalid.decay_per_step_q24[0] = Q + 1;
-    assert_eq!(invalid.digest().err(), Some(DiagonalSsmErrorV1::InvalidConfig));
+    assert_eq!(
+        invalid.digest().err(),
+        Some(DiagonalSsmErrorV1::InvalidConfig)
+    );
     invalid = cfg.clone();
     invalid.base.generation = checked(Generation::new(102));
     assert_eq!(
@@ -148,11 +158,15 @@ fn scope_sequence_config_generation_and_checkpoint_tampering_reject() {
     cross_scope.scope_digest = Digest32::of_bytes(b"different-scope");
     assert_eq!(
         diagonal_ssm_tick_v1(&cfg, &cross_scope, Some(&first.0)).err(),
-        Some(DiagonalSsmErrorV1::Mechanism(PopulationSparseError::ScopeDrift))
+        Some(DiagonalSsmErrorV1::Mechanism(
+            PopulationSparseError::ScopeDrift
+        ))
     );
     assert_eq!(
         diagonal_ssm_tick_v1(&cfg, &tick(3, 200), Some(&first.0)).err(),
-        Some(DiagonalSsmErrorV1::Mechanism(PopulationSparseError::Sequence))
+        Some(DiagonalSsmErrorV1::Mechanism(
+            PopulationSparseError::Sequence
+        ))
     );
 }
 
@@ -171,9 +185,9 @@ fn state_clips_to_q24_envelope_and_replay_is_deterministic() {
     assert_eq!(second.0.temporal_q24(), &[8 * Q; 2]);
     assert!(second.1.projection_count > 0);
 
-    let inputs = (1..=64).map(|sequence| {
-        tick(sequence, sequence * 100)
-    }).collect::<Vec<_>>();
+    let inputs = (1..=64)
+        .map(|sequence| tick(sequence, sequence * 100))
+        .collect::<Vec<_>>();
     let expected = checked(replay_diagonal_ssm_v1(&config(), &inputs));
     let mut current = None;
     for input in &inputs {
@@ -203,8 +217,11 @@ fn independent_python_diagonal_ssm_q24_golden_is_bit_exact() {
     // qualification/neuron-gated-sparse-v3/q24_temporal_oracle.py
     let cfg = config();
     let inputs = [
-        (1_u64, 100_u64, Q), (2, 200, -(Q / 2)),
-        (3, 401, 3 * Q / 2), (4, 1301, -3 * Q), (5, 1302, 0),
+        (1_u64, 100_u64, Q),
+        (2, 200, -(Q / 2)),
+        (3, 401, 3 * Q / 2),
+        (4, 1301, -3 * Q),
+        (5, 1302, 0),
     ];
     let steps = [1_u64, 1, 3, 9, 1];
     let retention = [8388608_i64, 8388608, 2097152, 32768, 8388608];
@@ -213,9 +230,7 @@ fn independent_python_diagonal_ssm_q24_golden_is_bit_exact() {
     for (index, (sequence, micros, drive)) in inputs.into_iter().enumerate() {
         let mut input = tick(sequence, micros);
         input.temporal_drive_q24[0] = drive;
-        let (next, receipt) = checked(diagonal_ssm_tick_v1(
-            &cfg, &input, previous.as_ref()
-        ));
+        let (next, receipt) = checked(diagonal_ssm_tick_v1(&cfg, &input, previous.as_ref()));
         assert_eq!(receipt.elapsed_steps, steps[index]);
         assert_eq!(q24_power(Q / 2, receipt.elapsed_steps), retention[index]);
         assert_eq!(next.temporal_q24()[0], expected[index]);
@@ -245,9 +260,7 @@ fn independent_4096_event_ssm_q24_stream_digest_is_bit_exact() {
         micros += delta;
         let mut input = tick(sequence, micros);
         input.temporal_drive_q24[0] = drive;
-        let (next, receipt) = checked(diagonal_ssm_tick_v1(
-            &cfg, &input, prior.as_ref(),
-        ));
+        let (next, receipt) = checked(diagonal_ssm_tick_v1(&cfg, &input, prior.as_ref()));
         let retention = q24_power(Q / 2, receipt.elapsed_steps);
         stream.extend_from_slice(&(receipt.elapsed_steps as i64).to_be_bytes());
         stream.extend_from_slice(&retention.to_be_bytes());
