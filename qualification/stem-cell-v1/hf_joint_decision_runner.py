@@ -260,6 +260,7 @@ def run(args):
         "model_source": SOURCES[args.model_key][0],
         "dataset_sha256": args.expected_dataset_sha256,
         "training_sample_groups_sha256": groups_digest,
+        "runner_source_sha256": sha256_file(__file__),
         "runtime_profile": {
             "device": args.device, "dtype": args.dtype,
             "batch_size": args.batch_size, "context_tokens": args.context_tokens},
