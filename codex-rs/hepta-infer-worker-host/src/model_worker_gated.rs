@@ -159,7 +159,10 @@ impl GatedHeadCpuDriverV2 {
             return Err(Error::ModelAlreadyLoaded);
         }
         let bytes = head.tensor_bytes()?;
-        let total = self.tensor_bytes.checked_add(bytes).ok_or(Error::ArithmeticOverflow)?;
+        let total = self
+            .tensor_bytes
+            .checked_add(bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
         if total > MAX_TENSOR_BYTES {
             return Err(Error::ModelCapacity);
         }
@@ -318,15 +321,14 @@ impl GatedHeadCpuDriverV2 {
 
 impl ModelDriver for GatedHeadCpuDriverV2 {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
-        let selected_catalog =
-            catalog_digest_sorted(
-                &self
-                    .heads
-                    .keys()
-                    .chain(self.dynamic_heads.keys())
-                    .cloned()
-                    .collect::<Vec<_>>(),
-            );
+        let selected_catalog = catalog_digest_sorted(
+            &self
+                .heads
+                .keys()
+                .chain(self.dynamic_heads.keys())
+                .cloned()
+                .collect::<Vec<_>>(),
+        );
         if *manifest != self.selected_manifest
             || self.loaded
             || (self.heads.is_empty() && self.dynamic_heads.is_empty())
@@ -922,7 +924,9 @@ mod tests {
             GatedHeadCpuDriverV2::catalog_digest_for_dynamic(&[candidate.clone()])
                 .expect("catalog");
         let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
-        let digest = driver.register_dynamic_head(candidate.clone()).expect("register");
+        let digest = driver
+            .register_dynamic_head(candidate.clone())
+            .expect("register");
         assert_eq!(driver.parameter_bytes(), 14 * 8);
         let handle = driver.load(&selected).expect("seal and load");
         assert_eq!(
@@ -930,9 +934,16 @@ mod tests {
             Err(Error::FeatureContract)
         );
         assert_eq!(
-            driver.compute_parts(
-                &digest, &"a".repeat(64), &[Q24, Q24], 1, Some("cell.dynamic")
-            ).expect("scoped dynamic gate").0,
+            driver
+                .compute_parts(
+                    &digest,
+                    &"a".repeat(64),
+                    &[Q24, Q24],
+                    1,
+                    Some("cell.dynamic")
+                )
+                .expect("scoped dynamic gate")
+                .0,
             vec![3 * Q24 / 2]
         );
         assert_eq!(
