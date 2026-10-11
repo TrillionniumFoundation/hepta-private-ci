@@ -34,6 +34,7 @@ from stem_cell_adapter import DifferentiatedEncoder
 from stem_cell_temporal import build_as_of_index
 from stem_cell_adapter_opportunity import eligible_pairs_by_stage
 from stem_cell_source_ceiling import retrospective_pool_ceiling
+from stem_train_heldout_bridge import train_to_heldout_gap
 from stem_reader_zero_evidence import (
     generate_empty_evidence_controls,
     evaluate_empty_evidence_controls,
@@ -830,6 +831,9 @@ def run(staged, ranker_dir, output):
             output / "post-policy-native-source-ceiling.json",
             retrospective_source_ceiling,
         )
+        # Only after all policy calls and scoring; targets never enter fitting.
+        train_heldout_diagnostic = train_to_heldout_gap(plan, learning, scored)
+        write(output / "train-heldout-gap.json", train_heldout_diagnostic)
         no_evidence_reader_after = control_session.summary()
         # The diagnostic is nonqualifying if its isolated Reader quarantined.
         if not control_generator.quarantined:
@@ -859,6 +863,7 @@ def run(staged, ranker_dir, output):
             no_evidence_reader_report=no_evidence_report,
             matched_frozen_vs_no_evidence=paired_reader_controls,
             retrospective_weak_source_ceiling=retrospective_source_ceiling,
+            train_to_heldout_diagnostic=train_heldout_diagnostic,
             no_evidence_reader_call_accounting=dict(
                 same_pinned_reader_identity=generator.identity,
                 same_pinned_reader_profile=generator.profile,

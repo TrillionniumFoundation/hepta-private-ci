@@ -614,3 +614,29 @@ These measurements are in-sample, require only the *existing* saved Head and
 frozen Encoder feature rows, and cannot establish held-out answer or citation
 benefit without an independent fixed-Reader evaluation. No training
 hyperparameter or model-selection policy is changed by this instrumentation.
+
+## Direct TRAIN-fit versus held-out frozen-source comparison
+
+`stem_train_heldout_bridge.py` is applied only **after all 576 original
+policy answers have been recorded and native post-policy scoring is closed**.
+For each 16/32/48 checkpoint and every learned Head/Adapter Cell route, it
+joins the measured **actual prior/updated Head SHA-256** and TRAIN-only weak
+loss delta to the *same question, Cell, source family, and exact candidate
+pool* under the frozen ranker and learned arm.
+
+It reports separate **test** and **transfer** weak native-source support
+gains/regressions, changed top-1 choices, matched actual Reader successes,
+scored paired token-F1, and conservative original-planned uncertainty bounds.
+Reader failures do not erase already observed selector decisions; missing
+selections or native unresolved labels are **not** counted as successful
+comparisons. Previously exposed selection and old-task revisit retention
+remain distinct, not relabelled as unseen test evidence.
+
+A lower training loss without a positive observed held-out source net change
+is an informative mismatch, not independent proof of overfitting. A LoRA
+arm is **Encoder adaptation plus Head**, so the frozen-to-LoRA comparison
+cannot attribute gain to its Head alone; the separately pinned three-way
+score geometry is required for that attribution. No gold source enters any
+actual training or policy decision, and native document-level source
+support is not independently verified window entailment, citation
+precision, or a production acceptance gate.

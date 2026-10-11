@@ -18,6 +18,8 @@ on:
       - "scripts/memory_cell/stem_reader_paired_control.py"
       - "scripts/memory_cell/test_stem_reader_paired_control.py"
       - "scripts/memory_cell/stem_cell_trial.py"
+      - "scripts/memory_cell/stem_train_heldout_bridge.py"
+      - "scripts/memory_cell/test_stem_train_heldout_bridge.py"
       - "scripts/memory_cell/stem_head_fit_dynamics.py"
       - "scripts/memory_cell/test_stem_head_fit_dynamics.py"
       - "scripts/memory_cell/stem_cell_source_ceiling.py"
@@ -56,7 +58,8 @@ jobs:
             test_stem_reader_paired_control \
             test_stem_cell_adapter_opportunity \
             test_stem_cell_source_ceiling \
-            test_stem_head_fit_dynamics             2>&1 | tee /tmp/stem-protocol/tests.log
+            test_stem_head_fit_dynamics \
+            test_stem_train_heldout_bridge             2>&1 | tee /tmp/stem-protocol/tests.log
       - name: Retain source, failure logs and manifest
         if: always()
         run: |
@@ -74,6 +77,8 @@ jobs:
           cp scripts/memory_cell/test_stem_cell_source_ceiling.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_head_fit_dynamics.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_head_fit_dynamics.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_train_heldout_bridge.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_train_heldout_bridge.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_reader_zero_evidence.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_reader_zero_evidence.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_reader_paired_control.py /tmp/stem-protocol/source/

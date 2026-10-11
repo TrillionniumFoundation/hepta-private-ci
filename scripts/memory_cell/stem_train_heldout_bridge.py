@@ -1,0 +1,221 @@
+"""Match within-TRAIN Head fitting to held-out frozen-policy source choices.
+
+Read-only *after* every original policy answer, Reader call, and original
+scoring record has been saved. Do not train, select, route, threshold, cache,
+alter native target labels, or treat weak document support as entailment.
+"""
+
+from collections import defaultdict
+import math
+
+ARMS = ("frozen_rerank", "prototype", "linear", "gated",
+        "lineage_lora_gated", "independent_lora_gated")
+STAGES = (16, 32, 48)
+PHASES = ("select", "retention", "test", "transfer")
+CELLS = ("general", "temporal")
+
+
+def train_to_heldout_gap(plan, learning, scored):
+    questions = plan["questions"]
+    routes = plan["routes"]
+    if (
+        tuple(plan["arms"]) != ARMS
+        or tuple(plan["curriculum_attempted_examples"]) != STAGES
+        or tuple(plan["cells"]) != CELLS
+        or set(questions) != {"train", *PHASES}
+        or len(questions["train"]) != 48
+        or any(len(questions[phase]) != 8 for phase in PHASES)
+        or len(set(q for group in questions.values() for q in group)) != 80
+        or set(routes) != set(q for group in questions.values() for q in group)
+        or any(cell not in CELLS for cell in routes.values())
+    ):
+        raise ValueError("incomplete originally registered Stem curriculum")
+    expected = {
+        (stage, phase, qid, arm)
+        for stage in STAGES for phase in PHASES
+        for qid in questions[phase] for arm in ARMS
+    }
+    predictions = {}
+    for row in scored:
+        key = row["stage"], row["phase"], row["question_id"], row["arm"]
+        if key not in expected or key in predictions:
+            raise ValueError("duplicate or unregistered scored policy attempt")
+        if row["status"] not in ("succeeded", "failed"):
+            raise ValueError("invalid Reader-policy status")
+        predictions[key] = row
+    if set(predictions) != expected or len(scored) != 576:
+        raise ValueError("all 576 policy rows required without imputation")
+    fit = {}
+    for row in learning:
+        key = row["stage"], row["arm"], row["cell"]
+        if (key in fit or key[0] not in STAGES or key[1] not in ARMS
+                or key[2] not in CELLS or row["status"] not in ("succeeded", "failed")):
+            raise ValueError("unexpected or duplicate original Head checkpoint")
+        if row["status"] == "succeeded" and row["arm"] != "frozen_rerank":
+            dynamics = row.get("within_train_fit_dynamics")
+            if (
+                not isinstance(dynamics, dict)
+                or dynamics["checkpoint"] != row["stage"]
+                or dynamics["arm"] != row["arm"]
+                or dynamics["cell"] != row["cell"]
+                or dynamics["previous_head_sha256"] != row["before_sha256"]
+                or dynamics["updated_head_sha256"] != row["after_sha256"]
+                or dynamics["heldout_annotations_consulted"] is not False
+                or dynamics["independent_generalization_established"] is not False
+                or dynamics["production_accepted"] is not False
+            ):
+                raise ValueError("TRAIN-only measured Head update receipt mismatch")
+        fit[key] = row
+    if len(fit) != len(STAGES) * len(ARMS) * len(CELLS):
+        raise ValueError("missing route/stage/Head training session")
+
+    groups = defaultdict(list)
+    for stage in STAGES:
+        for phase in PHASES:
+            for qid in questions[phase]:
+                baseline = predictions[(stage, phase, qid, "frozen_rerank")]
+                if baseline.get("cell") != routes[qid]:
+                    raise ValueError("baseline route differs from registered Cell")
+                for arm in ARMS[1:]:
+                    learned = predictions[(stage, phase, qid, arm)]
+                    if (
+                        learned.get("cell") != baseline["cell"]
+                        or learned.get("family") != baseline.get("family")
+                    ):
+                        raise ValueError("matched Cell/source-family changed across arms")
+                    b_selection = "selected" in baseline
+                    l_selection = "selected" in learned
+                    if b_selection and l_selection and (
+                        baseline.get("pool_digest") != learned.get("pool_digest")
+                        or not baseline.get("pool_digest")
+                    ):
+                        raise ValueError("paired source candidate pool changed")
+                    base_valid = baseline.get("source_choice_correct")
+                    learned_valid = learned.get("source_choice_correct")
+                    native_scored = (
+                        b_selection and l_selection
+                        and type(base_valid) is int and base_valid in (0, 1)
+                        and type(learned_valid) is int and learned_valid in (0, 1)
+                    )
+                    good_pair = (
+                        baseline["status"] == "succeeded"
+                        and learned["status"] == "succeeded"
+                    )
+                    f1_delta = None
+                    if good_pair:
+                        orig_f1 = baseline.get("diagnostic_answer_f1")
+                        new_f1 = learned.get("diagnostic_answer_f1")
+                        if orig_f1 is not None and new_f1 is not None:
+                            if any(
+                                type(v) not in (float, int)
+                                or not math.isfinite(v) or not 0 <= v <= 1
+                                for v in (orig_f1, new_f1)
+                            ):
+                                raise ValueError("invalid paired Reader token F1")
+                            f1_delta = new_f1 - orig_f1
+                    row = dict(
+                        stage=stage, phase=phase, arm=arm, cell=routes[qid],
+                        question_id=qid, source_family=baseline["family"],
+                        both_source_choices_observed=b_selection and l_selection,
+                        weak_native_source_labels_scored=native_scored,
+                        changed_top1=(
+                            baseline["selected"] != learned["selected"]
+                            if b_selection and l_selection else None
+                        ),
+                        weak_support_gain=(
+                            learned_valid - base_valid if native_scored else None
+                        ),
+                        both_original_reader_calls_succeeded=good_pair,
+                        both_reader_answers_scored=f1_delta is not None,
+                        diagnostic_answer_f1_delta=f1_delta,
+                        semantic_citation_precision=None,
+                    )
+                    groups[(stage, arm, routes[qid], phase)].append(row)
+    reports = {}
+    for stage in STAGES:
+        for arm in ARMS[1:]:
+            for cell in CELLS:
+                train = fit[(stage, arm, cell)]
+                observed = train["status"] == "succeeded"
+                head_probe = train["within_train_fit_dynamics"] if observed else None
+                by_phase = {}
+                for phase in PHASES:
+                    rows = groups[(stage, arm, cell, phase)]
+                    known = [r["weak_support_gain"] for r in rows
+                             if r["weak_support_gain"] is not None]
+                    f1 = [r["diagnostic_answer_f1_delta"] for r in rows
+                          if r["diagnostic_answer_f1_delta"] is not None]
+                    n = len(rows)
+                    by_phase[phase] = dict(
+                        planned=n,
+                        source_compared=len(known),
+                        source_unresolved_or_unselected=n-len(known),
+                        native_support_gains=sum(delta == 1 for delta in known),
+                        native_support_regressions=sum(delta == -1 for delta in known),
+                        source_decision_changes=sum(r["changed_top1"] is True for r in rows),
+                        source_choice_not_observed=sum(r["changed_top1"] is None for r in rows),
+                        both_readers_succeeded=sum(
+                            r["both_original_reader_calls_succeeded"] for r in rows),
+                        reader_f1_scored=len(f1),
+                        reader_f1_unscored=n-len(f1),
+                        paired_reader_f1_delta_mean=(
+                            math.fsum(f1)/len(f1) if f1 else None
+                        ),
+                        all_planned_reader_f1_delta_bounds=(
+                            [(math.fsum(f1)-(n-len(f1)))/n,
+                             (math.fsum(f1)+(n-len(f1)))/n]
+                            if n else None
+                        ),
+                        independent_family_semantics_verified=False,
+                    )
+                heldout = [by_phase[phase] for phase in ("test", "transfer")]
+                heldout_gains = sum(g["native_support_gains"] for g in heldout)
+                heldout_regressions = sum(g["native_support_regressions"] for g in heldout)
+                reports[f"{stage}/{arm}/{cell}"] = dict(
+                    head_trained_checkpoint_succeeded=observed,
+                    within_head_train_mean_weak_loss_delta=(
+                        head_probe["mean_weak_loss_delta"] if head_probe else None
+                    ),
+                    within_head_train_weak_source_top1_gains=(
+                        head_probe.get("weak_source_top1_gains") if head_probe else None
+                    ),
+                    within_head_train_mean_pair_margin_delta=(
+                        head_probe.get("mean_positive_over_negative_candidate_margin_delta")
+                        if head_probe else None
+                    ),
+                    heldout_test_transfer_native_support_net_gain=(
+                        heldout_gains - heldout_regressions
+                    ),
+                    train_fit_but_no_heldout_native_source_net_gain=(
+                        bool(
+                            observed and head_probe["mean_weak_loss_delta"] < 0
+                            and heldout_gains <= heldout_regressions
+                        )
+                        if observed and sum(g["source_compared"] for g in heldout)
+                        else None
+                    ),
+                    limited_development_question_count=sum(g["planned"] for g in heldout),
+                    comparison_includes_encoder_adaptation=(
+                        arm in ("lineage_lora_gated", "independent_lora_gated")
+                    ),
+                    encoder_only_vs_head_effects_are_separate_elsewhere=True,
+                    test_transfer_source_label_coverage=sum(
+                        g["source_compared"] for g in heldout
+                    ),
+                    phases=by_phase,
+                    authentic_independent_generalization=False,
+                    source_document_support_not_entailment=True,
+                    production_accepted=False,
+                )
+    return dict(
+        schema="hepta.stem-train-heldout-diagnostic-gap.v1",
+        planned_source_policy_rows=len(scored),
+        planned_stages=STAGES,
+        learned_arms=ARMS[1:],
+        posthoc_source_annotations_only=True,
+        metrics_not_for_hyperparameter_search=True,
+        train_fit_not_proof_of_generalization=True,
+        independent_semantic_evidence_review=False,
+        by_checkpoint_cell_arm=reports,
+        production_accepted=False,
+    )
