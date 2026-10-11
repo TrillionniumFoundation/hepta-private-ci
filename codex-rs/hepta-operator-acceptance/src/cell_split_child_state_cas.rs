@@ -29,6 +29,7 @@ use crate::CellSplitExecutionIntentV1;
 use crate::CellSplitExecutionPlanV1;
 use crate::CellSplitExecutionStepV1;
 use crate::CellSplitOwnedEffectV1;
+use crate::durable::SIDECAR_LOCK_FILE;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
@@ -160,6 +161,15 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             }
         }
         let root = secure_root(root, "child migration CAS root")?;
+        // Once an owner lock has existed, the two frozen manifests cannot be
+        // recreated after deletion. A lost manifest may conceal an already
+        // staged or published child batch: only external reconciliation may
+        // recover it, never implicit reinitialization from caller inputs.
+        let initialized_before = match fs::symlink_metadata(root.join(SIDECAR_LOCK_FILE)) {
+            Ok(_) => true,
+            Err(error) if error.kind() == ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
         let lock = lock_sidecar(&root)?;
 
         let frozen_path = root.join(FROZEN);
@@ -171,6 +181,9 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             }
             Ok(_) => {}
             Err(error) if error.kind() == ErrorKind::NotFound => {
+                if initialized_before {
+                    return Err(CellSplitChildStateCasErrorV1::Ambiguous);
+                }
                 write_private_new(&frozen_path, &frozen_bytes)?;
             }
             Err(error) => return Err(error.into()),
@@ -182,6 +195,9 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
             }
             Ok(_) => {}
             Err(error) if error.kind() == ErrorKind::NotFound => {
+                if initialized_before {
+                    return Err(CellSplitChildStateCasErrorV1::Ambiguous);
+                }
                 write_private_new(&input_path, &frozen_input_bytes)?;
             }
             Err(error) => return Err(error.into()),
