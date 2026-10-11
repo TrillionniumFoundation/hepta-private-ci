@@ -185,6 +185,7 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed parameter plasticity.
     /// Callers never receive the mutable writer or a second owner handle.
+    #[cfg(test)]
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
@@ -202,6 +203,7 @@ impl AgentdState {
 
     /// Named Agentd-owned producer boundary for governed topology plasticity.
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    #[cfg(test)]
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
@@ -574,7 +576,11 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
-            && !runtime.fenced)
+            && !runtime.fenced
+            && self
+                .plasticity_runtime
+                .get()
+                .is_some_and(|producer| producer.is_owner_channel_open()))
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
