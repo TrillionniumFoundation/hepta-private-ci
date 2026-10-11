@@ -6,7 +6,7 @@ rust_library(
     crate_name = "codex_hepta_operator_acceptance",
     crate_root = "src/lib.rs",
     edition = "2024",
-    visibility = ["//visibility:private"],
+    visibility = ["//codex-rs/hepta-supervisor:__pkg__"],
     deps = [
         "//codex-rs/hepta-neuron:hepta-neuron",
         "//codex-rs/hepta-types:hepta-types",
@@ -22,6 +22,14 @@ rust_library(
         "@platforms//os:windows": ["@crates//:winapi-util"],
         "//conditions:default": [],
     }),
+)
+
+# Conventional crate label for codex_rust_crate dependency resolution.
+# Only the actual Supervisor owner may directly consume this effect protocol.
+alias(
+    name = "hepta-operator-acceptance",
+    actual = ":hepta-operator-acceptance-lib",
+    visibility = ["//codex-rs/hepta-supervisor:__pkg__"],
 )
 
 rust_test(
