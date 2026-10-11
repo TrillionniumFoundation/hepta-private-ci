@@ -65,8 +65,8 @@ jobs:
           set -euo pipefail
           cp scripts/memory_cell/source_completion_loss.py scripts/memory_cell/source_pretrained_projection_receipt.py scripts/memory_cell/test_source_completion_qwen.py /tmp/memory-parity/
           git rev-parse HEAD > /tmp/memory-parity/tested-commit.txt
-          (cd /tmp/memory-parity && find . -type f ! -name SHA256SUMS ! -name input.zip -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           rm -rf /tmp/memory-parity/venv /tmp/memory-parity/input.zip
+          (cd /tmp/memory-parity && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

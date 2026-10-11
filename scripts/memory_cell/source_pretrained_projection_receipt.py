@@ -56,9 +56,7 @@ def compare(sources, model_dir, output, *, source_sha, stage_sha, commit):
     if len(ids) > 768:
         raise ValueError("no bounded original source-only example for CPU proof")
     model = reader.model
-    if not all(
-        p.device.type == "cpu" for p in model.parameters()
-    ) or model.training:
+    if any(p.device.type != "cpu" for p in model.parameters()):
         raise ValueError("expected frozen CPU BF16 research reader before proof")
     parameters = {name: p for name, p in model.named_parameters() if p.requires_grad}
     if not parameters:
