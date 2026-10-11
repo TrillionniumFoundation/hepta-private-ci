@@ -403,3 +403,12 @@ Local no-weights tests check Head size, actual tiny-PyTorch tensor updates,
 determinism, attention-mask pooling and failed provenance admission.
 They are L1 interface evidence, NOT pretrained 421M inference, full
 backbone fine-tuning or Hepta native 4096 Cell measurements.
+
+
+**Anti-false-zero-shot admission:** for each checkpoint phase, the external
+run record must explicitly attest pretrained_typed_decision_head_present=true
+and disclose upstream_task_exposure as task_specific, generic_decision, or
+unknown. A fresh random HF classification/decision Head is NEVER a
+qualifying checkpoint-stage comparator. These fields are offline operator
+attestations, NOT cryptographically verified independent receipts. They
+prevent accidental leaderboard promotion from invalid model semantics.
