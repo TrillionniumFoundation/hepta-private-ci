@@ -155,6 +155,28 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                         "effect changed during signed readback",
                     ));
                 }
+                // A negative lookup is not a snapshot unless it remains
+                // absent after the separate frontier query. Positive reads
+                // likewise must refer to the same original effect. Never
+                // sign an out-of-date absence or a mixed-generation sample.
+                let observed_again = self
+                    .backend
+                    .read_committed(&request.intent)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                if observed_again != committed {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "effect changed during signed readback",
+                    ));
+                }
+                let final_sequence = self
+                    .backend
+                    .current_sequence()
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                if final_sequence != sequence {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "owner frontier changed during signed readback",
+                    ));
+                }
                 let mut readback = CellSplitEffectReadbackV1 {
                     schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
                     intent: request.intent.clone(),
