@@ -576,6 +576,12 @@ pub fn verify_cell_split_target_host_evidence(
     {
         return Err(invalid("signed evidence envelope header"));
     }
+    // Apply the same input bound to the in-memory/store path as to JSON
+    // ingestion; otherwise a purportedly verified report might be written
+    // durably but could never be reopened through the bounded reader.
+    if envelope.canonical_bytes()?.len() > MAX_EVIDENCE_BYTES {
+        return Err(invalid("signed evidence envelope exceeds durable read bound"));
+    }
     let payload = &envelope.payload;
     replay_payload(payload)?;
     let payload_bytes = payload.canonical_bytes()?;
