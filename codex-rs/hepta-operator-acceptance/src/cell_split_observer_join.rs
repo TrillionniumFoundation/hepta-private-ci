@@ -17,6 +17,8 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::CellSplitExecutionPortV1;
+#[cfg(unix)]
+use crate::CellSplitUnixEffectPortV1;
 use crate::CellSplitExecutionTranscriptV1;
 use crate::CellSplitOwnerTrustV1;
 use crate::CellSplitSignedTargetHostEvidenceV1;
@@ -178,7 +180,32 @@ fn verify_join_signature(
 ///
 /// Even a successful result is NOT a global atomic snapshot or permission to
 /// promote: the actual final-use gate must revalidate all current authorities.
-pub fn verify_cell_split_observer_join_v1<P: CellSplitExecutionPortV1>(
+/// Public production-facing verifier. It cannot be given an allow-all
+/// implementation of CellSplitExecutionPortV1. Socket owner keys must match
+/// the frozen four original signature keys exactly, so caller-selected
+/// readback signers cannot launder stale effect receipts.
+#[cfg(unix)]
+pub fn verify_cell_split_observer_join_v1(
+    join: &CellSplitSignedObserverJoinV1,
+    transcript: &CellSplitExecutionTranscriptV1,
+    owner_trust: &CellSplitOwnerTrustV1,
+    evidence: &CellSplitSignedTargetHostEvidenceV1,
+    evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
+    live_owners: &mut CellSplitUnixEffectPortV1,
+) -> Result<CellSplitObserverJoinReceiptV1, CellSplitObserverJoinErrorV1> {
+    if !live_owners.uses_exact_owner_keys(owner_trust.owner_verifying_keys()) {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "live RPC trust pins differ from four original effect owners",
+        ));
+    }
+    verify_cell_split_observer_join_with_port_v1(
+        join, transcript, owner_trust, evidence, evidence_policy, live_owners,
+    )
+}
+
+/// Crate-only generic verification permits deterministic failure injection in
+/// tests but cannot mint a production-facing readback via a fake port.
+pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecutionPortV1>(
     join: &CellSplitSignedObserverJoinV1,
     transcript: &CellSplitExecutionTranscriptV1,
     owner_trust: &CellSplitOwnerTrustV1,
