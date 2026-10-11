@@ -19,6 +19,7 @@ import time
 from four_gate_capture import capture_cpu, tensor_digest
 from four_gate_common import canonical, digest, integer, require, sha, write_once
 from hf_trial import make_head
+from four_gate_inputs import QuestionPreservingInputs, joint_text
 
 MODEL = "jhu-clsp/mmBERT-small"
 REVISION = "abc32620dd4f6ab06f5fbe905dc25f310618e09f"
@@ -120,13 +121,14 @@ def build_schedule(root, cells, active_bps, repeat_bps, *, public_corpus=None):
     for i in range(count):
         state = states[i % unique]
         question = QUESTIONS[i % len(QUESTIONS)]
-        joint = f"Question: {question}\nOptions: {' | '.join(OPTIONS)}\nState: {state}"
+        joint = joint_text(state, question, list(OPTIONS))
         row = {"request_id": f"request-{i}", "cell_id": i,
                "principal": "public-repository-research", "scope": "hepta-docs",
                "purpose": "non-authorizing-physical-stem-capture", "generation": 1,
                "authority_epoch": 1, "state_sha256": digest(state), "joint_sha256": digest(joint)}
         rows.append(row)
-        payloads[row["request_id"]] = {"state": state, "joint": joint}
+        payloads[row["request_id"]] = {"state": state, "joint": joint,
+                                       "question": question, "options": list(OPTIONS)}
     return rows, payloads, sources
 
 
@@ -155,27 +157,26 @@ def run(args):
         "model": MODEL, "revision": REVISION, "schedule": schedule, "payloads": payloads,
         "source_documents": sources, "arm": args.arm, "max_tokens": args.max_tokens,
         "cells": args.cells, "active_bps": args.active_bps, "repeat_bps": args.repeat_bps,
-        "head_seed": 20261011, "input_profile": "question_options_first_truncate_state_v2",
+        "head_seed": 20261011, "input_profile": "question_preserving_shared_state_budget.v2",
         "source_corpus": args.source_corpus, "not_a_prospective_efficacy_plan": True})
     start_cpu, start_wall = time.process_time_ns(), time.perf_counter_ns()
     model, tokenizer, inventory, loading = load_pinned(args.model_dir)
     heads = {i: make_head(torch, torch.nn, "swiglu", 384, len(OPTIONS), 16384)[0].eval()
              for i in range(args.cells)}
+    input_adapter = QuestionPreservingInputs(tokenizer, payloads, args.max_tokens)
     load_cost = {"cpu_ns": time.process_time_ns() - start_cpu,
                  "wall_ns": time.perf_counter_ns() - start_wall}
     head_inventory = {str(i): digest({key: tensor_digest(value) for key, value in head.state_dict().items()})
                       for i, head in heads.items()}
     pipeline = digest({"revision": REVISION, "files": inventory, "max_tokens": args.max_tokens,
                        "dtype": "float32", "attention": "eager", "pooling": "masked_mean",
-                       "input_profile": "question_options_first_truncate_state_v2",
-                       "source_corpus": args.source_corpus, "source_sha": source})
+                       "input_profile": "question_preserving_shared_state_budget.v2",
+                       "source_corpus": args.source_corpus, "source_sha": source,
+                       "input_adapter": input_adapter.pipeline})
     state = {}
 
     def prepare(rows, arm):
-        texts = [payloads[row["request_id"]]["state" if arm == "feature_reuse" else "joint"]
-                 for row in rows]
-        tokens = dict(tokenizer(texts, padding=True, truncation=True,
-                                max_length=args.max_tokens, return_tensors="pt"))
+        tokens = input_adapter(rows, arm)
         state["mask"] = tokens["attention_mask"].float()
         return tokens
 
@@ -192,12 +193,16 @@ def run(args):
         "revision": REVISION, "physical_files": inventory, "loading_info": loading,
         "pipeline_sha256": pipeline, "load_including_download_and_heads": load_cost,
         "warmup": warmup, "head_inventory": head_inventory,
+        "input_adapter": input_adapter.pipeline,
         "head_parameters_each": sum(p.numel() for p in heads[0].parameters()),
         "encoder_parameters": sum(p.numel() for p in model.parameters()),
         "native_owner_load_authenticated": False})
     capture = capture_cpu(model, prepare, pool, heads, schedule, arm=args.arm,
                           pipeline_sha256=pipeline, cache_entries=4096)
-    capture.update({"schema": "hepta.four-gate.physical-smoke.v1", "source_sha": source,
+    write_once(args.output / "token-audit.json", {
+        "schema": "hepta.four-gate.token-audit.v2", "pipeline": input_adapter.pipeline,
+        "requests": input_adapter.audit, "production_promotion_permitted": False})
+    capture.update({"schema": "hepta.four-gate.physical-smoke.v2", "source_sha": source,
         "arm": args.arm, "model": MODEL, "revision": REVISION,
         "schedule_sha256": digest(schedule), "load_cost": load_cost, "warmup_cost": warmup,
         "process_high_watermark_rss_bytes": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024,

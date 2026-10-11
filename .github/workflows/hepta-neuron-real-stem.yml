@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - "qualification/neuron-stem/four_gate_pretrained.py"
+      - "qualification/neuron-stem/four_gate_inputs.py"
+      - "qualification/neuron-stem/test_four_gate_inputs.py"
       - "qualification/neuron-stem/four_gate_public_replay.py"
       - "qualification/neuron-stem/prequential_trial.py"
       - "qualification/neuron-stem/hf_trial.py"

@@ -60,12 +60,45 @@ def clustered_metrics(rows, plan):
               "accepted_error": sum(any(r[0] and r[2] for r in c) for c in ordered),
               "unknown_acceptance": sum(any(not r[0] for r in c) for c in ordered),
               "benign_rejection": sum(any(r[1] for r in c) for c in ordered)}
-    return {name: {"estimate": value, "lcb": percentile(draws[name], alpha / 2),
+    report = {name: {"estimate": value, "lcb": percentile(draws[name], alpha / 2),
                    "ucb": percentile(draws[name], 1 - alpha / 2),
                    "eligible_source_clusters": counts[name],
                    "enough_groups": counts[name] >= plan["min_groups"],
                    "estimator": "episode_ratio_with_source_cluster_bootstrap"}
             for name, value in _metrics([r for c in ordered for r in c]).items()}
+    # Percentile bootstrap degenerates at an all-zero error boundary. For the
+    # current observed profile, enclose it in a conservative conditional bound.
+    # The additional premise is fixed pre-outcome cluster sizes and independent
+    # source-cluster observations. This is NOT a distribution-shift guarantee.
+    guarded = (plan.get("schema") == "hepta.four-gate.plan.v2" and
+               plan["evidence_kind"] == "observed")
+    if guarded:
+        size = sum(map(len, ordered))
+        weights = [len(c) / size for c in ordered]
+        epsilon = math.sqrt(0.5 * sum(w*w for w in weights) * math.log(4/alpha))
+        contributions = {
+            "accepted_error": lambda r: (int(r[0] and r[2] and r[3]), int(r[0] and r[2])),
+            "answerable_coverage": lambda r: (int(r[0] and r[2]), int(r[0])),
+            "unknown_acceptance": lambda r: (int(not r[0] and r[2]), int(not r[0])),
+            "benign_rejection": lambda r: (int(r[1] and not r[2]), int(r[1])),
+        }
+        for name, contribution in contributions.items():
+            pairs = [contribution(r) for c in ordered for r in c]
+            numerator = sum(a for a, _ in pairs) / size
+            denominator = sum(b for _, b in pairs) / size
+            lower = max(0, numerator-epsilon) / min(1, denominator+epsilon)
+            upper = (min(1, (numerator+epsilon)/(denominator-epsilon))
+                     if denominator > epsilon else 1.0)
+            report[name]["lcb"] = min(report[name]["lcb"], lower)
+            report[name]["ucb"] = max(report[name]["ucb"], upper)
+            report[name]["conditional_weighted_cluster_guard"] = {
+                "epsilon": epsilon, "sum_squared_cluster_weights": sum(w*w for w in weights),
+                "assumptions": "fixed_preoutcome_cluster_sizes_and_independent_clusters",
+                "assumptions_authenticated": False,
+            }
+    for item in report.values():
+        item["finite_sample_guard_applied"] = guarded
+    return report
 
 
 def review_selective(plan, evidence, *, trial, nochange_identity):

@@ -54,6 +54,9 @@ def validate_selection(plan, evidence, gate, episodes):
     require(type(rows) is list and 0 < len(rows) <= 100_000, "bounded validation inventory")
     held_inputs = {c["input_sha256"] for c in evidence["cases"]}
     held_groups = {c["source_cluster"] for c in evidence["cases"]}
+    training_inputs = set(evidence["training_input_sha256s"])
+    training_groups = set(evidence["training_source_clusters"])
+    validation_input_owner = {}
     cases, scores, groups = {}, {d: {} for d in DEPTHS}, {}
     for row in rows:
         cid, depth = row["case_id"], row["depth"]
@@ -63,6 +66,13 @@ def validate_selection(plan, evidence, gate, episodes):
         require(row["input_sha256"] not in held_inputs and row["source_cluster"] not in held_groups,
                 "held-out information used to select fixed depth")
         sha(row["input_sha256"])
+        require(row["input_sha256"] not in training_inputs and
+                row["source_cluster"] not in training_groups, "training information used as validation")
+        require(validation_input_owner.setdefault(row["input_sha256"], cid) == cid,
+                "same validation input repeated as another case")
+        require(all(type(row[k]) is str and 0 < len(row[k]) <= 256
+                    for k in ("source_cluster", "producer_id", "observer_id")),
+                "validation source/producer/observer identity required")
         require(timestamp(row["observed_at"]) <= timestamp(plan["selection_cutoff"]),
                 "future outcome used in depth selection")
         require(row["objective_sha256"] == plan["objective_sha256"], "selection objective drift")
