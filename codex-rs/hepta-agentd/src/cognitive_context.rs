@@ -70,10 +70,12 @@ pub(crate) async fn read(
         body_generation,
         query,
         limit,
-        ranker,
-        None,
-        None,
-        None,
+        CognitiveReadOptions {
+            ranker,
+            current_retrieval: None,
+            learning_sink: None,
+            request_id: None,
+        },
     )
     .await
 }
@@ -94,12 +96,24 @@ pub(crate) async fn read_with_retrieval_context(
         body_generation,
         query,
         limit,
-        ranker,
-        current_retrieval,
-        None,
-        None,
+        CognitiveReadOptions {
+            ranker,
+            current_retrieval,
+            learning_sink: None,
+            request_id: None,
+        },
     )
     .await
+}
+
+/// Bounded owner-local retrieval options. Keeping optional learning,
+/// policy and context dependencies together avoids a drifting positional
+/// API where the wrong optional port could silently cross a trust boundary.
+pub(crate) struct CognitiveReadOptions<'a> {
+    pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    pub current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    pub request_id: Option<u64>,
 }
 
 pub(crate) async fn read_with_retrieval_context_and_learning(
@@ -108,11 +122,14 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     body_generation: u64,
     query: &str,
     limit: u16,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
-    request_id: Option<u64>,
+    options: CognitiveReadOptions<'_>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    let CognitiveReadOptions {
+        ranker,
+        current_retrieval,
+        learning_sink,
+        request_id,
+    } = options;
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -492,11 +509,13 @@ pub(crate) async fn revalidate(
     revalidate_with_retrieval_context(
         store,
         owner,
-        snapshot_digest,
-        read_digest,
-        omitted_records,
-        items,
-        plan,
+        CognitiveRevalidationInput {
+            snapshot_digest,
+            read_digest,
+            omitted_records,
+            items,
+            plan,
+        },
         ranker,
         1,
         None,
@@ -504,18 +523,32 @@ pub(crate) async fn revalidate(
     .await
 }
 
+/// Atomic view of one observed cognitive snapshot for final-use
+/// revalidation. Callers cannot accidentally reorder digests, omitted-count,
+/// item set and immutable policy plan through ten positional arguments.
+pub(crate) struct CognitiveRevalidationInput<'a> {
+    pub snapshot_digest: &'a str,
+    pub read_digest: &'a str,
+    pub omitted_records: u64,
+    pub items: &'a [CognitiveContextItem],
+    pub plan: Option<&'a CognitiveContextPlan>,
+}
+
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    input: CognitiveRevalidationInput<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     body_generation: u64,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let CognitiveRevalidationInput {
+        snapshot_digest,
+        read_digest,
+        omitted_records,
+        items,
+        plan,
+    } = input;
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),
