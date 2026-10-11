@@ -67,9 +67,15 @@ fn bounds_digest_and_dimensions_fail_closed() {
     wrong.rank = 0;
     assert!(DynamicGateArtifactV3::new(wrong).is_err());
     let head = DynamicGateArtifactV3::new(candidate()).expect("valid");
-    assert!(head.compute(&"b".repeat(64), "cell.a", &[Q24, Q24], 1).is_err());
+    assert!(
+        head.compute(&"b".repeat(64), "cell.a", &[Q24, Q24], 1)
+            .is_err()
+    );
     assert!(head.compute(&"a".repeat(64), "cell.a", &[Q24], 1).is_err());
-    assert!(head.compute(&"a".repeat(64), "cell.a", &[9 * Q24, 0], 1).is_err());
+    assert!(
+        head.compute(&"a".repeat(64), "cell.a", &[9 * Q24, 0], 1)
+            .is_err()
+    );
     assert_eq!(head.parameter_count(), 14);
     assert_eq!(head.tensor_bytes().expect("bytes"), 112);
 }
