@@ -60,13 +60,16 @@ def rust_stem_encoder_pipeline_digest_v1(
     Inputs are model-artifact digest *claims*; the product owner still has to
     verify each actual artifact and its current authority/generation.
     """
-    if not isinstance(model_id, str) or not model_id:
-        raise ValueError("model ID required")
-    encoded_id = model_id.encode("utf-8")
-    if len(encoded_id) > 1024:
-        raise ValueError("oversized model ID")
-    if type(generation) is not int or generation <= 0:
-        raise ValueError("generation must be positive")
+    # Match the exact Rust codex_hepta_types::StableId V1 grammar.
+    # Reject identifiers which Python could hash but Rust cannot construct.
+    if (not isinstance(model_id, str) or not 1 <= len(model_id) <= 128
+            or not model_id.isascii()
+            or any(not (ch.isascii() and (ch.isalnum() or ch in "._-:"))
+                   for ch in model_id)):
+        raise ValueError("model ID must satisfy Rust StableId V1 (ASCII, <=128 bytes)")
+    encoded_id = model_id.encode("ascii")
+    if type(generation) is not int or not 1 <= generation <= (1 << 64) - 1:
+        raise ValueError("generation must fit positive Rust u64")
     if type(feature_width) is not int or not 1 <= feature_width <= MAX_FEATURES:
         raise ValueError("invalid Stem feature width")
     raw = b"hepta.inference.stem-encoder-pipeline.v1"
@@ -76,8 +79,9 @@ def rust_stem_encoder_pipeline_digest_v1(
     for candidate in (stem_weights_sha256, tokenizer_sha256,
                       preprocessor_sha256, projection_sha256):
         if (not isinstance(candidate, str) or len(candidate) != 64
-                or any(ch not in "0123456789abcdef" for ch in candidate)):
-            raise ValueError("canonical 64-character digest required")
+                or any(ch not in "0123456789abcdef" for ch in candidate)
+                or candidate == "0" * 64):
+            raise ValueError("nonzero canonical 64-character artifact digest required")
         raw += bytes.fromhex(candidate)
     return hashlib.sha256(raw).hexdigest()
 
