@@ -109,8 +109,7 @@ pub(crate) async fn read_with_retrieval_context(
 /// Exact owner-side retrieval context and learning evidence authorities.
 pub(crate) struct CognitiveContextReadOptions<'a> {
     pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    pub current_retrieval:
-        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     pub learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     pub request_id: Option<u64>,
 }
@@ -532,8 +531,7 @@ pub(crate) struct CognitiveContextRevalidationOptions<'a> {
     pub plan: Option<&'a CognitiveContextPlan>,
     pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
     pub body_generation: u64,
-    pub current_retrieval:
-        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 }
 
 pub(crate) async fn revalidate_with_retrieval_context(
