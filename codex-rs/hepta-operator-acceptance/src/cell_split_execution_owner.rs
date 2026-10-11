@@ -399,6 +399,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Invalid("trusted plan mismatch"));
         }
         let path = root.join("cell-split-frozen-plan.json");
+        let pins_path = root.join("cell-split-owner-trust-pins.json");
+        // Observe the entire frozen namespace before writing any new file.
+        // Restoring a deleted plan after preparation, even from matching
+        // caller-supplied bytes, would hide lost or tampered durable evidence.
+        let has_effect_history = has_successor_frame(&root, 0)?;
+        let persisted_pins = read_frame(&pins_path)?;
         let bytes = canonical_json(&plan)?;
         match read_frame(&path)? {
             Some(persisted) if persisted != bytes => {
@@ -410,15 +416,18 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                     "read-only transcript requires an existing frozen plan",
                 ));
             }
+            None if has_effect_history || persisted_pins.is_some() => {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "frozen plan lost after initialization",
+                ));
+            }
             None => write_private_new(&path, &bytes)?,
         }
 
         // Keep all four trusted signer keys frozen across restarts.
         // The symlink-aware frame scan must not treat a broken link as absence.
-        let pins_path = root.join("cell-split-owner-trust-pins.json");
         let frozen_pins = frozen_owner_trust_pins(&plan, &trust)?;
-        let has_effect_history = has_successor_frame(&root, 0)?;
-        match read_frame(&pins_path)? {
+        match persisted_pins {
             Some(stored) if stored != frozen_pins => {
                 return Err(CellSplitExecutionErrorV1::Invalid(
                     "persisted effect owner keys changed",
