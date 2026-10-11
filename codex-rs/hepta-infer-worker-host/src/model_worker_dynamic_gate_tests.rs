@@ -22,6 +22,10 @@ fn candidate() -> DynamicGateCandidateV3 {
 #[test]
 fn gate_changes_with_input_and_is_not_absorbable_into_a_fixed_linear_head() {
     let head = DynamicGateArtifactV3::new(candidate()).expect("valid dynamic head");
+    assert_eq!(
+        head.digest(),
+        "31d23d4d80f039d5fbe63b8dfde0f37e36b7f6b044e11b50f4d0b166f3a3ed22"
+    );
     let (drive_1, pred_1) = head
         .compute(&"a".repeat(64), "cell.a", &[Q24, Q24], 1)
         .expect("inference");
