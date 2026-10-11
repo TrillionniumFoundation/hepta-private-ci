@@ -27,6 +27,7 @@ use crate::CellSplitExecutionIntentV1;
 use crate::CellSplitExecutionPlanV1;
 use crate::CellSplitExecutionStepV1;
 use crate::CellSplitOwnedEffectV1;
+use crate::durable::SIDECAR_LOCK_FILE;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
@@ -116,6 +117,14 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
         // this effect owner is opened independently of Agentd.
         let plan_digest = plan.digest().map_err(|_| CellSplitArtifactCasErrorV1::Invalid)?;
         let root = secure_root(root, "artifact CAS owner root")?;
+        // The lock inode survives crashes and owner restarts. Once it exists,
+        // losing the durable frontier is an unknown/rolled-back owner history,
+        // not a fresh CAS namespace that may be initialized from plan bytes.
+        let initialized_before = match fs::symlink_metadata(root.join(SIDECAR_LOCK_FILE)) {
+            Ok(_) => true,
+            Err(error) if error.kind() == ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
         let lock = lock_sidecar(&root)?;
         let parent = secure_canonical_file_path(parent, "parent artifact")?;
         let child_source = secure_canonical_file_path(child_source, "child source artifact")?;
@@ -140,7 +149,12 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
             }
             Ok(_) => {}
             Err(error) if error.kind() == ErrorKind::NotFound => {
-                write_private_new(&path, &expected)?
+                if initialized_before {
+                    // Never manufacture a new sequence-one witness after any
+                    // earlier owner could have durably committed a child CAS.
+                    return Err(CellSplitArtifactCasErrorV1::Ambiguous);
+                }
+                write_private_new(&path, &expected)?;
             }
             Err(error) => return Err(error.into()),
         }
