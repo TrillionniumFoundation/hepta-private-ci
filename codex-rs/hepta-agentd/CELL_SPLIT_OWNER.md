@@ -29,8 +29,16 @@ Every step first durably records pending intent. It then obtains a current
 authoritative readback. The executor may issue mutation only after an
 authoritative Missing observation, using the exact deterministic operation
 key. It commits only real owner evidence that the separately trusted port has
-authenticated. A timeout, lost ACK or unknown outcome is Indeterminate, never
-success, and cannot be treated as Missing. The next owner resumes by reading
+authenticated. **Before every external mutation**, the owner requires a
+successful `retain_ledger_anchor` acknowledgement for the already-durable
+pending-intent frame from an independent, rollback-protected observer. After
+each real receipt, it requires another observer acknowledgement before
+running a subsequent mutation. Earlier acknowledged prefixes are revalidated
+before observer reconciliation, so a recovered but unverified suffix is not
+automatically blessed.
+
+A timeout, lost ACK or unknown outcome is Indeterminate, never success,
+and cannot be treated as Missing. The next owner resumes by reading
 the external owner first; it must not replay effects blindly.
 
 On all re-entries, previous accepted steps are checked against current
