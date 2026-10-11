@@ -638,6 +638,65 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
             .is_some()
     );
 
+    // An attacker may control the outer CNS effect signing key but must not
+    // be able to replace the independent runtime acknowledgement. Re-sign the
+    // outer envelope after corrupting only the original runtime signature.
+    let mut forged_cns = cns_receipt.clone();
+    let mut forged_original: CellSplitCnsRuntimeCommitV1 =
+        serde_json::from_slice(&forged_cns.owner_receipt_bytes)
+            .expect("typed original");
+    forged_original.original_runtime_signature_bytes[0] ^= 0x80;
+    forged_cns.owner_receipt_bytes = serde_json::to_vec(&forged_original)
+        .expect("outer envelope bytes");
+    forged_cns.output_digest = format!(
+        "{:x}",
+        sha2::Sha256::digest(&forged_cns.owner_receipt_bytes),
+    );
+    forged_cns.owner_signature_bytes = cns_signer
+        .sign(&cell_split_execution_signing_payload_v1(&forged_cns).expect("outer signature"))
+        .to_bytes()
+        .to_vec();
+    forged_cns.receipt_digest =
+        cell_split_execution_receipt_digest_v1(&forged_cns).expect("forged outer receipt");
+    let mut forged_intent = supervisor_intent.clone();
+    forged_intent.previous_receipt_digest = forged_cns.receipt_digest.clone();
+    forged_intent.idempotency_key = format!(
+        "{:x}",
+        sha2::Sha256::digest(
+            format!(
+                "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
+                forged_intent.plan_digest,
+                forged_intent.step.index(),
+                forged_intent.previous_receipt_digest,
+            )
+            .as_bytes()
+        ),
+    );
+    let root_inner_denied = tempfile::tempdir().expect("independent original journal");
+    let minimum_inner_denied = prepare(&root_inner_denied, WriterHandoffPhaseV1::RoutePublished);
+    let inner_finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root_inner_denied),
+        &minimum_inner_denied,
+        binding(),
+        authority.clone(),
+    )
+    .expect("original journal before forged CNS evidence");
+    assert!(
+        crate::CellSplitSupervisorJournalRuntimePortV1::new_with_signed_cns_predecessor(
+            plan.clone(),
+            fence.clone(),
+            forged_intent,
+            accepted,
+            inner_finalizer,
+            SigningKey::from_bytes(&[22; 32]),
+            &forged_cns,
+            &cns_signer.verifying_key(),
+            &cns_runtime_signer.verifying_key(),
+        )
+        .is_err(),
+        "a valid outer CNS signature must never launder a forged runtime signature"
+    );
+
     let root_denied = tempfile::tempdir().expect("independent journal");
     let minimum_denied = prepare(&root_denied, WriterHandoffPhaseV1::RoutePublished);
     let denied_finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
