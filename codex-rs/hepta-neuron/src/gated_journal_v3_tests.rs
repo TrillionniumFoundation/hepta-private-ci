@@ -158,8 +158,8 @@ fn loss_of_acknowledged_prefix_or_empty_replacement_is_rejected() {
         Some(GatedJournalErrorV3::AcknowledgedHistoryMissing)
     );
     assert_eq!(
-        checked(fs::read(&fixture.file)),
-        bytes[..HEADER_BYTES + first_frame * 2]
+        checked(fs::read(&fixture.file)).as_slice(),
+        &bytes[..HEADER_BYTES + first_frame * 2]
     );
     checked(fs::write(&fixture.file, b""));
     assert_eq!(
