@@ -876,3 +876,33 @@ calibration, failed calibration reused as a success, fabricated source
 identity, or mismatched frozen-vs-Shadow top-1 fails closed.
 Failed decisions stay in the full denominator. Independent test source
 entailment and actual Reader answer improvements are not asserted.
+
+## Exact completed strict-run residual-scale feasibility (no answer tuning)
+
+The earlier fully executed strict-as-of native run
+[38116809759](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38116809759)
+has generating source `48118e891a54c0296b182dc4b88d721b5ab4cf5a`,
+tree `4891f100ce520a997e4356c00545bc670d6cbc2b`, and immutable ZIP
+SHA-256 `d2147964d4b916a01bfa0051dec3a3e9aaedb5b2864625c5f2a25db0c44f20e0`.
+All 136 internal manifest members were re-verified in the offline audit.
+
+A new label-free, source-pinned `stem_strict_residual_opportunity.py`
+reconciles all **576** original policy rows, matched frozen candidate pools,
+selected indices and Head score-geometry receipts. Its **60**
+checkpoint/phase/learned-arm cohorts report original attempted denominators,
+median minimum residual scale required to overturn frozen top-1, and distinct
+`limit < scale` versus `limit <= scale` counts to avoid misinterpreting an
+equality/tie infimum as a guaranteed flip. It opens **no target labels or
+generated answer content**. The read-only GitHub Action downloads the pinned
+ZIP, verifies its external SHA, all internal hashes and tested commit/tree,
+executes five adversarial/edge-case regressions, and retains a checksumed JSON.
+
+At the original checkpoint **48**, gated Head's overall median flip infimum
+is approximately **15**, while under the fixed grid of 0–64 the direction
+could mathematically change some candidate on **28/32** evaluation
+questions. This **does not** establish correct source support: the winning
+challenger may be a distractor, and the scale was not chosen on the
+training cut in this audit. The separate TRAIN-only shadow experiment
+must select its scale before reading any held-out support label, and no
+shadow Reader call is allowed. It cannot certify independent generalization,
+semantic citation entailment, per-Cell TCO or production admission.
