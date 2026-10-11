@@ -8,16 +8,30 @@ from selector_head import Supervision
 from stem_cell import StemHead
 from stem_cell_cache import SharedFeatureCache
 from stem_cell_protocol import (
-    ARMS, CURVE, PHASES, oracle_sources, score_attempt, summarize, validate_census,
+    ARMS,
+    CURVE,
+    PHASES,
+    oracle_sources,
+    score_attempt,
+    summarize,
+    validate_census,
 )
 from test_stem_cell import Encoder, Pool, Query, features, training_cut
 
 
 def attempt(arm="frozen_rerank", qid="q", source=0, answer=0.0, status="succeeded"):
     return dict(
-        stage=16, phase="test", question_id=qid, family="family", arm=arm,
-        status=status, source_choice_correct=source, diagnostic_answer_f1=answer,
-        citation_structure=dict(markers=0, delivered_markers=0, semantic_precision=None),
+        stage=16,
+        phase="test",
+        question_id=qid,
+        family="family",
+        arm=arm,
+        status=status,
+        source_choice_correct=source,
+        diagnostic_answer_f1=answer,
+        citation_structure=dict(
+            markers=0, delivered_markers=0, semantic_precision=None
+        ),
     )
 
 
@@ -69,7 +83,10 @@ class ProtocolTests(unittest.TestCase):
         self.assertIsNone(metrics["citation_structural_precision"])
 
     def test_unknown_scores_expand_bounds_without_dropping_family(self):
-        rows = [attempt(source=None, answer=None), attempt(arm="gated", source=1, answer=1)]
+        rows = [
+            attempt(source=None, answer=None),
+            attempt(arm="gated", source=1, answer=1),
+        ]
         result = summarize(rows)
         base = result["metrics"]["16/test/frozen_rerank"]
         contrast = result["contrasts"]["16/test/gated"]
@@ -80,8 +97,11 @@ class ProtocolTests(unittest.TestCase):
         self.assertFalse(contrast["superiority_claim"])
 
     def test_repeated_questions_do_not_become_independent_families(self):
-        rows = [attempt(arm=arm, qid=f"q-{i}", source=int(arm == "gated"))
-                for arm in ("frozen_rerank", "gated") for i in range(20)]
+        rows = [
+            attempt(arm=arm, qid=f"q-{i}", source=int(arm == "gated"))
+            for arm in ("frozen_rerank", "gated")
+            for i in range(20)
+        ]
         contrast = summarize(rows)["contrasts"]["16/test/gated"]
         self.assertEqual(contrast["family_count"], 1)
         self.assertEqual(contrast["simultaneous_conditional_95_interval"], [-1.0, 1.0])
@@ -91,27 +111,46 @@ class ProtocolTests(unittest.TestCase):
             questions={p: [p] for p in PHASES},
             question_families={p: "family" for p in PHASES},
         )
-        rows = [dict(stage=s, phase=p, question_id=p, arm=a, family="family", status="failed")
-                for s in CURVE for p in PHASES for a in ARMS]
+        rows = [
+            dict(
+                stage=s, phase=p, question_id=p, arm=a, family="family", status="failed"
+            )
+            for s in CURVE
+            for p in PHASES
+            for a in ARMS
+        ]
         self.assertEqual(validate_census(rows, plan)["recorded"], 72)
-        invalid = [rows[:-1], rows + [rows[0]], [dict(rows[0], family="other")] + rows[1:]]
+        invalid = [
+            rows[:-1],
+            rows + [rows[0]],
+            [dict(rows[0], family="other")] + rows[1:],
+        ]
         for bad in invalid:
             with self.assertRaises(ValueError):
                 validate_census(bad, plan)
 
     def test_reference_span_is_original_source_not_inserted_answer(self):
         doc = SimpleNamespace(
-            identity="source", root="root", scope="scope", observed_at=1,
+            identity="source",
+            root="root",
+            scope="scope",
+            observed_at=1,
             content="The planned destination was Paris. Keep the original statement.",
         )
         source = SimpleNamespace(history=lambda q: [doc])
         query = SimpleNamespace(observed_at=2)
-        target = SimpleNamespace(unanswerable=False, unresolved_evidence=(),
-                                 evidence=("source",), answer="Paris")
+        target = SimpleNamespace(
+            unanswerable=False,
+            unresolved_evidence=(),
+            evidence=("source",),
+            answer="Paris",
+        )
         evidence, kind = oracle_sources(source, query, target)
         self.assertEqual(kind, "native-source-literal-span")
         item = evidence[0]
-        self.assertEqual(item["excerpt"], doc.content[item["source_start"]:item["source_end"]])
+        self.assertEqual(
+            item["excerpt"], doc.content[item["source_start"] : item["source_end"]]
+        )
         target.answer = "Tokyo"
         missing, kind = oracle_sources(source, query, target)
         self.assertIsNone(missing)
@@ -121,8 +160,12 @@ class ProtocolTests(unittest.TestCase):
         doc = SimpleNamespace(identity="source", observed_at=3, content="Paris")
         source = SimpleNamespace(history=lambda q: [doc])
         query = SimpleNamespace(observed_at=2)
-        target = SimpleNamespace(unanswerable=False, unresolved_evidence=(),
-                                 evidence=("source",), answer="Paris")
+        target = SimpleNamespace(
+            unanswerable=False,
+            unresolved_evidence=(),
+            evidence=("source",),
+            answer="Paris",
+        )
         self.assertIsNone(oracle_sources(source, query, target)[0])
 
 
