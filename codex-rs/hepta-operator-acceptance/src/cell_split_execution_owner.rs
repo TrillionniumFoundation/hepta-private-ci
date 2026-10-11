@@ -112,6 +112,9 @@ impl CellSplitExecutionPlanV1 {
     /// Canonical plan digest used to bind external owner ports to the exact
     /// coordinator intent. This is an identity, never an authorization grant.
     pub fn digest(&self) -> Result<String, CellSplitExecutionErrorV1> {
+        // Independent effect owners must reject an invalid split plan before
+        // pinning its digest or opening a durable mutation namespace.
+        self.validate()?;
         Ok(sha256(&canonical_json(self)?))
     }
 }
