@@ -3,6 +3,7 @@
 The subprocess fixture below emits synthetic observations solely to verify the
 diagnostic file protocol; it is not deployment evidence.
 """
+
 import json
 import sys
 import tempfile
