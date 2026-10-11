@@ -573,3 +573,27 @@ pretraining heads. They require a separately audited, content-pinned
 canonical base conversion rather than weakening the gate. Model-free
 mocks test both matching and wrong-in-memory tensor values, but do not
 prove real 435M DeBERTa execution or external NDU benefits.
+
+
+### Real HF physical microbatch, isolated by Scope (research only)
+
+The existing offline local-weight `hf_joint_decision_runner.py` now accepts
+`--encoder-microbatch-size 1..32` (default 1). Batches of 2..32 adjacent
+joint decision inputs from the SAME Scope are tokenized without truncation,
+padded explicitly, and run through ONE physically shared
+`AutoModel(...).last_hidden_state` forward call. No input may enter a
+different Scope's microbatch; all full state, question and ordered options
+remain represented. The masked per-case feature must numerically match a
+single-case execution. The output receipt records actual physical Encoder
+forward call counts and observed physical batch widths, and conservatively
+charges each case the **entire measured batch time**. It never divides a
+shared duration by batch size to fabricate an apparent p99 improvement.
+
+The contract tests include a real CPU torch multi-case forward with padded
+lengths, cross-Scope rejection, over-budget token rejection and a complete
+24-case small fake-encoder/real learned-Head path with exactly six
+four-request forwards. The synthetic fixture does not load actual
+DeBERTa/ModernBERT weights, and even the genuine HF offline mode remains
+**not** the Rust Worker/Agentd native backend or target-host 4096-Cell
+performance proof. Physical pooling is limited to an audited locally
+loaded checkpoint; independent NDU/CAS/final-use remain blocking.
