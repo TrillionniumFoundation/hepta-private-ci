@@ -222,3 +222,42 @@ fn independent_python_diagonal_ssm_q24_golden_is_bit_exact() {
         previous = Some(next);
     }
 }
+
+fn ssm_fuzz_splitmix64(state: &mut u64) -> u64 {
+    *state = state.wrapping_add(0x9e37_79b9_7f4a_7c15);
+    let mut value = *state;
+    value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
+    value = (value ^ (value >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
+    value ^ (value >> 31)
+}
+
+#[test]
+fn independent_4096_event_ssm_q24_stream_digest_is_bit_exact() {
+    // Source: qualification/neuron-gated-sparse-v3/q24_temporal_fuzz.py.
+    let cfg = config();
+    let mut prior = None;
+    let mut seed = 0x1337_babe_dead_beef_u64;
+    let mut micros = 0_u64;
+    let mut stream = Vec::with_capacity(4_096 * 24);
+    for sequence in 1..=4_096_u64 {
+        let drive = (ssm_fuzz_splitmix64(&mut seed) % (2 * H + 1) as u64) as i64 - H;
+        let delta = (ssm_fuzz_splitmix64(&mut seed) % 3_000) + 1;
+        micros += delta;
+        let mut input = tick(sequence, micros);
+        input.temporal_drive_q24[0] = drive;
+        let (next, receipt) = checked(diagonal_ssm_tick_v1(
+            &cfg, &input, prior.as_ref(),
+        ));
+        let retention = q24_power(Q / 2, receipt.elapsed_steps);
+        stream.extend_from_slice(&(receipt.elapsed_steps as i64).to_be_bytes());
+        stream.extend_from_slice(&retention.to_be_bytes());
+        stream.extend_from_slice(&next.temporal_q24()[0].to_be_bytes());
+        prior = Some(next);
+    }
+    let last = prior.expect("4096 evaluated ticks");
+    assert_eq!(last.temporal_q24()[0], -65_761_034);
+    assert_eq!(
+        Digest32::of_bytes(&stream).to_string(),
+        "d863ccff0948d5f34f7080d3d040df57388e15417a820e56c4c1c52cac64f61b"
+    );
+}
