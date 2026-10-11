@@ -293,3 +293,20 @@ margins are raw logits, never calibrated probabilities.
 The per-checkpoint `selection_geometry` summary is diagnostic only.
 Do not promote parameter deltas, larger Head scores, cache reuse or candidate
 count into claims of generalizable learning or production readiness.
+
+## Track training adaptation separately from held-out task effects
+
+The additional `stem_cell_training_probe.py` evaluates the **same registered
+multi-positive training objective** before/after the saved Head checkpoint for
+each admitted training example. It observes how source-support loss and
+source-versus-null margin change, including native unanswerable cases. Every
+training example is bound to its registered `TrainingCut`, its Head snapshot
+and its explicit route. Every attempted probe, including failures, is retained
+in `weak-training-probes.jsonl`; failures cannot disappear from the
+denominator. The baseline has no learning and uses original native scores.
+
+This is **weak native document support**, not human-verified window-level
+entailment. Decreasing the admitted training loss is never a successful answer,
+a new-task transfer score or reliable citation. Only the separate held-out
+source/Reader/citation evaluation can establish downstream benefit, and even
+that requires independent family/semantic review before production admission.

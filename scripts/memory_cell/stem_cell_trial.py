@@ -32,6 +32,7 @@ from selector_windows import WindowBudget, candidate_windows
 from stem_cell import StemHead, route_text, sha256
 from stem_cell_adapter import DifferentiatedEncoder
 from stem_cell_geometry import inspect_selection, summarize_geometry
+from stem_cell_training_probe import train_probe, summarize_train_probes
 from stem_cell_cache import SharedFeatureCache
 from stem_cell_protocol import (
     ARMS,
@@ -160,6 +161,7 @@ def run(staged, ranker_dir, output):
         generator_template_digest=digest(SYSTEM),
         primary_policy="same-forced-top1-except-empty-for-all-six-arms",
         score_geometry_policy="frozen-native-logits-versus-head; forced-top1; label-free",
+        training_probe_policy="only registered train cut; original native weak support; after checkpoint reload",
         calibration_or_final_label_hyperparameter_search=False,
         reference_oracle="post-policy answer-dependent source span; NOT independently verified gold evidence",
         reader_cache="exact canonical request reuse; failed and successful actual executions counted separately",
@@ -185,6 +187,7 @@ def run(staged, ranker_dir, output):
     )
     adapter_receipts, adapter_errors, index_costs = {}, {}, []
     heads, head_errors, learning, snapshots, attempts = {}, {}, [], {}, []
+    training_probes = []
     try:
         for group in qs.values():
             for q in group:
@@ -476,6 +479,45 @@ def run(staged, ranker_dir, output):
                                 cumulative_charged_pairs=heads[hkey].pair_evaluations,
                             )
                         )
+            # Frozen native evidence-support labels enter only the train cut.
+            # This is a weak-label training diagnostic, NOT test-set tuning.
+            for arm in ARMS:
+                for train_row in rows:
+                    qid = train_row.features.question_id
+                    if qid not in admitted_ids:
+                        continue
+                    question = queries[qid]
+                    cell = route_text(question.content)
+                    item = dict(
+                        stage=stage, arm=arm, cell=cell, question_id=qid,
+                        family=train_row.features.family,
+                        admitted_training_cut_digest=cut.admission_digest,
+                    )
+                    try:
+                        if (arm, cell) in head_errors:
+                            raise ValueError(head_errors[(arm, cell)])
+                        train_features = get_features(arm, question)
+                        with torch.no_grad():
+                            snapshot_scores = (
+                                train_features.frozen_scores.tolist() + [0.0]
+                                if arm == "frozen_rerank"
+                                else heads[(arm, cell)](train_features).tolist()
+                            )
+                        item.update(
+                            status="succeeded",
+                            head_sha256=sha256(heads[(arm, cell)].export()),
+                            probe=train_probe(
+                                train_features.frozen_scores.tolist() + [0.0],
+                                snapshot_scores, train_row.positive_indices,
+                            ),
+                        )
+                    except Exception as exc:
+                        item.update(
+                            status="failed", error_type=type(exc).__name__,
+                            error=str(exc)[:1024],
+                        )
+                    append(output / "weak-training-probes.jsonl", item)
+                    training_probes.append(item)
             for phase in PHASES:
                 for q in qs[phase]:
                     for arm in ARMS:
@@ -629,6 +671,7 @@ def run(staged, ranker_dir, output):
         result = dict(
             plan=plan,
             selection_geometry=summarize_geometry(attempts),
+            weak_training_probes=summarize_train_probes(training_probes),
             census=census,
             **summarize(scored),
             learning=learning,
