@@ -34,6 +34,16 @@ def digest(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def rust_feature_digest_q24(features: list[int]) -> str:
+    """Exactly codex_hepta_infer_core::shared_feature_v2::feature_content_digest_v2."""
+    if not 1 <= len(features) <= 512 or any(abs(x) > MAX_Q24 for x in features):
+        raise StemQualificationError("invalid feature for snapshot identity")
+    payload = b"hepta.infer.shared-feature-content.v2"
+    payload += len(features).to_bytes(8, "big")
+    payload += b"".join(int(v).to_bytes(8, "big", signed=True) for v in features)
+    return digest(payload)
+
+
 def _is_safe_id(value: Any) -> bool:
     return isinstance(value, str) and bool(re.fullmatch(r"[a-zA-Z0-9_.:-]{1,128}", value))
 
@@ -248,7 +258,7 @@ class OfflineSharedStem:
                 "authority_epoch": request["authority_epoch"],
                 "input_digest": key[-1],
                 "features_q24": feature,
-                "feature_digest": digest(canonical_bytes(feature)),
+                "feature_digest": rust_feature_digest_q24(feature),
                 "pipeline_digest": self.pipeline_digest,
                 "authority": "DENY_ALL",
             })
