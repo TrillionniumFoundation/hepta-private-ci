@@ -57,8 +57,14 @@ def model_inputs(model_dir, stage_sha):
     return stage, inventory
 
 
-def write_memory(sources, model_dir, output, *, source_sha, stage_sha):
+def write_memory(
+    sources, model_dir, output, *, source_sha, stage_sha, loss_backend="full"
+):
     from pretrained import LoRAReader
+    from source_completion_loss import BACKENDS
+
+    if loss_backend not in BACKENDS:
+        raise ValueError("unregistered source loss backend")
 
     commit = exact_source()
     documents = original_documents(sources, source_sha)
@@ -74,6 +80,7 @@ def write_memory(sources, model_dir, output, *, source_sha, stage_sha):
             revision=2,
             maximum_steps=STEPS,
             token_ceiling=TOKEN_CEILING,
+            loss_backend=loss_backend,
             evaluation_query_input=False,
             source_documents_digest=digest([asdict(d) for d in documents]),
             authored_controlled_sources=True,
@@ -91,6 +98,7 @@ def write_memory(sources, model_dir, output, *, source_sha, stage_sha):
         revision=2,
         allowed_roots={d.root for d in documents},
         revoked=set(),
+        loss_backend=loss_backend,
     )
     manifest = LoRAReader.save(reader, output / "adapter", training)
     reader.verify_frozen()
@@ -492,6 +500,9 @@ if __name__ == "__main__":
         p.add_argument(name, type=Path)
     p.add_argument("--source-sha", required=True)
     p.add_argument("--stage-sha", required=True)
+    p.add_argument(
+        "--loss-backend", choices=("full", "supervised_positions"), default="full"
+    )
     p = sub.add_parser("read")
     for name in ("plan", "inputs", "model", "snapshot", "output"):
         p.add_argument(name, type=Path)
@@ -502,7 +513,12 @@ if __name__ == "__main__":
     a = parser.parse_args()
     if a.mode == "write":
         write_memory(
-            a.sources, a.model, a.output, source_sha=a.source_sha, stage_sha=a.stage_sha
+            a.sources,
+            a.model,
+            a.output,
+            source_sha=a.source_sha,
+            stage_sha=a.stage_sha,
+            loss_backend=a.loss_backend,
         )
     else:
         read_memory(
