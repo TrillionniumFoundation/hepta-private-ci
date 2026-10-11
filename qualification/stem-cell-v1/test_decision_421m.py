@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 
 from decision_421m import (SOURCES, PHASES, audit_dataset, build_plan,
-                           evaluate, load_plan, write_frozen)
+                           evaluate, input_fingerprint, load_plan, write_frozen)
 from model_runner import snapshot_digest
 
 
@@ -88,6 +88,7 @@ class FourWayDecisionTests(unittest.TestCase):
                         logits = [-3., 3.]
                     self.predictions.append({
                         "arm": arm, "sample_id": row["sample_id"],
+                        "input_digest": input_fingerprint(row),
                         "logits": logits, "weights_sha256": weights,
                         "latency_ms": 2.5,
                     })
@@ -166,6 +167,17 @@ class FourWayDecisionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "genuinely pretrained"):
             evaluate(self.plan, invalid, self.predictions, self.indexed,
                      replicates=1000)
+
+    def test_same_id_but_different_option_or_source_input_is_rejected(self):
+        changed = copy.deepcopy(self.predictions)
+        changed[0]["input_digest"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "input/source/options"):
+            evaluate(self.plan, self.runs, changed, self.indexed,
+                     replicates=1000)
+        row = next(r for r in self.rows if r["sample_id"] == changed[0]["sample_id"])
+        altered_row = copy.deepcopy(row)
+        altered_row["options"].reverse()
+        self.assertNotEqual(input_fingerprint(row), input_fingerprint(altered_row))
 
     def test_missing_prediction_and_leaked_labels_fail_closed(self):
         with self.assertRaisesRegex(ValueError, "incomplete"):
