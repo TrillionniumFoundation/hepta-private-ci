@@ -120,6 +120,13 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Match the real Agentd startup composition in runtime.rs: merely
+        // attaching the CognitiveStore cannot open final-use or Health.ready.
+        // The generation's critical stores/revocation prerequisites must be
+        // frozen before the App Server socket is marked ready. Omitting this
+        // step left critical_stores_ready and revocation_ready false forever,
+        // causing the real Agentd E2E control readiness timeout.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
