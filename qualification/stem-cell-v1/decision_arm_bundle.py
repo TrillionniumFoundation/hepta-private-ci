@@ -13,9 +13,8 @@ from pathlib import Path
 
 from decision_421m import (
     PHASES, SCORING, SOURCES, audit_dataset, check_sha,
-    input_fingerprint, load_plan, sha256_file,
+    input_fingerprint, load_plan, read_strict_jsonl, sha256_file,
 )
-from study import load_jsonl
 
 SCHEMA = "hepta.decision-421m-shadow-arm-bundle.v1"
 MAX_PREDICTION_BYTES = 64 * 1024 * 1024
@@ -187,7 +186,7 @@ def main():
     parser.add_argument("--output-prefix", required=True)
     args = parser.parse_args()
     plan, plan_sha = load_plan(args.plan)
-    data, width, groups_sha = audit_dataset(list(load_jsonl(plan["dataset_path"])))
+    data, width, groups_sha = audit_dataset(list(read_strict_jsonl(plan["dataset_path"])))
     if (width != plan["classes"] or
             groups_sha != plan["training_sample_groups_sha256"]):
         raise ValueError("dataset lineage changed from frozen experiment plan")
