@@ -29,6 +29,29 @@ impl CognitiveRetrievalLearningSink {
         }
     }
 
+    /// Legacy four-field replay adapter exists only for migration contract
+    /// tests; production must bind explicit delivery/propensity metadata.
+    #[cfg(test)]
+    pub(crate) fn append(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        request_id: u64,
+        observation: &RetrievalAssignmentObservationV1,
+    ) -> Result<AppendReceipt, String> {
+        self.append_with_delivery_policy(
+            owner,
+            body_generation,
+            request_id,
+            observation,
+            &[],
+            false,
+            None,
+            None,
+            ProbabilityQ32::ONE,
+        )
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn append_with_delivery_policy(
         &self,
