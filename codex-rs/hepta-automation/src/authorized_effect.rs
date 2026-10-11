@@ -560,6 +560,19 @@ pub enum AuthorizedEffectError {
     Driver(#[from] AuthorizedEffectDriverError),
 }
 
+/// One immutable pre-effect proposal. The intent, exact provider bytes,
+/// Step Fence and independently signed grant/binding travel as a single
+/// snapshot; constructing it grants no execution authority.
+pub struct AuthorizedTaskflowEffectInvocation<'a> {
+    pub intent: &'a AuthorizedEffectIntent,
+    pub wire_payload: &'a [u8],
+    pub fence: &'a TaskFlowFence,
+    pub signed_grant: &'a SignedFinalUseGrant,
+    pub expected_binding: &'a FinalUseBinding,
+    pub command_id: &'a str,
+    pub now_ms: u64,
+}
+
 impl AutomationStore {
     /// Observe an already settled effect under the automation owner's read
     /// boundary. Exact intent, payload, binding, command and terminal evidence
@@ -647,14 +660,17 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        proposal: AuthorizedTaskflowEffectInvocation<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let AuthorizedTaskflowEffectInvocation {
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            now_ms,
+        } = proposal;
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -869,14 +885,17 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        proposal: AuthorizedTaskflowEffectInvocation<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let AuthorizedTaskflowEffectInvocation {
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            now_ms,
+        } = proposal;
         let provider_intent = provider_effect_intent(intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
