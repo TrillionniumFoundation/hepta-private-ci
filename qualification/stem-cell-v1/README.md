@@ -483,3 +483,21 @@ A file SHA binds bytes, not an independent execution or NDU signature;
 therefore neither the assembler nor subsequent offline scorecard is a
 production acceptance receipt. A small all-synthetic no-model unit suite
 tests digest tampering, duplicate arms, gold-label leakage and path escapes.
+
+
+### Exact input fingerprint admission in Experiment A
+
+Each Decision arm now carries a mandatory label-free input_digest. It is
+the SHA-256 of canonical JSON over sample_id, source_group, episode_id,
+split, scope, language, state, question, the complete *ordered* options,
+and event_time. Gold labels, rewards and observed outcomes are excluded.
+The local HF runner computes this digest from the exact consumed data;
+decision_arm_bundle.py and decision_421m.py independently recompute it
+from the frozen dataset. Missing digests, wrong options order, or another
+source episode fail closed even if the supplied prediction file and
+.run.json sidecar have been rehashed to match each other.
+
+The fingerprint prevents accidental source/option mispairing but does
+not cryptographically prove that external model code truly encoded the
+claimed input. Real model runner provenance, authenticated owner receipts,
+independent evaluator/NDU and production final-use are still mandatory.
