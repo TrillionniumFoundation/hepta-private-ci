@@ -314,6 +314,14 @@ def offline_threeway_ood_diagnostic(dataset, trial, nochange_identity, receipts)
     if len(receipts) != len(expected):
         raise ValueError("OOD requires full three-arm calibration and OOD coverage")
     nochange_rev, nochange_weights, nochange_gen = nochange_identity
+    # A reused Head digest is not sufficient identity across Worker generations
+    # or Encoder revisions. Require the frozen trial's exact model-only lineage
+    # before interpreting even a descriptive OOD comparison.
+    generation = trial.get("generation")
+    if type(generation) is not int or generation <= 0:
+        raise ValueError("offline OOD trial lacks pinned Stem/Cell generation")
+    feature_manifest_digest = trial.get("feature_manifest_digest")
+    require_sha(feature_manifest_digest)
     observed = {}
     forbidden = {"label", "outcome", "external_ndu_utility", "total_cost",
                  "producer_signature_verified", "independent_evaluator_signature_verified"}
@@ -347,7 +355,10 @@ def offline_threeway_ood_diagnostic(dataset, trial, nochange_identity, receipts)
                         else trial["final_head_digests"])
             identity_ok = (receipt.get("model_revision") == trial["revision"] and
                            receipt.get("weights_digest") == declared.get(cell_key) and
-                           receipt.get("model_id") == trial["model"])
+                           receipt.get("model_id") == trial["model"] and
+                           receipt.get("generation") == generation and
+                           receipt.get("feature_manifest_digest") ==
+                           feature_manifest_digest)
         if not identity_ok:
             raise ValueError("OOD frozen/learned/no-change weight or generation lineage drifted")
         observed[key] = receipt["probabilities"]
