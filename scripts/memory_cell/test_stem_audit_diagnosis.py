@@ -35,6 +35,7 @@ def inputs():
     report["learning"] = learning
     report["plan"] = deepcopy(plan)
     for row in data["raw"]:
+        row["cell"] = "general"
         row["head_sha256"] = f"head-{row['stage']}-{row['arm']}-general"
     for i, row in enumerate(data["scored"]):
         row["head_sha256"] = data["raw"][i]["head_sha256"]
