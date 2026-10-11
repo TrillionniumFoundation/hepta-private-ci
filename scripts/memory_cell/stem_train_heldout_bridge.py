@@ -103,6 +103,25 @@ def train_to_heldout_gap(plan, learning, scored):
                     )
                     f1_delta = None
                     if good_pair:
+                        b_receipt = baseline.get("receipt")
+                        l_receipt = learned.get("receipt")
+                        if (
+                            not isinstance(b_receipt, dict)
+                            or not isinstance(l_receipt, dict)
+                            or not b_receipt.get("generator_identity")
+                            or not b_receipt.get("generator_profile")
+                            or b_receipt["generator_identity"]
+                            != l_receipt.get("generator_identity")
+                            or b_receipt["generator_profile"]
+                            != l_receipt.get("generator_profile")
+                            or not isinstance(b_receipt.get("observable_query"), dict)
+                            or b_receipt["observable_query"]
+                            != l_receipt.get("observable_query")
+                            or b_receipt["observable_query"].get("identity") != qid
+                        ):
+                            raise ValueError(
+                                "frozen-matched Reader model/prompt/query identity drift"
+                            )
                         orig_f1 = baseline.get("diagnostic_answer_f1")
                         new_f1 = learned.get("diagnostic_answer_f1")
                         if orig_f1 is not None and new_f1 is not None:
@@ -208,12 +227,13 @@ def train_to_heldout_gap(plan, learning, scored):
                     production_accepted=False,
                 )
     return dict(
-        schema="hepta.stem-train-heldout-diagnostic-gap.v1",
+        schema="hepta.stem-train-heldout-diagnostic-gap.v2",
         planned_source_policy_rows=len(scored),
         planned_stages=STAGES,
         learned_arms=ARMS[1:],
         posthoc_source_annotations_only=True,
         metrics_not_for_hyperparameter_search=True,
+        matched_reader_weights_prompt_and_question_required=True,
         train_fit_not_proof_of_generalization=True,
         independent_semantic_evidence_review=False,
         by_checkpoint_cell_arm=reports,

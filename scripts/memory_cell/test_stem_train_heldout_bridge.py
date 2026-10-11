@@ -37,6 +37,14 @@ def fixture():
                         source_choice_correct=0,
                         diagnostic_answer_f1=0.25,
                         answer="fixture answer",
+                        receipt=dict(
+                            generator_identity="pinned-reader",
+                            generator_profile="pinned-reader-prompt",
+                            observable_query=dict(
+                                identity=qid, content="Fixture question.",
+                                observed_at="2024-01-01", scope="scope-" + qid,
+                            ),
+                        ),
                     ))
     learning = []
     for stage in STAGES:
@@ -155,6 +163,27 @@ class GeneralizationBridgeTests(unittest.TestCase):
             else:
                 learning.pop()
             with self.subTest(corruption=corruption), self.assertRaises(ValueError):
+                train_to_heldout_gap(plan, learning, scored)
+
+    def test_reader_model_prompt_and_observable_question_must_match(self):
+        for drift, key in (
+            ("changed-reader", "generator_identity"),
+            ("changed-prompt", "generator_profile"),
+            ("wrong-question", "observable_query"),
+        ):
+            plan, learning, scored = fixture()
+            learned = next(
+                x for x in scored if x["stage"] == 48
+                and x["phase"] == "test" and x["question_id"] == "test-0"
+                and x["arm"] == "gated"
+            )
+            if drift == "wrong-question":
+                learned["receipt"][key]["identity"] = "test-1"
+            else:
+                learned["receipt"][key] = drift
+            with self.subTest(drift=drift), self.assertRaisesRegex(
+                ValueError, "Reader model/prompt/query"
+            ):
                 train_to_heldout_gap(plan, learning, scored)
 
     def test_head_sha_or_hidden_heldout_annotation_claim_is_rejected(self):
