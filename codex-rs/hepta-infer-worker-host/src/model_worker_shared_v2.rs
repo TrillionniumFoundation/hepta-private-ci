@@ -97,6 +97,7 @@ pub fn canonical_shared_neuron_payload_digest_v2(
         req.authorization.reservation_id.as_str(),
         req.authorization.model_digest.as_str(),
         req.scope_id.as_str(),
+        req.authorization.reservation_model_digest.as_str(),
         req.principal_id.as_str(),
         req.purpose_id.as_str(),
         req.cell_id.as_str(),
@@ -123,6 +124,14 @@ pub fn canonical_shared_neuron_payload_digest_v2(
             .map_err(|_| Error::ArithmeticOverflow)?
             .to_be_bytes(),
     );
+    // Bind the entire admission envelope, not just tensor identity. In
+    // particular, a caller must not extend an expired snapshot or deadline
+    // while replaying an earlier lease/payload digest.
+    bytes.extend_from_slice(&req.snapshot.expires_at_ms.to_be_bytes());
+    bytes.extend_from_slice(&req.authorization.deadline_ms.to_be_bytes());
+    bytes.extend_from_slice(&req.authorization.maximum_tokens.to_be_bytes());
+    bytes.extend_from_slice(&req.authorization.reservation_maximum_tokens.to_be_bytes());
+    bytes.push(u8::from(req.authorization.cancelled));
     Ok(Digest32::of_bytes(&bytes).to_string())
 }
 
@@ -225,6 +234,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         let input_width = requests[0].snapshot.features_q24.len();
         let output_width = requests[0].expected_output_width;
         let mut request_ids = BTreeSet::new();
+        let mut reservation_ids = BTreeSet::new();
         for item in &requests {
             validate_item(
                 item,
@@ -245,6 +255,10 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                     .contains_key(&item.authorization.request_id)
             {
                 return Err(Error::RequestCapacity);
+            }
+            // Separate Cell uses need distinct, independently admitted reservations.
+            if !reservation_ids.insert(item.authorization.reservation_id.as_str()) {
+                return Err(Error::FeatureContract);
             }
         }
 
@@ -520,5 +534,37 @@ mod tests {
             validate_item(&changed, 10, 3, 2, &manifest),
             Err(Error::FeatureContract)
         );
+
+        // The input and content digest remain exactly the same, but this
+        // expired snapshot is now replayed with a forged later expiry.
+        let mut extended = (*a.snapshot).clone();
+        extended.expires_at_ms = 2_000;
+        changed = a.clone();
+        changed.snapshot = Arc::new(extended);
+        assert_ne!(
+            canonical_shared_neuron_payload_digest_v2(&changed).expect("extended expiry"),
+            a.authorization.payload_digest
+        );
+        assert_eq!(
+            validate_item(&changed, 1_000, 3, 2, &manifest),
+            Err(Error::PayloadMismatch)
+        );
+
+        // Lease payload identity also commits the request/reservation budgets
+        // and deadline. Each mutation would otherwise keep the old digest.
+        for field in 0..4 {
+            changed = a.clone();
+            match field {
+                0 => changed.authorization.deadline_ms += 1,
+                1 => changed.authorization.maximum_tokens += 1,
+                2 => changed.authorization.reservation_maximum_tokens += 1,
+                3 => changed.authorization.reservation_model_digest = "a".repeat(64),
+                _ => unreachable!(),
+            }
+            assert_ne!(
+                canonical_shared_neuron_payload_digest_v2(&changed).expect("admission field"),
+                a.authorization.payload_digest
+            );
+        }
     }
 }

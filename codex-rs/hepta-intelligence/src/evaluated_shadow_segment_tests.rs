@@ -18,7 +18,9 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
-    std::fs::File::open(root).unwrap()
+    // Reuse the existing production-style durable parent handle helper.
+    // File::open on a directory fails with AccessDenied on Windows.
+    durable_parent_directory(&root.join("owner"))
 }
 
 fn writer(
