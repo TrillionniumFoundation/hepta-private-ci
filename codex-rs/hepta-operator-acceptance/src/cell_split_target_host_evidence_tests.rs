@@ -351,3 +351,241 @@ fn recorder_exposes_next_event_context_for_external_host_adapters() {
     assert_eq!(next_sequence, 2);
     assert_ne!(next_previous, ZERO_DIGEST);
 }
+
+
+/// A signed host lifecycle report and a four-signer coordinator transcript
+/// may each verify independently while referring to unrelated operations.
+/// The Observer must sign their exact pairing and confirm every live owner.
+fn signed_owner_transcript_for_host(
+    payload: &CellSplitTargetHostEvidenceV1,
+) -> (
+    crate::CellSplitExecutionTranscriptV1,
+    crate::CellSplitOwnerTrustV1,
+) {
+    use ed25519_dalek::Signer as _;
+
+    let plan = crate::CellSplitExecutionPlanV1 {
+        split_id: payload.split_id.clone(),
+        scope_digest: "11".repeat(32),
+        parent_generation: payload.parent_generation,
+        child_generation: payload.child_generation,
+        parent_artifact_digest: payload.parent_artifact_digest.clone(),
+        child_artifact_digest: payload.child_artifact_digest.clone(),
+        ndu_snapshot_digest: "22".repeat(32),
+        route_fence_digest: "33".repeat(32),
+        owner_ids: [
+            "independent-artifact-owner".into(),
+            "independent-migration-owner".into(),
+            "independent-cns-owner".into(),
+            "independent-supervisor-owner".into(),
+        ],
+    };
+    let keys = [51_u8, 52, 53, 54].map(key);
+    let trusted = crate::CellSplitOwnerTrustV1::new(
+        &plan,
+        keys.map(|signing_key| signing_key.verifying_key()),
+    ).expect("four original owners are distinct");
+    let plan_digest = plan.digest().expect("frozen plan");
+    let mut predecessor = plan_digest.clone();
+    let mut receipts = Vec::new();
+    for (index, step) in [
+        crate::CellSplitExecutionStepV1::ArtifactCas,
+        crate::CellSplitExecutionStepV1::ChildStateMigration,
+        crate::CellSplitExecutionStepV1::CnsRouteCutover,
+        crate::CellSplitExecutionStepV1::SupervisorGenerationFence,
+    ].into_iter().enumerate() {
+        let idempotency_key = crate::durable::sha256(
+            format!(
+                "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
+                plan_digest, step.index(), predecessor,
+            ).as_bytes(),
+        );
+        let intent = crate::CellSplitExecutionIntentV1 {
+            schema: "hepta.learning.cell-split.execution-owner.v1".into(),
+            plan_digest: plan_digest.clone(),
+            step,
+            owner_id: plan.owner_ids[index].clone(),
+            idempotency_key,
+            previous_receipt_digest: predecessor.clone(),
+        };
+        let owner_bytes = canonical_json(&intent).expect("fixture original receipt");
+        let mut receipt = crate::CellSplitExecutionReceiptV1 {
+            intent,
+            owner_sequence: index as u64 + 1,
+            output_digest: crate::durable::sha256(&owner_bytes),
+            owner_receipt_bytes: owner_bytes,
+            owner_signature_bytes: Vec::new(),
+            receipt_digest: String::new(),
+        };
+        receipt.owner_signature_bytes = keys[index]
+            .sign(&crate::cell_split_execution_signing_payload_v1(&receipt).expect("payload"))
+            .to_bytes()
+            .to_vec();
+        receipt.receipt_digest = crate::cell_split_execution_receipt_digest_v1(&receipt)
+            .expect("original receipt digest");
+        predecessor = receipt.receipt_digest.clone();
+        receipts.push(receipt);
+    }
+    let mut digest_bytes = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
+    digest_bytes.extend_from_slice(&canonical_json(&plan).expect("canonical plan"));
+    digest_bytes.extend_from_slice(&canonical_json(&receipts).expect("original receipts"));
+    let transcript = crate::CellSplitExecutionTranscriptV1 {
+        plan,
+        receipts,
+        transcript_digest: crate::durable::sha256(&digest_bytes),
+    };
+    (transcript, trusted)
+}
+
+fn signed_observer_join_fixture(
+    envelope: &CellSplitSignedTargetHostEvidenceV1,
+    transcript: &crate::CellSplitExecutionTranscriptV1,
+    host: &SigningKey,
+    observer: &SigningKey,
+) -> crate::CellSplitSignedObserverJoinV1 {
+    use ed25519_dalek::Signer as _;
+
+    let payload = crate::cell_split_observer_join_payload_v1(transcript, envelope)
+        .expect("identical host and split identities");
+    let signing_bytes = crate::cell_split_observer_join_signing_payload_v1(&payload)
+        .expect("observer pairing domain");
+    let signature = |id: &str, key: &SigningKey| CellSplitTargetHostSignatureV1 {
+        signer_id: id.to_string(),
+        verifying_key_base64: BASE64.encode(key.verifying_key().to_bytes()),
+        signature_base64: BASE64.encode(key.sign(&signing_bytes).to_bytes()),
+    };
+    crate::CellSplitSignedObserverJoinV1 {
+        schema: crate::CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1.into(),
+        payload,
+        host_signature: signature("host-signer", host),
+        observer_signature: signature("observer-signer", observer),
+    }
+}
+
+struct CurrentEffectFixture {
+    committed: BTreeMap<String, crate::CellSplitExecutionReceiptV1>,
+    verification_count: usize,
+}
+
+impl CurrentEffectFixture {
+    fn new(transcript: &crate::CellSplitExecutionTranscriptV1) -> Self {
+        Self {
+            committed: transcript.receipts.iter().map(|receipt| {
+                (receipt.intent.idempotency_key.clone(), receipt.clone())
+            }).collect(),
+            verification_count: 0,
+        }
+    }
+}
+
+impl crate::CellSplitExecutionPortV1 for CurrentEffectFixture {
+    type Error = &'static str;
+
+    fn preflight_uncommitted(
+        &mut self,
+        _intent: &crate::CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        Err("observer cannot prepare an effect")
+    }
+
+    fn execute(
+        &mut self,
+        _intent: &crate::CellSplitExecutionIntentV1,
+    ) -> Result<crate::CellSplitExecutionReceiptV1, Self::Error> {
+        Err("observer cannot execute an effect")
+    }
+
+    fn reconcile(
+        &mut self,
+        _intent: &crate::CellSplitExecutionIntentV1,
+    ) -> Result<Option<crate::CellSplitExecutionReceiptV1>, Self::Error> {
+        Err("observer cannot reconcile a mutation")
+    }
+
+    fn verify_committed(
+        &mut self,
+        intent: &crate::CellSplitExecutionIntentV1,
+        receipt: &crate::CellSplitExecutionReceiptV1,
+    ) -> Result<(), Self::Error> {
+        self.verification_count += 1;
+        if self.committed.get(&intent.idempotency_key) == Some(receipt) {
+            Ok(())
+        } else {
+            Err("real owner effect no longer current")
+        }
+    }
+}
+
+#[test]
+fn independent_observer_join_requires_all_four_current_owners() {
+    let target = complete_recorder();
+    let host = key(3);
+    let observer = key(7);
+    let envelope = target.sign(
+        "host-signer", &host,
+        [("observer-signer".to_string(), observer.clone())],
+    ).expect("signed target host");
+    let (transcript, trust) = signed_owner_transcript_for_host(&envelope.payload);
+    let signed_join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
+    let target_policy = policy(&host, &observer);
+    let mut current = CurrentEffectFixture::new(&transcript);
+
+    let receipt = crate::verify_cell_split_observer_join_v1(
+        &signed_join, &transcript, &trust,
+        &envelope, &target_policy, &mut current,
+    ).expect("four original effect owners + independently signed target-host pairing");
+    assert_eq!(current.verification_count, 4);
+    assert!(receipt.four_current_owner_readbacks);
+    assert!(receipt.independently_signed_host_and_observer);
+    assert!(!receipt.production_activation_authorized);
+
+    // An unrelated or revoked external owner invalidates the joined proof,
+    // even though the earlier host and observer signatures are unchanged.
+    assert!(current.committed.remove(&transcript.receipts[2].intent.idempotency_key).is_some());
+    assert!(crate::verify_cell_split_observer_join_v1(
+        &signed_join, &transcript, &trust,
+        &envelope, &target_policy, &mut current,
+    ).is_err());
+}
+
+#[test]
+fn observer_join_rejects_mixed_host_and_effect_lineage_before_remote_reads() {
+    let target = complete_recorder();
+    let host = key(3);
+    let observer = key(7);
+    let envelope = target.sign(
+        "host-signer", &host,
+        [("observer-signer".to_string(), observer.clone())],
+    ).expect("signed target host");
+    let (transcript, trust) = signed_owner_transcript_for_host(&envelope.payload);
+    let mut signed_join = signed_observer_join_fixture(
+        &envelope, &transcript, &host, &observer,
+    );
+    let target_policy = policy(&host, &observer);
+    let mut current = CurrentEffectFixture::new(&transcript);
+
+    signed_join.payload.owner_receipt_digests[1] = "ff".repeat(32);
+    assert!(crate::verify_cell_split_observer_join_v1(
+        &signed_join, &transcript, &trust,
+        &envelope, &target_policy, &mut current,
+    ).is_err());
+    assert_eq!(current.verification_count, 0);
+
+    let mut signed_join = signed_observer_join_fixture(
+        &envelope, &transcript, &host, &observer,
+    );
+    signed_join.observer_signature.signature_base64 = BASE64.encode([0_u8; 64]);
+    assert!(crate::verify_cell_split_observer_join_v1(
+        &signed_join, &transcript, &trust,
+        &envelope, &target_policy, &mut current,
+    ).is_err());
+    assert_eq!(current.verification_count, 0);
+
+    let mut changed = transcript.clone();
+    changed.plan.child_artifact_digest = "99".repeat(32);
+    assert!(crate::verify_cell_split_observer_join_v1(
+        &signed_join, &changed, &trust,
+        &envelope, &target_policy, &mut current,
+    ).is_err());
+    assert_eq!(current.verification_count, 0);
+}
