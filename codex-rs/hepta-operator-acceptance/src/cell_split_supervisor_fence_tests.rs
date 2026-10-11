@@ -467,3 +467,54 @@ fn replayed_supervisor_checkpoint_is_not_a_fresh_readback() {
         Err(CellSplitSupervisorFenceErrorV1::Invalid)
     ));
 }
+
+
+#[test]
+fn lost_frozen_supervisor_identity_cannot_be_reinitialized() {
+    // A preexisting sidecar proves a frozen identity once existed. Losing that
+    // identity before or after finalization must never bootstrap fresh pins.
+    for completed in [false, true] {
+        let fixture = root();
+        let allowed = Arc::new(AtomicBool::new(true));
+        let mut first = owner(fixture.path(), allowed.clone());
+        if completed {
+            first.commit_once(&intent()).expect("original terminal transition");
+        }
+        let frozen = fixture.path().join("cell-split-supervisor-frozen.json");
+        fs::remove_file(&frozen).expect("simulate partial backup or deletion");
+        assert!(first.read_committed(&intent()).is_err());
+        drop(first);
+        let replay = CellSplitSupervisorFenceOwnerV1::open(
+            fixture.path(),
+            plan(),
+            binding(),
+            DiskSupervisor::new(fixture.path().to_path_buf(), allowed),
+        );
+        assert!(matches!(replay, Err(CellSplitSupervisorFenceErrorV1::Invalid)));
+        assert!(!frozen.exists(), "recovery must not rewrite deleted identity");
+    }
+}
+
+#[test]
+fn retired_supervisor_requires_the_exact_terminal_revision() {
+    let fixture = root();
+    let mut first = owner(fixture.path(), Arc::new(AtomicBool::new(true)));
+    let request = intent();
+    first.commit_once(&request).expect("original fsynced retirement");
+    let receipt = first.read_committed(&request).unwrap().expect("original effect");
+    let disk = DiskSupervisor::new(
+        fixture.path().to_path_buf(), Arc::new(AtomicBool::new(true)),
+    );
+    let mut drift = disk.snapshot();
+    assert_eq!(drift.phase, CellSplitSupervisorPhaseV1::Retired);
+    drift.revision += 1; // A valid retired journal is terminal; this is drift.
+    disk.replace(&drift).expect("simulate unrelated runtime append");
+    assert!(matches!(
+        first.read_committed(&request),
+        Err(CellSplitSupervisorFenceErrorV1::Invalid)
+    ));
+    assert!(matches!(
+        first.verify_current(&request, &receipt),
+        Err(CellSplitSupervisorFenceErrorV1::Invalid)
+    ));
+}
