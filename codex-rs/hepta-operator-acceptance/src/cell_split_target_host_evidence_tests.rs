@@ -23,25 +23,30 @@ fn event(
         parent_generation: payload.parent_generation,
         child_generation: payload.child_generation,
         operation_id: format!("operation-{sequence}"),
-        artifact_digest: if kind == CellSplitTargetHostEventKindV1::ArtifactLoaded {
-            CHILD.to_string()
-        } else {
-            String::new()
-        },
-        route_digest: if kind == CellSplitTargetHostEventKindV1::RouteCutover {
-            "child-route-receipt".to_string()
-        } else {
-            String::new()
-        },
-        predecessor_digest: if matches!(
-            kind,
+        artifact_digest: CHILD.to_string(),
+        route_digest: match kind {
             CellSplitTargetHostEventKindV1::RouteCutover
-                | CellSplitTargetHostEventKindV1::RollbackCompleted
-                | CellSplitTargetHostEventKindV1::NoResurrectionVerified
-        ) {
-            "parent-route-fence".to_string()
-        } else {
-            String::new()
+            | CellSplitTargetHostEventKindV1::RestartRecovered
+            | CellSplitTargetHostEventKindV1::PowerLossRecovered => {
+                "child-route-receipt".to_string()
+            }
+            CellSplitTargetHostEventKindV1::RollbackCompleted
+            | CellSplitTargetHostEventKindV1::TombstoneCommitted
+            | CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
+                "restored-parent-route".to_string()
+            }
+            _ => String::new(),
+        },
+        predecessor_digest: match kind {
+            CellSplitTargetHostEventKindV1::RouteCutover => "parent-route-fence".to_string(),
+            CellSplitTargetHostEventKindV1::RollbackCompleted => {
+                "child-route-receipt".to_string()
+            }
+            CellSplitTargetHostEventKindV1::TombstoneCommitted
+            | CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
+                "restored-parent-route".to_string()
+            }
+            _ => String::new(),
         },
         tombstone_digest: if matches!(
             kind,
@@ -749,5 +754,65 @@ fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
     assert!(!result.production_activation_authorized);
     for handle in handles {
         handle.join().expect("effect reader thread");
+    }
+}
+
+
+/// Recomputing a consistent hash chain is not evidence that the underlying
+/// lifecycle actually used one route/child identity. A separately held host
+/// signer must not be able to notarize disconnected stages as one Split.
+#[test]
+fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
+    let cases: &[(CellSplitTargetHostEventKindV1, &str)] = &[
+        (CellSplitTargetHostEventKindV1::RestartRecovered, "recovery-route"),
+        (CellSplitTargetHostEventKindV1::PowerLossRecovered, "recovery-route"),
+        (CellSplitTargetHostEventKindV1::RollbackCompleted, "rollback-predecessor"),
+        (CellSplitTargetHostEventKindV1::TombstoneCommitted, "tombstone-route"),
+        (CellSplitTargetHostEventKindV1::NoResurrectionVerified, "wrong-tombstone"),
+        (CellSplitTargetHostEventKindV1::NoResurrectionVerified, "wrong-parent-route"),
+        (CellSplitTargetHostEventKindV1::RestartRecovered, "wrong-child-artifact"),
+    ];
+    for &(kind, mutation) in cases {
+        let mut payload = complete_recorder();
+        let matching = payload
+            .events
+            .iter_mut()
+            .find(|event| event.event_kind == kind)
+            .expect("fixture has every required lifecycle event");
+        match mutation {
+            "recovery-route" => matching.route_digest = "unrelated-live-route".to_string(),
+            "rollback-predecessor" => {
+                matching.predecessor_digest = "unrelated-active-route".to_string();
+            }
+            "tombstone-route" | "wrong-parent-route" => {
+                matching.route_digest = "unrelated-parent-route".to_string();
+            }
+            "wrong-tombstone" => matching.tombstone_digest = PARENT.to_string(),
+            "wrong-child-artifact" => matching.artifact_digest = PARENT.to_string(),
+            _ => unreachable!("named negative fixture"),
+        }
+        // Rebuild every event hash and the envelope digest after tampering,
+        // so rejection cannot be attributed merely to stale checksums.
+        let mut predecessor = ZERO_DIGEST.to_string();
+        for event in &mut payload.events {
+            event.previous_event_digest = predecessor;
+            event.event_digest = event_digest(event).expect("canonical forged event");
+            predecessor = event.event_digest.clone();
+        }
+        payload.evidence_digest = evidence_digest(&payload).expect("fresh forged digest");
+        let rejection = replay_payload(&payload);
+        assert!(rejection.is_err(), "{mutation}: signed lineage was accepted");
+        let host = key(59);
+        let observer = key(61);
+        assert!(
+            payload
+                .sign(
+                    "host-signer",
+                    &host,
+                    [("observer-signer".to_string(), observer)],
+                )
+                .is_err(),
+            "{mutation}: apparently complete source must not become signed target-host evidence",
+        );
     }
 }
