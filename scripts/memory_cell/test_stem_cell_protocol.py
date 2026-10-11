@@ -159,7 +159,7 @@ class ProtocolTests(unittest.TestCase):
     def test_future_source_cannot_be_privileged_reference(self):
         doc = SimpleNamespace(identity="source", observed_at="2023-01-03", content="Paris")
         source = SimpleNamespace(history=lambda q: [doc])
-        query = SimpleNamespace(observed_at=2)
+        query = SimpleNamespace(observed_at="2023-01-02")
         target = SimpleNamespace(
             unanswerable=False,
             unresolved_evidence=(),

@@ -23,7 +23,7 @@ class NativeFixture:
 
 def corpus():
     train = [
-        Question(f"train-{kind}-{i}", "train", f"scope-{i}", text, "2024-01-01")
+        Question(f"train-{kind}-{i}", "train", f"scope-{i}", text, "2024")
         for kind, text in (
             ("general", "What happened?"),
             ("temporal", "When did it happen?"),
