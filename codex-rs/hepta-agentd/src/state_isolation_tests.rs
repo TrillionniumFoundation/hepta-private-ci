@@ -98,9 +98,9 @@ fn secure_prompt_registry_unavailable_fences_agentd_before_admission() {
         Err(error) => error,
     };
     assert!(
-        error.to_string().contains(
-            "secure durable Prompt Registry owner unavailable on this platform"
-        ),
+        error
+            .to_string()
+            .contains("secure durable Prompt Registry owner unavailable on this platform"),
         "unexpected unsupported-platform failure: {error}"
     );
 }
@@ -110,7 +110,10 @@ fn secure_prompt_registry_unavailable_fences_agentd_before_admission() {
 fn private_unix_prompt_owner_is_initialized_before_serving() {
     let (_temp, _registry, state) = fixture().expect("private Unix fixture");
     let root = state.identity.home_root.join("prompt-registry");
-    assert!(root.is_dir(), "the required durable Prompt Registry must exist");
+    assert!(
+        root.is_dir(),
+        "the required durable Prompt Registry must exist"
+    );
 }
 
 #[tokio::test]
