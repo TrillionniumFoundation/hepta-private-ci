@@ -135,6 +135,24 @@ def assemble(plan, evidence_root, entries, dataset, scope):
                 run.get("production_promotion_permitted") is not False or
                 not check_sha(run.get("weights_sha256"))):
             raise ValueError("run artifact is not bound to the immutable model/data plan")
+        # DeBERTa/ModernBERT run evidence must actually come from the
+        # pinned reviewed local safetensors execution implementation. A model
+        # identifier and logits alone cannot prove real pretrained weights
+        # loaded instead of random base-model layers.
+        if model in ("deberta_v3_large", "modernbert_large") and phase == "equal_budget":
+            local_runner = Path(__file__).with_name("hf_joint_decision_runner.py")
+            loading = run.get("verified_encoder_loading")
+            if (run.get("schema") != "hepta.stem-cell-actual-hf-joint-decision.v1" or
+                    run.get("runner_source_sha256") != sha256_file(local_runner) or
+                    type(loading) is not dict or loading != {
+                        "schema": "hepta.local-hf-encoder-weight-load.v1",
+                        "complete": True,
+                        "missing_keys": 0, "unexpected_keys": 0,
+                        "mismatched_keys": 0, "error_msgs": 0,
+                    } or
+                    run.get("pretrained_typed_decision_head_existed") is not False or
+                    run.get("checkpoint_zero_shot_score_emitted") is not False):
+                raise ValueError("HF arm lacks complete audited safetensors loading/runner evidence")
         if phase == "checkpoint":
             if (run.get("pretrained_typed_decision_head_present") is not True or
                     run.get("trainable_parameters") != 0 or
