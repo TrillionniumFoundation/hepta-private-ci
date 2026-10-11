@@ -4,6 +4,7 @@
 This compares supplied measurements; it does not run models, authenticate
 hardware, verify signatures, or issue production/activation authorization.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -150,14 +151,17 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         physical = measurements[(scope, "physical_split")]
         # All four modes must attempt the same frozen workload. Otherwise
         # performance gains could be manufactured by dropping difficult work.
-        if len(
-            {
-                baseline["attempted"],
-                logical["attempted"],
-                optimized["attempted"],
-                physical["attempted"],
-            }
-        ) != 1:
+        if (
+            len(
+                {
+                    baseline["attempted"],
+                    logical["attempted"],
+                    optimized["attempted"],
+                    physical["attempted"],
+                }
+            )
+            != 1
+        ):
             raise InvalidEvidence(f"{scope}: modes attempted different request counts")
         comparisons.append(
             {
@@ -207,9 +211,14 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
                 violations.append(
                     f"{scope}: physical {percentile.removesuffix('_ms')} regressed"
                 )
-        for key in ("cpu_per_request_s", "communication_per_request_bytes",
-                    "fsync_per_request", "lock_wait_per_request_ms",
-                    "rss_peak_bytes", "recovery_ms"):
+        for key in (
+            "cpu_per_request_s",
+            "communication_per_request_bytes",
+            "fsync_per_request",
+            "lock_wait_per_request_ms",
+            "rss_peak_bytes",
+            "recovery_ms",
+        ):
             if physical[key] > baseline[key]:
                 violations.append(f"{scope}: physical {key} regressed")
         if physical["failure_rate"] > baseline["failure_rate"]:
