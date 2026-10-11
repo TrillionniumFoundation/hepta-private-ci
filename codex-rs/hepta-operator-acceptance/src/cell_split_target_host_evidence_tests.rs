@@ -7,6 +7,9 @@ const PARENT: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 const CHILD: &str = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 const TOMBSTONE: &str = "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc";
 const ATTESTATION: &str = "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
+const CHILD_ROUTE: &str = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+const PARENT_ROUTE: &str = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+const PARENT_FENCE: &str = "1111111111111111111111111111111111111111111111111111111111111111";
 
 fn event(
     recorder: &CellSplitTargetHostEvidenceRecorderV1,
@@ -28,23 +31,23 @@ fn event(
             CellSplitTargetHostEventKindV1::RouteCutover
             | CellSplitTargetHostEventKindV1::RestartRecovered
             | CellSplitTargetHostEventKindV1::PowerLossRecovered => {
-                "child-route-receipt".to_string()
+                CHILD_ROUTE.to_string()
             }
             CellSplitTargetHostEventKindV1::RollbackCompleted
             | CellSplitTargetHostEventKindV1::TombstoneCommitted
             | CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
-                "restored-parent-route".to_string()
+                PARENT_ROUTE.to_string()
             }
             _ => String::new(),
         },
         predecessor_digest: match kind {
-            CellSplitTargetHostEventKindV1::RouteCutover => "parent-route-fence".to_string(),
+            CellSplitTargetHostEventKindV1::RouteCutover => PARENT_FENCE.to_string(),
             CellSplitTargetHostEventKindV1::RollbackCompleted => {
-                "child-route-receipt".to_string()
+                CHILD_ROUTE.to_string()
             }
             CellSplitTargetHostEventKindV1::TombstoneCommitted
             | CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
-                "restored-parent-route".to_string()
+                PARENT_ROUTE.to_string()
             }
             _ => String::new(),
         },
@@ -62,7 +65,9 @@ fn event(
         } else {
             String::new()
         },
-        receipt_digest: format!("receipt-{sequence}"),
+        receipt_digest: crate::durable::sha256(
+            format!("receipt-{sequence}").as_bytes(),
+        ),
         resource: None,
         previous_event_digest: payload
             .events
@@ -841,12 +846,12 @@ fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
             .find(|event| event.event_kind == kind)
             .expect("fixture has every required lifecycle event");
         match mutation {
-            "recovery-route" => matching.route_digest = "unrelated-live-route".to_string(),
+            "recovery-route" => matching.route_digest = crate::durable::sha256(b"unrelated-live-route"),
             "rollback-predecessor" => {
-                matching.predecessor_digest = "unrelated-active-route".to_string();
+                matching.predecessor_digest = crate::durable::sha256(b"unrelated-active-route");
             }
             "tombstone-route" | "wrong-parent-route" => {
-                matching.route_digest = "unrelated-parent-route".to_string();
+                matching.route_digest = crate::durable::sha256(b"unrelated-parent-route");
             }
             "wrong-tombstone" => matching.tombstone_digest = PARENT.to_string(),
             "wrong-child-artifact" => matching.artifact_digest = PARENT.to_string(),
