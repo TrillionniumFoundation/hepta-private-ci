@@ -1,5 +1,10 @@
 use std::process::Command;
 
+#[cfg(windows)]
+use std::io::Write;
+#[cfg(windows)]
+use std::path::Path;
+
 use anyhow::Context;
 use anyhow::Result;
 use app_test_support::ChatGptAuthFixture;
@@ -18,6 +23,49 @@ use wiremock::ResponseTemplate;
 use wiremock::matchers::header;
 use wiremock::matchers::method;
 use wiremock::matchers::path;
+
+
+#[cfg(windows)]
+fn stage_windows_helpers(test_executable: &Path) -> Result<()> {
+    let resources = test_executable
+        .parent()
+        .context("CLI test executable has no parent directory")?;
+    std::fs::create_dir_all(resources)
+        .with_context(|| format!("create helper directory {}", resources.display()))?;
+    for name in ["codex-windows-sandbox-setup", "codex-command-runner"] {
+        let source = codex_utils_cargo_bin::cargo_bin(name)?;
+        let destination = resources.join(Path::new(name).with_extension("exe"));
+        let expected = std::fs::read(&source)
+            .with_context(|| format!("read built helper {}", source.display()))?;
+        if std::fs::read(&destination).ok().as_deref() == Some(expected.as_slice()) {
+            continue;
+        }
+        let mut staged = tempfile::NamedTempFile::new_in(resources)?;
+        staged.write_all(&expected)?;
+        staged.flush()?;
+        anyhow::ensure!(
+            std::fs::read(staged.path())? == expected,
+            "helper staging changed bytes"
+        );
+        if let Err(error) = staged.persist_noclobber(&destination)
+            && std::fs::read(&destination).ok().as_deref() != Some(expected.as_slice())
+        {
+            return Err(error.error).with_context(|| {
+                format!(
+                    "publish helper {} at {}",
+                    source.display(),
+                    destination.display()
+                )
+            });
+        }
+        anyhow::ensure!(
+            std::fs::read(&destination)? == expected,
+            "staged helper differs from the current build: {}",
+            destination.display()
+        );
+    }
+    Ok(())
+}
 
 const CLOUD_MANAGED_PERMISSION_PROFILE_REQUIREMENTS: &str = r#"
 default_permissions = "managed-cloud"
@@ -99,6 +147,8 @@ async fn sandbox_fetches_and_enforces_cloud_managed_permission_profile() -> Resu
         .await;
 
     let codex = codex_utils_cargo_bin::cargo_bin("codex")?;
+    #[cfg(windows)]
+    stage_windows_helpers(&codex)?;
     let chatgpt_base_url_override = format!("chatgpt_base_url=\"{chatgpt_base_url}\"");
     let output = Command::new(&codex)
         .current_dir(codex_home.path())
