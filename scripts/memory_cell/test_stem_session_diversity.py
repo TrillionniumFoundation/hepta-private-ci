@@ -94,6 +94,10 @@ class SessionDiversityTests(unittest.TestCase):
             row["ranked_original_source_sessions"][2]["session"] = "s3"
             row["selected_original_identities"] = ["source-distractor", "source-duplicate"]
             row["retrieved_source_ids"] = ["source-distractor", "source-duplicate"]
+            # The original window is the distractor. The synthetic setup's
+            # previous diversified window was sourced from "source-positive",
+            # which is no longer in the unchanged top-K selection.
+            row["window_source_ids"] = ["source-distractor"]
             # No-change control must retain only its baseline delivered window.
             row["window_source_ids"] = ["source-distractor"]
         outcomes = validate_session_receipts(plan, original, rows)
@@ -102,7 +106,7 @@ class SessionDiversityTests(unittest.TestCase):
         self.assertEqual(result["results"]["test"]["changed_source_topk"], 0)
 
     def test_no_question_reordering_or_model_input_replacement(self):
-        for change in ("index", "rank", "choice", "pool", "answer", "family"):
+        for change in ("index", "rank", "choice", "pool", "window", "answer", "family"):
             plan, original, rows, _ = setup()
             if change == "index":
                 rows[0]["original_as_of_index_sha256"] = "other"
@@ -112,6 +116,8 @@ class SessionDiversityTests(unittest.TestCase):
                 rows[0]["selected_original_identities"] = ["source-positive", "source-distractor"]
             elif change == "pool":
                 rows[0]["pool_sha256"] = ""
+            elif change == "window":
+                rows[0]["window_source_ids"] = ["unselected-document"]
             elif change == "answer":
                 rows[0]["read_targets_for_retrieval"] = True
             else:
