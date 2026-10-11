@@ -17,6 +17,14 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
         &mut self,
         now_ms: u64,
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
+        // Physical serving requires a healthy evidence-owned metric sink.
+        // Failed persistence cannot justify retrying a completed model call;
+        // subsequent admissions are fenced instead.
+        if self.metrics_poisoned
+            || self.metric_sink.as_ref().is_none_or(|sink| !sink.healthy())
+        {
+            return Err(BatchWorkerErrorV1::TelemetryUnavailable);
+        }
         let poll = self
             .scheduler
             .poll_physical_compatible(now_ms)
@@ -145,7 +153,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
                 group_digest.extend_from_slice(item.request_id.as_str().as_bytes());
                 group_digest.push(0);
             }
-            let _ = sink.record(PhaseMetricEventV1 {
+            if sink.record(PhaseMetricEventV1 {
                 scope_digest: Digest32::of_bytes(&scope_bytes),
                 operation_digest: Digest32::of_bytes(&group_digest),
                 phase: PhaseMetricKindV1::NeuronFeature,
@@ -156,7 +164,9 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
                         Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
                     )
                 }),
-            });
+            }).is_err() {
+                self.metrics_poisoned = true;
+            }
         }
         Ok(BatchWorkerPollV1 {
             expired: poll.expired_request_ids,
