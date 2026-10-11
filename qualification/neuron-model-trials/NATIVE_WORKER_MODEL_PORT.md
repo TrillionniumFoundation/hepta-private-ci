@@ -77,6 +77,15 @@ entire canonical Neuron payload.
 
 This only returns `NeuronDurableAssignmentDiagnosticV1`: a bounded, data-free,
 domain-separated integrity commitment with `AuthorityPosture::DENY_ALL`.
+It now also checks the actual in-process Worker's consumed request and
+reservation tombstones. An Assigned record left behind after a Worker
+attempt can no longer be presented as an unconsumed matched assignment
+within that Worker generation. A self-rehashed stale report also fails
+`revalidate_neuron_durable_assignment_v1`, which compares a fresh read from
+both owners against the exact prior diagnostic. The new rejection tests cover
+post-consumption, changed/currently cancelling state, expiry, and forged
+prior digest. This is not a durable dispatch intent or a cross-process
+replay-protection token.
 The read neither consumes nor executes a reservation and **does not imply
 crash-safe exactly-once or final-use authority**. In particular, reopening
 a durable Assigned record after a process death does not prove the request

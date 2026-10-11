@@ -97,6 +97,7 @@ pub enum NeuronDurableAssignmentErrorV1 {
     Missing,
     NotAssigned,
     Mismatch,
+    Stale,
     Expired,
     Worker(WorkerError),
 }
@@ -201,6 +202,14 @@ pub fn read_neuron_durable_assignment_v1<D: ModelDriver>(
     if canonical_neuron_feature_payload_digest(&feature) != record.request.payload_digest {
         return Err(NeuronDurableAssignmentErrorV1::Mismatch);
     }
+    // A durable Assigned entry can outlive an actual Worker attempt in this
+    // process. Never report it as an unconsumed correlation if this Worker
+    // already tombstoned either request or reservation, even when the control
+    // owner has not yet received the terminal acknowledgement.
+    worker.verify_neuron_attempt_unconsumed(
+        &record.request.request_id,
+        &reservation.reservation_id,
+    )?;
     let mut report = NeuronDurableAssignmentDiagnosticV1 {
         request_id: record.request.request_id.clone(),
         reservation_id: reservation.reservation_id.clone(),
@@ -222,6 +231,33 @@ pub fn read_neuron_durable_assignment_v1<D: ModelDriver>(
         return Err(NeuronDurableAssignmentErrorV1::Mismatch);
     }
     Ok(report)
+}
+
+
+/// Verify that a previously read diagnostic still equals the current *real*
+/// durable inference.control assignment and this Worker instance's loaded
+/// model, grant, reservation and in-process attempt tombstones.
+///
+/// A stale digest can always be recomputed by a caller; equality with a new
+/// owner read is required. This is only a read-side freshness check and does
+/// not fence changes between this return and an actual model invocation.
+/// The physical dispatch owner must commit a durable single-use intent first
+/// and reconcile uncertain outcomes on restart.
+pub fn revalidate_neuron_durable_assignment_v1<D: ModelDriver>(
+    owner: &DurableInferenceControl,
+    worker: &InferenceWorker<D>,
+    request: &NeuronFeatureRequestV1,
+    previous: &NeuronDurableAssignmentDiagnosticV1,
+    now_ms: u64,
+) -> Result<(), NeuronDurableAssignmentErrorV1> {
+    if !previous.validate_integrity() || previous.request_id != request.request_id.as_str() {
+        return Err(NeuronDurableAssignmentErrorV1::Stale);
+    }
+    let current = read_neuron_durable_assignment_v1(owner, worker, request, now_ms)?;
+    if &current != previous {
+        return Err(NeuronDurableAssignmentErrorV1::Stale);
+    }
+    Ok(())
 }
 
 #[cfg(test)]

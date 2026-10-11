@@ -237,3 +237,78 @@ fn missing_reserved_cancelling_expired_and_drifted_requests_are_rejected() {
         Err(NeuronDurableAssignmentErrorV1::NotAssigned)
     );
 }
+
+#[test]
+fn owner_freshness_rejects_self_rehashed_stale_assignment_and_cancellation() {
+    let directory = tempfile::tempdir().unwrap();
+    let request = typed_request();
+    let worker = worker();
+    let mut owner = control(&directory, &request);
+    let initial = read_neuron_durable_assignment_v1(&owner, &worker, &request, 100).unwrap();
+    assert_eq!(
+        revalidate_neuron_durable_assignment_v1(&owner, &worker, &request, &initial, 100),
+        Ok(())
+    );
+    // A caller can rehash a forged prior report, but cannot alter what the
+    // current Ledger + Worker owners actually observed.
+    let mut changed = initial.clone();
+    changed.control_revision += 1;
+    changed.diagnostic_digest = changed.computed_digest();
+    assert!(changed.validate_integrity());
+    assert_eq!(
+        revalidate_neuron_durable_assignment_v1(&owner, &worker, &request, &changed, 100),
+        Err(NeuronDurableAssignmentErrorV1::Stale)
+    );
+    let mut changed = initial.clone();
+    changed.diagnostic_digest = Digest32::ZERO;
+    assert_eq!(
+        revalidate_neuron_durable_assignment_v1(&owner, &worker, &request, &changed, 100),
+        Err(NeuronDurableAssignmentErrorV1::Stale)
+    );
+    assert_eq!(
+        revalidate_neuron_durable_assignment_v1(&owner, &worker, &request, &initial, 8000),
+        Err(NeuronDurableAssignmentErrorV1::Expired)
+    );
+    owner.cancel(request.request_id.as_str(), 3).unwrap();
+    assert_eq!(
+        revalidate_neuron_durable_assignment_v1(&owner, &worker, &request, &initial, 100),
+        Err(NeuronDurableAssignmentErrorV1::NotAssigned)
+    );
+}
+
+#[test]
+fn assigned_durable_owner_must_not_report_a_consumed_worker_attempt_as_unused() {
+    let directory = tempfile::tempdir().unwrap();
+    let request = typed_request();
+    let owner = control(&directory, &request);
+    let mut worker = worker();
+    let initial = read_neuron_durable_assignment_v1(&owner, &worker, &request, 100).unwrap();
+    let used = WorkerRequest {
+        request_id: request.request_id.to_string(),
+        reservation_id: initial.reservation_id.clone(),
+        model_digest: "2".repeat(64),
+        payload_digest: initial.payload_digest.to_string(),
+        maximum_tokens: 64,
+        deadline_ms: 9000,
+        lease_payload_digest: initial.payload_digest.to_string(),
+        reservation_model_digest: "2".repeat(64),
+        reservation_maximum_tokens: 64,
+        cancelled: false,
+    };
+    // This is the same Worker method that every Neuron ModelPort consumes
+    // before any potential backend execution. The durable record remains
+    // Assigned until its independent owner observes the terminal result.
+    worker.consume_neuron_attempt(&used).unwrap();
+    assert_eq!(
+        read_neuron_durable_assignment_v1(&owner, &worker, &request, 100),
+        Err(NeuronDurableAssignmentErrorV1::Worker(
+            WorkerError::NeuronReservationReplay
+        ))
+    );
+    assert_eq!(
+        revalidate_neuron_durable_assignment_v1(&owner, &worker, &request, &initial, 100),
+        Err(NeuronDurableAssignmentErrorV1::Worker(
+            WorkerError::NeuronReservationReplay
+        ))
+    );
+}

@@ -383,6 +383,32 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
+    /// Read the actual in-process Neuron request/reservation tombstones without
+    /// consuming them. The durable inference.control owner independently checks
+    /// the matching reservation and current dispatch state. Neither owner alone
+    /// can prove exactly-once execution across a Worker process restart.
+    pub(crate) fn verify_neuron_attempt_unconsumed(
+        &self,
+        request_id: &str,
+        reservation_id: &str,
+    ) -> Result<(), Error> {
+        validate_identity(request_id, "request")?;
+        validate_identity(reservation_id, "reservation")?;
+        let request_hash = Digest32::of_bytes(request_id.as_bytes());
+        let reservation_hash = Digest32::of_bytes(reservation_id.as_bytes());
+        if self.used_neuron_requests.contains(&request_hash)
+            || self.used_neuron_reservations.contains(&reservation_hash)
+        {
+            return Err(Error::NeuronReservationReplay);
+        }
+        if self.used_neuron_requests.len() >= MAX_NEURON_ATTEMPTS
+            || self.used_neuron_reservations.len() >= MAX_NEURON_ATTEMPTS
+        {
+            return Err(Error::NeuronReservationCapacity);
+        }
+        Ok(())
+    }
+
     /// Consume one preexisting invocation identity before any model/lease check.
     /// This is NOT reservation authentication or crash-durable deduplication.
     /// A full tombstone budget fails closed until a separately admitted new
