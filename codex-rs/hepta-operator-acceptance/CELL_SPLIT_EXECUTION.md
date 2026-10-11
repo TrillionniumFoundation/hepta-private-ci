@@ -142,6 +142,22 @@ independently verified; the execution coordinator never resends a prepared
 intent. Recovery needs an independently approved reconciliation procedure,
 not an opportunistic adoption of orphan bytes.
 
+### CNS frozen-binding loss and recovery
+
+The CNS cutover owner now treats the persistent sidecar-lock identity as an
+initialization marker. If that lock already existed but the frozen CNS binding
+has disappeared, `open` rejects reinitialization **even while the signed
+predecessor route is still serving**. A previously prepared plan cannot be
+silently replaced by another one merely because no child cutover has occurred.
+Retain the original owner files and reconcile their state with the independent
+CNS writer; do not delete the lock to suppress this error.
+
+This local anti-reinitialization check is not an independently retained
+anti-rollback witness. Deletion of both the lock and frozen binding cannot be
+proved from the remaining local directory alone. Production acceptance must
+still check independent CNS/Selector frontiers and signed route/retirement
+witnesses, including after restart and physical power loss.
+
 ## Opt-in Agentd selected-plan ingress
 
 Agentd now has an opt-in `cell-split-operator-bridge` Cargo feature,
