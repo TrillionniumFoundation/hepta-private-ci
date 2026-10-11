@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 25d806087a74778262edddee5fcb48ef651e9265
+      CHAIN_SOURCE_SHA: ce7a96769218ffec142b4fa70c2eb83eda10918f
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '25d806087a74778262edddee5fcb48ef651e9265' || 'ddeb7a08d31e1791e1da37dc61e7fdd0d224548d' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && 'ce7a96769218ffec142b4fa70c2eb83eda10918f' || '31e2d84c8685ce36d50759504c9894f7ddc09b2d' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -102,7 +102,7 @@ jobs:
       - name: Require complete CI observer and recent-window regressions
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ci-execution.json" --minimum-tests 35 -- python3 ../chain/scripts/ci/test_ci_execution.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ci-execution.json" --minimum-tests 51 -- python3 ../chain/scripts/ci/test_ci_execution.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recent-window.json" --minimum-tests 13 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::error_boundary_tests -- --nocapture --test-threads=1
       - name: Require exact account branch-byte and complete lifting regressions
         run: |
@@ -146,6 +146,15 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-owned-cpu.json" --minimum-tests 7 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib ingress::public_v3::scalar_cpu::request_owned_reserve_tests -- --show-output --test-threads=1
           for selector in owned_quantum_remains_credited_when_request_crosses_its_first_quantum extended_request_cannot_spend_the_other_owned_quantum actual_cpu_extension_uses_its_own_reserve_and_settles_exact_total; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "ingress::public_v3::scalar_cpu::request_owned_reserve_tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require current bounded ordinary records and full history controls
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-fixed-records.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::fixed_blob_read_tests:: -- --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-history-read.json" --minimum-tests 3 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::history_page:: -- --show-output --test-threads=1
+          for selector in store::fixed_blob_read_tests::fixed_blob_copy_preserves_null_types_and_exact_boundaries store::fixed_blob_read_tests::fixed_header_projection_bounds_all_six_fields_without_type_coercion store::fixed_blob_read_tests::fixed_record_rereads_original_errors_and_restores_both_native_backends store::fixed_blob_read_tests::fixed_context_and_active_tip_reject_oversize_prefix_aliases store::history_page::bounded_record_tests::history_record_copy_bounds_keep_original_conversion_and_shape_order; do
+            receipt="$RUNNER_TEMP/pon-pair/${selector//:/_}.json"
+            python3 scripts/hepta_ci_exec.py --output "$receipt" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1
           done
       - name: Require complete authenticated snapshot retention and rollback controls
         run: |
