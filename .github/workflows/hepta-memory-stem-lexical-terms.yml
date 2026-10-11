@@ -30,10 +30,10 @@ jobs:
           set -euo pipefail
           mkdir /tmp/lexical-contract
           python3 -m pip install uv==0.8.22 numpy==1.26.4
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stem_lexical_terms.py' -v 2>&1 | tee /tmp/lexical-contract/tests.log
           uv run --frozen --project scripts ruff format --diff scripts/memory_cell/stem_lexical_terms.py scripts/memory_cell/stem_lexical_probe.py scripts/memory_cell/test_stem_lexical_terms.py > /tmp/lexical-contract/format.diff 2>&1 || true
           cat /tmp/lexical-contract/format.diff
           uv run --frozen --project scripts ruff format --check scripts/memory_cell/stem_lexical_terms.py scripts/memory_cell/stem_lexical_probe.py scripts/memory_cell/test_stem_lexical_terms.py 2>&1 | tee /tmp/lexical-contract/format.log
-          python3 -m unittest discover -s scripts/memory_cell -p 'test_stem_lexical_terms.py' -v 2>&1 | tee /tmp/lexical-contract/tests.log
       - name: Preserve exact source and failure logs
         if: always()
         run: |
