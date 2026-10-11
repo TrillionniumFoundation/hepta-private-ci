@@ -269,5 +269,51 @@ class ProjectionManifestTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'duplicate projection manifest'):
                 load_shadow_projection(p, expected_file_sha256=sha)
 
+
+class CasProjectionCandidateTests(unittest.TestCase):
+    def test_cas_candidate_exact_bytes_and_projection_digest(self):
+        from stem_projection import encode_cas_projection_candidate, decode_cas_projection_candidate
+        raw = encode_cas_projection_candidate(spec())
+        result = decode_cas_projection_candidate(
+            raw, expected_payload_sha256=hashlib.sha256(raw).hexdigest(),
+            expected_projection_digest=spec().digest,
+        )
+        self.assertEqual(result, spec())
+        self.assertIn(b'"schema":"hepta.stem.low-rank-projection-payload.v1"', raw)
+
+    def test_cas_candidate_refuses_unknown_fields_and_changed_weights(self):
+        import json
+        from stem_projection import encode_cas_projection_candidate, decode_cas_projection_candidate
+        raw = encode_cas_projection_candidate(spec())
+        obj = json.loads(raw)
+        obj["production_authorized"] = True
+        tampered = (json.dumps(obj, sort_keys=True, separators=(",", ":"))+"\\n").encode()
+        with self.assertRaisesRegex(ValueError, "schema mismatch"):
+            decode_cas_projection_candidate(
+                tampered, expected_payload_sha256=hashlib.sha256(tampered).hexdigest(),
+                expected_projection_digest=spec().digest)
+        obj = json.loads(raw)
+        obj["projection"]["a_q24"][0] += 1
+        tampered = (json.dumps(obj, sort_keys=True, separators=(",", ":"))+"\\n").encode()
+        with self.assertRaisesRegex(ValueError, "revision"):
+            decode_cas_projection_candidate(
+                tampered, expected_payload_sha256=hashlib.sha256(tampered).hexdigest(),
+                expected_projection_digest=spec().digest)
+
+    def test_cas_candidate_refuses_reordered_and_duplicate_keys(self):
+        from stem_projection import encode_cas_projection_candidate, decode_cas_projection_candidate
+        raw = encode_cas_projection_candidate(spec())
+        reordered = raw.replace(b'{"projection":', b'{"schema":"duplicate","projection":')
+        with self.assertRaisesRegex(ValueError, "duplicate CAS"):
+            decode_cas_projection_candidate(
+                reordered, expected_payload_sha256=hashlib.sha256(reordered).hexdigest(),
+                expected_projection_digest=spec().digest)
+        changed = b" " + raw
+        with self.assertRaisesRegex(ValueError, "canonical"):
+            decode_cas_projection_candidate(
+                changed, expected_payload_sha256=hashlib.sha256(changed).hexdigest(),
+                expected_projection_digest=spec().digest)
+
+
 if __name__ == '__main__':
     unittest.main()
