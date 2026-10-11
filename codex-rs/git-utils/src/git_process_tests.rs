@@ -39,10 +39,11 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        // Start-Process joins ArgumentList arrays with spaces instead of
-        // preserving argument boundaries. A raw -Command script can therefore
-        // be re-tokenized and never signal child readiness. PowerShell's
-        // -EncodedCommand consumes a single UTF-16LE/base64 argument instead.
+        // Use the .NET CreateProcess path rather than Start-Process
+        // -NoNewWindow, which can fail to launch under Windows Bazel's
+        // redirected/no-console test host. Keep the UTF-16LE encoded command:
+        // the wrapper must start a *real* descendant in its JobObject, whose
+        // cleanup is what this test is intended to verify.
         let encoded_command = format!(
             "$encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes('{child_command}')); "
         );
@@ -53,7 +54,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
             }
         };
         let wrapper_command = format!(
-            "{encoded_command}$child = Start-Process -FilePath powershell.exe -ArgumentList \"-NoProfile -NonInteractive -EncodedCommand $encoded\" -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); {lifecycle}"
+            "{encoded_command}$start = [System.Diagnostics.ProcessStartInfo]::new(); $start.FileName = 'powershell.exe'; $start.Arguments = '-NoProfile -NonInteractive -EncodedCommand ' + $encoded; $start.UseShellExecute = $false; $start.CreateNoWindow = $true; $child = [System.Diagnostics.Process]::new(); $child.StartInfo = $start; if (-not $child.Start()) {{ throw 'Git child did not start' }}; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); {lifecycle}"
         );
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
