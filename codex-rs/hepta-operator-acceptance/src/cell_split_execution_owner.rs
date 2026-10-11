@@ -566,10 +566,7 @@ fn frame_path(root: &Path, index: usize, phase: &str) -> PathBuf {
 /// A broken symlink is still a persisted path, never evidence of absence.
 /// Do not use Path::exists here: it follows symlinks and can return false for
 /// malicious/dangling successors, allowing a non-prefix history to advance.
-fn has_successor_frame(
-    root: &Path,
-    from_index: usize,
-) -> Result<bool, CellSplitExecutionErrorV1> {
+fn has_successor_frame(root: &Path, from_index: usize) -> Result<bool, CellSplitExecutionErrorV1> {
     for index in from_index..STEP_COUNT {
         if read_frame(&frame_path(root, index, "prepared"))?.is_some()
             || read_frame(&frame_path(root, index, "committed"))?.is_some()
