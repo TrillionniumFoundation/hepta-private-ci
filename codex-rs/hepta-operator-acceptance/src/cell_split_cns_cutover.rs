@@ -189,6 +189,17 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             return Err(CellSplitCnsCutoverErrorV1::Invalid);
         }
         let root = secure_root(root, "CNS cutover owner root")?;
+        // The lock inode outlives an owner instance. If it already exists,
+        // losing the frozen binding is an ambiguous interrupted lifecycle:
+        // a fresh observation of the old route cannot prove that the caller
+        // supplied the same plan and independent owner trust as before.
+        let initialized_before = match fs::symlink_metadata(
+            root.join(".operator-acceptance.lock"),
+        ) {
+            Ok(_) => true,
+            Err(error) if error.kind() == ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
         let lock = lock_sidecar(&root)?;
         let frozen = canonical_json(&(plan.clone(), binding.clone()))?;
         let frozen_path = root.join(FROZEN);
@@ -206,6 +217,13 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             }
             Ok(_) => {}
             Err(error) if error.kind() == ErrorKind::NotFound => {
+                // Refuse any re-initialization after the durable lock first
+                // existed, including before a cutover or after a lost ack.
+                // Recovery must reconcile against the original independent
+                // owner; never silently supply a replacement frozen plan.
+                if initialized_before {
+                    return Err(CellSplitCnsCutoverErrorV1::Invalid);
+                }
                 // Losing the local frozen binding after a real cutover must
                 // not allow an attacker (or stale caller) to reinitialize the
                 // owner under a new routing plan. Require a fresh nonce-bound
