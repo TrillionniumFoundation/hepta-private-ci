@@ -105,6 +105,8 @@ class OwnerBridgeChecks(unittest.TestCase):
         self.assertIsNone(report['windows']['future_1']['no_change']['brier'])
         self.assertFalse(report['scientific_superiority_established'])
         self.assertFalse(report['native_owner_currently_queried'])
+        self.assertFalse(report['candidate_trace_signature_verified'])
+        self.assertFalse(report['candidate_input_delivery_authenticated'])
 
     def test_frozen_learned_baseline_descriptor_also_supported(self):
         d = self.cohort['payload']['no_change']
@@ -179,6 +181,32 @@ class OwnerBridgeChecks(unittest.TestCase):
         self.assertFalse(report['current_acceptance_profile_passed'])
         self.assertFalse(report['all_offline_diagnostics_passed'])
         self.assertFalse(report['independent_signatures_verified'])
+
+    def test_resigned_blind_manifest_hash_cannot_replace_actual_inputs(self):
+        self.manifest['blind_dataset_sha256'] = digest('different-blinded-inputs')
+        self.refs['manifest'] = self.save('manifest', canonical(self.manifest))
+        body = self.packet['body']
+        body['trial_manifest_sha256'] = self.refs['manifest']['sha256']
+        body['blind_dataset_sha256'] = self.manifest['blind_dataset_sha256']
+        sig = {k: v for k, v in self.packet['owner_signature'].items() if k != 'signature_ed25519_hex'}
+        message = baseline.SIGNATURE_DOMAIN + canonical({'schema': baseline.SCHEMA, 'body': body, **sig})
+        self.packet['owner_signature']['signature_ed25519_hex'] = self.keys['baseline_owner'].sign(message).hex()
+        self.refs['baseline'] = self.save('baseline', canonical(self.packet))
+        with self.assertRaisesRegex(ValueError, 'verification rejected'):
+            self.run_review()
+
+    def test_resigned_manifest_dataset_hash_cannot_replace_original_bytes(self):
+        self.manifest['dataset_sha256'] = digest('different-sealed-bytes')
+        self.refs['manifest'] = self.save('manifest', canonical(self.manifest))
+        body = self.packet['body']
+        body['trial_manifest_sha256'] = self.refs['manifest']['sha256']
+        body['dataset_sha256'] = self.manifest['dataset_sha256']
+        sig = {k: v for k, v in self.packet['owner_signature'].items() if k != 'signature_ed25519_hex'}
+        message = baseline.SIGNATURE_DOMAIN + canonical({'schema': baseline.SCHEMA, 'body': body, **sig})
+        self.packet['owner_signature']['signature_ed25519_hex'] = self.keys['baseline_owner'].sign(message).hex()
+        self.refs['baseline'] = self.save('baseline', canonical(self.packet))
+        with self.assertRaisesRegex(ValueError, 'verification rejected'):
+            self.run_review()
 
     def test_abstention_signature_keeps_risk_undefined(self):
         for row in self.verified['observations'].values():

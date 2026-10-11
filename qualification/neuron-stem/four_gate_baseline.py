@@ -31,12 +31,17 @@ from pathlib import Path
 sys.path.insert(0, str(Path.cwd()))
 import hepta_neuron_real_cohort_preflight as c
 import hepta_neuron_production_baseline_compare as b
+from hepta_neuron_model_trials import blind_rows, canonical_jsonl
 p = Path.cwd()
 verified = c.verify(p/'cohort', p/'sealed', p/'trust', sys.argv[1])
 cohort, manifest, trust, packet = (c.read_json(p/n) for n in ('cohort','manifest','trust','baseline'))
 rows = c.read_sealed(p/'sealed')
 if manifest['family'] not in ('decisions', 'multilingual') or manifest['family'] != cohort['payload']['family']:
     raise ValueError('typed baseline bridge requires matching choice families; Q24 is not probabilities')
+if manifest['dataset_sha256'] != c.sha_bytes((p/'sealed').read_bytes()):
+    raise ValueError('manifest does not bind original sealed bytes')
+if manifest['blind_dataset_sha256'] != c.sha_bytes(canonical_jsonl(blind_rows(rows, manifest['family']))):
+    raise ValueError('manifest does not bind the original blinded input inventory')
 observed, signed = b._check_baseline_receipt(packet, cohort, rows, p/'manifest', manifest, trust, p/'cohort')
 print(json.dumps({'verification': verified, 'owner_signature_payload_sha256': signed,
                   'observations': observed}, sort_keys=True, allow_nan=False))
@@ -185,6 +190,7 @@ def pair_verified(plan, dataset, trial, journal, cohort, sealed, packet, verifie
             stats[arm]["normalized_brier"] = stats[arm].pop("brier_sum") / n
     return {"status": "diagnostic_complete", "profile": PROFILE, "windows": result,
         "cell_trace_verified": True, "cell_weights_changed": changed,
+        "candidate_trace_signature_verified": False, "candidate_input_delivery_authenticated": False,
         "dataset_digest": audit["dataset_digest"], "descriptor_sha256": digest(descriptor),
         "owner_verification": verified["verification"],
         "owner_signature_payload_sha256": verified["owner_signature_payload_sha256"],
