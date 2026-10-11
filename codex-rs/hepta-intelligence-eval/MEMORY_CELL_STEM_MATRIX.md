@@ -440,3 +440,49 @@ post-hoc *diagnostic* subset, not a newly preregistered independent test. Both
 Reader receipts must identify exactly the same pinned model and prompt,
 even when the two executions used separate model instances. No source
 entailment, semantic citation precision or production gate is inferred.
+
+## Completed-but-unqualified earlier six-arm run: independent baseline reconstruction
+
+The research staging run `38099411279` at source commit
+`306c2c8dc745b22f4dc137fdfec5e83158189964`, Git tree
+`4e84e9443c68fa12cff3e4235d4dd18b0611ee77`, emitted a
+historically complete 576/576 native development matrix. Artifact
+`11687561401` has independently observed external ZIP SHA-256
+`2f15aa0a6c4900b2cf19cc03051f2727c58c9c04c1d993eda6486e019d0d0014`.
+That earlier runner called its Reader directly without the later
+ExactReaderCache's as-of time guard, and is **not** a successful execution
+of the current research/production admission implementation.
+
+The failing later original `e9c8f9c9...` artifact `11688435110`
+(`3e09533c535f6b847f9ec58d4f56055d3a2c6adb2eee68705873584a72aca909`)
+matched the earlier run's cohort, frozen model inventory, prompt, and
+registered 16/32/48 six-arm matrix. Its **396 successfully executed answers
+are byte-identical to the earlier run's corresponding raw answer strings**,
+with the same original delivered excerpts and actual input/output token hashes.
+The other 180 attempts originally failed the Reader gate. Across the two
+versions, one previously failed row has a different recorded Head selection,
+so never claim all 576 choices are cross-run identical.
+
+Within the completed earlier staging run, the five learned Head/Adapter
+arms each have **96 matched successful comparisons** against the frozen
+ranker; all five have **0 changed source selections and 0 changed original
+answer bytes**. A complete execution census is not an observed learning
+advantage. The full 80-question original Encoder candidate census found:
+48 training tasks with 8–10 windows, eight select tasks with 8–9,
+eight retention and eight test tasks each with 8, and eight transfer tasks
+each with 32. No registered task had only one candidate, disproving that
+single-candidate forced-top1 alone explains the absence of learning.
+
+`stem_archive_contrast.py` and the separate
+`hepta-memory-stem-historical-contrast.yml` audit validate **both external ZIP
+SHA-256 pins and complete internal SHA256SUMS manifests**, source commit/tree,
+cohort/Reader registration, 576 exact policy identities and unchanged
+successful answers. They record the old execution's unsafe gate boundary
+explicitly and never issue a current-source quality or production certificate.
+
+Separate local source-only checks of the pinned LongMemEval raw dataset
+(SHA-256 `d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442`)
+found 1,475 truly future session timestamps out of 23,867 across all 500
+native questions. The eight preregistered transfer questions had no
+future-dated session in their histories. These are source-level chronology
+counts, not 500 prospective independent answers or adjudicated support.
