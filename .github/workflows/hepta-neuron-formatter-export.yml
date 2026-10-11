@@ -1,0 +1,67 @@
+name: Hepta Neuron one-time Ruff source formatting export
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-neuron-formatter-export.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  format-readonly:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact source without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Produce exact locked Ruff formatted source in ephemeral checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff format \
+            .github/scripts/test_hepta_neuron_cpu_benchmark.py \
+            .github/scripts/test_hepta_neuron_lock_dependency_check.py \
+            .github/scripts/test_hepta_neuron_physical_receipt_verify.py \
+            .github/scripts/test_hepta_neuron_production_baseline_compare.py \
+            .github/scripts/test_hepta_neuron_real_cohort_preflight.py \
+            scripts/hepta_neuron_cpu_benchmark.py \
+            scripts/hepta_neuron_cpu_benchmark_verify.py \
+            scripts/hepta_neuron_lock_dependency_check.py \
+            scripts/hepta_neuron_physical_receipt_verify.py \
+            scripts/hepta_neuron_production_baseline_compare.py \
+            scripts/hepta_neuron_real_cohort_preflight.py
+          git diff --check
+      - name: Export formatted file contents as bounded textual chunks
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          files = [
+              ".github/scripts/test_hepta_neuron_cpu_benchmark.py",
+              ".github/scripts/test_hepta_neuron_lock_dependency_check.py",
+              ".github/scripts/test_hepta_neuron_physical_receipt_verify.py",
+              ".github/scripts/test_hepta_neuron_production_baseline_compare.py",
+              ".github/scripts/test_hepta_neuron_real_cohort_preflight.py",
+              "scripts/hepta_neuron_cpu_benchmark.py",
+              "scripts/hepta_neuron_cpu_benchmark_verify.py",
+              "scripts/hepta_neuron_lock_dependency_check.py",
+              "scripts/hepta_neuron_physical_receipt_verify.py",
+              "scripts/hepta_neuron_production_baseline_compare.py",
+              "scripts/hepta_neuron_real_cohort_preflight.py",
+          ]
+          for path in files:
+              contents = Path(path).read_text(encoding="utf-8")
+              pieces = [contents[i:i + 900] for i in range(0, len(contents), 900)]
+              for index, piece in enumerate(pieces):
+                  print("HEPTA_RUFF_EXPORT|" + path + "|" + str(index) + "|" + str(len(pieces)) + "|" + json.dumps(piece, ensure_ascii=True))
+          PY
