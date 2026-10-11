@@ -43,13 +43,16 @@ class PrequentialThreeWayTests(unittest.TestCase):
         journal = []
         self.nochange = []
         seen = set()
+        last_postupdate = {}
         for event_order, row in enumerate(self.future):
             key = (row["scope_id"], row["cell_id"])
             first = key not in seen
             seen.add(key)
             frozen = [.3, .7]
             trained = frozen if first else [.99, .01]
-            head_before = self.initial[str(key)] if first else "c" * 64
+            head_before = self.initial[str(key)] if first else last_postupdate[key]
+            head_after = sha256_record(["head_after_update", row["case_id"], head_before])
+            last_postupdate[key] = head_after
             prec = prediction_precommit(row, trained, head_before, event_order)
             prec["record_digest"] = sha256_record(prec)
             journal.append(json.dumps(prec, sort_keys=True, ensure_ascii=False,
@@ -60,7 +63,7 @@ class PrequentialThreeWayTests(unittest.TestCase):
                 "cell_id": row["cell_id"], "event_time": row["event_time"],
                 "prediction_seal_before_label_update": prec["record_digest"],
                 "preupdate_head_digest": head_before,
-                "postupdate_head_digest": "d" * 64,
+                "postupdate_head_digest": head_after,
                 "trained_probabilities": trained,
                 "frozen_same_initialization_probabilities": frozen,
                 "outcome_label_revealed_after_prediction": True,
@@ -86,6 +89,9 @@ class PrequentialThreeWayTests(unittest.TestCase):
             "genuine_future_outcomes_authenticated": False,
             "dataset_audit": self.audit,
             "initial_head_digests": self.initial,
+            "final_head_digests": {
+                str(key): digest for key, digest in last_postupdate.items()},
+            "update_steps_per_future_event": 1,
             "pre_label_prediction_journal_sha256":
                 hashlib.sha256(self.journal).hexdigest(),
             "pre_label_prediction_journal_event_count": len(self.records),
@@ -168,6 +174,28 @@ class PrequentialThreeWayTests(unittest.TestCase):
                         replicates=1000)
         self.assertFalse(result["quality_three_way_precheck_passed"])
         self.assertFalse(result["production_promotion_permitted"])
+
+    def test_discontinuous_cell_head_update_chain_is_rejected(self):
+        bad = copy.deepcopy(self.trial)
+        bad["temporal_receipts"][2]["postupdate_head_digest"] = "f" * 64
+        with self.assertRaisesRegex(ValueError, "discontinuous Cell Head"):
+            review(self.rows, bad, self.journal, self.nochange, replicates=1000)
+        bad = copy.deepcopy(self.trial)
+        bad["final_head_digests"][str(("S", "cell-A"))] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "final Cell Head artifact"):
+            review(self.rows, bad, self.journal, self.nochange, replicates=1000)
+
+    def test_no_optimizer_updates_can_never_prove_cell_learning(self):
+        bad = copy.deepcopy(self.trial)
+        bad["update_steps_per_future_event"] = 0
+        for record in bad["temporal_receipts"]:
+            record["local_update_steps_after_prediction"] = 0
+        with self.assertRaisesRegex(ValueError, "no-update Cell"):
+            review(self.rows, bad, self.journal, self.nochange, replicates=1000)
+        bad = copy.deepcopy(self.trial)
+        bad["temporal_receipts"][0]["local_update_steps_after_prediction"] = 0
+        with self.assertRaisesRegex(ValueError, "local Cell update steps"):
+            review(self.rows, bad, self.journal, self.nochange, replicates=1000)
 
     def test_research_resource_scale_matrix_is_not_native_proof(self):
         reports = []
