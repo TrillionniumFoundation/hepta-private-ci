@@ -597,3 +597,15 @@ DeBERTa/ModernBERT weights, and even the genuine HF offline mode remains
 **not** the Rust Worker/Agentd native backend or target-host 4096-Cell
 performance proof. Physical pooling is limited to an audited locally
 loaded checkpoint; independent NDU/CAS/final-use remain blocking.
+
+
+**Comparison fairness:** before running any four-model equal-budget trial
+with `--encoder-microbatch-size > 1`, first freeze the Experiment A plan
+with the **same** `decision_421m.py plan --encoder-microbatch-size N`.
+Both the direct evaluator and the SHA-bound arm bundle reject execution
+receipts whose physical Encoder batch ceiling is different from the
+frozen plan, including the original Laya controls. A missing batch
+declaration means legacy single-input execution (N=1); it cannot be used
+to claim an N>1 trial. This is a budget/trace-consistency check,
+not independent hardware attestation or permission to compare actual
+inference p99 from different hardware.
