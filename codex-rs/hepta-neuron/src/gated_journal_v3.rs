@@ -412,6 +412,7 @@ fn decode_tick(
     let ndu_digest = digest();
     let body_digest = digest();
     let input_digest = digest();
+    drop(digest);
     let mut number = || {
         let mut arr = [0_u8; 8];
         arr.copy_from_slice(&bytes[cursor..cursor + 8]);
