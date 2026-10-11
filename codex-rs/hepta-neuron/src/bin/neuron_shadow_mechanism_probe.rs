@@ -438,10 +438,9 @@ mod tests {
         assert_eq!(configs.v2.global_top_k, 3);
         for arm in ["v1", "v2", "v3", "ssm"] {
             let mut states = ActiveState::new(arm, 64).expect("valid arm");
-            let mut frontier = Digest32::ZERO;
             for row in &trace.events {
                 let input = request_for(row, 7);
-                frontier = states
+                let frontier = states
                     .apply(7, &input, &configs)
                     .expect("arm must process same Q24 trace");
                 assert!(!frontier.is_zero());
