@@ -8,7 +8,6 @@ download or loading a pretrained checkpoint in the mechanics workflow.
 from dataclasses import dataclass
 import hashlib
 import importlib.util
-import io
 import json
 from pathlib import Path
 import sys
@@ -73,28 +72,12 @@ def _load_adapter():
     peft.get_peft_model_state_dict = get_peft_model_state_dict
     peft.set_peft_model_state_dict = set_peft_model_state_dict
 
-    safetensors = types.ModuleType("safetensors")
-    safetensors_torch = types.ModuleType("safetensors.torch")
-
-    def save_tensors(state):
-        stream = io.BytesIO()
-        torch.save(state, stream)
-        return stream.getvalue()
-
-    def load_tensors(payload):
-        return torch.load(io.BytesIO(payload), weights_only=True)
-
-    safetensors_torch.load = load_tensors
-    safetensors_torch.save = save_tensors
-    safetensors.torch = safetensors_torch
     modules = {
         "selector_encoder": selector_encoder,
         "native": native,
         "pretrained": pretrained,
         "stem_cell": stem_cell,
         "peft": peft,
-        "safetensors": safetensors,
-        "safetensors.torch": safetensors_torch,
     }
     saved = {name: sys.modules.get(name) for name in modules}
     sys.modules.update(modules)
