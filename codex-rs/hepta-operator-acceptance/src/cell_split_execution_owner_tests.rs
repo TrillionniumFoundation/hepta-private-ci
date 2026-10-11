@@ -1187,3 +1187,73 @@ fn invalid_frozen_plans_cannot_derive_a_trusted_effect_digest() {
     invalid.split_id.clear();
     assert!(invalid.digest().is_err());
 }
+
+
+#[test]
+fn unknown_step_frame_fences_owner_before_first_effect_and_after_open() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let foreign = root.path().join("cell-split-04-committed.json");
+    fs::write(&foreign, b"{}").expect("unrecognized fifth-step frame");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "unknown cell split durable frame"
+        )),
+    ));
+    assert!(!root.path().join("cell-split-frozen-plan.json").exists());
+    assert_eq!(state.borrow().executions, 0);
+    fs::remove_file(&foreign).expect("clean injected frame");
+
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("clean owner");
+    owner.advance().expect("first effect").expect("receipt");
+    let injected = root.path().join("cell-split-00-replayed.json");
+    fs::write(&injected, b"{}").expect("unrecognized replay marker");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "unknown cell split durable frame"
+        )),
+    ));
+    assert!(matches!(
+        owner.verified_transcript(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "unknown cell split durable frame"
+        )),
+    ));
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
+fn oversized_owner_directory_fails_before_writing_frozen_plan() {
+    let root = private_tempdir();
+    for index in 0..33 {
+        fs::write(root.path().join(format!("unrelated-{index:02}")), b"data")
+            .expect("adversarial directory entry");
+    }
+    let state = Rc::new(RefCell::new(Observed::default()));
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "split ledger namespace exceeds bounded entry limit"
+        )),
+    ));
+    assert!(!root.path().join("cell-split-frozen-plan.json").exists());
+    assert_eq!(state.borrow().executions, 0);
+}
