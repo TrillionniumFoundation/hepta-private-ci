@@ -2,8 +2,6 @@ use std::ffi::OsString;
 use std::io::Read;
 use std::path::PathBuf;
 
-#[cfg(unix)]
-use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_v1;
 use codex_hepta_operator_acceptance::CellSplitTargetHostEvidenceStoreV1;
 use codex_hepta_operator_acceptance::CellSplitTargetHostEvidenceTrustPolicyV1;
 use codex_hepta_operator_acceptance::PrepareRequest;
@@ -11,6 +9,8 @@ use codex_hepta_operator_acceptance::ReadReceiptRequest;
 use codex_hepta_operator_acceptance::VerifyRequest;
 use codex_hepta_operator_acceptance::prepare;
 use codex_hepta_operator_acceptance::require_formal_environment;
+#[cfg(unix)]
+use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_v1;
 use codex_hepta_operator_acceptance::verify_and_seal;
 use codex_hepta_operator_acceptance::verify_receipt;
 
