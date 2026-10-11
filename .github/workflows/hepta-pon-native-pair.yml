@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 563e461656feed66a0b9ddcf99b22f2f1d39d627
+      CHAIN_SOURCE_SHA: 5c25ed9eadbb10e8193d062ee92c14ef8a9db1b5
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '563e461656feed66a0b9ddcf99b22f2f1d39d627' || 'ae2d895bae454e271e8056f776813232c270fc3c' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '5c25ed9eadbb10e8193d062ee92c14ef8a9db1b5' || '66ea84baf9a8f5ca4890964ce341d10b48448168' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -269,7 +269,7 @@ jobs:
           mkdir -p "$out"
           git archive --format=tar.gz --output="$out/hepta-source.tar.gz" "$TESTED_SHA"
           sha256sum "$out/hepta-source.tar.gz" > "$out/hepta-source.sha256"
-          for job in 114191442196 114191438176; do
+          for job in 114191442196 114191438176 114284747966 114284748042 114284748026; do
             code=0
             curl --fail --silent --show-error --location --max-time 60 --max-filesize 20971520 \
               --header "Authorization: Bearer $GH_TOKEN" \
