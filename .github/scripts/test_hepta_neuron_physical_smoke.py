@@ -102,5 +102,31 @@ class PhysicalSmokePreflightTests(unittest.TestCase):
             self.assertEqual(report["weights_sha256"], "b" * 64)
 
 
+class WorkflowOfflineIsolationTests(unittest.TestCase):
+    def test_all_physical_model_workflows_require_offline_forward(self):
+        for workflow in (
+            "hepta-neuron-physical-smoke.yml",
+            "hepta-neuron-matched-cpu.yml",
+        ):
+            with self.subTest(workflow=workflow):
+                content = (ROOT / ".github" / "workflows" / workflow).read_text(
+                    encoding="utf-8"
+                )
+                self.assertNotIn("${1}", content)
+                for variable, expected in (
+                    ("HF_HUB_DISABLE_TELEMETRY", "1"),
+                    ("HF_HUB_OFFLINE", "1"),
+                    ("TRANSFORMERS_OFFLINE", "1"),
+                    ("USE_TF", "0"),
+                ):
+                    self.assertIn(f'{variable}: "{expected}"', content)
+                    self.assertIn(
+                        f'test "${variable}" = "{expected}"',
+                        content,
+                    )
+                self.assertIn("--allow-network", content)
+                self.assertIn("if: always()", content)
+
+
 if __name__ == "__main__":
     unittest.main()
