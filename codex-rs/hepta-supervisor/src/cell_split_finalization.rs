@@ -180,6 +180,9 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalFinalizerV1<
     }
 
     fn verify_authority(&mut self) -> Result<(), CellSplitFinalizationErrorV1> {
+        // A signed readback cannot use an in-memory cached checkpoint after
+        // the externally owned durable journal has changed on disk.
+        self.journal.verify_current_on_disk()?;
         Self::validate_phase(self.journal.checkpoint(), &self.binding)?;
         self.authority
             .verify_current_route(&self.binding, self.journal.checkpoint())
