@@ -175,3 +175,7 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
         Ok(receipts)
     }
 }
+
+#[cfg(test)]
+#[path = "model_worker_physical_batch_tests.rs"]
+mod tests;
