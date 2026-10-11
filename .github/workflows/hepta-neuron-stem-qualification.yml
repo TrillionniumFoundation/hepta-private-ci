@@ -6,10 +6,17 @@ on:
     paths:
       - "qualification/neuron-stem/**"
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-agentd/src/state.rs"
+      - "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
+      - "codex-rs/hepta-prompt-registry/src/durable.rs"
       - ".github/workflows/hepta-neuron-stem-qualification.yml"
 
 permissions:
   contents: read
+
+concurrency:
+  group: hepta-neuron-stem-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   offline-contracts:
@@ -104,3 +111,50 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib
       - name: Require scoped Rust Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
+
+  secure-prompt-owner-platform:
+    name: Secure Prompt Registry OS owner (no authorization)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout exact source candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact PR head
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install pinned compiler
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Exercise genuine Unix secure Prompt Registry
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib
+          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib private_unix_prompt_owner_is_initialized_before_serving
+      - name: Prove Windows unsupported owner cannot create state or admit Agentd
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib unsupported_platform_cannot_create_unprotected_registry_state
+          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib secure_prompt_registry_unavailable_fences_agentd_before_admission
+      - name: Assert no checkout mutations
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
