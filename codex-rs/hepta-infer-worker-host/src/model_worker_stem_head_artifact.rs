@@ -231,7 +231,13 @@ impl SelectedStemHeadBankReaderV1 {
         signed_head_selection: &SignedArtifactSelectionV1,
         head_current: VerifiedCurrentRegistryViewV1,
         selection_now: u64,
-    ) -> Result<codex_hepta_infer_core::NeuronFeatureReceiptV1, StemHeadArtifactError> {
+    ) -> Result<
+        (
+            codex_hepta_infer_core::NeuronFeatureReceiptV1,
+            StemHeadBankReadObservationV1,
+        ),
+        StemHeadArtifactError,
+    > {
         if self.sealed {
             return Err(StemHeadArtifactError::ConsumerSealed);
         }
@@ -260,7 +266,13 @@ impl SelectedStemHeadBankReaderV1 {
         signed_head_selection: &SignedArtifactSelectionV1,
         head_current: VerifiedCurrentRegistryViewV1,
         selection_now: u64,
-    ) -> Result<codex_hepta_infer_core::NeuronFeatureReceiptV1, StemHeadArtifactError> {
+    ) -> Result<
+        (
+            codex_hepta_infer_core::NeuronFeatureReceiptV1,
+            StemHeadBankReadObservationV1,
+        ),
+        StemHeadArtifactError,
+    > {
         let request = &use_request.request;
         let binding = use_request.binding;
         if binding.scope_digest != self.fence.scope_digest.to_string()
@@ -281,27 +293,30 @@ impl SelectedStemHeadBankReaderV1 {
         {
             return Err(StemHeadArtifactError::StaleOrUnselected);
         }
-        self.candidate
+        let witness = head_current.witness_digest();
+        let trust = head_current.trust_digest();
+        let receipt = self
+            .candidate
             .with_current(head_current, |_| {
                 projection
                     .run_selected_cpu_head(worker, use_request)
                     .map_err(StemHeadArtifactError::Projection)
             })
-            .map_err(|e| StemHeadArtifactError::Storage(e.to_string()))?
-    }
-
-    pub fn observation(
-        &self,
-        selected_current: &VerifiedCurrentRegistryViewV1,
-    ) -> StemHeadBankReadObservationV1 {
-        StemHeadBankReadObservationV1 {
-            artifact_id: self.artifact_id.clone(),
-            selection_digest: self.selected_digest,
-            current_witness_digest: selected_current.witness_digest(),
-            current_trust_digest: selected_current.trust_digest(),
-            bank_weights_digest: self.weights_digest.clone(),
-            production_authorized: false,
-        }
+            .map_err(|e| StemHeadArtifactError::Storage(e.to_string()))??;
+        // Emit provenance only AFTER both signed CURRENT checks and the
+        // model-only dispatch actually succeeded. Never make an observation
+        // from an arbitrary retained/current-like view.
+        Ok((
+            receipt,
+            StemHeadBankReadObservationV1 {
+                artifact_id: self.artifact_id.clone(),
+                selection_digest: self.selected_digest,
+                current_witness_digest: witness,
+                current_trust_digest: trust,
+                bank_weights_digest: self.weights_digest.clone(),
+                production_authorized: false,
+            },
+        ))
     }
 }
 
