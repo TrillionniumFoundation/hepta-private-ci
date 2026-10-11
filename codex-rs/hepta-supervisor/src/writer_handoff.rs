@@ -928,6 +928,48 @@ mod tests {
     }
 
     #[test]
+    fn live_writer_rejects_tampered_idempotent_retry() {
+        let temp = TempDir::new().expect("temp");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("original journal");
+        let path = temp.path().join("writer-handoff.log");
+        let original = std::fs::read(&path).expect("original bytes");
+        let marker = b"\"phase\":\"prepared\"";
+        let start = original
+            .windows(marker.len())
+            .position(|part| part == marker)
+            .expect("original prepared phase");
+        let mut corrupted = original.clone();
+        corrupted[start + 9] = b'x';
+        std::fs::write(&path, corrupted).expect("uncooperative writer changed file");
+        // This would previously have been a successful cached no-op.
+        assert_eq!(
+            journal.advance(step(WriterHandoffPhaseV1::Prepared, "migration-plan")),
+            Err(WriterHandoffErrorV1::Corrupt)
+        );
+        std::fs::write(&path, original).expect("restore disk bytes");
+        assert_eq!(
+            journal.advance(step(WriterHandoffPhaseV1::Prepared, "migration-plan")),
+            Err(WriterHandoffErrorV1::Poisoned)
+        );
+    }
+
+    #[test]
+    fn live_writer_rejects_unknown_appended_tail_before_transition() {
+        let temp = TempDir::new().expect("temp");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("original journal");
+        let path = temp.path().join("writer-handoff.log");
+        let mut bytes = std::fs::read(&path).expect("original");
+        bytes.extend_from_slice(b"{\"uncommitted\":");
+        std::fs::write(&path, bytes).expect("external torn append");
+        assert_eq!(
+            journal.advance(step(WriterHandoffPhaseV1::AdmissionStopped, "admission-stopped")),
+            Err(WriterHandoffErrorV1::Corrupt)
+        );
+    }
+
+    #[test]
     fn full_handoff_has_no_dual_writer_window() {
         let temp = TempDir::new().expect("temp");
         let mut journal =
