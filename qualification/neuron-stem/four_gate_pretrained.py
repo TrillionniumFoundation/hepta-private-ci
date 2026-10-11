@@ -90,7 +90,7 @@ def load_pinned(directory):
     return model, tokenizer, inventory, loading
 
 
-def build_schedule(root, cells, active_bps, repeat_bps):
+def build_schedule(root, cells, active_bps, repeat_bps, *, public_corpus=None):
     import math
 
     require(cells in (64, 256, 1024, 4096), "unsupported Cell scale")
@@ -99,7 +99,7 @@ def build_schedule(root, cells, active_bps, repeat_bps):
     count = math.ceil(cells * active_bps / 10000)
     unique = max(1, round(count * (1 - repeat_bps / 10000)))
     excerpts, sources = [], {}
-    for relative in SOURCES:
+    for relative in SOURCES if public_corpus is None else ():
         path = root / relative
         require(path.is_file() and not path.is_symlink(), "missing source document")
         raw = path.read_bytes()
@@ -107,6 +107,11 @@ def build_schedule(root, cells, active_bps, repeat_bps):
         sources[relative] = hashlib.sha256(raw).hexdigest()
         paragraphs = [p for p in raw.decode("utf-8").split("\n\n") if len(p.strip()) > 80]
         excerpts.extend(p[:1600] for p in paragraphs)
+    if public_corpus is not None:
+        require(type(public_corpus) is list and 0 < len(public_corpus) <= 20000, "bounded public corpus")
+        require(all(type(v) is str and 0 < len(v) <= 4096 for v in public_corpus), "invalid public text")
+        excerpts = public_corpus
+        sources["publisher_train_text_inventory"] = digest(public_corpus)
     # Different source windows, not an appended random ID pretending to be new text.
     candidates = list(dict.fromkeys(excerpts))
     require(unique <= len(candidates), "insufficient distinct real excerpts for this workload")
@@ -138,15 +143,20 @@ def run(args):
     source = subprocess.check_output(["git", "-C", str(args.source_root), "rev-parse", "HEAD"],
                                      text=True).strip()
     sha(source, 40)
+    corpus = None
+    if args.source_corpus == "clinc-train":
+        from four_gate_public_replay import read_public_data
+        published, _ = read_public_data(args.output / "publisher")
+        corpus = [entry[0] for entry in published["train"]]
     schedule, payloads, sources = build_schedule(args.source_root, args.cells,
-                                                 args.active_bps, args.repeat_bps)
+        args.active_bps, args.repeat_bps, public_corpus=corpus)
     write_once(args.output / "input-plan.json", {
         "schema": "hepta.four-gate.physical-inputs.v1", "source_sha": source,
         "model": MODEL, "revision": REVISION, "schedule": schedule, "payloads": payloads,
         "source_documents": sources, "arm": args.arm, "max_tokens": args.max_tokens,
         "cells": args.cells, "active_bps": args.active_bps, "repeat_bps": args.repeat_bps,
         "head_seed": 20261011, "input_profile": "question_options_first_truncate_state_v2",
-        "not_a_prospective_efficacy_plan": True})
+        "source_corpus": args.source_corpus, "not_a_prospective_efficacy_plan": True})
     start_cpu, start_wall = time.process_time_ns(), time.perf_counter_ns()
     model, tokenizer, inventory, loading = load_pinned(args.model_dir)
     heads = {i: make_head(torch, torch.nn, "swiglu", 384, len(OPTIONS), 16384)[0].eval()
@@ -158,7 +168,7 @@ def run(args):
     pipeline = digest({"revision": REVISION, "files": inventory, "max_tokens": args.max_tokens,
                        "dtype": "float32", "attention": "eager", "pooling": "masked_mean",
                        "input_profile": "question_options_first_truncate_state_v2",
-                       "source_sha": source})
+                       "source_corpus": args.source_corpus, "source_sha": source})
     state = {}
 
     def prepare(rows, arm):
@@ -213,6 +223,7 @@ def main():
     parser.add_argument("--source-root", type=Path, required=True)
     parser.add_argument("--model-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--source-corpus", choices=("repository", "clinc-train"), default="repository")
     parser.add_argument("--arm", choices=("joint_batch", "feature_reuse"), required=True)
     parser.add_argument("--cells", type=int, choices=(64, 256, 1024, 4096), default=64)
     parser.add_argument("--active-bps", type=int, choices=(500, 2500, 10000), default=10000)

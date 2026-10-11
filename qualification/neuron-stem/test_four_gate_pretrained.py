@@ -51,6 +51,19 @@ class PhysicalCaptureContracts(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "insufficient distinct"):
                 build_schedule(root, 4096, 10000, 0)
 
+    def test_real_corpus_supports_all_36_workload_settings_without_fake_ids(self):
+        corpus = [f"publisher fixture utterance {i}" for i in range(5000)]
+        for cells in (64, 256, 1024, 4096):
+            for active in (500, 2500, 10000):
+                for repeat in (0, 5000, 9000):
+                    rows, payloads, sources = build_schedule(Path("not-read"), cells, active, repeat,
+                                                              public_corpus=corpus)
+                    self.assertEqual(len(rows), len({r["cell_id"] for r in rows}))
+                    self.assertEqual(len({r["state_sha256"] for r in rows}),
+                                     max(1, round(len(rows) * (1 - repeat / 10000))))
+                    self.assertTrue(all(v["state"] in corpus for v in payloads.values()))
+                    self.assertIn("publisher_train_text_inventory", sources)
+
     def test_missing_real_source_is_not_replaced_with_fixture(self):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaisesRegex(ValueError, "missing source"):
