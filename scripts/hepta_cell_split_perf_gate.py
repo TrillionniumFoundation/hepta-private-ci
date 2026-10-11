@@ -17,10 +17,22 @@ SCOPES = (64, 256, 1024, 4096)
 MODES = ("no_split", "logical_split", "optimized_logical_split", "physical_split")
 TRACE_FIELD = "attempted_request_trace_sha256"
 FIELDS = (
-    "attempted", "completed", "elapsed_seconds", "p50_ms", "p95_ms", "p99_ms",
-    "cpu_seconds", "rss_peak_bytes", "communication_bytes",
-    "native_backend_calls", "native_batch_requests", "fsync_count",
-    "lock_wait_ms", "recovery_ms", "failed_requests", "negative_transfer_rate",
+    "attempted",
+    "completed",
+    "elapsed_seconds",
+    "p50_ms",
+    "p95_ms",
+    "p99_ms",
+    "cpu_seconds",
+    "rss_peak_bytes",
+    "communication_bytes",
+    "native_backend_calls",
+    "native_batch_requests",
+    "fsync_count",
+    "lock_wait_ms",
+    "recovery_ms",
+    "failed_requests",
+    "negative_transfer_rate",
 )
 
 
@@ -40,7 +52,9 @@ def positive_number(value: Any, field: str, *, allow_zero: bool = True) -> float
 def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str, Any]:
     if packet.get("schema") != "hepta.cell-split.performance.v1":
         raise InvalidEvidence("unsupported schema")
-    if not isinstance(packet.get("source_sha"), str) or not re.fullmatch(r"[0-9a-f]{40}", packet["source_sha"]):
+    if not isinstance(packet.get("source_sha"), str) or not re.fullmatch(
+        r"[0-9a-f]{40}", packet["source_sha"]
+    ):
         raise InvalidEvidence("missing exact 40-character source SHA")
     for field in ("hardware_id", "model_digest", "workload_digest"):
         if not isinstance(packet.get(field), str) or not packet[field]:
@@ -49,7 +63,9 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         raise InvalidEvidence("p99 regression limit must be in [0,1)")
     raw = packet.get("runs")
     if not isinstance(raw, list) or len(raw) != len(SCOPES) * len(MODES):
-        raise InvalidEvidence("requires exactly four modes at each of four scope counts")
+        raise InvalidEvidence(
+            "requires exactly four modes at each of four scope counts"
+        )
 
     measurements: dict[tuple[int, str], dict[str, Any]] = {}
     for entry in raw:
@@ -64,16 +80,27 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
             raise InvalidEvidence(f"duplicate run {key}")
         trace = entry.get(TRACE_FIELD)
         if not isinstance(trace, str) or not re.fullmatch(r"[0-9a-f]{64}", trace):
-            raise InvalidEvidence(f"{scope}/{mode}: missing canonical attempted request trace SHA-256")
+            raise InvalidEvidence(
+                f"{scope}/{mode}: missing canonical attempted request trace SHA-256"
+            )
         vals = {
-            field: positive_number(entry.get(field), f"{scope}/{mode}/{field}",
-                                   allow_zero=field not in ("attempted", "completed", "elapsed_seconds"))
+            field: positive_number(
+                entry.get(field),
+                f"{scope}/{mode}/{field}",
+                allow_zero=field not in ("attempted", "completed", "elapsed_seconds"),
+            )
             for field in FIELDS
         }
         vals[TRACE_FIELD] = trace
-        for field in ("attempted", "completed", "communication_bytes",
-                      "native_backend_calls", "native_batch_requests",
-                      "fsync_count", "failed_requests"):
+        for field in (
+            "attempted",
+            "completed",
+            "communication_bytes",
+            "native_backend_calls",
+            "native_batch_requests",
+            "fsync_count",
+            "failed_requests",
+        ):
             if not vals[field].is_integer():
                 raise InvalidEvidence(f"{scope}/{mode}/{field}: expected integer")
         if vals["completed"] + vals["failed_requests"] != vals["attempted"]:
@@ -83,18 +110,23 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         if vals["native_batch_requests"] > vals["completed"]:
             raise InvalidEvidence(f"{key}: impossible native batch accounting")
         if vals["native_batch_requests"] and not vals["native_backend_calls"]:
-            raise InvalidEvidence(f"{key}: native batch requests without a backend call")
+            raise InvalidEvidence(
+                f"{key}: native batch requests without a backend call"
+            )
         if vals["negative_transfer_rate"] > 1:
             raise InvalidEvidence(f"{key}: negative-transfer rate is not a fraction")
         vals["throughput_rps"] = vals["completed"] / vals["elapsed_seconds"]
         vals["cpu_per_request_s"] = vals["cpu_seconds"] / vals["completed"]
-        vals["communication_per_request_bytes"] = vals["communication_bytes"] / vals["completed"]
+        vals["communication_per_request_bytes"] = (
+            vals["communication_bytes"] / vals["completed"]
+        )
         vals["fsync_per_request"] = vals["fsync_count"] / vals["completed"]
         vals["lock_wait_per_request_ms"] = vals["lock_wait_ms"] / vals["completed"]
         vals["failure_rate"] = vals["failed_requests"] / vals["attempted"]
         vals["native_batch_requests_per_call"] = (
             vals["native_batch_requests"] / vals["native_backend_calls"]
-            if vals["native_backend_calls"] else 0.0
+            if vals["native_backend_calls"]
+            else 0.0
         )
         measurements[key] = vals
     if len(measurements) != 16:
@@ -105,7 +137,9 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
     if len({row[TRACE_FIELD] for row in measurements.values()}) != 1:
         raise InvalidEvidence("all sixteen runs must use the same frozen request trace")
     if len({row["attempted"] for row in measurements.values()}) != 1:
-        raise InvalidEvidence("all sixteen runs must attempt the same frozen workload size")
+        raise InvalidEvidence(
+            "all sixteen runs must attempt the same frozen workload size"
+        )
 
     comparisons = []
     violations = []
@@ -116,27 +150,46 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
         physical = measurements[(scope, "physical_split")]
         # All four modes must attempt the same frozen workload. Otherwise
         # performance gains could be manufactured by dropping difficult work.
-        if len({baseline["attempted"], logical["attempted"],
-                optimized["attempted"], physical["attempted"]}) != 1:
+        if len(
+            {
+                baseline["attempted"],
+                logical["attempted"],
+                optimized["attempted"],
+                physical["attempted"],
+            }
+        ) != 1:
             raise InvalidEvidence(f"{scope}: modes attempted different request counts")
-        comparisons.append({
-            "scopes": scope,
-            "no_split": baseline,
-            "logical_split": logical,
-            "optimized_logical_split": optimized,
-            "physical_split": physical,
-            "optimized_throughput_ratio": optimized["throughput_rps"] / logical["throughput_rps"],
-            "physical_throughput_ratio": physical["throughput_rps"] / baseline["throughput_rps"],
-        })
+        comparisons.append(
+            {
+                "scopes": scope,
+                "no_split": baseline,
+                "logical_split": logical,
+                "optimized_logical_split": optimized,
+                "physical_split": physical,
+                "optimized_throughput_ratio": (
+                    optimized["throughput_rps"] / logical["throughput_rps"]
+                ),
+                "physical_throughput_ratio": (
+                    physical["throughput_rps"] / baseline["throughput_rps"]
+                ),
+            }
+        )
         # Tighten against the logical-split control, not a different workload.
         if optimized["throughput_rps"] < logical["throughput_rps"]:
             violations.append(f"{scope}: optimized throughput below logical split")
         for percentile in ("p50_ms", "p95_ms", "p99_ms"):
             if optimized[percentile] > logical[percentile] * (1 + max_p99_regression):
-                violations.append(f"{scope}: optimized {percentile.removesuffix('_ms')} regressed")
-        for key in ("cpu_per_request_s", "communication_per_request_bytes",
-                    "fsync_per_request", "lock_wait_per_request_ms",
-                    "rss_peak_bytes", "recovery_ms"):
+                violations.append(
+                    f"{scope}: optimized {percentile.removesuffix('_ms')} regressed"
+                )
+        for key in (
+            "cpu_per_request_s",
+            "communication_per_request_bytes",
+            "fsync_per_request",
+            "lock_wait_per_request_ms",
+            "rss_peak_bytes",
+            "recovery_ms",
+        ):
             if optimized[key] > logical[key]:
                 violations.append(f"{scope}: optimized {key} regressed")
         if optimized["failure_rate"] > logical["failure_rate"]:
@@ -151,7 +204,9 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
             violations.append(f"{scope}: physical throughput below no-split")
         for percentile in ("p50_ms", "p95_ms", "p99_ms"):
             if physical[percentile] > baseline[percentile] * (1 + max_p99_regression):
-                violations.append(f"{scope}: physical {percentile.removesuffix('_ms')} regressed")
+                violations.append(
+                    f"{scope}: physical {percentile.removesuffix('_ms')} regressed"
+                )
         for key in ("cpu_per_request_s", "communication_per_request_bytes",
                     "fsync_per_request", "lock_wait_per_request_ms",
                     "rss_peak_bytes", "recovery_ms"):
