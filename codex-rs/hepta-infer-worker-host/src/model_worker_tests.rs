@@ -5,6 +5,7 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    excessive_neuron_transient: bool,
     loaded: usize,
 }
 
@@ -78,7 +79,11 @@ impl NeuronFeatureDriver for Driver {
             drive_q24: vec![1 << 24; request.expected_output_width],
             prediction_q24: vec![0; request.expected_output_width],
             observed_memory_bytes: 1_024,
-            transient_allocation_bytes: 2_048,
+            transient_allocation_bytes: if self.excessive_neuron_transient {
+                4_096
+            } else {
+                2_048
+            },
             queue_age_micros: 11,
             latency_micros: 17,
         })
@@ -629,5 +634,34 @@ fn neuron_feature_runtime_enforces_real_model_and_reservation_token_ceilings() {
             100, &source, &access, head, &features, auth
         ),
         Err(Error::TokenLimit)
+    );
+}
+
+
+#[test]
+fn neuron_driver_total_reported_peak_cannot_bypass_memory_resource_grant() {
+    let driver = Driver {
+        excessive_neuron_transient: true,
+        ..Driver::default()
+    };
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.memory".to_string(),
+        3,
+        grant(),
+        driver,
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCapacity)
+    );
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    assert_eq!(
+        worker.run_bound_stem_feature_receipt_v1(
+            100, &source, &access, head, &features, auth
+        ),
+        Err(Error::ModelCapacity)
     );
 }
