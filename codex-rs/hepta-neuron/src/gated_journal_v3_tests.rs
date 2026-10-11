@@ -255,7 +255,11 @@ fn external_witness_is_required_to_detect_full_valid_suffix_loss() {
     let f = fixture.reopen();
     checked(f.set_len(len - frame_length(&config()) as u64));
     drop(f);
-    let weaker = fixture.open();
+    assert_eq!(
+        GatedSparseJournalV3::open(fixture.reopen(), config(), scope(), 16).err(),
+        Some(GatedJournalErrorV3::ExistingJournalRequiresAnchor)
+    );
+    let weaker = checked(fixture.open_anchored(ack2));
     assert_eq!(checked(weaker.current_anchor()), Some(ack2));
     drop(weaker);
     assert_eq!(
