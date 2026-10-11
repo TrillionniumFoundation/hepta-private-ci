@@ -65,7 +65,7 @@ fn digest(s: &str) -> Digest32 {
     Digest32::of_bytes(s.as_bytes())
 }
 
-fn gen(value: u64) -> Generation {
+fn generation(value: u64) -> Generation {
     Generation::new(value).expect("generation")
 }
 
@@ -75,8 +75,8 @@ fn plan() -> crate::WriterHandoffPlanV1 {
         domain_id: id("scope.writer"),
         source_writer: id("writer.old"),
         target_writer: id("writer.new"),
-        old_generation: gen(7),
-        new_generation: gen(8),
+        old_generation: generation(7),
+        new_generation: generation(8),
         authority_epoch: 11,
         migration_plan_digest: digest("original migration plan"),
         schema_digest: digest("original state schema"),
@@ -90,8 +90,8 @@ fn binding() -> CellSplitFinalizationBindingV1 {
         domain_id: plan().domain_id,
         source_writer: plan().source_writer,
         target_writer: plan().target_writer,
-        old_generation: gen(7),
-        new_generation: gen(8),
+        old_generation: generation(7),
+        new_generation: generation(8),
         authority_epoch: 11,
         migration_plan_digest: plan().migration_plan_digest,
         schema_digest: plan().schema_digest,
