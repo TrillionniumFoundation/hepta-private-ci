@@ -102,7 +102,7 @@ class DiagnosisTests(unittest.TestCase):
 
     def test_head_update_claim_cannot_be_invented_from_counter(self):
         data, skipped, features, adapters = inputs()
-        data["report"]["learning"][1]["receipt"]["tensor_delta_squared_norm"] = 0.0
+        data["report"]["learning"][2]["receipt"]["tensor_delta_squared_norm"] = 0.0
         with self.assertRaisesRegex(AuditError, "tensor delta"):
             check(data, skipped, features, adapters)
 
