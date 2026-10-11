@@ -156,3 +156,45 @@ a batch request API or from the number of logical Cells.
 For **L4/L5**, require independent signed evaluator/selection/execution
 receipts, negative-transfer and subgroup floors, revocation reconciliation,
 and measured NDU gain. These gates are not implemented by this research module.
+
+## Dual selected CAS: Projection **and** Cell Head Bank (L1 extension)
+
+The original CAS reader pinning the Projection only was insufficient to
+authenticate the CPU Head's independently trainable weights. The native Worker
+now also provides `SelectedStemHeadBankReaderV1`:
+
+- `encode_cpu_head_bank_candidate_v1` is a pure, bounded, canonical JSON
+  encoder for 1–32 distinct Q24 Heads (at most 16 MiB of candidate bytes).
+  Python `native_bridge.encode_cpu_head_bank_candidate` produces matching
+  bytes and SHA-256 domain-separated weight identities. This is not a CAS
+  publication operation and creates no authority.
+- The Head bank must have its **own** exact immutable Artifact CAS payload,
+  independently signed selection, and owner-signed CURRENT. It checks the
+  artifact's compatibility digest against the recomputed bank weight digest.
+  Duplicate, reordered, tampered, noncanonical, oversized or non-finite Head
+  content is rejected before installing or executing the candidate.
+- The externally callable combined model-only path requires **both**
+  Projection and Head bank CURRENT/selection checks, identical Scope,
+  Generation, revocation frontier, Encoder and exact Worker bundle weights,
+  and a pre-existing admitted `NeuronFeatureRequest`. It recomputes the Q24
+  projected input from the complete source feature, instead of trusting a
+  caller-provided projected buffer. The Projection-only CPU dispatch helper
+  is crate-private to reduce the bypass surface.
+- Head bank provenance is emitted only after successful non-effectful CPU
+  execution and is always `production_authorized=false`. Any failure seals
+  the Head bank reader; both banks must be independently reloaded after a
+  revoked/corrected artifact. Signed head selections cannot authorize tools,
+  provider calls, training, route cutovers, or checkpoint commits.
+- `CALLERS.toml` explicitly registers the newly privileged
+  `RevalidatingCandidate::with_current` call site. The test uses real
+  Ed25519 owner/selector signatures, genuine create-only candidate storage,
+  two registry manifests, genuine Q24 CPU arithmetic, and head revocation.
+
+**Still blocked:** The test authority is a fixture, not production. The
+Owner must serialize both CURRENT views, revocation publication, Worker
+dispatch, Artifact and Head lifecycle, independent Final-use and WAL recovery
+under a shared live fence. The Rust CPU Head uses already supplied f32
+features; real audited mmBERT/ModernBERT/Jina weights and target-host
+64–4096 Cell measurements remain unverified. No benchmark or NDU claim
+follows from these L1 tests.
+
