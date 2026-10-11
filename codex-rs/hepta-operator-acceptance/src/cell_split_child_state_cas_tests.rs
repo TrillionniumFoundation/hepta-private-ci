@@ -1,25 +1,42 @@
 use std::fs;
 use std::os::unix::net::UnixListener;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 
-use codex_hepta_neuron::{
-    CellStateSplitPlanV1 as NeuronSplitPlan, SparseConfig, SparseTick,
-    canonical_partition_digest_v1, sparse_tick,
-};
-use codex_hepta_types::{
-    CellBundleBindingV1, CellBundleInheritanceV1, CellBundleModeV1, CellCachePolicyV1,
-    CellChildPortBindingV1, CellChildV1, CellInFlightPolicyV1, CellParentDispositionV1,
-    CellParentRetirementPlanV1, CellPortCompatibilityV1, CellResourceDeltaV1, CellRouteModeV1,
-    CellSplitEvaluationBindingV1, CellSplitV1, CellStateSplitPlanV1 as SemanticStatePlan,
-    CellStateTransformKindV1, CellStateTransformV1, Generation, StableId,
-};
+use codex_hepta_neuron::CellStateSplitPlanV1 as NeuronSplitPlan;
+use codex_hepta_neuron::SparseConfig;
+use codex_hepta_neuron::SparseTick;
+use codex_hepta_neuron::canonical_partition_digest_v1;
+use codex_hepta_neuron::sparse_tick;
+use codex_hepta_types::CellBundleBindingV1;
+use codex_hepta_types::CellBundleInheritanceV1;
+use codex_hepta_types::CellBundleModeV1;
+use codex_hepta_types::CellCachePolicyV1;
+use codex_hepta_types::CellChildPortBindingV1;
+use codex_hepta_types::CellChildV1;
+use codex_hepta_types::CellInFlightPolicyV1;
+use codex_hepta_types::CellParentDispositionV1;
+use codex_hepta_types::CellParentRetirementPlanV1;
+use codex_hepta_types::CellPortCompatibilityV1;
+use codex_hepta_types::CellResourceDeltaV1;
+use codex_hepta_types::CellRouteModeV1;
+use codex_hepta_types::CellSplitEvaluationBindingV1;
+use codex_hepta_types::CellSplitV1;
+use codex_hepta_types::CellStateSplitPlanV1 as SemanticStatePlan;
+use codex_hepta_types::CellStateTransformKindV1;
+use codex_hepta_types::CellStateTransformV1;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 use ed25519_dalek::SigningKey;
 
 use super::*;
-use crate::{CellSplitEffectServiceV1, CellSplitExecutionPortV1, CellSplitUnixEffectPortV1};
+use crate::CellSplitEffectServiceV1;
+use crate::CellSplitExecutionPortV1;
+use crate::CellSplitUnixEffectPortV1;
 
 const Q: i64 = 1 << 24;
 fn id(value: &str) -> StableId {
@@ -514,10 +531,10 @@ fn signed_migration_rpc_requires_reopening_real_child_bytes() {
 /// neither can be inferred from the earlier Artifact + migration commits.
 #[test]
 fn coordinator_executes_real_artifact_and_child_migration_then_fences_cns() {
-    use crate::{
-        CellSplitArtifactCasOwnerV1, CellSplitCasFinalUsePortV1, CellSplitExecutionOwnerV1,
-        CellSplitOwnerTrustV1,
-    };
+    use crate::CellSplitArtifactCasOwnerV1;
+    use crate::CellSplitCasFinalUsePortV1;
+    use crate::CellSplitExecutionOwnerV1;
+    use crate::CellSplitOwnerTrustV1;
     use std::io::ErrorKind;
     use std::os::unix::fs::PermissionsExt as _;
 
