@@ -933,7 +933,6 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
     );
 }
 
-
 #[cfg(unix)]
 fn reopen_signed_stem_test_authority(
     directory: &tempfile::TempDir,
@@ -969,14 +968,7 @@ fn signed_stem_nonce_cannot_replay_after_authority_reopen() {
     worker.load_model(100, manifest()).expect("loaded");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
     let binding = worker
-        .expected_stem_final_use_binding_v1(
-            100,
-            &source,
-            &access,
-            head.clone(),
-            &features,
-            &auth,
-        )
+        .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
         .expect("fully scoped Worker binding");
 
     let (authority, signed, directory) = signed_stem_final_use_fixture(binding.clone());
@@ -1005,11 +997,8 @@ fn signed_stem_nonce_cannot_replay_after_authority_reopen() {
     assert!(!outcome.authority.grants_any());
     drop(authority);
 
-    let reopened = reopen_signed_stem_test_authority(
-        &directory,
-        signed.grant.signer_id.clone(),
-        1,
-    );
+    let signer_id = signed.grant.signer_id.clone();
+    let reopened = reopen_signed_stem_test_authority(&directory, signer_id, 1);
     assert_eq!(
         reopened.claim(&signed, &binding).unwrap_err(),
         codex_hepta_contracts::FinalUseError::AlreadyClaimed,
@@ -1031,14 +1020,7 @@ fn claimed_nonce_remains_consumed_when_worker_never_entered() {
     worker.load_model(100, manifest()).expect("loaded");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
     let binding = worker
-        .expected_stem_final_use_binding_v1(
-            100,
-            &source,
-            &access,
-            head,
-            &features,
-            &auth,
-        )
+        .expected_stem_final_use_binding_v1(100, &source, &access, head, &features, &auth)
         .expect("frozen complete signed request");
 
     let (authority, signed, directory) = signed_stem_final_use_fixture(binding.clone());
@@ -1049,11 +1031,8 @@ fn claimed_nonce_remains_consumed_when_worker_never_entered() {
     // dispatch. It is a clean owner reopen, NOT a power-loss recovery test.
     drop(claim);
     drop(authority);
-    let reopened = reopen_signed_stem_test_authority(
-        &directory,
-        signed.grant.signer_id.clone(),
-        1,
-    );
+    let signer_id = signed.grant.signer_id.clone();
+    let reopened = reopen_signed_stem_test_authority(&directory, signer_id, 1);
     assert_eq!(
         reopened.claim(&signed, &binding).unwrap_err(),
         codex_hepta_contracts::FinalUseError::AlreadyClaimed,
