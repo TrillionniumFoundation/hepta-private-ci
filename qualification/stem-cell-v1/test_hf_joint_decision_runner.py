@@ -1,0 +1,127 @@
+"""No-model HF Decision Head contract tests; never counted as real weights."""
+import copy
+import hashlib
+import importlib.util
+import tempfile
+import unittest
+from pathlib import Path
+from types import SimpleNamespace
+
+from hf_joint_decision_runner import (
+    HF_KEYS, build_head, head_sha256, head_width, render_joint,
+    snapshot_validation, train_head, vectorize_case,
+)
+
+
+class DecisionHeadContractTests(unittest.TestCase):
+    def test_full_ordered_input_contains_every_option_but_not_gold_label(self):
+        row = {"state": "state", "question": "what next",
+               "options": ["go", "stay"], "label": 999}
+        rendered = render_joint(row)
+        self.assertIn("Option 0: go", rendered)
+        self.assertIn("Option 1: stay", rendered)
+        self.assertNotIn("999", rendered)
+        self.assertLess(rendered.index("go"), rendered.index("stay"))
+        invalid = dict(row)
+        invalid["options"] = ["go", ""]
+        with self.assertRaisesRegex(ValueError, "empty legal"):
+            render_joint(invalid)
+
+    def test_physical_parameters_fit_and_unsupported_model_rejected(self):
+        self.assertEqual(HF_KEYS, {"deberta_v3_large", "modernbert_large"})
+        width, count = head_width(1024, 2, 262144)
+        self.assertEqual(count, width * (1024 + 2 + 1) + 2)
+        self.assertLessEqual(count, 262144)
+        self.assertGreater(count, 260000)
+        with self.assertRaisesRegex(ValueError, "budget"):
+            head_width(1024, 3, 3)
+
+    def test_unapproved_model_revision_denied_before_model_load(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            snapshot = root / "weights"
+            snapshot.mkdir()
+            (snapshot / "config.json").write_text("{}")
+            dataset = root / "dataset"
+            dataset.write_text("{}")
+            dataset_sha = hashlib.sha256(dataset.read_bytes()).hexdigest()
+            args = SimpleNamespace(
+                model_key="wrong", upstream_revision="a" * 40,
+                expected_snapshot_sha256="b" * 64,
+                expected_dataset_sha256=dataset_sha,
+                license_approved=True, adapter_reviewed=True,
+                dtype="fp32", train_steps=100, batch_size=16,
+                context_tokens=512, trainable_budget=262144,
+                seed=7347, snapshot=str(snapshot),
+                dataset=str(dataset), output=str(root / "out"),
+            )
+            with self.assertRaisesRegex(ValueError, "only DeBERTa"):
+                snapshot_validation(args)
+            args.model_key = "deberta_v3_large"
+            args.license_approved = False
+            with self.assertRaisesRegex(ValueError, "license"):
+                snapshot_validation(args)
+            args.license_approved = True
+            args.upstream_revision = "unversioned-main"
+            with self.assertRaisesRegex(ValueError, "pinned"):
+                snapshot_validation(args)
+
+
+@unittest.skipUnless(importlib.util.find_spec("torch") is not None,
+                     "optional CPU PyTorch is not installed")
+class TorchHeadEvidenceTests(unittest.TestCase):
+    def test_padding_mask_is_respected_and_no_silent_truncation(self):
+        import torch
+
+        class Tokenizer:
+            def __call__(self, text, return_tensors, truncation):
+                return {"input_ids": torch.tensor([[0, 3, 4]]),
+                        "attention_mask": torch.tensor([[0, 1, 1]])}
+
+        class Model:
+            def __call__(self, **_kwargs):
+                return SimpleNamespace(last_hidden_state=torch.tensor(
+                    [[[999., 999.], [2., 4.], [4., 6.]]]))
+
+        row = {"state": "state", "question": "question",
+               "options": ["x", "y"]}
+        value, n_tokens = vectorize_case(
+            torch, Model(), Tokenizer(), row, "cpu", max_tokens=2)
+        self.assertEqual(n_tokens, 2)
+        self.assertEqual(value.tolist(), [3., 5.])
+        with self.assertRaisesRegex(ValueError, "no silent truncation"):
+            vectorize_case(torch, Model(), Tokenizer(), row, "cpu", max_tokens=1)
+
+    def test_actual_head_update_changes_weights_within_exact_budget(self):
+        import torch
+        torch.manual_seed(1234)
+        head, params = build_head(torch, 16, 2, 2048)
+        initial = head_sha256(head)
+        features = torch.randn(10, 16)
+        labels = torch.randint(0, 2, (10,))
+        learned = train_head(
+            torch, head, features, labels,
+            batch_size=4, steps=5, seed=7347)
+        self.assertNotEqual(initial, learned)
+        self.assertLessEqual(params, 2048)
+        self.assertEqual(len(learned), 64)
+        self.assertFalse(any(p.grad is None for p in head.parameters()))
+
+    def test_same_seed_data_and_initialization_replays_identically(self):
+        import torch
+        torch.manual_seed(2)
+        head, _ = build_head(torch, 8, 2, 2048)
+        control = copy.deepcopy(head)
+        features = torch.randn(8, 8)
+        labels = torch.tensor([0, 1, 1, 0, 1, 0, 0, 1])
+        first = train_head(
+            torch, head, features, labels,
+            batch_size=4, steps=5, seed=7347)
+        second = train_head(
+            torch, control, features, labels,
+            batch_size=4, steps=5, seed=7347)
+        self.assertEqual(first, second)
+
+
+if __name__ == "__main__":
+    unittest.main()
