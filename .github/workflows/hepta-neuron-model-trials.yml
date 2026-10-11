@@ -42,7 +42,7 @@ jobs:
             --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
             --output "$RUNNER_TEMP/hepta-neuron-upstream-metadata.json"
           /tmp/hepta-neuron-trial-venv/bin/python scripts/hepta_neuron_physical_receipt_verify.py \
-            --directory qualification/neuron-model-trials/physical-smoke-receipts/run-38095795540 \
+            --directory "$GITHUB_WORKSPACE/qualification/neuron-model-trials/physical-smoke-receipts/run-38095795540" \
             --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
             --expected-run-id 38095795540 \
             --expected-source-sha 5b542e100368f2e1aefeba6de7a156e19af27282 \
