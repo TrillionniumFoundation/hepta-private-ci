@@ -22,8 +22,9 @@ The durable order is:
 5. FinalUseReady: observe a live independently signed final-use grant for this
    exact split/scope/generation; the executor cannot create it
 6. SupervisorFence: durably disable parent generation writes
-7. CnsRouteCutover: check/consume final-use at the final-use boundary and
-   compare-and-swap the real CNS route against the pinned parent generation
+7. CnsRouteCutover: reverify the exact accepted selector receipt and
+   signed Final-use evidence, check/consume Final-use at the real effect boundary,
+   and compare-and-swap the CNS route against the pinned parent generation
 
 Every step first durably records pending intent. It then obtains a current
 authoritative readback. The executor may issue mutation only after an
@@ -43,8 +44,13 @@ the external owner first; it must not replay effects blindly.
 
 On all re-entries, previous accepted steps are checked against current
 authoritative state and their retained raw receipts; drift fails closed.
-Selection and final-use remain external and cannot be auto-issued. Cutover is
-never treated as completed merely because a candidate graph digest exists.
+Selection and final-use remain external and cannot be auto-issued. Cutover
+receives the two exact retained external evidence bodies and must verify
+freshness, revocation and one-time consumption against independent authority
+at the mutation boundary. A once-valid grant may become spent: after cutover,
+`observe` must verify its signed issuance/consumption history rather than
+requiring the grant to remain unconsumed. Cutover is never treated as completed
+merely because a candidate graph digest exists.
 
 ## Ledger and recovery
 
