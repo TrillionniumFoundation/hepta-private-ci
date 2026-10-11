@@ -73,7 +73,10 @@ def pinned_original(archive):
             "not the original complete 576-policy Reader census",
         )
         observed[key] = row
-    require(len(observed) == len(expected) == 576, "missing originally sealed answer")
+    require(
+        len(observed) == len(expected) == 576,
+        "not the original complete 576-policy Reader census: missing originally sealed answer",
+    )
     frozen = {}
     for phase in PHASES:
         for qid in plan["questions"][phase]:
