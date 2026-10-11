@@ -6,6 +6,8 @@ on:
     paths:
       - 'codex-rs/hepta-infer-core/**'
       - 'codex-rs/hepta-infer-worker-host/**'
+      - 'codex-rs/hepta-context-compiler/**'
+      - 'codex-rs/hepta-memory/**'
       - 'codex-rs/hepta-agentd/src/test_support.rs'
       - 'qualification/neuron-stem/stem_worker_binding.py'
       - 'qualification/neuron-stem/test_stem_worker_binding.py'
@@ -59,6 +61,8 @@ jobs:
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
       - name: Exact source formatting
         run: cargo +1.95.0 fmt --all -- --check
+      - name: Strict owner and transitive dependency Clippy (before heavyweight E2E)
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings
       - name: Build the exact-source Codex App Server executable for real Agentd E2E
         run: |
           cargo +1.95.0 build --locked -p codex-app-server --bin codex-app-server
@@ -67,5 +71,3 @@ jobs:
         env:
           HEPTA_TEST_CODEX_EXECUTABLE: ${{ github.workspace }}/codex-rs/target/debug/codex-app-server
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --lib
-      - name: Strict owner crate Clippy
-        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings

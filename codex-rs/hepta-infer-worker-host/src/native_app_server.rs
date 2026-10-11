@@ -1434,6 +1434,23 @@ fn observe_event(
             }
             output.output.push_str(&delta.delta);
         }
+        // A Responses provider may supply a complete assistant message without
+        // any text delta. The App Server reports that as ItemCompleted. Do not
+        // silently present a successful turn as empty when the exact matching
+        // item contains bounded text. A streamed prefix wins to avoid replaying
+        // the full item and double-counting output bytes.
+        ServerNotification::ItemCompleted(item)
+            if item.thread_id == output.thread_id && item.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { text, .. } = &item.item
+                && output.output.is_empty()
+            {
+                if text.len() > MAX_OUTPUT_BYTES {
+                    return Err("output byte limit exceeded".to_string());
+                }
+                output.output.push_str(text);
+            }
+        }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
         {
@@ -1450,6 +1467,20 @@ fn observe_event(
         ServerNotification::TurnCompleted(completed)
             if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>
         {
+            // The final turn snapshot can carry full assistant items even if
+            // streamed delta/item events were missed during subscription.
+            // Only a matching actual terminal notification may supply this
+            // fallback; it cannot invent terminal success or Owner authority.
+            if output.output.is_empty() {
+                for item in &completed.turn.items {
+                    if let ThreadItem::AgentMessage { text, .. } = item {
+                        if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
+                            return Err("output byte limit exceeded".to_string());
+                        }
+                        output.output.push_str(text);
+                    }
+                }
+            }
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;

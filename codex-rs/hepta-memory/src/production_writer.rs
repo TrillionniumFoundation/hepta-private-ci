@@ -34,6 +34,7 @@ use crate::CognitiveAccess;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::CognitiveWriteReceipt;
+use crate::cognitive_intelligence_writer::CognitiveCorrectionTarget;
 use crate::ForgetMemoryDraft;
 use crate::KgFactSetDraft;
 use crate::LocalAdmission;
@@ -1608,8 +1609,10 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
                 .correct_with_kg_tx(
                     &mut transaction,
                     access,
-                    memory_id,
-                    expected_revision,
+                    CognitiveCorrectionTarget {
+                        memory_id,
+                        expected_revision,
+                    },
                     source,
                     draft,
                     facts,
