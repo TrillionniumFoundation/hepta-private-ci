@@ -947,12 +947,13 @@ mod tests {
             vec![3 * Q24 / 2]
         );
         assert_eq!(
-            driver.compute_parts(
-                &digest, &"a".repeat(64), &[Q24, Q24], 1, Some("cell.other")
-            ),
+            driver.compute_parts(&digest, &"a".repeat(64), &[Q24, Q24], 1, Some("cell.other")),
             Err(Error::FeatureOutputMismatch)
         );
-        assert_eq!(driver.register_dynamic_head(candidate), Err(Error::ActiveRequests));
+        assert_eq!(
+            driver.register_dynamic_head(candidate),
+            Err(Error::ActiveRequests)
+        );
         assert!(driver.verify_loaded(&handle).is_ok());
     }
 
