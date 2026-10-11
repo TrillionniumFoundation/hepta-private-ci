@@ -14,7 +14,6 @@ use codex_extension_api::ExtensionMetrics;
 use codex_extension_api::ModelProviderPolicyError;
 use codex_extension_api::ModelProviderPolicyFuture;
 use codex_extension_api::ModelProviderRequestKind;
-use codex_extension_api::ModelProviderSha256Digest;
 use codex_extension_api::TurnInputContext;
 use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
@@ -859,12 +858,6 @@ fn federation_source_binding(
             content_sha256.as_str().as_bytes(),
         ],
     ))
-}
-
-fn api_digest(
-    digest: &Sha256Digest,
-) -> Result<ModelProviderSha256Digest, ModelProviderPolicyError> {
-    ModelProviderSha256Digest::parse(digest.as_str())
 }
 
 fn final_use_capability_window_current(
