@@ -3,6 +3,7 @@ use std::sync::Arc;
 use codex_hepta_operator_acceptance::CellSplitCnsRuntimePortV1;
 use codex_hepta_paths::HeptaStateRoot;
 use ed25519_dalek::{Signer as _, SigningKey};
+use sha2::{Digest as _, Sha256};
 
 use crate::{RuntimeStateAdapter, RuntimeStateStatus};
 
@@ -207,4 +208,23 @@ fn stale_nonce_and_wrong_runtime_signer_fail_before_any_cutover() {
     let (_, plan, binding, _, mut forged) =
         fixture(false, false, trusted, SigningKey::from_bytes(&[44; 32]));
     assert!(forged.inspect_live(&binding.cns_id, &plan.scope_digest, &"ab".repeat(32)).is_err());
+}
+
+
+#[test]
+fn preflight_pass_without_signed_successor_cannot_mutate_real_runtime() {
+    let key = SigningKey::from_bytes(&[45; 32]);
+    let (runtime, plan, binding, intent, mut port) =
+        fixture(false, false, key.clone(), key);
+    let before = runtime.topology_snapshot().expect("serving CNS");
+    port.verify_preconditions(&plan, &intent).expect("preflight allowed");
+    assert!(
+        port.publish_once(&plan, &binding, &intent).is_err(),
+        "missing independently signed final-use grant must stop cutover",
+    );
+    assert_eq!(
+        runtime.topology_snapshot().expect("still serving predecessor"),
+        before,
+    );
+    assert!(port.read_original_commit(&intent.idempotency_key).unwrap().is_none());
 }
