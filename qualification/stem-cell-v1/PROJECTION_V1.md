@@ -101,6 +101,16 @@ revocation frontier and exact already-authorized Q24 payload. Any failed check
 revocation fails closed. The Rust regression uses an actual Ed25519 fixture,
 create-only CAS files, signed CURRENT snapshots and an independent selector.
 
+The separate typed `StemCpuHeadUseV1` route can execute the **actual local
+Q24 CPU Head** inside `RevalidatingCandidate::with_current`, after the exact
+independent signed selection, current registry view, source feature binding and
+pre-existing Worker request have passed their checks. Its non-authoritative
+`NeuronFeatureReceiptV1` proves observed **model-only CPU math** in the Rust
+test, not pretrained text encoding or permission to use tools. No signature,
+cache lease, or Final-use right is manufactured by this route. A failure seals
+the reader and prevents a prior signed CURRENT or projected vector from
+reviving it.
+
 **Not a production atomicity claim:** a caller can retain an old already
 verified CURRENT value. A *production* owner must acquire the newest signed
 CURRENT from its authority service immediately before each use and serialize
