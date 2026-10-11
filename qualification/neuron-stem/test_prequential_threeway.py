@@ -91,6 +91,7 @@ class PrequentialThreeWayTests(unittest.TestCase):
         self.trial = {
             "schema": "hepta.jina-v5-cell-prequential-shadow.v1",
             "model": "jina-v5-text-nano", "revision": "d" * 40,
+            "generation": 1, "feature_manifest_digest": "c" * 64,
             "task_id": "decision",
             "production_promotion_permitted": False,
             "independent_ndu_signature_verified": False,
@@ -158,6 +159,8 @@ class PrequentialThreeWayTests(unittest.TestCase):
                     "probabilities": probs, "model_id": model_id,
                     "model_revision": revision, "weights_digest": weights,
                     "generation": generation,
+                    **({"feature_manifest_digest": self.trial["feature_manifest_digest"]}
+                       if arm != "no_change" else {}),
                     "status": "Succeeded", "production_promotion_permitted": False,
                 })
         return receipts
@@ -187,6 +190,11 @@ class PrequentialThreeWayTests(unittest.TestCase):
         for change, error in (
                 (lambda xs: xs.pop(), "full three-arm"),
                 (lambda xs: xs[0].update({"generation": 9}), "weight or generation"),
+                (lambda xs: next(row for row in xs if row["arm"] == "trained")
+                 .update({"generation": 9}), "weight or generation"),
+                (lambda xs: next(row for row in xs if row["arm"] == "frozen")
+                 .update({"feature_manifest_digest": "a" * 64}),
+                 "weight or generation"),
                 (lambda xs: xs[0].update({"input_digest": "0" * 64}), "source/Cell"),
                 (lambda xs: xs[0].update({"label": 0}), "smuggle outcome"),
                 (lambda xs: xs[0].update({"production_promotion_permitted": True}),
@@ -196,6 +204,16 @@ class PrequentialThreeWayTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, error):
                 offline_threeway_ood_diagnostic(
                     self.rows, self.trial, ("e" * 40, "f" * 64, 1), invalid)
+        incomplete = copy.deepcopy(self.trial)
+        incomplete.pop("generation")
+        with self.assertRaisesRegex(ValueError, "pinned Stem/Cell generation"):
+            offline_threeway_ood_diagnostic(
+                self.rows, incomplete, ("e" * 40, "f" * 64, 1), records)
+        incomplete = copy.deepcopy(self.trial)
+        incomplete["feature_manifest_digest"] = "invalid"
+        with self.assertRaisesRegex(ValueError, "immutable SHA identity"):
+            offline_threeway_ood_diagnostic(
+                self.rows, incomplete, ("e" * 40, "f" * 64, 1), records)
         invalid = copy.deepcopy(records)
         next(item for item in invalid if item["split"] == "calibration" and
              item["arm"] == "trained")["probabilities"] = [.99, .01]
