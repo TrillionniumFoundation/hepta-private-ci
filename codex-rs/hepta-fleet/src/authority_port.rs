@@ -159,8 +159,25 @@ mod tests {
     use codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier;
     use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
     use sha2::Digest;
+    use std::fmt::Debug;
     use std::os::unix::fs::PermissionsExt;
     use std::sync::Arc;
+
+    /// Unwrap test-only fixture errors explicitly without suppressing the
+    /// production workspace's expect_used/unwrap_used Clippy denies.
+    fn must<T, E: Debug>(result: Result<T, E>) -> T {
+        match result {
+            Ok(value) => value,
+            Err(error) => panic!("fleet authority fixture failed: {error:?}"),
+        }
+    }
+
+    fn rejected<T: Debug, E>(result: Result<T, E>) -> E {
+        match result {
+            Ok(value) => panic!("revoked authority unexpectedly accepted: {value:?}"),
+            Err(error) => error,
+        }
+    }
 
     #[derive(Debug)]
     struct FixedClock(u64);
@@ -194,55 +211,57 @@ mod tests {
 
     fn ledger() -> LeaseLedger {
         let mut ledger = LeaseLedger::new();
-        ledger
-            .admit_host(HostObservation {
-                host_id: "host-one".into(),
-                failure_domain_id: "rack-one".into(),
-                generation: 1,
-                observed_at_ms: 1_000,
-                valid_until_ms: 10_000,
-                capacity: Resources {
-                    cpu_millis: 1_000,
-                    memory_bytes: 1 << 20,
-                    accelerator_millis: 1_000,
-                },
-            })
-            .expect("valid fleet-authority test fixture");
+        must(ledger.admit_host(HostObservation {
+            host_id: "host-one".into(),
+            failure_domain_id: "rack-one".into(),
+            generation: 1,
+            observed_at_ms: 1_000,
+            valid_until_ms: 10_000,
+            capacity: Resources {
+                cpu_millis: 1_000,
+                memory_bytes: 1 << 20,
+                accelerator_millis: 1_000,
+            },
+        }));
         ledger
     }
 
     #[test]
     fn allocation_issue_consumes_exact_live_kernel_authority_lease() {
-        let directory = tempfile::tempdir().expect("valid fleet-authority test fixture");
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).expect("valid fleet-authority test fixture");
-        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
+        let directory = must(tempfile::tempdir());
+        must(std::fs::set_permissions(
+            directory.path(),
+            std::fs::Permissions::from_mode(0o700),
+        ));
+        let registry = must(AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
-            AuthorityLeaseFrontier::for_empty_epoch(7).expect("valid fleet-authority test fixture"),
+            must(AuthorityLeaseFrontier::for_empty_epoch(7)),
             Arc::new(FixedClock(2_000)),
-        )
-        .expect("valid fleet-authority test fixture");
+        ));
         let grant = grant();
-        let binding = FleetAuthorityPort::binding_for_issue(&grant).expect("valid fleet-authority test fixture");
-        registry
-            .put_lease(
-                AuthorityLease {
-                    schema_version: 1,
-                    lease_id: "fleet-issue-one".into(),
-                    authority_epoch: 7,
-                    revision: 1,
-                    binding,
-                    issued_at_unix_ms: 1_000,
-                    expires_at_unix_ms: 8_000,
-                },
-                0,
-            )
-            .expect("valid fleet-authority test fixture");
+        let binding = must(FleetAuthorityPort::binding_for_issue(&grant));
+        must(registry.put_lease(
+            AuthorityLease {
+                schema_version: 1,
+                lease_id: "fleet-issue-one".into(),
+                authority_epoch: 7,
+                revision: 1,
+                binding,
+                issued_at_unix_ms: 1_000,
+                expires_at_unix_ms: 8_000,
+            },
+            0,
+        ));
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
-        let (receipt, witness) = port
-            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
-            .expect("valid fleet-authority test fixture");
+        let (receipt, witness) = must(port.issue_with_witness(
+            &mut ledger,
+            "fleet-issue-one",
+            1,
+            2_000,
+            grant.clone(),
+        ));
         assert_eq!(receipt.allocation_id, "allocation-one");
         assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
         assert_eq!(witness.authority_epoch, 7);
@@ -256,10 +275,9 @@ mod tests {
             other => panic!("unexpected authority witness: {other:?}"),
         }
 
-        registry.revoke("fleet-issue-one", 1, [9; 32]).expect("valid fleet-authority test fixture");
+        must(registry.revoke("fleet-issue-one", 1, [9; 32]));
         assert_eq!(
-            port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
-                .expect_err("revoked lease must be denied"),
+            rejected(port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)),
             FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
         );
     }
@@ -267,10 +285,10 @@ mod tests {
     #[test]
     fn allocation_binding_changes_when_owner_mutation_semantics_change() {
         let first = grant();
-        let first_binding = FleetAuthorityPort::binding_for_issue(&first).expect("valid fleet-authority test fixture");
+        let first_binding = must(FleetAuthorityPort::binding_for_issue(&first));
         let mut changed = first;
         changed.resources.cpu_millis += 1;
-        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed).expect("valid fleet-authority test fixture");
+        let changed_binding = must(FleetAuthorityPort::binding_for_issue(&changed));
         assert_ne!(first_binding.scope_sha256, changed_binding.scope_sha256);
         assert_eq!(first_binding.payload_sha256, changed_binding.payload_sha256);
     }
