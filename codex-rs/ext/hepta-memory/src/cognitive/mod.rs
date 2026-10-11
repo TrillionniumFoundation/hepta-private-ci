@@ -57,6 +57,7 @@ use crate::framing::path_identity_bytes;
 use crate::framing::workspace_digest;
 
 mod federation;
+mod federation_workspace;
 mod kg_extractor;
 mod tools;
 
