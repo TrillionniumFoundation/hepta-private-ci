@@ -207,6 +207,10 @@ def run(args):
         sid = row["sample_id"]
         vectors[sid], encode_ms[sid], lengths[sid] = feature, duration, n_tokens
 
+    # Loading different pretrained architectures may consume different RNG.
+    # Reset exactly before Head initialization so matched-width Head arms
+    # receive genuinely matched initialization and minibatch ordering.
+    torch.manual_seed(args.seed + 1)
     head, head_parameters = build_head(torch, width, classes, args.trainable_budget)
     head = head.to(args.device)
     train_rows = sorted((r for r in rows if r["split"] == "train"),
