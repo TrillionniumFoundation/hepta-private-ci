@@ -111,8 +111,10 @@ class GatedQ24ReferenceTests(unittest.TestCase):
 
     def test_reference_is_pure_and_never_mutates_weights(self):
         head = head_with_gate(-1)
-        before = {key: value.copy() if isinstance(value, list) else value
-                  for key, value in head.items()}
+        before = {
+            key: value.copy() if isinstance(value, list) else value
+            for key, value in head.items()
+        }
         self.assertEqual(infer_gated_q24(head, [0]), ((Q24 // 2,), (0,)))
         self.assertEqual(head, before)
 
