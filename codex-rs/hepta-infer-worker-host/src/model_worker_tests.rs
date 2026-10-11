@@ -349,7 +349,7 @@ fn approved_fixture_authorization(
         encoder_digest: bound.request.encoder_digest.to_string(),
         head_digest: bound.request.head_digest.to_string(),
         weights_digest: bound.request.weights_digest.to_string(),
-        input_digest: bound.request.input_digest.to_string(),
+        input_digest: scoped_stem_worker_input_digest_v1(&bound).to_string(),
         feature_vector_q24: bound.request.feature_vector_q24,
         expected_output_width: bound.request.expected_output_width,
     };
@@ -379,6 +379,11 @@ fn scoped_stem_dispatches_through_loaded_driver_and_keeps_authority_denied() {
         .run_bound_stem_feature_receipt_v1(100, &source, &access, head, &features, auth)
         .expect("real Worker Driver dispatch");
     assert_eq!(result.stem_feature_ref_digest, expected.feature_ref_digest);
+    assert_eq!(
+        result.scoped_input_digest,
+        scoped_stem_worker_input_digest_v1(&expected)
+    );
+    assert_ne!(result.scoped_input_digest, source.input_digest);
     assert_eq!(
         result.worker_receipt.status,
         NeuronFeatureTerminalStatusV1::Succeeded
@@ -493,6 +498,45 @@ fn scoped_stem_rejects_wrong_head_weights_and_feature_mutation() {
             100, &source, &access, head, &features, wrong_request_id
         ),
         Err(Error::FeatureContract)
+    );
+}
+
+#[test]
+fn scoped_stem_worker_payload_cannot_replay_across_principals_or_scopes() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.scope-replay".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded Head");
+    let (original, access, head, features, authorization) = scoped_shared_stem_fixture();
+
+    let mut other_source = original.clone();
+    let mut other_access = access.clone();
+    other_source.scope_id = StableId::new("scope.other").expect("scope");
+    other_access.scope_id = other_source.scope_id.clone();
+    // All model weights, input bytes, generation and Head configuration are
+    // identical; only Scope differs. The borrowed Scope A authorization is
+    // still rejected because the signed-payload *claim* is scoped.
+    assert_eq!(
+        worker.run_bound_stem_feature_receipt_v1(
+            100, &other_source, &other_access, head.clone(), &features,
+            authorization.clone()
+        ),
+        Err(Error::PayloadMismatch)
+    );
+    let mut other_source = original.clone();
+    let mut other_access = access.clone();
+    other_source.principal_id = StableId::new("principal.other").expect("principal");
+    other_access.principal_id = other_source.principal_id.clone();
+    assert_eq!(
+        worker.run_bound_stem_feature_receipt_v1(
+            100, &other_source, &other_access, head, &features, authorization
+        ),
+        Err(Error::PayloadMismatch)
     );
 }
 
