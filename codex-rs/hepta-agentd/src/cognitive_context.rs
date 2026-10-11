@@ -52,8 +52,7 @@ pub(crate) enum CognitiveContextError {
 /// preventing positional boolean/digest swaps at the control entry.
 pub(crate) struct CognitiveReadBindings<'a> {
     pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    pub current_retrieval:
-        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     pub learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     pub request_id: Option<u64>,
 }
@@ -70,8 +69,7 @@ pub(crate) struct CognitiveRevalidationInput<'a> {
 pub(crate) struct CognitiveRevalidationBindings<'a> {
     pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
     pub body_generation: u64,
-    pub current_retrieval:
-        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 }
 
 impl From<CognitiveStoreError> for CognitiveContextError {
