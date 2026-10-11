@@ -300,7 +300,11 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
         // The still-unchanged empty durable history must independently
         // replay without witness fabrication or recovered decision records.
         let reopened = DurableLedger::recover(
-            OpenOptions::new().read(true).write(true).open(&path).unwrap(),
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&path)
+                .unwrap(),
             digest("host-authorized-ledger"),
             1,
             LedgerRecovery::Unacknowledged,
@@ -335,7 +339,11 @@ fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
     drop(ledger);
     assert_eq!(fs::metadata(&path).unwrap().len(), original_length);
     let reopened = DurableLedger::recover(
-        OpenOptions::new().read(true).write(true).open(&path).unwrap(),
+        OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&path)
+                .unwrap(),
         digest("host-authorized-ledger"),
         1,
         LedgerRecovery::Unacknowledged,
@@ -478,7 +486,11 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
             .set_len(/*size*/ 0)
             .unwrap();
         let recovery = DurableLedger::recover(
-            OpenOptions::new().read(true).write(true).open(&path).unwrap(),
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&path)
+                .unwrap(),
             digest("host-authorized-ledger"),
             1,
             LedgerRecovery::Unacknowledged,
