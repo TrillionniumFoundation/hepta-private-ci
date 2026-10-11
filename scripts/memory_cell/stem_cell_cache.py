@@ -16,11 +16,13 @@ class SharedFeatureCache:
         self.maximum_bytes = maximum_bytes
         self.entries = OrderedDict()
         self.bytes = self.hits = self.misses = self.evictions = 0
-        self.receipts = []
 
     def encode(self, query, family, pool, *, revoked):
-        # Authorization and withdrawals are rechecked even on a cache hit.
+        # Both observed sources AND the encoder's training lineage matter on hits.
         pool.revalidate(query, revoked)
+        if (getattr(self.encoder, "quarantined", False)
+                or set(getattr(self.encoder, "roots", ())).intersection(revoked)):
+            raise ValueError("unavailable or training-revoked cached encoder")
         key = digest(("stem-pair-cache-v1", self.encoder.identity,
                       asdict(query), family, pool.seal()))
         started = time.perf_counter()
@@ -62,7 +64,6 @@ class SharedFeatureCache:
             self.bytes += size
         cost = dict(cache_hit=False, key=key, incremental_encoder_seconds=receipt["seconds"],
                     extraction=receipt, retained_estimated_bytes=self.bytes)
-        # No unbounded per-call history; callers own full evidence receipts.
         return clone_features(batch), cost
 
     def clear(self):
