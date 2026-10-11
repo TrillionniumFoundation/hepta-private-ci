@@ -882,3 +882,92 @@ fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
         );
     }
 }
+
+
+#[test]
+fn bounded_target_host_envelope_refuses_synthetic_and_excessive_observers() {
+    let host = key(73);
+    let observer = key(79);
+    let trust = policy(&host, &observer);
+    let payload = complete_recorder();
+    let mut envelope = payload
+        .sign(
+            "host-signer",
+            &host,
+            [("observer-signer".to_string(), observer.clone())],
+        )
+        .expect("legitimate signed evidence");
+    assert!(verify_cell_split_target_host_evidence(&envelope, &trust).is_ok());
+    for index in 0..MAX_OBSERVER_SIGNATURES {
+        envelope.observer_signatures.push(sign_payload(
+            format!("untrusted-observer-{index}"),
+            &key(90 + index as u8),
+            &payload.canonical_bytes().expect("original canonical payload"),
+        ));
+    }
+    assert!(
+        verify_cell_split_target_host_evidence(&envelope, &trust)
+            .expect_err("unbounded observer key fan-out cannot be verified")
+            .to_string()
+            .contains("bounded independent observer"),
+    );
+    let oversized_json = vec![b' '; MAX_EVIDENCE_BYTES + 1];
+    assert!(
+        verify_cell_split_target_host_evidence_json(&oversized_json, &trust)
+            .expect_err("oversized bytes should be rejected before JSON parse")
+            .to_string()
+            .contains("bounded input"),
+    );
+    let mut synthetic = complete_recorder();
+    let metric = synthetic
+        .events
+        .iter_mut()
+        .find(|event| event.event_kind == CellSplitTargetHostEventKindV1::ResourceMeasurement)
+        .expect("resource");
+    metric.resource
+        .as_mut()
+        .expect("sample")
+        .measurement_source = "Externally-SYNTHETIC-counter".to_string();
+    let mut previous = ZERO_DIGEST.to_string();
+    for event in &mut synthetic.events {
+        event.previous_event_digest = previous;
+        event.event_digest = event_digest(event).expect("rehash");
+        previous = event.event_digest.clone();
+    }
+    synthetic.evidence_digest = evidence_digest(&synthetic).expect("recompute envelope digest");
+    assert!(
+        synthetic
+            .sign(
+                "host-signer",
+                &host,
+                [("observer-signer".to_string(), observer)],
+            )
+            .is_err(),
+        "resigned mixed-case synthetic resources cannot count as target-host measurements",
+    );
+}
+
+#[test]
+fn a_well_formed_hash_chain_does_not_launder_a_nondigest_operation_receipt() {
+    let mut forged = complete_recorder();
+    forged.events[0].receipt_digest = "operation receipt from another system".to_string();
+    let mut previous = ZERO_DIGEST.to_string();
+    for event in &mut forged.events {
+        event.previous_event_digest = previous;
+        event.event_digest = event_digest(event).expect("validly rehashed event");
+        previous = event.event_digest.clone();
+    }
+    forged.evidence_digest = evidence_digest(&forged).expect("matching envelope hash");
+    assert!(replay_payload(&forged).is_err());
+    let host = key(101);
+    let observer = key(103);
+    assert!(
+        forged
+            .sign(
+                "host-signer",
+                &host,
+                [("observer-signer".to_string(), observer)],
+            )
+            .is_err(),
+    );
+}
