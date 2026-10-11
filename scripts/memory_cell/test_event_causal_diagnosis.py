@@ -67,6 +67,10 @@ class PairedAttributionTests(unittest.TestCase):
         )
         self.assertEqual(result["by_task_kind"]["procedure"]["planned"], 1)
         self.assertFalse(result["program_support_is_human_verified"])
+        self.assertEqual(
+            result["ablation_dispositions"]["not_demonstrated_necessary"], 1
+        )
+        self.assertFalse(result["controlled_premise_necessity_proven"])
         self.assertFalse(result["policy_or_parametric_learning_qualified"])
 
     def test_missing_attempt_is_not_silently_assigned_zero(self):
@@ -88,9 +92,12 @@ class PairedAttributionTests(unittest.TestCase):
 
     def test_omission_success_does_not_show_necessary_evidence(self):
         rows = case("q", correct=("program_support", "without_prerequisite"))
+        report = diagnose(rows, ("q",))
         self.assertEqual(
-            diagnose(rows, ("q",))["cases"][0]["ablation"],
-            "not_demonstrated_necessary",
+            report["cases"][0]["ablation"], "not_demonstrated_necessary"
+        )
+        self.assertEqual(
+            report["ablation_dispositions"]["not_demonstrated_necessary"], 1
         )
 
     def test_rejects_changed_candidates_reader_and_missing_or_duplicate_pairs(self):

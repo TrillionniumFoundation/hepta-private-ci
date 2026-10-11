@@ -78,3 +78,65 @@ collects actual subprocess receipts, builds the common index, and executes both
 frozen readers only after repository formatting passes. Test fixtures and real
 pretrained calls run in distinct processes. Outputs are immutable; reruns do not
 become independent evidence. Consult the generating commit and terminal job result.
+
+
+## Independently replayable historical reader/organization receipt (2026-10-11)
+
+The following is a **read-only inspection of already generated model answers**.
+It is neither a new model execution nor an independent semantic review or a
+new prospective population. It belongs to exact generating commit
+`59f9eadd5cc919359079e04442f7343838a60057`.
+Successful workflow:
+[38063870516](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38063870516).
+Both archives were downloaded, checked against their complete in-ZIP
+`SHA256SUMS` manifest (including original raw and scored responses), and
+verified to identify that generating commit:
+
+- SmolLM2-1.7B archive `11674486085`, ZIP SHA-256
+  `67d46247bd1881c8fb3f73ec6122415d0d15a0ec24b02f193fb1294e7ea63bae`.
+- Qwen2.5-3B archive `11674741321`, ZIP SHA-256
+  `831ce9658bafcbaf04f4a15879982e58317322f7cd5137724498d7d20df7bb98`.
+- Qwen `run/scored-answers.json` SHA-256
+  `74c37d754303e920c7fc1f4c5e694116148bead1530d22674a8138199dbd4caa`.
+
+Both models successfully generated **48/48** recorded responses from the same
+eight authored final tasks and six fixed conditions, with zero failed attempts.
+Strict output grammar and the actual bounded procedure verifier were used by
+the *original* generating workflow; this inspection did not re-execute model
+inference or those procedures.
+
+| Fixed condition | SmolLM2-1.7B | Qwen2.5-3B |
+| --- | ---: | ---: |
+| empty evidence | 0/8 | 0/8 |
+| hybrid top-four | 1/8 | 3/8 |
+| entity/time projection | 2/8 | 8/8 |
+| deterministic organization | 3/8 | 8/8 |
+| program-bound support | 3/8 | 8/8 |
+| one premise removed | 2/8 | **4/8** |
+
+**Attribution, not superiority:** Qwen's five additional successes with
+program-bound support are reader-family/capacity effects, not parameter-memory
+gains. In all eight Qwen hybrid examples, the original scored receipts say that
+the required source IDs were covered; nevertheless five answers were wrong.
+The organizer selected exactly the same original IDs, in the same order, as the
+program-support condition on all eight cases, while hybrid always selected four
+documents and organization selected only one or two. The controlled 8/8 versus
+3/8 difference therefore cannot be credited to *missing support recall*; it
+may be due to distractor filtering, packing or how the fixed reader uses the
+evidence. A stronger, independently calibrated top-k hybrid reader baseline is
+needed before any claim beyond this authored corpus.
+
+**Necessary-premise gate fails:** In both composition tasks and both procedure
+tasks the Qwen reader still succeeded after a purportedly required source was
+removed (**4/8** ablation successes). These observations do not prove the
+missing source necessary; possible redundant evidence, shortcut decoding and
+fixture construction must be investigated. The previous PR comment that
+reported **0/8** for this particular Qwen ablation is contradicted by this
+exact archived scored file and must not be used as an acceptance claim.
+
+Only two examples of each task kind were tested, all authored rather than
+independent real-world histories. There is no validated independence-adjusted
+confidence interval, human-signed sufficiency or citation entailment verdict,
+qualified prospective task advantage, deployed maintenance/recovery observation
+or production admission. The research-only Qwen license and preserved source
+storage still apply.

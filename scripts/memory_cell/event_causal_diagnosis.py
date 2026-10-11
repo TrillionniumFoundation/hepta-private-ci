@@ -52,7 +52,7 @@ def diagnose(records, expected):
     if any(set(groups.get(qid, {})) != set(ARMS) for qid in expected):
         raise ValueError("incomplete reader control census")
 
-    cases, counts, strata = [], Counter(), {}
+    cases, counts, ablations, strata = [], Counter(), Counter(), {}
     comparisons = {
         "organized_minus_hybrid": Counter(),
         "program_support_minus_hybrid": Counter(),
@@ -137,6 +137,7 @@ def diagnose(records, expected):
             )
         )
         counts[category] += 1
+        ablations[ablation] += 1
         bucket = strata.setdefault(kind, Counter())
         bucket["planned"] += 1
         bucket[category] += 1
@@ -176,10 +177,17 @@ def diagnose(records, expected):
         observed_questions=n - counts["incomplete_execution"],
         cases=cases,
         attribution_counts=dict(sorted(counts.items())),
+        ablation_dispositions=dict(sorted(ablations.items())),
+        hybrid_support_present_but_answer_wrong=sum(
+            case["strict_success"]["hybrid"] is False
+            and case["required_support_covered"]["hybrid"] is True
+            for case in cases
+        ),
+        controlled_premise_necessity_proven=False,
         by_task_kind={k: dict(sorted(v.items())) for k, v in sorted(strata.items())},
         paired_contrasts=paired,
         program_support_is_human_verified=False,
-        original_evidence_is_preserved=True,
+        original_evidence_preservation_verified_by_this_scorer=False,
         reader_capacity_comparison_is_a_separate_axis=True,
         independent_future_source_families=0,
         semantic_citation_precision=None,
