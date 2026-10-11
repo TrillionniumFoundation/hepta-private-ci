@@ -161,10 +161,26 @@ impl Drop for Fixture {
 }
 
 fn append_decision(writer: &mut LedgerWriter) -> Digest32 {
+    append_named_decision(
+        writer,
+        Digest32::ZERO,
+        "decision-1",
+        "episode-1",
+        "candidate-set",
+    )
+}
+
+fn append_named_decision(
+    writer: &mut LedgerWriter,
+    predecessor: Digest32,
+    record: &str,
+    episode: &str,
+    set_id: &str,
+) -> Digest32 {
     let candidates = vec![id("action"), id("abstain")];
     let request = ProductionDecisionV2 {
-        record_id: id("decision-1"),
-        episode_id: id("episode-1"),
+        record_id: id(record),
+        episode_id: id(episode),
         run_snapshot_digest: digest("run"),
         objective_digest: digest("objective"),
         policy_digest: digest("policy"),
@@ -172,7 +188,7 @@ fn append_decision(writer: &mut LedgerWriter) -> Digest32 {
         selected_candidate_id: id("action"),
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: id("candidate-set"),
+            set_id: id(set_id),
             state_digest: digest("state"),
             generator_id: id("generator"),
             generator_code_digest: digest("generator-code"),
@@ -185,7 +201,7 @@ fn append_decision(writer: &mut LedgerWriter) -> Digest32 {
             canonical_order_digest: candidate_order_digest_v2(&candidates),
             complete_for_generator: true,
         },
-        support_digest: digest("decision-support"),
+        support_digest: digest(&format!("{record}-support")),
     };
     let payload = decision_signing_payload_v2(&request).unwrap();
     let evidence = signed(
@@ -195,7 +211,7 @@ fn append_decision(writer: &mut LedgerWriter) -> Digest32 {
         &payload,
     );
     writer
-        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .append_decision(predecessor, request, &evidence, 50)
         .unwrap()
         .chain_digest
 }
@@ -284,12 +300,21 @@ fn native_owner_pairs_actual_durable_decision_and_terminal_without_labels() {
 fn native_owner_keeps_missing_outcomes_as_pending_not_zero_reward() {
     let fixture = Fixture::new();
     let mut writer = fixture.writer();
-    append_decision(&mut writer);
+    let head = append_decision(&mut writer);
+    append_terminal(&mut writer, head);
+    let predecessor = writer.snapshot().unwrap().head_digest;
+    append_named_decision(
+        &mut writer,
+        predecessor,
+        "decision-pending",
+        "episode-pending",
+        "candidate-set-pending",
+    );
     let (snapshot, plan, signed_freeze, dataset) = freeze(&writer);
     let report = writer
         .read_neuron_trial_source_v1(&snapshot, &plan, &signed_freeze, &dataset, 50)
         .unwrap();
-    assert!(report.terminal_joins.is_empty());
+    assert_eq!(report.terminal_joins.len(), 1);
     assert_eq!(report.pending_episodes, 1);
     assert!(report.validate_integrity());
 }
@@ -298,7 +323,8 @@ fn native_owner_keeps_missing_outcomes_as_pending_not_zero_reward() {
 fn native_owner_rejects_changed_signed_freeze_and_forged_dataset() {
     let fixture = Fixture::new();
     let mut writer = fixture.writer();
-    append_decision(&mut writer);
+    let head = append_decision(&mut writer);
+    append_terminal(&mut writer, head);
     let (snapshot, plan, signature, dataset) = freeze(&writer);
     let mut tampered = signature.clone();
     tampered.signature[0] ^= 1;
@@ -320,7 +346,8 @@ fn native_owner_rejects_changed_signed_freeze_and_forged_dataset() {
 fn native_owner_rejects_frozen_ledger_that_is_not_current_prefix() {
     let fixture = Fixture::new();
     let mut writer = fixture.writer();
-    append_decision(&mut writer);
+    let head = append_decision(&mut writer);
+    append_terminal(&mut writer, head);
     let (mut snapshot, plan, signature, dataset) = freeze(&writer);
     snapshot.head_digest = digest("wrong-chain-head");
     assert!(
