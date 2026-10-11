@@ -95,6 +95,17 @@ impl CircuitEdgeV1 {
     }
 }
 
+/// Immutable identity and predecessor binding for one Neural Circuit
+/// generation. Route/parameter/resource digests remain separate mandatory
+/// inputs to the candidate's canonical content hash.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuralCircuitIdentityV1 {
+    pub circuit_id: String,
+    pub version: u32,
+    pub predecessor_digest: Option<Sha256Digest>,
+    pub entry_node: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct NeuralCircuitCandidateV1 {
@@ -111,24 +122,6 @@ pub struct NeuralCircuitCandidateV1 {
     pub circuit_digest: Sha256Digest,
 }
 
-/// Unsigned, bounded circuit proposal. A candidate must be constructed from
-/// one coherent versioned envelope, validated and hashed before any TaskFlow
-/// compilation. Creating this struct never grants topology or effect authority.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct NeuralCircuitDraftV1 {
-    pub circuit_id: String,
-    pub version: u32,
-    pub predecessor_digest: Option<Sha256Digest>,
-    pub entry_node: String,
-    pub nodes: Vec<CircuitNodeV1>,
-    pub edges: Vec<CircuitEdgeV1>,
-    pub capability_set: Vec<String>,
-    pub route_policy_digest: Sha256Digest,
-    pub parameter_bundle_digest: Sha256Digest,
-    pub resource_profile_digest: Sha256Digest,
-}
-
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CircuitCompilationReceiptV1 {
     pub circuit_id: String,
@@ -140,19 +133,21 @@ pub struct CircuitCompilationReceiptV1 {
 }
 
 impl NeuralCircuitCandidateV1 {
-    pub fn new(draft: NeuralCircuitDraftV1) -> Result<Self, TaskFlowError> {
-        let NeuralCircuitDraftV1 {
+    pub fn new(
+        identity: NeuralCircuitIdentityV1,
+        mut nodes: Vec<CircuitNodeV1>,
+        mut edges: Vec<CircuitEdgeV1>,
+        mut capability_set: Vec<String>,
+        route_policy_digest: Sha256Digest,
+        parameter_bundle_digest: Sha256Digest,
+        resource_profile_digest: Sha256Digest,
+    ) -> Result<Self, TaskFlowError> {
+        let NeuralCircuitIdentityV1 {
             circuit_id,
             version,
             predecessor_digest,
             entry_node,
-            mut nodes,
-            mut edges,
-            mut capability_set,
-            route_policy_digest,
-            parameter_bundle_digest,
-            resource_profile_digest,
-        } = draft;
+        } = identity;
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
         edges.sort_by(|left, right| {
             left.from
@@ -161,10 +156,10 @@ impl NeuralCircuitCandidateV1 {
         });
         capability_set.sort();
         let mut candidate = Self {
-            circuit_id: circuit_id.into(),
+            circuit_id,
             version,
             predecessor_digest,
-            entry_node: entry_node.into(),
+            entry_node,
             nodes,
             edges,
             capability_set,
@@ -450,27 +445,29 @@ mod tests {
     }
 
     fn v1() -> NeuralCircuitCandidateV1 {
-        NeuralCircuitCandidateV1::new(NeuralCircuitDraftV1 {
-            circuit_id: ("retrieval-control").into(),
-            version: 1,
-            predecessor_digest: None,
-            entry_node: ("observe").into(),
-            nodes: vec![
+        NeuralCircuitCandidateV1::new(
+            NeuralCircuitIdentityV1 {
+                circuit_id: "retrieval-control".to_owned(),
+                version: 1,
+                predecessor_digest: None,
+                entry_node: "observe".to_owned(),
+            },
+            vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
                 CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            edges: vec![
+            vec![
                 CircuitEdgeV1::new("observe", "decide"),
                 CircuitEdgeV1::new("decide", "success"),
                 CircuitEdgeV1::new("decide", "failure"),
             ],
-            capability_set: vec![],
-            route_policy_digest: digest("route-v1"),
-            parameter_bundle_digest: digest("parameters-v1"),
-            resource_profile_digest: digest("resources-v1"),
-        })
+            vec![],
+            digest("route-v1"),
+            digest("parameters-v1"),
+            digest("resources-v1"),
+        )
         .expect("v1 circuit")
     }
 
@@ -491,30 +488,32 @@ mod tests {
     #[test]
     fn successor_binds_exact_predecessor_and_can_change_route_and_parameters() {
         let current = v1();
-        let successor = NeuralCircuitCandidateV1::new(NeuralCircuitDraftV1 {
-            circuit_id: (current.circuit_id.clone()).into(),
-            version: 2,
-            predecessor_digest: Some(current.circuit_digest.clone()),
-            entry_node: ("observe").into(),
-            nodes: vec![
+        let successor = NeuralCircuitCandidateV1::new(
+            NeuralCircuitIdentityV1 {
+                circuit_id: current.circuit_id.clone(),
+                version: 2,
+                predecessor_digest: Some(current.circuit_digest.clone()),
+                entry_node: "observe".to_owned(),
+            },
+            vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
                 CircuitNodeV1::new("guard", CircuitNodeRoleV1::TransformGuard),
                 CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            edges: vec![
+            vec![
                 CircuitEdgeV1::new("observe", "guard"),
                 CircuitEdgeV1::new("guard", "decide"),
                 CircuitEdgeV1::new("guard", "failure"),
                 CircuitEdgeV1::new("decide", "success"),
                 CircuitEdgeV1::new("decide", "failure"),
             ],
-            capability_set: vec![],
-            route_policy_digest: digest("route-v2"),
-            parameter_bundle_digest: digest("parameters-v2"),
-            resource_profile_digest: digest("resources-v1"),
-        })
+            vec![],
+            digest("route-v2"),
+            digest("parameters-v2"),
+            digest("resources-v1"),
+        )
         .expect("successor");
         validate_circuit_successor_v1(&current, &successor).expect("admitted successor");
         assert_ne!(current.circuit_digest, successor.circuit_digest);
@@ -523,71 +522,77 @@ mod tests {
     #[test]
     fn structural_successor_cannot_rebind_predecessor_or_widen_capabilities() {
         let current = v1();
-        let wrong = NeuralCircuitCandidateV1::new(NeuralCircuitDraftV1 {
-            circuit_id: (current.circuit_id.clone()).into(),
-            version: 2,
-            predecessor_digest: Some(digest("wrong-predecessor")),
-            entry_node: ("observe").into(),
-            nodes: current.nodes.clone(),
-            edges: current.edges.clone(),
-            capability_set: vec![],
-            route_policy_digest: digest("route-v2"),
-            parameter_bundle_digest: digest("parameters-v2"),
-            resource_profile_digest: digest("resources-v1"),
-        })
+        let wrong = NeuralCircuitCandidateV1::new(
+            NeuralCircuitIdentityV1 {
+                circuit_id: current.circuit_id.clone(),
+                version: 2,
+                predecessor_digest: Some(digest("wrong-predecessor")),
+                entry_node: "observe".to_owned(),
+            },
+            current.nodes.clone(),
+            current.edges.clone(),
+            vec![],
+            digest("route-v2"),
+            digest("parameters-v2"),
+            digest("resources-v1"),
+        )
         .expect("wrong successor shape");
         assert!(validate_circuit_successor_v1(&current, &wrong).is_err());
 
-        let widened = NeuralCircuitCandidateV1::new(NeuralCircuitDraftV1 {
-            circuit_id: (current.circuit_id.clone()).into(),
-            version: 2,
-            predecessor_digest: Some(current.circuit_digest.clone()),
-            entry_node: ("observe").into(),
-            nodes: vec![
+        let widened = NeuralCircuitCandidateV1::new(
+            NeuralCircuitIdentityV1 {
+                circuit_id: current.circuit_id.clone(),
+                version: 2,
+                predecessor_digest: Some(current.circuit_digest.clone()),
+                entry_node: "observe".to_owned(),
+            },
+            vec![
                 CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
                 CircuitNodeV1::effect("effect", "network.http", "circuit/{run}/effect"),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            edges: vec![
+            vec![
                 CircuitEdgeV1::new("observe", "effect"),
                 CircuitEdgeV1::new("observe", "failure"),
                 CircuitEdgeV1::new("effect", "success"),
                 CircuitEdgeV1::new("effect", "failure"),
             ],
-            capability_set: vec!["network.http".to_string()],
-            route_policy_digest: digest("route-v2"),
-            parameter_bundle_digest: digest("parameters-v2"),
-            resource_profile_digest: digest("resources-v1"),
-        })
+            vec!["network.http".to_string()],
+            digest("route-v2"),
+            digest("parameters-v2"),
+            digest("resources-v1"),
+        )
         .expect("widened successor shape");
         assert!(validate_circuit_successor_v1(&current, &widened).is_err());
     }
 
     #[test]
     fn circuit_reuses_taskflow_cycle_and_terminal_rejection() {
-        let result = NeuralCircuitCandidateV1::new(NeuralCircuitDraftV1 {
-            circuit_id: ("loop").into(),
-            version: 1,
-            predecessor_digest: None,
-            entry_node: ("a").into(),
-            nodes: vec![
+        let result = NeuralCircuitCandidateV1::new(
+            NeuralCircuitIdentityV1 {
+                circuit_id: "loop".to_owned(),
+                version: 1,
+                predecessor_digest: None,
+                entry_node: "a".to_owned(),
+            },
+            vec![
                 CircuitNodeV1::new("a", CircuitNodeRoleV1::Decide),
                 CircuitNodeV1::new("b", CircuitNodeRoleV1::TransformGuard),
                 CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
                 CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
             ],
-            edges: vec![
+            vec![
                 CircuitEdgeV1::new("a", "b"),
                 CircuitEdgeV1::new("b", "a"),
                 CircuitEdgeV1::new("a", "success"),
                 CircuitEdgeV1::new("b", "failure"),
             ],
-            capability_set: vec![],
-            route_policy_digest: digest("route"),
-            parameter_bundle_digest: digest("params"),
-            resource_profile_digest: digest("resources"),
-        });
+            vec![],
+            digest("route"),
+            digest("params"),
+            digest("resources"),
+        );
         assert!(result.is_err());
     }
 }

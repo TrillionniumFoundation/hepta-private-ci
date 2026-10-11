@@ -539,23 +539,9 @@ pub enum AuthorizedEffectRecovery {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AuthorizedEffectRecoveryResult {
     ProvenAbsent,
+    /// Box only the observed terminal projection; a proven-absent result
+    /// must not carry the 272+ byte TaskFlow receipt on every recovery path.
     Observed(Box<TaskFlowStepReceipt>),
-}
-
-/// Complete immutable effect intent for the already-selected TaskFlow step.
-///
-/// Keep the wire bytes, durable step fence, exact signed final-use grant,
-/// binding, command identity and sampled time in one typed envelope. This
-/// cannot mint authority: the independent FinalUseAuthority still claims and
-/// verifies the complete binding immediately before effect entry.
-pub struct AuthorizedTaskflowEffectExecution<'a> {
-    pub intent: &'a AuthorizedEffectIntent,
-    pub wire_payload: &'a [u8],
-    pub fence: &'a TaskFlowFence,
-    pub signed_grant: &'a SignedFinalUseGrant,
-    pub expected_binding: &'a FinalUseBinding,
-    pub command_id: &'a str,
-    pub now_ms: u64,
 }
 
 #[derive(Debug, Error)]
@@ -572,6 +558,19 @@ pub enum AuthorizedEffectError {
     ProvenAbsentNeedsNewAttempt,
     #[error(transparent)]
     Driver(#[from] AuthorizedEffectDriverError),
+}
+
+/// One immutable pre-effect proposal. The intent, exact provider bytes,
+/// Step Fence and independently signed grant/binding travel as a single
+/// snapshot; constructing it grants no execution authority.
+pub struct AuthorizedTaskflowEffectInvocation<'a> {
+    pub intent: &'a AuthorizedEffectIntent,
+    pub wire_payload: &'a [u8],
+    pub fence: &'a TaskFlowFence,
+    pub signed_grant: &'a SignedFinalUseGrant,
+    pub expected_binding: &'a FinalUseBinding,
+    pub command_id: &'a str,
+    pub now_ms: u64,
 }
 
 impl AutomationStore {
@@ -661,9 +660,9 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        dispatch: AuthorizedTaskflowEffectExecution<'_>,
+        proposal: AuthorizedTaskflowEffectInvocation<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
-        let AuthorizedTaskflowEffectExecution {
+        let AuthorizedTaskflowEffectInvocation {
             intent,
             wire_payload,
             fence,
@@ -671,7 +670,7 @@ impl AutomationStore {
             expected_binding,
             command_id,
             now_ms,
-        } = dispatch;
+        } = proposal;
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -886,9 +885,9 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        dispatch: AuthorizedTaskflowEffectExecution<'_>,
+        proposal: AuthorizedTaskflowEffectInvocation<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
-        let AuthorizedTaskflowEffectExecution {
+        let AuthorizedTaskflowEffectInvocation {
             intent,
             wire_payload,
             fence,
@@ -896,7 +895,7 @@ impl AutomationStore {
             expected_binding,
             command_id,
             now_ms,
-        } = dispatch;
+        } = proposal;
         let provider_intent = provider_effect_intent(intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;

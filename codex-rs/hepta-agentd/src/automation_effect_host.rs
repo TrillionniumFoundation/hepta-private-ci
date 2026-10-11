@@ -23,7 +23,7 @@ use codex_hepta_automation::AuthorizedEffectProviderReceipt;
 use codex_hepta_automation::AuthorizedEffectRecovery;
 use codex_hepta_automation::AuthorizedEffectRecoveryResult;
 use codex_hepta_automation::AuthorizedEffectRequest;
-use codex_hepta_automation::AuthorizedTaskflowEffectExecution;
+use codex_hepta_automation::AuthorizedTaskflowEffectInvocation;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowStepObservation;
@@ -260,7 +260,7 @@ impl AgentdAutomationEffectHost {
             .execute_authorized_taskflow_effect(
                 &self.authority,
                 &mut driver,
-                AuthorizedTaskflowEffectExecution {
+                AuthorizedTaskflowEffectInvocation {
                     intent: intent,
                     wire_payload: wire_payload,
                     fence: &fence,
