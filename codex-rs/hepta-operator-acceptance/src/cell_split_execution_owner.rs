@@ -489,6 +489,26 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if predecessor != self.previous_receipt_digest {
             return Err(CellSplitExecutionErrorV1::Invalid("committed prefix drift"));
         }
+        // The pending intent is part of the durable replay boundary too.
+        // Read-only transcript export must not silently accept post-open
+        // mutation or an unacknowledged commit at the pending cursor.
+        if self.pending {
+            let step = CellSplitExecutionStepV1::at(self.cursor)
+                .ok_or(CellSplitExecutionErrorV1::Invalid("pending step index"))?;
+            let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
+            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
+                .ok_or(CellSplitExecutionErrorV1::Invalid("pending intent disappeared"))?;
+            if prepared != canonical_json(&intent)? {
+                return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
+            }
+            if read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+                || has_successor_frame(&self.root, self.cursor + 1)?
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "pending cursor changed; reopen required",
+                ));
+            }
+        }
         Ok(receipts)
     }
 
