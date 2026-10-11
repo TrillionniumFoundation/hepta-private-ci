@@ -19,6 +19,11 @@ from native import digest
 from reviewed_diagnostic import DiagnosticInputs, execute
 
 MODELS = {
+    # Research tier: reuses the historical pinned SmolLM2-135M benchmark reader.
+    "smol-135m": (
+        "HuggingFaceTB/SmolLM2-135M-Instruct",
+        "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+    ),
     "smol-1.7b": (
         "HuggingFaceTB/SmolLM2-1.7B-Instruct",
         "31b70e2e869a7173562077fd711b654946d38674",
