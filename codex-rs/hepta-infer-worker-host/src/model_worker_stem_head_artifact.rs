@@ -36,6 +36,24 @@ const HEAD_BANK_SCHEMA: &str = "hepta.stem.q24-cpu-head-bank-candidate.v1";
 const MAX_HEAD_BANK_SIZE: usize = 32;
 const MAX_HEAD_BANK_PAYLOAD_BYTES: usize = 16 * 1024 * 1024;
 
+/// A dual-CAS use has ONE caller-supplied selection time. Mixing independently
+/// valid Projection and Head selection checks from different time instants
+/// is not acceptable, even when both signatures individually verify.
+///
+/// This equality check is NOT a trusted clock or proof of CURRENT freshness:
+/// the product owner must still acquire both views and perform dispatch inside
+/// its separately enforced revocation/generation fence.
+fn require_same_selection_time(
+    projection_now: u64,
+    head_now: u64,
+) -> Result<(), StemHeadArtifactError> {
+    if projection_now != head_now {
+        return Err(StemHeadArtifactError::InvalidBinding);
+    }
+    Ok(())
+}
+
+
 #[derive(Debug)]
 pub enum StemHeadArtifactError {
     InvalidPayload,
@@ -288,6 +306,7 @@ impl SelectedStemHeadBankReaderV1 {
         ),
         StemHeadArtifactError,
     > {
+        require_same_selection_time(use_request.selection_now, selection_now)?;
         let request = &use_request.request;
         let binding = use_request.binding;
         if binding.scope_digest != self.fence.scope_digest.to_string()
@@ -384,6 +403,7 @@ impl SelectedStemHeadBankReaderV1 {
         (super::NeuronBackendBatchReceipt, StemHeadBankReadObservationV1),
         StemHeadArtifactError,
     > {
+        require_same_selection_time(use_request.selection_now, selection_now)?;
         if !(2..=32).contains(&use_request.items.len()) {
             return Err(StemHeadArtifactError::InvalidBinding);
         }
