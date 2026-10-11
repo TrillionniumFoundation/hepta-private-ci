@@ -634,8 +634,7 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
     tampered.feature_vector_q24[0] += 1;
     // Attacker can recompute an untrusted hash; it still does not match
     // the selected projection's Q24 output.
-    let tampered_payload_digest =
-        super::super::canonical_neuron_feature_payload_digest(&tampered);
+    let tampered_payload_digest = super::super::canonical_neuron_feature_payload_digest(&tampered);
     tampered.authorization.payload_digest = tampered_payload_digest.clone();
     tampered.authorization.lease_payload_digest = tampered_payload_digest;
     let (_, bad_projection_live) = fx.current("projection.invalid.use", Digest32::ZERO);
