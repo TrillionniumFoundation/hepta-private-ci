@@ -10,8 +10,11 @@ import fbsde_local
 import fbsde_tree
 
 
-def run(output, profile="exact_v1"):
-    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1"), "study profile")
+def run(output, profile="exact_v1", **options):
+    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1"), "study profile")
+    if profile == "semantic_acquisition_v1":
+        from fbsde_acquisition_study import run as run_acquisition
+        return run_acquisition(output, **options)
     if profile == "coupled_nonlinear_v1":
         from fbsde_coupled_study import run as run_coupled
         return run_coupled(output)
@@ -49,6 +52,10 @@ def run(output, profile="exact_v1"):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1"), default="exact_v1")
+    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1"), default="exact_v1")
+    parser.add_argument("--backend", choices=("hashing_reference_v1", "mmbert"), default="hashing_reference_v1")
+    parser.add_argument("--publisher-root", type=Path)
+    parser.add_argument("--model-dir", type=Path)
     args = parser.parse_args()
-    run(args.output, args.profile)
+    options = dict(backend=args.backend, publisher_root=args.publisher_root, model_dir=args.model_dir) if args.profile == "semantic_acquisition_v1" else {}
+    run(args.output, args.profile, **options)

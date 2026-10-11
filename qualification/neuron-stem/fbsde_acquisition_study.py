@@ -1,0 +1,282 @@
+"""Observed partial-text decisions and bounded finite NDU acquisition control.
+
+Called by the existing fbsde_study entrypoint. Labels are original public labels;
+view acquisition is a designed offline protocol, not real user clarification.
+"""
+from collections import Counter
+from dataclasses import asdict
+import hashlib
+import os
+from pathlib import Path
+import random
+import time
+
+from four_gate_common import canonical, digest, require, write_once
+from four_gate_capture import tensor_digest
+from fbsde_acquisition import (JointKernel, Objective, ViewPort, certainty_equivalent,
+                               exhaustive_reference, history_key, solve, terminal)
+from fbsde_acquisition_data import (DATA_REV, DATA_PINS, INTENTS, PARTITIONS,
+                                    load_publisher, partition, text_view, hashed_reference)
+
+ARMS = ('initial_only', 'full_only', 'all_views', 'best_fixed', 'confidence',
+        'myopic', 'ndu_bsde', 'compiled_same_model', 'risk_ndu')
+FIXED = ((), (1,), (2,), (1, 2))
+THRESHOLDS = (.5, .65, .8, .95)
+SEED = 179424673
+
+
+def scored(records, labels, objective):
+    require(len(records) == len(labels) and len({r['id'] for r in records}) == len(labels),
+            'complete terminal evaluation inventory')
+    correct = accepted = 0; rewards = []; costs = []; reads = []; errors = Counter(); classes = Counter()
+    for row in records:
+        require(row['id'] in labels, 'unregistered answer')
+        gold = labels[row['id']]; classes[gold] += 1
+        answer = row['action']
+        if answer == 'abstain':
+            reward = objective.abstain
+            require(row['text'] == 'Insufficient evidence; abstain.', 'abstention decoding drift')
+        else:
+            require(answer.startswith('answer:'), 'unfinished decision')
+            label = int(answer.split(':')[1]); require(0 <= label < len(INTENTS), 'invalid label')
+            require(row['text'] == f'The request is classified as {INTENTS[label]}.', 'decoded answer drift')
+            right = label == gold; correct += right; accepted += 1
+            errors[gold] += not right
+            reward = objective.correct if right else objective.wrong
+        viewed = [event['view'] for event in row['events']]
+        require(viewed[0] == 0 and len(viewed) == len(set(viewed)) <= 3, 'invalid acquisition trace')
+        cost = sum(objective.costs[v-1] for v in viewed if v)
+        require(abs(cost-row['modeled_cost']) < 1e-12, 'cost/trace mismatch')
+        rewards.append(reward-cost); costs.append(cost); reads.append(len(viewed)-1)
+    return {'count': len(records), 'correct': correct, 'answered': accepted,
+            'answer_coverage': accepted/len(records), 'correct_coverage': correct/len(records),
+            'accepted_error': (accepted-correct)/accepted if accepted else None,
+            'mean_external_score_minus_cost': sum(rewards)/len(rewards),
+            'empirical_entropic_score_rho_half': certainty_equivalent(rewards, [1/len(rewards)]*len(rewards), .5),
+            'mean_additional_views': sum(reads)/len(reads), 'modeled_cost_total': sum(costs),
+            'wrong_answers_by_class': dict(sorted(errors.items())),
+            'class_counts': dict(sorted(classes.items())), 'read_count_histogram': dict(Counter(reads)),
+            'iid_independence_authenticated': False, 'confidence_intervals_claimed': False}
+
+
+def choose(arm, kernel, history, objective, fixed, threshold, tables):
+    if arm in ('initial_only', 'full_only', 'all_views', 'best_fixed'):
+        order = {'initial_only': (), 'full_only': (2,), 'all_views': (1, 2), 'best_fixed': fixed}[arm]
+        for view in order:
+            if view not in dict(history): return f'read:{view}', None
+    elif arm == 'confidence':
+        belief = kernel.distribution(history)[1]
+        if max(belief) < threshold:
+            for view in (1, 2):
+                if view not in dict(history): return f'read:{view}', None
+    elif arm == 'compiled_same_model':
+        identity, actions = tables
+        require(identity == digest([kernel.identity, asdict(objective)]), 'stale kernel/objective table')
+        return actions[history_key(history, kernel.symbols)], None
+    elif arm in ('myopic', 'ndu_bsde', 'risk_ndu'):
+        value = solve(kernel, history, objective, one_step=arm == 'myopic')
+        return value['action'], {'root_value': value['value'], 'edges': value['edges'],
+                                 'kernel_sha256': value['kernel_sha256']}
+    return terminal(kernel, history, objective)[0], None
+
+
+def execute(row, arm, kernel, objective, provider, fixed, threshold, tables, head_identity):
+    """The chooser has no row text, ID, hidden future symbol, or label argument."""
+    started_cpu, started_wall = time.process_time_ns(), time.perf_counter_ns()
+    port = ViewPort(provider, kernel.symbols); history = port.read(0); decisions = []
+    for _ in range(3):
+        begin = time.process_time_ns()
+        action, trace = choose(arm, kernel, history, objective, fixed, threshold, tables)
+        decisions.append({'history': history, 'action': action, 'bsde': trace,
+                          'cpu_ns': time.process_time_ns()-begin})
+        if action.startswith('read:'):
+            history = port.read(int(action.split(':')[1]))
+        else:
+            text = ('Insufficient evidence; abstain.' if action == 'abstain' else
+                    f'The request is classified as {INTENTS[int(action.split(":")[1])]}.')
+            return {'id': row['id'], 'source_input_sha256': row['text_sha256'], 'arm': arm,
+                    'action': action, 'text': text, 'head_sha256': head_identity,
+                    'kernel_sha256': kernel.identity, 'objective_sha256': digest(asdict(objective)),
+                    'events': port.events, 'decisions': decisions,
+                    'modeled_cost': sum(objective.costs[e['view']-1] for e in port.events if e['view']),
+                    'cpu_ns': time.process_time_ns()-started_cpu, 'wall_ns': time.perf_counter_ns()-started_wall}
+    raise ValueError('acquisition policy exceeded horizon')
+
+
+def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_dir=None):
+    import torch
+    from torch import nn
+    from four_gate_pretrained import MODEL, REVISION, load_pinned, file_hash
+
+    require(backend in ('hashing_reference_v1', 'mmbert'), 'explicit backend; no silent substitute')
+    output = Path(output); output.mkdir(parents=True, exist_ok=False)
+    torch.set_num_threads(2); torch.manual_seed(SEED)
+    envelope_cpu = time.process_time_ns(); jobs = []
+    sources = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(__file__).parent.glob('fbsde_acquisition*.py')}
+    objective, risk = Objective(), Objective(rho=.5)
+    write_once(output/'plan.json', {'schema': 'hepta.fbsde.semantic-acquisition.plan.v1',
+        'backend': backend, 'model': MODEL if backend == 'mmbert' else 'deterministic_sha256_lexical_384',
+        'revision': REVISION if backend == 'mmbert' else None, 'publisher_revision': DATA_REV,
+        'publisher_pins': DATA_PINS, 'sources': sources, 'intents': INTENTS, 'partitions': PARTITIONS,
+        'seed': SEED, 'steps': 96, 'lr': .003, 'kernel_alpha': .01,
+        'normalization_fit_only': True, 'view_protocol': 'first_3_words,last_3_words,full_original',
+        'objective': asdict(objective), 'risk_objective': asdict(risk), 'arms': ARMS,
+        'fixed_grid': FIXED, 'confidence_grid': THRESHOLDS, 'prediction_cpu_limit_ns': 100_000_000,
+        'test_labels_not_used_for_selection': True, 'real_future_observations': False,
+        'source_author_independence_unknown': True, 'production_promotion_permitted': False})
+    begin = time.process_time_ns()
+    data = load_publisher(publisher_root or output/'publisher'); splits = partition(data)
+    # Text and gold remain separate at the policy interface, not separate OS trust domains.
+    inputs = {s: [{k: v for k, v in r.items() if k != 'label'} for r in rows] for s, rows in splits.items()}
+    labels = {s: {r['id']: r['label'] for r in rows} for s, rows in splits.items()}
+    write_once(output/'input-inventory.json', inputs)
+    jobs.append({'id': 'publisher_and_partition', 'phase': 'load', 'cpu_ns': time.process_time_ns()-begin})
+    physical = {'backend': backend, 'real_pretrained_weights_executed': backend == 'mmbert'}
+    begin = time.process_time_ns()
+    if backend == 'mmbert':
+        require(model_dir is not None, 'physical model directory required')
+        model, tokenizer, inventory, loading = load_pinned(Path(model_dir))
+        physical.update({'model': MODEL, 'revision': REVISION, 'physical_files': inventory, 'loading': loading})
+        def encode(texts):
+            tokens = tokenizer(texts, padding=True, truncation=False, return_tensors='pt')
+            require(tokens['input_ids'].shape[1] <= 256, 'no silent truncation')
+            with torch.inference_mode():
+                h = model(**tokens).last_hidden_state.float(); mask = tokens['attention_mask'].unsqueeze(-1)
+                return (h*mask).sum(1)/mask.sum(1)
+    else:
+        def encode(texts): return hashed_reference(texts, torch)
+    jobs.append({'id': 'encoder_load', 'phase': 'load', 'cpu_ns': time.process_time_ns()-begin})
+    begin = time.process_time_ns(); encode(['Please classify this request.'])
+    jobs.append({'id': 'encoder_warmup', 'phase': 'warmup', 'cpu_ns': time.process_time_ns()-begin})
+    # Preparation never computes test views. Each TEST acquisition below performs its own forward.
+    features = {}; forward_records = []
+    begin = time.process_time_ns()
+    for split in ('fit', 'kernel', 'selection'):
+        requests = [(r['id'], v, text_view(r['text'], v)) for r in inputs[split] for v in range(3)]
+        for start in range(0, len(requests), 32):
+            batch = requests[start:start+32]; t = time.process_time_ns(); x = encode([r[2] for r in batch])
+            require(x.shape == (len(batch), 384) and torch.isfinite(x).all().item(), 'encoder feature contract')
+            forward_records.append({'split': split, 'inputs': [(u, v, digest(txt)) for u, v, txt in batch],
+                'vectors_sha256': tensor_digest(x), 'cpu_ns': time.process_time_ns()-t})
+            features.update({(u, v): x[i].clone() for i, (u, v, _) in enumerate(batch)})
+    fit_keys = [(r['id'], v) for r in inputs['fit'] for v in range(3)]
+    fit_x = torch.stack([features[k] for k in fit_keys]); mean, scale = fit_x.mean(0), fit_x.std(0).clamp_min(.1)
+    normalize = lambda x: ((x-mean)/scale).clamp(-8, 8)
+    fit_x = normalize(fit_x); features = {k: normalize(v) for k, v in features.items()}
+    jobs.append({'id': 'pretest_features_and_normalizer', 'phase': 'training', 'cpu_ns': time.process_time_ns()-begin})
+    class Head(nn.Module):
+        def __init__(self):
+            super().__init__(); self.value = nn.Linear(384, 16); self.gate = nn.Linear(384, 16); self.out = nn.Linear(16, 8)
+        def forward(self, x): return self.out(self.value(x).tanh()*self.gate(x).sigmoid())
+    begin = time.process_time_ns(); head = Head(); optimizer = torch.optim.AdamW(head.parameters(), lr=.003)
+    fit_y = torch.tensor([labels['fit'][uid] for uid, _ in fit_keys]); losses = []
+    for _ in range(96):
+        optimizer.zero_grad(); loss = nn.functional.cross_entropy(head(fit_x), fit_y)
+        require(torch.isfinite(loss).item(), 'nonfinite head loss'); loss.backward()
+        nn.utils.clip_grad_norm_(head.parameters(), 1.); optimizer.step(); losses.append(float(loss.item()))
+    head.eval().requires_grad_(False)
+    head_id = digest({k: tensor_digest(v) for k, v in head.state_dict().items()})
+    jobs.append({'id': 'shared_head_fit', 'phase': 'training', 'cpu_ns': time.process_time_ns()-begin})
+    begin = time.process_time_ns(); observations = {}; kernel_observations = []
+    with torch.inference_mode():
+        for split in ('kernel', 'selection'):
+            for r in inputs[split]:
+                x = torch.stack([features[(r['id'], v)] for v in range(3)])
+                probabilities = head(x).softmax(-1)
+                observations[r['id']] = tuple(int(v) for v in probabilities.argmax(-1).tolist())
+                if split == 'kernel':
+                    kernel_observations.append({'id': r['id'], 'text_sha256': r['text_sha256'],
+                        'symbols': observations[r['id']], 'probabilities': probabilities.tolist(),
+                        'head_sha256': head_id})
+    kernel_rows = [(labels['kernel'][r['id']], *observations[r['id']]) for r in inputs['kernel']]
+    binding = {'head': head_id, 'backend': physical, 'kernel_inputs': digest(inputs['kernel']),
+               'normalizer': digest([tensor_digest(mean), tensor_digest(scale)])}
+    kernel = JointKernel.fit(kernel_rows, 8, binding)
+    jobs.append({'id': 'joint_kernel_fit', 'phase': 'training', 'cpu_ns': time.process_time_ns()-begin})
+    write_once(output/'kernel-fit-observations.json', kernel_observations)
+    write_once(output/'kernel.json', {'counts': kernel.counts, 'binding': binding, 'identity': kernel.identity,
+                                    'fit_row_count': len(kernel_rows), 'classes': 8, 'symbols': 8})
+    def cached_provider(row):
+        def view(v): return observations[row['id']][v], {'kind': 'pretest_cached_symbol', 'view': v}
+        return view
+    begin = time.process_time_ns(); fixed_scores = []; threshold_scores = []
+    for order in FIXED:
+        rows = [execute(r, 'best_fixed', kernel, objective, cached_provider(r), order, .8, None, head_id)
+                for r in inputs['selection']]
+        fixed_scores.append((order, scored(rows, labels['selection'], objective)['mean_external_score_minus_cost']))
+    fixed = max(fixed_scores, key=lambda x: x[1])[0]
+    for threshold in THRESHOLDS:
+        rows = [execute(r, 'confidence', kernel, objective, cached_provider(r), fixed, threshold, None, head_id)
+                for r in inputs['selection']]
+        threshold_scores.append((threshold, scored(rows, labels['selection'], objective)['mean_external_score_minus_cost']))
+    threshold = max(threshold_scores, key=lambda x: x[1])[0]
+    jobs.append({'id': 'simple_controller_selection', 'phase': 'search', 'cpu_ns': time.process_time_ns()-begin})
+    begin = time.process_time_ns(); table = {}; interfaces = []
+    for symbol in range(8):
+        solved = solve(kernel, ((0, symbol),), objective); table.update(solved['actions']); interfaces += solved['edges']
+    tables = (digest([kernel.identity, asdict(objective)]), table)
+    jobs.append({'id': 'compiled_dp_preparation', 'phase': 'search', 'cpu_ns': time.process_time_ns()-begin})
+    write_once(output/'selection.json', {'fixed_scores': fixed_scores, 'selected_fixed': fixed,
+        'threshold_scores': threshold_scores, 'threshold': threshold, 'head_sha256': head_id,
+        'tables_binding': tables[0], 'tables': [{'history': h, 'action': a} for h, a in table.items()],
+        'training_losses': losses, 'head_parameters': sum(p.numel() for p in head.parameters()),
+        'finite_bsde_edges': interfaces})
+    records = {a: [] for a in ARMS}; validation_records = {a: [] for a in ARMS}
+    # Freeze all model selection before validation/test. Validate is reported, never used to tune.
+    for split in ('validation', 'test'):
+        streams = {a: (output/f'{split}-{a}.jsonl').open('xb') for a in ARMS}
+        try:
+            for ordinal, row in enumerate(inputs[split]):
+                order = list(ARMS); random.Random(SEED+ordinal).shuffle(order)
+                for arm in order:
+                    obj = risk if arm == 'risk_ndu' else objective
+                    def provider(view):
+                        t = time.process_time_ns(); txt = text_view(row['text'], view)
+                        with torch.inference_mode():
+                            vector = encode([txt]); p = head(normalize(vector)).softmax(-1)[0]
+                        require(torch.isfinite(p).all().item(), 'nonfinite actual observation')
+                        elapsed = time.process_time_ns()-t
+                        require(elapsed <= 100_000_000, 'per-view CPU budget exceeded')
+                        return int(p.argmax().item()), {'kind': 'actual_requested_forward',
+                            'text_sha256': digest(txt), 'vector_sha256': tensor_digest(vector),
+                            'probabilities': p.tolist(), 'cpu_ns': elapsed, 'head_sha256': head_id}
+                    rec = execute(row, arm, kernel, obj, provider, fixed, threshold, tables, head_id)
+                    streams[arm].write(canonical(rec)+b'\n'); streams[arm].flush()
+                    (records if split == 'test' else validation_records)[arm].append(rec)
+        finally:
+            for stream in streams.values():
+                stream.flush(); os.fsync(stream.fileno()); stream.close()
+    require(head_id == digest({k: tensor_digest(v) for k, v in head.state_dict().items()}), 'selected head mutated')
+    # All test predictions exist on disk BEFORE the outcome scorer uses labels.
+    begin = time.process_time_ns()
+    metrics = {a: scored(records[a], labels['test'], objective) for a in ARMS}
+    jobs.append({'id': 'outcome_scoring', 'phase': 'evaluation', 'cpu_ns': time.process_time_ns()-begin})
+    for a, b in zip(records['ndu_bsde'], records['compiled_same_model']):
+        require(a['id'] == b['id'] and a['action'] == b['action'] and
+                [e['view'] for e in a['events']] == [e['view'] for e in b['events']],
+                'compiled policy differs from same-model BSDE')
+    tensor_file = output/'candidate-head.pt'; torch.save({'state': head.state_dict(), 'mean': mean, 'scale': scale}, tensor_file)
+    write_once(output/'outcomes.json', labels)
+    write_once(output/'preparation-forwards.json', forward_records)
+    write_once(output/'physical.json', {**physical, 'normalizer_fit_ids': [r['id'] for r in inputs['fit']],
+        'candidate_head_file_sha256': file_hash(tensor_file), 'candidate_head_identity': head_id})
+    elapsed = time.process_time_ns()-envelope_cpu
+    classified = sum(j['cpu_ns'] for j in jobs)+sum(r['cpu_ns'] for grouped in (records, validation_records) for rows in grouped.values() for r in rows)
+    require(elapsed >= classified, 'overlapping CPU components')
+    report = {'schema': 'hepta.fbsde.semantic-acquisition.results.v1', 'backend': backend,
+        'metrics': metrics, 'actual_test_forwards': {a: sum(len(r['events']) for r in rows) for a, rows in records.items()},
+        'actual_test_cpu_ns': {a: sum(r['cpu_ns'] for r in rows) for a, rows in records.items()},
+        'jobs_once': jobs, 'measured_experiment_cpu_ns': elapsed,
+        'actual_validation_cpu_ns': {a: sum(r['cpu_ns'] for r in rows) for a, rows in validation_records.items()},
+        'classified_cpu_ns': classified, 'unallocated_preparation_recording_ns': elapsed-classified,
+        'test_source_count': len(inputs['test']), 'kernel_source_count': len(inputs['kernel']),
+        'compiled_vs_bsde_predictions_equal': True, 'full_lifecycle_costs_allocated': False,
+        'native_deployment_evidence': False, 'future_window_evidence': False,
+        'general_continuous_fbsde_claimed': False, 'production_promotion_permitted': False,
+        'risk_objective_is_preregistered_not_redefined_by_predictions': True,
+        'validation_not_used_for_selection': True,
+        'interpretation': 'partial historical text views; no new user response or world truth is synthesized'}
+    write_once(output/'results.json', report)
+    from fbsde_acquisition_audit import audit
+    write_once(output/'arithmetic-audit.json', audit(output, splits))
+    return report
