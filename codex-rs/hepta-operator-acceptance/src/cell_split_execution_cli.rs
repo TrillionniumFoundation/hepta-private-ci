@@ -97,18 +97,11 @@ pub fn run_pinned_cell_split_execution_v1(
         Duration::from_millis(config.timeout_millis),
     )
     .map_err(|error| error.to_string())?;
-    let mut owner = CellSplitExecutionOwnerV1::open(
-        &config.execution_root,
-        config.plan,
-        trust,
-        port,
-    )
-    .map_err(|error| error.to_string())?;
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(&config.execution_root, config.plan, trust, port)
+            .map_err(|error| error.to_string())?;
     let (receipt, transcript) = match selected_action {
-        "advance" => (
-            owner.advance().map_err(|error| error.to_string())?,
-            None,
-        ),
+        "advance" => (owner.advance().map_err(|error| error.to_string())?, None),
         _ => (
             None,
             owner
@@ -129,7 +122,9 @@ pub fn run_pinned_cell_split_execution_v1(
 
 fn canonical_hex(value: &str) -> bool {
     value.len() == 64
-        && value.bytes().all(|ch| ch.is_ascii_hexdigit() && !ch.is_ascii_uppercase())
+        && value
+            .bytes()
+            .all(|ch| ch.is_ascii_hexdigit() && !ch.is_ascii_uppercase())
 }
 
 fn parse_verifying_key(value: &str) -> Result<VerifyingKey, String> {
