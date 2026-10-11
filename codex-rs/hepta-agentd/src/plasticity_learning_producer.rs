@@ -34,6 +34,14 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
+    /// An open channel is a health prerequisite, never a grant to change
+    /// Cell weights or topology. The real owner retains authorization and
+    /// durability decisions after receipt of a bounded request.
+    #[must_use]
+    pub fn is_open(&self) -> bool {
+        self.handle.is_open()
+    }
+
     pub async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
