@@ -731,7 +731,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         let directive_error = directive_read_error.or_else(|| {
             recovery_directive.as_ref().and_then(|directive| {
                 if directive.intent_sha256 != intent.intent_sha256 {
-                    Some("signed intent recovery directive does not match current intent".to_string())
+                    Some(
+                        "signed intent recovery directive does not match current intent"
+                            .to_string(),
+                    )
                 } else if !matches!(directive.action, SignedIntentRecoveryAction::Abort) {
                     Some("signed intent recovery directive has an unsupported action".to_string())
                 } else {

@@ -176,7 +176,11 @@ fn write_intent_raw(
     Ok(())
 }
 
-fn write_process_lease_raw(run_root: &Path, agent_id: &AgentId, spawn_generation: u64) -> Result<(), SupervisorError> {
+fn write_process_lease_raw(
+    run_root: &Path,
+    agent_id: &AgentId,
+    spawn_generation: u64,
+) -> Result<(), SupervisorError> {
     std::fs::write(
         run_root.join("supervisor-process.json"),
         serde_json::json!({
@@ -262,7 +266,7 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
 }
 
 #[test]
-fn mismatched_abort_directive_keeps_unresolved_intent_fail_closed() -> Result<(), SupervisorError> {
+fn mismatched_abort_directive_is_fail_closed() -> Result<(), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
