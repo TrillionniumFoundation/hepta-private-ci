@@ -319,9 +319,19 @@ jobs:
             cargo_args+=(--features sandbox)
           fi
 
+          # Keep generated Cargo artifacts isolated from other Rust toolchains and
+          # discard only this bounded, disposable smoke target before each build.
+          # rusty_v8 carries its own source-build toolchain, so stale host crates
+          # here can otherwise trigger E0514 when Cargo switches compilers.
+          smoke_toolchain="1.96.0"
+          smoke_target_dir="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}-rustc-${smoke_toolchain}"
+          rm -rf -- "${smoke_target_dir}"
+          mkdir -p -- "${smoke_target_dir}"
+
           (
             cd codex-rs
-            CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
+            RUSTUP_TOOLCHAIN="${smoke_toolchain}" \
+            CARGO_TARGET_DIR="${smoke_target_dir}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \
             "${CARGO_1_95}" "${cargo_args[@]}"
