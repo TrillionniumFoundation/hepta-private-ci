@@ -61,6 +61,16 @@ class CpuCaptureTests(unittest.TestCase):
         self.assertFalse(shared["native_worker_execution_authenticated"])
         self.assertFalse(shared["production_promotion_permitted"])
 
+    def test_request_latency_includes_previous_batch_queueing(self):
+        data = self.capture("joint_batch", max_batch_size=1)
+        starts = {row["start_ns"] for row in data["requests"]}
+        self.assertEqual(len(starts), 1)
+        last = data["requests"][-1]
+        self.assertGreater(last["end_ns"] - last["start_ns"],
+                           data["encoder_forwards"][-1]["end_ns"] -
+                           data["encoder_forwards"][-1]["start_ns"])
+        self.assertEqual(data["arrival_policy"], "all_rows_queued_at_capture_start")
+
     def test_all_four_scales_physically_tick_every_toy_head(self):
         for n in (64, 256, 1024, 4096):
             with self.subTest(cells=n):

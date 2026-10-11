@@ -81,3 +81,49 @@ jobs:
             four-gate-cpu.log
           if-no-files-found: error
           retention-days: 14
+
+  historical-probes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: current
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 88d248277e853b96613f6b442386c25921ad2372
+          path: historical
+          persist-credentials: false
+      - name: Bind both identities without importing the old reviewer over the new
+        run: |
+          git -C current rev-parse HEAD > current-source.txt
+          git -C historical rev-parse HEAD > historical-source.txt
+          test "$(cat historical-source.txt)" = 88d248277e853b96613f6b442386c25921ad2372
+          python3 -m venv /tmp/historical-probe-venv
+          /tmp/historical-probe-venv/bin/pip install numpy==2.2.6 psutil==7.0.0
+          /tmp/historical-probe-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+      - name: Execute preserved 62 regressions and 13 actual tensor mechanisms
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=historical/qualification/neuron-stem /tmp/historical-probe-venv/bin/python \
+            -m unittest discover -s historical/qualification/neuron-stem \
+            -p 'test_four_gate_core.py' -v 2>&1 | tee historical-protocol.log
+          PYTHONPATH=historical/qualification/neuron-stem /tmp/historical-probe-venv/bin/python \
+            -m unittest four_gate_tensor_tests -v 2>&1 | tee historical-tensor.log
+          git -C current diff --exit-code
+          git -C historical diff --exit-code
+      - name: Preserve historical compatibility evidence, not new efficacy
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: four-gate-historical-${{ github.run_id }}
+          path: |
+            current-source.txt
+            historical-source.txt
+            historical-protocol.log
+            historical-tensor.log
+          if-no-files-found: error
+          retention-days: 14

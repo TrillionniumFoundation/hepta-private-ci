@@ -88,7 +88,8 @@ def capture_cpu(model, prepare_batch, pool, heads, schedule, *, arm,
         with torch.inference_mode():
             for start in range(0, len(schedule), max_batch_size):
                 chunk = schedule[start:start + max_batch_size]
-                admitted = time.perf_counter_ns()
+                # All schedule rows are already queued when capture begins.
+                admitted = begin_wall
                 keys = [encoding_key(row, arm, pipeline_sha256) for row in chunk]
                 slots = {}
                 missing, missing_keys = [], []
@@ -145,6 +146,7 @@ def capture_cpu(model, prepare_batch, pool, heads, schedule, *, arm,
             "sampled_peak_rss_bytes": peak_rss,
             "rss_is_continuously_sampled_high_watermark": False,
             "completed_schedule_sha256": digest(schedule),
+            "arrival_policy": "all_rows_queued_at_capture_start",
             "native_worker_execution_authenticated": False,
             "production_promotion_permitted": False,
             "limitations": ["CPU research process only; no GPU or energy measurement",

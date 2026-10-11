@@ -44,7 +44,9 @@ class PhysicalCaptureContracts(unittest.TestCase):
             self.assertEqual(len(rows), 64)
             self.assertEqual(len({r["state_sha256"] for r in rows}), 6)
             self.assertEqual(len(sources), 3)
-            self.assertIn("Question:", payloads["request-0"]["joint"])
+            self.assertTrue(payloads["request-0"]["joint"].startswith("Question:"))
+            self.assertLess(payloads["request-0"]["joint"].index("Options:"),
+                            payloads["request-0"]["joint"].index("State:"))
             self.assertNotIn("Question:", payloads["request-0"]["state"])
             with self.assertRaisesRegex(ValueError, "insufficient distinct"):
                 build_schedule(root, 4096, 10000, 0)

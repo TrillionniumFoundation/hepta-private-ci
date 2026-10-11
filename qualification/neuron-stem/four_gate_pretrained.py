@@ -12,7 +12,7 @@ import hashlib
 import importlib.metadata
 import platform
 from pathlib import Path
-import resource
+import sys
 import subprocess
 import time
 
@@ -115,7 +115,7 @@ def build_schedule(root, cells, active_bps, repeat_bps):
     for i in range(count):
         state = states[i % unique]
         question = QUESTIONS[i % len(QUESTIONS)]
-        joint = f"State: {state}\nQuestion: {question}\nOptions: {' | '.join(OPTIONS)}"
+        joint = f"Question: {question}\nOptions: {' | '.join(OPTIONS)}\nState: {state}"
         row = {"request_id": f"request-{i}", "cell_id": i,
                "principal": "public-repository-research", "scope": "hepta-docs",
                "purpose": "non-authorizing-physical-stem-capture", "generation": 1,
@@ -127,6 +127,9 @@ def build_schedule(root, cells, active_bps, repeat_bps):
 
 def run(args):
     import torch
+
+    require(sys.platform.startswith("linux"), "physical RSS profile requires Linux")
+    import resource
 
     integer(args.threads, "CPU threads", 1, 16)
     torch.set_num_threads(args.threads)
@@ -142,7 +145,8 @@ def run(args):
         "model": MODEL, "revision": REVISION, "schedule": schedule, "payloads": payloads,
         "source_documents": sources, "arm": args.arm, "max_tokens": args.max_tokens,
         "cells": args.cells, "active_bps": args.active_bps, "repeat_bps": args.repeat_bps,
-        "head_seed": 20261011, "not_a_prospective_efficacy_plan": True})
+        "head_seed": 20261011, "input_profile": "question_options_first_truncate_state_v2",
+        "not_a_prospective_efficacy_plan": True})
     start_cpu, start_wall = time.process_time_ns(), time.perf_counter_ns()
     model, tokenizer, inventory, loading = load_pinned(args.model_dir)
     heads = {i: make_head(torch, torch.nn, "swiglu", 384, len(OPTIONS), 16384)[0].eval()
@@ -153,6 +157,7 @@ def run(args):
                       for i, head in heads.items()}
     pipeline = digest({"revision": REVISION, "files": inventory, "max_tokens": args.max_tokens,
                        "dtype": "float32", "attention": "eager", "pooling": "masked_mean",
+                       "input_profile": "question_options_first_truncate_state_v2",
                        "source_sha": source})
     state = {}
 
