@@ -43,6 +43,7 @@ pub enum BatchWorkerErrorV1 {
     Authority,
     Worker,
     Capacity,
+    TelemetryUnavailable,
 }
 
 #[derive(Debug)]
@@ -77,6 +78,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<StableId>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    metrics_poisoned: bool,
     maximum_ids: usize,
 }
 
@@ -138,6 +140,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            metrics_poisoned: false,
             maximum_ids: limits.max_pending,
         })
     }
