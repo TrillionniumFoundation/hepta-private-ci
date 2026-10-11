@@ -504,8 +504,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             let step = CellSplitExecutionStepV1::at(self.cursor)
                 .ok_or(CellSplitExecutionErrorV1::Invalid("pending step index"))?;
             let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
-            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
-                .ok_or(CellSplitExecutionErrorV1::Invalid("pending intent disappeared"))?;
+            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("pending intent disappeared"),
+            )?;
             if prepared != canonical_json(&intent)? {
                 return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
             }
