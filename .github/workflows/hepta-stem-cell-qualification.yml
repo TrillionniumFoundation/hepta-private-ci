@@ -39,6 +39,34 @@ jobs:
           git diff --check
           git diff --exit-code
 
+  formatter-diagnostic:
+    name: Capture exact Rust formatter patch (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Record exact checked-out input
+        run: git rev-parse HEAD HEAD^{tree}
+      - name: Produce candidate patch without retaining changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src > "$RUNNER_TEMP/stem-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src
+          git diff --check
+          git diff --exit-code
+      - name: Upload proposed formatting only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-fast-rustfmt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-rustfmt.patch
+          if-no-files-found: warn
+          retention-days: 7
+
   native-worker-batch:
     name: Native Neuron Head/batch and final-use ordering contracts (L1 only)
     runs-on: ubuntu-24.04
