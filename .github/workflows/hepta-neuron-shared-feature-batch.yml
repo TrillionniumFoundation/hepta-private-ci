@@ -171,11 +171,10 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import re
           from pathlib import Path
           root = Path("codex-rs/cli/src")
           shared = (root / "main.rs").read_text(encoding="utf-8")
-          if re.search(r"(?m)^\\s*#!\\[", shared):
+          if any(line.lstrip().startswith("#![") for line in shared.splitlines()):
               raise SystemExit("included main.rs contains a forbidden crate-level inner attribute")
           for name in ("codex", "hepta"):
               source = (root / f"{name}.rs").read_text(encoding="utf-8")
