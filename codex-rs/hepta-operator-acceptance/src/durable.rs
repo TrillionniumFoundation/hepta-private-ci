@@ -180,7 +180,9 @@ fn sync_verified_sidecar_parent(parent: &Path) -> Result<(), AcceptanceError> {
     directory.sync_all()?;
     let after = std::fs::symlink_metadata(parent)?;
     if after.file_type().is_symlink() || !same_file_identity(&before, &after) {
-        return Err(invalid("durable sidecar parent changed after synchronization"));
+        return Err(invalid(
+            "durable sidecar parent changed after synchronization",
+        ));
     }
     Ok(())
 }
