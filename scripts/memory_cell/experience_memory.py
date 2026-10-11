@@ -202,6 +202,9 @@ class ExperienceReader(ReferenceReader):
         prepared, plan = prepare(
             self.tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING
         )
+        from source_write_coverage import audit_coverage
+
+        coverage = audit_coverage(examples, prepared, plan, curriculum=curriculum)
         params = [p for p in self.model.parameters() if p.requires_grad]
         before = {
             k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()
@@ -283,6 +286,7 @@ class ExperienceReader(ReferenceReader):
                 curriculum_receipt=curriculum_receipt,
                 training_digest=digest((examples, prepared)),
                 write_schedule=plan,
+                write_curriculum_coverage=coverage,
                 schedule_sha256=digest(plan),
                 roots=sorted(self.roots),
                 scopes=plan["scopes"],

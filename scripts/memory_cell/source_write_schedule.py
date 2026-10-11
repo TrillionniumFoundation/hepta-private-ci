@@ -100,7 +100,7 @@ def prepare(tokenizer, examples, *, maximum_steps, token_ceiling):
     )
 
 
-def preflight(sources, output, *, source_sha):
+def preflight(sources, output, *, source_sha, curriculum="single_hop"):
     from huggingface_hub import HfApi, snapshot_download
     from transformers import AutoTokenizer
     from bundle_trial import write
@@ -113,12 +113,22 @@ def preflight(sources, output, *, source_sha):
         Document(**(d | {"assets": tuple(d["assets"])}))
         for d in read(sources, source_sha)
     )
-    examples, dispositions = source_examples(
-        documents,
+    source_args = dict(
         revision=2,
         allowed_roots={d.root for d in documents},
         revoked=set(),
     )
+    if curriculum == "source_two_hop":
+        from source_composition_curriculum import combine_source_examples
+
+        examples, dispositions, curriculum_receipt = combine_source_examples(
+            documents, **source_args
+        )
+    elif curriculum == "single_hop":
+        examples, dispositions = source_examples(documents, **source_args)
+        curriculum_receipt = None
+    else:
+        raise ValueError("unregistered source-only curriculum")
     output.mkdir()
     repository, revision = MODELS["qwen-3b"]
     entries = catalogue(
@@ -150,9 +160,12 @@ def preflight(sources, output, *, source_sha):
     tokenizer = AutoTokenizer.from_pretrained(
         output / "tokenizer", local_files_only=True, trust_remote_code=False
     )
-    _, plan = prepare(
+    prepared, plan = prepare(
         tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING
     )
+    from source_write_coverage import audit_coverage
+
+    coverage = audit_coverage(examples, prepared, plan, curriculum=curriculum)
     result = dict(
         schema="hepta.source-write.preflight.v1",
         writer_profile=PROFILE,
@@ -166,6 +179,9 @@ def preflight(sources, output, *, source_sha):
         source_example_ids=[r["query"]["identity"] for r in examples],
         source_supervision_digest=digest(examples),
         unresolved_source_facts=dispositions,
+        curriculum=curriculum,
+        curriculum_receipt=curriculum_receipt,
+        curriculum_coverage=coverage,
         schedule=plan,
         schedule_sha256=digest(plan),
         measured_preflight_seconds=time.perf_counter() - started,
@@ -184,5 +200,13 @@ if __name__ == "__main__":
     parser.add_argument("sources", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--source-sha", required=True)
+    parser.add_argument(
+        "--curriculum",
+        choices=("single_hop", "source_two_hop"),
+        default="single_hop",
+    )
     args = parser.parse_args()
-    preflight(args.sources, args.output, source_sha=args.source_sha)
+    preflight(
+        args.sources, args.output,
+        source_sha=args.source_sha, curriculum=args.curriculum,
+    )
