@@ -941,6 +941,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         owner,
         cancellation.clone(),
     );
+    assert!(
+        state.plasticity_admission_ready().expect("owner readiness"),
+        "a running, attached Plasticity Owner should permit governed proposals"
+    );
 
     let first = state
         .submit_parameter_plasticity_v1(request.clone(), 50)
@@ -968,6 +972,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("owner task join")
         .expect("owner task shutdown");
+    assert!(
+        !state.plasticity_admission_ready().expect("owner shutdown readiness"),
+        "a stopped bounded owner channel must close product admission"
+    );
     drop(state);
 
     let recovered_ledger = DurableLedger::recover(
@@ -1017,6 +1025,10 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         restarted_owner,
         restarted_cancellation.clone(),
     );
+    assert!(
+        restarted_state.plasticity_admission_ready().expect("restart readiness"),
+        "a newly attached owner is necessary for replay proposals"
+    );
 
     let second = restarted_state
         .submit_parameter_plasticity_v1(request, 50)
@@ -1048,6 +1060,12 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("restart task join")
         .expect("restart task shutdown");
+    assert!(
+        !restarted_state
+            .plasticity_admission_ready()
+            .expect("restarted owner shutdown readiness"),
+        "replayed requests must not re-open a dead owner channel"
+    );
     drop(restarted_state);
 
     let (reconciled, _anchor_store): (
