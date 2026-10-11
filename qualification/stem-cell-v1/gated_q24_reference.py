@@ -63,11 +63,13 @@ def _validated_head(head):
         values = head[name]
         if type(values) is not list or any(type(v) is not int for v in values):
             raise ValueError("noncanonical Head coefficients")
-        if len(values) not in (
-            (count,) if name == "drive_weights_q24" else
-            (0, count) if name in ("prediction_weights_q24", "gate_weights_q24")
-            else (outputs,)
-        ):
+        if name == "drive_weights_q24":
+            allowed_lengths = (count,)
+        elif name in ("prediction_weights_q24", "gate_weights_q24"):
+            allowed_lengths = (0, count)
+        else:
+            allowed_lengths = (outputs,)
+        if len(values) not in allowed_lengths:
             raise ValueError("Head tensor shape mismatch")
         for number in values:
             _q24_integer(number)
@@ -97,8 +99,7 @@ def infer_gated_q24(head, features_q24):
         start = row * width
         total = bias * Q24
         total += sum(
-            weight * value
-            for weight, value in zip(weights[start : start + width], features)
+            weight * value for weight, value in zip(weights[start : start + width], features)
         )
         return _round_q48(total)
 
@@ -106,7 +107,5 @@ def infer_gated_q24(head, features_q24):
     for row in range(outputs):
         gate = _gate_q24(dot(gate_w, gate_b[row], row))
         drive.append(_round_q48(dot(drive_w, drive_b[row], row) * gate))
-        prediction.append(
-            _round_q48(dot(prediction_w, prediction_b[row], row) * gate)
-        )
+        prediction.append(_round_q48(dot(prediction_w, prediction_b[row], row) * gate))
     return tuple(drive), tuple(prediction)
