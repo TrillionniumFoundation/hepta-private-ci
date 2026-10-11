@@ -273,10 +273,38 @@ def paired_future_score(
         raise LearningContractError("invalid production baseline")
     def bce(logits: np.ndarray) -> float:
         return float(np.logaddexp(0, logits).mean() - np.mean(y * logits))
+
+    def brier(probabilities: np.ndarray) -> float:
+        return float(np.mean(np.square(probabilities - y)))
+
+    def ece(probabilities: np.ndarray) -> float:
+        # Fixed ten-bin reliability estimate; bins and future sample
+        # membership must be frozen before scoring, never optimized on labels.
+        bin_ids = np.minimum((probabilities * 10).astype(np.int64), 9)
+        calibration_error = 0.0
+        for bin_index in range(10):
+            selected = bin_ids == bin_index
+            if selected.any():
+                calibration_error += float(
+                    selected.mean()
+                    * abs(probabilities[selected].mean() - y[selected].mean())
+                )
+        return calibration_error
+
+    frozen_logits = frozen.predict(features)
+    trained_logits = trained.predict(features)
+    frozen_probabilities = _sigmoid(frozen_logits)
+    trained_probabilities = _sigmoid(trained_logits)
     no_change_loss = float((-y * np.log(no_change) - (1 - y) * np.log1p(-no_change)).mean())
     return {
         "no_change_bce": no_change_loss,
-        "frozen_bce": bce(frozen.predict(future_x)),
-        "trained_bce": bce(trained.predict(future_x)),
+        "frozen_bce": bce(frozen_logits),
+        "trained_bce": bce(trained_logits),
+        "no_change_brier": brier(no_change),
+        "frozen_brier": brier(frozen_probabilities),
+        "trained_brier": brier(trained_probabilities),
+        "no_change_ece": ece(no_change),
+        "frozen_ece": ece(frozen_probabilities),
+        "trained_ece": ece(trained_probabilities),
         "synthetic_or_offline_only": 1.0,
     }
