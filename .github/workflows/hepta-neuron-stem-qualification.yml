@@ -6,6 +6,10 @@ on:
     paths:
       - "qualification/neuron-stem/**"
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/cli/Cargo.toml"
+      - "codex-rs/cli/src/codex.rs"
+      - "codex-rs/cli/src/hepta.rs"
+      - "codex-rs/cli/src/main.rs"
       - "codex-rs/hepta-agentd/src/state.rs"
       - "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
       - "codex-rs/hepta-prompt-registry/src/durable.rs"
