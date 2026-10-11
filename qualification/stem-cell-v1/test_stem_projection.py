@@ -179,6 +179,25 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(d3.projection_cache_hits,0)
         self.assertFalse(d2.production_authorized)
 
+    def test_4096_cells_reuse_one_real_projection_in_same_scope(self):
+        from stem_projection import ProjectedStemEngine
+        fake = Engine((feature((.5, -.25, .125)),) * 32)
+        runner = ProjectedStemEngine(fake, spec())
+        projected_calls = 0
+        in_batch = 0
+        cache_hits = 0
+        for offset in range(0, 4096, 32):
+            out = runner.run([Request(f"req.{offset+i}") for i in range(32)])
+            projected_calls += out.projection_calls
+            in_batch += out.projection_reuses_within_batch
+            cache_hits += out.projection_cache_hits
+            self.assertFalse(out.production_authorized)
+        self.assertEqual(fake.calls, 128)  # simulated Encoder per batch
+        self.assertEqual(projected_calls, 1)
+        self.assertEqual(in_batch, 31)
+        self.assertEqual(cache_hits, 4064)
+        self.assertEqual(runner.cache.bytes_used, 16)
+
     def test_preflight_denies_changed_projection_before_encoder_call(self):
         from dataclasses import replace
         fake = Engine((feature((.5,-.25,.125)),))
