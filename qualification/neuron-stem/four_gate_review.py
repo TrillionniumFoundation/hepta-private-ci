@@ -21,6 +21,7 @@ from four_gate_selective import review_selective, validate_selective_plan
 from four_gate_outcomes import WINDOWS, review_ndu, review_reasoning
 
 GATES = ("compute", "learning", "reasoning", "ndu")
+BASELINE_BUNDLE = "hepta.four-gate.evidence-bundle.v2"
 
 
 def validate_plan(plan, now):
@@ -150,10 +151,19 @@ def review_learning(plan, refs, root):
                   [] if passed else ["learning/retention/OOD benefit not established against both controls"])
 
 
-def review_all(plan, bundle, root, *, now=None):
+def review_all(plan, bundle, root, *, now=None, baseline_owner_root=None,
+               baseline_trust_path=None, baseline_trust_sha256=None):
     now = now or datetime.now(timezone.utc)
     validate_plan(plan, now)
-    require(bundle["schema"] == "hepta.four-gate.evidence-bundle.v1", "bundle schema")
+    require(bundle["schema"] in ("hepta.four-gate.evidence-bundle.v1", BASELINE_BUNDLE), "bundle schema")
+    typed_baseline = bundle["schema"] == BASELINE_BUNDLE
+    if typed_baseline:
+        from four_gate_baseline import validate_baseline_plan
+        require(plan["schema"] == V2 and set(bundle) == {
+            "schema", "plan_sha256", "evidence", "production_baseline"}, "typed baseline bundle fields")
+        validate_baseline_plan(plan["production_baseline"])
+    else:
+        require("production_baseline" not in bundle, "typed baseline needs versioned bundle")
     require(bundle["plan_sha256"] == digest(plan), "bundle is not bound to this plan")
     require(set(bundle["evidence"]) == set(GATES), "all four gate slots required")
     reports = {}
@@ -177,12 +187,28 @@ def review_all(plan, bundle, root, *, now=None):
             reports[gate] = {**result(False, {}, [str(exc)]), "status": "blocked_missing_runtime"}
         except (ValueError, KeyError, TypeError, AttributeError, OverflowError) as exc:
             reports[gate] = {**result(False, {}, [str(exc)]), "status": "invalid_evidence"}
+    baseline_report = None
+    if typed_baseline:
+        from four_gate_baseline import review_production_baseline
+        try:
+            if bundle["production_baseline"] is None:
+                raise FileNotFoundError("original production baseline not supplied")
+            baseline_report = review_production_baseline(plan, bundle["production_baseline"], root,
+                owner_root=baseline_owner_root, trust_path=baseline_trust_path,
+                trust_sha256=baseline_trust_sha256)
+        except (FileNotFoundError, ImportError) as exc:
+            baseline_report = {"status": "blocked_missing_baseline_dependency", "reason": str(exc)}
+        except (ValueError, KeyError, TypeError, AttributeError, OverflowError, OSError) as exc:
+            baseline_report = {"status": "invalid_baseline_evidence", "reason": str(exc)}
     all_passed = all(r["status"] == "diagnostic_pass" for r in reports.values())
     return {
         "schema": "hepta.four-gate.research-review.v1",
         "acceptance_plan_schema": plan["schema"],
         "strong_controls_required": plan["schema"] == V2,
-        "current_acceptance_profile_passed": all_passed and plan["schema"] == V2,
+        "typed_production_baseline": baseline_report,
+        "typed_baseline_replaces_learning_gate": False,
+        "current_acceptance_profile_passed": all_passed and plan["schema"] == V2 and not typed_baseline,
+        "typed_bundle_is_supplemental_not_acceptance_profile": typed_baseline,
         "plan_sha256": digest(plan), "bundle_sha256": digest(bundle),
         "evidence_kind": plan["evidence_kind"], "experiment_source_sha": plan["source_sha"],
         "gates": reports, "all_offline_diagnostics_passed": all_passed,
@@ -209,14 +235,19 @@ def main():
     parser.add_argument("--bundle", required=True, help="relative path below root")
     parser.add_argument("--bundle-sha256", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--baseline-owner-root", type=Path, help="operator-staged pinned owner source checkout")
+    parser.add_argument("--baseline-trust", type=Path, help="independently controlled public-key trust file")
+    parser.add_argument("--baseline-trust-sha256", help="out-of-band trust pin, never supplied by evidence")
     args = parser.parse_args()
     plan = read_pinned(args.root, {"path": args.plan, "sha256": args.plan_sha256})
     bundle = read_pinned(args.root, {"path": args.bundle, "sha256": args.bundle_sha256})
-    report = review_all(plan, bundle, args.root)
+    report = review_all(plan, bundle, args.root, baseline_owner_root=args.baseline_owner_root,
+        baseline_trust_path=args.baseline_trust, baseline_trust_sha256=args.baseline_trust_sha256)
     report["plan_file_sha256"] = args.plan_sha256
     report["bundle_file_sha256"] = args.bundle_sha256
     write_once(args.output, report)
-    return 0 if report["all_offline_diagnostics_passed"] else 2
+    return 0 if report["all_offline_diagnostics_passed"] and not report[
+        "typed_bundle_is_supplemental_not_acceptance_profile"] else 2
 
 
 if __name__ == "__main__":

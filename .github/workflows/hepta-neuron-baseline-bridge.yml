@@ -14,10 +14,14 @@ jobs:
   owner-contract:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source: ${{ fromJSON(github.event_name == 'pull_request' && '["head","merge"]' || '["head"]') }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ matrix.source == 'head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
           path: candidate
           persist-credentials: false
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -44,11 +48,19 @@ jobs:
           cd baseline-owner
           /tmp/baseline-bridge-venv/bin/python -m unittest discover -s .github/scripts -p 'test_hepta_neuron_production_baseline_compare.py' -v 2>&1 | tee ../baseline-owner-tests.log
           git diff --exit-code
+      - name: Run canonical Cell bridge against original owner code without skips
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_BASELINE_OWNER_ROOT="$PWD/baseline-owner"
+          export PYTHONPATH="$PWD/candidate/qualification/neuron-stem"
+          /tmp/baseline-bridge-venv/bin/python -m unittest baseline_owner_bridge_checks -v 2>&1 | tee baseline-bridge-tests.log
+          git -C candidate diff --exit-code
       - name: Retain source and actual test records only
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: baseline-bridge-${{ github.run_id }}
+          name: baseline-bridge-${{ matrix.source }}-${{ github.run_id }}
           path: |
             candidate-source.txt
             owner-source.txt
@@ -56,5 +68,6 @@ jobs:
             baseline-owner-source.tar.gz
             candidate-source.tar.gz
             baseline-owner-tests.log
+            baseline-bridge-tests.log
           if-no-files-found: error
           retention-days: 14
