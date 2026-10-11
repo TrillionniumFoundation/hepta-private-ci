@@ -70,18 +70,34 @@ def verify_zip(path, expected):
         )
         if not info.is_dir():
             files[name] = info
-    require(len(files) <= 512 and sum(i.file_size for i in files.values()) < 90 * 1024 * 1024, "unbounded archive")
+    require(
+        len(files) <= 512
+        and sum(i.file_size for i in files.values()) < 90 * 1024 * 1024,
+        "unbounded archive",
+    )
     receipt = z.read("SHA256SUMS").decode("utf-8")
     declared = {}
     for line in receipt.splitlines():
         digest, separator, name = line.partition("  ")
-        require(separator and HEX64.fullmatch(digest) and name and name not in declared, "malformed checksum inventory")
+        require(
+            separator and HEX64.fullmatch(digest) and name and name not in declared,
+            "malformed checksum inventory",
+        )
         canonical = str(PurePosixPath(name))
-        require(canonical not in declared and canonical != "SHA256SUMS", "duplicate or self-referential digest")
+        require(
+            canonical not in declared and canonical != "SHA256SUMS",
+            "duplicate or self-referential digest",
+        )
         declared[canonical] = digest
-    require(set(declared) == set(files) - {"SHA256SUMS"}, "incomplete original checksum inventory")
+    require(
+        set(declared) == set(files) - {"SHA256SUMS"},
+        "incomplete original checksum inventory",
+    )
     for name, expected_digest in declared.items():
-        require(hashlib.sha256(z.read(name)).hexdigest() == expected_digest, "original artifact member drifted")
+        require(
+            hashlib.sha256(z.read(name)).hexdigest() == expected_digest,
+            "original artifact member drifted",
+        )
     return z, len(declared)
 
 
@@ -99,14 +115,21 @@ def classify(*, ranked, original_top8, oracle_ids, eligible, indexed):
         return dict(bucket="not-native-scored", first_rank=None)
     if not oracle_ids:
         return dict(bucket="no-publisher-oracle-source", first_rank=None)
-    require(len(oracle_ids) == len(set(oracle_ids)) and all(isinstance(i, str) and i for i in oracle_ids), "invalid oracle sources")
+    require(
+        len(oracle_ids) == len(set(oracle_ids))
+        and all(isinstance(i, str) and i for i in oracle_ids),
+        "invalid oracle sources",
+    )
     hits = [ranked.index(s) + 1 for s in oracle_ids if s in ranked]
     if hits:
         rank = min(hits)
         return dict(bucket="top8" if rank <= 8 else "ranks9-64", first_rank=rank)
     if indexed is None:
         return dict(bucket="index-unchecked", first_rank=None)
-    return dict(bucket="indexed-beyond-64" if indexed else "not-in-original-index", first_rank=None)
+    return dict(
+        bucket="indexed-beyond-64" if indexed else "not-in-original-index",
+        first_rank=None,
+    )
 
 
 def load_index_identities(zipfile, key, family):
@@ -147,45 +170,108 @@ def analyze(grid, matrix):
         and matrix_plan["schema"] == "hepta.stem-cell.native-development.v1",
         "original generating cohorts or archive roles drifted",
     )
-    raw = [strict_json(s) for s in grid.read("receipts/session-diverse-label-blind.jsonl").decode().splitlines()]
-    require(len(raw) == 80 and all(r["read_targets_for_retrieval"] is False and r["pretrained_reader_calls"] == 0 for r in raw), "not a complete label-blind original frontier")
+    raw = [
+        strict_json(s)
+        for s in grid.read("receipts/session-diverse-label-blind.jsonl")
+        .decode()
+        .splitlines()
+    ]
+    require(
+        len(raw) == 80
+        and all(
+            r["read_targets_for_retrieval"] is False
+            and r["pretrained_reader_calls"] == 0
+            for r in raw
+        ),
+        "not a complete label-blind original frontier",
+    )
     ranked = {}
     for row in raw:
         key = row["question_id"]
-        require(key not in ranked and row["phase"] in ("train", *PHASES), "duplicate label-blind question")
+        require(
+            key not in ranked and row["phase"] in ("train", *PHASES),
+            "duplicate label-blind question",
+        )
         values = row["ranked_original_source_sessions"]
-        require(all(set(v) == {"id", "root", "session"} for v in values), "original indexed rows have changed fields")
+        require(
+            all(set(v) == {"id", "root", "session"} for v in values),
+            "original indexed rows have changed fields",
+        )
         identities = [v["id"] for v in values]
-        require(len(identities) == len(set(identities)) and 8 <= len(identities) <= 64, "invalid original ranked frontier")
-        require(row["original_baseline_source_ids"] == identities[:8], "baseline is not the frozen top-eight")
+        require(
+            len(identities) == len(set(identities)) and 8 <= len(identities) <= 64,
+            "invalid original ranked frontier",
+        )
+        require(
+            row["original_baseline_source_ids"] == identities[:8],
+            "baseline is not the frozen top-eight",
+        )
         ranked[key] = row
-    native = strict_json(matrix.read("comparison/post-policy-native-source-ceiling.json"))
-    require(native["after_all_policy_answers"] is True and native["final_checkpoint"] == 48 and native["independent_semantic_review_performed"] is False, "not a completed historical posthoc native audit")
+    native = strict_json(
+        matrix.read("comparison/post-policy-native-source-ceiling.json")
+    )
+    require(
+        native["after_all_policy_answers"] is True
+        and native["final_checkpoint"] == 48
+        and native["independent_semantic_review_performed"] is False,
+        "not a completed historical posthoc native audit",
+    )
     decisions = native["decisions"]
-    oracle = [strict_json(s) for s in matrix.read("comparison/oracle-diagnostic.jsonl").decode().splitlines()]
+    oracle = [
+        strict_json(s)
+        for s in matrix.read("comparison/oracle-diagnostic.jsonl").decode().splitlines()
+    ]
     expected = [(phase, q) for phase in PHASES for q in matrix_plan["questions"][phase]]
-    require(len(expected) == 32 and len(set(expected)) == 32, "no exact registered evaluation census")
-    require([(d["phase"], d["question_id"]) for d in decisions] == expected, "native diagnostic order or census changed")
-    require([(d["phase"], d["question_id"]) for d in oracle] == expected, "publisher oracle order or census changed")
+    require(
+        len(expected) == 32 and len(set(expected)) == 32,
+        "no exact registered evaluation census",
+    )
+    require(
+        [(d["phase"], d["question_id"]) for d in decisions] == expected,
+        "native diagnostic order or census changed",
+    )
+    require(
+        [(d["phase"], d["question_id"]) for d in oracle] == expected,
+        "publisher oracle order or census changed",
+    )
     admission = strict_json(matrix.read("comparison/source-admission.json"))
     index_by_family = {}
     for index_key, record in admission.items():
         family = record["receipt"]["source_scope"]
-        require(HEX64.fullmatch(index_key) and family not in index_by_family, "inconsistent original family index")
+        require(
+            HEX64.fullmatch(index_key) and family not in index_by_family,
+            "inconsistent original family index",
+        )
         index_by_family[family] = index_key
     buckets = {phase: Counter() for phase in PHASES}
     rows = []
     scoped_indexes = {}
-    for (phase, question), decision, example in zip(expected, decisions, oracle, strict=True):
+    for (phase, question), decision, example in zip(
+        expected, decisions, oracle, strict=True
+    ):
         item = ranked.get(question)
-        require(item is not None and item["phase"] == phase and item["source_family"] == decision["source_family"], "original label-blind rank identity changed")
+        require(
+            item is not None
+            and item["phase"] == phase
+            and item["source_family"] == decision["source_family"],
+            "original label-blind rank identity changed",
+        )
         require(
             example.get("policy_comparator") is False
             and example.get("semantic_entailment_independently_verified") is False
             and (
-                (example.get("oracle_kind") == "native-source-literal-span" and example.get("status") == "succeeded")
-                or (example.get("oracle_kind") == "annotated-unanswerable" and example.get("status") == "succeeded")
-                or (example.get("oracle_kind") == "no-admitted-literal-reference-span" and example.get("status") == "unavailable")
+                (
+                    example.get("oracle_kind") == "native-source-literal-span"
+                    and example.get("status") == "succeeded"
+                )
+                or (
+                    example.get("oracle_kind") == "annotated-unanswerable"
+                    and example.get("status") == "succeeded"
+                )
+                or (
+                    example.get("oracle_kind") == "no-admitted-literal-reference-span"
+                    and example.get("status") == "unavailable"
+                )
             ),
             "oracle role, status or review state changed",
         )
@@ -201,8 +287,7 @@ def analyze(grid, matrix):
             "unbound, repeated or unsuccessful oracle source",
         )
         recorded_roots = {
-            v["id"]: v["root"]
-            for v in item["ranked_original_source_sessions"]
+            v["id"]: v["root"] for v in item["ranked_original_source_sessions"]
         }
         for source in delivered:
             if source["original_id"] in recorded_roots:
@@ -211,10 +296,18 @@ def analyze(grid, matrix):
                     "oracle root differs from original ranked source",
                 )
         indexed = None
-        if eligible and ids and not set(ids).intersection(v["id"] for v in item["ranked_original_source_sessions"]):
+        if (
+            eligible
+            and ids
+            and not set(ids).intersection(
+                v["id"] for v in item["ranked_original_source_sessions"]
+            )
+        ):
             family = decision["source_family"]
             if family not in scoped_indexes:
-                scoped_indexes[family] = load_index_identities(matrix, index_by_family[family], family)
+                scoped_indexes[family] = load_index_identities(
+                    matrix, index_by_family[family], family
+                )
             known = scoped_indexes[family]
             for v in delivered:
                 if v["original_id"] in known:
@@ -231,14 +324,24 @@ def analyze(grid, matrix):
             indexed=indexed,
         )
         buckets[phase][result["bucket"]] += 1
-        rows.append(dict(phase=phase, question_id=question, original_family=decision["source_family"], weak_source_labeled=eligible, publisher_oracle_status=example["status"], publisher_oracle_source_count=len(ids), **result))
+        rows.append(
+            dict(
+                phase=phase,
+                question_id=question,
+                original_family=decision["source_family"],
+                weak_source_labeled=eligible,
+                publisher_oracle_status=example["status"],
+                publisher_oracle_source_count=len(ids),
+                **result,
+            )
+        )
     return dict(
         schema="hepta.stem-frozen-frontier-depth-audit.v1",
         generating_grid_source=grid_plan["generating_source"],
         generating_matrix_source=matrix_plan["source_commit"],
         planned=32,
         family_count=len({r["original_family"] for r in rows}),
-        by_phase={phase:dict(buckets[phase]) for phase in PHASES},
+        by_phase={phase: dict(buckets[phase]) for phase in PHASES},
         total=dict(sum((buckets[phase] for phase in PHASES), Counter())),
         decisions=rows,
         original_oracle_labels_already_exposed=True,
@@ -268,11 +371,18 @@ def main():
     finally:
         grid.close()
         matrix.close()
-    result["original_archive_members_checked"] = {"grid":grid_count,"matrix":matrix_count}
+    result["original_archive_members_checked"] = {
+        "grid": grid_count,
+        "matrix": matrix_count,
+    }
     with args.output.open("x", encoding="utf-8") as output:
         json.dump(result, output, ensure_ascii=False, allow_nan=False, indent=2)
         output.write("\n")
-    print(json.dumps({k:v for k,v in result.items() if k!="decisions"}, allow_nan=False))
+    print(
+        json.dumps(
+            {k: v for k, v in result.items() if k != "decisions"}, allow_nan=False
+        )
+    )
 
 
 if __name__ == "__main__":

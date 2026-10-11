@@ -113,7 +113,7 @@ class CandidateDepthTests(unittest.TestCase):
                 archive.writestr("source.json", payload)
                 archive.writestr(
                     "SHA256SUMS",
-                    f'{hashlib.sha256(payload).hexdigest()}  ./source.json\n',
+                    f"{hashlib.sha256(payload).hexdigest()}  ./source.json\n",
                 )
             loaded, checked = verify_zip(path, sha256_file(path))
             self.assertEqual((checked, loaded.read("source.json")), (1, payload))
