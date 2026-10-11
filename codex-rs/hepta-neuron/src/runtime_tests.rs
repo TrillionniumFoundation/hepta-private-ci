@@ -522,7 +522,12 @@ fn local_binding_requires_checkpoint_and_matching_witness() {
     let config = runtime_config(&native);
     let witness = MemoryWitness::default();
     let mut runtime = checked(NeuronRuntime::bootstrap(
-        fixture.file(), native, scope(), 16, config.clone(), witness.clone(),
+        fixture.file(),
+        native,
+        scope(),
+        16,
+        config.clone(),
+        witness.clone(),
     ));
     assert_eq!(
         runtime.read_local_checkpoint_binding_v1(),
@@ -533,7 +538,10 @@ fn local_binding_requires_checkpoint_and_matching_witness() {
     let binding = checked(runtime.read_local_checkpoint_binding_v1());
     assert!(binding.validate_integrity());
     assert_eq!(binding.config, config);
-    assert_eq!(binding.anchor.checkpoint_digest, receipt.tick.checkpoint_after);
+    assert_eq!(
+        binding.anchor.checkpoint_digest,
+        receipt.tick.checkpoint_after
+    );
     assert_eq!(checked(witness.current()), Some(binding.anchor));
     let mut changed = binding.clone();
     changed.config.weights_digest = Digest32::of_bytes(b"wrong-weight");
@@ -558,8 +566,12 @@ fn local_binding_rejects_missing_or_advanced_witness() {
     let native = native_config();
     let witness = MemoryWitness::default();
     let mut runtime = checked(NeuronRuntime::bootstrap(
-        fixture.file(), native.clone(), scope(), 16,
-        runtime_config(&native), witness.clone(),
+        fixture.file(),
+        native.clone(),
+        scope(),
+        16,
+        runtime_config(&native),
+        witness.clone(),
     ));
     let mut model = FakeModel::new();
     checked(runtime.tick(&mut model, input(1, Digest32::ZERO)));
@@ -591,8 +603,12 @@ fn local_binding_rejects_unacknowledged_commit() {
     let native = native_config();
     let witness = MemoryWitness::default();
     let mut runtime = checked(NeuronRuntime::bootstrap(
-        fixture.file(), native.clone(), scope(), 16,
-        runtime_config(&native), witness.clone(),
+        fixture.file(),
+        native.clone(),
+        scope(),
+        16,
+        runtime_config(&native),
+        witness.clone(),
     ));
     witness.fail_next_compare_and_swap();
     let mut model = FakeModel::new();
