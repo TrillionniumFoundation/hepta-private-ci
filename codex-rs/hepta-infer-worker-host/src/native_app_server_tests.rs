@@ -433,9 +433,7 @@ fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_s
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
     use std::sync::Arc;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
-
+    // Each test owns its own unique temporary journal namespace.
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
     use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -467,8 +465,8 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
-    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    let test_namespace = tempfile::tempdir()?;
+    let root = test_namespace.path().join("agentd");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     // The focused native CI lane supplies a real Codex binary. Bazel's
     // unit-test harness has no CLI artifact; this no-tool-turn fixture may
@@ -503,8 +501,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         timeout: Duration::from_secs(20),
     })?
     .with_turn_start_authorizer(Arc::new(authorizer));
-    let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
-    let mut durable = DurableInferenceControl::open(&journal, 8)?;
+    let journal = test_namespace.path().join("native-inference-owner.journal");
+    let mut durable = DurableInferenceControl::open(&journal, 8).map_err(|error| {
+        std::io::Error::other(format!("native control initial-owner open: {error:?}"))
+    })?;
 
     let accepted = driver
         .run(
@@ -517,7 +517,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
             Some("lemon".to_string()),
             &CancellationToken::new(),
         )
-        .await?;
+        .await
+        .map_err(|error| {
+            std::io::Error::other(format!("native Worker accepted TurnStart: {error:?}"))
+        })?;
     assert!(
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
@@ -669,7 +672,9 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
 
     drop(durable);
-    let reopened = DurableInferenceControl::open(&journal, 8)?;
+    let reopened = DurableInferenceControl::open(&journal, 8).map_err(|error| {
+        std::io::Error::other(format!("native control post-final-use recovery: {error:?}"))
+    })?;
     assert_eq!(
         reopened.native_record(ACCEPT_REQUEST_ID),
         Some(&accepted_record)
