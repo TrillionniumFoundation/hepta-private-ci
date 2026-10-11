@@ -125,7 +125,15 @@ jobs:
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 60
+    # Keep every reverse-consumer test. Limit only resource-heavy compilation
+    # artifacts: fewer parallel rustc processes, no incremental object cache,
+    # and no DWARF in test/dependency binaries.
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -134,6 +142,20 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Reclaim non-Rust runner SDK space before full reverse-dependency compilation
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          # These hosted SDK images are not needed by this Linux Rust-only lane.
+          # Never delete the checked-out tree, rustup, Cargo registry, or V8 cache.
+          for directory in /usr/local/lib/android /usr/share/dotnet /opt/ghc /opt/hostedtoolcache/CodeQL; do
+            if [ -d "$directory" ]; then
+              sudo rm -rf --one-file-system -- "$directory"
+            fi
+          done
+          sudo apt-get clean
+          df -h "$GITHUB_WORKSPACE"
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
