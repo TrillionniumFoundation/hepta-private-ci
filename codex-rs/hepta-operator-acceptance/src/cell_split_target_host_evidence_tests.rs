@@ -1015,3 +1015,51 @@ fn a_well_formed_hash_chain_does_not_launder_a_nondigest_operation_receipt() {
             .is_err(),
     );
 }
+
+
+#[test]
+fn same_third_party_route_in_rollback_and_tombstone_still_fails() {
+    let mut payload = complete_recorder();
+    let unrelated_parent = crate::durable::sha256(b"attacker-replaced-original-parent-route");
+    assert_ne!(unrelated_parent, PARENT_ROUTE);
+    assert_ne!(unrelated_parent, CHILD_ROUTE);
+    for event in &mut payload.events {
+        match event.event_kind {
+            CellSplitTargetHostEventKindV1::RollbackCompleted => {
+                event.route_digest = unrelated_parent.clone();
+            }
+            CellSplitTargetHostEventKindV1::TombstoneCommitted
+            | CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
+                event.route_digest = unrelated_parent.clone();
+                event.predecessor_digest = unrelated_parent.clone();
+            }
+            _ => {}
+        }
+    }
+    let mut previous = ZERO_DIGEST.to_string();
+    for event in &mut payload.events {
+        event.previous_event_digest = previous;
+        event.event_digest = event_digest(event).expect("validly rehashed lifecycle");
+        previous = event.event_digest.clone();
+    }
+    payload.evidence_digest = evidence_digest(&payload).expect("validly rehashed envelope");
+    let bytes = payload.canonical_bytes().expect("canonical forged bytes");
+    let host = key(127);
+    let observer = key(131);
+    let envelope = CellSplitSignedTargetHostEvidenceV1 {
+        schema: CELL_SPLIT_SIGNED_TARGET_HOST_EVIDENCE_SCHEMA_V1.to_string(),
+        schema_version: 1,
+        signature_algorithm: CELL_SPLIT_TARGET_HOST_EVIDENCE_SIGNATURE_ALGORITHM_V1.to_string(),
+        payload,
+        host_signature: sign_payload("host-signer".to_string(), &host, &bytes),
+        observer_signatures: vec![sign_payload(
+            "observer-signer".to_string(),
+            &observer,
+            &bytes,
+        )],
+    };
+    assert!(
+        verify_cell_split_target_host_evidence(&envelope, &policy(&host, &observer)).is_err(),
+        "a fully signed tombstone on a third route cannot replace the original parent",
+    );
+}
