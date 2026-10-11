@@ -7,12 +7,15 @@
 use std::fmt;
 use std::fs::File;
 
-use codex_hepta_types::{Digest32, Generation, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
-use crate::{
-    DurableWriterHandoffJournalV1, WriterHandoffAdvanceV1,
-    WriterHandoffCheckpointV1, WriterHandoffErrorV1, WriterHandoffPhaseV1,
-};
+use crate::DurableWriterHandoffJournalV1;
+use crate::WriterHandoffAdvanceV1;
+use crate::WriterHandoffCheckpointV1;
+use crate::WriterHandoffErrorV1;
+use crate::WriterHandoffPhaseV1;
 
 /// Immutable binding to the original signed CNS cutover and Selector admission.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -38,7 +41,10 @@ impl CellSplitFinalizationBindingV1 {
     pub fn retirement_evidence_digest(&self) -> Digest32 {
         let mut bytes = b"hepta.supervisor.cell-split-retirement.v1\0".to_vec();
         for identity in [
-            &self.operation_id, &self.domain_id, &self.source_writer, &self.target_writer,
+            &self.operation_id,
+            &self.domain_id,
+            &self.source_writer,
+            &self.target_writer,
         ] {
             let raw = identity.as_str().as_bytes();
             bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
@@ -141,7 +147,11 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalFinalizerV1<
             return Err(CellSplitFinalizationErrorV1::InvalidBinding);
         }
         Self::validate_phase(current, &binding)?;
-        Ok(Self { journal, binding, authority })
+        Ok(Self {
+            journal,
+            binding,
+            authority,
+        })
     }
 
     fn validate_phase(
@@ -149,7 +159,8 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalFinalizerV1<
         binding: &CellSplitFinalizationBindingV1,
     ) -> Result<(), CellSplitFinalizationErrorV1> {
         if !matches!(
-            current.phase, WriterHandoffPhaseV1::RoutePublished | WriterHandoffPhaseV1::Retired
+            current.phase,
+            WriterHandoffPhaseV1::RoutePublished | WriterHandoffPhaseV1::Retired
         ) || current.outbox_watermark.is_none()
             || current.unknown_effect_count != 0
             || current.old_writer_admission_open()
