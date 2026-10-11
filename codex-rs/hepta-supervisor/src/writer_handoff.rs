@@ -425,9 +425,9 @@ impl DurableWriterHandoffJournalV1 {
         &mut self,
         step: WriterHandoffAdvanceV1,
     ) -> Result<WriterHandoffCheckpointV1, WriterHandoffErrorV1> {
-        if self.poisoned {
-            return Err(WriterHandoffErrorV1::Poisoned);
-        }
+        // A stale or tampered WAL cannot succeed even on an exact
+        // idempotent retry of the in-memory checkpoint.
+        self.verify_current_on_disk()?;
         if step.phase == self.checkpoint.phase
             && step.evidence_digest == self.checkpoint.evidence_digest
             && (step.outbox_watermark == self.checkpoint.outbox_watermark
