@@ -539,7 +539,7 @@ pub enum AuthorizedEffectRecovery {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AuthorizedEffectRecoveryResult {
     ProvenAbsent,
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
 }
 
 #[derive(Debug, Error)]
@@ -705,7 +705,7 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
@@ -744,7 +744,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -809,7 +809,7 @@ impl AutomationStore {
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -922,7 +922,7 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
@@ -961,7 +961,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -1025,7 +1025,7 @@ impl AutomationStore {
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -1196,7 +1196,7 @@ impl AutomationStore {
             self.reconcile_effect_run(durable, fence, observation, terminal)
                 .await?;
         }
-        Ok(AuthorizedEffectRecoveryResult::Observed(step))
+        Ok(AuthorizedEffectRecoveryResult::Observed(Box::new(step)))
     }
 
     async fn quarantine_effect_run(
