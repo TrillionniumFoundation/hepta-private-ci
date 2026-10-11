@@ -44,8 +44,10 @@ class ConfusionTests(unittest.TestCase):
     def score(reader, prompt, completion, arm):
         is_positive = completion == "site_b"
         mean_nll = (
-            0.5 if is_positive else 0.4
-        ) if arm == "base" else (0.2 if is_positive else 0.6)
+            (0.5 if is_positive else 0.4)
+            if arm == "base"
+            else (0.2 if is_positive else 0.6)
+        )
         return dict(
             mean_nll=mean_nll,
             input_tokens=len(prompt) + 2,
@@ -78,11 +80,15 @@ class ConfusionTests(unittest.TestCase):
         self.assertEqual(selected, reverse)
         self.assertEqual(unavailable, ())
         self.assertEqual(unknown, [])
-        self.assertEqual(selected[0]["negative_category"], "same_attribute_other_entity")
+        self.assertEqual(
+            selected[0]["negative_category"], "same_attribute_other_entity"
+        )
         seen = []
+
         def scored(reader, prompt, completion, arm):
             seen.append((tuple(prompt), completion, arm))
             return self.score(reader, prompt, completion, arm)
+
         report = self.run_probe(scored)
         self.assertEqual(report["scores_completed"], 8)
         self.assertEqual(len(seen), 8)
@@ -90,7 +96,10 @@ class ConfusionTests(unittest.TestCase):
         plan = json.loads((self.output / "plan.json").read_text())
         self.assertNotIn('"target": "site_', (self.output / "plan.json").read_text())
         self.assertEqual({x["wording"] for x in plan["comparisons"]}, set(WORDINGS))
-        rows = [json.loads(x) for x in (self.output / "raw-likelihoods.jsonl").read_text().splitlines()]
+        rows = [
+            json.loads(x)
+            for x in (self.output / "raw-likelihoods.jsonl").read_text().splitlines()
+        ]
         self.assertEqual({x["arm"] for x in rows}, set(ARMS))
         self.assertEqual({x["completion_kind"] for x in rows}, set(KINDS))
         self.assertTrue(all(x["delivered_evidence"] == [] for x in rows))
@@ -102,14 +111,13 @@ class ConfusionTests(unittest.TestCase):
             if completion == "site_b" and arm == "memory":
                 raise RuntimeError("deliberate model failure")
             return self.score(reader, prompt, completion, arm)
+
         with self.assertRaisesRegex(ValueError, "incomplete source-confusion"):
             self.run_probe(fail)
         report = json.loads((self.output / "report.json").read_text())
         self.assertEqual(report["scores_expected"], 8)
         self.assertEqual(report["scores_completed"], 6)
-        self.assertEqual(
-            report["results_by_wording"]["training"]["complete_pairs"], 0
-        )
+        self.assertEqual(report["results_by_wording"]["training"]["complete_pairs"], 0)
 
     def test_no_equal_length_or_distinct_relation_refuses_admission(self):
         self.reader.tokenizer.encode = lambda value, **kwargs: (

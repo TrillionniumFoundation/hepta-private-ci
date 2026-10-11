@@ -70,28 +70,32 @@ def eligible_pairs(documents, tokenizer, *, roots, revision=2, maximum=MAX_SCOPE
                 b = tokenizer.encode(negative["target"], add_special_tokens=False)
                 if not a or not b or len(a) != len(b):
                     continue
-                choices.append((
-                    0 if category == "same_attribute_other_entity" else 1,
-                    positive["query"]["identity"],
-                    negative["query"]["identity"],
-                    positive,
-                    negative,
-                    category,
-                    len(a),
-                ))
+                choices.append(
+                    (
+                        0 if category == "same_attribute_other_entity" else 1,
+                        positive["query"]["identity"],
+                        negative["query"]["identity"],
+                        positive,
+                        negative,
+                        category,
+                        len(a),
+                    )
+                )
         if not choices:
             unavailable.append(scope)
             continue
         _, _, _, positive, negative, category, tokens = min(
             choices, key=lambda x: x[:3]
         )
-        chosen.append(dict(
-            scope=scope,
-            positive=positive,
-            negative=negative,
-            negative_category=category,
-            completion_tokens=tokens,
-        ))
+        chosen.append(
+            dict(
+                scope=scope,
+                positive=positive,
+                negative=negative,
+                negative_category=category,
+                completion_tokens=tokens,
+            )
+        )
     return tuple(chosen), tuple(unavailable), dispositions
 
 
@@ -103,7 +107,9 @@ def summarize(rows, pairs):
         for arm in ARMS
         for kind in KINDS
     }
-    keyed = {(r["scope"], r["wording"], r["arm"], r["completion_kind"]): r for r in rows}
+    keyed = {
+        (r["scope"], r["wording"], r["arm"], r["completion_kind"]): r for r in rows
+    }
     if len(keyed) != len(rows) or set(keyed) != expected:
         raise ValueError("missing, duplicated or substituted likelihood observation")
     summary = {}
@@ -151,8 +157,16 @@ def summarize(rows, pairs):
 
 
 def probe(
-    reader, documents, output, *, snapshot_sha, writer_source, source_commit,
-    maximum=MAX_SCOPES, scorer=conditional_nll, training=None,
+    reader,
+    documents,
+    output,
+    *,
+    snapshot_sha,
+    writer_source,
+    source_commit,
+    maximum=MAX_SCOPES,
+    scorer=conditional_nll,
+    training=None,
 ):
     if (
         output.exists()
@@ -213,11 +227,13 @@ def probe(
                 distractor_training_question_id=p["negative"]["query"]["identity"],
                 positive_optimizer_visits=(
                     visits[p["positive"]["query"]["identity"]]
-                    if visits is not None else None
+                    if visits is not None
+                    else None
                 ),
                 distractor_optimizer_visits=(
                     visits[p["negative"]["query"]["identity"]]
-                    if visits is not None else None
+                    if visits is not None
+                    else None
                 ),
                 equal_completion_tokens=p["completion_tokens"],
                 wording=wording,
@@ -241,7 +257,11 @@ def probe(
         for pair, wording, question, prompt in prepared:
             for arm in ARMS:
                 for kind in KINDS:
-                    completion = pair["positive"]["target"] if kind == "target" else pair["negative"]["target"]
+                    completion = (
+                        pair["positive"]["target"]
+                        if kind == "target"
+                        else pair["negative"]["target"]
+                    )
                     row = dict(
                         scope=pair["scope"],
                         question_id=question.identity,
@@ -267,7 +287,9 @@ def probe(
                             error_type=type(error).__name__,
                             error=str(error)[:512],
                         )
-                    stream.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+                    stream.write(
+                        json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                    )
                     stream.flush()
                     os.fsync(stream.fileno())
                     rows.append(row)
@@ -334,7 +356,8 @@ def main():
         a.model / "reader", expected_inventory=ready["base_identity"]
     )
     LoRAReader.load_candidate(
-        reader, a.snapshot / "adapter",
+        reader,
+        a.snapshot / "adapter",
         expected_manifest_sha256=ready["manifest_sha"],
         scope=reader.scope,
         allowed_roots={d.root for d in docs},
@@ -346,7 +369,9 @@ def main():
     if reader.profile != ready["reader_profile"]:
         raise ValueError("reader profile changed after source writing")
     return probe(
-        reader, docs, a.output,
+        reader,
+        docs,
+        a.output,
         snapshot_sha=a.ready_sha,
         writer_source=ready["writer_source"],
         source_commit=a.source_commit,
