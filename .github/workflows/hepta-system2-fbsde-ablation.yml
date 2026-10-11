@@ -75,6 +75,13 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/system2-research/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_linear_solver.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/linear-replay 2>&1 | tee /tmp/system2-research/execution.log
+      - name: Compare one-sided margins and frozen-stop control on the same saved features
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-research/margin-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_margin_transfer.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/margin-transfer 2>&1 | tee /tmp/system2-research/margin-execution.log
       - name: Retain source identity, partial rows, failures, and full artifacts
         if: always()
         run: |
