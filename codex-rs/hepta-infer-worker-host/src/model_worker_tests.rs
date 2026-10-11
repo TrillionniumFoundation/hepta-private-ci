@@ -1019,7 +1019,7 @@ fn signed_stem_nonce_cannot_replay_after_authority_reopen() {
 #[cfg(unix)]
 #[test]
 fn claimed_nonce_remains_consumed_when_worker_never_entered() {
-    let worker = InferenceWorker::new(
+    let mut worker = InferenceWorker::new(
         100,
         "worker.abandoned-claim".to_string(),
         3,
@@ -1027,9 +1027,7 @@ fn claimed_nonce_remains_consumed_when_worker_never_entered() {
         Driver::default(),
     )
     .expect("worker");
-    // The separately trusted issuer can issue a test grant only for the
-    // real loaded Head, so this fixture loads it before preparing the claim.
-    let mut worker = worker;
+    // A test grant is constructed only after the actual Head is loaded.
     worker.load_model(100, manifest()).expect("loaded");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
     let binding = worker
