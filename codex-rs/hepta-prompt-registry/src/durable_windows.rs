@@ -53,12 +53,18 @@ mod tests {
         let root = temporary.path().join("registry");
         let original = super::super::DurablePromptRegistry::open_state_dir(&root, 64)
             .expect("real retained Windows registry startup");
-        let digest = original.registry().expect("initialized registry").snapshot_digest();
+        let digest = original
+            .registry()
+            .expect("initialized registry")
+            .snapshot_digest();
         drop(original);
         let recovered = super::super::DurablePromptRegistry::open_state_dir(&root, 64)
             .expect("reopen the exact persisted authoritative registry");
         assert_eq!(
-            recovered.registry().expect("recovered registry").snapshot_digest(),
+            recovered
+                .registry()
+                .expect("recovered registry")
+                .snapshot_digest(),
             digest
         );
         drop(recovered);
