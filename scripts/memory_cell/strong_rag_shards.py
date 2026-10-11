@@ -70,11 +70,7 @@ def _read_local_record(path):
     These records are checked against other source pins and exact journal
     receipts by their callers. A self-hash is NOT independent authentication.
     """
-    if (
-        path.is_symlink()
-        or not path.is_file()
-        or path.stat().st_size > 4 * 1024 * 1024
-    ):
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 4 * 1024 * 1024:
         raise ValueError("bounded regular local record required")
     return read(path, trial.file_sha(path))
 
@@ -571,7 +567,10 @@ def collect_evaluation(
         "hybrid6_minus_hybrid4": trial.paired(group, "hybrid_k4", "hybrid_k6"),
     }
     stage_sha = locked_policy["stage_sha256"]
-    if _read_local_record(calibration_dir / "run.json")["model_stage_sha256"] != stage_sha:
+    if (
+        _read_local_record(calibration_dir / "run.json")["model_stage_sha256"]
+        != stage_sha
+    ):
         raise ValueError("canonical staged reader drift")
     inv = read(
         output / "inventory.json",
