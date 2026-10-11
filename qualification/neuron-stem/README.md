@@ -514,3 +514,23 @@ and dataset identities, then provide the full three-arm JSONL to
 Synthetic tests check the output contract, NOT pretrained model learning.
 No automatic completion of the no-change arm, independent signature
 verification, production authorization, artifact CAS or release occurs.
+
+
+### Operating-system availability is a production security boundary
+
+The current `codex-hepta-prompt-registry` durable Owner implements verified
+private 0700 directory permissions, no-follow handle-relative file opens and
+durability semantics **only for Unix**. Non-Unix callers explicitly return
+`UnsafeStateDirectory` *before creating any state*. Agentd now performs an
+early capability check and rejects non-Unix startup before composing other
+runtime owners. There is no emergency fallback to an unprotected path-based
+Windows registry and no claim that this constitutes Windows production support.
+
+The `secure-prompt-owner-platform` matrix runs source-bound checks on
+Linux (real Unix Prompt Registry open and Agentd composition) and Windows
+(explicit no-write/fail-closed denial). It does **not** skip or green-light the
+repository's broader Windows Bazel/Agentd integration suites, which remain
+blocked pending a separately reviewed Windows Owner with private ACL and
+owner-token verification, reparse-point/hard-link rejection, handle-relative
+safe opens, atomic replacement, directory durability and real crash recovery.
+Keep all source/merge and cargo-deny gates unchanged.
