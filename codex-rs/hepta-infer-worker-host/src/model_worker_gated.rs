@@ -12,8 +12,6 @@ use std::time::Instant;
 use codex_hepta_types::Digest32;
 
 use super::DriverModelHandle;
-use super::dynamic_gate::DynamicGateArtifactV3;
-use super::dynamic_gate::DynamicGateCandidateV3;
 use super::DriverNeuronFeatureObservation;
 use super::DriverRunObservation;
 use super::Error;
@@ -26,6 +24,8 @@ use super::NeuronFeatureRequest;
 use super::NeuronSharedFeatureBatchDriverV2;
 use super::SharedNeuronFeatureRequestV2;
 use super::WorkerRequest;
+use super::dynamic_gate::DynamicGateArtifactV3;
+use super::dynamic_gate::DynamicGateCandidateV3;
 use super::validate_manifest;
 
 const Q24: i64 = 1 << 24;
