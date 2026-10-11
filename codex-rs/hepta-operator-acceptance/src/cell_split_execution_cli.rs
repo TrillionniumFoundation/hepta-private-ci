@@ -225,6 +225,88 @@ mod tests {
     }
 
     #[test]
+    fn pinned_read_only_open_and_lost_ack_never_dispatch_twice() {
+        let dir = tempfile::tempdir().expect("private directory");
+        let execution_root = dir.path().join("split-execution");
+        std::fs::create_dir(&execution_root).expect("execution root");
+        use std::os::unix::fs::PermissionsExt as _;
+        std::fs::set_permissions(&execution_root, std::fs::Permissions::from_mode(0o700))
+            .expect("private execution root");
+
+        let keys = (11_u8..15)
+            .map(|index| {
+                let signer = ed25519_dalek::SigningKey::from_bytes(&[index; 32]);
+                signer
+                    .verifying_key()
+                    .to_bytes()
+                    .iter()
+                    .map(|byte| format!("{byte:02x}"))
+                    .collect::<Vec<_>>()
+                    .join("")
+            })
+            .collect::<Vec<_>>();
+        let sockets = (0..4)
+            .map(|index| {
+                dir.path()
+                    .join(format!("absent-owner-{index}.sock"))
+                    .to_string_lossy()
+                    .into_owned()
+            })
+            .collect::<Vec<_>>();
+        let configuration = serde_json::json!({
+            "schema": CONFIG_SCHEMA,
+            "plan": {
+                "splitId": "split-pinned-test",
+                "scopeDigest": "11".repeat(32),
+                "parentGeneration": 1,
+                "childGeneration": 2,
+                "parentArtifactDigest": "22".repeat(32),
+                "childArtifactDigest": "33".repeat(32),
+                "nduSnapshotDigest": "44".repeat(32),
+                "routeFenceDigest": "55".repeat(32),
+                "ownerIds": [
+                    "artifact-owner", "migration-owner", "cns-owner", "supervisor-owner"
+                ]
+            },
+            "executionRoot": execution_root,
+            "ownerSocketPaths": sockets,
+            "ownerVerifyingKeysHex": keys,
+            "timeoutMillis": 1000
+        });
+        let bytes = serde_json::to_vec(&configuration).expect("configuration");
+        let pin = format!("{:x}", Sha256::digest(&bytes));
+        let config_path = dir.path().join("frozen-config.json");
+        std::fs::write(&config_path, bytes).expect("config write");
+        std::fs::set_permissions(&config_path, std::fs::Permissions::from_mode(0o600))
+            .expect("private config");
+
+        let read_only = run_pinned_cell_split_execution_v1("transcript", &config_path, &pin)
+            .expect("empty read-only transcript");
+        assert_eq!(read_only.completed_steps, 0);
+        assert!(!read_only.complete);
+        assert!(read_only.transcript.is_none());
+        assert!(!read_only.production_activation_authorized);
+
+        assert!(run_pinned_cell_split_execution_v1("advance", &config_path, &pin).is_err());
+        let pending = dir
+            .path()
+            .join("split-execution")
+            .join("cell-split-00-prepared.json");
+        let terminal = dir
+            .path()
+            .join("split-execution")
+            .join("cell-split-00-committed.json");
+        let original = std::fs::read(&pending).expect("durable prepared intent");
+        assert!(!terminal.exists());
+
+        // Reopen may only consult the original owner. A missing socket cannot
+        // turn a prepared intent into a second execution or terminal receipt.
+        assert!(run_pinned_cell_split_execution_v1("advance", &config_path, &pin).is_err());
+        assert_eq!(std::fs::read(&pending).expect("same intent"), original);
+        assert!(!terminal.exists());
+    }
+
+    #[test]
     fn rejects_group_readable_config_even_if_hash_is_pinned() {
         let dir = tempfile::tempdir().expect("tempdir");
         let file = dir.path().join("config.json");
