@@ -21,6 +21,9 @@ use crate::PlasticityRuntimeHandleV1;
 /// writers, anchor stores, trust roots or authoritative owner stores.
 #[derive(Clone)]
 pub(crate) struct AgentdLearningPlasticityProducerV1 {
+    // The owned handle must survive startup even before the separately
+    // admitted product actor is routed from the control plane. Tests exercise
+    // the actual bounded actor; no new unauthenticated caller is introduced.
     handle: PlasticityRuntimeHandleV1,
 }
 

@@ -1,5 +1,30 @@
 use super::*;
 
+// Preserve historical ledger/idempotent replay tests without reintroducing
+// an unused product ingress API. Every test follows the actual production
+// append_with_delivery_policy path with explicit no-delivery semantics.
+impl CognitiveRetrievalLearningSink {
+    fn append(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+        request_id: u64,
+        observation: &RetrievalAssignmentObservationV1,
+    ) -> Result<AppendReceipt, String> {
+        self.append_with_delivery_policy(
+            owner,
+            body_generation,
+            request_id,
+            observation,
+            &[],
+            false,
+            None,
+            None,
+            ProbabilityQ32::ONE,
+        )
+    }
+}
+
 use std::fs::File;
 use std::fs::OpenOptions;
 

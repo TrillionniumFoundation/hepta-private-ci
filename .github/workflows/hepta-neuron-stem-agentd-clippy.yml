@@ -1,0 +1,63 @@
+name: Hepta Agentd Strict Clippy Convergence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - '.github/workflows/hepta-neuron-stem-agentd-clippy.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust formatter
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Whole workspace format
+        run: cargo +1.95.0 fmt --all -- --check
+
+  agentd-strict-clippy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust and Clippy
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy
+      - name: Strict Agentd owner lib, with transitive dependencies
+        run: |
+          cargo +1.95.0 clippy --locked -p codex-hepta-agentd --lib -- -D warnings
+      - name: Strict inference owner and full Worker targets, with transitive dependencies
+        run: |
+          cargo +1.95.0 clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+
+  owner-contract-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Execute bounded Agentd owner state and intelligence tests
+        run: |
+          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib
