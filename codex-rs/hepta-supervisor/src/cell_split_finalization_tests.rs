@@ -363,8 +363,7 @@ fn independent_writer_lock_blocks_second_owner() {
             WriterHandoffErrorV1::Busy
         ))
     ));
-}
-#[test]
+}#[test]
 fn schema_rollback_and_writer_identity_are_frozen_for_retirement() {
     let root = tempfile::tempdir().expect("dir");
     let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
