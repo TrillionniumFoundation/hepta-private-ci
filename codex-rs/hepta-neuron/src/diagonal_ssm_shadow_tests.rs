@@ -108,7 +108,7 @@ fn zero_retention_unit_gain_matches_exact_v2_downstream() {
     cfg.input_gain_q24 = vec![Q; 2];
     let input = tick(1, 100);
     let (state, receipt) = checked(diagonal_ssm_tick_v1(&cfg, &input, None));
-    let mut baseline = cfg.base.clone();
+    let mut baseline = cfg.base;
     baseline.temporal_decay_q24 = 0;
     let (reference, reference_receipt) =
         checked(population_sparse_tick_v2(&baseline, &input, None));

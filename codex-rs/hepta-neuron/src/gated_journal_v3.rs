@@ -504,18 +504,17 @@ fn decode_tick(
         return Err(GatedJournalErrorV3::Corrupt);
     }
     let mut cursor = 0;
-    let mut digest = || {
-        let mut arr = [0_u8; 32];
-        arr.copy_from_slice(&bytes[cursor..cursor + 32]);
-        cursor += 32;
-        Digest32::from_array(arr)
+    // Scope the decoder closure so its mutable cursor borrow ends before
+    // the next decoder; no dummy drop or lint suppression is necessary.
+    let (scope_digest, objective_digest, ndu_digest, body_digest, input_digest) = {
+        let mut digest = || {
+            let mut arr = [0_u8; 32];
+            arr.copy_from_slice(&bytes[cursor..cursor + 32]);
+            cursor += 32;
+            Digest32::from_array(arr)
+        };
+        (digest(), digest(), digest(), digest(), digest())
     };
-    let scope_digest = digest();
-    let objective_digest = digest();
-    let ndu_digest = digest();
-    let body_digest = digest();
-    let input_digest = digest();
-    drop(digest);
     let mut number = || {
         let mut arr = [0_u8; 8];
         arr.copy_from_slice(&bytes[cursor..cursor + 8]);

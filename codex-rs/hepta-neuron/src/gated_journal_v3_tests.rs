@@ -83,7 +83,7 @@ fn tick(sequence: u64) -> PopulationSparseTickV2 {
         input_digest: Digest32::of_bytes(format!("features-{sequence}").as_bytes()),
         sequence,
         monotonic_micros: sequence * 100,
-        temporal_drive_q24: vec![Q, if sequence % 2 == 0 { -Q / 2 } else { Q / 2 }],
+        temporal_drive_q24: vec![Q, if sequence.is_multiple_of(2) { -Q / 2 } else { Q / 2 }],
         prediction_q24: vec![0; 6],
     }
 }
