@@ -84,7 +84,7 @@ pub fn run_pinned_cell_split_execution_v1(
     let parsed_keys = config
         .owner_verifying_keys_hex
         .iter()
-        .map(parse_verifying_key)
+        .map(|value| parse_verifying_key(value.as_str()))
         .collect::<Result<Vec<_>, _>>()?;
     let keys: [VerifyingKey; 4] = parsed_keys
         .try_into()
