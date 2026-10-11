@@ -53,6 +53,28 @@ impl From<CognitiveStoreError> for CognitiveContextError {
     }
 }
 
+/// Bounded optional owner ports. Keeping them in one immutable bundle
+/// prevents positional swaps between the ranker, retrieval-currentness owner
+/// and learning-ledger writer during a scoped read.
+pub(crate) struct CognitiveReadPorts<'a> {
+    pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    pub current_retrieval:
+        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    pub request_id: Option<u64>,
+}
+
+/// Exactly the same immutable owner-port identity is re-resolved at final use.
+/// The fresh current retrieval context is **not** silently replaced by the
+/// original snapshot: stale context must continue failing closed.
+pub(crate) struct CognitiveRevalidationPorts<'a> {
+    pub plan: Option<&'a CognitiveContextPlan>,
+    pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    pub body_generation: u64,
+    pub current_retrieval:
+        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+}
+
 /// `body_generation` is the process launch identity, not the separately fenced
 /// fleet lifecycle epoch (Starting -> Running advances that epoch).
 #[cfg(test)]
@@ -70,10 +92,12 @@ pub(crate) async fn read(
         body_generation,
         query,
         limit,
-        ranker,
-        None,
-        None,
-        None,
+        CognitiveReadPorts {
+            ranker,
+            current_retrieval: None,
+            learning_sink: None,
+            request_id: None,
+        },
     )
     .await
 }
@@ -94,10 +118,12 @@ pub(crate) async fn read_with_retrieval_context(
         body_generation,
         query,
         limit,
-        ranker,
-        current_retrieval,
-        None,
-        None,
+        CognitiveReadPorts {
+            ranker,
+            current_retrieval,
+            learning_sink: None,
+            request_id: None,
+        },
     )
     .await
 }
@@ -108,11 +134,14 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     body_generation: u64,
     query: &str,
     limit: u16,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
-    request_id: Option<u64>,
+    ports: CognitiveReadPorts<'_>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    let CognitiveReadPorts {
+        ranker,
+        current_retrieval,
+        learning_sink,
+        request_id,
+    } = ports;
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -496,10 +525,12 @@ pub(crate) async fn revalidate(
         read_digest,
         omitted_records,
         items,
-        plan,
-        ranker,
-        1,
-        None,
+        CognitiveRevalidationPorts {
+            plan,
+            ranker,
+            body_generation: 1,
+            current_retrieval: None,
+        },
     )
     .await
 }
@@ -511,11 +542,14 @@ pub(crate) async fn revalidate_with_retrieval_context(
     read_digest: &str,
     omitted_records: u64,
     items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    body_generation: u64,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    ports: CognitiveRevalidationPorts<'_>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let CognitiveRevalidationPorts {
+        plan,
+        ranker,
+        body_generation,
+        current_retrieval,
+    } = ports;
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),
