@@ -623,18 +623,19 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
     let mut valid = request.clone();
     valid.authorization.request_id = "request.batch.verified".into();
     valid.authorization.reservation_id = "reservation.batch.verified".into();
-    let digest = super::super::canonical_neuron_feature_payload_digest(&valid);
-    valid.authorization.payload_digest = digest.clone();
-    valid.authorization.lease_payload_digest = digest;
+    let valid_payload_digest = super::super::canonical_neuron_feature_payload_digest(&valid);
+    valid.authorization.payload_digest = valid_payload_digest.clone();
+    valid.authorization.lease_payload_digest = valid_payload_digest;
     let mut tampered = request.clone();
     tampered.authorization.request_id = "request.batch.tampered".into();
     tampered.authorization.reservation_id = "reservation.batch.tampered".into();
     tampered.feature_vector_q24[0] += 1;
     // Attacker can recompute an untrusted hash; it still does not match
     // the selected projection's Q24 output.
-    let digest = super::super::canonical_neuron_feature_payload_digest(&tampered);
-    tampered.authorization.payload_digest = digest.clone();
-    tampered.authorization.lease_payload_digest = digest;
+    let tampered_payload_digest =
+        super::super::canonical_neuron_feature_payload_digest(&tampered);
+    tampered.authorization.payload_digest = tampered_payload_digest.clone();
+    tampered.authorization.lease_payload_digest = tampered_payload_digest;
     let (_, bad_projection_live) =
         fx.current("projection.invalid.use", Digest32::ZERO);
     let (_, bad_head_live) = fx.current("head.invalid.use", Digest32::ZERO);
