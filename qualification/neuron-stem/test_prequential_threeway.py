@@ -180,15 +180,15 @@ class PrequentialThreeWayTests(unittest.TestCase):
         lines = self.journal.decode("utf-8").splitlines()
         lines[0] = lines[0].replace(
             '"case_id":', '"case_id":"forged","case_id":', 1)
-        content = ("\\n".join(lines) + "\\n").encode("utf-8")
+        content = ("\n".join(lines) + "\n").encode("utf-8")
         forged = copy.deepcopy(self.trial)
         forged["pre_label_prediction_journal_sha256"] = hashlib.sha256(content).hexdigest()
         with self.assertRaisesRegex(ValueError, "malformed immutable prediction journal"):
             review(self.rows, forged, content, self.nochange, replicates=1000)
         with self.assertRaisesRegex(ValueError, "malformed immutable prediction journal"):
-            read_journal(self.journal + b"\\n")
+            read_journal(self.journal + b"\n")
         with self.assertRaisesRegex(ValueError, "malformed immutable prediction journal"):
-            read_journal(b'{"case_id":"x","probabilities":[NaN,1]}\\n')
+            read_journal(b'{"case_id":"x","probabilities":[NaN,1]}\n')
 
     def test_prediction_fsynced_digest_and_precommit_evidence_are_required(self):
         with self.assertRaisesRegex(ValueError, "byte digest mismatch"):
