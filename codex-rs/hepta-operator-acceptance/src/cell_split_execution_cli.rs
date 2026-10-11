@@ -61,6 +61,33 @@ pub fn run_pinned_cell_split_execution_v1(
     config_path: &Path,
     externally_pinned_config_sha256: &str,
 ) -> Result<CellSplitExecutionCliOutcomeV1, String> {
+    // Legacy operator CLI entry. Real effect owners must still independently
+    // enforce final-use, NDU/Selector, and generation fencing. A product caller
+    // should use the admission-bound entry below instead.
+    run_pinned_cell_split_execution_with_admission_v1(
+        action,
+        config_path,
+        externally_pinned_config_sha256,
+        |_| Ok(()),
+    )
+}
+
+/// Product composition seam: validate the independently admitted, frozen split
+/// against the operator's externally pinned configuration *before* opening the
+/// coordinator, preparing an intent, or contacting any effect owner.
+///
+/// This callback is not an issuer or a substitute for each durable effect
+/// backend's fresh final-use check. Its caller must validate real signed
+/// NDU/Selector evidence rather than accept self-asserted digests.
+pub fn run_pinned_cell_split_execution_with_admission_v1<F>(
+    action: &str,
+    config_path: &Path,
+    externally_pinned_config_sha256: &str,
+    admit_selected_plan: F,
+) -> Result<CellSplitExecutionCliOutcomeV1, String>
+where
+    F: FnOnce(&CellSplitExecutionPlanV1) -> Result<(), String>,
+{
     let selected_action = match action {
         "advance" => "advance",
         "transcript" => "transcript",
@@ -78,6 +105,10 @@ pub fn run_pinned_cell_split_execution_v1(
     if config.schema != CONFIG_SCHEMA {
         return Err("unknown execution configuration schema".to_string());
     }
+    // No filesystem owner initialization and no prepared intent may precede
+    // this independent selection check. The operator pin alone does not
+    // establish the current NDU or Selector authorization.
+    admit_selected_plan(&config.plan)?;
     if !(1..=30_000).contains(&config.timeout_millis) {
         return Err("RPC timeout must be between 1 and 30000 ms".to_string());
     }
@@ -277,6 +308,22 @@ mod tests {
         std::fs::write(&config_path, bytes).expect("config write");
         std::fs::set_permissions(&config_path, std::fs::Permissions::from_mode(0o600))
             .expect("private config");
+
+        let mut inspected_selected_plan = false;
+        let denied = run_pinned_cell_split_execution_with_admission_v1(
+            "advance",
+            &config_path,
+            &pin,
+            |selected| {
+                inspected_selected_plan = true;
+                assert_eq!(selected.split_id, "split-pinned-test");
+                Err("independent NDU/Selector evidence unavailable".to_string())
+            },
+        );
+        assert!(denied.is_err());
+        assert!(inspected_selected_plan);
+        assert!(!execution_root.join("cell-split-frozen-plan.json").exists());
+        assert!(!execution_root.join("cell-split-00-prepared.json").exists());
 
         assert!(run_pinned_cell_split_execution_v1("transcript", &config_path, &pin).is_err());
         assert!(!execution_root.join("cell-split-frozen-plan.json").exists());
