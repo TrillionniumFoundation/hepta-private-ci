@@ -9,7 +9,8 @@ import unittest
 from jina_v5 import sha256_record
 from prequential_trial import prediction_precommit
 from prequential_threeway_review import (
-    future_calibration_metrics, read_journal, review, write_frozen_report,
+    future_calibration_metrics, offline_threeway_ood_diagnostic,
+    read_journal, review, write_frozen_report,
 )
 from qualified_eval import audit_dataset
 
@@ -128,6 +129,79 @@ class PrequentialThreeWayTests(unittest.TestCase):
                          ["frozen"]["groups"], 32)
         self.assertEqual(result["future_grouped_paired"]["future_2"]
                          ["no_change"]["groups"], 32)
+
+    def synthetic_threeway_ood_receipts(self):
+        # Synthetic inputs exercise the reviewer only, never model performance.
+        receipts = []
+        for row in self.rows:
+            if row["split"] not in ("calibration", "ood"):
+                continue
+            cell = str((row["scope_id"], row["cell_id"]))
+            for arm in ("no_change", "frozen", "trained"):
+                if arm == "no_change":
+                    model_id, revision, weights, generation = (
+                        "no-change", "e" * 40, "f" * 64, 1)
+                    probs = [.2, .8] if row["split"] == "calibration" else [.95, .05]
+                else:
+                    model_id, revision, generation = "jina-v5-text-nano", "d" * 40, 1
+                    weights = (self.trial["initial_head_digests"][cell] if
+                               arm == "frozen" or row["split"] == "calibration"
+                               else self.trial["final_head_digests"][cell])
+                    probs = ([.3, .7] if row["split"] == "calibration" else
+                             [.9, .1] if arm == "frozen" else [.55, .45])
+                receipts.append({
+                    "case_id": row["case_id"], "arm": arm,
+                    "scope_id": row["scope_id"], "cell_id": row["cell_id"],
+                    "split": row["split"], "event_time": row["event_time"],
+                    "input_digest": sha256_record(
+                        [row["state"], row["question"], row["options"]]),
+                    "probabilities": probs, "model_id": model_id,
+                    "model_revision": revision, "weights_digest": weights,
+                    "generation": generation,
+                    "status": "Succeeded", "production_promotion_permitted": False,
+                })
+        return receipts
+
+    def test_threeway_ood_uses_only_prior_calibration_and_never_promotes(self):
+        receipts = self.synthetic_threeway_ood_receipts()
+        report = review(
+            self.rows, self.trial, self.journal, self.nochange,
+            ood_receipts=receipts, min_future_groups=30, replicates=1000)
+        self.assertTrue(report["offline_ood_threeway_coverage_present"])
+        measured = report["offline_ood_threeway_diagnostic"]
+        self.assertFalse(measured["independent_prediction_signature_verified"])
+        self.assertTrue(measured["ood_after_future_window_verified"])
+        self.assertEqual(set(measured["results"]),
+                         {"trained", "frozen", "no_change"})
+        self.assertEqual(measured["results"]["trained"]["ood_false_accept_rate"], 0)
+        self.assertEqual(measured["results"]["frozen"]["ood_false_accept_rate"], 1)
+        self.assertEqual(measured["results"]["no_change"]["ood_false_accept_rate"], 1)
+        self.assertEqual(measured["trained_ood_far_delta_vs_frozen"], -1)
+        self.assertFalse(measured["negative_transfer_ood_far_vs_frozen"])
+        self.assertFalse(report["ood_threeway_model_evidence_present"])
+        self.assertFalse(report["full_quality_and_ood_gate_passed"])
+        self.assertFalse(report["production_promotion_permitted"])
+
+    def test_threeway_ood_forgery_partial_coverage_and_weight_drift_fail(self):
+        records = self.synthetic_threeway_ood_receipts()
+        for change, error in (
+                (lambda xs: xs.pop(), "full three-arm"),
+                (lambda xs: xs[0].update({"generation": 9}), "weight or generation"),
+                (lambda xs: xs[0].update({"input_digest": "0" * 64}), "source/Cell"),
+                (lambda xs: xs[0].update({"label": 0}), "smuggle outcome"),
+                (lambda xs: xs[0].update({"production_promotion_permitted": True}),
+                 "source/Cell")):
+            invalid = copy.deepcopy(records)
+            change(invalid)
+            with self.assertRaisesRegex(ValueError, error):
+                offline_threeway_ood_diagnostic(
+                    self.rows, self.trial, ("e" * 40, "f" * 64, 1), invalid)
+        invalid = copy.deepcopy(records)
+        next(item for item in invalid if item["split"] == "calibration" and
+             item["arm"] == "trained")["probabilities"] = [.99, .01]
+        with self.assertRaisesRegex(ValueError, "same initial state"):
+            offline_threeway_ood_diagnostic(
+                self.rows, self.trial, ("e" * 40, "f" * 64, 1), invalid)
 
     def test_future_ece_brier_are_descriptive_for_all_three_arms(self):
         summary = self.run_report()
