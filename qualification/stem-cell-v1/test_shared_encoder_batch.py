@@ -167,6 +167,39 @@ class BatchTests(unittest.TestCase):
         self.assertEqual(b.cache_hits, 1)
 
 
+    def test_optional_ephemeral_values_preserve_no_cache_and_receipt_only_api(self):
+        engine = SharedStemEngine(FakeBackend(width=768), max_cache_bytes=0)
+        standard = engine.run([req(1, "one")])
+        self.assertFalse(hasattr(standard, "features"))
+        observation, features = engine.run([
+            req(2, "one"), req(3, "three"), req(4, "one")
+        ], return_features=True)
+        self.assertEqual(len(features), 3)
+        self.assertEqual(features[0].feature_digest, features[2].feature_digest)
+        self.assertEqual(observation.backend_batch_widths, (2,))
+        self.assertEqual(engine.cache.size_bytes, 0)
+        self.assertTrue(all(r.status == "shadow_only_not_authorized" for r in observation.receipts))
+
+    def test_real_shared_engine_projection_binds_full_768_without_truncation(self):
+        from stem_projection import Q, LowRankProjectionQ24, ProjectedStemEngine
+        backend = FakeBackend(width=768)
+        encoder = SharedStemEngine(backend, max_cache_bytes=0)
+        a = [0] * 768
+        a[-1] = Q
+        projection = LowRankProjectionQ24(
+            D("a"), D("b"), D("c"), D("d"), "mean", 768, 2, 1,
+            tuple(a), (Q, 0), (0, 0),
+        )
+        bridge = ProjectedStemEngine(encoder, projection, maximum_projection_cache_bytes=16)
+        result = bridge.run([req(1, "one"), req(2, "one")])
+        self.assertEqual(result.encoder_observation.backend_batch_widths, (1,))
+        self.assertEqual(len(result.refs), 2)
+        self.assertEqual(result.refs[0].vector_q24[0], result.refs[1].vector_q24[0])
+        self.assertGreater(result.refs[0].vector_q24[0], 0)
+        self.assertFalse(result.production_authorized)
+        self.assertEqual(bridge.run([req(3, "one")]).projection_cache_hits, 1)
+
+
 @unittest.skipUnless(importlib.util.find_spec("torch") is not None, "torch optional")
 class RealTorchBatchPathTests(unittest.TestCase):
     def make_backend(self, *, left_padding=False):
