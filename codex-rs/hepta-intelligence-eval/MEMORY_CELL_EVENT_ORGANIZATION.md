@@ -140,3 +140,63 @@ confidence interval, human-signed sufficiency or citation entailment verdict,
 qualified prospective task advantage, deployed maintenance/recovery observation
 or production admission. The research-only Qwen license and preserved source
 storage still apply.
+
+## Actual archived component-by-component attribution (2026-10-11)
+
+A **read-only structural aggregation** was recomputed from the two complete
+historical model archives generated at source
+`59f9eadd5cc919359079e04442f7343838a60057`, successful
+[workflow 38063870516](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38063870516).
+This did **not** call either pretrained reader again. It does not independently
+rejudge semantic correctness: it verifies ZIP and per-file SHA-256, generating
+source, complete raw/scored identity and the frozen 8-task × 6-arm census,
+then decomposes the original recorded strict task outcomes.
+
+Reproducible, model-free source:
+`scripts/memory_cell/historical_component_receipt.py`, including four
+regression tests and saved pinned output at
+`scripts/memory_cell/data/historical-component-effects-20261011.json`.
+The saved JSON has source provenance, both exact ZIP hashes, raw/scored file
+hashes, the original task-kind census, and explicitly false production and
+statistical-admission flags.
+
+| Controlled step | SmolLM2-1.7B win/loss | Qwen2.5-3B win/loss | Qwen selection changed |
+| --- | ---: | ---: | ---: |
+| Hybrid → entity/time filtering | 1 / 0 | 5 / 0 | 8/8 |
+| Entity/time → organized correction/closure | 1 / 0 | **0 / 0** | 2/8 |
+| Organized → program-bound support | 0 / 0 | **0 / 0** | **0/8** |
+
+All eight Qwen hybrid answers already had all program-annotated required
+source IDs, so the five entity/time wins **cannot** be counted as new
+required-source recall. They are compatible with removing distractions,
+reordering, shortening or better reader use; this experiment does not isolate
+those explanations fully. The *additional* correction/closure phase showed
+**no Qwen task win** beyond simpler filtering. The Qwen entity/time and
+organized evidence selections were identical in six tasks and different in
+only two. The program-bound support and organized selections were identical
+in **all eight tasks**, for both reader families. This synthetic task set
+therefore provides no independent proof that graph completion adds a useful
+capability beyond selecting the already authored support group.
+
+SmolLM2 registered one additional organized-over-entity/time success, but
+only eight authored tasks from one restricted task family are present.
+The contrast is neither independently replicated nor statistically qualified.
+No past run is relabelled with the current HEAD and no source-group sample
+inflation is permitted.
+
+To independently reproduce this structural receipt from the two original
+GitHub Actions artifact ZIPs (IDs `11674486085` and `11674741321`):
+
+```sh
+PYTHONPATH=scripts/memory_cell python3 \
+  scripts/memory_cell/historical_component_receipt.py \
+  SMOL_ARCHIVE.zip QWEN_ARCHIVE.zip NEW_COMPONENT_RECEIPT.json
+python3 -m unittest discover -s scripts/memory_cell \
+  -p 'test_historical_component_receipt.py' -v
+```
+
+A successful replay establishes historical record integrity **only**, not
+human-certified sufficiency, new independent task improvement, deployed
+rollback/recovery or production eligibility. Parameter-memory claims remain
+blocked until a same-reader strong-RAG comparator succeeds on fresh
+independent source families and real executable tasks.
