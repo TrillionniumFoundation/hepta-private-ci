@@ -2,14 +2,16 @@
 import copy
 import hashlib
 import importlib.util
+import sys
 import tempfile
 import unittest
 from pathlib import Path
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 
 from hf_joint_decision_runner import (
     HF_KEYS, build_head, head_sha256, head_width, render_joint,
-    snapshot_validation, train_head, validate_encoder_loading_info, vectorize_case,
+    snapshot_validation, train_head, validate_encoder_loading_info,
+    vectorize_case, verify_loaded_safetensors,
 )
 
 
@@ -130,6 +132,54 @@ class TorchHeadEvidenceTests(unittest.TestCase):
         self.assertLessEqual(params, 2048)
         self.assertEqual(len(learned), 64)
         self.assertFalse(any(p.grad is None for p in head.parameters()))
+
+    def test_runtime_weights_must_equal_pinned_tensor_bytes(self):
+        import torch
+
+        class FakeReader:
+            def __init__(self, value):
+                self.value = value
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def keys(self):
+                return ["encoder.value"]
+
+            def get_tensor(self, name):
+                self.asserted_name = name
+                return torch.tensor([self.value], dtype=torch.float32)
+
+        fake_module = ModuleType("safetensors")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "model.safetensors").write_bytes(b"synthetic weight-file bytes")
+            original = sys.modules.get("safetensors")
+            present = "safetensors" in sys.modules
+            try:
+                fake_module.safe_open = lambda *_args, **_kwargs: FakeReader(.5)
+                sys.modules["safetensors"] = fake_module
+                model = SimpleNamespace(
+                    state_dict=lambda: {"encoder.value": torch.tensor([.5])})
+                receipt = verify_loaded_safetensors(torch, model, root)
+                self.assertEqual(receipt["tensor_elements"], 1)
+                self.assertTrue(receipt["all_state_dict_tensors_compared"])
+                fake_module.safe_open = lambda *_args, **_kwargs: FakeReader(.4)
+                with self.assertRaisesRegex(ValueError, "differs from pinned"):
+                    verify_loaded_safetensors(torch, model, root)
+                fake_module.safe_open = lambda *_args, **_kwargs: FakeReader(.5)
+                broken_model = SimpleNamespace(
+                    state_dict=lambda: {"encoder.other": torch.tensor([.5])})
+                with self.assertRaisesRegex(ValueError, "unexpected safetensors"):
+                    verify_loaded_safetensors(torch, broken_model, root)
+            finally:
+                if present:
+                    sys.modules["safetensors"] = original
+                else:
+                    sys.modules.pop("safetensors", None)
 
     def test_same_seed_data_and_initialization_replays_identically(self):
         import torch
