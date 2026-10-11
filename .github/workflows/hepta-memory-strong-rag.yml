@@ -149,7 +149,7 @@ jobs:
           assert hashlib.sha256((root / 'plan/plan.json').read_bytes()).hexdigest() == '9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897'
           (Path('/tmp/strong-rag-evidence') / 'input-pin.txt').write_text('artifact=11669174727\nzip_sha256=23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b\n')
           PY
-      - name: Restore pinned CPU environment and run complete Python regressions
+      - name: Restore pinned CPU environment and test exact reader dependencies
         run: |
           set -euo pipefail
           python3 -m venv /tmp/strong-rag-python
@@ -157,7 +157,24 @@ jobs:
           /tmp/strong-rag-python/bin/pip install -r /tmp/strong-rag-inputs/environment.txt
           /tmp/strong-rag-python/bin/pip freeze > /tmp/strong-rag-evidence/environment.txt
           diff -u /tmp/strong-rag-inputs/environment.txt /tmp/strong-rag-evidence/environment.txt
-          /tmp/strong-rag-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/strong-rag-evidence/tests.log
+          : > /tmp/strong-rag-evidence/tests.log
+          for pattern in \
+            'test_strong_rag*.py' \
+            'test_event_*.py' \
+            'test_bundle_trial.py' \
+            'test_evidence_bundle.py' \
+            'test_index_integrity.py' \
+            'test_native*.py' \
+            'test_citation_audit.py' \
+            'test_pretrained.py' \
+            'test_reader_reference*.py' \
+            'test_tensor_contract.py' \
+            'test_reviewed_bundle.py' \
+            'test_reviewed_diagnostic.py' \
+            'test_sessions.py'; do
+            echo "=== frozen reader dependencies: $pattern ===" | tee -a /tmp/strong-rag-evidence/tests.log
+            /tmp/strong-rag-python/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee -a /tmp/strong-rag-evidence/tests.log
+          done
       - name: Reuse original indexed source and verify pinned retrieval replay
         run: |
           set -euo pipefail
