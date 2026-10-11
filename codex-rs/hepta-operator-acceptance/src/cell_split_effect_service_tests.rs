@@ -17,6 +17,7 @@ struct DiskEffect {
     root: PathBuf,
     commits: usize,
     owner_id: String,
+    sequence_override: Option<u64>,
 }
 
 impl DiskEffect {
@@ -25,6 +26,7 @@ impl DiskEffect {
             root,
             commits: 0,
             owner_id: owner_id.to_owned(),
+            sequence_override: None,
         }
     }
 
@@ -110,7 +112,9 @@ impl CellSplitDurableEffectBackendV1 for DiskEffect {
     }
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
-        Ok(if self.commit_path().exists() { 7 } else { 1 })
+        Ok(self.sequence_override.unwrap_or_else(|| {
+            if self.commit_path().exists() { 7 } else { 1 }
+        }))
     }
 }
 
@@ -195,6 +199,82 @@ fn disk_backed_owner_signs_only_current_state_and_detects_external_revocation() 
     fs::remove_file(root.path().join("live-owner-state")).expect("external revocation");
     assert!(client.verify_committed(&operation, &receipt).is_err());
     assert_eq!(server.join().expect("server completion"), 1);
+}
+
+#[test]
+fn committed_effect_cannot_be_signed_ahead_of_durable_frontier() {
+    let root = tempfile::tempdir().expect("fixture");
+    let mut backend = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
+    backend.sequence_override = Some(6);
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+    )
+    .expect("service");
+
+    let (mut sender, mut receiver) = UnixStream::pair().expect("pair");
+    send_frame(
+        &mut sender,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: intent(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("execute");
+    assert!(service.serve_connection(&mut receiver).is_err());
+    assert_eq!(service.backend().commits, 1);
+    assert!(root.path().join("committed").exists());
+
+    // A freshly challenged readback is denied while the authoritative
+    // sequence remains behind the original committed effect.
+    let (mut sender, mut receiver) = UnixStream::pair().expect("pair");
+    send_frame(
+        &mut sender,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::ReadBack,
+            intent: intent(),
+            challenge_nonce: Some("aa".repeat(32)),
+        },
+    )
+    .expect("readback");
+    assert!(service.serve_connection(&mut receiver).is_err());
+    drop(service);
+
+    // Once a separate owner rereads the recovered sequence, only the
+    // original durable effect is signed; it must never execute twice.
+    let mut recovered = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
+    )
+    .expect("recovered service");
+    let (mut sender, mut receiver) = UnixStream::pair().expect("pair");
+    send_frame(
+        &mut sender,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::ReadBack,
+            intent: intent(),
+            challenge_nonce: Some("bb".repeat(32)),
+        },
+    )
+    .expect("reconcile");
+    recovered
+        .serve_connection(&mut receiver)
+        .expect("frontier recovered");
+    let response: CellSplitEffectRpcResponseV1 =
+        receive_frame(&mut sender).expect("authenticated recovery");
+    assert_eq!(response.receipt.expect("original receipt").owner_sequence, 7);
+    assert!(response.readback.is_some());
+    assert_eq!(recovered.backend().commits, 0);
 }
 
 #[test]
