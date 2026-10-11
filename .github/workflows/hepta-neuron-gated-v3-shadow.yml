@@ -72,4 +72,24 @@ jobs:
         run: cargo test --locked -p codex-hepta-neuron --lib
       - name: Run selected strict Clippy
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-neuron --lib --tests -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+      - name: Build exact-source four-arm native mechanism probe
+        working-directory: codex-rs
+        run: cargo build --locked -p codex-hepta-neuron --bin neuron_shadow_mechanism_probe
+      - name: Execute four-arm and four-size same-Q24-input fixture matrix
+        working-directory: codex-rs
+        env:
+          PROBE_RESULT: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+        run: >-
+          python3 ../qualification/neuron-gated-sparse-v3/run_shadow_probe_matrix.py
+          --binary target/debug/neuron_shadow_mechanism_probe
+          --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json
+          --report "$PROBE_RESULT"
+      - name: Retain explicitly non-production native fixture measurements
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: neuron-q24-fixture-matrix-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+          if-no-files-found: warn
+          retention-days: 14
