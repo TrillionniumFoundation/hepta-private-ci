@@ -415,11 +415,13 @@ def review(dataset, trial, journal_bytes, nochange, *,
 
 def write_frozen_report(path, report):
     """No replay may silently overwrite previously reviewed outcomes."""
+    # Reject nonfinite/incomplete reports BEFORE creating an immutable path.
+    serialized = json.dumps(report, sort_keys=True, ensure_ascii=False,
+                            separators=(",", ":"), allow_nan=False) + "\n"
     destination = Path(path)
     destination.parent.mkdir(parents=True, exist_ok=True)
     with destination.open("x", encoding="utf-8") as stream:
-        stream.write(json.dumps(report, sort_keys=True, ensure_ascii=False,
-                                separators=(",", ":"), allow_nan=False) + "\n")
+        stream.write(serialized)
 
 
 def main():
