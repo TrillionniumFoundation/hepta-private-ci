@@ -425,3 +425,62 @@ fn bootstrap_repositions_nonzero_cursor_on_an_empty_file() {
         .expect("recovery from normalized header");
     assert_eq!(recovered.anchor(), initial);
 }
+
+#[derive(Default)]
+struct MockRecoveryObserver {
+    binding: Option<Digest32>,
+    acknowledged: Option<CellSplitLedgerAnchorV1>,
+}
+
+impl CellSplitRecoveryObserverV1 for MockRecoveryObserver {
+    fn verified_anchor(
+        &mut self,
+        plan: &CellSplitPlanV1,
+    ) -> Result<CellSplitLedgerAnchorV1, CellSplitErrorV1> {
+        if self.binding != Some(plan.binding_digest()) {
+            return Err(CellSplitErrorV1::ScopeMismatch);
+        }
+        self.acknowledged.ok_or(CellSplitErrorV1::Unapproved)
+    }
+}
+
+#[test]
+fn public_recovery_requires_independently_authenticated_observer_anchor() {
+    let file = NamedTempFile::new().expect("temp ledger");
+    let p = plan();
+    let owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
+        .expect("bootstrap");
+    let anchored = owner.anchor();
+    drop(owner);
+
+    let mut missing = MockRecoveryObserver::default();
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::recover_from_observer(reopen(&file), p.clone(), &mut missing),
+        Err(CellSplitErrorV1::ScopeMismatch)
+    ));
+
+    let mut forged_scope = MockRecoveryObserver {
+        binding: Some(digest(b"wrong identity")),
+        acknowledged: Some(anchored),
+    };
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::recover_from_observer(
+            reopen(&file),
+            p.clone(),
+            &mut forged_scope,
+        ),
+        Err(CellSplitErrorV1::ScopeMismatch)
+    ));
+
+    let mut acknowledged = MockRecoveryObserver {
+        binding: Some(p.binding_digest()),
+        acknowledged: Some(anchored),
+    };
+    let recovered = CellSplitExecutionOwnerV1::recover_from_observer(
+        reopen(&file),
+        p,
+        &mut acknowledged,
+    )
+    .expect("observer-validated journal");
+    assert_eq!(recovered.anchor(), anchored);
+}
