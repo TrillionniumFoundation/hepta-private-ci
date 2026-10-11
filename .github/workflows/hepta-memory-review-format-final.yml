@@ -25,7 +25,7 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
-          python3 -m pip install uv==0.8.22
+          python3 -m pip install uv==0.11.3
           git fetch --no-tags --depth=1 origin "$BASE"
           just fmt --check --base "$BASE" 2>&1 | tee /tmp/reviewed-format.log
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
