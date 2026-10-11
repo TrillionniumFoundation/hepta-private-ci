@@ -1,0 +1,86 @@
+name: Hepta Four-Gate Research Diagnostics
+
+on:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/four_gate_*.py"
+      - "qualification/neuron-stem/test_four_gate_core.py"
+      - "docs/learning/FOUR_GATE_ACCEPTANCE.md"
+      - ".github/workflows/hepta-neuron-four-gates.yml"
+  workflow_dispatch:
+    inputs:
+      full_controlled_matrix:
+        description: "Run generated CPU research matrix (NOT native/pretrained acceptance)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-and-parent:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Verify exact inherited bytes and callable API
+        run: python3 qualification/neuron-stem/four_gate_base_check.py --repository . --check-api
+      - name: Run model-free adversarial tests without skips
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          python3 -m compileall -q qualification/neuron-stem
+          python3 -m unittest discover -s qualification/neuron-stem -p 'test_four_gate_*.py' -v
+          python3 qualification/neuron-stem/four_gate_review.py plan --output four-gate-plan.json
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: four-gate-frozen-research-plan
+          path: four-gate-plan.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  real-controlled-cpu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install explicit CPU tensor dependencies (not model weights)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-four-gate-venv
+          /tmp/hepta-four-gate-venv/bin/python -m pip install 'numpy==2.3.5'
+          /tmp/hepta-four-gate-venv/bin/python -m pip install 'torch==2.10.0' --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-four-gate-venv/bin/python -m pip freeze
+      - name: Execute real tensors and explicit controlled probes
+        shell: bash
+        env:
+          FULL_MATRIX: ${{ inputs.full_controlled_matrix || false }}
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          PY=/tmp/hepta-four-gate-venv/bin/python
+          mkdir -p four-gate-artifacts
+          "$PY" -m unittest four_gate_tensor_tests -v 2>&1 | tee four-gate-artifacts/tensor-tests.log
+          if [ "$FULL_MATRIX" = "true" ]; then
+            "$PY" qualification/neuron-stem/four_gate_compute_probe.py --output four-gate-artifacts/compute
+            "$PY" qualification/neuron-stem/four_gate_learning_probe.py --output four-gate-artifacts/learning
+          else
+            "$PY" qualification/neuron-stem/four_gate_compute_probe.py --smoke --output four-gate-artifacts/compute
+            "$PY" qualification/neuron-stem/four_gate_learning_probe.py --smoke --output four-gate-artifacts/learning
+          fi
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: four-gate-generated-cpu-diagnostics-not-production
+          path: four-gate-artifacts
+          if-no-files-found: warn
+          retention-days: 14
