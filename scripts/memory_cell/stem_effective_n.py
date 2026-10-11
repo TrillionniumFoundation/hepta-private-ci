@@ -61,6 +61,45 @@ def effective_heldout_subjects(plan, paired_bridge):
                or not families[q] for q in subjects)
     ):
         raise ValueError("held-out question/family/route identities drifted")
+    all_phases = ("train", "select", "retention", "test", "transfer")
+    if any(
+        phase not in questions or any(
+            q not in families or not isinstance(families[q], str)
+            or not families[q] for q in questions[phase]
+        )
+        for phase in all_phases
+    ):
+        raise ValueError("unregistered original source-family lineage")
+    family_sets = {
+        phase: {families[q] for q in questions[phase]}
+        for phase in all_phases
+    }
+    source_family_units = dict(
+        test=len(family_sets["test"]),
+        transfer=len(family_sets["transfer"]),
+        combined_test_transfer=len(
+            family_sets["test"] | family_sets["transfer"]
+        ),
+        retention=len(family_sets["retention"]),
+        test_shared_with_retention=len(
+            family_sets["test"] & family_sets["retention"]
+        ),
+        test_new_beyond_retention=len(
+            family_sets["test"] - family_sets["retention"]
+        ),
+        transfer_shared_with_train_select_retention_test=len(
+            family_sets["transfer"] & (
+                family_sets["train"] | family_sets["select"]
+                | family_sets["retention"] | family_sets["test"]
+            )
+        ),
+        test_is_unseen_source_family_vs_retention=(
+            not bool(family_sets["test"] & family_sets["retention"])
+        ),
+        family_overlap_does_not_prove_training_label_leakage=True,
+        unique_source_families_not_independent_samples=True,
+        independent_family_sampling_verified=False,
+    )
     rows = paired_bridge["test_transfer_paired_panel_rows"]
     if not isinstance(rows, list) or len(rows) != 3 * 5 * 16:
         raise ValueError("full three-stage repeated question panel required")
@@ -233,13 +272,14 @@ def effective_heldout_subjects(plan, paired_bridge):
             independent_generalization_proven=False,
         )
     return dict(
-        schema="hepta.stem-effective-heldout-repeated-panel.v2",
+        schema="hepta.stem-effective-heldout-repeated-panel.v3",
         declared_phases=PHASES,
         stage_48_primary_predeclared_no_best_checkpoint_search=True,
         repeated_stages=STAGES,
         independent_question_ids_per_arm=16,
         repeated_question_evaluations_per_arm=48,
         source_family_sampling_independence_certified=False,
+        original_native_source_family_structure=source_family_units,
         full_original_policy_census_verified_by_bridge=True,
         semantic_citation_precision=None,
         by_arm=report,

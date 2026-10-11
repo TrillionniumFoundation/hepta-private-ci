@@ -737,3 +737,26 @@ The aggregate report is explicitly versioned
 `hepta.stem-effective-heldout-repeated-panel.v2`; none of these
 cryptographic consistency checks establish independent source-family
 sampling, held-out answer benefit or semantic citation entailment.
+
+### Pinned-source native family diversity is smaller still
+
+A direct SHA-256-verified read of the **original immutable**
+`e9c8f9c9...` experiment ZIP shows 16 distinct test/transfer question
+identities but only **three distinct native source-family identifiers**:
+Test has 8 questions from **two LoCoMo conversations**; Transfer has
+8 questions from **one LongMemEval family**. The two Test families
+also appear in the existing Retention cohort; **zero** Test source
+families are new relative to Retention. This is a source-family
+overlap observation, **not** evidence that evaluation answer labels
+entered any optimizer. Training and selection family identities
+remain separately accounted.
+
+The `effective_heldout_subjects` receipt now includes a
+`original_native_source_family_structure` block computed from the
+**registered source-family map**, alongside the 16 unique question
+denominator and 48 repeated observations per learned arm. It refuses
+to infer statistical significance or independent-family generalization
+from three observed family IDs; the three may themselves be dependent.
+A future production-relevant result needs multiple genuinely independent
+and prospective source families with separately judged support and
+answer/citation correctness.

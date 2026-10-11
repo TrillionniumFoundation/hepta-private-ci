@@ -167,6 +167,48 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "forged identity"):
             effective_heldout_subjects(plan, paired)
 
+    def test_three_native_source_families_not_sixteen_independent_trials(self):
+        plan, paired = realistic_fixture()
+        test = plan["questions"]["test"]
+        retention = plan["questions"]["retention"]
+        transfer = plan["questions"]["transfer"]
+        for q in test[:6] + retention[:6]:
+            plan["question_families"][q] = "locomo:conv-47"
+        for q in test[6:] + retention[6:]:
+            plan["question_families"][q] = "locomo:conv-43"
+        for q in transfer:
+            plan["question_families"][q] = "longmemeval:001be529"
+        for row in paired["test_transfer_paired_panel_rows"]:
+            row["source_family"] = plan["question_families"][row["question_id"]]
+        output = effective_heldout_subjects(plan, paired)
+        cohort = output["original_native_source_family_structure"]
+        self.assertEqual(cohort["test"], 2)
+        self.assertEqual(cohort["transfer"], 1)
+        self.assertEqual(cohort["combined_test_transfer"], 3)
+        self.assertEqual(cohort["test_shared_with_retention"], 2)
+        self.assertEqual(cohort["test_new_beyond_retention"], 0)
+        self.assertFalse(cohort["test_is_unseen_source_family_vs_retention"])
+        self.assertFalse(cohort["independent_family_sampling_verified"])
+        self.assertEqual(output["independent_question_ids_per_arm"], 16)
+        self.assertEqual(output["by_arm"]["gated"]["primary"]["source_family_count"], 3)
+
+    def test_retention_overlap_does_not_require_gold_label_leakage(self):
+        plan, paired = realistic_fixture()
+        plan["question_families"]["retention-0"] = (
+            plan["question_families"]["test-0"]
+        )
+        report = effective_heldout_subjects(plan, paired)
+        family = report["original_native_source_family_structure"]
+        self.assertEqual(family["test_shared_with_retention"], 1)
+        self.assertEqual(family["test_new_beyond_retention"], 7)
+        self.assertTrue(family["family_overlap_does_not_prove_training_label_leakage"])
+
+    def test_unknown_original_family_in_retention_is_not_silently_ignored(self):
+        plan, paired = realistic_fixture()
+        plan["question_families"].pop("retention-0")
+        with self.assertRaisesRegex(ValueError, "source-family lineage"):
+            effective_heldout_subjects(plan, paired)
+
     def test_unknown_test_names_and_forged_independence_are_rejected(self):
         plan, paired = realistic_fixture()
         for mode in ("question", "route", "schema"):
