@@ -85,7 +85,7 @@ pub struct ModelLoadObservation {
     pub terminal_observed: bool,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ExecutionStatus {
     Succeeded,
     Failed,
@@ -126,6 +126,7 @@ pub enum Error {
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
+    IndeterminateLifecycle,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -170,6 +171,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     generation: u64,
     grant: ResourceGrant,
     driver: D,
+    poisoned: bool,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
 }
@@ -192,6 +194,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             generation,
             grant,
             driver,
+            poisoned: false,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
@@ -216,9 +219,26 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::ModelCapacity);
         }
         let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
+        if let Err(error) = validate_identity(&handle.opaque_id, "model handle") {
+            if self.driver.unload(handle).is_err() {
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+            return Err(error);
+        }
+        // Account for all resident model handles, not merely the new model.
+        let total_after_load = self
+            .models
+            .values()
+            .try_fold(0_u64, |total, loaded| {
+                total.checked_add(loaded.handle.observed_memory_bytes)
+            })
+            .and_then(|total| total.checked_add(handle.observed_memory_bytes));
+        if !matches!(total_after_load, Some(total) if total <= self.grant.maximum_memory_bytes) {
+            if self.driver.unload(handle).is_err() {
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
@@ -343,7 +363,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::ActiveRequests);
         }
         let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if self.driver.unload(loaded.handle).is_err() {
+            // Physical unload may have occurred despite the error. Forbid any
+            // further use of this worker until its owner reconciles/restarts.
+            self.poisoned = true;
+            return Err(Error::IndeterminateLifecycle);
+        }
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -352,6 +377,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::IndeterminateLifecycle);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
@@ -522,6 +550,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
@@ -572,6 +606,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         } else {
             ExecutionStatus::Failed
         };
+        if status != ExecutionStatus::Succeeded
+            && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
+        {
+            return Err(Error::FeatureOutputMismatch);
+        }
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,
@@ -603,54 +642,64 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
-                .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
-        };
-        let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
-            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
-            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
-            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
-            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
-            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
-            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
-            device_digest: parse_digest32(&observed.manifest.device_digest)?,
-        };
-        let status = match observed.status {
-            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
-            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
-            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
-            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
-        };
-        build_neuron_feature_receipt_v1(
-            &control_request,
-            runtime_tuple,
-            NeuronFeatureObservationV1 {
-                encoder_digest: parse_digest32(&observed.encoder_digest)?,
-                head_digest: parse_digest32(&observed.head_digest)?,
-                drive_q24: observed.drive_q24,
-                prediction_q24: observed.prediction_q24,
-                observed_memory_bytes: observed.observed_memory_bytes,
-                transient_allocation_bytes: observed.transient_allocation_bytes,
-                queue_age_micros: observed.queue_age_micros,
-                latency_micros: observed.latency_micros,
-                status,
-            },
-        )
-        .map_err(|_| Error::FeatureContract)
+        project_neuron_feature_receipt_v1(request_copy, observed)
     }
+}
+
+/// Shared, authority-free V1 observation projection, used by both single
+/// requests and admitted native batches. This does not create a signed
+/// independent evaluator or final-use authorization.
+pub(crate) fn project_neuron_feature_receipt_v1(
+    request_copy: NeuronFeatureRequest,
+    observed: NeuronFeatureExecutionObservation,
+) -> Result<NeuronFeatureReceiptV1, Error> {
+    let generation =
+        Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
+    let control_request = NeuronFeatureRequestV1 {
+        request_id: StableId::new(request_copy.authorization.request_id)
+            .map_err(|_| Error::FeatureContract)?,
+        generation,
+        model_id: StableId::new(observed.manifest.model_id.clone())
+            .map_err(|_| Error::FeatureContract)?,
+        encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
+        head_digest: parse_digest32(&request_copy.head_digest)?,
+        weights_digest: parse_digest32(&request_copy.weights_digest)?,
+        input_digest: parse_digest32(&request_copy.input_digest)?,
+        feature_vector_q24: request_copy.feature_vector_q24,
+        expected_output_width: request_copy.expected_output_width,
+    };
+    let runtime_tuple = NeuronModelRuntimeTupleV1 {
+        model_id: control_request.model_id.clone(),
+        model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
+        weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
+        tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
+        preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
+        quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
+        runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
+        device_digest: parse_digest32(&observed.manifest.device_digest)?,
+    };
+    let status = match observed.status {
+        ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
+        ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
+        ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
+        ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
+    };
+    build_neuron_feature_receipt_v1(
+        &control_request,
+        runtime_tuple,
+        NeuronFeatureObservationV1 {
+            encoder_digest: parse_digest32(&observed.encoder_digest)?,
+            head_digest: parse_digest32(&observed.head_digest)?,
+            drive_q24: observed.drive_q24,
+            prediction_q24: observed.prediction_q24,
+            observed_memory_bytes: observed.observed_memory_bytes,
+            transient_allocation_bytes: observed.transient_allocation_bytes,
+            queue_age_micros: observed.queue_age_micros,
+            latency_micros: observed.latency_micros,
+            status,
+        },
+    )
+    .map_err(|_| Error::FeatureContract)
 }
 
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {
@@ -711,6 +760,23 @@ fn validate_neuron_feature_output(
     validate_digest(&value.head_digest, "head")?;
     Ok(())
 }
+
+#[path = "model_worker_batch.rs"]
+mod batch;
+pub use batch::NeuronFeatureBatchDriver;
+pub use batch::NeuronFeatureBatchItemObservationV2;
+
+#[path = "model_worker_gated.rs"]
+mod gated_cpu;
+pub use gated_cpu::GatedHeadCandidateV2;
+pub use gated_cpu::GatedHeadCpuDriverV2;
+
+#[path = "model_worker_shared_v2.rs"]
+mod shared_v2;
+pub(crate) use shared_v2::NeuronSharedFeatureBatchDriverV2;
+pub use shared_v2::SharedNeuronFeatureRequestV2;
+pub use shared_v2::SharedNeuronFeatureResultV2;
+pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
