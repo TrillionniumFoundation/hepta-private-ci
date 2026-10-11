@@ -17,15 +17,24 @@ pub struct PhysicalBatchItemObservationV1 {
     pub observation: DriverNeuronFeatureObservation,
 }
 
-/// A reviewed backend must submit the full slice in one backend invocation.
-/// Observations correspond to input order, exactly one per request.
-/// An uncertain or malformed batch fails the whole local attempt.
+/// Batch-level observation. All resource numbers are backend-reported until
+/// independently attested by a target-host observer.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PhysicalBatchRunObservationV1 {
+    pub batch_execution_digest: String,
+    pub claimed_encoder_forward_count: u32,
+    pub observed_peak_memory_bytes: u64,
+    pub items: Vec<PhysicalBatchItemObservationV1>,
+}
+
+/// A reviewed backend must submit the whole slice in one invocation and
+/// report the exact item ordering. No sequential fallback is provided.
 pub trait NeuronPhysicalBatchDriver: NeuronFeatureDriver {
     fn run_neuron_feature_batch(
         &mut self,
         handle: &DriverModelHandle,
         requests: &[NeuronFeatureRequest],
-    ) -> Result<Vec<PhysicalBatchItemObservationV1>, Error>;
+    ) -> Result<PhysicalBatchRunObservationV1, Error>;
 }
 
 impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
@@ -93,12 +102,16 @@ impl<D: NeuronPhysicalBatchDriver> InferenceWorker<D> {
             self.active_requests.remove(&request.authorization.request_id);
         }
         loaded.active_requests = loaded.active_requests.saturating_sub(size);
-        let observations = result?;
-        if observations.len() != size {
+        let batch = result?;
+        validate_digest(&batch.batch_execution_digest, "physical batch execution")?;
+        if batch.claimed_encoder_forward_count != 1
+            || batch.items.len() != size
+            || batch.observed_peak_memory_bytes > self.grant.maximum_memory_bytes
+        {
             return Err(Error::FeatureContract);
         }
         let mut receipts = Vec::with_capacity(size);
-        for (request, item) in requests.into_iter().zip(observations) {
+        for (request, item) in requests.into_iter().zip(batch.items) {
             if item.request_id != request.authorization.request_id
                 || item.payload_digest != request.authorization.payload_digest
             {
