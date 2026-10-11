@@ -198,3 +198,11 @@ features; real audited mmBERT/ModernBERT/Jina weights and target-host
 64–4096 Cell measurements remain unverified. No benchmark or NDU claim
 follows from these L1 tests.
 
+
+## Dual-selected CAS → one native Q24 Head backend batch (L1 extension)
+
+The read-only Rust `SelectedStemHeadBankReaderV1::run_selected_cpu_head_backend_batch` now composes **two independently selected, signed-CURRENT CAS readers** with the registered `NeuronBackendBatchDriver` for **2–32 same-scope/same-generation** Cell requests. The projection reader requires full-width source features and recomputes each Cell's exact Q24 projection *inside* authenticated CURRENT revalidation; it rejects a mutated or missing member **before any backend call**. The Head bank checks exact signed selection, manifest-bound weights, membership, Scope, Generation and revocation frontier before entering its own CURRENT guard. A failed use seals the affected readers, so a stale CURRENT object cannot reactivate them. Every successful member receives a typed inference receipt with `authority=DENY_ALL`; the returned batch digest is **not** a signature.
+
+The concrete `CpuGatedHeadDriver::observed_backend_batch_invocations` counter is diagnostic for **native CPU Head driver dispatch**, not an independently attested full Encoder execution or fused GPU/Tensor backend. Within the driver the distinct Head calculations are still per-member; batch formation does not prove a throughput increase. A regression on real selected CAS test payloads checks that two different Head IDs produce two typed receipts after **one** Head backend invocation. A separate signed-CAS negative session introduces one modified Q24 member whose self-recomputed payload digest is valid: the selected projection rejects the whole batch, seals both readers and leaves the observed backend invocation count unchanged.
+
+**Non-waivable P1/P2/P3 gates:** this does not install a pretrained HF Encoder in the Rust Worker, sign artifact-load/Final-use receipts, serialize two CURRENT issuances against a production revocation owner, persist a WAL checkpoint, or measure target-host p95/p99/RSS. The product Owner must perform those operations atomically or under a proven generation fence before any route may be promoted. Do not infer 4096-Cell performance or NDU improvement from these L1 fixtures.
