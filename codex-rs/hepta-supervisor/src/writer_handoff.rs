@@ -955,6 +955,28 @@ mod tests {
     }
 
     #[test]
+    fn live_writer_rejects_noncanonical_equal_length_json() {
+        let temp = TempDir::new().expect("temp");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("journal");
+        let path = temp.path().join("writer-handoff.log");
+        let original = std::fs::read_to_string(&path).expect("original canonical WAL");
+        let from = "\"revision\":1,\"phase\":\"prepared\"";
+        let to = "\"phase\":\"prepared\",\"revision\":1";
+        assert!(original.contains(from));
+        assert_eq!(from.len(), to.len());
+        let replaced = original.replacen(from, to, 1);
+        assert_eq!(original.len(), replaced.len());
+        // Same parsed checkpoint and valid semantic receipt digest, but
+        // different actual fsynced bytes: no normalized receipt laundering.
+        std::fs::write(&path, replaced).expect("reordered JSON fields");
+        assert_eq!(
+            journal.advance(step(WriterHandoffPhaseV1::Prepared, "migration-plan")),
+            Err(WriterHandoffErrorV1::Corrupt)
+        );
+    }
+
+    #[test]
     fn live_writer_rejects_unknown_appended_tail_before_transition() {
         let temp = TempDir::new().expect("temp");
         let mut journal =
