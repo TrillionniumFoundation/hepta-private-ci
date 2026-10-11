@@ -393,25 +393,58 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
     let payload_digest = super::super::canonical_neuron_feature_payload_digest(&admitted);
     admitted.authorization.payload_digest = payload_digest.clone();
     admitted.authorization.lease_payload_digest = payload_digest;
+    let (_file, worker_current) = fx.current("current.worker", Digest32::ZERO);
     reader
-        .check_worker_request(&binding, &projected, &admitted)
-        .expect("same fenced generation and scope");
+        .check_worker_request(
+            &fx.selector_verifier,
+            &signed,
+            worker_current,
+            30,
+            &binding,
+            &projected,
+            &admitted,
+        )
+        .expect("new signed CURRENT required for every Worker use");
     let mut mismatched_scope = binding.clone();
     mismatched_scope.scope_digest = digest(b"different-scope").to_string();
     assert!(matches!(
-        reader.check_worker_request(&mismatched_scope, &projected, &admitted),
+        reader.check_worker_request_current(
+            &fx.selector_verifier,
+            &signed,
+            fx.current("current.invalid.scope", Digest32::ZERO).1,
+            30,
+            &mismatched_scope,
+            &projected,
+            &admitted,
+        ),
         Err(StemProjectionArtifactError::InvalidBinding)
     ));
     let mut mismatched_frontier = binding.clone();
     mismatched_frontier.revocation_frontier_digest = digest(b"previous-frontier").to_string();
     assert!(matches!(
-        reader.check_worker_request(&mismatched_frontier, &projected, &admitted),
+        reader.check_worker_request_current(
+            &fx.selector_verifier,
+            &signed,
+            fx.current("current.invalid.frontier", Digest32::ZERO).1,
+            30,
+            &mismatched_frontier,
+            &projected,
+            &admitted,
+        ),
         Err(StemProjectionArtifactError::InvalidBinding)
     ));
     let mut wrong_generation = binding.clone();
     wrong_generation.generation += 1;
     assert!(matches!(
-        reader.check_worker_request(&wrong_generation, &projected, &admitted),
+        reader.check_worker_request_current(
+            &fx.selector_verifier,
+            &signed,
+            fx.current("current.invalid.generation", Digest32::ZERO).1,
+            30,
+            &wrong_generation,
+            &projected,
+            &admitted,
+        ),
         Err(StemProjectionArtifactError::InvalidBinding)
     ));
 
@@ -425,16 +458,18 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
         }))
         .expect("revoke");
     let (_file, revoked) = fx.current("current.revoked", before_revoke);
+    // Reusing a previously valid, in-memory projection after the registry
+    // revokes it must fail even without a second Encoder or Projection run.
     assert!(
         reader
-            .project_with_current(
+            .check_worker_request(
                 &fx.selector_verifier,
                 &signed,
                 revoked,
                 30,
                 &binding,
-                &features,
-                3,
+                &projected,
+                &admitted,
             )
             .is_err()
     );
