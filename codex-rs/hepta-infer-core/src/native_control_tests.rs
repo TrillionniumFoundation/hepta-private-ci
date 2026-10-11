@@ -601,3 +601,33 @@ fn historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_succ
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn poisoned_native_owner_rejects_idempotent_cancel_and_terminal_retry() {
+    let journal = path("poisoned-native-idempotency");
+    let mut owner = DurableInferenceControl::open(&journal, 8).unwrap();
+    start(&mut owner, "r1");
+    owner.cancel_native("r1").unwrap();
+    owner.poisoned = true;
+    assert_eq!(owner.cancel_native("r1"), Err(Error::WriterUnavailable));
+    owner.poisoned = false; // unit-test-only simulation of separate failure points
+    let observed = output(NativeRunStatus::Completed, Some(5));
+    owner.settle_native("r1", observed.clone()).unwrap();
+    owner.poisoned = true;
+    assert_eq!(
+        owner.settle_native("r1", observed),
+        Err(Error::WriterUnavailable)
+    );
+    assert_eq!(
+        owner.reserve_native(request("r1"), 1),
+        Err(Error::WriterUnavailable)
+    );
+    drop(owner);
+    let recovered = DurableInferenceControl::open(&journal, 8).unwrap();
+    assert_eq!(
+        recovered.native_record("r1").unwrap().state,
+        NativeReservationState::Released
+    );
+    drop(recovered);
+    std::fs::remove_file(journal).unwrap();
+}

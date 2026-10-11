@@ -536,3 +536,67 @@ fn forged_legacy_terminal_wal_cannot_relabel_or_overcharge_on_recovery() {
         fs::remove_file(&journal).unwrap();
     }
 }
+
+#[test]
+fn poisoned_owner_never_acknowledges_idempotent_legacy_receipts() {
+    let journal = path("poisoned-idempotent-legacy");
+    let mut owner = DurableInferenceControl::open(&journal, 32).unwrap();
+    owner.submit(100, request()).unwrap();
+    // These toggles ONLY simulate separate post-fsync-failure points in a unit
+    // test. Product code must never clear a poisoned owner without reopening.
+    owner.poisoned = true;
+    assert_eq!(owner.submit(100, request()), Err(Error::WriterUnavailable));
+    assert_eq!(
+        owner.reserve(100, "request.1", 1, reservation()),
+        Err(Error::WriterUnavailable)
+    );
+    owner.poisoned = false;
+    owner.reserve(100, "request.1", 1, reservation()).unwrap();
+    owner.poisoned = true;
+    assert_eq!(
+        owner.reserve(100, "request.1", 2, reservation()),
+        Err(Error::WriterUnavailable)
+    );
+    owner.poisoned = false;
+    owner.assign("request.1", 2, assignment()).unwrap();
+    owner.poisoned = true;
+    assert_eq!(
+        owner.assign("request.1", 3, assignment()),
+        Err(Error::WriterUnavailable)
+    );
+    assert_eq!(
+        owner.claim_dispatch(100, "request.1", 3, "reservation.1", &assignment()),
+        Err(Error::WriterUnavailable)
+    );
+    owner.poisoned = false;
+    owner.cancel("request.1", 3).unwrap();
+    owner.poisoned = true;
+    assert_eq!(owner.cancel("request.1", 4), Err(Error::WriterUnavailable));
+    owner.poisoned = false;
+    let observed = TerminalObservation {
+        request_id: "request.1".to_owned(),
+        reservation_id: "reservation.1".to_owned(),
+        worker_id: "worker.1".to_owned(),
+        worker_generation: 2,
+        model_digest: "1".repeat(64),
+        payload_digest: "2".repeat(64),
+        terminal_observed: true,
+        terminal_status: Some(RequestState::Completed),
+        output_digest: Some("5".repeat(64)),
+        consumed_tokens: 10,
+        usage_units: 5,
+    };
+    owner.settle("request.1", 4, "6".repeat(64), observed.clone()).unwrap();
+    owner.poisoned = true;
+    assert_eq!(
+        owner.settle("request.1", 5, "6".repeat(64), observed),
+        Err(Error::WriterUnavailable)
+    );
+    drop(owner);
+    // The real repair boundary is a fresh lock-acquiring journal replay, not a
+    // resurrected in-memory receipt from the poisoned instance.
+    let recovered = DurableInferenceControl::open(&journal, 32).unwrap();
+    assert_eq!(recovered.get("request.1").unwrap().state, RequestState::Completed);
+    drop(recovered);
+    fs::remove_file(journal).unwrap();
+}

@@ -180,3 +180,18 @@ cryptographically tamper-evident. Production rollout still needs a separately
 retained journal-head witness, trusted file access and full current authority
 verification. On partial write/unknown sync, the writer remains poisoned and
 does not allow a second physical dispatch.
+
+## Idempotent retry after an uncertain WAL write
+
+A failed or unknown fsync poisons the **entire** existing inference.control
+owner. Legacy submit/reserve/assign/cancel/settle (and dispatch) now check
+that fence **before** returning an otherwise matching idempotent receipt;
+Native cancel/settle retries must do the same. Old in-memory state cannot
+be interpreted as a durable acknowledgement. Only independently inspected
+reopen and replay can reestablish a fresh owner. Targeted tests simulate each
+legacy retry point and native late cancellation/settlement, then reopen the
+actual WAL. The Worker CI now executes all inference-core unit tests, including
+both legacy and Native owner regression modules.
+
+This does not invent resource usage or stop late observed token overruns being
+recorded, and does not provide production selection/final-use authority.

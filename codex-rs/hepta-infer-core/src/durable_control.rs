@@ -186,6 +186,16 @@ pub struct DurableInferenceControl {
 }
 
 impl DurableInferenceControl {
+    /// A failed or uncertain WAL fsync poisons the entire live owner. Even a
+    /// matching idempotent retry may not acknowledge an unverified frontier:
+    /// only a separately inspected, clean reopen can reestablish currentness.
+    fn ensure_writer_available(&self) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        Ok(())
+    }
+
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);
@@ -290,6 +300,7 @@ impl DurableInferenceControl {
         now_ms: u64,
         request: InferenceRequest,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_request(now_ms, &request)?;
         if let Some(current) = self.records.get(&request.request_id) {
             if current.request == request {
@@ -314,6 +325,7 @@ impl DurableInferenceControl {
         expected_revision: u64,
         reservation: Reservation,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         validate_reservation(now_ms, &reservation)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
@@ -344,6 +356,7 @@ impl DurableInferenceControl {
         expected_revision: u64,
         assignment: Assignment,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         validate_assignment(&assignment)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
@@ -379,6 +392,7 @@ impl DurableInferenceControl {
         reservation_id: &str,
         assignment: &Assignment,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         validate_identity(reservation_id, "reservation")?;
         validate_assignment(assignment)?;
@@ -415,6 +429,7 @@ impl DurableInferenceControl {
         request_id: &str,
         expected_revision: u64,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
         if record.revision != expected_revision {
@@ -439,6 +454,7 @@ impl DurableInferenceControl {
         observation_digest: String,
         observation: TerminalObservation,
     ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
         validate_identity(request_id, "request")?;
         validate_digest(&observation_digest, "observation")?;
         validate_observation(&observation)?;

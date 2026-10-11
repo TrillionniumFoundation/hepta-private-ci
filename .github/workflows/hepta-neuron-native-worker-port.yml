@@ -13,6 +13,8 @@ on:
       - "codex-rs/hepta-infer-worker-host/src/neuron_durable_assignment_tests.rs"
       - "codex-rs/hepta-infer-core/src/durable_control.rs"
       - "codex-rs/hepta-infer-core/src/durable_control_tests.rs"
+      - "codex-rs/hepta-infer-core/src/native_control.rs"
+      - "codex-rs/hepta-infer-core/src/native_control_tests.rs"
       - "codex-rs/hepta-infer-worker-host/src/lib.rs"
       - "codex-rs/hepta-infer-worker-host/src/model_worker.rs"
       - "qualification/neuron-model-trials/NATIVE_WORKER_MODEL_PORT.md"
@@ -50,7 +52,7 @@ jobs:
       - name: Verify exact Rustfmt
         run: cargo fmt --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
       - name: Verify pre-driver durable claim, recovery and rejection
-        run: cargo test --locked -p codex-hepta-infer-core --lib durable_control::tests
+        run: cargo test --locked -p codex-hepta-infer-core --lib
       - name: Compile native Worker and ModelPort
         run: cargo check --locked -p codex-hepta-infer-worker-host --all-targets
       - name: Exercise exact prepared Worker reservations through Neuron ModelPort
