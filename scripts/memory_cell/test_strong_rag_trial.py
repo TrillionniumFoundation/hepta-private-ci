@@ -75,6 +75,19 @@ class StrongRagPolicyTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 trial.eval_selections(bad, 2)
 
+    def test_calibration_export_excludes_test_index_hash_and_source_scope(self):
+        cases = [dict(query=dict(identity=f"q{i}", scope=f"q{i}")) for i in range(8)]
+        sources = [dict(identity=f"event{i}", scope=f"q{i}") for i in range(8)]
+        indices = {f"q{i}": f"sha{i}" for i in range(8)}
+        trial.assert_calibration_publication(cases, sources, indices)
+        extra = dict(indices)
+        extra["held_out_test_scope"] = "private_index_hash"
+        with self.assertRaises(ValueError):
+            trial.assert_calibration_publication(cases, sources, extra)
+        sources.append(dict(identity="leaked", scope="held_out_test_scope"))
+        with self.assertRaises(ValueError):
+            trial.assert_calibration_publication(cases, sources, indices)
+
     def test_calibration_uses_actual_task_success_before_input_cost(self):
         correct = {("q1", 2), ("q2", 2), ("q1", 1)}
         rows = rows_for(successes=correct)
