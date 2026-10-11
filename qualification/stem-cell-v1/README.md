@@ -501,3 +501,24 @@ The fingerprint prevents accidental source/option mispairing but does
 not cryptographically prove that external model code truly encoded the
 claimed input. Real model runner provenance, authenticated owner receipts,
 independent evaluator/NDU and production final-use are still mandatory.
+
+
+### Mandatory DeBERTa-v3-large weight-format admission (L2 blocker)
+
+The upstream Microsoft deberta-v3-large model repository currently contains
+pytorch_model.bin, not a model.safetensors checkpoint. The L2 HF runner
+intentionally refuses unsafe automatic PyTorch pickle fallback. Real
+DeBERTa-v3-large experiments therefore require an **independently reviewed,
+isolated, self-contained safetensors conversion** of those upstream weights
+with its own model/source lineage, conversion tool/command/version/SBOM,
+operator review, immutable 40-hex upstream Git revision, and a new
+byte-level local tree digest. An unreviewed .bin file is not valid
+execution input, even if its checksum was frozen. Merely adding an empty
+file with a .safetensors suffix (as some model-free tests deliberately
+do) is NOT a real conversion and AutoModel will reject it.
+
+ModernBERT-large publishes safetensors, but still requires audited local
+files and exact revision/dataset approval. No dynamic network downloads,
+remote code, unknown-pickle unpickling or automatic conversion are
+permitted in this shadow runner. This explicit format gate is separate
+from model accuracy, NDU or production authorization.
