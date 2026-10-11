@@ -2,6 +2,8 @@ use std::ffi::OsString;
 use std::io::Read;
 use std::path::PathBuf;
 
+#[cfg(unix)]
+use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_v1;
 use codex_hepta_operator_acceptance::CellSplitTargetHostEvidenceStoreV1;
 use codex_hepta_operator_acceptance::CellSplitTargetHostEvidenceTrustPolicyV1;
 use codex_hepta_operator_acceptance::PrepareRequest;
@@ -12,7 +14,7 @@ use codex_hepta_operator_acceptance::require_formal_environment;
 use codex_hepta_operator_acceptance::verify_and_seal;
 use codex_hepta_operator_acceptance::verify_receipt;
 
-const USAGE: &str = "usage:\n  hepta-operator-acceptance prepare        <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256>\n  hepta-operator-acceptance verify         <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256> <detached-signature>\n  hepta-operator-acceptance verify-receipt <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256>\n  hepta-operator-acceptance target-host-evidence verify <evidence-json|-> <trust-policy-json>\n  hepta-operator-acceptance target-host-evidence ingest <evidence-json|-> <trust-policy-json>\n  hepta-operator-acceptance target-host-evidence store <evidence-json|-> <trust-policy-json> <evidence-store-path>";
+const USAGE: &str = "usage:\n  hepta-operator-acceptance prepare        <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256>\n  hepta-operator-acceptance verify         <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256> <detached-signature>\n  hepta-operator-acceptance verify-receipt <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256>\n  hepta-operator-acceptance cell-split-execution advance|transcript <private-config-json> <externally-pinned-config-sha256>\n  hepta-operator-acceptance target-host-evidence verify <evidence-json|-> <trust-policy-json>\n  hepta-operator-acceptance target-host-evidence ingest <evidence-json|-> <trust-policy-json>\n  hepta-operator-acceptance target-host-evidence store <evidence-json|-> <trust-policy-json> <evidence-store-path>";
 
 fn main() {
     if let Err(error) = run(std::env::args_os().collect()) {
@@ -22,6 +24,9 @@ fn main() {
 }
 
 fn run(arguments: Vec<OsString>) -> Result<(), String> {
+    if arguments.get(1).and_then(|value| value.to_str()) == Some("cell-split-execution") {
+        return run_cell_split_execution_command(&arguments);
+    }
     if arguments.get(1).and_then(|value| value.to_str()) == Some("target-host-evidence") {
         return run_target_host_evidence(&arguments);
     }
@@ -107,6 +112,30 @@ fn run(arguments: Vec<OsString>) -> Result<(), String> {
         }
         _ => Err(USAGE.to_string()),
     }
+}
+
+#[cfg(unix)]
+fn run_cell_split_execution_command(arguments: &[OsString]) -> Result<(), String> {
+    if arguments.len() != 5 {
+        return Err(USAGE.to_string());
+    }
+    let action = arguments[2]
+        .to_str()
+        .ok_or_else(|| "cell-split action must be UTF-8".to_string())?;
+    let pin = arguments[4]
+        .to_str()
+        .ok_or_else(|| "cell-split external pin must be UTF-8".to_string())?;
+    let result = run_pinned_cell_split_execution_v1(action, &PathBuf::from(&arguments[3]), pin)?;
+    println!(
+        "{}",
+        serde_json::to_string(&result).map_err(|error| error.to_string())?
+    );
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn run_cell_split_execution_command(_arguments: &[OsString]) -> Result<(), String> {
+    Err("cell-split Unix effect services are not available on this platform".to_string())
 }
 
 fn run_target_host_evidence(arguments: &[OsString]) -> Result<(), String> {
