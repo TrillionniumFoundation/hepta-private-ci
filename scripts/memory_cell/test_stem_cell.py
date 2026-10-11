@@ -13,6 +13,7 @@ import torch
 from selector_head import Features, Supervision, TrainingCut
 from stem_cell import StemHead, clone_features, route_text, sha256
 from stem_cell_cache import SharedFeatureCache
+from stem_head_fit_dynamics import compare_train_head_before_after
 
 
 def features(q="train", root="root", identity="encoder-v1"):
@@ -60,6 +61,30 @@ class HeadTests(unittest.TestCase):
         self.assertEqual(
             head.decide(features("unseen", "held-out"), revoked=set())[0], 0
         )
+
+    def test_observed_actual_head_fit_matches_before_after_train_objective(self):
+        head = StemHead(4, "encoder-v1", kind="gated")
+        previous = sha256(head.export())
+        with torch.no_grad():
+            before = [head(self.row.features).tolist()]
+        receipt = head.fit(
+            (self.row,), training_cut(), revoked=set(), steps=64
+        )
+        updated = sha256(head.export())
+        with torch.no_grad():
+            after = [head(self.row.features).tolist()]
+        report = compare_train_head_before_after(
+            (self.row,), before, after,
+            admitted_ids={"train"}, stage=16, arm="gated",
+            cell="general", previous_head_sha256=previous,
+            updated_head_sha256=updated,
+        )
+        self.assertGreater(receipt["tensor_delta_squared_norm"], 0)
+        self.assertLess(report["mean_weak_loss_delta"], 0)
+        self.assertEqual(report["changed_train_top1_rows"], 1)
+        self.assertEqual(report["matched_training_rows"], 1)
+        self.assertTrue(report["objective_matches_actual_fit"])
+        self.assertFalse(report["independent_generalization_established"])
 
     def test_train_with_local_gradients_from_no_grad_caller(self):
         head = StemHead(4, "encoder-v1", kind="gated")
