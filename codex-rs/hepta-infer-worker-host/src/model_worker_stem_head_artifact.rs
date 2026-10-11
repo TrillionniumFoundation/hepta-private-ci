@@ -27,6 +27,7 @@ use super::CpuGatedHead;
 use super::CpuGatedHeadDriver;
 use super::InferenceWorker;
 use super::SelectedStemProjectionReaderV1;
+use super::StemCpuHeadBatchUseV1;
 use super::StemCpuHeadUseV1;
 use super::StemProjectionOwnerFenceV1;
 use super::cpu_gated_bundle_weights_digest;
@@ -321,6 +322,104 @@ impl SelectedStemHeadBankReaderV1 {
         // Emit provenance only AFTER both signed CURRENT checks and the
         // model-only dispatch actually succeeded. Never make an observation
         // from an arbitrary retained/current-like view.
+        Ok((
+            receipt,
+            StemHeadBankReadObservationV1 {
+                artifact_id: self.artifact_id.clone(),
+                selection_digest: self.selected_digest,
+                current_witness_digest: witness,
+                current_trust_digest: trust,
+                bank_weights_digest: self.weights_digest.clone(),
+                production_authorized: false,
+            },
+        ))
+    }
+
+    /// Admit only an exact 2..32-member, same-fence batch from BOTH selected
+    /// CAS artifacts. Uses ONE native CPU Head batch driver invocation and
+    /// returns non-authoritative per-Cell typed receipts.
+    #[allow(clippy::too_many_arguments)]
+    pub fn run_selected_cpu_head_backend_batch(
+        &mut self,
+        projection: &mut SelectedStemProjectionReaderV1,
+        worker: &mut InferenceWorker<CpuGatedHeadDriver>,
+        use_request: StemCpuHeadBatchUseV1<'_>,
+        head_selector: &ArtifactSelectionVerifierV1,
+        signed_head_selection: &SignedArtifactSelectionV1,
+        head_current: VerifiedCurrentRegistryViewV1,
+        selection_now: u64,
+    ) -> Result<
+        (super::NeuronBackendBatchReceipt, StemHeadBankReadObservationV1),
+        StemHeadArtifactError,
+    > {
+        if self.sealed {
+            return Err(StemHeadArtifactError::ConsumerSealed);
+        }
+        let result = self.run_backend_batch_checked(
+            projection,
+            worker,
+            use_request,
+            head_selector,
+            signed_head_selection,
+            head_current,
+            selection_now,
+        );
+        if result.is_err() {
+            self.sealed = true;
+        }
+        result
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn run_backend_batch_checked(
+        &mut self,
+        projection: &mut SelectedStemProjectionReaderV1,
+        worker: &mut InferenceWorker<CpuGatedHeadDriver>,
+        use_request: StemCpuHeadBatchUseV1<'_>,
+        head_selector: &ArtifactSelectionVerifierV1,
+        signed_head_selection: &SignedArtifactSelectionV1,
+        head_current: VerifiedCurrentRegistryViewV1,
+        selection_now: u64,
+    ) -> Result<
+        (super::NeuronBackendBatchReceipt, StemHeadBankReadObservationV1),
+        StemHeadArtifactError,
+    > {
+        if !(2..=32).contains(&use_request.items.len()) {
+            return Err(StemHeadArtifactError::InvalidBinding);
+        }
+        for member in &use_request.items {
+            let binding = member.binding;
+            let request = &member.request;
+            if binding.scope_digest != self.fence.scope_digest.to_string()
+                || binding.generation != self.fence.worker_generation
+                || binding.revocation_frontier_digest
+                    != self.fence.revocation_frontier_digest.to_string()
+                || request.encoder_digest != self.encoder_digest
+                || binding.encoder_digest != self.encoder_digest
+                || request.weights_digest != self.weights_digest
+                || !self.head_digests.contains(&request.head_digest)
+            {
+                return Err(StemHeadArtifactError::InvalidBinding);
+            }
+        }
+        let verified = head_selector
+            .verify(signed_head_selection, &head_current, selection_now)
+            .map_err(|error| StemHeadArtifactError::Selection(error.to_string()))?;
+        if verified.selection_digest() != self.selected_digest
+            || verified.artifact_id() != &self.artifact_id
+        {
+            return Err(StemHeadArtifactError::StaleOrUnselected);
+        }
+        let witness = head_current.witness_digest();
+        let trust = head_current.trust_digest();
+        let receipt = self
+            .candidate
+            .with_current(head_current, |_| {
+                projection
+                    .run_selected_cpu_head_backend_batch(worker, use_request)
+                    .map_err(StemHeadArtifactError::Projection)
+            })
+            .map_err(|error| StemHeadArtifactError::Storage(error.to_string()))??;
         Ok((
             receipt,
             StemHeadBankReadObservationV1 {
