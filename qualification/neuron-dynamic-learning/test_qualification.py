@@ -179,6 +179,34 @@ class DynamicLearning(unittest.TestCase):
             self.assertLess(abs(drive_q[0] / Q24 - drive[0]), 0.02)
             self.assertLess(abs(pred_q[0] / Q24 - prediction[0]), 0.02)
 
+    def test_future_score_rejects_label_broadcasting_and_invalid_outcomes(self):
+        head = DynamicCell.initialize("cell.a", "a" * 64, 8, 4, 4, seed=2)
+        frozen = head.clone_frozen()
+        x = np.zeros((4, 8))
+        y = np.array([0.0, 1.0, 0.0, 1.0])
+        baseline = np.full(4, 0.5)
+        self.assertTrue(np.isfinite(
+            paired_future_score(head, frozen, x, y, baseline)["trained_bce"]
+        ))
+        malformed = [
+            (y[:, None], baseline[:, None]),  # old code silently broadcast logits
+            (np.array([0.0, 1.0, np.nan, 1.0]), baseline),
+            (np.array([0.0, 1.0, 2.0, 1.0]), baseline),
+        ]
+        for labels, probabilities in malformed:
+            with self.subTest(labels=labels.shape):
+                with self.assertRaises(LearningContractError):
+                    paired_future_score(head, frozen, x, labels, probabilities)
+        with self.assertRaises(LearningContractError):
+            paired_future_score(head, frozen, x[:0], y[:0], baseline[:0])
+        with self.assertRaises(LearningContractError):
+            paired_future_score(
+                head, frozen, x, y, np.array([0.5, 0.5, np.nan, 0.5])
+            )
+        incompatible = DynamicCell.initialize("cell.a", "a" * 64, 16, 4, 4, seed=2)
+        with self.assertRaises(LearningContractError):
+            paired_future_score(head, incompatible, x, y, baseline)
+
     def test_cell_learning_is_independent_and_no_change_mandatory(self):
         a = DynamicCell.initialize("cell.a", "a" * 64, 8, 4, 4, seed=2)
         b = DynamicCell.initialize("cell.b", "a" * 64, 8, 4, 4, seed=2)
@@ -219,6 +247,34 @@ class OrganAndScale(unittest.TestCase):
         kwargs["future_groups"][0] = "t0"
         with self.assertRaises(LearningContractError):
             compare_organ(**kwargs)
+
+    def test_organ_source_history_must_precede_target_learning(self):
+        rng = np.random.default_rng(123)
+        sx = rng.normal(0, 0.3, (64, 8))
+        sy = (sx[:, 0] > 0).astype(np.float64)
+        groups = [f"s{i}" for i in range(64)]
+        with self.assertRaises(LearningContractError):
+            fit_frozen_organ("MemoryRead", sx, sy[:, None], groups, list(range(64)))
+        # Source remains earlier than future, but overlaps target training.
+        # Prior logic accepted this retrospective transfer leakage.
+        late_source = fit_frozen_organ(
+            "MemoryRead", sx, sy, groups, list(range(90, 154))
+        )
+        tx = rng.normal(0, 0.3, (16, 8))
+        future = rng.normal(0, 0.3, (8, 8))
+        with self.assertRaises(LearningContractError):
+            compare_organ(
+                organ=late_source, target_cell="cell.mem",
+                encoder_digest="a" * 64,
+                training_x=tx, training_y=(tx[:, 0] > 0).astype(float),
+                training_groups=[f"t{i}" for i in range(16)],
+                training_times=list(range(100, 116)),
+                future_x=future, future_y=(future[:, 0] > 0).astype(float),
+                future_groups=[f"f{i}" for i in range(8)],
+                future_times=list(range(200, 208)),
+                production_no_change=np.full(8, 0.5),
+                steps=1,
+            )
 
     def test_organ_cannot_read_future_or_unsupported_role(self):
         x = np.ones((16, 8), dtype=float)
