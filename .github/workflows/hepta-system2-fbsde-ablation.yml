@@ -89,6 +89,13 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/system2-research/fewshot-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_fewshot_cells.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/fewshot-cells 2>&1 | tee /tmp/system2-research/fewshot-execution.log
+      - name: Exhaust all bounded support subsets without selecting a favorable split
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-research/support-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_support_sensitivity.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/support-sensitivity 2>&1 | tee /tmp/system2-research/support-execution.log
       - name: Retain source identity, partial rows, failures, and full artifacts
         if: always()
         run: |
