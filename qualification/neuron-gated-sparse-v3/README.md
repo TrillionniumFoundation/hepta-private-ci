@@ -4,7 +4,9 @@ Status: **shadow-only, no production authorization**. The source and tests in
 this directory cannot show that a model has been deployed, trained, or outperformed
 another model. V1 `SparseJournal` is unchanged and is the only durable legacy
 replay contract. V2 is a pure multi-population mechanism, not a durable owner.
-V3 adds an independent pure temporal candidate above that V2 mechanism.
+V3 adds an independent pure temporal candidate above V2, plus a separate
+V3-only synced shadow journal. This is not the production Cell owner or
+independent NDU authority.
 
 ## A0 — census the *actual deployed* Cell models
 
@@ -86,8 +88,10 @@ On the same signed A0 model population, prepare immutable, preregistered
 Freeze a no-change baseline and the model manifest before training, then use
 identical raw feature streams and the same exact Encoder+preprocessor+tokenizer.
 Count **all** trainable parameters, including V2 projection and any Head; budget
-state bytes and projection edges as well as weights. Give both arms identical
-optimization examples/steps and common resource ceilings. Run V1 and V2 as
+state bytes and projection edges as well as weights. The frozen **no-change**
+baseline uses zero experimental optimizer steps. All *new* candidates share
+the preregistered dataset digest and positive optimizer-step budget under
+identical resource ceilings. Run V1 and V2 as
 shadow mechanisms without invoking production routing. Only compare examples
 with joined final labels, and never reuse future-window labels for training.
 
@@ -99,12 +103,19 @@ Neither fixture output nor untrusted simulated timing can select the V2 arm.
 `paired_shadow_analysis.py` accepts an evaluator-signed
 `hepta.neuron.paired-shadow-evaluation.v1` envelope. Each joined case must
 carry all arm outcomes for an identical input digest. Arm records must declare
-the actual frozen artifact hash, shared Encoder, common training dataset,
-identical optimizer steps, counted total parameters and state bytes. The
-signed experiment binds registration and train cutoff dates, separate
-Evaluator/Selector/Executor key IDs and the A0 registry hash. It rejects
-mixed budgets, future-window leakage, missing OOD cases and incomplete A4
-scale coverage. The report intentionally always says
+the actual frozen artifact hash, shared Encoder, and counted total parameters
+and state bytes. The top-level signed experiment separately registers
+`training_dataset_digest` and `candidate_optimizer_steps` for all new
+candidates while enforcing zero experimental steps on the no-change baseline. The
+signed experiment binds registration, train cutoff, evaluation as-of dates,
+distinct *claimed* Evaluator/Selector/Executor key IDs, and the A0 registry
+hash. Distinct IDs are not proof of independent executor/selector ownership. It rejects
+mixed budgets, future-window leakage, labels unavailable at evaluation time,
+missing OOD cases and incomplete A4 scale coverage. Paired utility confidence
+intervals aggregate by **Cell**, not by repeated events from the same Cell.
+The unadjusted clustered t approximation is descriptive, not a causal NDU
+proof. A4 additionally requires 64/256/1024/4096 size receipts claiming
+real host measurement and binding execution/recovery receipt digests. The report intentionally always says
 `NO_PRODUCTION_PROMOTION`, regardless of its paired metrics.
 
 ```sh
@@ -117,8 +128,8 @@ python3 qualification/neuron-gated-sparse-v3/paired_shadow_analysis.py \
 The contract and synthetic negative examples are tested in
 `test_paired_shadow_analysis.py`. This evaluator signature alone cannot
 authenticate target-host execution or make a causal NDU estimate. A4's
-independent final-use evaluator, confidence intervals and CAS proofs remain
-separate production blockers.
+independent final-use evaluator, verified receipt provenance, calibrated
+uncertainty and CAS proofs remain separate production blockers.
 
 ## A2 — Gated Sparse V3 temporal mechanism (in this PR)
 
@@ -147,8 +158,20 @@ V2 checkpoint with domain-separated V3 digests.
 
 Unit tests exercise signed rounding, zero/full gates, deterministic tie/order,
 scope/config/generation/clock/sequence fencing, corruption, and reconstruction
-from 1–1024 original ticks. This replay is **not** a persistent V3 journal,
-atomic file CAS, storage-fault recovery or production state migration.
+from 1–1024 original ticks. Separate `gated_journal_v3.rs` implements
+the **shadow-only** `HPTNGV03` journal: bounded exact-tick frames,
+checksum+digest replay validation, advisory locked owner file, synchronized
+compare-and-append, duplicate retry, poisoned uncertain writes, independent
+acknowledged-prefix anchor checks, and incomplete-tail recovery. Any reopen
+of a nonempty journal **requires an independently retained anchor**.
+The journal uses neither V1 wire bytes nor a V1 checkpoint; a V1 consumer
+cannot interpret it as a V1 replay.
+
+The standalone `replay_gated_sparse_v3` is an in-memory reconstruction API,
+not a journal. The new shadow journal is real file I/O at source level,
+but still **not** a signed Artifact CAS, trusted witness implementation,
+production owner, physical power-loss certification, target-host timing
+attestation, or an authorized V1-to-V3 migration.
 
 ## A3 — frozen Encoder + equal-budget experimental candidates
 
@@ -187,8 +210,10 @@ future-window retention, safety/OOD error, CPU/RSS and p95/p99 for 64, 256,
 1,024 and 4,096 Cell target-host runs. Counterfactual comparisons must not
 be confused with an observed split.
 
-**No automatic promotion from these modules.** A separate versioned V3
-Artifact CAS and durable owner must complete signature verification, exact
+**No automatic promotion from these modules.** The experimental V3 journal
+is not sufficient for the production owner. A versioned V3 Artifact CAS,
+independent signed owner/witness composition and migration coordinator must
+complete signature verification, exact
 generation fence, shadow state migration, byte-for-byte V1 journal replay
 regression, fault-injection recovery, rollback and independent NDU final-use
 authorization. If any requirement is missing, retain the V1 production Cell.
