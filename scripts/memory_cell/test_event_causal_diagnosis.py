@@ -93,9 +93,7 @@ class PairedAttributionTests(unittest.TestCase):
     def test_omission_success_does_not_show_necessary_evidence(self):
         rows = case("q", correct=("program_support", "without_prerequisite"))
         report = diagnose(rows, ("q",))
-        self.assertEqual(
-            report["cases"][0]["ablation"], "not_demonstrated_necessary"
-        )
+        self.assertEqual(report["cases"][0]["ablation"], "not_demonstrated_necessary")
         self.assertEqual(
             report["ablation_dispositions"]["not_demonstrated_necessary"], 1
         )
