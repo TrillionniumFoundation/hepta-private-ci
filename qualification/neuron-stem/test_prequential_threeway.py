@@ -173,6 +173,8 @@ class PrequentialThreeWayTests(unittest.TestCase):
         self.assertTrue(report["offline_ood_threeway_coverage_present"])
         measured = report["offline_ood_threeway_diagnostic"]
         self.assertFalse(measured["independent_prediction_signature_verified"])
+        self.assertEqual(measured["frozen_feature_manifest_digest"], "c" * 64)
+        self.assertEqual(measured["frozen_stem_cell_generation"], 1)
         self.assertTrue(measured["ood_after_future_window_verified"])
         self.assertEqual(set(measured["results"]),
                          {"trained", "frozen", "no_change"})
