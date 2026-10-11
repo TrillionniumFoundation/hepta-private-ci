@@ -46,5 +46,6 @@ jobs:
             --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
             --expected-run-id 38095795540 \
             --expected-source-sha 5b542e100368f2e1aefeba6de7a156e19af27282 \
+            --expected-manifest-sha256 93665176c9f42d7489ea4509217aa58d452a87ee33c5051066e027122f20448e \
             --output "$RUNNER_TEMP/hepta-neuron-public-receipt-replay.json"
           git diff --check
