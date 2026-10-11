@@ -128,7 +128,8 @@ jobs:
         run: cargo check --locked -p codex-hepta-fleet --all-targets
       - name: Fleet test suite
         working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-fleet --lib authority_port::tests::
+        run: |
+          cargo test --locked -p codex-hepta-fleet --lib authority_port::tests::
       - name: Strict fleet Clippy including tests
         working-directory: codex-rs
         run: >
