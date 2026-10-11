@@ -328,11 +328,7 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         return Err(Error::FeatureContract);
     }
     let mut checked = Vec::with_capacity(requests.len());
-    for ((request, expected_input), row) in requests
-        .iter()
-        .zip(hashes)
-        .zip(response.rows)
-    {
+    for ((request, expected_input), row) in requests.iter().zip(hashes).zip(response.rows) {
         if row.scope_id != request.scope_id
             || row.principal_id != request.principal_id
             || row.purpose_id != request.purpose_id
@@ -423,7 +419,8 @@ pub(crate) fn stage_shadow_feature_snapshots(
     let mut all = Vec::with_capacity(batch.rows.len());
     for row in &batch.rows {
         let input = Digest32::from_str(&row.input_digest).map_err(|_| Error::FeatureContract)?;
-        let content = Digest32::from_str(&row.feature_digest).map_err(|_| Error::FeatureContract)?;
+        let content =
+            Digest32::from_str(&row.feature_digest).map_err(|_| Error::FeatureContract)?;
         if row.features_q24.is_empty()
             || row.features_q24.len() > 512
             || content != feature_content_digest_v2(&row.features_q24)
@@ -434,7 +431,8 @@ pub(crate) fn stage_shadow_feature_snapshots(
             scope_id: StableId::new(row.scope_id.clone()).map_err(|_| Error::FeatureContract)?,
             principal_id: StableId::new(row.principal_id.clone())
                 .map_err(|_| Error::FeatureContract)?,
-            purpose_id: StableId::new(row.purpose_id.clone()).map_err(|_| Error::FeatureContract)?,
+            purpose_id: StableId::new(row.purpose_id.clone())
+                .map_err(|_| Error::FeatureContract)?,
             generation: Generation::new(row.generation).map_err(|_| Error::FeatureContract)?,
             authority_epoch: row.authority_epoch,
             encoder_digest: pipeline.encoder_digest,
@@ -443,8 +441,9 @@ pub(crate) fn stage_shadow_feature_snapshots(
             quantization_digest: pipeline.quantization_digest,
             input_digest: input,
         };
-        let snapshot = if let Some(existing) =
-            staged.get(now_ms, &identity).map_err(|_| Error::FeatureContract)?
+        let snapshot = if let Some(existing) = staged
+            .get(now_ms, &identity)
+            .map_err(|_| Error::FeatureContract)?
         {
             if existing.content_digest != content
                 || existing.expires_at_ms != expires_at_ms
