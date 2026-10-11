@@ -44,10 +44,20 @@ impl<B: MatrixRuntimeBridge> MatrixRuntime<B> {
         }
         while *remaining_pages > 0 {
             *remaining_pages -= 1;
-            let page = self
+            let page = match self
                 .bridge
                 .list_persisted_turns(thread_id, cursor.as_deref())
-                .await?;
+                .await
+            {
+                Ok(page) => page,
+                Err(MatrixBridgeError::RecoveryUnavailable(reason)) => {
+                    eprintln!(
+                        "Matrix recovery remains admitted for thread {thread_id}, turn {turn_id}: {reason}"
+                    );
+                    return Ok(MatrixDispatchOutcome::Admitted { dispatch });
+                }
+                Err(error) => return Err(error.into()),
+            };
             if page.data.len() > crate::PERSISTED_TURN_PAGE_SIZE as usize {
                 return Err(MatrixRuntimeError::Protocol(
                     "persisted Matrix turn page exceeded its requested bound".to_string(),

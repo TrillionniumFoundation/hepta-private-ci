@@ -59,6 +59,7 @@ struct FakeBridgeState {
     persisted_turns: Option<Vec<Turn>>,
     history_requests: Vec<(String, Option<String>)>,
     force_next_cursor: Option<String>,
+    history_refusals: usize,
 }
 
 impl FakeRuntimeBridge {
@@ -133,6 +134,12 @@ impl MatrixRuntimeBridge for FakeRuntimeBridge {
             state
                 .history_requests
                 .push((thread_id.to_string(), cursor.map(str::to_owned)));
+            if state.history_refusals > 0 {
+                state.history_refusals -= 1;
+                return Err(MatrixBridgeError::RecoveryUnavailable(
+                    "budgetExceeded".into(),
+                ));
+            }
             let default_turns;
             let turns = if let Some(turns) = &state.persisted_turns {
                 turns
@@ -1056,3 +1063,6 @@ async fn queued_recovery_never_recreates_a_missing_core_record() -> anyhow::Resu
     runtime.store().close().await;
     Ok(())
 }
+
+#[path = "bounded_recovery_tests.rs"]
+mod bounded_recovery_tests;

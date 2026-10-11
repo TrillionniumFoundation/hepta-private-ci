@@ -16,6 +16,7 @@ pub mod send_observer;
 
 mod config;
 mod control;
+mod history_error;
 mod runner;
 
 use std::collections::BTreeMap;
@@ -947,23 +948,25 @@ impl MatrixAppServerTransport for RemoteMatrixAppServerTransport {
         Box::pin(async move {
             let response: ThreadTurnsListResponse = tokio::time::timeout(
                 Duration::from_secs(5),
-                self.request(ClientRequest::ThreadTurnsList {
-                    request_id: self.request_id(),
-                    params: ThreadTurnsListParams {
-                        thread_id: thread_id.to_string(),
-                        cursor: cursor.map(str::to_owned),
-                        limit: Some(PERSISTED_TURN_PAGE_SIZE),
-                        sort_direction: Some(SortDirection::Desc),
-                        items_view: Some(TurnItemsView::Full),
-                    },
-                }),
+                self.request_handle
+                    .request_typed(ClientRequest::ThreadTurnsList {
+                        request_id: self.request_id(),
+                        params: ThreadTurnsListParams {
+                            thread_id: thread_id.to_string(),
+                            cursor: cursor.map(str::to_owned),
+                            limit: Some(PERSISTED_TURN_PAGE_SIZE),
+                            sort_direction: Some(SortDirection::Desc),
+                            items_view: Some(TurnItemsView::BoundedFull),
+                        },
+                    }),
             )
             .await
             .map_err(|_| {
                 MatrixBridgeError::AppServer(
                     "persisted Matrix turn observation timed out".to_string(),
                 )
-            })??;
+            })?
+            .map_err(history_error::classify)?;
             Ok(BridgePage {
                 data: response.data,
                 next_cursor: response.next_cursor,
@@ -1175,6 +1178,8 @@ pub enum MatrixBridgeError {
     Invalid(String),
     #[error("Matrix App Server protocol violation: {0}")]
     Protocol(String),
+    #[error("Matrix persisted recovery is unavailable: {0}")]
+    RecoveryUnavailable(String),
     #[error("Matrix App Server request failed: {0}")]
     AppServer(String),
     #[error(transparent)]

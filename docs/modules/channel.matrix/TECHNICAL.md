@@ -226,13 +226,17 @@ past still-pending older rows and wraps without duplicate selection; this window
 frontier is process-local and restarts at zero after reopen. These are recovery
 observations, not new authority.
 
-That outer turn/RPC budget does not bound full-item hydration. `ThreadTurnsList`
-with `Full` items internally calls `paginated_turn_full_items` without a total
-item or internal-page cap for each turn. Its materialized response can therefore
-exceed the outer window's apparent memory budget. The five-second client RPC
-timeout does not cancel server-side hydration. Bounded item pagination and a
-provider-side terminal/freshness fence require an additional owner seam; the
-current recovery implementation does not establish a full-history memory bound.
+Matrix now requests the opt-in `BoundedFull` persisted-turn view. The server reads
+only indexed plain paginated histories without `history_base`, with shared limits
+of 1,024 turn/item rows (including lookahead), 256 KiB per row, 4 MiB of stored
+payload and 4 MiB of serialized response per request. Metadata paths and session
+headers are bounded before parsing. Legacy, compressed and lineage histories
+return an explicit unavailable error; they never fall back to unbounded replay.
+Refusal preserves the exact durable cursor and Admitted state and allows other
+inbox recovery to proceed. Successful pages contain complete items and retain
+raw persisted status: a crashed `inProgress` is not inferred terminal and may
+remain pending. The SQLite projection can still lag canonical JSONL; provider-side
+terminal/freshness fencing and selected-host production qualification remain open.
 
 For local `ResolveApproval`, successful transport return proves a socket write
 and returns wire `Accepted`. The exact approval/decision remains durably
@@ -456,7 +460,7 @@ governed product operations.
 | Governed send authority | Current sender has room/revision/generation checks; independent final-use token and revocation consumer absent | Implement current operation/room/payload-bound authority at the existing SDK adapter |
 | Send terminality | Durable `Sent` is a homeserver event-ID acknowledgement; stronger observer is separate and in memory | Durable authenticated observation/reconciliation without a new sender or transaction identity |
 | Uncertain retry exhaustion | One-record claims, lease-bounded sends and elapsed-time settlement; exhausted ambiguity is parked under the same transaction without a terminal-failure inference | Authenticate the reconciler and qualify crash/reopen/lost acknowledgement on the selected transport |
-| Admitted-turn restart | Recover exact terminal/final identity using at most 16 outer pages of 100 turns and durable progress; per-turn Full hydration has no total item/page cap | Add bounded item pagination and the owner terminal/freshness seam; client timeout does not cancel hydration; qualify real retention/crash behavior |
+| Admitted-turn restart | Opt-in bounded complete pages, shared row/byte budgets, typed refusal and durable cursor preservation | Add the owner terminal/freshness seam; qualify real retention/crash behavior and bounded support for legacy/compressed/lineage history |
 | Redaction and restore | Initial sync precedes recovery; dispatched-source redaction commits a scope quarantine while retaining issued dispatch identity | Provider-context withdrawal, authenticated quarantine resolution and backup/restore non-resurrection |
 | Limited timeline | Live composer rejects without advancing the cursor; bounded gap-fill helper is tested separately | Compose bounded gap fill before accepting a limited timeline or declaring reconnect completion |
 | Transport / retained capacity | Normalized events and checkpoint work are bounded; HTTP predecode and total retained inbox/outbox bounds are absent; V2 journals have fixed 65536 lifetime ceilings | Implement transport byte admission, retained-capacity policy and authenticated archival/rotation; qualify sustained history |
