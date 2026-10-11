@@ -267,14 +267,14 @@ fn hard_sigmoid_half_ties_round_to_even_not_towards_zero() {
 }
 
 #[test]
-fn hard_sigmoid_gate_keeps_actual_single_and_batch_numeric_parity() {
+fn hard_sigmoid_gate_rounding_propagates_correctly_across_rows() {
     let mut candidate = sample_head(false);
     candidate.gate_weights_q24.clear();
     candidate.gate_bias_q24 = vec![-1, 3];
     let input = [Q24 / 2, Q24 / 4];
     let (drive, prediction) = candidate.infer(&input).expect("gated arithmetic");
     assert_eq!(drive[0], Q24 / 4);
-    assert_eq!(drive[1], Q24 / 8 + 1);
+    assert_eq!(drive[1], Q24 / 8); // 0.5 LSB ties to the even Q24 value
     assert_eq!(prediction[0], Q24 / 8);
     assert_eq!(prediction[1], Q24 / 4 + 1);
 }
