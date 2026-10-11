@@ -641,7 +641,7 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
     );
     assert_eq!(calls.load(Ordering::SeqCst), 0);
 
-    let mut worker = worker(Arc::clone(&calls), true, false);
+    let mut worker = self::worker(Arc::clone(&calls), true, false);
     let reservation = preadmitted_reservation(&typed);
     {
         let mut port = WorkerNeuronControlPort::from_reserved_worker(
