@@ -172,6 +172,40 @@ fn plan() -> CellSplitExecutionPlanV1 {
 }
 
 #[test]
+fn existing_unprepared_effect_must_not_be_adopted_or_dispatched() {
+    let root = private_tempdir();
+    let frozen = plan();
+    let plan_digest = frozen.digest().expect("frozen plan");
+    let intent = super::make_intent(
+        &frozen,
+        &plan_digest,
+        super::CellSplitExecutionStepV1::ArtifactCas,
+        &plan_digest,
+    );
+    let state = Rc::new(RefCell::new(Observed::default()));
+    state.borrow_mut().commits.insert(
+        intent.idempotency_key.clone(),
+        FixturePort::receipt(&intent),
+    );
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        frozen.clone(),
+        trust_for(&frozen),
+        FixturePort::new(state.clone()),
+    )
+    .expect("frozen plan before effects");
+
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert_eq!(owner.completed_steps(), 0);
+    assert_eq!(state.borrow().executions, 0);
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+}
+
+#[test]
 fn advances_only_in_exact_dependency_order_and_recovers_verified_chain() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
