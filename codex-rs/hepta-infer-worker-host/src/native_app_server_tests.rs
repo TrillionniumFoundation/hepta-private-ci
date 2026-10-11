@@ -461,8 +461,18 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // Exactly the same source build provides the runnable App Server helper
+    // binary. A test harness executable is NOT a valid Codex helper.
+    let codex_executable = std::env::var_os("HEPTA_TEST_CODEX_EXECUTABLE")
+        .ok_or("Agentd real E2E requires HEPTA_TEST_CODEX_EXECUTABLE")?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        std::path::Path::new(&codex_executable),
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
