@@ -92,29 +92,24 @@ fn fixture()
     ))
 }
 
-fn second_batch_grant(original: &SignedFinalUseGrant, nonce: u8) -> SignedFinalUseGrant {
+fn second_batch_grant(
+    original: &SignedFinalUseGrant,
+    nonce: u8,
+) -> Result<SignedFinalUseGrant, FinalUseError> {
     let issuer = SigningKey::from_bytes(&[47; 32]);
     let mut signed = original.clone();
     signed.grant.grant_id = format!("batch-{nonce}");
     signed.grant.nonce = [nonce; 32];
     signed.grant.binding.request_sha256 = [nonce; 32];
-    signed.signature = issuer
-        .sign(
-            &signed
-                .grant
-                .signing_bytes()
-                .expect("valid batch fixture grant"),
-        )
-        .to_bytes()
-        .to_vec();
-    signed
+    signed.signature = issuer.sign(&signed.grant.signing_bytes()?).to_bytes().to_vec();
+    Ok(signed)
 }
 
 #[test]
 fn batch_claim_durably_commits_all_nonces_before_one_effect() {
     let (authority, original, dir) = fixture().unwrap();
-    let first = second_batch_grant(&original, 70);
-    let second = second_batch_grant(&original, 71);
+    let first = second_batch_grant(&original, 70).unwrap();
+    let second = second_batch_grant(&original, 71).unwrap();
     let entries = [
         (&first, &first.grant.binding),
         (&second, &second.grant.binding),
@@ -153,8 +148,8 @@ fn batch_claim_durably_commits_all_nonces_before_one_effect() {
 #[test]
 fn invalid_or_duplicate_batch_member_never_burns_valid_nonce() {
     let (authority, original, dir) = fixture().unwrap();
-    let first = second_batch_grant(&original, 72);
-    let mut invalid = second_batch_grant(&original, 73);
+    let first = second_batch_grant(&original, 72).unwrap();
+    let mut invalid = second_batch_grant(&original, 73).unwrap();
     invalid.signature[0] ^= 0x80;
     assert_eq!(
         authority
@@ -173,7 +168,7 @@ fn invalid_or_duplicate_batch_member_never_burns_valid_nonce() {
         0
     );
 
-    let mut duplicate = second_batch_grant(&original, 72);
+    let mut duplicate = second_batch_grant(&original, 72).unwrap();
     duplicate.grant.grant_id = "different-id-same-nonce".into();
     duplicate.signature = SigningKey::from_bytes(&[47; 32])
         .sign(&duplicate.grant.signing_bytes().unwrap())
