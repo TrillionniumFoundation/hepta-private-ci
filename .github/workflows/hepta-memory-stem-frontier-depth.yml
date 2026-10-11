@@ -1,0 +1,60 @@
+name: MemoryCell pinned frozen-index depth audit
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/stem_candidate_depth_audit.py"
+      - "scripts/memory_cell/test_stem_candidate_depth_audit.py"
+      - ".github/workflows/hepta-memory-stem-frontier-depth.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  original-source-depth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Exact contract tests and scoped formatter
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p test_stem_candidate_depth_audit.py -v
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/stem_candidate_depth_audit.py \
+            scripts/memory_cell/test_stem_candidate_depth_audit.py
+      - name: Download original exact-source archives without expanding permissions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frontier-depth
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11700818304/zip > /tmp/frontier-depth/grid.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11700958394/zip > /tmp/frontier-depth/matrix.zip
+          echo '227453015e4535cff2f7f4df77fa374c0a027eb0ba9873d6625699ddbb96738c  /tmp/frontier-depth/grid.zip' | sha256sum -c -
+          echo '3fe286f84d7f719ebe9ee300d3772aec1842dafb5c97ab9dfdb792eb4daaf43c  /tmp/frontier-depth/matrix.zip' | sha256sum -c -
+      - name: Replay frozen source depths without any model generation
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_candidate_depth_audit.py \
+            /tmp/frontier-depth/grid.zip /tmp/frontier-depth/matrix.zip \
+            /tmp/frontier-depth/report.json | tee /tmp/frontier-depth/replay.log
+          git rev-parse HEAD > /tmp/frontier-depth/consumer-commit.txt
+          (cd /tmp/frontier-depth && sha256sum report.json replay.log consumer-commit.txt > SHA256SUMS)
+          rm /tmp/frontier-depth/grid.zip /tmp/frontier-depth/matrix.zip
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-native-depth-posthoc
+          path: |
+            /tmp/frontier-depth/report.json
+            /tmp/frontier-depth/replay.log
+            /tmp/frontier-depth/consumer-commit.txt
+            /tmp/frontier-depth/SHA256SUMS
+          if-no-files-found: warn
