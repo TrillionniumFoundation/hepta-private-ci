@@ -5,6 +5,7 @@ the work here validates the entire native-Python research execution path
 while refusing downloads, fake zero-shot predictions or production authority.
 """
 import hashlib
+from contextlib import contextmanager
 import importlib.util
 import json
 from pathlib import Path
@@ -12,10 +13,24 @@ import sys
 import tempfile
 from types import ModuleType, SimpleNamespace
 import unittest
-from unittest.mock import patch
 
 from hf_joint_decision_runner import run
 from model_runner import snapshot_digest
+
+
+@contextmanager
+def scoped_fake_transformers(module):
+    """Restore only one import slot, not every Torch submodule imported in test."""
+    missing = object()
+    previous = sys.modules.get("transformers", missing)
+    sys.modules["transformers"] = module
+    try:
+        yield
+    finally:
+        if previous is missing:
+            sys.modules.pop("transformers", None)
+        else:
+            sys.modules["transformers"] = previous
 
 
 @unittest.skipUnless(importlib.util.find_spec("torch") is not None,
@@ -97,7 +112,7 @@ class FullPipelineModelFreeTests(unittest.TestCase):
                 batch_size=4, context_tokens=512, seed=7347,
                 device="cpu", dtype="fp32",
                 snapshot=str(model), dataset=str(data), output=str(output))
-            with patch.dict(sys.modules, {"transformers": fake_hf}):
+            with scoped_fake_transformers(fake_hf):
                 receipt = run(args)
             predictions = [
                 json.loads(line) for line in output.read_text().splitlines()]
@@ -116,7 +131,7 @@ class FullPipelineModelFreeTests(unittest.TestCase):
                 row["arm"] == "deberta_v3_large:equal_budget" and
                 "label" not in row and "external_ndu_utility" not in row
                 for row in predictions))
-            with patch.dict(sys.modules, {"transformers": fake_hf}):
+            with scoped_fake_transformers(fake_hf):
                 with self.assertRaises(FileExistsError):
                     run(args)
 
