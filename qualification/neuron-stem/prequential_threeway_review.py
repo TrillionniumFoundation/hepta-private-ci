@@ -159,8 +159,14 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
     if trial.get("pre_label_prediction_journal_event_count") != len(futures):
         raise ValueError("wrong committed prediction count")
     final_heads = trial.get("final_head_digests")
-    if (type(final_heads) is not dict or
-            final_heads != {str(key): digest for key, digest in last_committed_head.items()}):
+    # The original prequential trainer also registers Cells with only historic
+    # examples. Such Cells never receive a future event and retain their
+    # pre-future Head. Requiring only future-ticked keys would falsely reject
+    # valid datasets with dormant Cells.
+    expected_final = dict(initial)
+    expected_final.update({str(key): digest
+                           for key, digest in last_committed_head.items()})
+    if type(final_heads) is not dict or final_heads != expected_final:
         raise ValueError("final Cell Head artifact digests do not match replayed update chain")
     if type(nochange) is not list or len(nochange) != len(futures):
         raise ValueError("genuine production no-change prediction coverage missing")
