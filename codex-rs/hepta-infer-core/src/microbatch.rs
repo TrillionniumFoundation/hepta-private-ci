@@ -173,9 +173,10 @@ impl BoundedMicrobatchSchedulerV1 {
             if lane.len() >= self.limits.max_batch_size {
                 return Err(SchedulerErrorV1::LaneCapacity);
             }
-            if lane.front().is_some_and(|front| {
-                front.intent.encoder_digest != intent.encoder_digest
-            }) {
+            if lane
+                .front()
+                .is_some_and(|front| front.intent.encoder_digest != intent.encoder_digest)
+            {
                 return Err(SchedulerErrorV1::FeatureMismatch);
             }
         }
@@ -288,9 +289,9 @@ impl BoundedMicrobatchSchedulerV1 {
 
 #[path = "microbatch_compatible.rs"]
 mod compatible;
-pub use compatible::{
-    PhysicalBatchCompatibilityV1, PhysicalMicrobatchPlanV1, PhysicalMicrobatchPollV1,
-};
+pub use compatible::PhysicalBatchCompatibilityV1;
+pub use compatible::PhysicalMicrobatchPlanV1;
+pub use compatible::PhysicalMicrobatchPollV1;
 
 #[cfg(test)]
 #[path = "microbatch_tests.rs"]

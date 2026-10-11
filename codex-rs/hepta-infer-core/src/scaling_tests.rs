@@ -186,7 +186,6 @@ fn workload_64_256_1024_4096_scope_cells() {
     }
 }
 
-
 /// Scheduling-only test. This is NOT actual GPU execution or 4096-Cell
 /// throughput, only bounded grouping of requests from independent scopes.
 #[test]
@@ -232,7 +231,10 @@ fn cross_scope_compatible_scheduling_64_256_1024_4096() {
             assert!(poll.scanned_lanes <= 64);
             let group = poll.batch.unwrap();
             assert_eq!(group.compatibility.encoder_digest, digest("pinned-encoder"));
-            assert_eq!(group.authority, codex_hepta_types::AuthorityPosture::DENY_ALL);
+            assert_eq!(
+                group.authority,
+                codex_hepta_types::AuthorityPosture::DENY_ALL
+            );
             seen += group.requests.len();
             batches += 1;
         }

@@ -90,9 +90,8 @@ impl BoundedMicrobatchSchedulerV1 {
                         let taken = space.min(lane.len());
                         for _ in 0..taken {
                             if let Some(entry) = lane.pop_front() {
-                                oldest_queue_age_ms = oldest_queue_age_ms.max(
-                                    now_ms.saturating_sub(entry.enqueued_at_ms),
-                                );
+                                oldest_queue_age_ms = oldest_queue_age_ms
+                                    .max(now_ms.saturating_sub(entry.enqueued_at_ms));
                                 self.queued_ids.remove(&entry.intent.request_id);
                                 requests.push(entry.intent);
                             }

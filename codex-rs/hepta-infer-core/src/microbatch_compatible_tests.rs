@@ -87,7 +87,12 @@ fn never_coalesce_different_encoder_or_generation() {
     assert_eq!(third.requests.len(), 1);
     let encoders: BTreeSet<_> = [first, second, third]
         .iter()
-        .map(|plan| (plan.compatibility.encoder_digest, plan.compatibility.generation))
+        .map(|plan| {
+            (
+                plan.compatibility.encoder_digest,
+                plan.compatibility.generation,
+            )
+        })
         .collect();
     assert_eq!(encoders.len(), 3);
     assert_eq!(q.pending(), 0);

@@ -889,7 +889,6 @@ fn missing_or_truncated_claim_journal_fails_closed_on_restart() {
     }
 }
 
-
 #[test]
 fn physical_batch_fences_revocation_until_all_signed_items_complete() {
     let (authority, first, _directory) = fixture().unwrap();
