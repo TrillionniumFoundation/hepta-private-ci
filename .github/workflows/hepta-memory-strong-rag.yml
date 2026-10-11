@@ -66,6 +66,11 @@ jobs:
           git diff --binary -- scripts/memory_cell/strong_rag*.py \
             scripts/memory_cell/test_strong_rag*.py \
             > /tmp/strong-rag-scoped-repair/ruff-fix.patch
+          # Preserve the failing gate and expose the exact pinned Ruff fix.
+          # An auditor may apply it as an ordinary subsequent source commit.
+          # This diagnostics-only step cannot auto-push, waive or pass CI.
+          test -s /tmp/strong-rag-scoped-repair/ruff-fix.patch
+          cat /tmp/strong-rag-scoped-repair/ruff-fix.patch
           cp scripts/memory_cell/test_strong_rag_trial.py \
             /tmp/strong-rag-scoped-repair/test_strong_rag_trial.py
           sha256sum /tmp/strong-rag-scoped-repair/* \
