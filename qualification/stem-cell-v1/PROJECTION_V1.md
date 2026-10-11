@@ -93,7 +93,7 @@ bytes** and SHA-256
 That digest is an integrity check and never constitutes selection authority.
 
 The former public split `check_worker_request` / later-dispatch path is
-**test-only**, not a callable production API. The public model-only
+**test-only**, not a callable production API. The crate-private Projection-only
 `run_selected_cpu_head` requires a separately authenticated CURRENT,
 the independent signed selection, trusted verifier, matching Scope,
 worker Generation, revocation frontier and exact already-authorized Q24
