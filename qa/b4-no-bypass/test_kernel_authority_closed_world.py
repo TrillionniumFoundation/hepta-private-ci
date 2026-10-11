@@ -178,6 +178,31 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+    def test_final_use_guarded_effect_agrees_across_independent_owner_registries(self) -> None:
+        # A new FinalUseAuthority consumer must be deliberately approved in
+        # both independent closed sets; neither policy can silently relax
+        # because someone renamed their local verifier variable.
+        manifest = tomllib.loads(MANIFEST.read_text(encoding="utf-8"))
+        published = [
+            row for row in manifest.get("boundary", [])
+            if row.get("id") == "final_use_guarded_effect"
+        ]
+        inventory = [
+            row for row in self.inventory()
+            if row.get("id") == "final_use_guarded_effect"
+        ]
+        self.assertEqual(len(published), 1)
+        self.assertEqual(len(inventory), 1)
+        self.assertEqual(
+            set(published[0]["product_callers"]),
+            set(inventory[0]["allowedCallers"]),
+        )
+        self.assertEqual(
+            published[0]["call_pattern"],
+            r"\.\s*with_verified_effect\s*\(",
+            "FinalUse method calls must be discovered regardless of local variable names",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
