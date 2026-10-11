@@ -45,6 +45,16 @@ def sha256_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def input_fingerprint(row):
+    """Bind exact label-free task input and provenance, not just sample_id."""
+    fields = ("sample_id", "source_group", "episode_id", "split",
+              "scope", "language", "state", "question", "options",
+              "event_time")
+    if any(key not in row for key in fields):
+        raise ValueError("missing complete label-free input provenance")
+    return digest({key: row[key] for key in fields})
+
+
 def check_sha(value, size=64):
     return (isinstance(value, str) and len(value) == size
             and all(x in "0123456789abcdef" for x in value))
@@ -328,6 +338,8 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *,
                 any(type(x) not in (float, int) or not math.isfinite(x)
                     or abs(x) > 1e6 for x in logits)):
             raise ValueError("invalid aligned ordered-action logits")
+        if r.get("input_digest") != input_fingerprint(indexed[sid]):
+            raise ValueError("prediction input/source/options digest mismatch")
         latency = r.get("latency_ms")
         if (type(latency) not in (int, float) or not math.isfinite(latency)
                 or latency < 0 or r.get("weights_sha256") != runs[arm]["weights_sha256"]):
