@@ -231,16 +231,19 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         .stderr(Stdio::null())
         .spawn()
         .map_err(|_| Error::FeatureContract)?;
-    let wrote = child
-        .stdin
-        .take()
-        .ok_or(Error::FeatureContract)
-        .and_then(|mut stdin| stdin.write_all(&payload).map_err(|_| Error::FeatureContract));
-    if let Err(error) = wrote {
+    // Even a 128 KiB request can exceed an OS pipe buffer. Never perform
+    // synchronous stdin writes on the supervisor thread: a stalled Python
+    // loader must not indefinitely block cancellation or the deadline.
+    let Some(mut stdin) = child.stdin.take() else {
         let _ = child.kill();
         let _ = child.wait();
-        return Err(error);
-    }
+        return Err(Error::FeatureContract);
+    };
+    let (write_sender, write_receiver) = mpsc::sync_channel(1);
+    thread::spawn(move || {
+        let written = stdin.write_all(&payload).is_ok();
+        let _ = write_sender.send(written);
+    });
     // std::Child::wait_with_output would buffer unbounded stdout and does not
     // enforce a deadline. Read at most MAX_RESULT_BYTES + 1 on a separate
     // thread while supervising the process, then reject excess output.
@@ -254,6 +257,11 @@ pub(crate) fn run_pinned_shadow_stem_batch(
     });
     let deadline = Instant::now() + MAX_SHADOW_RUNTIME;
     let status = loop {
+        if let Ok(false) | Err(mpsc::TryRecvError::Disconnected) = write_receiver.try_recv() {
+            let _ = child.kill();
+            let _ = child.wait();
+            return Err(Error::FeatureContract);
+        }
         match child.try_wait() {
             Ok(Some(status)) => break status,
             Ok(None) => {}
