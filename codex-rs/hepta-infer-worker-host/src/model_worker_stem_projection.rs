@@ -47,7 +47,8 @@ fn q48_round_ties_even(value: i128) -> Result<i64, Error> {
     Ok(result)
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct LowRankStemProjectionV1 {
     pub encoder_digest: String,
     pub preprocessor_digest: String,
