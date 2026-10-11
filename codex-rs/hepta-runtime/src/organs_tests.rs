@@ -783,7 +783,7 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     struct DurableTestCnsWitness {
         signer: SigningKey,
         original_path: PathBuf,
-        authority_dir: tempfile::TempDir,
+        _authority_dir: tempfile::TempDir,
         successor: Option<(
             Arc<FinalUseAuthority>,
             SignedFinalUseGrant,
@@ -920,7 +920,9 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         Arc::new(ObservedAdapter(Arc::clone(&calls)));
     let runtime = crate::HeptaRuntime::from_adapter(root.clone(), Arc::clone(&state));
     let before = runtime.topology_snapshot()?;
-    let successor_host = build_host_generation(root, state, before.generation().next()?)?;
+    let successor_host = build_host_generation(
+        root.clone(), Arc::clone(&state), before.generation().next()?,
+    )?;
     let successor = RuntimeTopologySuccessorV1::new(
         successor_host.host, successor_host.route,
     ).map_err(|e| anyhow::anyhow!("{e}"))?;
@@ -983,10 +985,11 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     };
     let witness_directory = tempfile::tempdir()?;
     let runtime_signer = SigningKey::from_bytes(&[0x6b; 32]);
+    let original_path = witness_directory.path().join("original-cns-runtime.json");
     let witness = DurableTestCnsWitness {
         signer: runtime_signer.clone(),
-        original_path: witness_directory.path().join("original-cns-runtime.json"),
-        authority_dir,
+        original_path: original_path.clone(),
+        _authority_dir: authority_dir,
         successor: Some((Arc::new(authority), signed_grant, request)),
     };
     let mut port = CellSplitCnsKernelRuntimePortV1::new(
@@ -1008,5 +1011,31 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     assert_eq!(live.generation, plan.child_generation);
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
     assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
+
+    // Process-local CNS hosts are NOT a durable restart registry. A fresh
+    // default host must never be mistaken for the already-committed successor
+    // simply because the original signed runtime receipt survived on disk.
+    drop(port);
+    let after_restart = crate::HeptaRuntime::from_adapter(root, state);
+    assert_eq!(after_restart.topology_snapshot()?, before);
+    let restarted_witness = DurableTestCnsWitness {
+        signer: runtime_signer.clone(),
+        original_path,
+        _authority_dir: tempfile::tempdir()?,
+        successor: None,
+    };
+    let restarted_port = CellSplitCnsKernelRuntimePortV1::new(
+        after_restart, plan.clone(), binding.clone(), intent.clone(),
+        runtime_signer.verifying_key(), restarted_witness,
+    ).map_err(|e| anyhow::anyhow!("{e}"))?;
+    let owner_root = tempfile::tempdir()?;
+    let mut owner = codex_hepta_operator_acceptance::CellSplitCnsCutoverOwnerV1::open(
+        owner_root.path(), plan, binding, restarted_port,
+    ).map_err(|e| anyhow::anyhow!("{e}"))?;
+    use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1 as _;
+    assert!(
+        owner.read_committed(&intent).is_err(),
+        "committed runtime receipt cannot activate a fresh old-generation host",
+    );
     Ok(())
 }
