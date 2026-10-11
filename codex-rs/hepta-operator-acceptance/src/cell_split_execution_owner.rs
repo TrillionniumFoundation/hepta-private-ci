@@ -190,6 +190,11 @@ impl CellSplitOwnerTrustV1 {
     ) -> Result<Self, CellSplitExecutionErrorV1> {
         plan.validate()?;
         let mut seen = BTreeSet::new();
+        if keys.iter().any(|key| key.is_weak()) {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "effect owner has a weak signing key",
+            ));
+        }
         if keys.iter().any(|key| !seen.insert(key.to_bytes())) {
             return Err(CellSplitExecutionErrorV1::Invalid(
                 "effect owners share a signing key",
