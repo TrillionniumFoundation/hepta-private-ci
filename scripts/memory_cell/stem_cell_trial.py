@@ -33,6 +33,7 @@ from stem_cell import StemHead, route_text, sha256
 from stem_cell_adapter import DifferentiatedEncoder
 from stem_cell_temporal import build_as_of_index
 from stem_cell_adapter_opportunity import eligible_pairs_by_stage
+from stem_cell_source_ceiling import retrospective_pool_ceiling
 from stem_reader_zero_evidence import (
     generate_empty_evidence_controls,
     evaluate_empty_evidence_controls,
@@ -774,6 +775,22 @@ def run(staged, ranker_dir, output):
             diagnose,
         )
         write(output / "reader-paired-no-evidence.json", paired_reader_controls)
+        # Only after the entire raw six-arm and no-evidence Reader census:
+        # the native source labels may be compared with the frozen candidate
+        # pool to distinguish retrieval opportunity from top-1 misranking.
+        retrospective_source_ceiling = retrospective_pool_ceiling(
+            {phase: qs[phase] for phase in PHASES},
+            pools,
+            {q.identity: source_for[q.identity].targets[q.identity]
+             for phase in PHASES for q in qs[phase]},
+            {q.identity: source_for[q.identity].families[q.family]
+             for phase in PHASES for q in qs[phase]},
+            scored,
+        )
+        write(
+            output / "post-policy-native-source-ceiling.json",
+            retrospective_source_ceiling,
+        )
         no_evidence_reader_after = control_session.summary()
         # The diagnostic is nonqualifying if its isolated Reader quarantined.
         if not control_generator.quarantined:
@@ -801,6 +818,7 @@ def run(staged, ranker_dir, output):
             reader=reader_before_controls,
             no_evidence_reader_report=no_evidence_report,
             matched_frozen_vs_no_evidence=paired_reader_controls,
+            retrospective_weak_source_ceiling=retrospective_source_ceiling,
             no_evidence_reader_call_accounting=dict(
                 same_pinned_reader_identity=generator.identity,
                 same_pinned_reader_profile=generator.profile,

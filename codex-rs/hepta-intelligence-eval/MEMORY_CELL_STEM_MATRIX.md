@@ -540,3 +540,34 @@ entailment. The experimental Adapter remains frozen after its original
 warm-start; any larger checkpoint pair eligibility is a separately
 reported **unused opportunity**, not retrospective evidence that the
 Adapter learned it. Failed Adapter receipts remain explicitly unavailable.
+
+## Fixed-pool retrieval ceiling versus Head misranking (post-policy labels only)
+
+`stem_cell_source_ceiling.py` is a **strictly post-answer diagnostic**:
+after all six-arm and no-evidence Reader answers have been committed, it
+joins 32 preregistered held-out questions with published native
+document-level support labels and the exact fixed candidate windows.
+It never sends the answer target to retrieval, an Encoder, a Head, a
+Reader prompt or tuning. Candidate-pool digest, source family, question
+identity and forced top-1 decision are bound to the frozen control receipt.
+
+The final-checkpoint report records three causally different cases,
+with separate 8-question phase denominators:
+
+* **Support never retrieved:** no labelled native supporting source
+  appears in the eligible candidate pool. No Head constrained to this
+  fixed pool can recover the absent source.
+* **Support present but frozen ranker missed it:** at least one labelled
+  native support window was in the candidates and the frozen top-1 chose
+  another. This is a *weak-source ranking opportunity*, NOT a proven
+  improvement from any trained Head.
+* **Native support selected:** compare the actual Reader answer (and
+  separately the no-evidence answer) to diagnose generation capacity.
+
+Published `unanswerable`, missing pool, unresolved labels, failures
+before selection and Reader execution failures have their own counters;
+no failure is dropped from the all-planned denominator. This is only
+native **document-level** weak support, not a reviewed window-level
+entailment or sufficient-evidence oracle. The analysis cannot certify
+semantic citations, prospective time/withdrawal authority, production
+benefit or an Encoder/Head winner.
