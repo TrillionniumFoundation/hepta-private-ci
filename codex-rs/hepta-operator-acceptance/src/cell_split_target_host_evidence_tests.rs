@@ -383,7 +383,7 @@ fn signed_owner_transcript_for_host(
     let keys = [51_u8, 52, 53, 54].map(key);
     let trusted = crate::CellSplitOwnerTrustV1::new(
         &plan,
-        keys.map(|signing_key| signing_key.verifying_key()),
+        std::array::from_fn(|index| keys[index].verifying_key()),
     ).expect("four original owners are distinct");
     let plan_digest = plan.digest().expect("frozen plan");
     let mut predecessor = plan_digest.clone();
