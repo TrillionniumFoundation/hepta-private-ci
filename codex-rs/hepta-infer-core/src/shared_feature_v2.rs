@@ -97,7 +97,7 @@ impl fmt::Display for SharedFeatureErrorV2 {
 impl StdError for SharedFeatureErrorV2 {}
 
 /// The identity + full bytes are checked even when a digest key matches.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SharedFeatureCacheV2 {
     maximum_entries: usize,
     maximum_bytes: usize,
