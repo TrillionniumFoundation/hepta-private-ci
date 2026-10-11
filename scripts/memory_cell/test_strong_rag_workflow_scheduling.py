@@ -49,12 +49,17 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
         self.assertIn("  independent-replay:\n    needs: reader\n", self.text)
         self.assertIn("test_strong_rag_workflow_scheduling.py' -v", self.text)
 
+    def test_concurrent_commits_do_not_wait_on_old_branch_run(self):
+        self.assertIn("group: memorycell-strong-rag-${{ github.sha }}", self.text)
+        self.assertNotIn("group: memorycell-strong-rag-${{ github.ref }}", self.text)
+        self.assertIn("cancel-in-progress: false", self.text)
+
     def test_global_format_remains_separately_observable(self):
         self.assertIn("  format:\n", self.text)
         self.assertIn('BASE_COMMIT="$(git rev-parse FETCH_HEAD)"', self.text)
         self.assertIn('just fmt --check --base "$BASE_COMMIT"', self.text)
         self.assertIn("cancel-in-progress: false", self.text)
-        self.assertIn("group: memorycell-strong-rag-${{ github.ref }}", self.text)
+        self.assertIn("group: memorycell-strong-rag-${{ github.sha }}", self.text)
 
 
 if __name__ == "__main__":

@@ -287,3 +287,23 @@ Matching source selections must preserve prompt identity; any answer drift
 counts as repeatability instability, not a graph benefit. A nominal task
 improvement on eight authored cases is still neither statistically independent
 superiority nor production admission.
+
+## Exact-commit concurrency correction (2026-10-11)
+
+The preceding per-branch Actions concurrency group with
+`cancel-in-progress: false` serialized *different* frozen research revisions.
+The earlier push source `b8b39191` remained `queued`, while the later
+eight-arm source `33e3aa13` stayed `pending` without jobs. This is a
+workflow scheduling dependency, not a failed Qwen inference.
+
+The group is now keyed by exact `github.sha` instead of `github.ref`.
+Each immutable generating source gets a distinct scheduling identity,
+while attempts of the same source remain grouped. Automatic cancellation
+remains disabled so that a running model is not interrupted before its
+original answers are journaled. The branch/path trigger, scoped preflight,
+reader controls, independent replay and broad PR gates are unchanged.
+
+This removes the workflow's own cross-SHA scheduling dependency; it cannot
+guarantee GitHub runner capacity or completion. Previously queued runs are
+not relabelled or treated as the latest model result. Production admission
+and parameter memory advantage remain unestablished.

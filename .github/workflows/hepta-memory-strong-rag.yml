@@ -19,7 +19,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: memorycell-strong-rag-${{ github.ref }}
+  group: memorycell-strong-rag-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   format:
