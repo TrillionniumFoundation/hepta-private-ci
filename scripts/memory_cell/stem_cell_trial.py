@@ -32,6 +32,7 @@ from selector_windows import WindowBudget, candidate_windows
 from stem_cell import StemHead, route_text, sha256
 from stem_cell_adapter import DifferentiatedEncoder
 from stem_cell_temporal import build_as_of_index
+from stem_cell_adapter_opportunity import eligible_pairs_by_stage
 from stem_reader_zero_evidence import (
     generate_empty_evidence_controls,
     evaluate_empty_evidence_controls,
@@ -354,6 +355,18 @@ def run(staged, ranker_dir, output):
             output / "adapter-training.json",
             dict(receipts=adapter_receipts, failures=adapter_errors),
         )
+        # The registered train-only source labels already produced `rows`.
+        # Reconcile the 16/32/48 pair-eligibility opportunity WITHOUT
+        # retraining an Encoder or opening any held-out annotation.
+        adapter_opportunities = eligible_pairs_by_stage(
+            qs["train"],
+            rows,
+            {q.identity: plan["routes"][q.identity] for q in qs["train"]},
+            adapter_receipts
+            if not adapter_errors and len(adapter_receipts) == 3 else None,
+        )
+        adapter_opportunities["actual_adapter_failures"] = sorted(adapter_errors)
+        write(output / "adapter-pair-opportunities.json", adapter_opportunities)
 
         def backend_key(arm, cell):
             return (
@@ -769,6 +782,7 @@ def run(staged, ranker_dir, output):
             plan=plan,
             selection_geometry=summarize_geometry(attempts),
             weak_training_probes=summarize_train_probes(training_probes),
+            adapter_pair_opportunities=adapter_opportunities,
             census=census,
             **summarize(scored),
             learning=learning,

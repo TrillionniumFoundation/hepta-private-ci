@@ -521,3 +521,22 @@ base-unchanged proof and actual adapter-only reload receipts. It joins
 the independent original-artifact audit but **does not change** historical
 answers, re-run an Encoder, authenticate source families for production
 or issue qualification. `production_accepted=false`.
+
+## Predeclared 16/32/48 pair eligibility — without extra model calls
+
+`stem_cell_adapter_opportunity.py` now reads only admitted TRAIN rows that
+were already produced before Adapter differentiation. At each original
+16/32/48 checkpoint it reports the total weak-source-admitted questions,
+the subset containing **both a positive source window and an available
+negative window**, the unadmitted/missing-support count, and per-Cell
+independent source-family counts. It binds the **16-question prefix** to
+the actual lineage and independent LoRA prepared-question receipts,
+rather than treating an AdamW/SGD step counter as a new training example.
+
+This is a necessary training-signal *opportunity* audit: it does **not**
+execute additional Adapter updates, expose held-out annotations, select
+new hyperparameters, improve answer accuracy, or authenticate negative
+entailment. The experimental Adapter remains frozen after its original
+warm-start; any larger checkpoint pair eligibility is a separately
+reported **unused opportunity**, not retrospective evidence that the
+Adapter learned it. Failed Adapter receipts remain explicitly unavailable.
