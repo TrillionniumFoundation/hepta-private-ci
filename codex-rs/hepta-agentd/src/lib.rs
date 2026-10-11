@@ -50,6 +50,9 @@ pub use shared_terminal_cell::SharedTerminalCellError;
 pub use shared_terminal_cell::SharedTerminalModelV1;
 #[doc(hidden)]
 pub mod test_support;
+#[cfg(test)]
+#[path = "transitive_resource_tests.rs"]
+mod transitive_resource_tests;
 mod topology_plasticity_host;
 
 pub use authbus_ingress::authbus_text_claims;
