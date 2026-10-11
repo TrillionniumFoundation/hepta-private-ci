@@ -185,9 +185,17 @@ class DynamicLearning(unittest.TestCase):
         x = np.zeros((4, 8))
         y = np.array([0.0, 1.0, 0.0, 1.0])
         baseline = np.full(4, 0.5)
-        self.assertTrue(np.isfinite(
-            paired_future_score(head, frozen, x, y, baseline)["trained_bce"]
-        ))
+        score = paired_future_score(head, frozen, x, y, baseline)
+        self.assertTrue(np.isfinite(score["trained_bce"]))
+        self.assertAlmostEqual(score["no_change_brier"], 0.25)
+        self.assertAlmostEqual(score["no_change_ece"], 0.0)
+        for candidate in ("no_change", "frozen", "trained"):
+            for metric in ("bce", "brier", "ece"):
+                self.assertTrue(np.isfinite(score[f"{candidate}_{metric}"]))
+            self.assertGreaterEqual(score[f"{candidate}_brier"], 0.0)
+            self.assertLessEqual(score[f"{candidate}_brier"], 1.0)
+            self.assertGreaterEqual(score[f"{candidate}_ece"], 0.0)
+            self.assertLessEqual(score[f"{candidate}_ece"], 1.0)
         malformed = [
             (y[:, None], baseline[:, None]),  # old code silently broadcast logits
             (np.array([0.0, 1.0, np.nan, 1.0]), baseline),
