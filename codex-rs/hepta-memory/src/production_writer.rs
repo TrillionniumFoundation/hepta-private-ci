@@ -2449,6 +2449,33 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
         .map_err(|error| ProductionWriterError::Invalid(format!("system clock failed: {error}")))
 }
 
+// Test-only hard assertions retain their original fail-fast semantics without
+// disabling the workspace's disallowed panic-convenience method lint.
+#[cfg(test)]
+trait RequireFixture<T> {
+    fn require_fixture(self, reason: &'static str) -> T;
+}
+
+#[cfg(test)]
+impl<T, E: std::fmt::Debug> RequireFixture<T> for Result<T, E> {
+    fn require_fixture(self, reason: &'static str) -> T {
+        match self {
+            Ok(value) => value,
+            Err(error) => panic!("{reason}: {error:?}"),
+        }
+    }
+}
+
+#[cfg(test)]
+impl<T> RequireFixture<T> for Option<T> {
+    fn require_fixture(self, reason: &'static str) -> T {
+        match self {
+            Some(value) => value,
+            None => panic!("{reason}: missing expected fixture value"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -3364,7 +3391,7 @@ mod takeover_regression_tests {
     use tokio::time::sleep;
 
     fn test_agent() -> AgentId {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cfe").expect("agent")
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cfe").require_fixture("agent")
     }
 
     struct TakeoverAllowVerifier;
@@ -3381,12 +3408,12 @@ mod takeover_regression_tests {
 
     async fn test_store(temp: &TempDir) -> CognitiveStore {
         let fleet_root = temp.path().join("fleet-takeover");
-        std::fs::create_dir_all(&fleet_root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().expect("canonical fleet"))
-            .expect("fleet");
+        std::fs::create_dir_all(&fleet_root).require_fixture("fleet root");
+        let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().require_fixture("canonical fleet"))
+            .require_fixture("fleet");
         CognitiveStore::open(&fleet.layout().agent(&test_agent()))
             .await
-            .expect("store")
+            .require_fixture("store")
     }
 
     fn authority_for(
@@ -3403,17 +3430,17 @@ mod takeover_regression_tests {
             authority_epoch,
             owner_epoch,
             expiry,
-            ProductionAuthorityToken::from_verified_bytes(token.to_vec()).expect("token"),
+            ProductionAuthorityToken::from_verified_bytes(token.to_vec()).require_fixture("token"),
         )
-        .expect("authority")
+        .require_fixture("authority")
     }
 
     #[tokio::test]
     async fn expired_active_writer_is_terminalized_and_successor_reconciles_unknown_effect() {
-        let temp = TempDir::new().expect("temp");
+        let temp = TempDir::new().require_fixture("temp");
         let store = test_store(&temp).await;
         let owner = store.owner_agent_id().clone();
-        let old_expiry = now_unix_seconds().expect("clock") + 2;
+        let old_expiry = now_unix_seconds().require_fixture("clock") + 2;
         let old_authority =
             authority_for(owner.clone(), b"grant-old", 9, 40, old_expiry, b"token-old");
         let old = ProductionDurableWriter::open(
@@ -3424,13 +3451,13 @@ mod takeover_regression_tests {
             1,
         )
         .await
-        .expect("old writer");
+        .require_fixture("old writer");
         old.admit("occurrence:takeover", "destination.write", "{\"value\":1}")
             .await
-            .expect("admission");
+            .require_fixture("admission");
         old.mark_indeterminate("occurrence:takeover", "ack-lost")
             .await
-            .expect("indeterminate");
+            .require_fixture("indeterminate");
         drop(old);
 
         sleep(Duration::from_millis(2_100)).await;
@@ -3440,7 +3467,7 @@ mod takeover_regression_tests {
             b"grant-new",
             9,
             41,
-            now_unix_seconds().expect("clock") + 3_600,
+            now_unix_seconds().require_fixture("clock") + 3_600,
             b"token-new",
         );
         let successor = ProductionDurableWriter::open(
@@ -3451,26 +3478,26 @@ mod takeover_regression_tests {
             2,
         )
         .await
-        .expect("successor writer");
+        .require_fixture("successor writer");
         assert_eq!(successor.generation(), 2);
         assert_eq!(
             successor
                 .status("occurrence:takeover")
                 .await
-                .expect("inherited status"),
+                .require_fixture("inherited status"),
             LocalOutcomeState::Indeterminate
         );
 
         let settled = successor
             .reconcile("occurrence:takeover", LocalReconcileOutcome::Committed)
             .await
-            .expect("successor reconciliation");
+            .require_fixture("successor reconciliation");
         assert_eq!(settled.state, LocalOutcomeState::Committed);
         assert_eq!(
             successor
                 .status("occurrence:takeover")
                 .await
-                .expect("terminal status"),
+                .require_fixture("terminal status"),
             LocalOutcomeState::Committed
         );
     }
