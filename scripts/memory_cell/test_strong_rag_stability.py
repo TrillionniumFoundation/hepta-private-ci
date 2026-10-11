@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from types import ModuleType
 from unittest.mock import patch
 
 from strong_rag_stability import KS, leave_one_out
@@ -195,6 +196,13 @@ class CalibrationSensitivityTests(unittest.TestCase):
                 return rows
 
             with (
+                # These synthetic Reader tests must not require a real torch
+                # installation just to check chronology and source isolation.
+                patch.dict("sys.modules", {"torch": ModuleType("torch")}),
+                patch(
+                    "runtime_preflight.capture_runtime",
+                    return_value={"schema": "synthetic-host-fixture-only"},
+                ),
                 patch.object(trial, "read", side_effect=observed_read),
                 patch.object(
                     trial,

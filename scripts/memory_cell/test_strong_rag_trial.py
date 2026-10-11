@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from types import ModuleType
 from unittest.mock import patch
 
 import strong_rag_trial as trial
@@ -411,6 +412,13 @@ class StrongRagPolicyTests(unittest.TestCase):
             # A bad literal citation must fail the research receipt, but it
             # cannot erase the original, already-generated task scores.
             with (
+                # These synthetic Reader tests must not require a real torch
+                # installation just to check chronology and source isolation.
+                patch.dict("sys.modules", {"torch": ModuleType("torch")}),
+                patch(
+                    "runtime_preflight.capture_runtime",
+                    return_value={"schema": "synthetic-host-fixture-only"},
+                ),
                 patch.object(trial, "read", side_effect=raw_read),
                 patch.object(trial, "_reader", return_value=(model, {}, inventory)),
                 patch.object(trial, "freeze_single_hop", side_effect=frozen_mock_hop),
