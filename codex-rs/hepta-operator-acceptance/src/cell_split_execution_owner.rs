@@ -312,14 +312,12 @@ pub trait CellSplitExecutionPortV1 {
 
     /// Check original-owner readiness without dispatching an effect. Called
     /// only before creating a new prepared intent, never during reconciliation.
-    /// Production ports must use an authenticated current-state readback;
-    /// source-only harnesses may retain the default no-op implementation.
+    /// Every port, including test fixtures, must explicitly implement this
+    /// method; no default allow-all readiness path is permitted.
     fn preflight_uncommitted(
         &mut self,
-        _intent: &CellSplitExecutionIntentV1,
-    ) -> Result<(), Self::Error> {
-        Ok(())
-    }
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error>;
 
     fn execute(
         &mut self,
