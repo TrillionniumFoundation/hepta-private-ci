@@ -101,19 +101,23 @@ fn invalid_numeric_range_and_extra_coefficients_rejected() {
 
 use codex_hepta_learning_artifacts::{
     ArtifactEvent, ArtifactKind, ArtifactManifest, ArtifactOwnerTrustV1, ArtifactOwnerVerifierV1,
-    ArtifactRegistry, ArtifactSelectionTrustV1, ArtifactSelectionVerifierV1, CreateOnlyArtifactFile,
-    RegistryHeadRequirementV1, RegistryHeadWitnessV1, SignedArtifactSelectionV1,
-    SignedCurrentArtifactHeadV1, StateChange, TrustedArtifactSelectorV1, TrustedArtifactSignerV1,
-    VerifiedCurrentRegistryViewV1, write_candidate_payload, write_registry_snapshot,
+    ArtifactRegistry, ArtifactSelectionTrustV1, ArtifactSelectionVerifierV1,
+    CreateOnlyArtifactFile, RegistryHeadRequirementV1, RegistryHeadWitnessV1,
+    SignedArtifactSelectionV1, SignedCurrentArtifactHeadV1, StateChange, TrustedArtifactSelectorV1,
+    TrustedArtifactSignerV1, VerifiedCurrentRegistryViewV1, write_candidate_payload,
+    write_registry_snapshot,
 };
 use codex_hepta_types::{Digest32, Generation, StableId};
 use ed25519_dalek::{Signer, SigningKey};
 use std::fs::File;
 use tempfile::TempDir;
 
-
-fn id(v: &str) -> StableId { StableId::new(v).expect("fixture id") }
-fn digest(v: &[u8]) -> Digest32 { Digest32::of_bytes(v) }
+fn id(v: &str) -> StableId {
+    StableId::new(v).expect("fixture id")
+}
+fn digest(v: &[u8]) -> Digest32 {
+    Digest32::of_bytes(v)
+}
 
 struct SignedCasFixture {
     dir: TempDir,
@@ -152,7 +156,8 @@ impl SignedCasFixture {
             writer_signers: vec![owner_signer.clone()],
             head_signers: vec![owner_signer],
         };
-        let owner_verifier = ArtifactOwnerVerifierV1::new(owner_trust.clone()).expect("owner trust");
+        let owner_verifier =
+            ArtifactOwnerVerifierV1::new(owner_trust.clone()).expect("owner trust");
         let selector_verifier = ArtifactSelectionVerifierV1::new(
             ArtifactSelectionTrustV1 {
                 registry_id: registry_id.clone(),
@@ -169,7 +174,8 @@ impl SignedCasFixture {
                 }],
             },
             &owner_trust,
-        ).expect("independent selector");
+        )
+        .expect("independent selector");
         let projection = sample_projector();
         let payload = payload_for(&projection);
         let manifest = ArtifactManifest {
@@ -185,19 +191,29 @@ impl SignedCasFixture {
             encoded_size_bytes: payload.len() as u64,
         };
         let mut registry = ArtifactRegistry::new();
-        registry.append(ArtifactEvent::Register {
-            event_id: id("registration"),
-            manifest: manifest.clone(),
-        }).expect("register");
+        registry
+            .append(ArtifactEvent::Register {
+                event_id: id("registration"),
+                manifest: manifest.clone(),
+            })
+            .expect("register");
         write_candidate_payload(
             CreateOnlyArtifactFile::create(dir.path().join("payload")).expect("create payload"),
             &registry,
             &manifest.artifact_id,
             &payload,
-        ).expect("durable payload");
+        )
+        .expect("durable payload");
         Self {
-            dir, owner_key, selector_key, owner_verifier, selector_verifier,
-            registry_id, withdrawal_scope, manifest, registry,
+            dir,
+            owner_key,
+            selector_key,
+            owner_verifier,
+            selector_verifier,
+            registry_id,
+            withdrawal_scope,
+            manifest,
+            registry,
         }
     }
 
@@ -207,7 +223,8 @@ impl SignedCasFixture {
             CreateOnlyArtifactFile::create(&path).expect("snapshot destination"),
             &self.registry,
             digest(b"fixed-storage-binding"),
-        ).expect("durable snapshot");
+        )
+        .expect("durable snapshot");
         let generation = Generation::new(receipt.records as u64).expect("generation");
         let mut signed = SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: self.withdrawal_scope,
@@ -226,18 +243,21 @@ impl SignedCasFixture {
             signature: [0; 64],
         };
         signed.signature = self.owner_key.sign(&signed.signing_bytes()).to_bytes();
-        let current = self.owner_verifier.verify_current_registry_view(
-            File::open(&path).expect("snapshot view"),
-            receipt,
-            &signed,
-            &RegistryHeadRequirementV1 {
-                registry_id: self.registry_id.clone(),
-                minimum_generation: generation,
-                expected_predecessor_head_digest: predecessor,
-                minimum_authority_epoch: 1,
-                now: 30,
-            },
-        ).expect("authenticated CURRENT");
+        let current = self
+            .owner_verifier
+            .verify_current_registry_view(
+                File::open(&path).expect("snapshot view"),
+                receipt,
+                &signed,
+                &RegistryHeadRequirementV1 {
+                    registry_id: self.registry_id.clone(),
+                    minimum_generation: generation,
+                    expected_predecessor_head_digest: predecessor,
+                    minimum_authority_epoch: 1,
+                    now: 30,
+                },
+            )
+            .expect("authenticated CURRENT");
         (File::open(path).expect("CAS read file"), current)
     }
 
@@ -267,7 +287,10 @@ impl SignedCasFixture {
             expires_at: 100,
             signature: [0; 64],
         };
-        selection.signature = self.selector_key.sign(&selection.signing_bytes()).to_bytes();
+        selection.signature = self
+            .selector_key
+            .sign(&selection.signing_bytes())
+            .to_bytes();
         selection
     }
 }
@@ -277,7 +300,9 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
     let mut fx = SignedCasFixture::new();
     let (snapshot, current) = fx.current("current.first", Digest32::ZERO);
     let signed = fx.selection(&current);
-    let selection = fx.selector_verifier.verify(&signed, &current, 30)
+    let selection = fx
+        .selector_verifier
+        .verify(&signed, &current, 30)
         .expect("signed independent selection");
     let scope = digest(b"owner-principal-workspace-purpose");
     let frontier = digest(b"current-revocation-frontier");
@@ -292,7 +317,8 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
             worker_generation: 7,
             revocation_frontier_digest: frontier,
         },
-    ).expect("real selected CAS load");
+    )
+    .expect("real selected CAS load");
     let projector = sample_projector();
     let features = [0.5f32, -0.25, 0.125];
     let binding = StemProjectionBindingV1 {
@@ -305,26 +331,51 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
         source_input_digest: digest(b"approved-input").to_string(),
         source_feature_digest: super::super::stem_projection::stem_feature_f32_digest(
             &features, 3, "mean",
-        ).expect("feature hash").to_string(),
+        )
+        .expect("feature hash")
+        .to_string(),
     };
     let (_file, fresh) = fx.current("current.second", Digest32::ZERO);
-    let (projected, observation) = reader.project_with_current(
-        &fx.selector_verifier, &signed, fresh, 30, &binding, &features, 3,
-    ).expect("currently selected projection");
+    let (projected, observation) = reader
+        .project_with_current(
+            &fx.selector_verifier,
+            &signed,
+            fresh,
+            30,
+            &binding,
+            &features,
+            3,
+        )
+        .expect("currently selected projection");
     assert_eq!(projected.values_q24, vec![1 << 23, 1 << 23]);
-    assert_eq!(observation.artifact_content_digest, fx.manifest.content_digest);
+    assert_eq!(
+        observation.artifact_content_digest,
+        fx.manifest.content_digest
+    );
     assert!(!observation.production_authorized);
     let before_revoke = fx.registry.snapshot().head_digest;
-    fx.registry.append(ArtifactEvent::Revoke(StateChange {
-        event_id: id("revoke"),
-        artifact_id: fx.manifest.artifact_id.clone(),
-        evaluator_id: id("independent-evaluator"),
-        reason_digest: digest(b"revoked"),
-    })).expect("revoke");
+    fx.registry
+        .append(ArtifactEvent::Revoke(StateChange {
+            event_id: id("revoke"),
+            artifact_id: fx.manifest.artifact_id.clone(),
+            evaluator_id: id("independent-evaluator"),
+            reason_digest: digest(b"revoked"),
+        }))
+        .expect("revoke");
     let (_file, revoked) = fx.current("current.revoked", before_revoke);
-    assert!(reader.project_with_current(
-        &fx.selector_verifier, &signed, revoked, 30, &binding, &features, 3,
-    ).is_err());
+    assert!(
+        reader
+            .project_with_current(
+                &fx.selector_verifier,
+                &signed,
+                revoked,
+                30,
+                &binding,
+                &features,
+                3,
+            )
+            .is_err()
+    );
     assert!(reader.is_sealed());
     reader.invalidate();
     assert!(reader.is_sealed());
