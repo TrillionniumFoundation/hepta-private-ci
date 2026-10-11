@@ -582,7 +582,7 @@ impl PreparedAgentdIntelligenceRunV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceProductOutcomeV1 {
-    Ready(PreparedAgentdIntelligenceRunV1),
+    Ready(Box<PreparedAgentdIntelligenceRunV1>),
     Abstained,
     SlowPath,
 }
