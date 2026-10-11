@@ -92,14 +92,15 @@ bytes** and SHA-256
 `542fe1a25af049d36e2aa2a92aac0513535f5828761812112888a2d88bcaec93`.
 That digest is an integrity check and never constitutes selection authority.
 
-`SelectedStemProjectionReaderV1::check_worker_request` no longer accepts only
-a cached projected feature plus static Fence. Every Worker-use check requires
-a separately authenticated `VerifiedCurrentRegistryViewV1`, the independent
-signed selection, their trusted verifier, matching Scope, worker Generation,
-revocation frontier and exact already-authorized Q24 payload. Any failed check
-**seals the reader**, so reusing a previously valid feature after an observed
-revocation fails closed. The Rust regression uses an actual Ed25519 fixture,
-create-only CAS files, signed CURRENT snapshots and an independent selector.
+The former public split `check_worker_request` / later-dispatch path is
+**test-only**, not a callable production API. The public model-only
+`run_selected_cpu_head` requires a separately authenticated CURRENT,
+the independent signed selection, trusted verifier, matching Scope,
+worker Generation, revocation frontier and exact already-authorized Q24
+payload. Any failed check **seals the reader**, so reusing a previously valid
+feature after an observed revocation fails closed. The Rust regression uses
+an actual Ed25519 fixture, create-only CAS files, signed CURRENT snapshots
+and an independent selector.
 
 The separate typed `StemCpuHeadUseV1` route can execute the **actual local
 Q24 CPU Head** inside `RevalidatingCandidate::with_current`, after the exact
