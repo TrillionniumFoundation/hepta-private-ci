@@ -428,3 +428,58 @@ fn commit_signing_payload(idempotency_key: &str, checkpoint: &[u8]) -> Vec<u8> {
     result.extend_from_slice(checkpoint);
     result
 }
+
+
+#[cfg(test)]
+mod original_cns_signature_tests {
+    use super::*;
+    use ed25519_dalek::Signer as _;
+
+    #[test]
+    fn real_journal_port_requires_independent_original_runtime_signature() {
+        let outer = SigningKey::from_bytes(&[31; 32]);
+        let runtime = SigningKey::from_bytes(&[41; 32]);
+        let alternate = SigningKey::from_bytes(&[51; 32]);
+        let evidence = b"original fsynced CNS runtime cutover";
+        let valid = runtime.sign(evidence).to_bytes();
+
+        assert!(verify_independent_cns_runtime_signature(
+            evidence,
+            &valid,
+            &outer.verifying_key(),
+            &runtime.verifying_key(),
+        ).is_ok());
+        assert!(verify_independent_cns_runtime_signature(
+            b"forged runtime cutover",
+            &valid,
+            &outer.verifying_key(),
+            &runtime.verifying_key(),
+        ).is_err());
+        let mut tampered = valid;
+        tampered[0] ^= 0x80;
+        assert!(verify_independent_cns_runtime_signature(
+            evidence,
+            &tampered,
+            &outer.verifying_key(),
+            &runtime.verifying_key(),
+        ).is_err());
+        assert!(verify_independent_cns_runtime_signature(
+            evidence,
+            &valid,
+            &outer.verifying_key(),
+            &alternate.verifying_key(),
+        ).is_err());
+        assert!(verify_independent_cns_runtime_signature(
+            evidence,
+            &outer.sign(evidence).to_bytes(),
+            &outer.verifying_key(),
+            &outer.verifying_key(),
+        ).is_err());
+        assert!(verify_independent_cns_runtime_signature(
+            evidence,
+            &valid[..63],
+            &outer.verifying_key(),
+            &runtime.verifying_key(),
+        ).is_err());
+    }
+}
