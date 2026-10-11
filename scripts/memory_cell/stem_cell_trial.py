@@ -572,12 +572,27 @@ def run(staged, ranker_dir, output):
                                     if arm == "frozen_rerank"
                                     else head(f).tolist()
                                 )
+                            original = initial_features[q.identity]
+                            if (
+                                f.question_id != original.question_id
+                                or f.family != original.family
+                                or f.pool_digest != original.pool_digest
+                                or f.candidate_ids != original.candidate_ids
+                            ):
+                                raise ValueError(
+                                    "original/adapted decision candidate pool mismatch"
+                                )
                             selected = choose(values, f.candidate_ids, allow_null=False)
                             item["selection_geometry"] = inspect_selection(
                                 f.frozen_scores.tolist(),
                                 values[: len(f.candidate_ids)],
                                 f.candidate_ids,
                                 selected,
+                                original_frozen_scores=original.frozen_scores.tolist(),
+                                encoder_adapted=arm in (
+                                    "lineage_lora_gated",
+                                    "independent_lora_gated",
+                                ),
                             )
                             item["head_seconds"] = time.perf_counter() - stamp
                             evidence = selected_window(

@@ -344,3 +344,19 @@ the SGD fitting objective. Lower diagnostic training loss does not establish
 within-Head progress, generalization to unseen families, correct downstream
 Reader answers, or semantic citation quality. If source/feature identity
 drifts, the probe fails and the attempted row remains in the audit.
+
+## Three-way, label-free source ranking analysis
+
+The persisted native experiment now records three matched rankings for each
+planned answer before the Reader runs: (1) original frozen pair Encoder,
+(2) LoRA-adapted pair Encoder without its Head, and (3) the learned Head
+applied to that adapted representation. Candidate identities, source-family
+and pool digest must match the original frozen feature batch. The report
+separately counts Encoder-only flips, Head-only flips, joint flips, and the
+case where a Head cancels an Encoder flip. Frozen-model and same-pool controls
+must have exactly equal original and Encoder-only scores.
+
+This is **label-free analysis only**: a rank flip is not evidence of correct
+source choice, transferable memory, independent semantic citation support or
+a positive task-level Reader outcome. The fixed forced-top1 policy, Reader,
+prompt, training/evaluation cuts and candidate pools remain unchanged.

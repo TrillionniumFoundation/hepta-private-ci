@@ -74,5 +74,52 @@ class RankGeometryTests(unittest.TestCase):
         self.assertIsNone(out["semantic_citation_precision"])
 
 
+    def test_adapter_changes_rank_without_head_contribution(self):
+        item = inspect_selection(
+            [1.0, 9.0], [1.0, 9.0], ("A", "B"), 1,
+            original_frozen_scores=[8.0, 2.0], encoder_adapted=True,
+        )
+        self.assertTrue(item["encoder_only_changed_selected_candidate"])
+        self.assertFalse(item["head_changed_selected_candidate"])
+        self.assertTrue(item["changed_selected_candidate"])
+        self.assertEqual(item["head_conditional_max_abs_score_delta"], 0.0)
+        self.assertEqual(item["encoder_only_top_id"], "B")
+
+    def test_head_changes_rank_without_encoder_adaptation(self):
+        item = inspect_selection([8.0, 2.0], [1.0, 9.0], ("A", "B"), 1)
+        self.assertFalse(item["encoder_only_changed_selected_candidate"])
+        self.assertTrue(item["head_changed_selected_candidate"])
+        self.assertTrue(item["changed_selected_candidate"])
+        self.assertEqual(item["encoder_only_max_abs_score_delta"], 0.0)
+
+    def test_head_cancels_encoder_rank_change_not_a_joint_improvement(self):
+        item = inspect_selection(
+            [1.0, 9.0], [8.0, 2.0], ("A", "B"), 0,
+            original_frozen_scores=[8.0, 2.0], encoder_adapted=True,
+        )
+        self.assertTrue(item["encoder_only_changed_selected_candidate"])
+        self.assertTrue(item["head_changed_selected_candidate"])
+        self.assertFalse(item["changed_selected_candidate"])
+        aggregate = summarize_geometry([
+            dict(stage=48, phase="transfer", arm="lineage_lora_gated",
+                 status="succeeded", selection_geometry=item),
+        ])["48/transfer/lineage_lora_gated"]
+        self.assertEqual(aggregate["cancelled_rank_changes"], 1)
+        self.assertEqual(aggregate["changed_top1_count"], 0)
+        self.assertEqual(aggregate["head_conditional_changed_top1_count"], 1)
+
+    def test_adapter_rank_claim_requires_original_frozen_baseline(self):
+        with self.assertRaisesRegex(ValueError, "unbound"):
+            inspect_selection(
+                [1.0, 9.0], [1.0, 9.0], ("A", "B"), 1,
+                encoder_adapted=True,
+            )
+        with self.assertRaisesRegex(ValueError, "unbound"):
+            inspect_selection(
+                [1.0, 9.0], [1.0, 9.0], ("A", "B"), 1,
+                original_frozen_scores=[8.0, 2.0], encoder_adapted=False,
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
