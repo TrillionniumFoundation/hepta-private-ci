@@ -293,6 +293,12 @@ def paired_future_score(
 
     frozen_logits = frozen.predict(features)
     trained_logits = trained.predict(features)
+    if (
+        frozen_logits.shape != y.shape or trained_logits.shape != y.shape
+        or not np.isfinite(frozen_logits).all()
+        or not np.isfinite(trained_logits).all()
+    ):
+        raise LearningContractError("nonfinite or misaligned future prediction logits")
     frozen_probabilities = _sigmoid(frozen_logits)
     trained_probabilities = _sigmoid(trained_logits)
     no_change_loss = float((-y * np.log(no_change) - (1 - y) * np.log1p(-no_change)).mean())
