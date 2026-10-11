@@ -24,6 +24,7 @@ from stem_frozen_retrieval_grid import (
     label_key,
     select_from_train,
     validate_unlabelled,
+    posthoc_all_registered_grid_ceiling,
 )
 
 SOURCE = "675970bb610c70bb0ec30a2dee05c025440510e6"
@@ -260,6 +261,13 @@ def replay_pinned(artifact, staged, output):
         }
         evaluated = evaluate_fixed(plan, unlabelled, eval_targets, calibration)
         write(output / "unseen-question-source-recall.json", evaluated)
+        # Hindsight ceiling runs ONLY after every unlabeled grid receipt was
+        # frozen AND the TRAIN-only selected policy was already written.
+        # The oracle does not return a policy to the retriever or Reader.
+        hindsight = posthoc_all_registered_grid_ceiling(
+            plan, unlabelled, eval_targets, calibration,
+        )
+        write(output / "posthoc-registered-grid-ceiling.json", hindsight)
         write(
             output / "experiment-manifest.json",
             dict(
@@ -277,6 +285,8 @@ def replay_pinned(artifact, staged, output):
                 original_pretrained_reader_calls=0,
                 original_pair_encoder_calls=0,
                 independent_test_label_used_for_training=False,
+                heldout_grid_hindsight_is_non_deployable=True,
+                posthoc_oracle_does_not_select_policy=True,
                 externally_reviewed_passage_entailment=False,
                 product_metric_improvement_claimed=False,
                 semantic_citation_precision=None,

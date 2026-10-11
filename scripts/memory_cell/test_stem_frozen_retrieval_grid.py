@@ -13,6 +13,7 @@ from stem_frozen_retrieval_grid import (
     validate_unlabelled,
 )
 from stem_frozen_retrieval_grid_trial import verify_pinned_replay_question
+from stem_frozen_retrieval_grid import posthoc_all_registered_grid_ceiling
 
 
 def fixture():
@@ -131,6 +132,65 @@ class FrozenGridTests(unittest.TestCase):
         self.assertEqual(result["results"]["test"]["window_rescues"], 7)
         self.assertEqual(result["results"]["test"]["retrieval_rescues"], 0)
         self.assertTrue(result["no_claim_of_original_Reader_QA_gain"])
+
+    def test_posthoc_grid_ceiling_is_not_a_heldout_selected_policy(self):
+        plan, rows, targets = fixture()
+        bound = validate_unlabelled(plan, rows)
+        chosen = select_from_train(
+            plan, bound,
+            {q: targets[q] for q in plan["questions"]["train"]},
+        )
+        heldout = {q: targets[q] for phase in PHASES[1:]
+                   for q in plan["questions"][phase]}
+        report = posthoc_all_registered_grid_ceiling(plan, bound, heldout, chosen)
+        self.assertEqual(report["planned_evaluation_questions"], 32)
+        self.assertEqual(report["by_phase"]["test"]["baseline_window_hits"], 1)
+        self.assertEqual(report["by_phase"]["test"]["any_registered_grid_window_hits"], 8)
+        self.assertEqual(report["by_phase"]["test"]["hindsight_grid_could_rescue_missing_window"], 7)
+        self.assertTrue(report["upper_bound_requires_forbidden_per_question_oracle"])
+        self.assertFalse(report["trained_or_tuned_on_evaluation_labels"])
+        self.assertFalse(report["task_answer_gain_proven"])
+
+    def test_posthoc_oracle_upper_bound_does_not_change_train_selected_baseline(self):
+        plan, rows, targets = fixture()
+        for row in rows:
+            if row["phase"] == "train":
+                row["window_source_ids"] = (
+                    ["source-distractor", "source-positive"]
+                    if row["policy"] == label_key(BASELINE)
+                    else ["source-distractor"]
+                )
+        bound = validate_unlabelled(plan, rows)
+        chosen = select_from_train(
+            plan, bound,
+            {q: targets[q] for q in plan["questions"]["train"]},
+        )
+        self.assertEqual(chosen["selected_policy"], label_key(BASELINE))
+        report = posthoc_all_registered_grid_ceiling(
+            plan, bound,
+            {q: targets[q] for phase in PHASES[1:]
+             for q in plan["questions"][phase]},
+            chosen,
+        )
+        self.assertEqual(report["by_phase"]["test"]["train_selected_window_hits"], 1)
+        self.assertEqual(report["by_phase"]["test"]["any_registered_grid_window_hits"], 8)
+        self.assertEqual(report["by_phase"]["test"]["hindsight_grid_could_rescue_missing_window"], 7)
+        self.assertEqual(report["fixed_train_selected_policy"], label_key(BASELINE))
+
+    def test_posthoc_grid_cannot_score_absent_or_leaked_evaluation_targets(self):
+        plan, rows, targets = fixture()
+        bound = validate_unlabelled(plan, rows)
+        chosen = select_from_train(
+            plan, bound,
+            {q: targets[q] for q in plan["questions"]["train"]},
+        )
+        with self.assertRaises(ValueError):
+            posthoc_all_registered_grid_ceiling(plan, bound, {}, chosen)
+        heldout = {q: targets[q] for phase in PHASES[1:]
+                   for q in plan["questions"][phase]}
+        bound[("test", "test-0", label_key(GRID[0]))]["read_targets_for_retrieval"] = True
+        with self.assertRaisesRegex(ValueError, "hindsight labels"):
+            posthoc_all_registered_grid_ceiling(plan, bound, heldout, chosen)
 
     def test_missing_duplicate_or_changed_index_is_rejected(self):
         for scenario in ("missing", "duplicate", "index", "pool", "family"):

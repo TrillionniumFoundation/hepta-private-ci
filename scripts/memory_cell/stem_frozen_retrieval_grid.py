@@ -229,3 +229,102 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
         independent_new_source_family_validation=False,
         production_accepted=False,
     )
+
+
+def posthoc_all_registered_grid_ceiling(plan, unlabelled, targets, selection):
+    """Hindsight *upper bound* across the already fixed 10-grid observations.
+
+    Held-out document-support labels are consulted ONLY after both the
+    candidate receipts and TRAIN-selected policy have been finalized.
+    This is NOT a deployable oracle, hyperparameter search, or Reader score.
+    No ID of a hindsight-winning eval policy is selected or returned.
+    """
+    eval_ids = [q for p in PHASES[1:] for q in plan["questions"][p]]
+    if (
+        set(targets) != set(eval_ids)
+        or len(eval_ids) != 32 or len(set(eval_ids)) != 32
+        or selection["train_only"] is not True
+        or selection["evaluation_labels_were_not_read_to_select"] is not True
+        or selection["selected_policy"] not in {label_key(g) for g in GRID}
+        or selection["baseline_policy"] != label_key(BASELINE)
+        or selection["train_cohort_sha256"] != digest(plan["questions"]["train"])
+        or selection["train_question_count"] != len(plan["questions"]["train"])
+    ):
+        raise ValueError("posthoc grid ceiling cannot change fixed TRAIN selection")
+    phases, decisions = {}, []
+    for phase in PHASES[1:]:
+        counts = defaultdict(int)
+        for qid in plan["questions"][phase]:
+            variants = [unlabelled[(phase, qid, label_key(config))] for config in GRID]
+            if any(row["source_family"] != plan["question_families"][qid]
+                   or row["read_targets_for_retrieval"] is not False
+                   for row in variants):
+                raise ValueError("hindsight labels were available during retrieval")
+            support = [annotate(row, targets[qid]) for row in variants]
+            if any((s is None) != (support[0] is None) for s in support):
+                raise ValueError("inconsistent native support across original grid")
+            baseline = support[GRID.index(BASELINE)]
+            selected = support[[label_key(c) for c in GRID].index(
+                selection["selected_policy"]
+            )]
+            counts["planned"] += 1
+            item = dict(
+                phase=phase,
+                question_id=qid,
+                source_family=plan["question_families"][qid],
+                native_document_support_resolved=baseline is not None,
+                original_document_hit=baseline[0] if baseline else None,
+                original_window_hit=baseline[1] if baseline else None,
+                train_selected_window_hit=selected[1] if selected else None,
+                any_fixed_grid_document_hit=(
+                    any(hit[0] for hit in support) if baseline else None
+                ),
+                any_fixed_grid_window_hit=(
+                    any(hit[1] for hit in support) if baseline else None
+                ),
+                label_exposed_only_after_all_800_candidate_receipts=True,
+                hindsight_config_used_for_policy=False,
+                independent_passage_entailment_reviewed=False,
+            )
+            if baseline is None:
+                counts["unscored_native_support"] += 1
+            else:
+                counts["scored_native_support"] += 1
+                counts["baseline_document_hits"] += int(baseline[0])
+                counts["baseline_window_hits"] += int(baseline[1])
+                counts["train_selected_window_hits"] += int(selected[1])
+                counts["any_registered_grid_document_hits"] += int(
+                    item["any_fixed_grid_document_hit"]
+                )
+                counts["any_registered_grid_window_hits"] += int(
+                    item["any_fixed_grid_window_hit"]
+                )
+                counts["hindsight_grid_could_rescue_missing_document"] += int(
+                    not baseline[0] and item["any_fixed_grid_document_hit"]
+                )
+                counts["hindsight_grid_could_rescue_missing_window"] += int(
+                    not baseline[1] and item["any_fixed_grid_window_hit"]
+                )
+                counts["retrieved_but_no_window_under_any_grid"] += int(
+                    item["any_fixed_grid_document_hit"]
+                    and not item["any_fixed_grid_window_hit"]
+                )
+            decisions.append(item)
+        if counts["planned"] != 8:
+            raise ValueError("fixed eight-question evaluation phase changed")
+        phases[phase] = dict(counts)
+    return dict(
+        schema="hepta.stem-frozen-retrieval-grid-hindsight-ceiling.v1",
+        fixed_grid_policy_count=len(GRID),
+        fixed_train_selected_policy=selection["selected_policy"],
+        original_baseline_policy=label_key(BASELINE),
+        planned_evaluation_questions=32,
+        trained_or_tuned_on_evaluation_labels=False,
+        upper_bound_requires_forbidden_per_question_oracle=True,
+        actual_frozen_reader_calls=0,
+        independent_source_window_entailment_reviewed=False,
+        task_answer_gain_proven=False,
+        by_phase=phases,
+        decisions=decisions,
+        production_accepted=False,
+    )
