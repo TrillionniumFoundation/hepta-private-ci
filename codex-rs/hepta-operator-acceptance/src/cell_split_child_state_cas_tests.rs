@@ -338,6 +338,43 @@ fn owner(
 }
 
 #[test]
+fn missing_frozen_migration_manifest_never_reinitializes_an_existing_owner() {
+    for committed in [false, true] {
+        for lose_input in [false, true] {
+            let root = private_root();
+            let (migration, anchor) = prepared();
+            let authority = ObservedAuthority::new(anchor);
+            let request = operation(&execution_plan());
+            let mut original = owner(root.path(), migration.clone(), authority.clone());
+            if committed {
+                original
+                    .commit_once(&request)
+                    .expect("persist original child batch");
+                assert!(original.read_committed(&request).unwrap().is_some());
+            }
+            drop(original);
+
+            let missing = root.path().join(if lose_input {
+                "migration-frozen-input.json"
+            } else {
+                "migration-frozen-plan.json"
+            });
+            fs::remove_file(&missing).expect("simulate manifest loss");
+            assert!(matches!(
+                CellSplitChildStateCasOwnerV1::open(
+                    root.path(),
+                    execution_plan(),
+                    migration.clone(),
+                    authority.clone(),
+                ),
+                Err(CellSplitChildStateCasErrorV1::Ambiguous)
+            ));
+            assert!(!missing.exists(), "lost manifest must not be regenerated");
+        }
+    }
+}
+
+#[test]
 fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
     let root = private_root();
     let (migration, anchor) = prepared();
