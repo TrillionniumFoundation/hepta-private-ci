@@ -53,7 +53,6 @@ fn require_same_selection_time(
     Ok(())
 }
 
-
 #[derive(Debug)]
 pub enum StemHeadArtifactError {
     InvalidPayload,
@@ -368,7 +367,10 @@ impl SelectedStemHeadBankReaderV1 {
         head_current: VerifiedCurrentRegistryViewV1,
         selection_now: u64,
     ) -> Result<
-        (super::NeuronBackendBatchReceipt, StemHeadBankReadObservationV1),
+        (
+            super::NeuronBackendBatchReceipt,
+            StemHeadBankReadObservationV1,
+        ),
         StemHeadArtifactError,
     > {
         if self.sealed {
@@ -400,7 +402,10 @@ impl SelectedStemHeadBankReaderV1 {
         head_current: VerifiedCurrentRegistryViewV1,
         selection_now: u64,
     ) -> Result<
-        (super::NeuronBackendBatchReceipt, StemHeadBankReadObservationV1),
+        (
+            super::NeuronBackendBatchReceipt,
+            StemHeadBankReadObservationV1,
+        ),
         StemHeadArtifactError,
     > {
         require_same_selection_time(use_request.selection_now, selection_now)?;
