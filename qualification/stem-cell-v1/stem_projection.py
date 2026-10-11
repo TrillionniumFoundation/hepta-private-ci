@@ -315,3 +315,67 @@ class ProjectedStemEngine:
         for key, ref in pending.items():
             self.cache.put(key, ref)
         return ProjectedBatch(observation, refs, cache_hits)
+
+PROJECTION_MANIFEST_SCHEMA = "hepta.stem.low-rank-projection.q24.v1"
+
+
+def save_shadow_projection(path, projection, *, training_lineage_digest):
+    """Write a never-overwrite shadow proposal; never writes Artifact CAS."""
+    import json
+    from pathlib import Path
+    if not _sha(training_lineage_digest):
+        raise ValueError("training lineage must be pinned")
+    projection.validate()
+    data = {
+        "schema": PROJECTION_MANIFEST_SCHEMA,
+        "shadow_only": True,
+        "production_authorized": False,
+        "training_lineage_digest": training_lineage_digest,
+        "projection_digest": projection.digest,
+    }
+    for name in projection.__dataclass_fields__:
+        value = getattr(projection, name)
+        data[name] = list(value) if isinstance(value, tuple) else value
+    encoded = (json.dumps(data, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
+    with Path(path).open("xb") as handle:
+        handle.write(encoded)
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def load_shadow_projection(path, *, expected_file_sha256):
+    """Fail-closed, exact-format JSON loader. Digest is NOT a signature."""
+    import json
+    from pathlib import Path
+    if not _sha(expected_file_sha256):
+        raise ValueError("untrusted projection file identity")
+    with Path(path).open("rb") as handle:
+        raw = handle.read(22_000_001)
+    if len(raw) > 22_000_000 or hashlib.sha256(raw).hexdigest() != expected_file_sha256:
+        raise ValueError("changed/oversize projection file")
+    def object_pairs_no_duplicates(pairs):
+        result = {}
+        for k, v in pairs:
+            if k in result:
+                raise ValueError("duplicate projection manifest key")
+            result[k] = v
+        return result
+    data = json.loads(raw, object_pairs_hook=object_pairs_no_duplicates)
+    required = set(LowRankProjectionQ24.__dataclass_fields__) | {
+        "schema", "shadow_only", "production_authorized",
+        "training_lineage_digest", "projection_digest",
+    }
+    if (type(data) is not dict or set(data) != required or
+            data.get("schema") != PROJECTION_MANIFEST_SCHEMA or
+            data.get("shadow_only") is not True or
+            data.get("production_authorized") is not False or
+            not _sha(data.get("training_lineage_digest")) or
+            not _sha(data.get("projection_digest"))):
+        raise ValueError("unknown or non-shadow projection manifest")
+    for key in ("a_q24", "b_q24", "bias_q24"):
+        if type(data[key]) is not list:
+            raise ValueError("invalid projection tensor serialization")
+        data[key] = tuple(data[key])
+    projector = LowRankProjectionQ24(**{k: data[k] for k in LowRankProjectionQ24.__dataclass_fields__})
+    if projector.digest != data["projection_digest"]:
+        raise ValueError("projector weights changed without revision")
+    return projector
