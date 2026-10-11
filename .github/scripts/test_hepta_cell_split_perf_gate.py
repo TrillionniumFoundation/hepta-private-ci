@@ -1,4 +1,5 @@
 """Regression tests for diagnostic-only CellSplit performance comparison."""
+
 import sys
 import unittest
 from pathlib import Path
@@ -88,7 +89,9 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         result = analyze(packet)
         self.assertFalse(result["comparative_gate_passed"])
         self.assertTrue(
-            any("4096: physical throughput" in reason for reason in result["violations"])
+            any(
+                "4096: physical throughput" in reason for reason in result["violations"]
+            )
         )
         self.assertFalse(result["production_activation_authorized"])
 
