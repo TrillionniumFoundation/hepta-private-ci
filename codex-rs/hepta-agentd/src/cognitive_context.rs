@@ -533,6 +533,12 @@ pub(crate) async fn revalidate_with_retrieval_context(
     body_generation: u64,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let CognitiveSnapshotProof {
+        snapshot_digest,
+        read_digest,
+        omitted_records,
+        items,
+    } = proof;
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),
