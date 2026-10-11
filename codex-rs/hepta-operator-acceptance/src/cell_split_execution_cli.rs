@@ -53,9 +53,10 @@ pub struct CellSplitExecutionCliOutcomeV1 {
     production_activation_authorized: bool,
 }
 
-/// Advance one committed step, or perform read-only verification of all four.
-/// The independent operator supplies the frozen configuration's exact SHA-256;
-/// no digest asserted inside the JSON is treated as an external trust anchor.
+/// Legacy operator-facing entry: only read-only transcript verification.
+/// Effectful advancement requires a separately admitted NDU/Selector choice
+/// through the Agentd product entry, plus live final-use checks at every owner.
+/// A pinned configuration SHA-256 identifies bytes but grants no authority.
 pub fn run_pinned_cell_split_execution_v1(
     action: &str,
     config_path: &Path,
@@ -364,8 +365,6 @@ mod tests {
 
         // Reopen may only consult the original owner. A missing socket cannot
         // turn a prepared intent into a second execution or terminal receipt.
-        // This is a fixture-only admitted call against absent, non-effectful
-        // sockets. Product calls must use independently verified selection.
         assert!(
             run_pinned_cell_split_execution_with_admission_v1(
                 "advance",
@@ -383,12 +382,8 @@ mod tests {
     fn legacy_operator_advance_denied_before_any_config_or_effect() {
         let dir = tempfile::tempdir().expect("tempdir");
         let missing = dir.path().join("absent-config.json");
-        let error = run_pinned_cell_split_execution_v1(
-            "advance",
-            &missing,
-            &"00".repeat(32),
-        )
-        .expect_err("a configuration hash is not an NDU/Selector grant");
+        let error = run_pinned_cell_split_execution_v1("advance", &missing, &"00".repeat(32))
+            .expect_err("a configuration hash is not an NDU/Selector grant");
         assert!(error.contains("independently admitted NDU/Selector"));
         assert!(!missing.exists());
         assert_eq!(
