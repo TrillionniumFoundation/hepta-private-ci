@@ -17,7 +17,8 @@ const MAX_OUTPUT: usize = 512;
 
 /// Read-only, Q24 affine Head: one hard-sigmoid gate for drive and prediction.
 /// Nonempty matrices are row-major [output_width, input_width]. An empty\n/// prediction or gate matrix means a canonical constant-zero matrix; only\n/// drive weights must be dense. Compact profiles count actual stored tensors.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CpuGatedHead {
     pub input_width: usize,
     pub output_width: usize,
