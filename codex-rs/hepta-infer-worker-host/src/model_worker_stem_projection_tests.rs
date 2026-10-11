@@ -31,7 +31,8 @@ fn binding() -> StemProjectionBindingV1 {
         preprocessor_digest: d('b'),
         runtime_digest: d('c'),
         source_input_digest: d('d'),
-        source_feature_digest: "e2738fbff6a632280fd48ed1022a3ea63a924111c75bc65260766e31b4f41327".to_string(),
+        source_feature_digest: "e2738fbff6a632280fd48ed1022a3ea63a924111c75bc65260766e31b4f41327"
+            .to_string(),
     }
 }
 
@@ -39,7 +40,10 @@ fn binding() -> StemProjectionBindingV1 {
 fn projection_parity_matches_python_golden_v1() {
     let projection = fixture();
     assert_eq!(
-        projection.digest().expect("pinned Q24 projector").to_string(),
+        projection
+            .digest()
+            .expect("pinned Q24 projector")
+            .to_string(),
         "451632b3946c1d3dd690eaf2007ad71ba00b50c49c8911854aa02be25a7838c3"
     );
     let input = [0.5_f32, -0.25_f32, 0.125_f32];
@@ -48,7 +52,9 @@ fn projection_parity_matches_python_golden_v1() {
         vec![Q24 / 2, -Q24 / 8]
     );
     assert_eq!(
-        stem_feature_f32_digest(&input, 3, "mean").expect("source digest").to_string(),
+        stem_feature_f32_digest(&input, 3, "mean")
+            .expect("source digest")
+            .to_string(),
         binding().source_feature_digest
     );
     let result = project_bound_f32(&projection, &binding(), &input, 3)
@@ -84,7 +90,8 @@ fn low_rank_projection_can_read_last_coordinate_beyond_512() {
 fn scope_generation_frontier_and_projection_revision_change_bound_identity() {
     let source = [0.5_f32, -0.25_f32, 0.125_f32];
     let base = project_bound_f32(&fixture(), &binding(), &source, 3)
-        .expect("baseline").projected_input_digest;
+        .expect("baseline")
+        .projected_input_digest;
     let mut changed = binding();
     changed.scope_digest = d('9');
     assert_ne!(
@@ -144,10 +151,7 @@ fn rejects_untrusted_input_digest_schema_and_unsafe_numeric() {
         fixture().project_float32(&[f32::NAN, 0.0, 0.0]),
         Err(Error::FeatureLimit)
     );
-    assert_eq!(
-        fixture().project_q24(&[0, 0]),
-        Err(Error::FeatureLimit)
-    );
+    assert_eq!(fixture().project_q24(&[0, 0]), Err(Error::FeatureLimit));
 }
 
 #[test]
@@ -157,8 +161,14 @@ fn ties_even_and_positive_negative_overflow_fail_closed() {
     assert_eq!(q48_round_ties_even(3 * q / 2), Ok(2));
     assert_eq!(q48_round_ties_even(-q / 2), Ok(0));
     assert_eq!(q48_round_ties_even(-3 * q / 2), Ok(-2));
-    assert_eq!(q48_round_ties_even(9 * q * q), Err(Error::FeatureOutputMismatch));
-    assert_eq!(q48_round_ties_even(-9 * q * q), Err(Error::FeatureOutputMismatch));
+    assert_eq!(
+        q48_round_ties_even(9 * q * q),
+        Err(Error::FeatureOutputMismatch)
+    );
+    assert_eq!(
+        q48_round_ties_even(-9 * q * q),
+        Err(Error::FeatureOutputMismatch)
+    );
 }
 
 #[test]
@@ -192,7 +202,10 @@ fn native_neuron_request_must_consume_exact_projected_digest_and_vector() {
     let payload = canonical_neuron_feature_payload_digest(&request);
     request.authorization.payload_digest = payload.clone();
     request.authorization.lease_payload_digest = payload;
-    assert_eq!(verify_neuron_projected_request(&binding(), &bound, &request, 5), Ok(()));
+    assert_eq!(
+        verify_neuron_projected_request(&binding(), &bound, &request, 5),
+        Ok(())
+    );
     assert_eq!(
         verify_neuron_projected_request(&binding(), &bound, &request, 6),
         Err(Error::FeatureContract)
