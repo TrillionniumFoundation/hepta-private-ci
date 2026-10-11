@@ -126,7 +126,12 @@ impl CpuGatedHead {
         for row in 0..self.output_width {
             let gate_pre = self.dot(&self.gate_weights_q24, self.gate_bias_q24[row], row, input)?;
             // Hard sigmoid: clamp((gate_pre + 1) / 2, 0, 1).
-            let gate = ((gate_pre as i128 + Q).clamp(0, 2 * Q)) / 2;
+            // The division itself is a Q24 quantization boundary: apply
+            // ties-to-even rather than truncation, including for odd negative
+            // gate_pre values. Otherwise a Cell Head can drift by one Q24 LSB.
+            let numerator = (gate_pre as i128 + Q).clamp(0, 2 * Q);
+            let half = numerator / 2;
+            let gate = half + i128::from(numerator % 2 != 0 && half % 2 != 0);
             let d = self.dot(
                 &self.drive_weights_q24,
                 self.drive_bias_q24[row],
