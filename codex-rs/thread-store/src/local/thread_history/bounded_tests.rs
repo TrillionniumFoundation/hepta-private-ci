@@ -121,3 +121,145 @@ async fn bounded_history_shares_row_budget_across_turns_and_rejects_pagination_b
         })
     ));
 }
+
+#[tokio::test]
+async fn bounded_history_counts_turn_errors_and_refuses_legacy_before_rollout_read() {
+    let (_home, store, thread_id) = store_with_mode(ThreadHistoryMode::Paginated).await;
+    let db = history_db(&store).await;
+    let error = format!(
+        r#"{{"message":"{}","codexErrorInfo":null,"additionalDetails":null}}"#,
+        "x".repeat(300_000)
+    );
+    insert_turn(
+        db,
+        thread_id,
+        "t",
+        /*rollout_ordinal*/ 1,
+        "failed",
+        Some(&error),
+        /*first_user_item_id*/ None,
+        /*final_agent_item_id*/ None,
+    )
+    .await;
+    let params = turn_params(
+        thread_id,
+        /*cursor*/ None,
+        /*page_size*/ 1,
+        SortDirection::Desc,
+        StoredTurnItemsView::NotLoaded,
+    );
+    assert!(matches!(
+        store.list_full_turns_bounded(params).await,
+        Err(ThreadStoreError::HistoryReadUnavailable {
+            reason: "budgetExceeded"
+        })
+    ));
+    // This fixture has no rollout file. A legacy fallback would fail opening it.
+    let (_home, store, thread_id) = store_with_mode(ThreadHistoryMode::Legacy).await;
+    let params = turn_params(
+        thread_id,
+        /*cursor*/ None,
+        /*page_size*/ 1,
+        SortDirection::Desc,
+        StoredTurnItemsView::NotLoaded,
+    );
+    assert!(matches!(
+        store.list_full_turns_bounded(params).await,
+        Err(ThreadStoreError::HistoryReadUnavailable {
+            reason: "unsupportedHistory"
+        })
+    ));
+}
+
+#[tokio::test]
+async fn bounded_history_rejects_compressed_and_oversized_headers_without_replay() {
+    let (home, store, thread_id) = store_with_mode(ThreadHistoryMode::Paginated).await;
+    let path = rollout_path(home.path(), thread_id);
+    let compressed = path.with_extension("jsonl.zst");
+    fs::write(
+        &compressed,
+        zstd::stream::encode_all(
+            fs::read(&path).expect("header").as_slice(),
+            /*level*/ 0,
+        )
+        .expect("compress"),
+    )
+    .expect("compressed file");
+    fs::remove_file(&path).expect("retire plain representation");
+    let params = turn_params(
+        thread_id,
+        /*cursor*/ None,
+        /*page_size*/ 1,
+        SortDirection::Desc,
+        StoredTurnItemsView::NotLoaded,
+    );
+    assert!(matches!(
+        store.list_full_turns_bounded(params.clone()).await,
+        Err(ThreadStoreError::HistoryReadUnavailable {
+            reason: "unsupportedHistory"
+        })
+    ));
+    fs::write(&path, vec![b'x'; 64 * 1024 + 1]).expect("oversized first line");
+    assert!(matches!(
+        store.list_full_turns_bounded(params).await,
+        Err(ThreadStoreError::HistoryReadUnavailable {
+            reason: "budgetExceeded"
+        })
+    ));
+}
+
+#[tokio::test]
+async fn bounded_history_accepts_exact_byte_boundary_but_rejects_one_more_byte() {
+    let (_home, store, thread_id) = store_with_mode(ThreadHistoryMode::Paginated).await;
+    let db = history_db(&store).await;
+    insert_turn(
+        db,
+        thread_id,
+        "t",
+        /*rollout_ordinal*/ 1,
+        "completed",
+        /*error_json*/ None,
+        /*first_user_item_id*/ None,
+        /*final_agent_item_id*/ None,
+    )
+    .await;
+    for ordinal in 2..18 {
+        let id = format!("i-{ordinal}");
+        insert_item(db, thread_id, "t", &id, ordinal).await;
+        // The single turn consumes 1 + 9 bytes. Include IDs in each exact row budget.
+        let bytes = 256 * 1024 - 1 - id.len() - if ordinal == 17 { 10 } else { 0 };
+        sqlx::query("UPDATE thread_items SET item_json = ? WHERE item_id = ?")
+            .bind("x".repeat(bytes))
+            .bind(id)
+            .execute(db)
+            .await
+            .expect("boundary payload");
+    }
+    let params = turn_params(
+        thread_id,
+        /*cursor*/ None,
+        /*page_size*/ 1,
+        SortDirection::Desc,
+        StoredTurnItemsView::NotLoaded,
+    );
+    assert_eq!(
+        store
+            .list_full_turns_bounded(params.clone())
+            .await
+            .expect("exact boundary")
+            .turns[0]
+            .1
+            .len(),
+        16
+    );
+    sqlx::query("UPDATE thread_items SET item_json = item_json || 'x' WHERE item_id = 'i-17'")
+        .execute(db)
+        .await
+        .expect("one more byte");
+    assert!(matches!(
+        store.list_full_turns_bounded(params).await,
+        Err(ThreadStoreError::HistoryReadUnavailable {
+            reason: "budgetExceeded"
+        })
+    ));
+}
