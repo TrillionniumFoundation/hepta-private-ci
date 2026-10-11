@@ -55,9 +55,10 @@ class ExactReaderCache:
                 or not isinstance(raw, str) or not raw.strip()
             ):
                 raise ValueError("Reader receipt detached from canonical request")
-            self.succeeded += 1
+            receipt = dict(receipt, observable_query=asdict(query), canonical_request_digest=key)
             retained = (raw, deepcopy(receipt), record_key)
             size = len(json.dumps(retained, ensure_ascii=False, allow_nan=False).encode())
+            self.succeeded += 1
             if len(self.entries) < self.maximum_entries and self.bytes + size <= self.maximum_bytes:
                 self.entries[key] = retained
                 self.bytes += size

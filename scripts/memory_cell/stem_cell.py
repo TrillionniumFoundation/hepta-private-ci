@@ -126,8 +126,10 @@ class StemHead(nn.Module):
     def fit(self, rows, cut, *, revoked, steps=192, pair_ceiling=1000000, lr=0.03):
         """Continue this head; validate all rows before any mutation.
 
-        The pair ceiling is cumulative, including earlier fit calls. Native
-        source-support labels are weak supervision, not entailment verdicts.
+        The pair ceiling and cyclic sample cursor survive artifact reload.
+        Changing the admitted curriculum is explicit: sort the new row set and
+        continue at cumulative_steps modulo its length. Native source-support
+        labels are weak supervision, not entailment verdicts.
         """
         if (
             self.quarantined
@@ -170,7 +172,7 @@ class StemHead(nn.Module):
         parameters = list(self.parameters())
         optimizer = torch.optim.SGD(parameters, lr=lr) if parameters else None
         ordered = sorted(rows, key=lambda r: (r.features.family, r.features.question_id))
-        batches = [ordered[i % len(ordered)] for i in range(steps)]
+        batches = [ordered[(self.steps + i) % len(ordered)] for i in range(steps)]
         if self.kind == "prototype":
             batches = [r for r in ordered if r.features.question_id not in self.seen]
         no_new_prototypes = self.kind == "prototype" and not batches
@@ -222,6 +224,7 @@ class StemHead(nn.Module):
             cumulative_pairs=self.pair_evaluations,
             cumulative_unique_examples=len(self.seen),
             pair_ceiling=pair_ceiling,
+            sample_cursor=self.steps % len(ordered),
             no_update_reason="no-new-prototype-examples" if no_new_prototypes else None,
             loss_first=None if not losses else losses[0],
             loss_last=None if not losses else losses[-1],
