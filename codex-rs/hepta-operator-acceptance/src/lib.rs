@@ -124,6 +124,7 @@ pub use cell_split_execution_owner::CellSplitExecutionStepV1;
 pub use cell_split_execution_owner::CellSplitExecutionTranscriptV1;
 pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
 pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
+pub use cell_split_execution_owner::verify_cell_split_execution_transcript_signatures_v1;
 #[cfg(unix)]
 pub use cell_split_supervisor_fence::CellSplitSupervisorCommitV1;
 #[cfg(unix)]
