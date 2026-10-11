@@ -11,6 +11,7 @@ use crate::CellSplitExecutionIntentV1;
 use crate::CellSplitExecutionPlanV1;
 use crate::CellSplitExecutionStepV1;
 use crate::CellSplitOwnedEffectV1;
+use crate::durable::SIDECAR_LOCK_FILE;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
@@ -177,6 +178,15 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
             return Err(CellSplitSupervisorFenceErrorV1::Invalid);
         }
         let root = secure_root(root, "Supervisor generation owner root")?;
+        // An existing sidecar means this owner namespace has been initialized.
+        // If its frozen binding disappeared, silently rewriting it would let
+        // an interrupted or already-retired handoff be rebound on recovery.
+        // The original independent Supervisor journal must be reconciled.
+        let initialized_before = match fs::symlink_metadata(root.join(SIDECAR_LOCK_FILE)) {
+            Ok(_) => true,
+            Err(error) if error.kind() == ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
         let lock = lock_sidecar(&root)?;
         let frozen = canonical_json(&(plan.clone(), binding.clone()))?;
         match fs::symlink_metadata(root.join(FROZEN)) {
@@ -185,6 +195,9 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
             }
             Ok(_) => {}
             Err(error) if error.kind() == ErrorKind::NotFound => {
+                if initialized_before {
+                    return Err(CellSplitSupervisorFenceErrorV1::Invalid);
+                }
                 write_private_new(&root.join(FROZEN), &frozen)?;
             }
             Err(error) => return Err(error.into()),
@@ -304,7 +317,7 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
         let live = self.checked_live()?;
         match (original, live.phase) {
             (Some(receipt), CellSplitSupervisorPhaseV1::Retired)
-                if live.current_revision >= receipt.committed_revision =>
+                if live.current_revision == receipt.committed_revision =>
             {
                 Ok(Some(CellSplitOwnedEffectV1 {
                     owner_sequence: receipt.committed_revision,
