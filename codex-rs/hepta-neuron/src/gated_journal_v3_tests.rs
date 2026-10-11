@@ -2,13 +2,14 @@ use super::*;
 use std::fs;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_types::Generation;
 use crate::gated_sparse_v3::TemporalGateV3;
-use crate::population_v2::{
-    ActivationPopulationV2, PopulationSparseConfigV2, TemporalProjectionEdgeV2,
-};
+use crate::population_v2::ActivationPopulationV2;
+use crate::population_v2::PopulationSparseConfigV2;
+use crate::population_v2::TemporalProjectionEdgeV2;
 
 const Q: i64 = 1 << 24;
 static NEXT: AtomicU64 = AtomicU64::new(0);
