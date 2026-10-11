@@ -172,6 +172,48 @@ fn plan() -> CellSplitExecutionPlanV1 {
 }
 
 #[test]
+fn cns_predecessor_bridge_rejects_wrong_signer_receipt_and_plan() {
+    let frozen = plan();
+    let digest = frozen.digest().expect("frozen plan");
+    let intent = super::make_intent(
+        &frozen,
+        &digest,
+        super::CellSplitExecutionStepV1::CnsRouteCutover,
+        &"ab".repeat(32),
+    );
+    let original = FixturePort::receipt(&intent);
+    let key = signing_key(2).verifying_key();
+    super::verify_cell_split_cns_step_receipt_v1(&frozen, &original, &key)
+        .expect("signed CNS owner predecessor");
+    assert_eq!(
+        super::cell_split_execution_receipt_digest_v1(&original).expect("outer digest"),
+        original.receipt_digest
+    );
+    assert_ne!(
+        original.output_digest, original.receipt_digest,
+        "the original CNS payload and signed coordinator receipt differ"
+    );
+
+    assert!(
+        super::verify_cell_split_cns_step_receipt_v1(
+            &frozen,
+            &original,
+            &signing_key(0).verifying_key(),
+        )
+        .is_err()
+    );
+    let mut changed = original.clone();
+    changed.receipt_digest = "cd".repeat(32);
+    assert!(super::verify_cell_split_cns_step_receipt_v1(&frozen, &changed, &key).is_err());
+    changed = original.clone();
+    changed.owner_receipt_bytes[0] ^= 1;
+    assert!(super::verify_cell_split_cns_step_receipt_v1(&frozen, &changed, &key).is_err());
+    changed = original.clone();
+    changed.intent.owner_id = frozen.owner_ids[3].clone();
+    assert!(super::verify_cell_split_cns_step_receipt_v1(&frozen, &changed, &key).is_err());
+}
+
+#[test]
 fn transcript_only_reopen_cannot_dispatch_an_uncommitted_effect() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
