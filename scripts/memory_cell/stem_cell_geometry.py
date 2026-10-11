@@ -10,6 +10,7 @@ import statistics
 from collections import defaultdict
 
 from native import digest
+from stem_rank_scale import minimum_residual_flip_scale
 
 
 def _rank(scores, ids):
@@ -75,6 +76,10 @@ def inspect_selection(
     delta_head = _max_difference(encoder_scores, head_scores)
     delta_joint = _max_difference(original, head_scores)
     frozen_gap = _gap(original, frozen_rank)
+    # No task labels or calibrating optimization enter these diagnostics.
+    encoder_scale = minimum_residual_flip_scale(original, encoder_scores, candidate_ids)
+    head_scale = minimum_residual_flip_scale(encoder_scores, head_scores, candidate_ids)
+    joint_scale = minimum_residual_flip_scale(original, head_scores, candidate_ids)
     return dict(
         schema="hepta.stem-selection-geometry.v2",
         candidate_count=len(candidate_ids),
@@ -99,6 +104,10 @@ def inspect_selection(
             head_winner != encoder_winner
         ),
         changed_selected_candidate=head_winner != frozen_winner,
+        encoder_only_flip_scale_infimum=encoder_scale,
+        head_conditional_flip_scale_infimum=head_scale,
+        joint_flip_scale_infimum=joint_scale,
+        residual_scaling_is_not_a_validated_policy=True,
         frozen_top1_gap=frozen_gap,
         encoder_only_top1_gap=_gap(encoder_scores, encoder_rank),
         learned_top1_gap=_gap(head_scores, head_rank),
@@ -155,6 +164,16 @@ def summarize_geometry(attempts):
             ),
             nonflipped_dominated_margins=sum(
                 r["gap_exceeds_twice_max_residual"] is True for r in rankable
+            ),
+            joint_direction_can_flip_count=sum(
+                r["joint_flip_scale_infimum"] is not None for r in rankable
+            ),
+            joint_direction_cannot_flip_count=sum(
+                r["joint_flip_scale_infimum"] is None for r in rankable
+            ),
+            joint_requires_scale_above_one_count=sum(
+                r["joint_flip_scale_infimum"] is not None
+                and r["joint_flip_scale_infimum"] > 1 for r in rankable
             ),
             median_max_abs_score_delta=(
                 statistics.median(r["max_abs_score_delta"] for r in rows)
