@@ -241,6 +241,17 @@ impl GatedSparseJournalV3 {
             .and_then(|seq| usize::try_from(seq).ok())
             && index < self.entries.len()
         {
+            let historical_predecessor = if index == 0 {
+                Digest32::ZERO
+            } else {
+                self.entries[index - 1]
+            };
+            if historical_predecessor != expected_predecessor {
+                // Early O(1) rejection for a stale/wrong expected checkpoint.
+                // The expensive bounded replay is reserved for a predecessor
+                // that could actually identify the submitted historical tick.
+                return Err(GatedJournalErrorV3::Conflict);
+            }
             // Exact duplicate retries after later commits still return the
             // originally committed receipt. Re-read and re-execute every
             // historical prefix tick, checking every complete frame and
