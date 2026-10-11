@@ -234,6 +234,13 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalFinalizerV1<
             .transpose()
     }
 
+    /// Source binding independently checked against the durable writer
+    /// journal. External adapters may inspect it, but cannot mutate it.
+    #[must_use]
+    pub fn binding(&self) -> &CellSplitFinalizationBindingV1 {
+        &self.binding
+    }
+
     #[must_use]
     pub fn checkpoint(&self) -> &WriterHandoffCheckpointV1 {
         self.journal.checkpoint()
