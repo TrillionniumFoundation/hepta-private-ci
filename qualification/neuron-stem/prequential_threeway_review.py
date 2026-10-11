@@ -130,6 +130,8 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
         if (type(record.get("local_update_steps_after_prediction")) is not int or
                 record["local_update_steps_after_prediction"] != updates_per_event):
             raise ValueError("local Cell update steps disagree with frozen trial protocol")
+        if updates_per_event == 0 and record["postupdate_head_digest"] != prec["head_digest"]:
+            raise ValueError("no-update Cell must not claim changing Head weights")
         classes = len(row["options"])
         valid_probs(record["trained_probabilities"], classes)
         valid_probs(record["frozen_same_initialization_probabilities"], classes)
