@@ -27,6 +27,7 @@ EVAL_ARMS = (
     "hybrid_k4",
     "hybrid_k6",
     "hybrid_k4_reversed",
+    "single_hop",
     "entity_time",
     "organized",
     "program_support",
@@ -84,6 +85,7 @@ def eval_selections(case, chosen_k):
         raise ValueError("invalid evaluator policy or candidate census")
     controls = case["controls"]
     if not {
+        "single_hop",
         "entity_time",
         "organized",
         "program_support",
@@ -98,6 +100,7 @@ def eval_selections(case, chosen_k):
         "hybrid_k4": chosen_prefix(candidates, 4),
         "hybrid_k6": chosen_prefix(candidates, 6),
         "hybrid_k4_reversed": tuple(reversed(chosen_prefix(candidates, 4))),
+        "single_hop": tuple(controls["single_hop"]["selected"]),
         "entity_time": tuple(controls["entity_time"]["selected"]),
         "organized": tuple(controls["organized"]["selected"]),
         "program_support": tuple(controls["program_support"]["selected"]),
@@ -258,6 +261,15 @@ def prepare(inputs, plan_dir, encoder_dir, output, *, plan_sha):
         plan_sha256=file_sha(output / "calibration-plan.json"),
         calibration_only=True,
     )
+
+
+def freeze_single_hop(cases, inputs, originals):
+    """Pre-register source-only first-hop controls before loading the reader."""
+    from strong_rag_hop_control import derive_single_hop
+
+    collection = read(inputs / "collection.json", HISTORIC_COLLECTION_SHA)
+    public = read(inputs / "questions.json", collection["files"]["questions.json"])
+    return derive_single_hop(cases, public, originals)
 
 
 def _bundle(query, selected, originals, *, frontier, arm):
@@ -607,6 +619,9 @@ def evaluate(
     ):
         raise ValueError("policy not frozen or not bound to original test source")
     locked, originals = preflight(plan_dir, inputs, plan_sha)
+    active_cases, first_hop_plan = freeze_single_hop(
+        locked["cases"], inputs, originals
+    )
     reader, stage, inventory = _reader(model_dir, stage_sha)
     if inventory["inventory_digest"] != locked_policy["reader_identity"]:
         raise ValueError("different reader between calibration and evaluation")
@@ -629,16 +644,18 @@ def evaluate(
             production_accepted=False,
         ),
     )
+    # Seal first-hop sources before any generated test answer exists.
+    dump(output / "single-hop-control.json", first_hop_plan)
     selections = {
         case["query"]["identity"]: eval_selections(case, locked_policy["selected_k"])
-        for case in locked["cases"]
+        for case in active_cases
     }
     if len(selections) != len(locked["cases"]):
         raise ValueError("duplicate evaluation task")
     started = time.perf_counter()
     rows = _journal_answers(
         reader,
-        locked["cases"],
+        active_cases,
         originals,
         EVAL_ARMS,
         lambda case, arm: selections[case["query"]["identity"]][arm],
@@ -658,6 +675,8 @@ def evaluate(
     pairs = {
         "selected_minus_hybrid4": paired(group, "hybrid_k4", "selected_k"),
         "organized_minus_selected": paired(group, "selected_k", "organized"),
+        "single_hop_minus_hybrid4": paired(group, "hybrid_k4", "single_hop"),
+        "entity_time_minus_single_hop": paired(group, "single_hop", "entity_time"),
         "entity_time_minus_hybrid4": paired(group, "hybrid_k4", "entity_time"),
         "organized_minus_entity_time": paired(group, "entity_time", "organized"),
         "organized_minus_hybrid4": paired(group, "hybrid_k4", "organized"),
@@ -674,6 +693,7 @@ def evaluate(
         success_by_arm=stats,
         paired_contrasts=pairs,
         same_prompt_consistency=same_prompt_consistency,
+        single_hop_control_sha256=file_sha(output / "single-hop-control.json"),
         source_and_index_costs=locked["frozen"]["costs"],
         extraction_costs=locked["extraction"],
         retained_original_source_bytes=sum(

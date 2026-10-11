@@ -71,7 +71,7 @@ model-learning benefit is credited.
 
 **Phase 3 — distinct-process evaluation.** With frozen `frozen-policy.json`
 (exact model identity, source/plan pins and earlier generation hashes), perform
-eight arms on every original eight-case evaluation question:
+nine arms on every original eight-case evaluation question:
 
 | Arm | What it isolates |
 | --- | --- |
@@ -79,8 +79,9 @@ eight arms on every original eight-case evaluation question:
 | `hybrid_k4` | Historical fixed RAG top-four, newly generated in this run |
 | `hybrid_k6` | More retrieved evidence and possible extra distractors |
 | `hybrid_k4_reversed` | Same four exact bytes, reverse presentation order |
-| `entity_time` | Entity/revision filtering without relation completion |
-| `organized` | Existing deterministic entity/revision/bridge selection |
+| `single_hop` | Only the first entity/attribute edge; no subsequent traversal or supersedes pruning |
+| `entity_time` | Full entity/attribute path traversal, without supersedes pruning |
+| `organized` | Full path traversal plus explicit supersedes correction pruning |
 | `program_support` | Diagnostic upper bound, NOT a human-certified oracle |
 | `empty` | Zero-evidence control under the same reader |
 
@@ -90,7 +91,7 @@ The no-evidence and program-support arms are included to make reader failures
 interpretable; oracle-derived labels **never** choose the RAG k or its ranking.
 No source bytes are truncated. A context overflow is a retained failed attempt,
 not a silently removed hard example. Final answer labels are parsed only after
-all eight-arm raw outputs are durable; `preflight` may hash the file for identity
+all nine-arm raw outputs are durable; `preflight` may hash the file for identity
 beforehand but does not interpret its target contents. An answer without the
 specified narrow identifier grammar is a strict failure. Program answers are
 checked by actual bounded worker execution. No generated citation is repaired.
@@ -260,33 +261,45 @@ Previously queued PR-triggered runs are not retroactively cancelled, renamed,
 or counted as successful push-triggered experiments. Running code checks alone
 establishes no Qwen task accuracy, parameter advantage, semantic judgement,
 future observation, or production acceptance. Only a completed exact-source
-40-answer calibration, 56-answer evaluation and separate artifact replay can
+40-answer calibration, 72-answer evaluation and separate artifact replay can
 supply the next bounded result.
 
-## Simple filtering versus relation-completion control
+## Actual single-hop versus multi-hop versus correction controls
 
-The pinned historical Qwen reader had strict task successes of **8/8** for
-`entity_time` and **8/8** for `organized`, with the same ordered original
-evidence selected in 6/8 cases. For SmolLM2 the corresponding success counts
-were 2/8 and 3/8. These are authored previously exposed cases, not
-independently reviewed source families or future-window samples.
+The original `EventProjection.select` implementation iterates through
+**all attributes in `lookup.path` in BOTH `entity_time` and `organized`**.
+The only algorithmic difference is that `organized` removes explicitly
+superseded events at each path step. Consequently, the original
+`organized_minus_entity_time` comparison is a *correction/conflict pruning*
+contrast, NOT evidence of extra relationship traversal.
 
-To isolate the actual incremental effect of relation completion, the fixed
-`entity_time` arm now joins the SAME pretrained reader/prompt/decoder/tool
-controls in the new model evaluation. It uses the original selected evidence
-IDs from the frozen plan, never original test gold answers for selection.
-All original evidence bytes remain unchanged. This changes the test-stage
-census from **8 x 7 = 56** to **8 x 8 = 64** real answer executions, while
-calibration remains **8 x 5 = 40** model calls. This addition supersedes the
-prior 56-call proposal; incomplete historical runs are not rewritten.
+A new `single_hop` test arm selects only the first attribute using the
+same source `EventProjection` with `mode=entity_time`, the same retrieved
+candidate pool, valid-time cut and 4-source limit. It does not read target
+answers or program-support labels. Before loading Qwen, the evaluation
+process independently re-derives the historical full-path entity/time and
+organized source lists from the original frozen public question declarations,
+and refuses any drift. It then seals `single-hop-control.json` **before**
+the answer journal. The read-only job independently rebuilds the exact same
+manifest from the pinned original inputs and rejects altered bytes/decisions.
 
-The independent artifact verifier repeats every original-source, prompt,
-citation, task-success and procedure check for this arm, and recomputes
-`entity_time_minus_hybrid4` and `organized_minus_entity_time` contrasts.
-Matching source selections must preserve prompt identity; any answer drift
-counts as repeatability instability, not a graph benefit. A nominal task
-improvement on eight authored cases is still neither statistically independent
-superiority nor production admission.
+In the frozen eight-task authored population, four composition/procedure
+questions gain one source by advancing from single-hop to full path;
+two correction questions differ between unpruned and explicitly corrected
+full path; the two new-fact questions need neither. Those are **source-set
+changes**, not reader success metrics. The actual new census is
+**8 x 5 = 40** calibration generations and **8 x 9 = 72** development
+test generations. The previous 56- and 64-answer designs remain historical
+plans; neither is relabelled as completed inference.
+
+The preregistered task comparisons now distinguish
+`entity_time_minus_single_hop` (relation traversal) from
+`organized_minus_entity_time` (explicit correction pruning), alongside
+strong RAG and same-prompt controls. All selected snippets retain original
+source content and independent citation/replay checks. These are public
+authored development tasks, not independent future observations, semantic
+sufficiency certificates, statistically reliable superiority or production
+qualification.
 
 ## Exact-commit concurrency correction (2026-10-11)
 

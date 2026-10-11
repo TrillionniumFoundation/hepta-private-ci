@@ -29,6 +29,7 @@ from strong_rag_trial import (
     choose_k,
     chosen_prefix,
     eval_selections,
+    freeze_single_hop,
     file_sha,
     paired,
 )
@@ -279,7 +280,14 @@ def audit(archive, original, *, expected_commit):
     ):
         raise ValueError("calibration/evaluation lineage, reader or source drift")
     calib_cases = cal_plan["cases"]
-    test_cases = plan["cases"]
+    # The reviewer independently rebuilds first-hop controls from the fixed
+    # public task declarations. Answers and test labels are NOT selector inputs.
+    test_cases, first_hop_proof = freeze_single_hop(
+        plan["cases"], original / "observations", documents
+    )
+    archived_hop = _json_file(archive / "evaluation/single-hop-control.json")
+    if archived_hop != first_hop_proof:
+        raise ValueError("published first-hop selection differs from original source")
     calib_ids = [row["query"]["identity"] for row in calib_cases]
     test_ids = [row["query"]["identity"] for row in test_cases]
     if (
@@ -363,6 +371,12 @@ def audit(archive, original, *, expected_commit):
             paired_results = {
                 "selected_minus_hybrid4": paired(groups, "hybrid_k4", "selected_k"),
                 "organized_minus_selected": paired(groups, "selected_k", "organized"),
+                "single_hop_minus_hybrid4": paired(
+                    groups, "hybrid_k4", "single_hop"
+                ),
+                "entity_time_minus_single_hop": paired(
+                    groups, "single_hop", "entity_time"
+                ),
                 "entity_time_minus_hybrid4": paired(
                     groups, "hybrid_k4", "entity_time"
                 ),
@@ -382,6 +396,9 @@ def audit(archive, original, *, expected_commit):
                 or report["same_prompt_consistency"] != same_prompt_consistency
                 or report["paired_contrasts"] != paired_results
                 or report["selected_k"] != frozen["selected_k"]
+                or report["single_hop_control_sha256"] != file_sha(
+                    archive / "evaluation/single-hop-control.json"
+                )
                 or report["raw_answers_sha256"] != file_sha(path / "raw-answers.jsonl")
                 or report["production_accepted"] is not False
             ):
@@ -393,6 +410,7 @@ def audit(archive, original, *, expected_commit):
                     "selected_k",
                     "hybrid_k6",
                     "hybrid_k4_reversed",
+                    "single_hop",
                     "entity_time",
                     "organized",
                     "program_support",
