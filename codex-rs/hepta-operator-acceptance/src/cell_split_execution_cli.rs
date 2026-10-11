@@ -97,9 +97,12 @@ pub fn run_pinned_cell_split_execution_v1(
         Duration::from_millis(config.timeout_millis),
     )
     .map_err(|error| error.to_string())?;
-    let mut owner =
+    let mut owner = if selected_action == "transcript" {
+        CellSplitExecutionOwnerV1::open_existing(&config.execution_root, config.plan, trust, port)
+    } else {
         CellSplitExecutionOwnerV1::open(&config.execution_root, config.plan, trust, port)
-            .map_err(|error| error.to_string())?;
+    }
+    .map_err(|error| error.to_string())?;
     let (receipt, transcript) = match selected_action {
         "advance" => (owner.advance().map_err(|error| error.to_string())?, None),
         _ => (
@@ -275,14 +278,17 @@ mod tests {
         std::fs::set_permissions(&config_path, std::fs::Permissions::from_mode(0o600))
             .expect("private config");
 
+        assert!(run_pinned_cell_split_execution_v1("transcript", &config_path, &pin).is_err());
+        assert!(!execution_root.join("cell-split-frozen-plan.json").exists());
+        assert!(!execution_root.join(".operator-acceptance.lock").exists());
+
+        assert!(run_pinned_cell_split_execution_v1("advance", &config_path, &pin).is_err());
         let read_only = run_pinned_cell_split_execution_v1("transcript", &config_path, &pin)
-            .expect("empty read-only transcript");
+            .expect("read-only reopen of prepared intent");
         assert_eq!(read_only.completed_steps, 0);
         assert!(!read_only.complete);
         assert!(read_only.transcript.is_none());
         assert!(!read_only.production_activation_authorized);
-
-        assert!(run_pinned_cell_split_execution_v1("advance", &config_path, &pin).is_err());
         let pending = dir
             .path()
             .join("split-execution")
