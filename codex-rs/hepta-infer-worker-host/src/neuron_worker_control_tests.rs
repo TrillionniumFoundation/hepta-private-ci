@@ -337,6 +337,35 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
     use codex_hepta_neuron::SparseConfig;
     use codex_hepta_neuron::canonical_feature_vector_digest_v1;
 
+    // Simulate an independently durable Witness that refuses precisely the
+    // first post-Journal CAS. The same tick may only reconcile that CAS; the
+    // already-spent Worker reservation must never run its ModelDriver twice.
+    struct RejectOneWitness {
+        inner: FileAnchorWitnessStore,
+        fail_once: bool,
+    }
+
+    impl AnchorWitnessStore for RejectOneWitness {
+        fn current(
+            &self,
+        ) -> Result<Option<codex_hepta_neuron::JournalAnchor>, codex_hepta_neuron::WitnessStoreError>
+        {
+            self.inner.current()
+        }
+
+        fn compare_and_swap(
+            &mut self,
+            expected: Option<codex_hepta_neuron::JournalAnchor>,
+            next: codex_hepta_neuron::JournalAnchor,
+        ) -> Result<(), codex_hepta_neuron::WitnessStoreError> {
+            if self.fail_once {
+                self.fail_once = false;
+                return Err(codex_hepta_neuron::WitnessStoreError::Unavailable);
+            }
+            self.inner.compare_and_swap(expected, next)
+        }
+    }
+
     let generation = Generation::new(3).unwrap();
     let q24 = Q;
     let native = SparseConfig {
@@ -440,7 +469,10 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
         .create_new(true)
         .open(&witness_path)
         .unwrap();
-    let witness = FileAnchorWitnessStore::open(witness_file, scope, generation, 16).unwrap();
+    let witness = RejectOneWitness {
+        inner: FileAnchorWitnessStore::open(witness_file, scope, generation, 16).unwrap(),
+        fail_once: true,
+    };
     let runtime =
         NeuronRuntime::bootstrap(file, native.clone(), scope, 16, config.clone(), witness).unwrap();
     let actual_request = runtime.model_request(&input).unwrap();
@@ -466,6 +498,15 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
     );
     let mut agentd = AgentdNeuronOwner::new(runtime, worker_port);
     assert!(agentd.read_local_checkpoint_binding_v1().is_err());
+    assert!(matches!(
+        agentd.tick_with_observation_v1(input.clone()),
+        Err(NeuronRuntimeError::WitnessAfterCommit { .. })
+    ));
+    // Journal was mutated, but no observation may be emitted before the
+    // independent acknowledgement. Reuse the same input to reconcile only
+    // the pending Witness CAS, not the already consumed Worker request.
+    assert!(agentd.read_local_checkpoint_binding_v1().is_err());
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
     let (first, observation) = agentd.tick_with_observation_v1(input.clone()).unwrap();
     assert!(observation.validate_integrity());
     assert_eq!(observation.tick_id, input.tick_id);
