@@ -103,7 +103,10 @@ fn accepted_shadow_rows_share_one_immutable_arc_across_cells() {
     assert_eq!(snapshots.len(), 2);
     assert!(Arc::ptr_eq(&snapshots[0], &snapshots[1]));
     assert_eq!(snapshots[0].identity.scope_id.as_str(), "scope.a");
-    assert_eq!(snapshots[0].features_q24.as_ref(), &[1_i64 << 23, -(1_i64 << 22)]);
+    assert_eq!(
+        snapshots[0].features_q24.as_ref(),
+        &[1_i64 << 23, -(1_i64 << 22)]
+    );
 }
 
 #[test]
@@ -139,8 +142,6 @@ fn shadow_snapshot_batch_failure_is_atomic_and_scope_is_part_of_key() {
         Err(Error::FeatureContract)
     ));
     assert_eq!(cache.len(), 2);
-    let bad_ttl = stage_shadow_feature_snapshots(
-        &mut cache, &base, shadow_pipeline(), 10, 600_000,
-    );
+    let bad_ttl = stage_shadow_feature_snapshots(&mut cache, &base, shadow_pipeline(), 10, 600_000);
     assert!(matches!(bad_ttl, Err(Error::FeatureContract)));
 }
