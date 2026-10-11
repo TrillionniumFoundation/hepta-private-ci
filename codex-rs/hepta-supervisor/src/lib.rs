@@ -4,7 +4,7 @@
 
 mod authority_signer;
 mod cell_split_finalization;
-#[cfg(unix)]
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 mod cell_split_supervisor_runtime_port;
 mod control;
 mod daemon;
@@ -176,7 +176,7 @@ pub use cell_split_finalization::CellSplitFinalizationAuthorityV1;
 pub use cell_split_finalization::CellSplitFinalizationBindingV1;
 pub use cell_split_finalization::CellSplitFinalizationErrorV1;
 pub use cell_split_finalization::CellSplitSupervisorJournalFinalizerV1;
-#[cfg(unix)]
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 pub use cell_split_supervisor_runtime_port::CellSplitSupervisorJournalRuntimePortV1;
 pub use writer_handoff::DurableWriterHandoffJournalV1;
 pub use writer_handoff::WriterHandoffAdvanceV1;
