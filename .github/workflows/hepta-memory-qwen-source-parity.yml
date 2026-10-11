@@ -4,6 +4,15 @@ on:
     branches:
       - codex/memory-cell-evidence-20261008
     paths:
+      - scripts/memory_cell/source_completion_loss.py
+      - scripts/memory_cell/source_loss_admission.py
+      - scripts/memory_cell/source_pretrained_projection_receipt.py
+      - scripts/memory_cell/experience_memory.py
+      - scripts/memory_cell/experience_inference.py
+      - scripts/memory_cell/reader_reference.py
+      - scripts/memory_cell/test_source_completion_hf.py
+      - scripts/memory_cell/test_source_loss_admission.py
+      - scripts/memory_cell/test_source_write_schedule.py
       - .github/workflows/hepta-memory-qwen-source-parity.yml
 permissions:
   contents: read
