@@ -436,15 +436,8 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
         .open(&witness_path)
         .unwrap();
     let witness = FileAnchorWitnessStore::open(witness_file, scope, generation, 16).unwrap();
-    let runtime = NeuronRuntime::bootstrap(
-        file,
-        native.clone(),
-        scope,
-        16,
-        config.clone(),
-        witness,
-    )
-    .unwrap();
+    let runtime =
+        NeuronRuntime::bootstrap(file, native.clone(), scope, 16, config.clone(), witness).unwrap();
     let actual_request = runtime.model_request(&input).unwrap();
     let control_request = NeuronFeatureRequestV1 {
         request_id: actual_request.request_id,
