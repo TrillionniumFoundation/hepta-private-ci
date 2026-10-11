@@ -44,8 +44,7 @@ fn strict_cas_projection_payload_roundtrip_matches_numeric_digest() {
 #[test]
 fn malformed_or_unknown_payload_fails_closed() {
     let p = sample_projector();
-    let original = serde_json::from_slice::<serde_json::Value>(&payload_for(&p))
-        .expect("json");
+    let original = serde_json::from_slice::<serde_json::Value>(&payload_for(&p)).expect("json");
     let mut invalid = original.clone();
     invalid["schema"] = serde_json::json!("hepta.stem.future");
     assert!(matches!(
