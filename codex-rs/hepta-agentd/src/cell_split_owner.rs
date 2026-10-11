@@ -173,6 +173,16 @@ pub trait CellSplitExecutionPortsV1 {
         receipt: &CellSplitExternalReceiptV1,
     ) -> Result<(), CellSplitErrorV1>;
 
+    /// Durably advance an INDEPENDENT, authenticated rollback-protected
+    /// observer witness. Return only after the observer acknowledges the exact
+    /// plan and chain head. Timeouts and conflicting high-watermarks fail closed.
+    /// Repeating the exact anchor must be idempotent.
+    fn retain_ledger_anchor(
+        &mut self,
+        plan: &CellSplitPlanV1,
+        anchor: CellSplitLedgerAnchorV1,
+    ) -> Result<(), CellSplitErrorV1>;
+
     fn publish_artifact(
         &mut self,
         plan: &CellSplitPlanV1,
@@ -413,6 +423,20 @@ impl CellSplitExecutionOwnerV1 {
                     }
                     _ => return Err(CellSplitErrorV1::Conflict),
                 }
+                // Re-acknowledge only the prefix already revalidated. Never
+                // bless an unverified suffix recovered beyond the last anchor.
+                let prefix = self
+                    .heads
+                    .get(2 * (index + 1))
+                    .copied()
+                    .ok_or(CellSplitErrorV1::Corrupt)?;
+                ports.retain_ledger_anchor(
+                    &self.plan,
+                    CellSplitLedgerAnchorV1 {
+                        sequence: (2 * (index + 1)) as u64,
+                        head_digest: prefix,
+                    },
+                )?;
                 continue;
             }
             if self.pending.is_none() {
@@ -424,6 +448,9 @@ impl CellSplitExecutionOwnerV1 {
             if self.pending != Some(step) {
                 return Err(CellSplitErrorV1::Corrupt);
             }
+            // No external mutation before the pending intent is independently
+            // acknowledged outside the potentially rolled-back ledger file.
+            ports.retain_ledger_anchor(&self.plan, self.anchor())?;
 
             let observed = match ports.observe(&self.plan, step)? {
                 CellSplitObservationV1::Applied(receipt) => {
@@ -459,6 +486,9 @@ impl CellSplitExecutionOwnerV1 {
                 step,
                 accepted: Some(receipt),
             })?;
+            // The next mutation must not run until this real receipt has
+            // reached an independently protected observer high-watermark.
+            ports.retain_ledger_anchor(&self.plan, self.anchor())?;
         }
         Ok(self.progress())
     }
