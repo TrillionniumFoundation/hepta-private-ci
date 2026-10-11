@@ -26,9 +26,9 @@ jobs:
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
       - name: Exact full-source format gate (unchanged)
         run: cargo +1.95.0 fmt --all -- --check
-      - name: Native Agentd library tests on actual source
-        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib
       - name: Native Agentd strict source Clippy
         run: cargo +1.95.0 clippy --locked -p codex-hepta-agentd --lib -- -D warnings
       - name: Existing Inference Core and Worker strict Clippy including transitive owners
         run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+      - name: Native Agentd library tests on actual source
+        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib
