@@ -766,6 +766,8 @@ pub mod stem_projection;
 mod stem_artifact;
 
 pub use stem_artifact::SelectedStemProjectionReaderV1;
+pub use stem_artifact::StemCpuHeadBatchItemV1;
+pub use stem_artifact::StemCpuHeadBatchUseV1;
 pub use stem_artifact::StemCpuHeadUseV1;
 pub use stem_artifact::StemProjectionArtifactError;
 pub use stem_artifact::StemProjectionOwnerFenceV1;
