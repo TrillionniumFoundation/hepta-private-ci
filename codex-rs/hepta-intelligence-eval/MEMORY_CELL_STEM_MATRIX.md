@@ -1058,3 +1058,38 @@ observable question, with source byte-offset evidence where applicable.
 The analysis adds **zero model calls**, cannot alter any 576 original
 policy answers, and never certifies citation entailment, a trained Cell,
 prospective learning, or production acceptance.
+
+## New frozen Reader capacity test: published source ID, but no answer-literal span
+
+A separate research workflow `hepta-memory-stem-source-only-reader.yml`
+uses the **byte-pinned strict native 576/576 run** at `675970bb...` and
+its original 32 held-out questions. Source selection reads **only the
+published native supporting document IDs**, not the benchmark answer string:
+it selects a source admitted by the unchanged as-of chronology, then chooses
+one query-overlap window with the identical original `WindowBudget`.
+The Reader's tokeniser, frozen weights, system prompt, input/output token
+ceilings and deterministic generation settings are exactly the same as
+those of the original native run. A separate Reader instance and resource
+journal are used; none of the original six Head/Reader decisions is replayed
+or modified.
+
+The 25 answerable registered questions have published support source IDs
+present in their original raw inputs; the seven native-unanswerable cases
+are retained as explicit **unavailable/no-extra-model-call** controls.
+Published source ID selection is itself privileged and is not a valid
+independent retrieval policy. A document's query-related 384-byte window
+may still lack the answer. Do not confuse this diagnostic with the older
+*answer-literal* reference Oracle, independently reviewed sufficient
+evidence, or a gold citation. True future/unknown source dates, scope
+withdrawal, missing source IDs, mismatched Reader identities, and failed
+generation fail closed with unchanged planned denominators.
+
+All extra source-only model outputs are persisted **before** any answer
+token-F1 scoring; the report compares those new answers with the original
+frozen source and zero-source Reader answers. The original 32 are stratified
+by native source already chosen, retrieved but not chosen, absent from
+the frozen candidate pool, unanswerable, or unresolved, each with its
+own original-planned conservative score bounds. Additional compute/load
+cost is charged separately. All outcomes are classified development
+diagnostics with `production_accepted=false`,
+`semantic_citation_precision=null`, and no independence claim.
