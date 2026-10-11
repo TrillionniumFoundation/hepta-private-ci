@@ -1,0 +1,488 @@
+{
+  "formal_event_path_is_production_semantic_precision": false,
+  "generating_commit": "59f9eadd5cc919359079e04442f7343838a60057",
+  "independent_source_families": 0,
+  "model_semantic_entailment_certified": false,
+  "models": {
+    "qwen-3b": {
+      "archive_sha256": "831ce9658bafcbaf04f4a15879982e58317322f7cd5137724498d7d20df7bb98",
+      "attempted": 48,
+      "by_arm": {
+        "empty": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 0,
+          "correct_with_full_program_declared_citations": 0,
+          "correct_with_public_event_chain_connected": 0,
+          "correct_without_citation_marker": 0,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 0
+        },
+        "entity_time": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 4,
+          "correct_with_full_program_declared_citations": 4,
+          "correct_with_public_event_chain_connected": 4,
+          "correct_without_citation_marker": 0,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 8
+        },
+        "hybrid": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 2,
+          "correct_with_full_program_declared_citations": 1,
+          "correct_with_public_event_chain_connected": 1,
+          "correct_without_citation_marker": 0,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 3
+        },
+        "organized": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 4,
+          "correct_with_full_program_declared_citations": 4,
+          "correct_with_public_event_chain_connected": 4,
+          "correct_without_citation_marker": 0,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 8
+        },
+        "program_support": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 4,
+          "correct_with_full_program_declared_citations": 4,
+          "correct_with_public_event_chain_connected": 4,
+          "correct_without_citation_marker": 0,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 8
+        },
+        "without_prerequisite": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 4,
+          "correct_with_full_program_declared_citations": 0,
+          "correct_with_public_event_chain_connected": 0,
+          "correct_without_citation_marker": 0,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 4
+        }
+      },
+      "failed_complete_program_citation_rows": [
+        {
+          "arm": "entity_time",
+          "cited_source_ids": [
+            "event_c71dcd6f_2"
+          ],
+          "kind": "composition",
+          "missing_program_declared_support": [
+            "event_c71dcd6f_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_c71dcd6f"
+        },
+        {
+          "arm": "organized",
+          "cited_source_ids": [
+            "event_c71dcd6f_2"
+          ],
+          "kind": "composition",
+          "missing_program_declared_support": [
+            "event_c71dcd6f_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_c71dcd6f"
+        },
+        {
+          "arm": "program_support",
+          "cited_source_ids": [
+            "event_c71dcd6f_2"
+          ],
+          "kind": "composition",
+          "missing_program_declared_support": [
+            "event_c71dcd6f_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_c71dcd6f"
+        },
+        {
+          "arm": "without_prerequisite",
+          "cited_source_ids": [
+            "event_c71dcd6f_2"
+          ],
+          "kind": "composition",
+          "missing_program_declared_support": [
+            "event_c71dcd6f_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_c71dcd6f"
+        },
+        {
+          "arm": "hybrid",
+          "cited_source_ids": [
+            "event_7fc7f8c2_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "entity_time",
+          "cited_source_ids": [
+            "event_7fc7f8c2_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "organized",
+          "cited_source_ids": [
+            "event_7fc7f8c2_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "program_support",
+          "cited_source_ids": [
+            "event_7fc7f8c2_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "without_prerequisite",
+          "cited_source_ids": [
+            "event_7fc7f8c2_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "entity_time",
+          "cited_source_ids": [
+            "event_bcb9165b_2"
+          ],
+          "kind": "composition",
+          "missing_program_declared_support": [
+            "event_bcb9165b_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_bcb9165b"
+        },
+        {
+          "arm": "organized",
+          "cited_source_ids": [
+            "event_bcb9165b_2"
+          ],
+          "kind": "composition",
+          "missing_program_declared_support": [
+            "event_bcb9165b_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_bcb9165b"
+        },
+        {
+          "arm": "program_support",
+          "cited_source_ids": [
+            "event_bcb9165b_2"
+          ],
+          "kind": "composition",
+          "missing_program_declared_support": [
+            "event_bcb9165b_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_bcb9165b"
+        },
+        {
+          "arm": "without_prerequisite",
+          "cited_source_ids": [
+            "event_bcb9165b_2"
+          ],
+          "kind": "composition",
+          "missing_program_declared_support": [
+            "event_bcb9165b_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_bcb9165b"
+        },
+        {
+          "arm": "hybrid",
+          "cited_source_ids": [
+            "event_52a0bb15_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        },
+        {
+          "arm": "entity_time",
+          "cited_source_ids": [
+            "event_52a0bb15_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        },
+        {
+          "arm": "organized",
+          "cited_source_ids": [
+            "event_52a0bb15_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        },
+        {
+          "arm": "program_support",
+          "cited_source_ids": [
+            "event_52a0bb15_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        },
+        {
+          "arm": "without_prerequisite",
+          "cited_source_ids": [
+            "event_52a0bb15_2"
+          ],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        }
+      ],
+      "generating_commit": "59f9eadd5cc919359079e04442f7343838a60057",
+      "scored_answers_sha256": "74c37d754303e920c7fc1f4c5e694116148bead1530d22674a8138199dbd4caa"
+    },
+    "smol-1.7b": {
+      "archive_sha256": "67d46247bd1881c8fb3f73ec6122415d0d15a0ec24b02f193fb1294e7ea63bae",
+      "attempted": 48,
+      "by_arm": {
+        "empty": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 0,
+          "correct_with_full_program_declared_citations": 0,
+          "correct_with_public_event_chain_connected": 0,
+          "correct_without_citation_marker": 0,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 0
+        },
+        "entity_time": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 2,
+          "correct_with_full_program_declared_citations": 0,
+          "correct_with_public_event_chain_connected": 0,
+          "correct_without_citation_marker": 2,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 2
+        },
+        "hybrid": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 1,
+          "correct_with_full_program_declared_citations": 0,
+          "correct_with_public_event_chain_connected": 0,
+          "correct_without_citation_marker": 1,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 1
+        },
+        "organized": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 3,
+          "correct_with_full_program_declared_citations": 0,
+          "correct_with_public_event_chain_connected": 0,
+          "correct_without_citation_marker": 3,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 3
+        },
+        "program_support": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 3,
+          "correct_with_full_program_declared_citations": 0,
+          "correct_with_public_event_chain_connected": 0,
+          "correct_without_citation_marker": 3,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 3
+        },
+        "without_prerequisite": {
+          "attempted": 8,
+          "correct_missing_program_declared_support": 2,
+          "correct_with_full_program_declared_citations": 0,
+          "correct_with_public_event_chain_connected": 0,
+          "correct_without_citation_marker": 2,
+          "generations_failed": 0,
+          "generations_succeeded": 8,
+          "strict_task_success": 2
+        }
+      },
+      "failed_complete_program_citation_rows": [
+        {
+          "arm": "organized",
+          "cited_source_ids": [],
+          "kind": "correction",
+          "missing_program_declared_support": [
+            "event_cbfd4ba5_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_cbfd4ba5"
+        },
+        {
+          "arm": "program_support",
+          "cited_source_ids": [],
+          "kind": "correction",
+          "missing_program_declared_support": [
+            "event_cbfd4ba5_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_cbfd4ba5"
+        },
+        {
+          "arm": "entity_time",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1",
+            "event_7fc7f8c2_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "organized",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1",
+            "event_7fc7f8c2_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "program_support",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1",
+            "event_7fc7f8c2_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "without_prerequisite",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_7fc7f8c2_1",
+            "event_7fc7f8c2_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_7fc7f8c2"
+        },
+        {
+          "arm": "hybrid",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1",
+            "event_52a0bb15_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        },
+        {
+          "arm": "entity_time",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1",
+            "event_52a0bb15_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        },
+        {
+          "arm": "organized",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1",
+            "event_52a0bb15_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        },
+        {
+          "arm": "program_support",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1",
+            "event_52a0bb15_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        },
+        {
+          "arm": "without_prerequisite",
+          "cited_source_ids": [],
+          "kind": "procedure",
+          "missing_program_declared_support": [
+            "event_52a0bb15_1",
+            "event_52a0bb15_2"
+          ],
+          "publicly_declared_event_path_connected": false,
+          "question_id": "controlled_52a0bb15"
+        }
+      ],
+      "generating_commit": "59f9eadd5cc919359079e04442f7343838a60057",
+      "scored_answers_sha256": "3e38208ef999f9fb53c67af25a3c0d8e8fb4be9cc2f9cf501f2f59a83cb4576d"
+    }
+  },
+  "pinned_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "production_accepted": false,
+  "program_declared_support_is_human_certified": false,
+  "real_model_generations": 96,
+  "schema": "hepta.memory-cell.historical-formal-citation.v1"
+}
