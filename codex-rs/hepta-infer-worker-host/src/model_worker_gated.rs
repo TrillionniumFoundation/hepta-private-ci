@@ -176,6 +176,35 @@ impl GatedHeadCpuDriverV2 {
         self.tensor_bytes
     }
 
+    /// Report temporary Q24 tensors actually allocated by a dynamic Head,
+    /// not just the input and two outputs of the older static reference.
+    fn transient_bytes_for_head(
+        &self,
+        digest: &str,
+        input_width: usize,
+        output_width: usize,
+    ) -> Result<u64, Error> {
+        let base = transient_dimensions_bytes(input_width, output_width)?;
+        let Some(head) = self.dynamic_heads.get(digest) else {
+            return Ok(base);
+        };
+        let extra_values = head
+            .candidate
+            .rank
+            .checked_add(
+                head.candidate
+                    .groups
+                    .checked_mul(2)
+                    .ok_or(Error::ArithmeticOverflow)?,
+            )
+            .ok_or(Error::ArithmeticOverflow)?;
+        let extra_bytes = extra_values
+            .checked_mul(std::mem::size_of::<i64>())
+            .ok_or(Error::ArithmeticOverflow)?;
+        base.checked_add(u64::try_from(extra_bytes).map_err(|_| Error::ArithmeticOverflow)?)
+            .ok_or(Error::ArithmeticOverflow)
+    }
+
     /// Calculate an exact bundle identity from the admitted immutable tensors,
     /// without trusting a manifest-supplied, unverified string.
     pub fn catalog_digest_for(candidates: &[GatedHeadCandidateV2]) -> Result<String, Error> {
@@ -431,7 +460,8 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
                     drive_q24: drive,
                     prediction_q24: prediction,
                     observed_memory_bytes: handle.observed_memory_bytes,
-                    transient_allocation_bytes: transient_dimensions_bytes(
+                    transient_allocation_bytes: self.transient_bytes_for_head(
+                        &request.head_digest,
                         request.snapshot.features_q24.len(),
                         request.expected_output_width,
                     )?,
