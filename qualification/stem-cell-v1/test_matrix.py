@@ -46,7 +46,7 @@ class MatrixTests(unittest.TestCase):
 
     def test_full_finite_grid_and_explicit_no_change(self):
         plan = self.plan()
-        self.assertEqual(4 * 4 * 6 * 4, len(plan['arms']))
+        self.assertEqual(5 * 4 * 6 * 4, len(plan['arms']))
         self.assertTrue(all(x['shots_per_class'] == 8 for x in plan['arms']))
         self.assertEqual(['no_change', 'laya_421m', 'laya_multilingual_322m'],
                          plan['external_baselines'])
