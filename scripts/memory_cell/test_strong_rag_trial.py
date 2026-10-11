@@ -408,9 +408,7 @@ class StrongRagPolicyTests(unittest.TestCase):
                 ],
             )
             preflight_path = root / "out/runtime-preflight.json"
-            runtime_receipt = trial.read(
-                preflight_path, trial.file_sha(preflight_path)
-            )
+            runtime_receipt = trial.read(preflight_path, trial.file_sha(preflight_path))
             self.assertEqual(runtime_receipt["schema"], "synthetic-host-fixture-only")
             self.assertEqual(result["total_attempts"], 72)
             self.assertEqual(
