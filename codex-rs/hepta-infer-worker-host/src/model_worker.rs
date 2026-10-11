@@ -586,7 +586,11 @@ pub trait NeuronFeatureDriver: ModelDriver {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
-    pub fn run_neuron_features(
+    /// Legacy direct feature execution for module-local tests only. Production
+    /// must obtain its one-use WorkerNeuronControlPort from the fsynced
+    /// claim_neuron_durable_dispatch_v1 path.
+    #[cfg(test)]
+    pub(crate) fn run_neuron_features(
         &mut self,
         now_ms: u64,
         model_id: &str,
@@ -696,9 +700,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
-    /// Execute the worker path and project the observed result into the
-    /// inference-control-owned typed receipt.
-    pub fn run_neuron_features_receipt(
+    /// Module-local compatibility test path. Not compiled into the product
+    /// library: a caller must fsync inference.control's Dispatching claim
+    /// before executing the typed Neuron Worker/ModelPort.
+    #[cfg(test)]
+    pub(crate) fn run_neuron_features_receipt(
         &mut self,
         now_ms: u64,
         model_id: &str,

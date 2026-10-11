@@ -118,8 +118,17 @@ fsyncs the Dispatching event BEFORE releasing a `WorkerNeuronControlPort`.
 A failed/unknown fsync cannot return an executable port. The Worker continues
 to enforce its in-generation tombstones, model binding and resource grant.
 Crash recovery from Dispatching forbids re-dispatch even when in-memory
-Worker tombstones have disappeared. Existing direct WorkerPort constructors
-remain lower-level compatibility APIs, not production dispatch admission.
+Worker tombstones have disappeared. The direct WorkerPort constructor is now **crate-private**; the two raw typed
+InferenceWorker::run_neuron_features / run_neuron_features_receipt methods
+are **test-only**, and are absent from the product library. Thus external
+product callers cannot construct a Neuron WorkerPort from a self-authored
+WorkerRequest or execute typed Neuron features without entering the durable
+claim_neuron_durable_dispatch_v1 path. Existing module-local unit tests still
+exercise these legacy rejection scenarios.
+
+This is a compile-time public API hardening, not independently signed final-use
+or an effect permit. The separate trusted host must still verify the actual
+resource/route grant and physical model load before using the returned port.
 
 This is **not** a signed final-use token or authoritative model activation.
 The owner must still obtain independently authenticated current host time,

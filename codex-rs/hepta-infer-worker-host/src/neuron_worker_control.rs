@@ -33,9 +33,13 @@ pub struct WorkerNeuronControlPort<'a, D: ModelDriver + NeuronFeatureDriver> {
 }
 
 impl<'a, D: ModelDriver + NeuronFeatureDriver> WorkerNeuronControlPort<'a, D> {
-    /// The host, not this constructor, authenticates the existing resource
-    /// grant, monotonic time, final-use and reservation prior to this call.
-    pub fn from_reserved_worker(
+    /// Internal handoff after the trusted same-crate inference.control owner
+    /// has fsynced a one-time Dispatching claim. Unit tests exercise older
+    /// lower-level rejection paths without manufacturing production authority.
+    ///
+    /// Do NOT expose this constructor outside the crate: a caller-supplied
+    /// WorkerRequest is not a substitute for a durable dispatch transition.
+    pub(crate) fn from_reserved_worker(
         worker: &'a mut InferenceWorker<D>,
         model_id: String,
         existing_reservation: WorkerRequest,
