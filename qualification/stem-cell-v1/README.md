@@ -313,3 +313,28 @@ Experiment C uses #1499's separate no-change/frozen/learned statistical
 and chronological training trials, plus the native Worker branch #1498.
 Synthetic 4096 logical-Cell tests remain L1 conformance, not real
 production CPU/RSS/p99/WAL/crash-recovery evidence.
+
+
+### Exact dataset identity bridge for Jina v5 (Experiment B)
+
+The optional, **schema-only** jina_dataset_bridge.py maps the *same*
+source dataset from six Stem splits to PR #1499's five Jina splits:
+held_out -> test, future_1/future_2 -> future with an unchanged
+future_window tag. It preserves case/group/episode identities, all ordered
+options, time, language, task, scope, principal and per-Cell identity.
+No unspecified identity is manufactured and cross-window source groups
+or matching text across training/evaluation folds are rejected.
+
+This bridge requires explicit cell_id, task_id and principal_id fields
+on the approved Stem dataset, plus an externally approved byte SHA:
+
+    python3 qualification/stem-cell-v1/jina_dataset_bridge.py \
+      --source /approved/episodes.jsonl \
+      --approved-source-sha256 64-hex-from-existing-data-owner \
+      --output /scratch/jina-compatible-episodes.jsonl
+
+It writes a non-authorizing append-only .bridge.json digest manifest.
+The converter neither authenticates the data-use owner, executes Jina v5,
+nor supplies token-state Landmark/Cross-attention support. Those Jina
+representation cells stay UNQUALIFIED until their own task-adapter
+implementation can supply demonstrably equivalent token states.
