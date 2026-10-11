@@ -77,6 +77,13 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    /// Channel liveness is necessary, but never sufficient, for authorizing
+    /// a learning proposal. The sole Runtime Owner still checks the
+    /// Supervisor fence and every independently signed evidence boundary.
+    pub(crate) fn is_open(&self) -> bool {
+        !self.sender.is_closed()
+    }
+
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
