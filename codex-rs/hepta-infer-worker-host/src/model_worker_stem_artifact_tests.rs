@@ -113,14 +113,18 @@ fn digest_binding_changes_on_normalizer_or_weight_change() {
 fn invalid_numeric_range_and_extra_coefficients_rejected() {
     let mut bad = sample_projector();
     bad.a_q24[0] = 9 * (1_i64 << 24);
+    // Invalid tensors must be rejected at canonical CAS encoding, before
+    // untrusted serialized bytes could ever reach the decode boundary.
     assert!(matches!(
-        decode_projection(&payload_for(&bad)),
+        canonical_projection_payload(&bad),
         Err(StemProjectionArtifactError::InvalidPayload)
     ));
     let mut bad = sample_projector();
     bad.bias_q24.push(0);
+    // Invalid tensors must be rejected at canonical CAS encoding, before
+    // untrusted serialized bytes could ever reach the decode boundary.
     assert!(matches!(
-        decode_projection(&payload_for(&bad)),
+        canonical_projection_payload(&bad),
         Err(StemProjectionArtifactError::InvalidPayload)
     ));
 }
