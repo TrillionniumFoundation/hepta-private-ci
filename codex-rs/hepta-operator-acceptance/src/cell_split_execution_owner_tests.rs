@@ -382,6 +382,57 @@ fn post_open_pending_intent_tampering_cannot_reconcile_or_dispatch() {
     assert_eq!(state.borrow().executions, 1);
 }
 
+#[cfg(unix)]
+#[test]
+fn dangling_later_frame_is_not_treated_as_absent_during_recovery() {
+    use std::os::unix::fs::symlink;
+
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    symlink(
+        root.path().join("absent-target"),
+        root.path().join("cell-split-02-prepared.json"),
+    )
+    .expect("inject dangling successor");
+    assert!(CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .is_err());
+    assert_eq!(state.borrow().executions, 0);
+}
+
+#[cfg(unix)]
+#[test]
+fn pending_step_recovery_rejects_dangling_successor_frame() {
+    use std::os::unix::fs::symlink;
+
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut port = FixturePort::new(state.clone());
+        port.drop_ack = true;
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+        assert!(owner.advance().is_err());
+    }
+    symlink(
+        root.path().join("absent-target"),
+        root.path().join("cell-split-03-committed.json"),
+    )
+    .expect("inject dangling successor");
+    assert!(CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .is_err());
+    assert_eq!(state.borrow().executions, 1);
+}
+
 #[test]
 fn full_transcript_uses_only_four_current_owner_receipts() {
     let root = private_tempdir();
