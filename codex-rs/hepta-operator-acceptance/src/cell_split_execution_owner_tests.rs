@@ -172,6 +172,43 @@ fn plan() -> CellSplitExecutionPlanV1 {
 }
 
 #[test]
+fn transcript_only_reopen_cannot_dispatch_an_uncommitted_effect() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("initialize private frozen owner");
+        assert_eq!(owner.completed_steps(), 0);
+    }
+    let mut reader = CellSplitExecutionOwnerV1::open_existing(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("reopen for read-only transcript");
+    assert!(matches!(
+        reader.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "read-only CellSplit owner cannot advance"
+        ))
+    ));
+    assert!(reader
+        .verified_transcript()
+        .expect("read-only evidence inspection")
+        .is_none());
+    assert_eq!(reader.completed_steps(), 0);
+    assert_eq!(state.borrow().executions, 0);
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+}
+
+#[test]
 fn existing_unprepared_effect_must_not_be_adopted_or_dispatched() {
     let root = private_tempdir();
     let frozen = plan();
