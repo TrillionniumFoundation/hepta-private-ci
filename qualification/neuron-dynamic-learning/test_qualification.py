@@ -190,8 +190,8 @@ class OrganAndScale(unittest.TestCase):
         self.assertEqual(report["role"], "MemoryRead")
         self.assertEqual(report["production_promotion"], "DENY_ALL")
         self.assertIn("negative_transfer", report)
-        self.assertEqual(report["head_parameters"], 2 * 16 + 4 * 16 * 8 // 2
-                         if False else report["head_parameters"])
+        self.assertGreater(report["head_parameters"], 0)
+        self.assertEqual(report["organ_shared_parameters"], 16)
         kwargs["future_groups"][0] = "t0"
         with self.assertRaises(LearningContractError):
             compare_organ(**kwargs)
