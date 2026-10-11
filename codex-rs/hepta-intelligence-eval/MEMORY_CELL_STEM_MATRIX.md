@@ -997,3 +997,34 @@ actual future-window validity or production acceptance. Final
 `production_accepted=false` is hard-coded. The new hosted run must
 finish successfully on its own audited source before treating its
 report as a verified independent receipt.
+
+## Condition the *already executed* frozen Reader on source-coverage cause
+
+The current strict-run artifact contains 32 stage-48 original frozen
+Reader requests plus 32 questions posed **without any delivered
+evidence** to an independently reloaded copy of the same pinned model,
+prompt and generation settings. The new read-only
+`stem_native_reader_stratification.py` joins these existing exact
+receipts, the post-policy 32-question native document-coverage census,
+and the frozen-vs-empty matched F1 report.
+
+The report partitions the **same 32 original questions** into:
+native-support document retrieved and chosen; retrieved but not chosen;
+not retrieved; native-unanswerable; and native-support-unresolved.
+For each stratum, it retains every planned question, failed or
+unscorable empty-Reader control, observed paired token-F1 delta and
+conservative all-planned bounds. Exact Reader model/prompt/question
+identity and the original one-evidence versus empty-evidence request
+are independently rechecked, not merely trusted from the previous
+reported mean.
+
+This distinguishes a *retrieval ceiling*, a frozen-selector missed
+document-level support opportunity, and a post-hoc Reader performance
+difference **without running a new model**. Native document evidence
+is not a blinded, independently reviewed sufficient answer passage,
+so lower Reader F1 after receiving a labelled source does not by
+itself prove a Reader capacity limit. Unanswerable tasks and absent
+supports are not misrepresented as bad semantic citations. All
+groups remain marked `production_accepted=false` and
+`semantic_citation_precision=null`; no training or policy
+configuration changes are authorized.

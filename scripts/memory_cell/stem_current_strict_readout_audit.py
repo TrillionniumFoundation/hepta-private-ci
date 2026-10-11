@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 from stem_audit_archive import PinnedArchive, require
+from stem_native_reader_stratification import stratify_original_reader
 
 SOURCE = "cb9e98365b5f46e00fb2693f548a7215b1ed1145"
 TREE = "022c9aa8abc095c91ef744644329aaed12564859"
@@ -203,12 +204,16 @@ def audit_zip(path):
                 "source commit is not the pinned strict run")
         require(archive.read("tested-tree.txt").decode().strip() == TREE,
                 "source tree is not the pinned strict run")
-        result = evaluate_strict_run(
-            archive.json("comparison/preregistered.json"),
-            archive.jsonl("comparison/policy-predictions.jsonl"),
-            archive.json("comparison/scored-policy-attempts.json"),
-            archive.json("comparison/report.json"),
-            archive.json("comparison/post-policy-native-source-ceiling.json"),
+        plan = archive.json("comparison/preregistered.json")
+        original = archive.jsonl("comparison/policy-predictions.jsonl")
+        scored = archive.json("comparison/scored-policy-attempts.json")
+        report = archive.json("comparison/report.json")
+        ceiling = archive.json("comparison/post-policy-native-source-ceiling.json")
+        result = evaluate_strict_run(plan, original, scored, report, ceiling)
+        result["reader_effect_by_original_source_coverage"] = stratify_original_reader(
+            plan, original, ceiling,
+            archive.jsonl("comparison/reader-no-evidence.jsonl"),
+            report["matched_frozen_vs_no_evidence"],
         )
         result["artifact_zip_sha256"] = archive.sha256
         result["verified_manifest_entries"] = archive.manifest_entries
