@@ -364,7 +364,10 @@ impl DurableInferenceControl {
         if record.state != RequestState::Assigned {
             return Err(Error::InvalidTransition);
         }
-        let reservation = record.reservation.as_ref().ok_or(Error::ReservationMismatch)?;
+        let reservation = record
+            .reservation
+            .as_ref()
+            .ok_or(Error::ReservationMismatch)?;
         if reservation.reservation_id != reservation_id {
             return Err(Error::ReservationMismatch);
         }
@@ -632,7 +635,10 @@ fn apply_event(
             if record.state != RequestState::Assigned {
                 return Err(Error::InvalidTransition);
             }
-            if record.reservation.as_ref().map(|value| value.reservation_id.as_str())
+            if record
+                .reservation
+                .as_ref()
+                .map(|value| value.reservation_id.as_str())
                 != Some(reservation_id.as_str())
             {
                 return Err(Error::ReservationMismatch);

@@ -122,7 +122,6 @@ impl From<WorkerError> for NeuronDurableAssignmentErrorV1 {
     }
 }
 
-
 impl From<ControlError> for NeuronDurableAssignmentErrorV1 {
     fn from(value: ControlError) -> Self {
         Self::Control(value)
@@ -245,7 +244,6 @@ pub fn read_neuron_durable_assignment_v1<D: ModelDriver>(
     }
     Ok(report)
 }
-
 
 /// The strict same-host pre-Worker path: first inspect the actual fsynced
 /// inference.control Assigned state and actual in-memory loaded Worker, then

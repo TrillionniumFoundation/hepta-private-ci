@@ -4,13 +4,13 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 
 use codex_hepta_infer_core::durable_control::Assignment;
-use codex_hepta_infer_core::durable_control::RequestState;
-use codex_hepta_infer_core::durable_control::TerminalObservation;
 use codex_hepta_infer_core::durable_control::InferenceRequest;
+use codex_hepta_infer_core::durable_control::RequestState;
 use codex_hepta_infer_core::durable_control::Reservation;
+use codex_hepta_infer_core::durable_control::TerminalObservation;
+use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use codex_hepta_neuron::NeuronInferenceControlPort;
 
 use crate::model_worker::DriverModelHandle;
 use crate::model_worker::DriverNeuronFeatureObservation;
@@ -44,14 +44,14 @@ impl ModelDriver for FixtureDriver {
     }
 }
 
-
 impl NeuronFeatureDriver for FixtureDriver {
     fn run_neuron_features(
         &mut self,
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, WorkerError> {
-        self._calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        self._calls
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         Ok(DriverNeuronFeatureObservation {
             terminal_observed: true,
             succeeded: true,
@@ -355,7 +355,10 @@ fn fsynced_dispatch_precedes_real_worker_model_port_and_survives_crash_restart()
     assert_eq!(claim.revision, 4);
     assert_eq!(claim.state, RequestState::Dispatching);
     assert!(!claim.idempotent);
-    assert_eq!(control.get("tick.1").unwrap().state, RequestState::Dispatching);
+    assert_eq!(
+        control.get("tick.1").unwrap().state,
+        RequestState::Dispatching
+    );
     let result = port.execute_feature(&request).unwrap();
     assert_eq!(
         result.status,
@@ -369,7 +372,10 @@ fn fsynced_dispatch_precedes_real_worker_model_port_and_survives_crash_restart()
     // pre-call fsynced Dispatching event must still block any replay.
     let mut recovered =
         DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
-    assert_eq!(recovered.get("tick.1").unwrap().state, RequestState::Dispatching);
+    assert_eq!(
+        recovered.get("tick.1").unwrap().state,
+        RequestState::Dispatching
+    );
     let mut restarted_worker = worker_with_calls(calls.clone());
     assert!(matches!(
         claim_neuron_durable_dispatch_v1(&mut recovered, &mut restarted_worker, &request, 100),
@@ -382,7 +388,12 @@ fn fsynced_dispatch_precedes_real_worker_model_port_and_survives_crash_restart()
         worker_id: "worker.1".to_owned(),
         worker_generation: 3,
         model_digest: "2".repeat(64),
-        payload_digest: recovered.get("tick.1").unwrap().request.payload_digest.clone(),
+        payload_digest: recovered
+            .get("tick.1")
+            .unwrap()
+            .request
+            .payload_digest
+            .clone(),
         terminal_observed: true,
         terminal_status: Some(RequestState::Completed),
         output_digest: Some(result.receipt_digest.to_string()),
