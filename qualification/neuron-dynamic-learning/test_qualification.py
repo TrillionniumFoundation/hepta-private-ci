@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from cell_learning import (
-    DynamicCell, LearningContractError, Q24, paired_future_score,
+    DynamicCell, LearningContractError, Q24, budgeted_cell, paired_future_score,
     q24_reference, rust_candidate_digest,
 )
 from offline_stem import (
@@ -118,6 +118,16 @@ class StemContracts(unittest.TestCase):
 
 
 class DynamicLearning(unittest.TestCase):
+    def test_2k_8k_16k_tiers_have_real_distinct_parameter_budgets(self):
+        sizes = []
+        for ceiling in (2048, 8192, 16384):
+            head = budgeted_cell("cell.a", "a" * 64, 384, ceiling, seed=4)
+            self.assertLessEqual(head.parameter_count(), ceiling)
+            self.assertGreater(head.parameter_count(), 0)
+            sizes.append(head.parameter_count())
+        self.assertEqual(sizes, sorted(sizes))
+        self.assertEqual(len(set(sizes)), 3)
+
     def test_cross_language_candidate_digest_golden(self):
         self.assertEqual(
             rust_candidate_digest(fixture_q24()),
