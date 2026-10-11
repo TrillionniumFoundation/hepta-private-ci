@@ -949,3 +949,51 @@ weak-native-support labels and Reader failures in conservative all-16 bounds.
 It does not claim a confidence interval, independent source-family sampling,
 blinded entailment review, or production acceptance. Raw 576-policy attempt
 accounting and all stage-specific receipts remain unchanged.
+
+## Independently reconcile the latest completed strict 576/576 run
+
+GitHub run `38136751661` completed **success** at source commit
+`cb9e98365b5f46e00fb2693f548a7215b1ed1145`, original tree
+`022c9aa8abc095c91ef744644329aaed12564859`. It passed
+**903 Python regressions**, all original **576/576** native policy
+executions, with **33 actual successful frozen Reader calls** and
+**543 canonical request cache hits**. The immutable archived ZIP
+`11702192907` has external SHA-256
+`be3393f448993451c7860e8867e28a79f5fb7f95d5773f79ed55b30d12a84776`.
+This is full strict-as-of research execution, not a learned-task or
+production acceptance certificate.
+
+The concurrently completed pinned frozen-retrieval grid
+`38136751668` also executed against source-pinned native data:
+TRAIN-only policy choice stayed at original `channel_k=64,
+lexical_weight=.50`, with **zero test/transfer retrieval rescues**.
+Only **17 of the 25 answerable evaluation questions** had published
+native supporting documents in the frozen candidate windows; eight
+had no weak supporting document in the fixed candidate pool.
+The other seven questions were **native unanswerable**, not
+missing-citation failures or source-ranking successes. These document
+labels are not independently adjudicated passage entailment.
+
+The separate read-only `stem_current_strict_readout_audit.py` and
+`hepta-memory-stem-current-source-gate.yml` independently re-open
+this exact completed strict ZIP. They validate the immutable transport
+and every internal SHA256SUMS, generating commit/tree, all 80
+registered questions, all 576 original policy and scored rows,
+unchanged original answers/receipts, Reader execution accounting,
+exact 32-question no-evidence diagnostic and 30 saved Head training
+sessions. They recompute the frozen-versus-each-learned-arm
+checkpoint/phase source selection, raw answer-byte differences and
+native weak-support gains/losses directly, with benchmark abstentions
+kept out of support gain metrics. The primary descriptive
+test/transfer cut has only **16 distinct questions, from three
+original source-family identifiers**, irrespective of repeated
+checkpoints and five learning arms.
+
+**No new Reader, model fitting or hyperparameter search** is done
+by this audit. It reports whether positive native document-support
+net gains appear separately in both test and transfer, but that is
+still not independent statistical proof, semantic citation precision,
+actual future-window validity or production acceptance. Final
+`production_accepted=false` is hard-coded. The new hosted run must
+finish successfully on its own audited source before treating its
+report as a verified independent receipt.
