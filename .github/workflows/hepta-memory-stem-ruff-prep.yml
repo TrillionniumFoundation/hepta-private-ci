@@ -1,0 +1,96 @@
+name: MemoryCell one-shot AST-preserving stem format repair
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - .github/workflows/hepta-memory-stem-ruff-prep.yml
+permissions:
+  contents: read
+jobs:
+  prepare:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Format exactly the failing stem and strong-RAG Python sources
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-format
+          git rev-parse HEAD > /tmp/stem-format/original-sha.txt
+          python3 -m pip install uv==0.8.22
+          python3 - <<'PY'
+          import ast
+          import json
+          from pathlib import Path
+          names = [
+            "scripts/memory_cell/stem_frozen_retrieval_grid.py",
+            "scripts/memory_cell/stem_frozen_retrieval_grid_trial.py",
+            "scripts/memory_cell/stem_latest_native_pair_audit.py",
+            "scripts/memory_cell/stem_root_diversity.py",
+            "scripts/memory_cell/stem_session_diversity.py",
+            "scripts/memory_cell/stem_train_heldout_bridge.py",
+            "scripts/memory_cell/test_stem_frozen_retrieval_grid.py",
+            "scripts/memory_cell/test_stem_latest_native_pair_audit.py",
+            "scripts/memory_cell/test_stem_root_diversity.py",
+            "scripts/memory_cell/test_stem_session_diversity.py",
+            "scripts/memory_cell/test_stem_train_heldout_bridge.py",
+            "scripts/memory_cell/test_strong_rag_trial.py",
+          ]
+          assert len(names) == len(set(names)) == 12
+          original = {
+              name: ast.dump(ast.parse(Path(name).read_text()), include_attributes=False)
+              for name in names
+          }
+          Path('/tmp/stem-format/ast-before.json').write_text(json.dumps(original))
+          Path('/tmp/stem-format/paths.json').write_text(json.dumps(names))
+          PY
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          paths = json.loads(Path('/tmp/stem-format/paths.json').read_text())
+          subprocess.run(
+              ['uv', 'run', '--frozen', '--project', 'scripts', 'ruff', 'format', *paths],
+              check=True,
+          )
+          PY
+          python3 - <<'PY'
+          import ast
+          import json
+          import subprocess
+          from pathlib import Path
+          before = json.loads(Path('/tmp/stem-format/ast-before.json').read_text())
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          assert changed and set(changed).issubset(before), changed
+          for name, tree in before.items():
+              assert ast.dump(ast.parse(Path(name).read_text()), include_attributes=False) == tree, name
+          Path('/tmp/stem-format/changed.json').write_text(json.dumps(changed))
+          PY
+          git diff --check
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/stem-format/required-format.log
+          git diff --binary > /tmp/stem-format/ruff-only.patch
+          git add -- scripts/memory_cell
+          git rm .github/workflows/hepta-memory-stem-ruff-prep.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): format stem studies and remove one-shot formatter'
+          git push origin "HEAD:refs/heads/codex/memory-stem-fmt-${GITHUB_RUN_ID}"
+          git rev-parse HEAD > /tmp/stem-format/candidate-sha.txt
+          (cd /tmp/stem-format && sha256sum *.json *.patch *.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-ast-preserving-format
+          path: /tmp/stem-format
+          if-no-files-found: warn
