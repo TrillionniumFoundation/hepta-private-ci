@@ -9,7 +9,6 @@ const TOMBSTONE: &str = "ccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 const ATTESTATION: &str = "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
 const CHILD_ROUTE: &str = "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
 const PARENT_ROUTE: &str = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
-const PARENT_FENCE: &str = "1111111111111111111111111111111111111111111111111111111111111111";
 
 fn event(
     recorder: &CellSplitTargetHostEvidenceRecorderV1,
@@ -41,7 +40,7 @@ fn event(
             _ => String::new(),
         },
         predecessor_digest: match kind {
-            CellSplitTargetHostEventKindV1::RouteCutover => PARENT_FENCE.to_string(),
+            CellSplitTargetHostEventKindV1::RouteCutover => PARENT_ROUTE.to_string(),
             CellSplitTargetHostEventKindV1::RollbackCompleted => {
                 CHILD_ROUTE.to_string()
             }
