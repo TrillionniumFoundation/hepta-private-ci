@@ -6,7 +6,19 @@ on:
     paths:
       - "scripts/memory_cell/experience_*.py"
       - "scripts/memory_cell/test_experience_*.py"
+      - "scripts/memory_cell/source_completion_loss.py"
+      - "scripts/memory_cell/source_pretrained_projection_receipt.py"
+      - "scripts/memory_cell/source_loss_admission.py"
+      - "scripts/memory_cell/source_write_schedule.py"
+      - "scripts/memory_cell/source_write_coverage.py"
+      - "scripts/memory_cell/source_composition_curriculum.py"
+      - "scripts/memory_cell/source_recall_probe.py"
+      - "scripts/memory_cell/source_recall_likelihood.py"
+      - "scripts/memory_cell/test_source_completion*.py"
       - "scripts/memory_cell/test_source_write_execution_gate.py"
+      - "scripts/memory_cell/test_source_write_coverage.py"
+      - "scripts/memory_cell/test_source_composition_curriculum.py"
+      - "scripts/memory_cell/test_source_recall*.py"
       - ".github/workflows/hepta-memory-write-experiment.yml"
   workflow_dispatch:
 permissions:
