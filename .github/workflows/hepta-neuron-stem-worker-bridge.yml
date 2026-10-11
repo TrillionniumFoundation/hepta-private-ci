@@ -8,6 +8,9 @@ on:
       - 'codex-rs/hepta-infer-worker-host/**'
       - 'codex-rs/hepta-context-compiler/**'
       - 'codex-rs/hepta-memory/**'
+      - 'codex-rs/hepta-automation/**'
+      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/ext/hepta-memory/**'
       - 'codex-rs/hepta-agentd/src/test_support.rs'
       - 'qualification/neuron-stem/stem_worker_binding.py'
       - 'qualification/neuron-stem/test_stem_worker_binding.py'
@@ -28,6 +31,25 @@ jobs:
         run: |
           python3 -m compileall -q qualification/neuron-stem/stem_worker_binding.py qualification/neuron-stem/test_stem_worker_binding.py
           PYTHONPATH=qualification/neuron-stem python3 -m unittest discover -s qualification/neuron-stem -p 'test_stem_worker_binding.py' -v
+
+  transitive-owner-replay-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust compiler and formatter
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Enforce exact full-source formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Execute actual signed TaskFlow/provider-contact and crash-recovery integration fixtures
+        run: cargo +1.95.0 test --locked -p codex-hepta-automation --test authorized_effect
+      - name: Execute canonical circuit, context delivery, memory CAS and lease replay unit tests
+        run: cargo +1.95.0 test --locked -p codex-hepta-automation -p codex-hepta-context-compiler -p codex-hepta-memory --lib
 
   scoped-stem-worker:
     runs-on: ubuntu-24.04
