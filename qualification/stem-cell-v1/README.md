@@ -6,7 +6,7 @@ Canonical governance: [`docs/learning/EXPERIMENTS.json`](../../docs/learning/EXP
 
 ## Experiment 1: fixed-model, fixed-budget Stem selection
 
-The preregistered `protocol.json` specifies four Stem candidates (mmBERT-small 140M, ModernBERT-base 149M, Jina v2 zh 161M, BGE-small-zh 24M), two external full-decision teacher baselines (Laya 421M, Laya Multilingual 322M), Chinese/English/cross-language slices, shot curves, and OOD. Model parameter counts are approximate model-card values. Check upstream model identities and licenses against **pinned** snapshots before starting. The Laya teachers are **external baselines**: no generic HF adapter is assumed for them.
+The preregistered `protocol.json` specifies five frozen-HF Stem candidates (mmBERT-small 140M, mmBERT-base 307M, ModernBERT-base 149M, Jina v2 zh 161M, BGE-small-zh 24M), two external full-decision teacher baselines (Laya 421M, Laya Multilingual 322M), Chinese/English/cross-language slices, shot curves, and OOD. Model parameter counts are approximate model-card values. Check upstream model identities and licenses against **pinned** snapshots before starting. The Laya teachers are **external baselines**: no generic HF adapter is assumed for them.
 
 `model_runner.py` uses **real local HF encoder weights** to train **one frozen encoder + one Head at a time**. It refuses network model fetching, validates a SHA-256 digest over an audited **self-contained snapshot**, and rejects trainable parameter counts exceeding budget. It computes temperature and the fixed 80%-coverage confidence threshold **only** from a disjoint calibration split. The model runner emits predictions, cost-neutral timing observations and a SHA-bound ".run.json" manifest with the Python/Torch/Transformers versions, encoder/Head parameter counts, feature/training times, cache usage and observed RSS; it **cannot emit reward/outcome receipts**.
 
@@ -83,8 +83,8 @@ Bootstrap is clustered by source group, uses fixed 2,000 replicates and Bonferro
 ## Next phase: immutable multi-arm execution plan
 
 `matrix.py` can now construct a **finite, immutable local experiment plan**
-from all four approved *local* encoder snapshots. An operator-supplied JSON
-maps each of the four model keys to `source`, an immutable 40-hex
+from all five approved *local* encoder snapshots. An operator-supplied JSON
+maps each of the five model keys to `source`, an immutable 40-hex
 `upstream_revision`, `snapshot_path`, an independently reviewed tree `sha256`,
 `license_approved: true`, and, for Jina's custom-code profile only,
 `custom_code_reviewed: true`. Remote names and remote commit IDs are operator
@@ -104,9 +104,9 @@ python3 qualification/stem-cell-v1/matrix.py run \
   --output /scratch/mmbert-joint-linear-2048-32.jsonl
 ```
 
-The full preregistered nonzero-shot Cartesian grid is **1,536 arms** (4
+The full preregistered nonzero-shot Cartesian grid is **1,920 arms** (5
 encoders × 4 representations × 6 Heads × 4 budgets × 4 positive shot counts),
-not 1,536 demonstrated successful trainings. Unsupported Head/budget combinations
+not 1,920 demonstrated successful trainings. Unsupported Head/budget combinations
 are intentionally rejected by `model_runner.py`. The 0-shot/no-change and two
 Laya teacher baselines remain external, separately observed baselines. Plan
 and per-arm output artifacts are **append-only / no overwrite**; plan, dataset,
@@ -247,3 +247,69 @@ The static final-use order regression now checks the entered-use helper used
 by the current code, rather than searching for the removed direct
 `request_typed::<TurnStartResponse>` call. A green L1 job alone remains
 insufficient for L3 or production promotion.
+
+
+## Experiment A: full-decision 395M–435M four-way comparison
+
+The existing qualification directory now contains decision_421m.py, an
+append-only, read-only evaluator of eight paired arms: original Laya
+421M, Laya Typed-Decisions 421M, DeBERTa-v3-large 435M, and
+ModernBERT-large 395M, each evaluated as an off-the-shelf checkpoint
+and after equal-budget, equal-step fine-tuning.
+An already task-trained checkpoint is not automatically zero-shot.
+The four real model/decision adapters, their pinned local weights and
+licensed/authorized dataset must be supplied by an independent operator;
+this script does not load arbitrary model code or generate pretend accuracy.
+
+Example offline workflow (no unapproved model download):
+
+    python3 qualification/stem-cell-v1/decision_421m.py plan \
+      --dataset /approved/time-partitioned.jsonl \
+      --descriptors /approved/decision-checkpoints.json \
+      --train-steps 100 --trainable-budget 262144 \
+      --batch-size 16 --context-tokens 512 --device cpu --dtype fp32 \
+      --output /scratch/decision-frozen-plan.json
+    python3 qualification/stem-cell-v1/decision_421m.py evaluate \
+      --plan /scratch/decision-frozen-plan.json \
+      --runs /scratch/actual-run-metadata.json \
+      --predictions /scratch/actual-model-ordered-logits.jsonl \
+      --output /scratch/decision-review.json
+
+Snapshot descriptors use exact keys defined by SOURCES with source,
+parameter_count, upstream_revision (40 lowercase hex), snapshot_path,
+sha256 (verified local content tree), and explicit license_approved and
+adapter_reviewed approvals. Each run metadata entry binds its arm,
+checkpoint_sha256, weights_sha256, dataset_sha256, upstream_revision,
+training_sample_groups_sha256, seed, runtime_profile, input_contract,
+truncated_input_count, train_steps and trainable_parameters. Equal-budget
+arms additionally bind training_split=train and optimizer=adamw.
+Measured trainable parameter counts must agree within 10% and stay
+under the fixed ceiling; options order, zero truncations and runtime
+profile must agree. Real decision adapters emit arm, sample_id, logits
+in the ordered legal option space, weights_sha256 and measured latency_ms,
+never gold labels or NDU utility.
+
+The evaluator demands all eight arms and all paired samples,
+source-group and episode separation, time-separated train/calibration/
+held-out/future windows, calibration-only temperature/confidence,
+15-bin ECE, Brier, NLL, OOD acceptance, measured latency, and
+Bonferroni-adjusted source-group paired future confidence bounds.
+Production promotion is always prohibited: metadata digests are not
+cryptographic owner attestations and offline predictive accuracy does
+not prove causal NDU gains or physical 4096-Cell resource savings.
+Its pure-Python fixtures only test instrumentation and rejection logic.
+
+## Experiment B and C interoperation
+
+The original model_runner.py and matrix.py now include mmBERT-base
+~307M alongside the original four frozen-HF candidates. Thus the
+complete planned nonzero-shot grid becomes 1,920 arms
+(5 encoders × 4 representations × 6 heads × 4 budgets × 4 shot counts),
+not 1,920 executed trainings. Jina v5 Text Nano ~239M is handled by
+the pinned task-adapter-aware backend in stacked PR #1499, not by
+disguising a generic Jina v2/HF pooled embedding as v5.
+
+Experiment C uses #1499's separate no-change/frozen/learned statistical
+and chronological training trials, plus the native Worker branch #1498.
+Synthetic 4096 logical-Cell tests remain L1 conformance, not real
+production CPU/RSS/p99/WAL/crash-recovery evidence.
