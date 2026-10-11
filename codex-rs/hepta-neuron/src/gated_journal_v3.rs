@@ -34,6 +34,7 @@ pub enum GatedJournalErrorV3 {
     BusyOrInvalidFile(JournalError),
     InvalidLimit,
     InvalidAnchor,
+    ExistingJournalRequiresAnchor,
     AcknowledgedHistoryMissing,
     AnchorMismatch,
     ContextMismatch,
@@ -70,9 +71,8 @@ pub struct GatedSparseJournalV3 {
 }
 
 impl GatedSparseJournalV3 {
-    /// New shadow-generation file or unanchored recovery. Unanchored recovery
-    /// cannot detect deletion of valid committed frames, so it is never
-    /// sufficient for acknowledging a prior durable tick.
+    /// Bootstrap a new, empty shadow-generation file. Existing files never
+    /// reopen without an independently retained checkpoint witness.
     pub fn open(
         file: File,
         config: GatedSparseConfigV3,
@@ -128,6 +128,9 @@ impl GatedSparseJournalV3 {
             file.sync_all()
                 .map_err(|_| GatedJournalErrorV3::Indeterminate)?;
         } else {
+            if anchor.is_none() {
+                return Err(GatedJournalErrorV3::ExistingJournalRequiresAnchor);
+            }
             if length < HEADER_BYTES as u64 {
                 return Err(GatedJournalErrorV3::Corrupt);
             }
