@@ -540,8 +540,34 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
     assert!(source_binding.validate_integrity());
     assert_eq!(source_binding.ledger_source.terminal_joins.len(), 2);
     assert_eq!(source_binding.source_support_digest, support);
+    assert_eq!(source_binding.source_memory_id, memory.id.memory_id);
+    assert_eq!(source_binding.source_memory_revision, memory.id.revision);
+    let content_digest: Digest32 = memory.content_sha256.as_str().parse().unwrap();
+    assert_eq!(source_binding.source_content_digest, content_digest);
     let mut altered = source_binding.clone();
     altered.replay_policy_revision += 1;
+    assert!(!altered.validate_integrity());
+    let mut altered = source_binding.clone();
+    altered.source_memory_revision += 1;
+    assert!(!altered.validate_integrity());
+    let mut altered = source_binding.clone();
+    altered.source_content_digest = digest("wrong-content");
+    assert!(!altered.validate_integrity());
+    // Rehashing a forged incomplete trial batch never passes admission.
+    let mut altered = source_binding.clone();
+    altered.ledger_source.pending_episodes += 1;
+    altered.ledger_source.diagnostic_digest = altered.ledger_source.computed_digest();
+    altered.diagnostic_digest = altered.computed_digest();
+    assert!(!altered.validate_integrity());
+    let mut altered = source_binding.clone();
+    altered.ledger_source.censored_episodes += 1;
+    altered.ledger_source.diagnostic_digest = altered.ledger_source.computed_digest();
+    altered.diagnostic_digest = altered.computed_digest();
+    assert!(!altered.validate_integrity());
+    let mut altered = source_binding.clone();
+    altered.ledger_source.terminal_joins[0].decision_support_digest = digest("different-root");
+    altered.ledger_source.diagnostic_digest = altered.ledger_source.computed_digest();
+    altered.diagnostic_digest = altered.computed_digest();
     assert!(!altered.validate_integrity());
     // Equal content under a different source ID cannot authorize these decisions.
     let twin = source

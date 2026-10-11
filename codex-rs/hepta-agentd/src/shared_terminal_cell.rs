@@ -32,6 +32,7 @@ use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::FederationConsumerAccess;
 use codex_hepta_memory::SharedExperiencePurposeV1;
+use codex_hepta_memory::StableMemoryId;
 use codex_hepta_memory::SharedExperienceUseV1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -91,6 +92,10 @@ pub struct SharedReplayNeuronTrialSourceV1 {
     pub ledger_source: NeuronTrialLedgerSourceV1,
     pub replay_policy_id: Sha256Digest,
     pub replay_policy_revision: u64,
+    /// Exact revision of the live Memory owner that allowed this Replay.
+    pub source_memory_id: StableMemoryId,
+    pub source_memory_revision: u64,
+    pub source_content_digest: Digest32,
     pub source_support_digest: Digest32,
     pub diagnostic_digest: Digest32,
     pub authority: AuthorityPosture,
@@ -105,6 +110,11 @@ impl SharedReplayNeuronTrialSourceV1 {
         bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
         bytes.extend_from_slice(raw);
         bytes.extend_from_slice(&self.replay_policy_revision.to_be_bytes());
+        let memory_id = self.source_memory_id.as_str().as_bytes();
+        bytes.extend_from_slice(&(memory_id.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(memory_id);
+        bytes.extend_from_slice(&self.source_memory_revision.to_be_bytes());
+        bytes.extend_from_slice(self.source_content_digest.as_array());
         bytes.extend_from_slice(self.source_support_digest.as_array());
         Digest32::of_bytes(&bytes)
     }
@@ -116,7 +126,17 @@ impl SharedReplayNeuronTrialSourceV1 {
         self.authority == AuthorityPosture::DENY_ALL
             && self.ledger_source.validate_integrity()
             && self.replay_policy_revision > 0
+            && self.source_memory_revision > 0
+            && !self.source_content_digest.is_zero()
             && !self.source_support_digest.is_zero()
+            && !self.ledger_source.terminal_joins.is_empty()
+            && self.ledger_source.pending_episodes == 0
+            && self.ledger_source.censored_episodes == 0
+            && self
+                .ledger_source
+                .terminal_joins
+                .iter()
+                .all(|join| join.decision_support_digest == self.source_support_digest)
             && self.diagnostic_digest == self.computed_digest()
     }
 }
@@ -176,6 +196,8 @@ impl AgentdSharedReplayHostV1 {
         let ledger_source =
             ledger.read_neuron_trial_source_v1(frozen_ledger, plan, signed_freeze, dataset, now)?;
         if ledger_source.terminal_joins.is_empty()
+            || ledger_source.pending_episodes != 0
+            || ledger_source.censored_episodes != 0
             || ledger_source
                 .terminal_joins
                 .iter()
@@ -193,15 +215,27 @@ impl AgentdSharedReplayHostV1 {
                 "Neuron trial ledger changed during source read",
             ));
         }
+        let source_content_digest: Digest32 = source
+            .memory()
+            .content_sha256
+            .as_str()
+            .parse()
+            .map_err(|_| SharedTerminalCellError::Binding("source content digest"))?;
         let mut binding = SharedReplayNeuronTrialSourceV1 {
             ledger_source,
             replay_policy_id: source.policy_id().clone(),
             replay_policy_revision: source.policy_revision(),
+            source_memory_id: source.memory().id.memory_id.clone(),
+            source_memory_revision: source.memory().id.revision,
+            source_content_digest,
             source_support_digest: support,
             diagnostic_digest: Digest32::ZERO,
             authority: AuthorityPosture::DENY_ALL,
         };
         binding.diagnostic_digest = binding.computed_digest();
+        if !binding.validate_integrity() {
+            return Err(SharedTerminalCellError::Binding("Neuron source diagnostic integrity"));
+        }
         Ok(binding)
     }
 

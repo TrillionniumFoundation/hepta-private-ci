@@ -12,6 +12,11 @@ Within this deliberately one-source Replay profile it:
   current correction/revocation state and active terminal joins;
 - requires every terminal decision to cite the exact currently approved Memory
   source-support digest (same content in a different source does not qualify);
+- refuses a partially observed single-source trial cohort: even one Pending
+  or Censored episode blocks the strict export rather than being treated as
+  a terminal sample or a zero reward;
+- binds the exact approved Memory ID, revision and content digest separately
+  to the read-only diagnostic digest (never the Memory plaintext);
 - revalidates the Memory grant and rereads the Ledger source before returning.
 
 A returned SharedReplayNeuronTrialSourceV1 is only an internal diagnostic with
