@@ -33,10 +33,10 @@ jobs:
           import pathlib
           import subprocess
           import yaml
-          
+
           def run(*args):
               return subprocess.check_output(args, text=True)
-          
+
           changed = run('git', 'diff', '--name-only').splitlines()
           if not changed:
               raise ValueError('nothing formatted; do not publish empty repair')
