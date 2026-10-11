@@ -48,8 +48,8 @@ class PrequentialTests(unittest.TestCase):
         for invalid_kwargs, error in (
                 ({"arm": "no_change"}, "only learned/frozen"),
                 ({"weights_digest": "unpinned"}, "revision/generation not pinned"),
-                ({"generation": 0}, "checkpoint revision"),
-                ({"revision": "G" * 40}, "checkpoint revision"),
+                ({"generation": 0}, "revision/generation not pinned"),
+                ({"revision": "G" * 40}, "revision/generation not pinned"),
                 ({"probabilities": [float("nan"), 1.0]}, "normalized"),
                 ({"probabilities": [.9, .9]}, "normalized")):
             values = dict(
