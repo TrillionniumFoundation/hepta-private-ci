@@ -526,6 +526,141 @@ fn real_supervisor_effect_inputs() -> (
 
 #[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
+fn signed_cns_predecessor_links_outer_receipt_and_original_runtime_bytes() {
+    use codex_hepta_operator_acceptance::{
+        CellSplitCnsRuntimeCommitV1, CellSplitExecutionReceiptV1,
+        CellSplitExecutionStepV1, cell_split_execution_receipt_digest_v1,
+        cell_split_execution_signing_payload_v1,
+    };
+    use codex_hepta_operator_acceptance::CellSplitSupervisorRuntimePortV1;
+    use ed25519_dalek::Signer as _;
+    use ed25519_dalek::SigningKey;
+    use sha2::Digest as _;
+
+    let root = tempfile::tempdir().expect("journal");
+    let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
+    let authority = LiveAuthority::allowed();
+    let (plan, fence, mut supervisor_intent, accepted) = real_supervisor_effect_inputs();
+    let cns_signer = SigningKey::from_bytes(&[31; 32]);
+    let cns_previous = digest("separately committed child migration").to_string();
+    let cns_key = format!(
+        "{:x}",
+        sha2::Sha256::digest(
+            format!(
+                "hepta.learning.cell-split.execution-owner.v1\\0{}\\0{}\\0{}",
+                plan.digest().expect("plan"),
+                CellSplitExecutionStepV1::CnsRouteCutover.index(),
+                cns_previous,
+            )
+            .as_bytes()
+        )
+    );
+    let cns_intent = codex_hepta_operator_acceptance::CellSplitExecutionIntentV1 {
+        schema: "hepta.learning.cell-split.execution-owner.v1".into(),
+        plan_digest: plan.digest().expect("plan"),
+        step: CellSplitExecutionStepV1::CnsRouteCutover,
+        owner_id: plan.owner_ids[2].clone(),
+        idempotency_key: cns_key.clone(),
+        previous_receipt_digest: cns_previous,
+    };
+    let original_cns = CellSplitCnsRuntimeCommitV1 {
+        idempotency_key: cns_key,
+        cns_id: "cns.original".into(),
+        predecessor_route_digest: digest("parent route").to_string(),
+        successor_route_digest: fence.successor_route_digest.clone(),
+        predecessor_generation: plan.parent_generation,
+        successor_generation: plan.child_generation,
+        authority_epoch: fence.authority_epoch,
+        committed_sequence: 3,
+        original_runtime_receipt_bytes: b"original signed cns cutover".to_vec(),
+        original_runtime_signature_bytes: vec![1; 64],
+    };
+    let original_bytes = serde_json::to_vec(&original_cns).expect("CNS original bytes");
+    let mut cns_receipt = CellSplitExecutionReceiptV1 {
+        intent: cns_intent,
+        owner_sequence: 3,
+        output_digest: format!("{:x}", sha2::Sha256::digest(&original_bytes)),
+        owner_receipt_bytes: original_bytes,
+        owner_signature_bytes: Vec::new(),
+        receipt_digest: String::new(),
+    };
+    cns_receipt.owner_signature_bytes = cns_signer
+        .sign(&cell_split_execution_signing_payload_v1(&cns_receipt).expect("CNS signing bytes"))
+        .to_bytes()
+        .to_vec();
+    cns_receipt.receipt_digest =
+        cell_split_execution_receipt_digest_v1(&cns_receipt).expect("outer CNS receipt");
+    assert_ne!(cns_receipt.receipt_digest, cns_receipt.output_digest);
+    assert_ne!(
+        cns_receipt.receipt_digest,
+        binding().cns_cutover_receipt_digest.to_string()
+    );
+    supervisor_intent.previous_receipt_digest = cns_receipt.receipt_digest.clone();
+    supervisor_intent.idempotency_key = format!(
+        "{:x}",
+        sha2::Sha256::digest(
+            format!(
+                "hepta.learning.cell-split.execution-owner.v1\\0{}\\0{}\\0{}",
+                supervisor_intent.plan_digest,
+                supervisor_intent.step.index(),
+                supervisor_intent.previous_receipt_digest,
+            )
+            .as_bytes()
+        )
+    );
+    let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root),
+        &minimum,
+        binding(),
+        authority.clone(),
+    )
+    .expect("real journal");
+    let mut port = crate::CellSplitSupervisorJournalRuntimePortV1::new_with_signed_cns_predecessor(
+        plan.clone(),
+        fence.clone(),
+        supervisor_intent.clone(),
+        accepted,
+        finalizer,
+        SigningKey::from_bytes(&[22; 32]),
+        &cns_receipt,
+        &cns_signer.verifying_key(),
+    )
+    .expect("independent CNS/Coordinator digest bridge");
+    port.finalize_once(&plan, &supervisor_intent, &fence)
+        .expect("actual fsynced retirement");
+    assert!(
+        port.read_original_commit(&supervisor_intent.idempotency_key)
+            .expect("readback")
+            .is_some()
+    );
+
+    let root_denied = tempfile::tempdir().expect("independent journal");
+    let minimum_denied = prepare(&root_denied, WriterHandoffPhaseV1::RoutePublished);
+    let denied_finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
+        file(&root_denied),
+        &minimum_denied,
+        binding(),
+        authority,
+    )
+    .expect("other real journal");
+    assert!(
+        crate::CellSplitSupervisorJournalRuntimePortV1::new_with_signed_cns_predecessor(
+            plan,
+            fence,
+            supervisor_intent,
+            accepted,
+            denied_finalizer,
+            SigningKey::from_bytes(&[22; 32]),
+            &cns_receipt,
+            &SigningKey::from_bytes(&[32; 32]).verifying_key(),
+        )
+        .is_err(),
+        "wrong independent CNS signer must not authorize retirement"
+    );
+}
+
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
+#[test]
 fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
     use codex_hepta_operator_acceptance::{
         CellSplitDurableEffectBackendV1, CellSplitSupervisorFenceOwnerV1,
