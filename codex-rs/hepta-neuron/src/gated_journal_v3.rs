@@ -9,17 +9,22 @@
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
-use std::io::{self, Read, Seek, SeekFrom, Write};
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::io::Write;
+use std::io;
 
 use codex_hepta_types::Digest32;
 
 use crate::JournalAnchor;
 use crate::JournalError;
 use crate::JournalScope;
-use crate::gated_sparse_v3::{
-    GatedSparseCheckpointV3, GatedSparseConfigV3, GatedSparseErrorV3,
-    GatedSparseSignalReceiptV3, gated_sparse_tick_v3,
-};
+use crate::gated_sparse_v3::GatedSparseCheckpointV3;
+use crate::gated_sparse_v3::GatedSparseConfigV3;
+use crate::gated_sparse_v3::GatedSparseErrorV3;
+use crate::gated_sparse_v3::GatedSparseSignalReceiptV3;
+use crate::gated_sparse_v3::gated_sparse_tick_v3;
 use crate::journal_lock::LockedFile;
 use crate::population_v2::PopulationSparseTickV2;
 
