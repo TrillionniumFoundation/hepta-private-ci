@@ -245,7 +245,7 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
     let (_recovered, report) =
-        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+        Supervisor::recover(fleet.registry.clone(), NoProcessDriver, config(), Instant::now())?;
     assert!(report.faults.is_empty());
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
