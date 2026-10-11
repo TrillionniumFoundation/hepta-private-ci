@@ -72,13 +72,23 @@ python3 -m pip install 'cryptography==46.0.4'
 python3 qualification/neuron-gated-sparse-v3/a0_deployment_evidence.py \
   --evidence-root /path/to/immutable/secure-evidence \
   --trusted-public-key /path/to/trusted-operator.pem \
+  --expected-host-id "$HEPTA_HOST_ID" \
+  --max-age-seconds 300 \
   --report /path/to/review/a0-audit.json
 python3 -m unittest discover \
   -s qualification/neuron-gated-sparse-v3 -p 'test_*.py' -v
 ```
 
 No actual deployment artifacts or signing keys are checked into this experiment.
-Without them, **A0 = BLOCKED**, not passed. Every emitted report explicitly
+The A0 command requires an independently determined target host identity and
+enforces a fresh 300-second owner snapshot (configurable to no more than 24
+hours). It rejects duplicate JSON keys, symlink or traversal paths, stale and
+future-dated registries, wrong generations, fabricated host measurements, and
+replay claims without attested checkpoint files. The owner must freeze a
+read-only directory for the entire audit; file path checks alone do not defeat
+malicious concurrent filesystem mutation. Passing cryptographic consistency
+checks alone cannot prove that any trusted host actually executed a model.
+Without host proof, **A0 = BLOCKED**, not passed. Every emitted report explicitly
 sets `production_qualification=false`.
 
 ## A1 — V1 against V2 at the same *total* budget
@@ -210,6 +220,45 @@ https://arxiv.org/abs/2410.01201 ; Hasani et al., *Closed-form continuous-time
 neural networks* (2022), https://doi.org/10.1038/s42256-022-00556-7 ;
 Dao & Gu, *Transformers are SSMs* (2024),
 https://proceedings.mlr.press/v235/dao24a.html .
+
+## Separate four-arm native mechanism smoke (not A0–A4 success)
+
+The `neuron_shadow_mechanism_probe` Rust binary executes the actual existing
+V1, V2, gated V3 and diagonal SSM kernels on the same parsed, bounded Q24
+trace. It runs **one arm per OS process** so process `VmHWM` peak RSS is not
+contaminated by earlier arms. It records p50/p95/p99 tick nanoseconds and
+microseconds, total elapsed time, throughput and final checkpoint frontier.
+Unlike the signed A0 collector, the probe does not authenticate the input,
+selected model, host or performance measurements.
+
+The committed `fixture_q24_trace.json` has 32 temporal/activation channels,
+8 synthetic monotonic events and a frozen feature digest. V2's per-population
+local quotas differ meaningfully from the global V1 Top-K; the V3 and SSM
+configurations remain **untrained fixture weights**. The 16-run sweep
+covers V1/V2/V3/SSM × 64/256/1024/4096 Cells, with identical input data,
+but is *not* a fair trained-model parameter-budget or target-host benchmark.
+
+```sh
+cd codex-rs
+cargo test --locked -p codex-hepta-neuron --all-targets
+cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+cargo build --locked -p codex-hepta-neuron --bin neuron_shadow_mechanism_probe
+python3 ../qualification/neuron-gated-sparse-v3/run_shadow_probe_matrix.py \
+  --binary target/debug/neuron_shadow_mechanism_probe \
+  --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json \
+  --report ../qualification/neuron-gated-sparse-v3/mechanism-only-results.json
+cd ..
+python3 qualification/neuron-gated-sparse-v3/q24_temporal_fuzz.py
+python3 -m unittest discover \
+  -s qualification/neuron-gated-sparse-v3 -p 'test_*.py' -v
+```
+
+The 4,096-step deterministic Q24 oracle in `q24_temporal_fuzz.py` was
+also executed independently in Python, and Rust tests pin SHA-256 of the
+per-event gate/temporal-state and SSM elapsed/retention/state streams. These
+are exact fixed-point arithmetic conformance tests. Neither a pass nor a
+speed result permits swapping the selected Cell. The matrix report always
+asserts `target_host_qualified=false` and `ndu_eligible=false`.
 
 ## A4 — independent longitudinal NDU gate and promotion controls
 
