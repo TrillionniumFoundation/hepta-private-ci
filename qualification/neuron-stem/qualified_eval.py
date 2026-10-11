@@ -29,18 +29,39 @@ def digest(obj):
     return hashlib.sha256(canonical(obj).encode("utf-8")).hexdigest()
 
 
+def no_duplicate_json_keys(pairs):
+    """One canonical interpretation of audit/prediction object identities."""
+    value = {}
+    for key, member in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON evidence field: {key}")
+        value[key] = member
+    return value
+
+
+def reject_nonfinite_json_constant(value):
+    raise ValueError(f"non-standard JSON number: {value}")
+
+
+def strict_json_loads(raw):
+    return json.loads(raw, object_pairs_hook=no_duplicate_json_keys,
+                      parse_constant=reject_nonfinite_json_constant)
+
+
 def read_jsonl(path):
+    """Require one well-formed, single-meaning object per physical evidence line."""
     result = []
     with Path(path).open(encoding="utf-8") as file:
         for number, line in enumerate(file, 1):
-            if line.strip():
-                try:
-                    value = json.loads(line)
-                    if not isinstance(value, dict):
-                        raise ValueError("row is not an object")
-                    result.append(value)
-                except (ValueError, TypeError) as exc:
-                    raise ValueError(f"{path}:{number}: {exc}") from exc
+            if not line.strip():
+                raise ValueError(f"{path}:{number}: blank evidence row")
+            try:
+                value = strict_json_loads(line)
+                if type(value) is not dict:
+                    raise ValueError("row is not an object")
+                result.append(value)
+            except (ValueError, TypeError) as exc:
+                raise ValueError(f"{path}:{number}: {exc}") from exc
     if not result:
         raise ValueError(f"{path}: empty input")
     return result
