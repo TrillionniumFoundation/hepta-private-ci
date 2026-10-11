@@ -142,3 +142,16 @@ and reconcile terminal outcomes through the same journal. It cannot infer
 that a committed claim proves the Worker actually ran. Tests use a fixture
 NeuronFeatureDriver, real Worker/ModelPort, and the real on-disk control WAL;
 there are no real Laya weights or selected production Cells.
+
+## Global durable reservation uniqueness (legacy inference.control)
+
+The same durable inference.control owner now keeps a bounded index mapping each
+legacy Reservation ID to its original Request for the entire retained WAL.
+Two distinct requests can no longer spend the same reservation, even after
+cancellation or a restart. Replaying an older corrupted/ambiguous journal
+with duplicate reservation IDs fails closed. A repeated read of the same
+Request/Reservation remains idempotent. The native Codex request profile
+uses a separate in-flight-slot model, not this legacy reservation ID field.
+This is identity safety, not quota-authority authentication or an actual
+production resource grant. Physical grants and selected-route evidence remain
+independently owned.

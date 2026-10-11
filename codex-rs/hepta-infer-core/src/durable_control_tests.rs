@@ -302,3 +302,82 @@ fn forged_dispatch_record_is_rejected_on_journal_replay() {
     ));
     fs::remove_file(path).unwrap();
 }
+
+#[test]
+fn reservation_id_cannot_move_between_requests_even_after_recovery() {
+    let journal = path("global-reservation-id");
+    let mut owner = DurableInferenceControl::open(&journal, 32).unwrap();
+    let mut second = request();
+    second.request_id = "request.2".to_string();
+    second.semantic_digest = "a".repeat(64);
+    owner.submit(100, request()).unwrap();
+    owner.submit(100, second).unwrap();
+    owner.reserve(100, "request.1", 1, reservation()).unwrap();
+
+    let journal_before = fs::metadata(&journal).unwrap().len();
+    assert_eq!(
+        owner.reserve(100, "request.2", 1, reservation()),
+        Err(Error::Conflict)
+    );
+    assert_eq!(fs::metadata(&journal).unwrap().len(), journal_before);
+    assert_eq!(
+        owner.get("request.2").unwrap().state,
+        RequestState::Pending
+    );
+    let replay = owner.reserve(100, "request.1", 2, reservation()).unwrap();
+    assert!(replay.idempotent);
+
+    owner.cancel("request.1", 2).unwrap();
+    assert_eq!(
+        owner.reserve(100, "request.2", 1, reservation()),
+        Err(Error::Conflict)
+    );
+    drop(owner);
+
+    let mut reopened = DurableInferenceControl::open(&journal, 32).unwrap();
+    assert_eq!(
+        reopened.reserve(100, "request.2", 1, reservation()),
+        Err(Error::Conflict)
+    );
+    let mut fresh = reservation();
+    fresh.reservation_id = "reservation.2".to_string();
+    assert_eq!(
+        reopened
+            .reserve(100, "request.2", 1, fresh)
+            .unwrap()
+            .revision,
+        2
+    );
+    drop(reopened);
+    let recovered = DurableInferenceControl::open(&journal, 32).unwrap();
+    assert_eq!(
+        recovered.get("request.2").unwrap().state,
+        RequestState::Reserved
+    );
+    drop(recovered);
+    fs::remove_file(&journal).unwrap();
+}
+
+#[test]
+fn duplicate_reservation_id_in_durable_wal_fails_closed() {
+    let journal = path("duplicate-reservation-id");
+    let mut owner = DurableInferenceControl::open(&journal, 32).unwrap();
+    let mut second = request();
+    second.request_id = "request.2".to_string();
+    second.semantic_digest = "a".repeat(64);
+    owner.submit(100, request()).unwrap();
+    owner.reserve(100, "request.1", 1, reservation()).unwrap();
+    owner.submit(100, second).unwrap();
+    drop(owner);
+
+    let mut wal = OpenOptions::new().append(true).open(&journal).unwrap();
+    wal.write_all(b"reserve|request.2|1|reservation.1|100|128|4|9000\n")
+        .unwrap();
+    wal.sync_all().unwrap();
+    drop(wal);
+    assert!(matches!(
+        DurableInferenceControl::open(&journal, 32),
+        Err(Error::CorruptJournal("reservation identity reused"))
+    ));
+    fs::remove_file(&journal).unwrap();
+}

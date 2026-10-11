@@ -176,6 +176,9 @@ pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
     records: BTreeMap<String, RequestRecord>,
+    // Reserved IDs remain occupied across cancellation and settled history.
+    // Kept separate from full record copies for O(log n) admission.
+    reservation_owners: BTreeMap<String, String>,
     native: native::NativeJournal,
     capacity: usize,
     journal_bytes: u64,
@@ -202,6 +205,7 @@ impl DurableInferenceControl {
         // Lock before replay: two owners must never admit from the same stale cut.
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
+        let mut reservation_owners = BTreeMap::new();
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
@@ -233,7 +237,22 @@ impl DurableInferenceControl {
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
             } else {
-                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+                let event = decode_event(line)?;
+                apply_event(
+                    &mut records,
+                    &reservation_owners,
+                    &event,
+                    /*replay*/ true,
+                )?;
+                if let Event::Reserve {
+                    request_id,
+                    reservation,
+                    ..
+                } = &event
+                {
+                    reservation_owners
+                        .insert(reservation.reservation_id.clone(), request_id.clone());
+                }
             }
             if records.len() + native.records.len() > capacity
                 || records.keys().any(|id| native.records.contains_key(id))
@@ -253,6 +272,7 @@ impl DurableInferenceControl {
             path,
             file,
             records,
+            reservation_owners,
             native,
             capacity,
             journal_bytes,
@@ -486,11 +506,25 @@ impl DurableInferenceControl {
         // Reject invalid transitions before durable append; a rejected command
         // must not poison the next reopen with an invalid journal event.
         let mut next = self.records.clone();
-        apply_event(&mut next, &event, /*replay*/ false)?;
+        apply_event(
+            &mut next,
+            &self.reservation_owners,
+            &event,
+            /*replay*/ false,
+        )?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
         let request_id = event.request_id().to_string();
         self.records = next;
+        if let Event::Reserve {
+            request_id,
+            reservation,
+            ..
+        } = &event
+        {
+            self.reservation_owners
+                .insert(reservation.reservation_id.clone(), request_id.clone());
+        }
         let record = self
             .records
             .get(&request_id)
@@ -571,6 +605,7 @@ impl Event {
 
 fn apply_event(
     records: &mut BTreeMap<String, RequestRecord>,
+    reservation_owners: &BTreeMap<String, String>,
     event: &Event,
     replay: bool,
 ) -> Result<(), Error> {
@@ -601,6 +636,19 @@ fn apply_event(
             expected_revision,
             reservation,
         } => {
+            // An exact reservation belongs to a single request for its entire
+            // durable lifetime. Never allow an old cancelled or completed
+            // request to donate its ResourceGrant identity to a second request.
+            if reservation_owners
+                .get(&reservation.reservation_id)
+                .is_some_and(|owner| owner != request_id)
+            {
+                return Err(if replay {
+                    Error::CorruptJournal("reservation identity reused")
+                } else {
+                    Error::Conflict
+                });
+            }
             let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
             require_revision(record, *expected_revision, replay)?;
             if record.state != RequestState::Pending {
