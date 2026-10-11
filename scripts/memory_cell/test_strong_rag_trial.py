@@ -407,11 +407,11 @@ class StrongRagPolicyTests(unittest.TestCase):
                     "citation_audit_after_labels",
                 ],
             )
-            self.assertEqual(
-                trial.read(root / "out/runtime-preflight.json",
-                           trial.file_sha(root / "out/runtime-preflight.json"))["schema"],
-                "synthetic-host-fixture-only",
+            preflight_path = root / "out/runtime-preflight.json"
+            runtime_receipt = trial.read(
+                preflight_path, trial.file_sha(preflight_path)
             )
+            self.assertEqual(runtime_receipt["schema"], "synthetic-host-fixture-only")
             self.assertEqual(result["total_attempts"], 72)
             self.assertEqual(
                 result["formal_citation_chain"]["schema"], "test-fixture-citation"
