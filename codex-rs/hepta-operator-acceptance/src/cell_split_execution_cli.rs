@@ -12,7 +12,6 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 
-use codex_hepta_types::Digest32;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
@@ -205,6 +204,9 @@ mod tests {
         let dir = tempfile::tempdir().expect("tempdir");
         let file = dir.path().join("config.json");
         std::fs::write(&file, b"{}").expect("fixture");
+        use std::os::unix::fs::PermissionsExt as _;
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600))
+            .expect("private config");
         let error = run_pinned_cell_split_execution_v1(
             "advance",
             &file,
@@ -227,7 +229,7 @@ mod tests {
         let error = run_pinned_cell_split_execution_v1(
             "promote",
             Path::new("/nonexistent-cell-split-config"),
-            &Digest32::ZERO.to_string(),
+            &"00".repeat(32),
         )
         .expect_err("no promotion action");
         assert!(error.contains("advance or transcript"));
