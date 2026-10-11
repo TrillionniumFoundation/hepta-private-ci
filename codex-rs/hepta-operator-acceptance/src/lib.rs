@@ -85,6 +85,10 @@ pub use cell_split_cns_cutover::CellSplitCnsRouteBindingV1;
 #[cfg(unix)]
 pub use cell_split_cns_cutover::CellSplitCnsRuntimeCommitV1;
 #[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsRuntimeAttestationV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CELL_SPLIT_CNS_RUNTIME_ATTESTATION_SCHEMA_V1;
+#[cfg(unix)]
 pub use cell_split_cns_cutover::CellSplitCnsRuntimePortV1;
 #[cfg(unix)]
 pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
