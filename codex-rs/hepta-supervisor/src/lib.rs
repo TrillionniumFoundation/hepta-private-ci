@@ -145,6 +145,7 @@ pub use signed_intent::SignedIntentRecoveryAction;
 pub use signed_intent::SignedIntentRecoveryDirective;
 pub use signed_intent::SignedIntentStatus;
 pub use signed_intent::SignedSupervisorIntent;
+pub use signed_intent::clear_recovery_directive as clear_signed_intent_recovery_directive;
 pub use signed_intent::read_intent as read_signed_intent;
 pub use signed_intent::read_recovery_directive as read_signed_intent_recovery_directive;
 pub use signed_intent::write_recovery_directive as write_signed_intent_recovery_directive;
