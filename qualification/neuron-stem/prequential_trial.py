@@ -127,7 +127,9 @@ def model_only_ood_receipt(row, arm, probabilities, *, model, revision,
     if arm not in ("frozen", "trained") or row.get("split") not in ("calibration", "ood"):
         raise ValueError("only learned/frozen calibration and OOD model records allowed")
     if (not isinstance(revision, str) or len(revision) != 40 or
+            any(c not in "0123456789abcdef" for c in revision) or
             not isinstance(weights_digest, str) or len(weights_digest) != 64 or
+            any(c not in "0123456789abcdef" for c in weights_digest) or
             type(generation) is not int or generation <= 0):
         raise ValueError("OOD model snapshot revision/generation not pinned")
     if (not isinstance(probabilities, list) or
@@ -169,6 +171,11 @@ def trial(args):
     if len(rows) > args.max_dataset_cases:
         raise ValueError("dataset exceeds precommitted bounded event envelope")
     task_rows, future, keys, classes, audit = prepare_chronology(rows, args.task_id)
+    if args.emit_ood_model_receipts:
+        oo = [row for row in task_rows if row["split"] == "ood"]
+        if not oo or min(iso_time(row) for row in oo) <= max(
+                iso_time(row) for row in future):
+            raise ValueError("OOD model traces require post-future chronological events")
     if len(future) > args.max_future_events:
         raise ValueError("future replay exceeds bounded event envelope")
     if len(keys) > args.max_cells:
