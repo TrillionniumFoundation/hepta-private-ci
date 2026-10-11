@@ -665,3 +665,40 @@ fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
         Err(CellSplitCnsCutoverErrorV1::Invalid)
     ));
 }
+
+#[test]
+fn genuinely_signed_but_wrong_scope_runtime_cutover_is_denied() {
+    let root = private_root();
+    let ready = Arc::new(AtomicBool::new(true));
+    let request = intent();
+    let mut cns = owner(root.path(), ready);
+    cns.commit_once(&request).expect("original live CNS cutover");
+    let original = cns
+        .read_committed(&request)
+        .expect("current CNS")
+        .expect("original commit");
+
+    // An adversary with a valid unrelated CNS runtime signature may not
+    // replace the original proof while preserving an otherwise valid outer
+    // record. Signed bytes must be bound to this exact scope and route.
+    let path = root
+        .path()
+        .join(format!("runtime-cutover-{}.json", request.idempotency_key));
+    let mut forged: CellSplitCnsRuntimeCommitV1 =
+        serde_json::from_slice(&fs::read(&path).expect("CNS receipt")).expect("typed commit");
+    let mut inner: CellSplitCnsRuntimeAttestationV1 =
+        serde_json::from_slice(&forged.original_runtime_receipt_bytes)
+            .expect("typed independent CNS attestation");
+    inner.scope_digest = "aa".repeat(32);
+    let unrelated = canonical_json(&inner).expect("canonical unrelated signed proof");
+    let signer = SigningKey::from_bytes(&[9; 32]);
+    forged.original_runtime_signature_bytes = signer.sign(&unrelated).to_bytes().to_vec();
+    forged.original_runtime_receipt_bytes = unrelated;
+    fs::write(&path, canonical_json(&forged).expect("changed outer commit"))
+        .expect("simulate out-of-band receipt substitution");
+    assert!(
+        cns.verify_current(&request, &original).is_err(),
+        "independently signed but wrong-scope CNS proof cannot be current"
+    );
+    assert!(cns.read_committed(&request).is_err());
+}
