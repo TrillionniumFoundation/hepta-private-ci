@@ -2,6 +2,7 @@
 from dataclasses import replace
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 import torch
 
@@ -125,6 +126,19 @@ class PairedOpportunityTests(unittest.TestCase):
         self.assertEqual(report["updates"], 4)
         with torch.inference_mode(), self.assertRaises(ValueError):
             fit_paired(Continuation(4, hidden=4), rows, cut, steps=4)
+
+    def test_gate_does_not_advance_when_random_control_wins(self):
+        rows, cut = inputs()
+        initial = dict(model_digest=model_digest(Continuation(4)), weak_support_hits=0)
+        learned = dict(status="succeeded", costs=dict(attempted_operations={"critic_forward": 32}))
+        with patch("system2_learning_probe.inspect", side_effect=[
+                initial, dict(weak_support_hits=0), dict(weak_support_hits=4), dict(weak_support_hits=2)]), \
+             patch("system2_learning_probe.train_continuation", return_value={}), \
+             patch("system2_learning_probe.fit_paired", return_value=learned):
+            report = run_probe(rows, cut, 4, steps=16)
+        self.assertTrue(report["observed_training_decision_gain"])
+        self.assertFalse(report["paired_over_random_training_decision_gain"])
+        self.assertEqual(report["next_gate"], "stop_no_gain_over_matched_random")
 
     def test_comparison_keeps_equal_initialization_and_no_task_claim(self):
         rows, cut = inputs()

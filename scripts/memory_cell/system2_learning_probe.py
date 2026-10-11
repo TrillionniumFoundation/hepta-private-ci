@@ -234,7 +234,9 @@ def run_probe(rows, cut, dimension, *, steps=96, revoked=frozenset()):
         cut_admission_digest=cut.admission_digest, disposition=disposition, disposition_digest=digest(disposition),
         initial=initial, methods=results, elapsed_seconds=time.perf_counter()-started,
         observed_training_decision_gain=bool(gain),
-        next_gate="reader_controls_and_fresh_confirmation" if gain else "stop_no_train_decision_gain",
+        next_gate=("reader_controls_and_fresh_confirmation" if gain and paired_over_random and matched_work
+                   else "stop_no_gain_over_matched_random" if gain
+                   else "stop_no_train_decision_gain"),
         same_update_ceiling=True, legacy_compute_matched=False,
         paired_random_neural_shapes_and_calls_matched=bool(matched_work),
         paired_over_random_training_decision_gain=bool(paired_over_random),

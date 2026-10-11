@@ -48,6 +48,11 @@ def append(path, value):
 def run(args):
     if not args.development:
         raise ValueError("unqualified exposed-native run requires explicit --development")
+    content_mode = getattr(args, "content_preflight", False)
+    if content_mode and args.learning_preflight:
+        raise ValueError("content-only and Reader-first preflights are distinct")
+    if content_mode and any((args.reviews, args.trust, args.reviews_sha, args.trust_sha)):
+        raise ValueError("content-only preflight does not consume human review inputs")
     commit = os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", "")
     if not re.fullmatch("[0-9a-f]{40}", commit):
         raise ValueError("exact generating commit required")
@@ -61,12 +66,17 @@ def run(args):
     qs = select_questions(sources)
     query_source = {q.identity: sources["longmemeval" if phase == "transfer" else "locomo"]
                     for phase, group in qs.items() for q in group}
+    training_queries = ([q for q in qs["train"] if route_text(q.content) == "general"]
+                        if content_mode else qs["train"])
+    if not training_queries:
+        raise ValueError("missing preregistered training Cell")
     evaluations = [q for phase, group in qs.items() if phase != "train" for q in group]
     family = {q.identity: query_source[q.identity].families[q.family] for group in qs.values() for q in group}
     train_families = {family[q.identity] for q in qs["train"]}
     if train_families & {family[q.identity] for q in evaluations}:
         raise ValueError("native source-family training/evaluation overlap")
-    if digest(file_inventory(args.staged / "reader")) != READER or digest(file_inventory(args.staged / "encoder")) != RETRIEVER:
+    if ((not content_mode and digest(file_inventory(args.staged / "reader")) != READER)
+            or digest(file_inventory(args.staged / "encoder")) != RETRIEVER):
         raise ValueError("shared frozen model inventory mismatch")
     plan = dict(schema="hepta.system2.development.v1", source_commit=commit,
                 arms=list(ARMS), checkpoints=[16, 32, 48],
@@ -88,11 +98,24 @@ def run(args):
                     fresh_initialization_each_checkpoint=True, optimizer_updates_per_fit=96,
                     paired_training_uses_two_forwards_per_update=True,
                     matched_training_compute=False, full_matrix_completed=False)
+    if content_mode:
+        plan.update(schema="hepta.system2.content-preflight.v1", arms=[],
+                    inherited_primary_arms=list(ARMS), planned_policy_attempts=0,
+                    mode="single-cell-train-content-vs-cardinality", cell="general",
+                    methods=["content", "content_erased"], planned_reader_calls=0,
+                    reader_calls_per_successful_policy=0, reader_input_token_limit=None,
+                    reader_model_loaded=False, reader_controls_executed=False,
+                    encoded_question_ids=[q.identity for q in training_queries],
+                    fresh_initialization_each_checkpoint=True, optimizer_updates_per_fit=96,
+                    equal_nonzero_cardinality_per_pair=True, pair_difference="one_candidate_replacement",
+                    frozen_train_comparator="max_frozen_score_over_each_set",
+                    confirmation_and_reader_adequacy_are_still_required=True,
+                    matched_training_compute=False, full_matrix_completed=False)
     write(args.output / "plan.json", plan)
     encoder, ranker = Encoder(args.staged / "encoder"), FrozenPairEncoder(args.ranker)
     cache = SharedFeatureCache(ranker)
     features, pools, failures, indices, index_receipts = {}, {}, {}, {}, {}
-    for group in qs.values():
+    for group in ([training_queries] if content_mode else qs.values()):
         for q in group:
             source = query_source[q.identity]
             try:
@@ -114,14 +137,48 @@ def run(args):
                 failures[q.identity] = dict(error_type=type(exc).__name__, error=str(exc)[:512])
     write(args.output / "feature-failures.json", failures)
     write(args.output / "indices.json", index_receipts)
-    if any(q.identity not in features for q in qs["train"]):
+    if any(q.identity not in features for q in training_queries):
         raise ValueError("incomplete train features; no silent train replacement")
-    train_roots = frozenset(root for q in qs["train"] for root in features[q.identity].roots)
+    train_roots = frozenset(root for q in training_queries for root in features[q.identity].roots)
     forbidden = frozenset(d.root for q in evaluations for d in query_source[q.identity].history(q))
-    cut = TrainingCut(frozenset(q.identity for q in qs["train"]), frozenset(train_families),
+    cut = TrainingCut(frozenset(q.identity for q in training_queries),
+                      frozenset(family[q.identity] for q in training_queries),
                       train_roots, forbidden, digest((plan, "train-only")))
-    rows, disposition = train_rows(qs["train"], sources["locomo"].targets, pools, features, cut)
+    rows, disposition = train_rows(training_queries, sources["locomo"].targets, pools, features, cut)
     write(args.output / "training-dispositions.json", disposition)
+    if content_mode:
+        from system2_content_probe import run_content_probe
+        probes = []
+        for checkpoint in (16, 32, 48):
+            admitted = {q.identity for q in qs["train"][:checkpoint]}
+            selected = tuple(r for r in rows if r.features.question_id in admitted)
+            try:
+                probe = run_content_probe(selected, cut, ranker.dimension, steps=96,
+                    output=args.output / f"content-probe-{checkpoint}")
+                statuses = [m["status"] for m in probe["methods"].values()]
+                status = ("failed" if "failed" in statuses else "unavailable"
+                          if "unavailable" in statuses else "succeeded")
+                record = dict(checkpoint=checkpoint, cell="general", status=status, probe=probe)
+            except Exception as exc:
+                record = dict(checkpoint=checkpoint, cell="general", status="failed",
+                              error_type=type(exc).__name__, error=str(exc)[:512])
+            probes.append(record)
+            append(args.output / "content-preflight.jsonl", record)
+        result = dict(schema="hepta.system2.content-preflight-summary.v1", source_commit=commit,
+            mode="single-cell-train-content-vs-cardinality", planned_policy_attempts=0,
+            actual_policy_attempts=0, planned_reader_calls=0, actual_reader_calls=0,
+            reader_model_loaded=False, reader_controls_executed=False,
+            planned_probe_checkpoints=3, recorded_probe_checkpoints=len(probes),
+            failed_probe_checkpoints=sum(r["status"] == "failed" for r in probes),
+            unavailable_probe_checkpoints=sum(r["status"] == "unavailable" for r in probes),
+            encoded_training_questions=len(features), evaluation_target_annotations_used=False,
+            elapsed_seconds=time.perf_counter()-started, full_matrix_completed=False,
+            reader_adequacy_established=False, native_reasoning_superiority=False,
+            production_accepted=False)
+        write(args.output / "run-summary.json", result)
+        if result["failed_probe_checkpoints"]:
+            raise RuntimeError("content preflight failed; partial artifacts retained")
+        return
     reader = FrozenBundleReader(args.staged / "reader", expected_inventory=READER)
     reviews, registry = {}, None
     if any((args.reviews, args.trust, args.reviews_sha, args.trust_sha)):
@@ -291,6 +348,8 @@ def main():
     parser.add_argument("output", type=Path); parser.add_argument("--development", action="store_true")
     parser.add_argument("--learning-preflight", action="store_true",
                         help="single general Cell train-only legacy/random/paired diagnostic; no new full policy matrix")
+    parser.add_argument("--content-preflight", action="store_true",
+                        help="train-only equal-size content/erased study; no Reader load, calls or new task answers")
     parser.add_argument("--reviews", type=Path); parser.add_argument("--reviews-sha")
     parser.add_argument("--trust", type=Path); parser.add_argument("--trust-sha")
     args = parser.parse_args()

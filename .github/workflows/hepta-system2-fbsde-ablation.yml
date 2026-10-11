@@ -96,13 +96,13 @@ jobs:
           if file_inventory(Path('/tmp/system2-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
               raise ValueError('paired encoder drift')
           PY
-      - name: Single Cell learning preflight after four Reader conditions, not a new full matrix
+      - name: Equal-cardinality content preflight on train-only features, zero Reader calls
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
-          /usr/bin/time -v -o /tmp/system2-research/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_native_trial.py /tmp/memory-inputs /tmp/system2-ranker /tmp/system2-research/native --development --learning-preflight 2>&1 | tee /tmp/system2-research/execution.log
+          /usr/bin/time -v -o /tmp/system2-research/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_native_trial.py /tmp/memory-inputs /tmp/system2-ranker /tmp/system2-research/native --development --content-preflight 2>&1 | tee /tmp/system2-research/execution.log
       - name: Retain source identity, partial rows, failures, and full artifacts
         if: always()
         run: |
