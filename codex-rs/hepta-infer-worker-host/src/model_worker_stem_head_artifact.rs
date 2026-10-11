@@ -26,8 +26,8 @@ use serde::Deserialize;
 use super::CpuGatedHead;
 use super::CpuGatedHeadDriver;
 use super::InferenceWorker;
-use super::StemCpuHeadUseV1;
 use super::SelectedStemProjectionReaderV1;
+use super::StemCpuHeadUseV1;
 use super::StemProjectionOwnerFenceV1;
 use super::cpu_gated_bundle_weights_digest;
 
@@ -77,19 +77,33 @@ pub fn encode_cpu_head_bank_candidate_v1(
     let mut previous: Option<String> = None;
     let mut values = Vec::with_capacity(heads.len());
     for head in heads {
-        let head_digest = head.digest().map_err(|_| StemHeadArtifactError::InvalidPayload)?;
-        if previous.as_ref().is_some_and(|before| before >= &head_digest) {
+        let head_digest = head
+            .digest()
+            .map_err(|_| StemHeadArtifactError::InvalidPayload)?;
+        if previous
+            .as_ref()
+            .is_some_and(|before| before >= &head_digest)
+        {
             return Err(StemHeadArtifactError::InvalidPayload);
         }
         previous = Some(head_digest);
         let mut row = BTreeMap::new();
         row.insert("input_width", serde_json::json!(head.input_width));
         row.insert("output_width", serde_json::json!(head.output_width));
-        row.insert("drive_weights_q24", serde_json::json!(head.drive_weights_q24));
-        row.insert("prediction_weights_q24", serde_json::json!(head.prediction_weights_q24));
+        row.insert(
+            "drive_weights_q24",
+            serde_json::json!(head.drive_weights_q24),
+        );
+        row.insert(
+            "prediction_weights_q24",
+            serde_json::json!(head.prediction_weights_q24),
+        );
         row.insert("gate_weights_q24", serde_json::json!(head.gate_weights_q24));
         row.insert("drive_bias_q24", serde_json::json!(head.drive_bias_q24));
-        row.insert("prediction_bias_q24", serde_json::json!(head.prediction_bias_q24));
+        row.insert(
+            "prediction_bias_q24",
+            serde_json::json!(head.prediction_bias_q24),
+        );
         row.insert("gate_bias_q24", serde_json::json!(head.gate_bias_q24));
         values.push(row);
     }
@@ -107,9 +121,7 @@ pub fn encode_cpu_head_bank_candidate_v1(
     Ok(encoded)
 }
 
-fn decode_cpu_head_bank(
-    bytes: &[u8],
-) -> Result<HeadBankPayloadV1, StemHeadArtifactError> {
+fn decode_cpu_head_bank(bytes: &[u8]) -> Result<HeadBankPayloadV1, StemHeadArtifactError> {
     if bytes.is_empty() || bytes.len() > MAX_HEAD_BANK_PAYLOAD_BYTES {
         return Err(StemHeadArtifactError::InvalidPayload);
     }
@@ -174,8 +186,7 @@ impl SelectedStemHeadBankReaderV1 {
         let mut candidate = load_selected_candidate(snapshot_file, payload_file, selected)
             .map_err(|error| StemHeadArtifactError::Storage(error.to_string()))?;
         if candidate.spec().manifest.kind != ArtifactKind::Parameters
-            || candidate.spec().manifest.compatibility_digest.to_string()
-                != expected_weights_digest
+            || candidate.spec().manifest.compatibility_digest.to_string() != expected_weights_digest
         {
             return Err(StemHeadArtifactError::InvalidBinding);
         }
@@ -191,7 +202,10 @@ impl SelectedStemHeadBankReaderV1 {
         let head_digests = bank
             .heads
             .iter()
-            .map(|head| head.digest().map_err(|_| StemHeadArtifactError::InvalidPayload))
+            .map(|head| {
+                head.digest()
+                    .map_err(|_| StemHeadArtifactError::InvalidPayload)
+            })
             .collect::<Result<BTreeSet<_>, _>>()?;
         if head_digests.len() != bank.heads.len() {
             return Err(StemHeadArtifactError::InvalidPayload);
@@ -277,7 +291,8 @@ impl SelectedStemHeadBankReaderV1 {
         let binding = use_request.binding;
         if binding.scope_digest != self.fence.scope_digest.to_string()
             || binding.generation != self.fence.worker_generation
-            || binding.revocation_frontier_digest != self.fence.revocation_frontier_digest.to_string()
+            || binding.revocation_frontier_digest
+                != self.fence.revocation_frontier_digest.to_string()
             || request.encoder_digest != self.encoder_digest
             || binding.encoder_digest != self.encoder_digest
             || request.weights_digest != self.weights_digest
