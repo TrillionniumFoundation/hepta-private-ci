@@ -5,6 +5,7 @@ This runner never generates model measurements, independent signatures or
 production authorization. Each external workload must write its own measured
 JSON. The resulting packet is diagnostic until independently attested.
 """
+
 from __future__ import annotations
 
 import argparse
