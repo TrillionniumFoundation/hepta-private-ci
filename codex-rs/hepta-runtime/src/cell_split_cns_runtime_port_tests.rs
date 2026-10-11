@@ -1,5 +1,8 @@
+use std::collections::BTreeSet;
+use std::os::unix::fs::PermissionsExt as _;
 use std::sync::Arc;
 
+use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_operator_acceptance::CellSplitCnsRuntimePortV1;
 use codex_hepta_paths::HeptaStateRoot;
 use ed25519_dalek::{Signer as _, SigningKey};
@@ -32,6 +35,7 @@ impl RuntimeStateAdapter for ReadOnlyState {
 /// authority, and it must NEVER return an admitted successor or positive
 /// original commit.
 struct DenyingWitness {
+    _authority_root: tempfile::TempDir,
     signer: SigningKey,
     stale_nonce: bool,
     deny_authority: bool,
@@ -80,14 +84,7 @@ impl CellSplitCnsKernelWitnessV1 for DenyingWitness {
         _plan: &CellSplitExecutionPlanV1,
         _binding: &CellSplitCnsRouteBindingV1,
         _intent: &CellSplitExecutionIntentV1,
-    ) -> Result<
-        (
-            Arc<FinalUseAuthority>,
-            SignedFinalUseGrant,
-            RuntimeTopologyApplyRequestV1,
-        ),
-        Self::Error,
-    > {
+    ) -> Result<(SignedFinalUseGrant, RuntimeTopologyApplyRequestV1), Self::Error> {
         Err("no signed final-use grant and admitted runtime candidate")
     }
 
@@ -167,10 +164,25 @@ fn fixture(
         idempotency_key,
         previous_receipt_digest: predecessor,
     };
+    let private = tempfile::tempdir().expect("private final-use state");
+    std::fs::set_permissions(
+        private.path(),
+        std::fs::Permissions::from_mode(0o700),
+    ).expect("private authority directory");
+    let pinned_authority = Arc::new(FinalUseAuthority::open_state_dir(
+        private.path(),
+        "cns-port-independent-test-issuer".to_owned(),
+        SigningKey::from_bytes(&[55; 32]).verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1, revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    ).expect("independent fixed verifier"));
     let port = CellSplitCnsKernelRuntimePortV1::new(
-        runtime.clone(), plan.clone(), binding.clone(), intent.clone(),
-        trusted_key.verifying_key(),
+        runtime.clone(), pinned_authority, plan.clone(), binding.clone(),
+        intent.clone(), trusted_key.verifying_key(),
         DenyingWitness {
+            _authority_root: private,
             signer: actual_key, stale_nonce, deny_authority,
         },
     ).expect("CNS runtime bridge");
