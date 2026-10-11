@@ -26,7 +26,10 @@ pub(crate) struct AgentdLearningPlasticityProducerV1 {
     // the actual bounded actor; no new unauthenticated caller is introduced.
     #[cfg_attr(
         not(test),
-        expect(dead_code, reason = "staged plasticity owner handle, not an ingress permission")
+        expect(
+            dead_code,
+            reason = "staged plasticity owner handle, not an ingress permission"
+        )
     )]
     handle: PlasticityRuntimeHandleV1,
 }
@@ -38,7 +41,10 @@ impl AgentdLearningPlasticityProducerV1 {
 
     #[cfg_attr(
         not(test),
-        expect(dead_code, reason = "staged owner-only plasticity call; no public dispatch path")
+        expect(
+            dead_code,
+            reason = "staged owner-only plasticity call; no public dispatch path"
+        )
     )]
     pub(crate) async fn submit_parameter(
         &self,
@@ -50,7 +56,10 @@ impl AgentdLearningPlasticityProducerV1 {
 
     #[cfg_attr(
         not(test),
-        expect(dead_code, reason = "staged owner-only topology call; no public dispatch path")
+        expect(
+            dead_code,
+            reason = "staged owner-only topology call; no public dispatch path"
+        )
     )]
     pub(crate) async fn submit_topology(
         &self,
