@@ -583,6 +583,99 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
     assert!(batch.receipts.iter().all(|r| !r.authority.grants_any()));
     assert!(!batch_observation.production_authorized);
 
+    // A fresh signed session with one tampered member must reject the
+    // WHOLE batch, seal both CAS readers, and never reach the native backend.
+    // Keep the successful readers untouched for the subsequent revocation test.
+    let (bad_projection_file, bad_projection_current) =
+        fx.current("projection.invalid.load", Digest32::ZERO);
+    let bad_signed_projection = fx.selection(&fx.projection, &bad_projection_current);
+    let bad_selected_projection = fx
+        .selector_verifier
+        .verify(&bad_signed_projection, &bad_projection_current, 30)
+        .expect("independent projection selection");
+    let (bad_head_file, bad_head_current) =
+        fx.current("head.invalid.load", Digest32::ZERO);
+    let bad_signed_head = fx.selection(&fx.bank, &bad_head_current);
+    let bad_selected_head = fx
+        .selector_verifier
+        .verify(&bad_signed_head, &bad_head_current, 30)
+        .expect("independent Head bank selection");
+    let mut bad_projection_reader = SelectedStemProjectionReaderV1::load(
+        bad_projection_file,
+        File::open(fx.root.path().join("projection.payload")).expect("projection payload"),
+        bad_selected_projection,
+        bad_projection_current,
+        fx.projection.compatibility_digest,
+        fence,
+    )
+    .expect("selected projection for adversarial batch");
+    let mut bad_head_reader = SelectedStemHeadBankReaderV1::load(
+        bad_head_file,
+        File::open(fx.root.path().join("bank.payload")).expect("Head payload"),
+        bad_selected_head,
+        bad_head_current,
+        &projection().encoder_digest,
+        &fx.bank.compatibility_digest.to_string(),
+        fence,
+    )
+    .expect("selected Head bank for adversarial batch");
+
+    let mut valid = request.clone();
+    valid.authorization.request_id = "request.batch.verified".into();
+    valid.authorization.reservation_id = "reservation.batch.verified".into();
+    let digest = super::super::canonical_neuron_feature_payload_digest(&valid);
+    valid.authorization.payload_digest = digest.clone();
+    valid.authorization.lease_payload_digest = digest;
+    let mut tampered = request.clone();
+    tampered.authorization.request_id = "request.batch.tampered".into();
+    tampered.authorization.reservation_id = "reservation.batch.tampered".into();
+    tampered.feature_vector_q24[0] += 1;
+    // Attacker can recompute an untrusted hash; it still does not match
+    // the selected projection's Q24 output.
+    let digest = super::super::canonical_neuron_feature_payload_digest(&tampered);
+    tampered.authorization.payload_digest = digest.clone();
+    tampered.authorization.lease_payload_digest = digest;
+    let (_, bad_projection_live) =
+        fx.current("projection.invalid.use", Digest32::ZERO);
+    let (_, bad_head_live) = fx.current("head.invalid.use", Digest32::ZERO);
+    assert!(
+        bad_head_reader
+            .run_selected_cpu_head_backend_batch(
+                &mut bad_projection_reader,
+                &mut worker,
+                StemCpuHeadBatchUseV1 {
+                    selector: &fx.selector_verifier,
+                    signed_selection: &bad_signed_projection,
+                    current: bad_projection_live,
+                    selection_now: 30,
+                    items: vec![
+                        super::super::StemCpuHeadBatchItemV1 {
+                            binding: &bound,
+                            source_features: &features,
+                            token_count: 3,
+                            request: valid,
+                        },
+                        super::super::StemCpuHeadBatchItemV1 {
+                            binding: &bound,
+                            source_features: &features,
+                            token_count: 3,
+                            request: tampered,
+                        },
+                    ],
+                    worker_now_ms: 100,
+                    model_id: "model.two.signed.cas",
+                },
+                &fx.selector_verifier,
+                &bad_signed_head,
+                bad_head_live,
+                30,
+            )
+            .is_err()
+    );
+    assert_eq!(worker.driver.observed_backend_batch_invocations(), 1);
+    assert!(bad_head_reader.is_sealed());
+    assert!(bad_projection_reader.is_sealed());
+
     let old_head = fx.registry.snapshot().head_digest;
     fx.registry
         .append(ArtifactEvent::Revoke(StateChange {
