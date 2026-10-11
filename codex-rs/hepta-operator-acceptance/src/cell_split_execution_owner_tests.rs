@@ -282,6 +282,53 @@ fn advances_only_in_exact_dependency_order_and_recovers_verified_chain() {
 }
 
 #[test]
+fn transcript_only_reopen_must_not_reconcile_lost_ack_into_a_commit() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut port = FixturePort::new(state.clone());
+        port.drop_ack = true;
+        let mut writer = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("open effect owner");
+        assert!(matches!(
+            writer.advance(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(state.borrow().executions, 1);
+    }
+    {
+        let mut reader = CellSplitExecutionOwnerV1::open_existing(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("read-only open of unresolved intent");
+        assert!(matches!(
+            reader.advance(),
+            Err(CellSplitExecutionErrorV1::Invalid(
+                "read-only CellSplit owner cannot advance"
+            ))
+        ));
+        assert_eq!(reader.completed_steps(), 0);
+        assert_eq!(state.borrow().executions, 1);
+        assert!(!root.path().join("cell-split-00-committed.json").exists());
+    }
+    // Only a separately opened mutable execution owner may reconcile this
+    // exact previously executed effect, without dispatching it a second time.
+    let mut writer = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("execution recovery");
+    assert!(writer.advance().expect("reconcile original").is_some());
+    assert_eq!(writer.completed_steps(), 1);
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
