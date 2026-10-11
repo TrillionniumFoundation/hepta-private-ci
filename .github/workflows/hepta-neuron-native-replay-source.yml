@@ -6,6 +6,8 @@ on:
       - "codex-rs/hepta-agentd/src/shared_terminal_cell.rs"
       - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
       - "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
+      - "codex-rs/hepta-agentd/src/neuron_selected_artifact.rs"
+      - "qualification/neuron-model-trials/NATIVE_SELECTED_MODEL_DESCRIPTOR.md"
       - "codex-rs/hepta-agentd/src/lib.rs"
       - "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs"
       - "qualification/neuron-model-trials/NATIVE_OBSERVATION_REPLAY_SOURCE.md"
@@ -38,6 +40,10 @@ jobs:
         run: cargo check --locked -p codex-hepta-agentd --lib --tests
       - name: Run durable owner, SQLite Memory and Ledger integration
         run: cargo test --locked -p codex-hepta-agentd --test terminal_cell_owner clean_agent_recall_replay_training_load_and_source_withdrawal -- --exact
+      - name: Verify canonical selected-model descriptor codec and owner binding
+        run: cargo test --locked -p codex-hepta-agentd --lib neuron_selected_artifact::tests
+      - name: Check independently signed artifact selection on CURRENT registry
+        run: cargo test --locked -p codex-hepta-learning-artifacts --lib art_12_independent_selector_binds_exact_current_and_manifest
       - name: Check strict correctness
         run: cargo clippy --locked -p codex-hepta-agentd --lib -- -D clippy::correctness
       - name: Check source hygiene

@@ -14,6 +14,14 @@ use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_neuron::NeuronRuntimeError;
 use codex_hepta_neuron::NeuronRuntimeOutputV1;
 use codex_hepta_neuron::NeuronTickInputV1;
+use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
+use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
+use std::fs::File;
+
+use crate::neuron_selected_artifact::NeuronCandidateModelArtifactErrorV1;
+use crate::neuron_selected_artifact::NeuronCandidateModelArtifactV1;
+use crate::neuron_selected_artifact::verify_pinned_neuron_model_descriptor_v1;
 
 pub struct AgentdNeuronOwner<W, P>
 where
@@ -52,6 +60,32 @@ where
         &self,
     ) -> Result<NeuronLocalCheckpointBindingV1, NeuronRuntimeError> {
         self.runtime.read_local_checkpoint_binding_v1()
+    }
+
+    /// Verify one independently signed Model *descriptor* artifact against
+    /// this owner-local witnessed config. The artifact is small: the actual
+    /// frozen weights remain under their existing physical model/CAS owner.
+    /// This does NOT prove CNS route selection or authorize final-use/promotion.
+    #[allow(clippy::too_many_arguments)]
+    pub fn read_model_artifact_candidate_v1(
+        &self,
+        verifier: &ArtifactSelectionVerifierV1,
+        signed: &SignedArtifactSelectionV1,
+        current: VerifiedCurrentRegistryViewV1,
+        registry_snapshot: File,
+        descriptor_payload: File,
+        now: u64,
+    ) -> Result<NeuronCandidateModelArtifactV1, NeuronCandidateModelArtifactErrorV1> {
+        let local = self.read_local_checkpoint_binding_v1()?;
+        verify_pinned_neuron_model_descriptor_v1(
+            &local,
+            verifier,
+            signed,
+            current,
+            registry_snapshot,
+            descriptor_payload,
+            now,
+        )
     }
 
     pub fn runtime(&self) -> &NeuronRuntime<W> {
