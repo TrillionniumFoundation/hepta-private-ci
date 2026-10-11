@@ -112,7 +112,12 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
                 operation_digest: Digest32::of_bytes(&group_digest),
                 phase: PhaseMetricKindV1::NeuronFeature,
                 latency_micros: u64::try_from(start.elapsed().as_micros()).unwrap_or(u64::MAX),
-                succeeded: completed.iter().all(|item| item.result.is_ok()),
+                succeeded: completed.iter().all(|item| {
+                    matches!(
+                        &item.result,
+                        Ok(receipt) if receipt.status == codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+                    )
+                }),
             });
         }
         Ok(BatchWorkerPollV1 {
