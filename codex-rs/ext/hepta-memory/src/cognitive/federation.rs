@@ -1214,7 +1214,14 @@ mod tests {
         let temp = tempfile::tempdir().expect("tempdir");
         let fleet_root = temp.path().join("fleet");
         std::fs::create_dir_all(&fleet_root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(fleet_root).expect("fleet").layout();
+        // The production cognitive store rejects noncanonical paths (including
+        // Windows path namespace aliases). The fixture must open the same
+        // canonical absolute root that a real Owner receives; do not relax
+        // CognitiveStore's symlink/redirection admission checks.
+        let canonical_fleet_root = fleet_root.canonicalize().expect("canonical fleet root");
+        let fleet = HeptaFleetRoot::parse(canonical_fleet_root)
+            .expect("fleet")
+            .layout();
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
         let owner_layout = fleet.agent(&owner_id);
