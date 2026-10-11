@@ -156,8 +156,10 @@ class PrequentialThreeWayTests(unittest.TestCase):
         one = next(r for r in broken if r.get("future_window") == "future_1")
         two = next(r for r in broken if r.get("future_window") == "future_2")
         two["group_id"] = one["group_id"]
+        broken_trial = copy.deepcopy(self.trial)
+        broken_trial["dataset_audit"] = audit_dataset(broken)
         with self.assertRaisesRegex(ValueError, "same group"):
-            review(broken, self.trial, self.journal, self.nochange,
+            review(broken, broken_trial, self.journal, self.nochange,
                    replicates=1000)
         bad = copy.deepcopy(self.trial)
         for entry in bad["held_out_test_retention_after"].values():
