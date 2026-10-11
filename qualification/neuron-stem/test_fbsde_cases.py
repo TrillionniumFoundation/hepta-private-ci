@@ -1,6 +1,6 @@
 import unittest
 from fbsde_encoder_cases import (cases, partition_utterances, INTENTS, formula_vector,
-                                decode_probability, score_decoded, TRAIN_FORMULAS, TEST_FORMULAS)
+                                decode_probability, score_decoded, TRAIN_FORMULAS, TEST_FORMULAS, checked_probability)
 from four_gate_common import digest
 
 
@@ -36,6 +36,13 @@ class CaseTests(unittest.TestCase):
         self.assertEqual(score_decoded(records,{'a':True})['decoded_exact_accuracy'],1.)
         records[0]['text']=decode_probability(.1)
         with self.assertRaisesRegex(ValueError,'decoder changed latent'):score_decoded(records,{'a':True})
+
+    def test_solver_nonfinite_not_silently_clamped(self):
+        for value in (float('nan'), float('inf'), -float('inf'), -.01, 1.01, True):
+            with self.assertRaises(ValueError): checked_probability(value)
+        self.assertEqual(checked_probability(-1e-15), 0.)
+        self.assertEqual(checked_probability(1+1e-15), 1.)
+        self.assertEqual(checked_probability(.25), .25)
 
     def test_bad_decoder_probability(self):
         for p in (float('nan'),float('inf'),-.1,1.1):

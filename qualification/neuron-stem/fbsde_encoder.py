@@ -17,7 +17,7 @@ import time
 from four_gate_common import digest, require, sha, write_once
 from four_gate_capture import tensor_digest
 from fbsde_encoder_cases import (INTENTS, DEPTHS, partition_utterances, cases, formula_vector,
-                                  decode_probability, score_decoded)
+                                  decode_probability, score_decoded, checked_probability)
 from fbsde_tree import belief_bsde, polynomial_probability
 
 
@@ -86,7 +86,9 @@ def train_and_compare(torch, partitions, features, output, seed=104729):
         optimizer = torch.optim.AdamW(model.parameters(), lr=.003)
         cpu, wall = time.process_time_ns(), time.perf_counter_ns()
         for step in range(96):
-            optimizer.zero_grad(); loss=loss_fn(step); loss.backward()
+            optimizer.zero_grad(); loss=loss_fn(step)
+            require(torch.isfinite(loss).item(), 'nonfinite training loss')
+            loss.backward()
             nn.utils.clip_grad_norm_(model.parameters(),1.)
             optimizer.step()
             require(time.process_time_ns()-cpu <= 15_000_000_000, 'training CPU budget exhausted')
@@ -166,7 +168,7 @@ def train_and_compare(torch, partitions, features, output, seed=104729):
                     if arm=='fbsde_tree':p,residual,nodes=belief_bsde(row['formula'],ps)
                     else:p=polynomial_probability(row['formula'],ps)
                     depth=0;executed=0  # deterministic solver nodes are not learned depth
-            p=min(1.,max(0.,p)); text=decode_probability(p)
+            p=checked_probability(p); text=decode_probability(p)
             elapsed=time.process_time_ns()-cpu
             require(elapsed<=100_000_000,'per-prediction CPU budget exhausted')
             actual_cost[arm]+=elapsed

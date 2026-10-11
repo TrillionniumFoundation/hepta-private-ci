@@ -5,6 +5,7 @@ are generated, not human-authored reasoning labels or future Hepta outcomes.
 Only public case inputs are passed to inference; truth stays with the scorer.
 """
 import random
+import math
 from collections import defaultdict
 
 from four_gate_common import digest, require
@@ -80,6 +81,13 @@ def cases(rows, split, count, seed):
         leaves = [r['intent'] == t for r, t in zip(selected, targets)]
         truths[identity] = bool(eval_formula(f, leaves))
     return public, truths
+
+
+def checked_probability(p):
+    """Only tolerate floating-point roundoff, never turn solver failure into an answer."""
+    require(type(p) in (float, int) and math.isfinite(p), 'nonfinite model/solver probability')
+    require(-1e-12 <= p <= 1+1e-12, 'model/solver probability outside roundoff tolerance')
+    return min(1., max(0., float(p)))
 
 
 def decode_probability(p):
