@@ -548,7 +548,10 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
             original,
             100,
         );
-        assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+        assert_eq!(
+            port.execute_feature(&typed),
+            Err(NeuronModelError::Rejected)
+        );
     }
     let mut new_reservation = preadmitted_reservation(&typed);
     new_reservation.reservation_id = "reservation.2".to_owned();
@@ -559,7 +562,10 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
             new_reservation,
             100,
         );
-        assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+        assert_eq!(
+            port.execute_feature(&typed),
+            Err(NeuronModelError::Rejected)
+        );
     }
     let mut fresh = typed.clone();
     fresh.request_id = StableId::new("tick.2").unwrap();
@@ -570,7 +576,10 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
             preadmitted_reservation(&fresh),
             100,
         );
-        assert_eq!(port.execute_feature(&fresh), Err(NeuronModelError::Rejected));
+        assert_eq!(
+            port.execute_feature(&fresh),
+            Err(NeuronModelError::Rejected)
+        );
     }
     // A genuinely new pair from the external reservation owner remains usable.
     let mut distinct = preadmitted_reservation(&fresh);
@@ -584,7 +593,10 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
         );
         // This particular pair has a previously denied request ID and so must
         // still fail closed. Use a new request+reservation below instead.
-        assert_eq!(port.execute_feature(&fresh), Err(NeuronModelError::Rejected));
+        assert_eq!(
+            port.execute_feature(&fresh),
+            Err(NeuronModelError::Rejected)
+        );
     }
     fresh.request_id = StableId::new("tick.3").unwrap();
     let mut third = preadmitted_reservation(&fresh);
@@ -612,7 +624,10 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
             reservation.clone(),
             100,
         );
-        assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+        assert_eq!(
+            port.execute_feature(&typed),
+            Err(NeuronModelError::Rejected)
+        );
     }
     let mut port = WorkerNeuronControlPort::from_reserved_worker(
         &mut worker,
@@ -620,7 +635,10 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
         reservation,
         100,
     );
-    assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+    assert_eq!(
+        port.execute_feature(&typed),
+        Err(NeuronModelError::Rejected)
+    );
     assert_eq!(calls.load(Ordering::SeqCst), 0);
 
     let mut worker = worker(Arc::clone(&calls), true, false);
@@ -633,7 +651,10 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
             100,
         );
         let observed = port.execute_feature(&typed).unwrap();
-        assert_eq!(observed.status, NeuronFeatureTerminalStatusV1::Indeterminate);
+        assert_eq!(
+            observed.status,
+            NeuronFeatureTerminalStatusV1::Indeterminate
+        );
     }
     let mut port = WorkerNeuronControlPort::from_reserved_worker(
         &mut worker,
@@ -641,6 +662,9 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
         reservation,
         100,
     );
-    assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+    assert_eq!(
+        port.execute_feature(&typed),
+        Err(NeuronModelError::Rejected)
+    );
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }

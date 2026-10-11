@@ -284,7 +284,11 @@ fn worker_owned_neuron_attempt_log_blocks_direct_feature_replay() {
     .unwrap();
     worker.load_model(100, manifest()).unwrap();
     let request = neuron_feature_request();
-    assert!(worker.run_neuron_features(100, "model.1", request.clone()).is_ok());
+    assert!(
+        worker
+            .run_neuron_features(100, "model.1", request.clone())
+            .is_ok()
+    );
     assert_eq!(
         worker.run_neuron_features(100, "model.1", request),
         Err(Error::NeuronReservationReplay)
