@@ -57,6 +57,8 @@ pub trait CellSplitCasFinalUsePortV1 {
 pub enum CellSplitArtifactCasErrorV1 {
     #[error("artifact CAS frozen binding, operation, or state mismatch")]
     Invalid,
+    #[error("artifact CAS contains an object without its original committed receipt; reconcile before retry")]
+    Ambiguous,
     #[error("artifact CAS final-use authority rejected effect: {0}")]
     Denied(String),
     #[error(transparent)]
@@ -207,8 +209,11 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
     /// use rename-overwrite; a partial object fails readback after a crash.
     fn publish_object(&self) -> Result<u64, CellSplitArtifactCasErrorV1> {
         let path = self.object_path();
+        // A valid orphaned object is still an unknown effect: its directory
+        // sync may have completed before the intent-bound commit record was
+        // written. Never adopt it as a fresh success on an Execute retry.
         match fs::symlink_metadata(&path) {
-            Ok(_) => return self.object_size(),
+            Ok(_) => return Err(CellSplitArtifactCasErrorV1::Ambiguous),
             Err(error) if error.kind() == ErrorKind::NotFound => {}
             Err(error) => return Err(error.into()),
         }
@@ -227,7 +232,13 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
                 .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
         }
         let mut source = source.open(&self.child_source)?;
-        let mut target = target.open(&path)?;
+        let mut target = match target.open(&path) {
+            Ok(file) => file,
+            Err(error) if error.kind() == ErrorKind::AlreadyExists => {
+                return Err(CellSplitArtifactCasErrorV1::Ambiguous);
+            }
+            Err(error) => return Err(error.into()),
+        };
         let mut buffer = [0u8; 128 * 1024];
         let mut sha = Sha256::new();
         let mut size = 0_u64;
