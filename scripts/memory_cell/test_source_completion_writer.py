@@ -14,6 +14,7 @@ import unittest
 from unittest.mock import patch
 
 import torch
+import torch._dynamo  # Eagerly load before patching sys.modules in the fixtures.
 
 from test_source_completion_loss import CausalFixture
 
@@ -55,6 +56,7 @@ def writer_loop():
         ).hexdigest(),
         math=math,
         time=time,
+        json=json,
     )
     exec(
         compile(ast.Module(body=[method], type_ignores=[]), "real-fit-sources", "exec"),
