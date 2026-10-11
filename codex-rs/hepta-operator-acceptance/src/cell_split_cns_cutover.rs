@@ -135,6 +135,13 @@ impl CellSplitCnsRuntimeAttestationV1 {
         }
     }
 
+    /// Produce the same sorted-key canonical encoding required by the
+    /// durable owner. Ordinary serde_json struct serialization preserves
+    /// declaration order and is NOT necessarily canonical.
+    pub fn canonical_bytes(&self) -> Result<Vec<u8>, &'static str> {
+        canonical_json(self).map_err(|_| "cannot canonicalize CNS runtime attestation")
+    }
+
     /// Check signed inner bytes and typed outer claims against the exact
     /// frozen plan. The caller MUST additionally verify the original runtime
     /// signature against a separately pinned key and inspect the live CNS.
@@ -145,9 +152,7 @@ impl CellSplitCnsRuntimeAttestationV1 {
         let attested: Self = serde_json::from_slice(&commit.original_runtime_receipt_bytes)
             .map_err(|_| "original CNS runtime attestation is not typed JSON")?;
         if attested != Self::for_commit(plan, commit)
-            || serde_json::to_vec(&attested)
-                .map_err(|_| "cannot canonicalize original CNS runtime attestation")?
-                != commit.original_runtime_receipt_bytes
+            || attested.canonical_bytes()? != commit.original_runtime_receipt_bytes
             || commit.predecessor_generation != plan.parent_generation
             || commit.successor_generation != plan.child_generation
             || commit.committed_sequence == 0
