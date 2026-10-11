@@ -5,12 +5,12 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
 
+use codex_hepta_infer_core::BoundStemNeuronRequestV1;
 use codex_hepta_infer_core::NeuronFeatureObservationV1;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
-use codex_hepta_infer_core::BoundStemNeuronRequestV1;
 use codex_hepta_infer_core::StemAccessContextV1;
 use codex_hepta_infer_core::StemFeatureRefV1;
 use codex_hepta_infer_core::StemHeadBindingV1;
