@@ -120,6 +120,50 @@ class PairedShadowTests(unittest.TestCase):
         self.assertEqual(result["comparisons_vs_frozen_no_change"]["v2"]["ood"]
                          ["negative_transfer_rate"], 1)
 
+    def test_binary_brier_and_ece_are_descriptive_only(self) -> None:
+        for row in self.payload["samples"]:
+            row["outcomes"]["no-change-v1"].update({
+                "binary_probability_ppm": 500_000, "binary_label": True,
+            })
+            row["outcomes"]["v2"].update({
+                "binary_probability_ppm": 750_000, "binary_label": True,
+            })
+        result = self.verify()
+        outcome = result["comparisons_vs_frozen_no_change"]["v2"]["future"]
+        self.assertEqual(outcome["candidate_calibration"]["brier_ppm"], 62_500)
+        self.assertEqual(outcome["candidate_calibration"]["ece_ppm"], 250_000)
+        self.assertEqual(outcome["baseline_calibration"]["brier_ppm"], 250_000)
+        self.assertEqual(result["decision"], "NO_PRODUCTION_PROMOTION")
+
+    def test_partial_probability_or_selective_calibration_blocks(self) -> None:
+        self.payload["samples"][0]["outcomes"]["v2"]["binary_probability_ppm"] = 750_000
+        with self.assertRaisesRegex(a0.EvidenceError, "partial binary"):
+            self.verify()
+        del self.payload["samples"][0]["outcomes"]["v2"]["binary_probability_ppm"]
+        for name, row in self.payload["samples"][0]["outcomes"].items():
+            row.update({"binary_probability_ppm": 500_000, "binary_label": True})
+        # Add another case in the same split that does not have binary labels.
+        future = copy.deepcopy(self.payload["samples"][0])
+        future["case_id"] = "no-calibration-case"
+        future["input_digest"] = sha(b"no-calibration")
+        for row in future["outcomes"].values():
+            del row["binary_probability_ppm"]
+            del row["binary_label"]
+        self.payload["samples"].append(future)
+        with self.assertRaisesRegex(a0.EvidenceError, "selective or incomplete"):
+            self.verify()
+
+    def test_mismatched_binary_ground_truth_rejected(self) -> None:
+        for sample in self.payload["samples"]:
+            sample["outcomes"]["no-change-v1"].update({
+                "binary_probability_ppm": 500_000, "binary_label": True,
+            })
+            sample["outcomes"]["v2"].update({
+                "binary_probability_ppm": 750_000, "binary_label": False,
+            })
+        with self.assertRaisesRegex(a0.EvidenceError, "disagree on binary"):
+            self.verify()
+
     def test_no_change_must_remain_frozen(self) -> None:
         self.payload["arms"]["no-change-v1"]["optimizer_steps"] = 100
         with self.assertRaisesRegex(a0.EvidenceError, "zero experimental training"):
