@@ -714,10 +714,9 @@ pub fn propose_agentd_plasticity_v1(
     owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
     owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
     verifier: &LearningEvidenceVerifierV1,
-    writer: &mut AnchoredPlasticityWriterV1,
-    anchor_store: &mut AgentdPlasticityAnchorStoreV1,
-    now: u64,
+    commit: AgentdPlasticityCommitContextV1<'_>,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    let AgentdPlasticityCommitContextV1 { writer, anchor_store, now } = commit;
     let resolved = resolve_agentd_plasticity_admission_v1(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),
