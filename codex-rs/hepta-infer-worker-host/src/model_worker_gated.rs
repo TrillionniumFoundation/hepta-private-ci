@@ -754,6 +754,51 @@ mod tests {
             Err(Error::FeatureContract)
         ));
         assert_eq!(worker.driver.batch_calls(), 0);
+
+        // A shared feature snapshot is bound to the worker generation and
+        // authority epoch. Replaying the same Q24 bytes under either a newer
+        // generation or authority epoch must fail before the driver is called.
+        let mut generation_drift = a.clone();
+        let mut generation_snapshot = (*snapshot).clone();
+        generation_snapshot.identity.generation = Generation::new(4).expect("generation");
+        generation_drift.snapshot = std::sync::Arc::new(generation_snapshot);
+        generation_drift.authorization.request_id = "request.generation-drift".into();
+        generation_drift.authorization.reservation_id = "reservation.generation-drift".into();
+        let generation_payload =
+            super::super::canonical_shared_neuron_payload_digest_v2(&generation_drift)
+                .expect("generation payload");
+        generation_drift.authorization.payload_digest = generation_payload.clone();
+        generation_drift.authorization.lease_payload_digest = generation_payload;
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![generation_drift],
+            ),
+            Err(Error::FeatureContract)
+        );
+        assert_eq!(worker.driver.batch_calls(), 0);
+
+        let mut epoch_drift = b.clone();
+        let mut epoch_snapshot = (*snapshot).clone();
+        epoch_snapshot.identity.authority_epoch = 3;
+        epoch_drift.snapshot = std::sync::Arc::new(epoch_snapshot);
+        epoch_drift.authorization.request_id = "request.epoch-drift".into();
+        epoch_drift.authorization.reservation_id = "reservation.epoch-drift".into();
+        let epoch_payload =
+            super::super::canonical_shared_neuron_payload_digest_v2(&epoch_drift)
+                .expect("epoch payload");
+        epoch_drift.authorization.payload_digest = epoch_payload.clone();
+        epoch_drift.authorization.lease_payload_digest = epoch_payload;
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![epoch_drift],
+            ),
+            Err(Error::FeatureContract)
+        );
+        assert_eq!(worker.driver.batch_calls(), 0);
         let results = worker
             .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
             .expect("batched references");
