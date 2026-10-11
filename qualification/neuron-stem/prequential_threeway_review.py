@@ -140,6 +140,13 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
         if initial_key not in initial:
             raise ValueError("missing frozen same-initialization Cell Head")
         require_sha(initial[initial_key])
+        frozen_digest = prec.get("frozen_control_head_digest")
+        require_sha(frozen_digest)
+        if (frozen_digest != initial[initial_key] or
+                record.get("frozen_control_head_digest") != frozen_digest or
+                prec.get("frozen_control_probabilities") !=
+                record.get("frozen_same_initialization_probabilities")):
+            raise ValueError("frozen Head weights/probabilities changed or were not precommitted")
         if key in last_committed_head and prec["head_digest"] != last_committed_head[key]:
             raise ValueError("discontinuous Cell Head update digest lineage")
         if key not in earliest_by_cell:
@@ -168,6 +175,8 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
                            for key, digest in last_committed_head.items()})
     if type(final_heads) is not dict or final_heads != expected_final:
         raise ValueError("final Cell Head artifact digests do not match replayed update chain")
+    if trial.get("frozen_final_head_digests") != initial:
+        raise ValueError("frozen final Head tensor digests changed during future learning")
     if type(nochange) is not list or len(nochange) != len(futures):
         raise ValueError("genuine production no-change prediction coverage missing")
     observed, nochange_identity = set(), None
@@ -331,6 +340,7 @@ def review(dataset, trial, journal_bytes, nochange, *,
         "production_worker_4096_cell_evidence_verified": False,
         "quality_three_way_precheck_passed": predictive_pass,
         "sealed_cell_update_chain_consistent": True,
+        "frozen_control_head_weights_sealed_and_unchanged": True,
         "observed_actual_head_parameter_change_in_offline_trace": head_learning_evidence,
         "four_scale_research_resource_precheck_passed": resource_ok,
         "joint_offline_diagnostic_passed": predictive_pass and resource_ok,
