@@ -69,8 +69,7 @@ where
         // The separately durable Witness is checked AFTER the model ran.
         // A failed post-commit acknowledgement cannot create a success report.
         let binding = self.read_local_checkpoint_binding_v1()?;
-        let observation =
-            from_actual_committed_tick(&input, input_digest, &output, &binding)?;
+        let observation = from_actual_committed_tick(&input, input_digest, &output, &binding)?;
         Ok((output, observation))
     }
 

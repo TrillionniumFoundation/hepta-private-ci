@@ -64,7 +64,10 @@ fn agentd_observed_tick_api_requires_real_owner_and_strict_final_witness() {
         &mut AgentdNeuronOwner<StubWitness, StubInferenceControl>,
         codex_hepta_neuron::NeuronTickInputV1,
     ) -> Result<
-        (codex_hepta_neuron::NeuronRuntimeOutputV1, AgentdNeuronTickObservationV1),
+        (
+            codex_hepta_neuron::NeuronRuntimeOutputV1,
+            AgentdNeuronTickObservationV1,
+        ),
         codex_hepta_neuron::NeuronRuntimeError,
     > = AgentdNeuronOwner::tick_with_observation_v1;
     let current: fn(

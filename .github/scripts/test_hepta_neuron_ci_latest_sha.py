@@ -24,7 +24,9 @@ class LatestShaWorkflowTests(unittest.TestCase):
                 self.assertEqual(source.count("\nconcurrency:\n"), 1)
                 self.assertEqual(source.count(GROUP), 1)
                 self.assertEqual(source.count(ONLY_PR), 1)
-                self.assertLess(source.index("\nconcurrency:\n"), source.index("\npermissions:\n"))
+                self.assertLess(
+                    source.index("\nconcurrency:\n"), source.index("\npermissions:\n")
+                )
                 self.assertIn("\n  pull_request:\n", source)
                 self.assertIn("\n  workflow_dispatch:\n", source)
                 self.assertIn("\npermissions:\n  contents: read\n", source)

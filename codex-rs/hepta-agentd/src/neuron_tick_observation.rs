@@ -122,9 +122,9 @@ pub(crate) fn from_actual_committed_tick(
         || output.tick.checkpoint_before != input.checkpoint_digest
         || output.tick.checkpoint_after != witnessed.anchor.checkpoint_digest
         || witnessed.anchor.sequence != input.logical_sequence
-        || input.body_generation.is_some_and(|generation| {
-            generation != witnessed.config.generation.get()
-        })
+        || input
+            .body_generation
+            .is_some_and(|generation| generation != witnessed.config.generation.get())
         || witnessed.scope.objective_digest != input.objective_digest
         || output.model_runtime.model_id != witnessed.config.model_id
         || output.model_runtime.weights_digest != witnessed.config.weights_digest

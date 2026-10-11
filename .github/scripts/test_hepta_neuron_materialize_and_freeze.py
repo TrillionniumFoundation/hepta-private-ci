@@ -113,8 +113,12 @@ class MaterializationTests(unittest.TestCase):
             catalog, _ = self._catalog_and_cache(root)
             dest = alias / "inner" / "new-model"
             with patch.object(material, "verify_catalog", side_effect=lambda c: c):
-                with self.assertRaisesRegex(InvalidTrial, "destination parent ancestry"):
-                    material.materialize(catalog, "typed", dest, fetcher=lambda *args: None)
+                with self.assertRaisesRegex(
+                    InvalidTrial, "destination parent ancestry"
+                ):
+                    material.materialize(
+                        catalog, "typed", dest, fetcher=lambda *args: None
+                    )
             self.assertFalse(dest.exists())
 
     def test_laya_runner_rejects_linked_root_and_ancestor_before_model_io(self):
@@ -141,7 +145,9 @@ class MaterializationTests(unittest.TestCase):
             }
             for path in (alias, alias / "child"):
                 with self.subTest(path=path):
-                    with self.assertRaisesRegex(InvalidTrial, "absolute, physical directory"):
+                    with self.assertRaisesRegex(
+                        InvalidTrial, "absolute, physical directory"
+                    ):
                         run_laya(
                             manifest, [], "laya", path, "model.safetensors", "cpu", "d" * 64
                         )
