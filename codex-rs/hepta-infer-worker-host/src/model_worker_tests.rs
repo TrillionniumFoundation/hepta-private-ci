@@ -535,3 +535,55 @@ fn scoped_stem_respects_worker_grant_expiry_and_driver_output_validation() {
         Err(Error::FeatureOutputMismatch)
     );
 }
+
+
+#[test]
+fn neuron_feature_runtime_enforces_real_model_and_reservation_token_ceilings() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.token".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+
+    let mut too_large_for_model = neuron_feature_request();
+    too_large_for_model.authorization.maximum_tokens = 129;
+    too_large_for_model.authorization.reservation_maximum_tokens = 129;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", too_large_for_model),
+        Err(Error::TokenLimit)
+    );
+
+    let mut exceeds_reservation = neuron_feature_request();
+    exceeds_reservation.authorization.maximum_tokens = 65;
+    exceeds_reservation.authorization.reservation_maximum_tokens = 64;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", exceeds_reservation),
+        Err(Error::TokenLimit)
+    );
+
+    let (source, access, head, features, mut auth) = scoped_shared_stem_fixture();
+    auth.maximum_tokens = 129;
+    auth.reservation_maximum_tokens = 129;
+    assert_eq!(
+        worker.run_bound_stem_feature_receipt_v1(
+            100, &source, &access, head.clone(), &features, auth
+        ),
+        Err(Error::TokenLimit)
+    );
+
+    let mut auth = approved_fixture_authorization(
+        &source, &access, &head, &features, request()
+    );
+    auth.maximum_tokens = 65;
+    auth.reservation_maximum_tokens = 64;
+    assert_eq!(
+        worker.run_bound_stem_feature_receipt_v1(
+            100, &source, &access, head, &features, auth
+        ),
+        Err(Error::TokenLimit)
+    );
+}
