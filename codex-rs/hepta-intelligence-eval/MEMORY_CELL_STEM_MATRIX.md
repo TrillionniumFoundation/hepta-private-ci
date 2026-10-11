@@ -1033,3 +1033,28 @@ supports are not misrepresented as bad semantic citations. All
 groups remain marked `production_accepted=false` and
 `semantic_citation_precision=null`; no training or policy
 configuration changes are authorized.
+
+## Actual Reader with privileged answer-literal source — diagnostic, not gold
+
+The successful STRICT stem matrix at `cb9e98365b5f46e00fb2693f548a7215b1ed1145`
+also contains 32 post-policy reference attempts, each labelled as either
+a literal substring taken from a native supporting source, native-annotated
+unanswerable, unavailable reference, or failed model execution. The
+`stem_native_oracle_reader_capacity.py` audit now matches those **already
+emitted** answers with the 32 original frozen-top1 Reader and independent
+no-evidence Reader controls. It reports separately by the actual native
+source-coverage bucket: weakly supported source chosen; support retrieved
+but not chosen; support absent from candidates; native-unanswerable; or
+native support unresolved. All source/answer counts use the original planned
+question denominator; failed/unavailable reference calls widen the
+frozen-vs-reference answer-F1 interval instead of being discarded.
+
+The reference span is selected **using the known gold answer** and therefore
+is explicitly *privileged*. A reference constructed in this way is NOT an
+independent human adjudication of context sufficiency, a fair retrieval
+competitor, or a deployable teacher. Every successful reference Reader
+receipt is required to match the unchanged model weights, prompt and
+observable question, with source byte-offset evidence where applicable.
+The analysis adds **zero model calls**, cannot alter any 576 original
+policy answers, and never certifies citation entailment, a trained Cell,
+prospective learning, or production acceptance.

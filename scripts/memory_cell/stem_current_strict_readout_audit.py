@@ -10,6 +10,7 @@ from pathlib import Path
 
 from stem_audit_archive import PinnedArchive, require
 from stem_native_reader_stratification import stratify_original_reader
+from stem_native_oracle_reader_capacity import reference_reader_capacity
 
 SOURCE = "cb9e98365b5f46e00fb2693f548a7215b1ed1145"
 TREE = "022c9aa8abc095c91ef744644329aaed12564859"
@@ -234,6 +235,17 @@ def audit_zip(path):
             plan, original, ceiling,
             archive.jsonl("comparison/reader-no-evidence.jsonl"),
             report["matched_frozen_vs_no_evidence"],
+        )
+        # All oracle and zero-context raw answers were produced by the original
+        # immutable model run. The answer-dependent literal span cannot be
+        # promoted to human-reviewed sufficient evidence or a trained policy.
+        result["answer_literal_oracle_reader_diagnostic"] = reference_reader_capacity(
+            plan,
+            scored,
+            archive.jsonl("comparison/oracle-diagnostic.jsonl"),
+            archive.jsonl("comparison/reader-no-evidence.jsonl"),
+            report["no_evidence_reader_report"],
+            ceiling,
         )
         result["artifact_zip_sha256"] = archive.sha256
         result["verified_manifest_entries"] = archive.manifest_entries
