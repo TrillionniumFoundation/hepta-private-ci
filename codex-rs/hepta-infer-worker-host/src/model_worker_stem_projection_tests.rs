@@ -160,3 +160,46 @@ fn ties_even_and_positive_negative_overflow_fail_closed() {
     assert_eq!(q48_round_ties_even(9 * q * q), Err(Error::FeatureOutputMismatch));
     assert_eq!(q48_round_ties_even(-9 * q * q), Err(Error::FeatureOutputMismatch));
 }
+
+#[test]
+fn native_neuron_request_must_consume_exact_projected_digest_and_vector() {
+    use super::super::NeuronFeatureRequest;
+    use super::super::WorkerRequest;
+    use super::super::canonical_neuron_feature_payload_digest;
+
+    let features = [0.5_f32, -0.25_f32, 0.125_f32];
+    let bound = project_bound_f32(&fixture(), &binding(), &features, 3).expect("project");
+    let mut request = NeuronFeatureRequest {
+        authorization: WorkerRequest {
+            request_id: "request.projected.1".to_string(),
+            reservation_id: "reservation.projected.1".to_string(),
+            model_digest: d('8'),
+            payload_digest: d('0'),
+            maximum_tokens: 64,
+            deadline_ms: 9000,
+            lease_payload_digest: d('0'),
+            reservation_model_digest: d('8'),
+            reservation_maximum_tokens: 64,
+            cancelled: false,
+        },
+        encoder_digest: binding().encoder_digest,
+        head_digest: d('7'),
+        weights_digest: d('6'),
+        input_digest: bound.projected_input_digest.to_string(),
+        feature_vector_q24: bound.values_q24.clone(),
+        expected_output_width: 2,
+    };
+    let payload = canonical_neuron_feature_payload_digest(&request);
+    request.authorization.payload_digest = payload.clone();
+    request.authorization.lease_payload_digest = payload;
+    assert_eq!(verify_neuron_projected_request(&binding(), &bound, &request, 5), Ok(()));
+    assert_eq!(
+        verify_neuron_projected_request(&binding(), &bound, &request, 6),
+        Err(Error::FeatureContract)
+    );
+    request.feature_vector_q24[0] += 1;
+    assert_eq!(
+        verify_neuron_projected_request(&binding(), &bound, &request, 5),
+        Err(Error::FeatureContract)
+    );
+}
