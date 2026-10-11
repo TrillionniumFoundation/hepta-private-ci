@@ -32,6 +32,11 @@ from stem_root_diversity import (
     validate_diverse_receipts,
     compare_diversity,
 )
+from stem_session_diversity import (
+    session_distinct,
+    validate_session_receipts,
+    compare_session_diversity,
+)
 
 SOURCE = "675970bb610c70bb0ec30a2dee05c025440510e6"
 TREE = "d280ba53070fb6457c04ff0d97fbb14ebbdbc3fb"
@@ -154,7 +159,7 @@ def replay_pinned(artifact, staged, output):
             "frozen retrieval Encoder model file pin drift",
         )
         started = time.perf_counter()
-        observations, distinct_candidates = [], []
+        observations, distinct_candidates, session_candidates = [], [], []
         index_times = {}
         with tempfile.TemporaryDirectory() as temporary:
             opened = {}
@@ -290,6 +295,54 @@ def replay_pinned(artifact, staged, output):
                                         pretrained_reader_calls=0,
                                     )
                                 )
+                                # Actual Document.session, not authority root,
+                                # controls this separate diversity ablation.
+                                ordered_sessions = [
+                                    dict(id=d.identity, root=d.root, session=d.session)
+                                    for d in larger
+                                ]
+                                session_ids = session_distinct(
+                                    ordered_sessions, len(retrieved)
+                                )
+                                session_docs = tuple(
+                                    selected_by_id[identity]
+                                    for identity in session_ids
+                                )
+                                session_pool = candidate_windows(
+                                    session_docs,
+                                    q,
+                                    revoked=set(),
+                                    budget=budgets,
+                                    profile="query_windows",
+                                )
+                                session_candidates.append(
+                                    dict(
+                                        phase=phase,
+                                        question_id=qid,
+                                        source_family=plan["question_families"][qid],
+                                        original_as_of_index_sha256=cost[
+                                            "index_artifact_digest"
+                                        ],
+                                        original_baseline_source_ids=[
+                                            source_id(d.identity) for d in retrieved
+                                        ],
+                                        ranked_original_source_sessions=ordered_sessions,
+                                        selected_original_identities=session_ids,
+                                        retrieved_source_ids=[
+                                            source_id(d.identity) for d in session_docs
+                                        ],
+                                        window_source_ids=sorted(
+                                            {
+                                                source_id(w.source_id)
+                                                for w in session_pool.windows
+                                            }
+                                        ),
+                                        pool_sha256=session_pool.seal(),
+                                        source_text_exported=False,
+                                        read_targets_for_retrieval=False,
+                                        pretrained_reader_calls=0,
+                                    )
+                                )
                             observations.append(
                                 dict(
                                     phase=phase,
@@ -319,9 +372,13 @@ def replay_pinned(artifact, staged, output):
         # Commit ALL 800 label-blind receipts BEFORE any score/label is read.
         write_jsonl(output / "all-label-blind-candidates.jsonl", observations)
         write_jsonl(output / "root-diverse-label-blind.jsonl", distinct_candidates)
+        write_jsonl(output / "session-diverse-label-blind.jsonl", session_candidates)
         unlabelled = validate_unlabelled(plan, observations)
         diverse = validate_diverse_receipts(
             plan, unlabelled, distinct_candidates
+        )
+        session_receipts = validate_session_receipts(
+            plan, unlabelled, session_candidates
         )
         labels = {
             qid: source_for[qid].targets[qid] for qid in plan["questions"]["train"]
@@ -342,6 +399,13 @@ def replay_pinned(artifact, staged, output):
             plan, unlabelled, diverse, labels | eval_targets
         )
         write(output / "root-diversity-weak-source-diagnostic.json", root_report)
+        session_report = compare_session_diversity(
+            plan, unlabelled, session_receipts, labels | eval_targets
+        )
+        write(
+            output / "session-diversity-weak-source-diagnostic.json",
+            session_report,
+        )
         # Hindsight ceiling runs ONLY after every unlabeled grid receipt was
         # frozen AND the TRAIN-only selected policy was already written.
         # The oracle does not return a policy to the retriever or Reader.
@@ -362,7 +426,9 @@ def replay_pinned(artifact, staged, output):
                 number_asof_immutable_indexes=len(index_times),
                 original_pool_identities_replayed=80,
                 exploratory_root_diversity_rows=len(distinct_candidates),
+                exploratory_session_diversity_rows=len(session_candidates),
                 source_root_diversity_is_not_a_learned_gain=True,
+                source_session_diversity_is_not_a_learned_gain=True,
                 immutable_source_cuts=list(index_times.values()),
                 actual_frozen_query_encoder_seconds=time.perf_counter() - started,
                 original_pretrained_reader_calls=0,

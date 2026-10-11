@@ -8,6 +8,8 @@ on:
       - "scripts/memory_cell/test_stem_frozen_retrieval_grid.py"
       - "scripts/memory_cell/stem_root_diversity.py"
       - "scripts/memory_cell/test_stem_root_diversity.py"
+      - "scripts/memory_cell/stem_session_diversity.py"
+      - "scripts/memory_cell/test_stem_session_diversity.py"
       - ".github/workflows/hepta-memory-stem-frozen-retrieval-grid.yml"
 permissions:
   contents: read
@@ -40,8 +42,8 @@ jobs:
           mkdir -p /tmp/stem-retrieval-grid
           git rev-parse HEAD > /tmp/stem-retrieval-grid/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/stem-retrieval-grid/tested-tree.txt
-          python3 -m unittest -v test_stem_frozen_retrieval_grid test_stem_root_diversity 2>&1 | tee /tmp/stem-retrieval-grid/tests.log
-          python3 -m compileall -q scripts/memory_cell/stem_frozen_retrieval_grid.py scripts/memory_cell/stem_frozen_retrieval_grid_trial.py scripts/memory_cell/stem_root_diversity.py scripts/memory_cell/test_stem_root_diversity.py
+          python3 -m unittest -v test_stem_frozen_retrieval_grid test_stem_root_diversity test_stem_session_diversity 2>&1 | tee /tmp/stem-retrieval-grid/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_frozen_retrieval_grid.py scripts/memory_cell/stem_frozen_retrieval_grid_trial.py scripts/memory_cell/stem_root_diversity.py scripts/memory_cell/test_stem_root_diversity.py scripts/memory_cell/stem_session_diversity.py scripts/memory_cell/test_stem_session_diversity.py
       - name: Fixed original frozen Encoder only
         run: |
           set -euo pipefail
@@ -102,6 +104,7 @@ jobs:
           cp scripts/memory_cell/stem_frozen_retrieval_grid_trial.py /tmp/stem-retrieval-grid/source/
           cp scripts/memory_cell/test_stem_frozen_retrieval_grid.py /tmp/stem-retrieval-grid/source/
           cp scripts/memory_cell/stem_root_diversity.py scripts/memory_cell/test_stem_root_diversity.py /tmp/stem-retrieval-grid/source/
+          cp scripts/memory_cell/stem_session_diversity.py scripts/memory_cell/test_stem_session_diversity.py /tmp/stem-retrieval-grid/source/
           cp .github/workflows/hepta-memory-stem-frozen-retrieval-grid.yml /tmp/stem-retrieval-grid/source/
           (cd /tmp/stem-retrieval-grid && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
