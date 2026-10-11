@@ -503,19 +503,28 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
-        let mut next = self.records.clone();
+        // Every event changes exactly one legacy request; the other requests
+        // are immutable for this transition. Stage only that record instead
+        // of cloning the entire bounded registry (which made one WAL append
+        // O(number of retained requests) even under the exclusive writer).
+        // Reservation identities are checked against the complete owner index.
+        let request_id = event.request_id().to_string();
+        let mut staged = BTreeMap::new();
+        if let Some(previous) = self.records.get(&request_id) {
+            staged.insert(request_id.clone(), previous.clone());
+        }
         apply_event(
-            &mut next,
+            &mut staged,
             &self.reservation_owners,
             &event,
             /*replay*/ false,
         )?;
+        // All fallible transition validation must complete BEFORE fsync. If
+        // append fails, the original in-memory record remains untouched.
+        let successor = staged.remove(&request_id).ok_or(Error::RequestNotFound)?;
         let encoded = format!("{}\n", encode_event(&event));
         self.append(&encoded)?;
-        let request_id = event.request_id().to_string();
-        self.records = next;
+        self.records.insert(request_id.clone(), successor);
         if let Event::Reserve {
             request_id,
             reservation,

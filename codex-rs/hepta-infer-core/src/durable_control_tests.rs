@@ -381,3 +381,62 @@ fn duplicate_reservation_id_in_durable_wal_fails_closed() {
     ));
     fs::remove_file(&journal).unwrap();
 }
+
+#[test]
+fn large_request_table_updates_one_record_and_replays_exactly() {
+    let journal = path("scoped-event-staging");
+    let mut owner = DurableInferenceControl::open(&journal, 256).unwrap();
+
+    // The original implementation cloned every retained request before
+    // appending one event. Exercise many independent records plus the complete
+    // legacy single-use transition through the same fsynced WAL.
+    for index in 0..64 {
+        let mut value = request();
+        value.request_id = format!("request.{index}");
+        value.semantic_digest = format!("{:064x}", index + 1);
+        owner.submit(100, value).unwrap();
+    }
+    let unrelated = owner.get("request.63").unwrap().clone();
+
+    let mut reserved = reservation();
+    reserved.reservation_id = "reservation.0".to_owned();
+    assert_eq!(
+        owner
+            .reserve(100, "request.0", 1, reserved.clone())
+            .unwrap()
+            .revision,
+        2
+    );
+    assert_eq!(
+        owner.assign("request.0", 2, assignment()).unwrap().revision,
+        3
+    );
+    let dispatched = owner
+        .claim_dispatch(100, "request.0", 3, "reservation.0", &assignment())
+        .unwrap();
+    assert_eq!(dispatched.state, RequestState::Dispatching);
+    assert_eq!(dispatched.revision, 4);
+    assert_eq!(*owner.get("request.63").unwrap(), unrelated);
+
+    // The GLOBAL reservation ownership map must still reject a second
+    // request, even though the staged transition holds only one record.
+    let previous_len = fs::metadata(&journal).unwrap().len();
+    assert_eq!(
+        owner.reserve(100, "request.1", 1, reserved),
+        Err(Error::Conflict)
+    );
+    assert_eq!(fs::metadata(&journal).unwrap().len(), previous_len);
+    assert_eq!(owner.get("request.1").unwrap().revision, 1);
+
+    drop(owner);
+    let reopened = DurableInferenceControl::open(&journal, 256).unwrap();
+    assert_eq!(
+        reopened.get("request.0").unwrap().state,
+        RequestState::Dispatching
+    );
+    assert_eq!(reopened.get("request.0").unwrap().revision, 4);
+    assert_eq!(*reopened.get("request.63").unwrap(), unrelated);
+    assert_eq!(reopened.get("request.1").unwrap().state, RequestState::Pending);
+    drop(reopened);
+    fs::remove_file(&journal).unwrap();
+}
