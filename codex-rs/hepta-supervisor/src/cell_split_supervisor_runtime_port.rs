@@ -11,6 +11,7 @@
 //! Supervisor signer, signed CNS/selection readers and a trusted minimum.
 
 use codex_hepta_operator_acceptance::CellSplitCnsRuntimeCommitV1;
+use codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionIntentV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionReceiptV1;
 use codex_hepta_operator_acceptance::verify_cell_split_cns_step_receipt_v1;
@@ -139,6 +140,9 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
                 "signed CNS predecessor contains inconsistent original runtime evidence".into(),
             );
         }
+        // The inner runtime signature MUST authenticate typed cutover facts,
+        // not an arbitrary valid CNS message unrelated to this split.
+        CellSplitCnsRuntimeAttestationV1::verify_original_bytes(&plan, &original)?;
         verify_independent_cns_runtime_signature(
             &original.original_runtime_receipt_bytes,
             &original.original_runtime_signature_bytes,
