@@ -106,6 +106,28 @@ fn witness_path(path: &std::path::Path) -> std::path::PathBuf {
     path.with_extension("witness")
 }
 
+/// Open a *real* synchronizable directory handle on each platform, matching
+/// the existing hepta-learning-ledger production test fixture. Plain File::open
+/// cannot open a directory on Windows and produced Access is denied before
+/// any evaluated-shadow/credit test could exercise its durable semantics.
+fn durable_parent_directory(path: &std::path::Path) -> std::fs::File {
+    let parent = path.parent().expect("ledger path must have a parent");
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(parent)
+            .expect("open actual durable parent handle on Windows")
+    }
+    #[cfg(not(windows))]
+    {
+        std::fs::File::open(parent).expect("open actual durable parent handle")
+    }
+}
+
 fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
     let file = OpenOptions::new()
         .create_new(true)
@@ -126,8 +148,8 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
         .open(witness_path(path))
         .unwrap();
     let witness = LedgerWitnessStore::create(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
-    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let ledger_directory = durable_parent_directory(path);
+    let witness_directory = durable_parent_directory(path);
     LedgerWriter::from_durable(
         ledger,
         witness,
@@ -189,8 +211,8 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         .open(witness_path(&path))
         .unwrap();
     let witness = LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
-    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
-    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let ledger_directory = durable_parent_directory(&path);
+    let witness_directory = durable_parent_directory(&path);
     let mut reopened = LedgerWriter::from_durable(
         reopened_ledger,
         witness,
