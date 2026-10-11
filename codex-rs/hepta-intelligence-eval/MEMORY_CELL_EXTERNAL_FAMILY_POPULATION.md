@@ -29,3 +29,29 @@ PYTHONPATH=scripts/memory_cell python3 scripts/memory_cell/external_family_popul
 **Next actual reader stage, contingent on successful preregistration:** freeze the same reader identity, prompt policy, question and evidence/token budget; run calibrated strong hybrid RAG and a simple entity/time/relationship filter on the published evaluation families; journal answers before opening the target artifact; measure task success **and** full citation chain, token/cpu/wall cost, failure denominator, cluster-level uncertainty and source-family overlap. Explicitly quarantine unresolvable native histories. No graph or learned candidate is qualified unless it outperforms the **strongest valid simple control** on previously unseen source groups and an independently reviewed population; retrospective benchmark outcomes are not actual future production windows.
 
 Production remains **NOT QUALIFIED**: independent semantic citation adjudication, valid real future windows, source custody/consent, lifecycle ingest/retention/revocation/recovery costs, rollback and current PR-wide CI acceptance remain outstanding.
+
+## Recorded external family-capacity failure, not a relaxed experiment
+
+The pinned source-only workflow at `623cb20ed4baaa6147488bd80ac127c7b337366c`
+completed its synthetic source-cut regressions but **rejected the actual
+published population** with `fewer than ten family-disjoint published
+groups`. The code must not fix this by relabelling different questions
+on a shared native source family as statistically independent families.
+
+`source_only_family_capacity()` now computes actual per-dataset original
+native family-proxy counts and the 60/20/remainder split capacities. It
+does not consult `Target` objects, model outputs or gold source judgments.
+`preflight_and_prepare()` saves a deterministic
+`<population-output>-capacity.json` *before* the hard failure, containing
+original source hashes, group counts, shortfall to the fixed **ten-family
+threshold**, explicit independent-review exclusions, and
+`production_accepted=false`. A blocked population leaves no public
+or private target directory. The existing ten-family guard, root-overlap
+checks, immutable SHA pins and downstream split budgets are unchanged.
+
+The GitHub Actions job will still correctly **fail** when the public native
+sources lack enough independent proxy groups, but now uploads a separate
+negative capacity artifact even on failure. This is useful source-level
+evidence of why additional **genuinely independent data** must be gathered,
+not a reason to tune on exposed evaluation questions, waive sample-size
+requirements, simulate source groups or claim prospective task gains.

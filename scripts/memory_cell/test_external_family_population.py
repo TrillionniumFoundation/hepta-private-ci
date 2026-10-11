@@ -186,6 +186,79 @@ class FamilyCutTests(unittest.TestCase):
                         for k, v in reversed(list(self.corpora.items()))}
         self.assertEqual(before, p.canonical(self.plan()))
 
+    def test_family_capacity_preflight_counts_real_groups_not_question_ids(self):
+        census = p.source_only_family_capacity(
+            self.corpora, source_commit="a" * 40
+        )
+        self.assertTrue(census["original_published_family_capacity_sufficient"])
+        self.assertFalse(census["production_accepted"])
+        for kind in p.SOURCE_PINS:
+            self.assertEqual(
+                census["corpora"][kind]["actual_native_family_proxy_count"], 16
+            )
+        corpus, _ = fixture("locomo", families=5)
+        self.corpora["locomo"] = corpus
+        refused = p.source_only_family_capacity(
+            self.corpora, source_commit="a" * 40
+        )
+        self.assertFalse(refused["original_published_family_capacity_sufficient"])
+        self.assertEqual(refused["corpora"]["locomo"]["actual_native_family_proxy_count"], 5)
+        self.assertEqual(refused["corpora"]["locomo"]["shortfall_from_ten"], 5)
+        self.assertTrue(refused["insufficient_source_families_block_promotion"])
+        self.assertFalse(refused["independent_source_authenticity_verified"])
+
+    def test_failed_population_still_seals_source_only_capacity_receipt(self):
+        self.corpora["locomo"] = fixture("locomo", families=5)[0]
+        with tempfile.TemporaryDirectory() as root:
+            target = Path(root) / "never-publish"
+            with self.assertRaisesRegex(ValueError, "family-disjoint"):
+                p.preflight_and_prepare(
+                    self.corpora, source_commit="a" * 40, output=target
+                )
+            capacity = target.with_name(target.name + "-capacity.json")
+            self.assertFalse(target.exists())
+            self.assertTrue(capacity.is_file())
+            raw = capacity.read_bytes()
+            self.assertEqual(raw, p.canonical(json.loads(raw)) + b"\n")
+            self.assertNotIn(b"VERY_PRIVATE", raw)
+            self.assertFalse(
+                json.loads(raw)["original_published_family_capacity_sufficient"]
+            )
+            with self.assertRaises(FileExistsError):
+                p.preflight_and_prepare(
+                    self.corpora, source_commit="a" * 40, output=target
+                )
+
+    def test_valid_population_preflight_happens_before_private_targets(self):
+        with tempfile.TemporaryDirectory() as root:
+            output = Path(root) / "cut"
+            public = p.preflight_and_prepare(
+                self.corpora, source_commit="a" * 40, output=output
+            )
+            receipt = json.loads(
+                output.with_name(output.name + "-capacity.json").read_text()
+            )
+            self.assertTrue(receipt["original_published_family_capacity_sufficient"])
+            self.assertTrue(all(
+                x["family_capacity_sufficient"]
+                for x in receipt["corpora"].values()
+            ))
+            self.assertFalse(output.exists())
+            self.assertNotIn("targets", json.dumps(public))
+            self.assertTrue(public["model_input_contains_answers"] is False)
+
+    def test_sharing_one_proxy_cannot_fake_ten_independent_families(self):
+        corpus, _ = fixture("locomo", families=16)
+        merged = {k: "one-shared-published-origin" for k in corpus.families}
+        self.corpora["locomo"] = replace(corpus, families=merged)
+        receipt = p.source_only_family_capacity(
+            self.corpora, source_commit="a" * 40
+        )
+        self.assertEqual(receipt["corpora"]["locomo"]["actual_native_family_proxy_count"], 1)
+        self.assertFalse(receipt["original_published_family_capacity_sufficient"])
+        with self.assertRaisesRegex(ValueError, "ten"):
+            self.plan()
+
     def test_small_family_population_refuses_promotion(self):
         self.corpora["locomo"] = fixture("locomo", families=5)[0]
         with self.assertRaisesRegex(ValueError, "ten"):

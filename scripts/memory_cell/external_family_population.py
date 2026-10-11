@@ -132,6 +132,78 @@ def _corpus_rows(corpus):
     }
 
 
+
+def source_only_family_capacity(corpora, *, source_commit):
+    """Report genuine published family capacity without consulting QA labels.
+
+    This is deliberately NOT a fallback that splits shared source families by
+    question ID. A failure leaves all targets sealed and does not certify an
+    independent or future population.
+    """
+    if (
+        not isinstance(source_commit, str)
+        or re.fullmatch(r"[0-9a-f]{40}", source_commit) is None
+        or set(corpora) != set(SOURCE_PINS)
+        or any(corpora[k].name != k for k in SOURCE_PINS)
+    ):
+        raise ValueError("pinned two-corpus source and tested commit required")
+    census = {}
+    for name in sorted(SOURCE_PINS):
+        corpus = corpora[name]
+        if corpus.source_sha256 != SOURCE_PINS[name]:
+            raise ValueError("original published source byte pin differs")
+        qids = [q.identity for q in corpus.questions]
+        docids = [d.identity for d in corpus.documents]
+        if len(set(qids)) != len(qids) or len(set(docids)) != len(docids):
+            raise ValueError("duplicated native source or question identity")
+        if any(q.family not in corpus.families for q in corpus.questions):
+            raise ValueError("missing original native source-family proxy")
+        groups = {
+            corpus.families[q.family] for q in corpus.questions
+        }
+        n = len(groups)
+        train_n = math.floor(n * 0.6)
+        selection_n = math.floor(n * 0.2)
+        evaluation_n = n - train_n - selection_n
+        capacity = (
+            len(qids) >= 10
+            and len(docids) >= 10
+            and n >= 10
+            and train_n >= 1
+            and selection_n >= 1
+            and evaluation_n >= 2
+        )
+        census[name] = dict(
+            pinned_source_sha256=corpus.source_sha256,
+            native_question_count=len(qids),
+            native_document_count=len(docids),
+            actual_native_family_proxy_count=n,
+            minimum_required_family_proxies=10,
+            split_family_capacity=dict(
+                train=train_n, selection=selection_n, evaluation=evaluation_n,
+            ),
+            family_capacity_sufficient=capacity,
+            shortfall_from_ten=max(0, 10 - n),
+            families_not_artificially_split_by_question=True,
+        )
+    ready = all(x["family_capacity_sufficient"] for x in census.values())
+    return dict(
+        schema="hepta.memorycell.external-family-capacity.v1",
+        tested_source_commit=source_commit,
+        source_only_preflight=True,
+        original_source_sha256=dict(SOURCE_PINS),
+        corpora=census,
+        original_published_family_capacity_sufficient=ready,
+        insufficient_source_families_block_promotion=not ready,
+        targets_inspected_by_this_function=False,
+        actual_future_observations=0,
+        independent_source_authenticity_verified=False,
+        independently_adjudicated_semantic_support=False,
+        generated_answers=0,
+        production_accepted=False,
+    )
+
+
 def prepare_population(corpora, *, source_commit, limits=None):
     """Do not accept targets as an input: question/corpus metadata only."""
     if not re.fullmatch(r"[0-9a-f]{40}", source_commit):
@@ -200,6 +272,31 @@ def prepare_population(corpora, *, source_commit, limits=None):
     )
 
 
+
+def preflight_and_prepare(corpora, *, source_commit, output):
+    """Emit a tamper-evident source-only failure receipt before opening labels.
+
+    The parent output remains absent when family capacity fails, so no
+    partial public/target artifact can be mistaken for a sealed population.
+    """
+    if not isinstance(output, Path) or output.exists():
+        raise ValueError("fresh immutable output location required")
+    capacity = source_only_family_capacity(
+        corpora, source_commit=source_commit,
+    )
+    path = output.with_name(output.name + "-capacity.json")
+    with path.open("xb") as stream:
+        stream.write(canonical(capacity) + b"\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    if not capacity["original_published_family_capacity_sufficient"]:
+        raise ValueError(
+            "insufficient actual family-disjoint published source groups; "
+            "no label/Reader experiment authorized: " + str(path)
+        )
+    return prepare_population(corpora, source_commit=source_commit)
+
+
 def publish_and_seal(public, target_supplier, output):
     """Persist PUBLIC inputs first; only then open targets in a separate file."""
     if output.exists():
@@ -262,7 +359,9 @@ def main():
                       session_conflicts="retain-versioned", invalid_history="quarantine-question")
         benchmarks[kind] = loaded
         corpora[kind] = PublicCorpus.from_native(loaded)
-    public = prepare_population(corpora, source_commit=args.source_commit)
+    public = preflight_and_prepare(
+        corpora, source_commit=args.source_commit, output=args.output,
+    )
     selected = {
         row["question_id"] for rows in public["splits"].values() for row in rows
     }
