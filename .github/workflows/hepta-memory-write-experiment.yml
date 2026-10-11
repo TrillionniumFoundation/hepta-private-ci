@@ -12,7 +12,10 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-source-write-1452
+  # GitHub replaces an older pending run in the same group even when
+  # cancel-in-progress is false. Bind this expensive source-before-task
+  # experiment to its exact generating SHA; no unrelated push may displace it.
+  group: memory-source-write-1452-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   format:
