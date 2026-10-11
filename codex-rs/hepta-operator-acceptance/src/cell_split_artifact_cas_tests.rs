@@ -110,6 +110,41 @@ impl Fixture {
 }
 
 #[test]
+fn missing_frontier_after_owner_initialization_never_resets_durable_cas_history() {
+    for committed in [false, true] {
+        let fixture = Fixture::new();
+        let authority = ExternalFinalUse(Arc::new(AtomicBool::new(true)));
+        let request = intent(&plan());
+        let mut owner = fixture.owner(authority.clone());
+        if committed {
+            owner.commit_once(&request).expect("real child artifact committed");
+            assert!(owner.read_committed(&request).unwrap().is_some());
+        }
+        drop(owner);
+
+        let frontier = fixture.store.join("cas-frontier.json");
+        fs::remove_file(&frontier).expect("simulate lost durable frontier");
+        let reopened = CellSplitArtifactCasOwnerV1::open(
+            &fixture.store,
+            &fixture.parent,
+            &fixture.child,
+            plan(),
+            authority,
+        );
+        assert!(
+            matches!(reopened, Err(CellSplitArtifactCasErrorV1::Ambiguous)),
+            "an initialized owner cannot recreate a missing frontier, committed={committed}"
+        );
+        assert!(!frontier.exists(), "recovery must not manufacture a new frontier");
+        assert_eq!(
+            fixture.store.join(format!("sha256-{}", plan().child_artifact_digest)).exists(),
+            committed,
+            "the original CAS object must not be created or removed by denied recovery"
+        );
+    }
+}
+
+#[test]
 fn create_only_cas_has_real_bytes_and_fails_closed_when_final_use_denied() {
     let fixture = Fixture::new();
     let allowed = Arc::new(AtomicBool::new(false));
