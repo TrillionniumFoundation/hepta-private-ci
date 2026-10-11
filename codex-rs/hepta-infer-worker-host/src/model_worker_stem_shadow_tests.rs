@@ -49,3 +49,90 @@ fn shadow_worker_refuses_unpinned_sidecar_before_any_execution() {
         Err(Error::RequestCapacity)
     ));
 }
+
+fn shadow_pipeline() -> ShadowSnapshotPipeline {
+    ShadowSnapshotPipeline {
+        encoder_digest: Digest32::of_bytes(b"exact-pinned-encoder-pipeline"),
+        tokenizer_digest: Digest32::of_bytes(b"exact-tokenizer"),
+        normalizer_digest: Digest32::of_bytes(b"exact-preprocessor"),
+        quantization_digest: Digest32::of_bytes(b"exact-q24-quantization"),
+    }
+}
+
+fn shadow_row(cell: &str, scope: &str) -> CheckedShadowStemRow {
+    let values = vec![1_i64 << 23, -(1_i64 << 22)];
+    CheckedShadowStemRow {
+        scope_id: scope.to_string(),
+        principal_id: "principal.a".to_string(),
+        purpose_id: "purpose.decision".to_string(),
+        cell_id: cell.to_string(),
+        generation: 3,
+        authority_epoch: 2,
+        input_digest: Digest32::of_bytes(b"complete-joint-input").to_string(),
+        feature_digest: feature_content_digest_v2(&values).to_string(),
+        features_q24: values,
+    }
+}
+
+fn shadow_batch(rows: Vec<CheckedShadowStemRow>) -> CheckedShadowStemBatch {
+    CheckedShadowStemBatch {
+        unique_inputs: 1,
+        actual_forward_calls_reported: 1,
+        backend_latency_micros_reported: 10,
+        rows,
+        authority: NonAuthorizingPosture::DENY_ALL,
+    }
+}
+
+#[test]
+fn accepted_shadow_rows_share_one_immutable_arc_across_cells() {
+    let mut cache = SharedFeatureCacheV2::new(8, 4096).expect("cache");
+    let snapshots = stage_shadow_feature_snapshots(
+        &mut cache,
+        &shadow_batch(vec![
+            shadow_row("cell.a", "scope.a"),
+            shadow_row("cell.b", "scope.a"),
+        ]),
+        shadow_pipeline(),
+        10,
+        1000,
+    )
+    .expect("typed shadow stage");
+    assert_eq!(cache.len(), 1);
+    assert_eq!(snapshots.len(), 2);
+    assert!(Arc::ptr_eq(&snapshots[0], &snapshots[1]));
+    assert_eq!(snapshots[0].identity.scope_id.as_str(), "scope.a");
+    assert_eq!(snapshots[0].features_q24.as_ref(), &[1_i64 << 23, -(1_i64 << 22)]);
+}
+
+#[test]
+fn shadow_snapshot_batch_failure_is_atomic_and_scope_is_part_of_key() {
+    let mut cache = SharedFeatureCacheV2::new(4, 4096).expect("cache");
+    let base = shadow_batch(vec![shadow_row("cell.a", "scope.a")]);
+    stage_shadow_feature_snapshots(&mut cache, &base, shadow_pipeline(), 10, 1000)
+        .expect("initial stage");
+    let initial_len = cache.len();
+    let mut poisoned = shadow_row("cell.b", "scope.a");
+    poisoned.feature_digest = Digest32::of_bytes(b"forged-content").to_string();
+    let rows = shadow_batch(vec![shadow_row("cell.new", "scope.b"), poisoned]);
+    assert!(matches!(
+        stage_shadow_feature_snapshots(&mut cache, &rows, shadow_pipeline(), 10, 1000),
+        Err(Error::FeatureContract)
+    ));
+    assert_eq!(cache.len(), initial_len);
+
+    let separate = stage_shadow_feature_snapshots(
+        &mut cache,
+        &shadow_batch(vec![shadow_row("cell.c", "scope.b")]),
+        shadow_pipeline(),
+        10,
+        1000,
+    )
+    .expect("different scope gets separate key");
+    assert_eq!(cache.len(), 2);
+    assert_eq!(separate[0].identity.scope_id.as_str(), "scope.b");
+    let bad_ttl = stage_shadow_feature_snapshots(
+        &mut cache, &base, shadow_pipeline(), 10, 600_000,
+    );
+    assert!(matches!(bad_ttl, Err(Error::FeatureContract)));
+}
