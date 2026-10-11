@@ -751,6 +751,14 @@ pub use stem_artifact::StemProjectionArtifactError;
 pub use stem_artifact::StemProjectionOwnerFenceV1;
 pub use stem_artifact::StemProjectionReadObservationV1;
 
+#[path = "model_worker_stem_head_artifact.rs"]
+mod stem_head_artifact;
+
+pub use stem_head_artifact::SelectedStemHeadBankReaderV1;
+pub use stem_head_artifact::StemHeadArtifactError;
+pub use stem_head_artifact::StemHeadBankReadObservationV1;
+pub use stem_head_artifact::encode_cpu_head_bank_candidate_v1;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
