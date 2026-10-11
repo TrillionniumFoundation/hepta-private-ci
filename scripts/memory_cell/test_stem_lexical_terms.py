@@ -47,6 +47,7 @@ class QueryTermTests(unittest.TestCase):
                          ("alice", "s", "account", "2026"))
         self.assertEqual(content_terms("the and or"), ("the", "and", "or"))
         self.assertEqual(content_terms("明天在东京"), ("明天在东京",))
+        self.assertEqual(content_terms("?!"), ())
 
     def test_invalid_content_fails_instead_of_creating_unbounded_fts(self):
         for text in ("", " ", "a" * 16385, None):
@@ -78,6 +79,13 @@ class QueryTermTests(unittest.TestCase):
         self.assertEqual(receipt["lexical_term_count"], 2)
         self.assertEqual(obj.db.args[0], '"alice" OR "2026"')
         self.assertEqual(receipt["original_index_sha256"], "a" * 64)
+        obj.db.sql = None
+        docs, _ = query_filtered(
+            obj, Obj(scope="scope", content="?!"),
+            np.array([1.0, 0.0]), policy, current_cut="cut", revoked=set()
+        )
+        self.assertEqual(len(docs), 2)
+        self.assertIsNone(obj.db.sql)
         with self.assertRaises(ValueError):
             query_filtered(obj, Obj(scope="other", content="alice"),
                            np.array([1.0, 0.0]), policy,

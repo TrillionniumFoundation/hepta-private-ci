@@ -57,14 +57,16 @@ def query_filtered(index, question, vector, policy, *, current_cut, revoked):
     ):
         raise ValueError("nonfinite or mismatched frozen Encoder vector")
     terms = content_terms(question.content)
-    expr = " OR ".join('"' + s.replace('"', '""') + '"' for s in terms)
-    lexical = [
-        r[0] - 1 for r in index.db.execute(
-            "SELECT rowid FROM lexical WHERE lexical MATCH ? "
-            "ORDER BY bm25(lexical), rowid LIMIT ?",
-            (expr, policy.channel_k),
-        )
-    ]
+    lexical = []
+    if terms:
+        expr = " OR ".join('"' + term.replace('"', '""') + '"' for term in terms)
+        lexical = [
+            r[0] - 1 for r in index.db.execute(
+                "SELECT rowid FROM lexical WHERE lexical MATCH ? "
+                "ORDER BY bm25(lexical), rowid LIMIT ?",
+                (expr, policy.channel_k),
+            )
+        ]
     norm = max(float(np.linalg.norm(query_vector)), 1e-12)
     similarities = index.vectors @ (query_vector / norm)
     dense = np.argsort(-similarities, kind="stable")[: policy.channel_k].tolist()
