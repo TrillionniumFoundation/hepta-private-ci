@@ -47,14 +47,14 @@ impl FakeRuntime {
             occurred_at_unix_nanos: self.next_timestamp,
             artifact_digest: CHILD.to_string(),
             route_digest: match name {
-                "route" | "restart" | "power-loss" => "route-child".to_string(),
-                "rollback" | "tombstone" | "resurrection" => "route-parent".to_string(),
+                "route" | "restart" | "power-loss" => crate::durable::sha256(b"route-child"),
+                "rollback" | "tombstone" | "resurrection" => crate::durable::sha256(b"route-parent"),
                 _ => String::new(),
             },
             predecessor_digest: match name {
-                "route" => "route-parent-fence".to_string(),
-                "rollback" => "route-child".to_string(),
-                "tombstone" | "resurrection" => "route-parent".to_string(),
+                "route" => crate::durable::sha256(b"route-parent-fence"),
+                "rollback" => crate::durable::sha256(b"route-child"),
+                "tombstone" | "resurrection" => crate::durable::sha256(b"route-parent"),
                 _ => String::new(),
             },
             tombstone_digest: matches!(name, "tombstone" | "resurrection")
@@ -63,7 +63,7 @@ impl FakeRuntime {
             fault_injection_digest: (name == "power-loss")
                 .then(|| ATTESTATION.to_string())
                 .unwrap_or_default(),
-            receipt_digest: format!("receipt-{n}"),
+            receipt_digest: crate::durable::sha256(format!("receipt-{n}").as_bytes()),
         }
     }
 }
