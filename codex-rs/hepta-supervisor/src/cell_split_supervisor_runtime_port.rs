@@ -56,13 +56,17 @@ fn verify_independent_cns_runtime_signature(
     signature_bytes: &[u8],
     outer_effect_key: &VerifyingKey,
     original_runtime_key: &VerifyingKey,
+    supervisor_key: &VerifyingKey,
 ) -> Result<(), String> {
     if original_bytes.is_empty()
         || original_bytes.len() > 32 * 1024
         || signature_bytes.len() != 64
         || original_runtime_key.is_weak()
         || outer_effect_key.is_weak()
+        || supervisor_key.is_weak()
         || original_runtime_key == outer_effect_key
+        || original_runtime_key == supervisor_key
+        || outer_effect_key == supervisor_key
     {
         return Err("CNS original runtime signer is absent, weak, or not independent".into());
     }
@@ -140,6 +144,7 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
             &original.original_runtime_signature_bytes,
             pinned_cns_key,
             pinned_cns_runtime_key,
+            &signer.verifying_key(),
         )?;
         // Both the signed outer receipt and the independently signed original
         // runtime payload are checked before the journal records this digest.
@@ -440,6 +445,7 @@ mod original_cns_signature_tests {
         let outer = SigningKey::from_bytes(&[31; 32]);
         let runtime = SigningKey::from_bytes(&[41; 32]);
         let alternate = SigningKey::from_bytes(&[51; 32]);
+        let supervisor = SigningKey::from_bytes(&[22; 32]);
         let evidence = b"original fsynced CNS runtime cutover";
         let valid = runtime.sign(evidence).to_bytes();
 
@@ -448,12 +454,14 @@ mod original_cns_signature_tests {
             &valid,
             &outer.verifying_key(),
             &runtime.verifying_key(),
+            &supervisor.verifying_key(),
         ).is_ok());
         assert!(verify_independent_cns_runtime_signature(
             b"forged runtime cutover",
             &valid,
             &outer.verifying_key(),
             &runtime.verifying_key(),
+            &supervisor.verifying_key(),
         ).is_err());
         let mut tampered = valid;
         tampered[0] ^= 0x80;
@@ -462,24 +470,42 @@ mod original_cns_signature_tests {
             &tampered,
             &outer.verifying_key(),
             &runtime.verifying_key(),
+            &supervisor.verifying_key(),
         ).is_err());
         assert!(verify_independent_cns_runtime_signature(
             evidence,
             &valid,
             &outer.verifying_key(),
             &alternate.verifying_key(),
+            &supervisor.verifying_key(),
         ).is_err());
         assert!(verify_independent_cns_runtime_signature(
             evidence,
             &outer.sign(evidence).to_bytes(),
             &outer.verifying_key(),
             &outer.verifying_key(),
+            &supervisor.verifying_key(),
         ).is_err());
         assert!(verify_independent_cns_runtime_signature(
             evidence,
             &valid[..63],
             &outer.verifying_key(),
             &runtime.verifying_key(),
+            &supervisor.verifying_key(),
+        ).is_err());        assert!(verify_independent_cns_runtime_signature(
+            evidence,
+            &valid,
+            &outer.verifying_key(),
+            &runtime.verifying_key(),
+            &runtime.verifying_key(),
         ).is_err());
+        assert!(verify_independent_cns_runtime_signature(
+            evidence,
+            &valid,
+            &outer.verifying_key(),
+            &runtime.verifying_key(),
+            &outer.verifying_key(),
+        ).is_err());
+
     }
 }
