@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 5c25ed9eadbb10e8193d062ee92c14ef8a9db1b5
+      CHAIN_SOURCE_SHA: 127ccdf03a6967ed102d77f040f381ed44ee8fa8
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '5c25ed9eadbb10e8193d062ee92c14ef8a9db1b5' || '66ea84baf9a8f5ca4890964ce341d10b48448168' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '127ccdf03a6967ed102d77f040f381ed44ee8fa8' || '013be30861f91ee1258298dafc3ba20b3185e1d7' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -109,6 +109,12 @@ jobs:
           set -euo pipefail
           for selector in native_branch_single_buffer_matches_original_wire native_branch_single_buffer_preserves_every_lift_depth; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "account_archive_prototype::native_primitive_tests::$selector" -- --exact --show-output --test-threads=1
+          done
+      - name: Require immutable account constants and concurrent copy isolation
+        run: |
+          set -euo pipefail
+          for selector in native_empty_constants_match_wire_and_keep_owned_copy_isolation native_empty_constants_parallel_callers_keep_independent_values; do
+            python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "account_archive_prototype::native_store::tests::$selector" -- --exact --show-output --test-threads=1
           done
       - name: Require complete authenticated snapshot retention and rollback controls
         run: |
