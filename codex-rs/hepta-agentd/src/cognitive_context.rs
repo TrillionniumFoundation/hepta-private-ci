@@ -60,7 +60,8 @@ impl From<CognitiveStoreError> for CognitiveContextError {
 /// small without changing cache ownership, evaluation, or durable learning.
 pub(crate) struct CognitiveReadPolicyV1<'a> {
     pub(crate) ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    pub(crate) current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub(crate) current_retrieval:
+        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     pub(crate) learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
     pub(crate) request_id: Option<u64>,
 }
@@ -72,7 +73,8 @@ pub(crate) struct CognitiveRevalidationPolicyV1<'a> {
     pub(crate) plan: Option<&'a CognitiveContextPlan>,
     pub(crate) ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
     pub(crate) body_generation: u64,
-    pub(crate) current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub(crate) current_retrieval:
+        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 }
 
 #[cfg(test)]
