@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-infer-worker-host/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "scripts/hepta_neuron_lock_dependency_check.py"
+      - ".github/scripts/test_hepta_neuron_lock_dependency_check.py"
       - "codex-rs/hepta-infer-worker-host/src/neuron_worker_control.rs"
       - "codex-rs/hepta-infer-worker-host/src/neuron_worker_control_tests.rs"
       - "codex-rs/hepta-infer-worker-host/src/lib.rs"
@@ -28,6 +31,10 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Fast offline Cargo.lock local-path regression
+        run: |
+          python3 -m unittest discover -s ../.github/scripts -p 'test_hepta_neuron_lock_dependency_check.py' -v
+          python3 ../scripts/hepta_neuron_lock_dependency_check.py
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
