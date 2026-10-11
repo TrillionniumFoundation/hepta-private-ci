@@ -327,3 +327,20 @@ The separate held-out task/citation/retention census remains the sole place
 to look for task benefit. A lower diagnostic training loss does not establish
 representation transfer, supported citations, prospective evaluation, or
 independent production admission. Failure rows remain in the denominator.
+
+## Three-way source-loss attribution (development-only)
+
+At each persistent checkpoint, `stem_cell_training_probe.py` now separates
+**original frozen Encoder**, **frozen-after-adaptation Encoder without Head**,
+and **the checkpoint Head applied to that Encoder**. Every value is bound to
+the same registered TRAIN question, candidate identities, pool seal, family and
+Head snapshot. The two conditional deltas distinguish Encoder adaptation from
+Head readout. This corrects the previous misleading use of adapted Encoder
+logits as a supposed original-frozen baseline.
+
+The native train-source labels are weak document-level support, not
+independently verified entailment. Frozen and prototype controls do not perform
+the SGD fitting objective. Lower diagnostic training loss does not establish
+within-Head progress, generalization to unseen families, correct downstream
+Reader answers, or semantic citation quality. If source/feature identity
+drifts, the probe fails and the attempted row remains in the audit.

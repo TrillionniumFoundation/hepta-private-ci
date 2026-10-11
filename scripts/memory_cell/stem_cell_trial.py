@@ -161,7 +161,7 @@ def run(staged, ranker_dir, output):
         generator_template_digest=digest(SYSTEM),
         primary_policy="same-forced-top1-except-empty-for-all-six-arms",
         score_geometry_policy="frozen-native-logits-versus-head; forced-top1; label-free",
-        training_probe_policy="only registered train cut; original native weak support; after checkpoint reload",
+        training_probe_policy="three-way frozen Encoder vs adapted Encoder vs saved Head; only train cut",
         calibration_or_final_label_hyperparameter_search=False,
         reference_oracle="post-policy answer-dependent source span; NOT independently verified gold evidence",
         reader_cache="exact canonical request reuse; failed and successful actual executions counted separately",
@@ -497,6 +497,17 @@ def run(staged, ranker_dir, output):
                         if (arm, cell) in head_errors:
                             raise ValueError(head_errors[(arm, cell)])
                         train_features = get_features(arm, question)
+                        original_features = initial_features[qid]
+                        if (
+                            train_features.question_id != original_features.question_id
+                            or train_features.family != original_features.family
+                            or train_features.pool_digest != original_features.pool_digest
+                            or train_features.candidate_ids != original_features.candidate_ids
+                            or train_row.features.seal() != original_features.seal()
+                        ):
+                            raise ValueError(
+                                "frozen/adapter probe changed the original candidate pool"
+                            )
                         with torch.no_grad():
                             snapshot_scores = (
                                 train_features.frozen_scores.tolist() + [0.0]
@@ -506,6 +517,10 @@ def run(staged, ranker_dir, output):
                         item.update(
                             status="succeeded",
                             head_sha256=sha256(heads[(arm, cell)].export()),
+                            original_encoder_identity=original_features.encoder_identity,
+                            checkpoint_encoder_identity=train_features.encoder_identity,
+                            candidate_pool_digest=original_features.pool_digest,
+                            candidate_ids_digest=digest(original_features.candidate_ids),
                             probe=train_probe(
                                 train_features.frozen_scores.tolist() + [0.0],
                                 snapshot_scores, train_row.positive_indices,
@@ -513,6 +528,14 @@ def run(staged, ranker_dir, output):
                                     "frozen" if arm == "frozen_rerank"
                                     else "prototype" if arm == "prototype"
                                     else "sgd"
+                                ),
+                                original_frozen_logits=(
+                                    initial_features[qid].frozen_scores.tolist()
+                                    + [0.0]
+                                ),
+                                encoder_adapted=arm in (
+                                    "lineage_lora_gated",
+                                    "independent_lora_gated",
                                 ),
                             ),
                         )

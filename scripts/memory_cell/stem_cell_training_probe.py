@@ -26,56 +26,73 @@ def _logsumexp(values):
     return high + math.log(math.fsum(math.exp(v - high) for v in values))
 
 
-def train_probe(frozen_logits, checkpoint_logits, positive_indices, *, fit_strategy):
-    """Compare frozen vs saved-checkpoint logits against TRAIN-only weak labels.
+def train_probe(
+    encoder_logits, checkpoint_logits, positive_indices, *,
+    fit_strategy, original_frozen_logits=None, encoder_adapted=False,
+):
+    """Three-way weak-label probe on a single admitted TRAIN candidate pool.
 
-    SGD Heads actually optimize this exact multi-positive/null objective when
-    a candidate exists. Prototype fitting is a sufficient-statistics update,
-    not SGD minimizing this loss. Frozen rerank does not fit at all.
+    Native frozen versus adapted Encoder versus adapted Encoder plus Head.
+    This is NOT a before/after trajectory for the same Head checkpoint.
     """
+    original = encoder_logits if original_frozen_logits is None else original_frozen_logits
     if (
         fit_strategy not in ("sgd", "prototype", "frozen")
-        or len(frozen_logits) != len(checkpoint_logits)
-        or not 1 <= len(frozen_logits) <= 65
+        or type(encoder_adapted) is not bool
+        or not 1 <= len(encoder_logits) <= 65
+        or len(original) != len(encoder_logits)
+        or len(checkpoint_logits) != len(encoder_logits)
         or any(type(v) not in (int, float) or not math.isfinite(v)
-               for v in (*frozen_logits, *checkpoint_logits))
+               for v in (*original, *encoder_logits, *checkpoint_logits))
         or len(set(positive_indices)) != len(positive_indices)
-        or any(type(i) is not int or not 0 <= i < len(frozen_logits) - 1
-               for i in positive_indices)
-        or (fit_strategy == "frozen" and list(frozen_logits) != list(checkpoint_logits))
+        or any(type(n) is not int or not 0 <= n < len(encoder_logits) - 1
+               for n in positive_indices)
+        or (encoder_adapted and (
+            original_frozen_logits is None or fit_strategy != "sgd"
+        ))
+        or (fit_strategy != "sgd" and encoder_adapted)
+        or (not encoder_adapted and list(original) != list(encoder_logits))
+        or (fit_strategy == "frozen" and
+            list(encoder_logits) != list(checkpoint_logits))
     ):
-        raise ValueError("unbound or invalid saved-checkpoint weak-label probe")
-    count = len(frozen_logits) - 1
-    support = tuple(positive_indices) or (count,)
-    def diagnostic_loss(values):
-        return _logsumexp(values) - _logsumexp([values[i] for i in support])
+        raise ValueError("invalid or unbound three-way weak-label probe")
+    n = len(encoder_logits) - 1
+    positives = tuple(positive_indices) or (n,)
+    def loss(scores):
+        return _logsumexp(scores) - _logsumexp([scores[k] for k in positives])
 
-    alternatives = [i for i in range(count + 1) if i not in support]
-    def margin(values):
+    competitors = [k for k in range(n + 1) if k not in positives]
+    def margin(scores):
         return (
-            max(values[i] for i in support) - max(values[i] for i in alternatives)
-            if alternatives else None
+            max(scores[k] for k in positives)
+            - max(scores[k] for k in competitors)
+            if competitors else None
         )
 
-    frozen_loss = diagnostic_loss(frozen_logits)
-    checkpoint_loss = diagnostic_loss(checkpoint_logits)
-    is_fit_objective = fit_strategy == "sgd" and count > 0
+    original_loss, encoder_loss, learned_loss = (
+        loss(original), loss(encoder_logits), loss(checkpoint_logits)
+    )
     return dict(
-        schema="hepta.stem-weak-training-probe.v2",
+        schema="hepta.stem-weak-training-probe.v3",
         fit_strategy=fit_strategy,
-        candidate_count=count,
+        encoder_adapted=encoder_adapted,
+        candidate_count=n,
         supported_candidate_count=len(positive_indices),
         annotated_unanswerable=not positive_indices,
-        has_competing_class=bool(alternatives),
-        frozen_weak_label_loss=frozen_loss,
-        learned_weak_label_loss=checkpoint_loss,
-        loss_delta=checkpoint_loss - frozen_loss,
-        weak_label_loss_improved=checkpoint_loss < frozen_loss,
-        native_margin=margin(frozen_logits),
+        has_competing_class=bool(competitors),
+        frozen_weak_label_loss=original_loss,
+        encoder_only_weak_label_loss=encoder_loss,
+        learned_weak_label_loss=learned_loss,
+        loss_delta=learned_loss - original_loss,
+        encoder_only_loss_delta=encoder_loss - original_loss,
+        head_conditional_loss_delta=learned_loss - encoder_loss,
+        weak_label_loss_improved=learned_loss < original_loss,
+        head_conditional_loss_improved=learned_loss < encoder_loss,
+        native_margin=margin(original),
+        encoder_only_margin=margin(encoder_logits),
         learned_margin=margin(checkpoint_logits),
-        # Distinguish a diagnostic objective from the actual fitting algorithm.
-        objective_matches_head_fit=is_fit_objective,
-        no_candidate_sgd_step=count == 0 and fit_strategy == "sgd",
+        objective_matches_head_fit=(fit_strategy == "sgd" and n > 0),
+        no_candidate_sgd_step=n == 0 and fit_strategy == "sgd",
         fit_updates_measured_here=False,
         previous_checkpoint_scores_measured_here=False,
         independent_test_labels_read=False,
@@ -124,12 +141,23 @@ def summarize_train_probes(records):
                 math.fsum(x["learned_weak_label_loss"] for x in rows) / len(rows)
                 if rows else None
             ),
-            lower_diagnostic_loss_than_frozen=sum(
+            encoder_only_diagnostic_loss_mean=(
+                math.fsum(x["encoder_only_weak_label_loss"] for x in rows) / len(rows)
+                if rows else None
+            ),
+            encoder_adapted_observations=sum(x["encoder_adapted"] for x in rows),
+            encoder_only_loss_lower_than_original=sum(
+                x["encoder_only_loss_delta"] < 0 for x in rows
+            ),
+            joint_loss_lower_than_original=sum(
                 x["weak_label_loss_improved"] for x in rows
             ),
+            head_conditional_loss_lower_than_encoder_only=sum(
+                x["head_conditional_loss_improved"] for x in rows
+            ),
             objective_aligned_training_examples=len(objective),
-            objective_aligned_lower_than_frozen=sum(
-                x["weak_label_loss_improved"] for x in objective
+            objective_aligned_head_loss_lower_than_encoder_only=sum(
+                x["head_conditional_loss_improved"] for x in objective
             ),
             # A within-Head pre/post fit measurement needs a frozen prior state.
             within_head_loss_before_after_measured=False,
