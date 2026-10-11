@@ -11,8 +11,9 @@ so recreating a ModelPort with an old pair cannot re-invoke the driver.
 
 Execution follows this exact native chain:
 
-pre-admitted WorkerRequest/ResourceGrant + already loaded ModelManifest
--> WorkerNeuronControlPort -> InferenceWorker::run_neuron_features_receipt
+authorized inference.control request + reserved Worker/ModelManifest
+-> fsynced DurableInferenceControl::claim_dispatch
+-> WorkerNeuronControlPort -> InferenceWorker::run_neuron_features_receipt_consumed
 -> NeuronFeatureReceiptV1 -> InferenceControlModelPort
 -> NeuronModelOutputV1 (Drive and Prediction Q24 separately)
 
@@ -118,7 +119,11 @@ fsyncs the Dispatching event BEFORE releasing a `WorkerNeuronControlPort`.
 A failed/unknown fsync cannot return an executable port. The Worker continues
 to enforce its in-generation tombstones, model binding and resource grant.
 Crash recovery from Dispatching forbids re-dispatch even when in-memory
-Worker tombstones have disappeared. The direct WorkerPort constructor is now **crate-private**; the two raw typed
+Worker tombstones have disappeared. A regression now covers the crash window
+where the pre-Worker claim is durably committed but the ModelPort is dropped
+without ever invoking the driver. It must not reissue that identity on reopen.
+
+The direct WorkerPort constructor is now **crate-private**; the two raw typed
 InferenceWorker::run_neuron_features / run_neuron_features_receipt methods
 are **test-only**, and are absent from the product library. Thus external
 product callers cannot construct a Neuron WorkerPort from a self-authored

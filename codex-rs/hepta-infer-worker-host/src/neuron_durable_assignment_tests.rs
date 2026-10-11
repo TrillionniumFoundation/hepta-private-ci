@@ -432,3 +432,36 @@ fn durable_claim_rejects_replayed_or_expired_worker_admission_without_dispatch()
     ));
     assert_eq!(control.get("tick.1").unwrap().revision, 4);
 }
+
+#[test]
+fn abandoned_fsynced_neuron_dispatch_is_not_replayable_after_crash() {
+    let directory = tempfile::tempdir().unwrap();
+    let request = typed_request();
+    let mut owner = control(&directory, &request);
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker_with_calls(calls.clone());
+
+    // Crash after durable ownership moved to Dispatching, but BEFORE the
+    // driver is invoked: even a new Worker has no permission to guess.
+    let (claim, port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &request, 100).unwrap();
+    assert_eq!(claim.state, RequestState::Dispatching);
+    assert!(port.reservation_unconsumed());
+    drop(port);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    drop(worker);
+    drop(owner);
+
+    let mut recovered =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    let mut fresh_worker = worker_with_calls(calls.clone());
+    assert_eq!(
+        recovered.get(request.request_id.as_str()).unwrap().state,
+        RequestState::Dispatching
+    );
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(&mut recovered, &mut fresh_worker, &request, 100),
+        Err(NeuronDurableAssignmentErrorV1::NotAssigned)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
