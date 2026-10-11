@@ -1,0 +1,320 @@
+{
+  "schema": "hepta.evidence-dag.v3",
+  "schemaVersion": 3,
+  "documentClass": "canonical_registry",
+  "authorityScope": "ordering_only",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "purpose": "package_specific_evidence_dependency_order",
+  "nodes": [
+    "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+    "DOC-1-V8-SEMANTIC-UPGRADE",
+    "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+    "DOC-2-DEFAULT-BRANCH-SELECTION",
+    "P0.7A-RUNTIME-BOOTSTRAP",
+    "P0.7B-B0-VERIFIED-USE",
+    "P0.7B-B1A-PROVIDER-BOUNDARY",
+    "P0.7B-B1B-MODEL-BOUNDARY",
+    "P0.7B-B2-TOOL-NET-FS",
+    "P0.7B-B3-BOUNDARIES",
+    "P0.7B-B4-CALLSITE-PROOF",
+    "AUTHBUS-P1.3-V12",
+    "INTELLIGENCE-A0-Q0.63",
+    "INFER-V4-T1",
+    "INFER-V4-T2",
+    "INFER-V4-T3",
+    "INFER-V4-T4",
+    "INFER-V4-T5",
+    "UI-V5",
+    "BROWSER-WEB-C1",
+    "MEM-0-TYPES",
+    "MEM-1-STORE",
+    "MEM-2-RETRIEVAL",
+    "MEM-3-FEDERATION",
+    "MEM-4-KG",
+    "MEM-5-COMPACT",
+    "MEM-8-PRODUCTION-WRITER",
+    "OBJ-0-OBJECTIVE-CONTRACTS",
+    "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+    "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+    "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+    "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+    "BIO-0-NEURON-INTUITION-CONTRACTS",
+    "OBJ-1-OBJECTIVE-COMPILER",
+    "LRN-1-DURABLE-EPISODE-LEDGER",
+    "ART-1-LEARNING-ARTIFACT-REGISTRY",
+    "PIM-1-PROMPT-FACTOR-REGISTRY",
+    "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+    "HBO-1-OPERATOR-SENSOR-CORE",
+    "HBO-2-BELLMAN-OPERATOR-SHADOW",
+    "NEU-1-LOCAL-MODEL-BAKEOFF",
+    "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+    "INT-1-CALIBRATED-INTUITION-POLICY",
+    "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+    "CTX-1-CONTEXT-COMPILER",
+    "P0.7D-FAULT-MATRIX",
+    "P0.7E-DEPENDENCY-INVERSION",
+    "P0.8A-AST-RATCHET",
+    "P0.8B-READINESS",
+    "P0.8C-RESOURCE-BUDGETS",
+    "ECP-1-ENGINEERING-CONTROL-PLANE",
+    "RCP-1-RUNTIME-CONTROL-PLANE",
+    "P0.8D-VERTICAL-SLICE",
+    "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+    "LRN-2-CAUSAL-EVALUATION",
+    "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+    "LONG-1-TEMPORAL-HOLDOUT",
+    "LONG-2-RETENTION-FORGETTING",
+    "LONG-3-UNLEARNING-NON-RESURRECTION",
+    "NDU-2-AGENT-DOMAIN-HIERARCHY",
+    "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+    "BIO-2-REPLAY-CONSOLIDATION",
+    "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
+    "PIM-3-FACTOR-EVOLUTION",
+    "PLS-1-PARAMETER-PLASTICITY",
+    "PLS-2-TOPOLOGY-PROPOSAL",
+    "SELF-1-CODE-CANDIDATE-PIPELINE",
+    "P0.9-EXTERNAL-GATES",
+    "PLS-3-BOUNDED-STRUCTURAL-CANARY",
+    "PLATFORM-0-TYPE-BOUNDARY",
+    "FLEET-1-ALLOCATION-CONTRACT",
+    "HEPTABAO-1-SECRET-BOUNDARY",
+    "MEM-READ-1-SNAPSHOT-PORT",
+    "TASKFLOW-1-EXECUTION-BOUNDARY",
+    "MATRIX-1-CHANNEL-BOUNDARY",
+    "UI-NATIVE-1-SHELL",
+    "INT-2-AGENTD-CODEX-COMPOSITION",
+    "DOC-REGISTRY-CLOSED-WORLD",
+    "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+    "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+    "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+    "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+    "EMB-0-EMBODIED-CONTRACTS",
+    "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+    "EMB-2-REFLEX-MOTOR-ACTUATION",
+    "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION",
+    "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+    "ASM-1-DISCOVERY-MANIFEST",
+    "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+    "ASM-3-STATE-MIGRATION-QUALIFICATION",
+    "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+  ],
+  "edges": [
+    {
+      "from": "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+      "to": "DOC-1-V8-SEMANTIC-UPGRADE"
+    },
+    {
+      "from": "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+      "to": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
+    },
+    {
+      "from": "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
+    },
+    {
+      "from": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
+    },
+    {
+      "from": "DOC-2-DEFAULT-BRANCH-SELECTION",
+      "to": "P0.7A-RUNTIME-BOOTSTRAP"
+    },
+    {
+      "from": "P0.7A-RUNTIME-BOOTSTRAP",
+      "to": "P0.7B-B0-VERIFIED-USE"
+    },
+    {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "AUTHBUS-P1.3-V12"
+    },
+    {
+      "from": "DOC-2-DEFAULT-BRANCH-SELECTION",
+      "to": "INTELLIGENCE-A0-Q0.63"
+    },
+    {
+      "from": "DOC-2-DEFAULT-BRANCH-SELECTION",
+      "to": "UI-V5"
+    },
+    {
+      "from": "DOC-2-DEFAULT-BRANCH-SELECTION",
+      "to": "BROWSER-WEB-C1"
+    },
+    {
+      "from": "P0.8D-VERTICAL-SLICE",
+      "to": "P0.9-EXTERNAL-GATES"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "P0.7E-DEPENDENCY-INVERSION",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "FLEET-1-ALLOCATION-CONTRACT"
+    },
+    {
+      "from": "AUTHBUS-P1.3-V12",
+      "to": "HEPTABAO-1-SECRET-BOUNDARY"
+    },
+    {
+      "from": "P0.7B-B3-BOUNDARIES",
+      "to": "HEPTABAO-1-SECRET-BOUNDARY"
+    },
+    {
+      "from": "MEM-0-TYPES",
+      "to": "MEM-READ-1-SNAPSHOT-PORT"
+    },
+    {
+      "from": "P0.7B-B4-CALLSITE-PROOF",
+      "to": "TASKFLOW-1-EXECUTION-BOUNDARY"
+    },
+    {
+      "from": "P0.7B-B3-BOUNDARIES",
+      "to": "MATRIX-1-CHANNEL-BOUNDARY"
+    },
+    {
+      "from": "P0.8B-READINESS",
+      "to": "UI-NATIVE-1-SHELL"
+    },
+    {
+      "from": "UI-V5",
+      "to": "UI-NATIVE-1-SHELL"
+    },
+    {
+      "from": "CTX-1-CONTEXT-COMPILER",
+      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
+    },
+    {
+      "from": "INT-1-CALIBRATED-INTUITION-POLICY",
+      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
+    },
+    {
+      "from": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
+    },
+    {
+      "from": "INTELLIGENCE-A0-Q0.63",
+      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "DOC-REGISTRY-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+      "to": "DOC-REGISTRY-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "DOC-3A-SOURCE-BINDING-RECONCILIATION"
+    },
+    {
+      "from": "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+      "to": "DOC-3B-MODULE-TECHNICAL-DOCUMENTS"
+    },
+    {
+      "from": "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+      "to": "DOC-3C-MODULE-DOC-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+      "to": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+      "to": "EMB-0-EMBODIED-CONTRACTS"
+    },
+    {
+      "from": "EMB-0-EMBODIED-CONTRACTS",
+      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+    },
+    {
+      "from": "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+    },
+    {
+      "from": "EMB-2-REFLEX-MOTOR-ACTUATION",
+      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+    },
+    {
+      "from": "LRN-2-CAUSAL-EVALUATION",
+      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+    },
+    {
+      "from": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+      "to": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS"
+    },
+    {
+      "from": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+      "to": "ASM-1-DISCOVERY-MANIFEST"
+    },
+    {
+      "from": "ASM-1-DISCOVERY-MANIFEST",
+      "to": "ASM-2-DEBIAN-BRIDGE-SANDBOX"
+    },
+    {
+      "from": "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+      "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
+    },
+    {
+      "from": "LRN-2-CAUSAL-EVALUATION",
+      "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
+    },
+    {
+      "from": "ASM-3-STATE-MIGRATION-QUALIFICATION",
+      "to": "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+    }
+  ],
+  "acyclicRequired": true,
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

@@ -1,0 +1,131 @@
+# Native mandatory context profile
+
+`compile(CompilationRequest)` now treats every `TrustedInstruction` item as a
+non-tradable floor. If those instructions cannot fit, it returns
+`Error::InsufficientContext` with the exact required cost and available budget.
+The existing request and receipt shapes remain unchanged. Successful legacy
+compilations retain the original digest format. The previous behavior that
+silently omitted a trusted instruction is intentionally rejected.
+
+`compile_with_requirements(request, CompilationRequirementsV1)` additionally
+binds mandatory provenance or contradiction groups. Requirements carry the
+expected run snapshot and objective, a stable identity for each group, and exact
+`ContextItem` bindings. Unknown item identities, changed role, source/content
+digest, secret flag or token count cannot satisfy a requirement. An indivisible
+mandatory group is included in full or the entire compilation fails. Shared
+members across groups are included and charged once.
+
+Validation precedes packing. Instructions and the union of all required group
+members reserve their entire cost before any optional evidence is considered.
+Remaining optional items use the existing deterministic role/ID order. Items
+that cannot fit are explicitly omitted; this stable greedy policy makes no
+global-optimality or value-per-cost claim. Required cost uses an exact u128 sum
+of at most 4096 u64 costs, so a floor exceeding u64 still returns insufficient
+context without wrapping. Input items, groups and total member references are
+each bounded by 4096. Empty or duplicate groups and duplicate members within a
+group are rejected. Reordering inputs/groups does not change the receipt.
+
+The native requirements profile has its own context digest domain. It binds the
+canonical group structure, frozen snapshot/objective, item roles, exact source
+and content digests, and costs along with the normal compilation inputs. Changing
+required-group semantics therefore invalidates that compilation digest even when
+the selected context items happen to be identical. It does not silently change
+the canonical serialized `ContextCompilationReceiptV1` protocol.
+
+The V1 entrypoints above remain compatibility surfaces. They still rely on
+caller-authenticated instructions/source access and caller-supplied token counts
+and therefore are not the normative proof path for exact tokenizer, revocation
+or delivery semantics.
+
+The normative V2 path in `src/v2.rs` closes those source-level gaps without
+changing the V1 wire meaning. The verified V2 compiler-to-runtime handoff is an
+in-process typed Rust API: V2 proof objects and final payload bytes do not cross
+`platform.wire`. The separately registered `hepta.context-compilation-receipt.v2`
+wire schema remains a compatibility transport for the legacy V1 compilation
+receipt and must not be interpreted as the verified V2 proof chain:
+
+- every admission snapshot is verifier-authenticated, bound to request scope
+  and an authority-domain digest, declares a complete cumulative revocation set,
+  and is bounded to 4096 revoked admission ids. Successor verification binds the
+  predecessor snapshot and rejects revocation resurrection; an oversized
+  cumulative set fails closed rather than silently pruning history;
+- every candidate carries `VerifiedAdmissionV2`, produced only by
+  `verify_admission_v2` from an admission record, an authenticated
+  `VerifiedAdmissionSnapshotV2` and the configured
+  `ContextAdmissionVerifierV2`; item role/content/source/generation, request
+  scope and secret classification are verifier-bound admission facts. Cross-scope
+  reuse and secret-classified admissions are rejected before compilation rather
+  than trusting candidate-side assertions;
+- candidate tokenization receipts are produced by
+  `TokenizationReceiptV2::from_exact_bytes`, which invokes the exact
+  profile-bound tokenizer over the actual candidate bytes;
+- canonical mandatory groups are included in
+  `mandatory_groups_digest`, so policy changes alter the compilation receipt
+  even when the same items happen to be selected;
+- `record_serialization` verifies the actual bytes for every selected item,
+  invokes the profile-bound serializer, hashes the actual final payload and then
+  invokes the exact tokenizer over that final payload, including framing,
+  template and tool-schema overhead;
+- `build_attachment` revalidates every selected admission against the current
+  verified admission/revocation snapshot; expiry is exclusive, so an admission
+  is already invalid when the snapshot time equals `expires_unix_ms`;
+- `prepare_delivery_v2` rejects revocation-epoch or snapshot-time rollback
+  from the attachment boundary, revalidates every selected admission again
+  immediately before dispatch, and emits a construction-closed
+  `ContextDeliveryPreparationV2` safety witness binding the exact serialized
+  payload, provider/model profile and current verified admission snapshot;
+- the runtime/provider owner, not this compiler, performs the physical model
+  request and consumes any required final-use authority. Its canonical
+  `ProviderRequestBinding` must carry the exact payload SHA-256 in
+  `ephemeral_input_sha256`. The existing `ephemeral_input_witness_sha256`
+  remains the provider-owned exact-attempt witness; the independent delivery
+  verifier must authenticate that witness against the current
+  `ContextDeliveryPreparationV2`;
+- `observe_delivery` accepts only a structurally valid
+  `ProviderInvocationReceipt` plus an independent
+  `ContextProviderDeliveryVerifierV2` decision, verifies the exact payload
+  binding, verifier-authenticated pre-dispatch preparation linkage,
+  provider/model identity, attempt and terminal
+  evidence, and emits a deny-all `ContextDeliveryReceiptV2`;
+- compilation, serialization, attachment, preparation and delivery proof
+  artifacts are construction-closed outside the module, so external callers
+  cannot synthesize receipts with struct literals and skip mandatory-group
+  selection, exact tokenization or current-revocation checks;
+- `Delivered` means the canonical provider receipt reached a completed terminal
+  observation for the exact bound input. It does not claim exactly-once external
+  execution or independent provider truth beyond the qualified evidence owner.
+
+Admission-verifier, tokenizer, serializer and provider-evidence verifier
+implementations are explicit trusted adapter boundaries. Their identities are
+digest-bound, but this crate does not independently prove a malicious adapter
+honest. Production composition must qualify those concrete adapters, bind the
+runtime provider owner to the opaque pre-dispatch witness, and consume any
+required `VerifiedUseToken` at the actual effect boundary. Compilation,
+attachment, preparation and delivery receipts remain
+`AuthorityPosture::DENY_ALL`.
+
+The additive owner-local, crate-native `compile_candidate_bound` and
+`compile_candidate_bound_with_requirements` entrypoints preserve the existing
+V1 request, receipt and digest semantics. Their wrapper binds the complete
+bounded set supplied by the caller, including omitted item identities, content,
+source, role, cost and secret marker. It deliberately calls this a
+`caller_candidate_set_digest`: it cannot prove that the caller supplied every
+eligible item and is not a source credential, freshness/revocation witness,
+delivery receipt, selection decision, or authority grant.
+
+Native acceptance cases are in `src/v2_tests.rs`, `src/lib_tests.rs`,
+`src/requirements_tests.rs` and `src/candidate_bound_tests.rs`. V2 cases
+cover verifier rejection of otherwise well-formed admission records,
+scope/authority-domain binding, cumulative no-resurrection snapshots,
+revocation/mandatory/raw-byte resource ceilings, role-binding confusion,
+compile-to-attach and attach-to-send revocation, mandatory-group provenance,
+actual realization-byte drift, exact final-payload tokenization and framing
+overflow, plus transport payload mismatch. Candidate bytes are capped at 1 MiB
+per item; pre-serialization realized bytes are capped at 16 MiB aggregate;
+mandatory references and cumulative revoked admission ids are each capped at
+4096.
+
+Run with `just test --locked -p codex-hepta-context-compiler`. These are native
+contract tests. Concrete product caller composition, target-host adapter
+qualification, independent acceptance, activation and release remain separate
+integration obligations; no such state is asserted here.

@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.heptabao-branch-audit-receipt.v1",
+  "observedAt": "2026-09-12T15:20:00+08:00",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "remote": "https://github.com/TrillionniumFoundation/HeptaBao.git",
+  "mainHead": "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18",
+  "mainParent": "eac9c608bfda77a8972e1e8a1343dfc21985d62b",
+  "remoteBranchCount": 387,
+  "nonMainBranchCount": 386,
+  "nonAncestorBranchCount": 0,
+  "aheadOfMainBranchCount": 0,
+  "allRemoteBranchTipsReachMain": true,
+  "headSymbolicRefExcluded": true,
+  "method": {
+    "fetch": "git fetch --unshallow origin",
+    "inventory": "git for-each-ref --format=%(refname:short) refs/remotes/origin",
+    "ancestryCheck": "git merge-base --is-ancestor <remote-branch-tip> origin/main",
+    "scope": "All 387 branch refs under refs/remotes/origin, including origin/main and excluding origin/HEAD"
+  },
+  "resolutionSource": {
+    "path": "planning/BRANCH_CONTENT_RESOLUTIONS_20260912.json",
+    "sha256": "f217b189b8087c2107caf26723344efee5ea7f401de38be08d517e01f5dafbac",
+    "frozenBranchCount": 387,
+    "independentDivergentHeads": 239,
+    "qualification": false,
+    "compatibilityClaim": false,
+    "allProductGapsClosed": false
+  },
+  "interpretation": "All currently advertised remote branch tips are reachable from main. Reachability preserves reviewed ancestry; it does not assert that every historical branch requirement was implemented or that OpenBao replacement is qualified.",
+  "compatibilityClaim": false,
+  "productionAuthority": false,
+  "independentAcceptance": false,
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "independentAcceptance": false,
+    "productionQualification": false,
+    "release": false
+  }
+}

@@ -1,0 +1,21 @@
+[package]
+name = "hepta-cognitive-types-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+codex-hepta-cognitive-types = { path = ".." }
+libfuzzer-sys = "0.4"
+
+[[bin]]
+name = "decode_contracts"
+path = "fuzz_targets/decode_contracts.rs"
+test = false
+doc = false
+bench = false
+
+[workspace]

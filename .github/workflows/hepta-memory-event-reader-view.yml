@@ -1,0 +1,155 @@
+name: MemoryCell source-preserving event reader experiment
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/event_reader*.py"
+      - "scripts/memory_cell/event_revision_closure.py"
+      - "scripts/memory_cell/test_event_reader*.py"
+      - "scripts/memory_cell/test_event_revision_closure.py"
+      - "scripts/memory_cell/bundle_reader.py"
+      - ".github/workflows/hepta-memory-event-reader-view.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-event-reader-view-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  format:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Required repository format check; retain exact repair diagnostics
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/event-view-format
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          set +e
+          just fmt --check --base "$BASE" > /tmp/event-view-format/check.log 2>&1
+          code=$?
+          set -e
+          cat /tmp/event-view-format/check.log
+          if [ "$code" -ne 0 ]; then
+            just fmt --base "$BASE"
+            git diff > /tmp/event-view-format/format.diff
+            cp scripts/memory_cell/bundle_reader.py scripts/memory_cell/event_reader*.py scripts/memory_cell/event_revision_closure.py scripts/memory_cell/test_event_reader*.py scripts/memory_cell/test_event_revision_closure.py /tmp/event-view-format/
+          fi
+          git rev-parse HEAD > /tmp/event-view-format/source-head.txt
+          exit "$code"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-event-view-format
+          path: /tmp/event-view-format
+          if-no-files-found: error
+  reader:
+    needs: format
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        tier: [smol-1.7b, qwen-3b]
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+      PLAN_SHA: "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Download the exact prior controlled input, never regenerate cases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir /tmp/event-view-result
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/event-inputs.zip
+          python3 - <<'PY'
+          import hashlib, re, stat, zipfile
+          from pathlib import Path, PurePosixPath
+          raw = Path('/tmp/event-inputs.zip').read_bytes()
+          assert len(raw) <= 16 * 1024 * 1024
+          assert hashlib.sha256(raw).hexdigest() == '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          root = Path('/tmp/event-inputs')
+          root.mkdir()
+          with zipfile.ZipFile('/tmp/event-inputs.zip') as z:
+              members = z.infolist()
+              assert len(members) <= 1024
+              assert sum(i.file_size for i in members) <= 32 * 1024 * 1024
+              seen = set()
+              for info in members:
+                  p = PurePosixPath(info.filename)
+                  assert not p.is_absolute() and '..' not in p.parts
+                  assert '\\' not in info.filename and not stat.S_ISLNK(info.external_attr >> 16)
+                  if info.is_dir():
+                      continue
+                  name = str(p)
+                  assert name not in seen
+                  seen.add(name)
+                  out = root / name
+                  out.parent.mkdir(parents=True, exist_ok=True)
+                  out.write_bytes(z.read(info))
+          declared = set()
+          for line in (root / 'SHA256SUMS').read_text().splitlines():
+              hashed, name = line.split('  ', 1)
+              assert re.fullmatch('[0-9a-f]{64}', hashed)
+              path = PurePosixPath(name)
+              assert not path.is_absolute() and '..' not in path.parts
+              name = str(path)
+              assert name not in declared
+              declared.add(name)
+              assert hashlib.sha256((root / name).read_bytes()).hexdigest() == hashed
+          assert declared == seen - {'SHA256SUMS'}
+          assert (root / 'tested-commit.txt').read_text().strip() == 'c9dd3aeff958fbdc4356a98718e96dec47f9b820'
+          assert hashlib.sha256((root / 'plan/plan.json').read_bytes()).hexdigest() == '9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897'
+          Path('/tmp/event-view-result/input-pin.txt').write_text('artifact=11669174727\nsource=c9dd3aeff958fbdc4356a98718e96dec47f9b820\n')
+          PY
+      - name: Exact environment and full regressions, separate from actual models
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/event-view-python
+          /tmp/event-view-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/event-view-python/bin/pip install -r /tmp/event-inputs/environment.txt
+          /tmp/event-view-python/bin/pip freeze > /tmp/event-view-result/environment.txt
+          diff -u /tmp/event-inputs/environment.txt /tmp/event-view-result/environment.txt
+          /tmp/event-view-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/event-view-result/tests.log
+      - name: Stage the same licensed research reader and frozen inventory
+        run: |
+          set -euo pipefail
+          /tmp/event-view-python/bin/python scripts/memory_cell/reader_reference.py stage '${{ matrix.tier }}' /tmp/event-view-model
+          cp /tmp/event-view-model/inventory.json /tmp/event-view-model/publisher.json /tmp/event-view-model/stage.json /tmp/event-view-result/
+      - name: Actual frozen reader with identical selected evidence and decoder
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/event-view-result/resources.txt /tmp/event-view-python/bin/python scripts/memory_cell/event_reader_experiment.py /tmp/event-inputs/plan /tmp/event-inputs/observations /tmp/event-view-model /tmp/event-view-result/run --plan-sha "$PLAN_SHA" --stage-sha "$(sha256sum /tmp/event-view-model/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/event-view-result/run.log
+      - name: Keep exact source, costs and every failure; never upload model weights
+        if: always()
+        run: |
+          mkdir -p /tmp/event-view-result/source
+          cp scripts/memory_cell/event_reader*.py scripts/memory_cell/event_revision_closure.py scripts/memory_cell/test_event_reader*.py scripts/memory_cell/test_event_revision_closure.py scripts/memory_cell/bundle_reader.py scripts/memory_cell/reader_reference.py /tmp/event-view-result/source/
+          git rev-parse HEAD > /tmp/event-view-result/tested-commit.txt
+          (cd /tmp/event-view-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-event-reader-view-${{ matrix.tier }}
+          path: /tmp/event-view-result
+          if-no-files-found: error

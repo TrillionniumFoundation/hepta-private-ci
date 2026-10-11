@@ -1,0 +1,201 @@
+name: MemoryCell preserved full LongMemEval
+on:
+  pull_request:
+    types: [labeled]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-cell-preserved-full-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  preregister:
+    if: >-
+      github.event.pull_request.number == 1452 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'codex/memory-cell-evidence-20261008' &&
+      github.event.label.name == 'memory-cell-preserved-native'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      source: ${{ steps.plan.outputs.source }}
+      plan_sha256: ${{ steps.plan.outputs.plan_sha256 }}
+      archive_sha256: ${{ steps.plan.outputs.archive_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Install the pinned model environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/mcell-python
+          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+      - name: Freeze all native questions, source identity and unchanged model budgets
+        id: plan
+        env:
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha }}
+          PYTHONPATH: scripts/memory_cell
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          mkdir -p /tmp/preserved-plans
+          /tmp/mcell-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/preserved-plans/tests.log
+          /tmp/mcell-python/bin/python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          from benchmark_collect import preregister
+          from native import load
+          from pretrained import file_inventory
+          from native import digest
+          root = Path('/tmp/memory-inputs')
+          expected = 'd6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442'
+          benchmark = load(root / 'longmemeval.json', 'longmemeval', expected, allow_unresolved_evidence=True, session_conflicts='retain-versioned', invalid_history='quarantine-question', empty_turns='preserve')
+          if len(benchmark.questions) != 500 or benchmark.ingress_failures:
+              raise ValueError('complete native input census not available')
+          for directory, identity in [('reader', 'afb110c28d68c8956d372e428277fa8f164a2304f0ef9d9064a084f3fab7d94c'), ('encoder', '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a')]:
+              if digest(file_inventory(root / directory)) != identity:
+                  raise ValueError('pinned pretrained input changed: ' + directory)
+          path = Path('/tmp/preserved-plans/longmemeval.json')
+          value = preregister(root, path, 'longmemeval', folds=1, shards=32, limit=None)
+          if value['execution_binding']['empty_turns'] != 'preserve' or len(value['coverage']['cases']) != 500:
+              raise ValueError('frozen execution profile or question census changed')
+          provenance = dict(source_commit=os.environ['HEPTA_MEMORY_TESTED_COMMIT'], original_input_run=37862780268, original_input_artifact=11586991191, original_generator_commit='4e996a707a7717152ab36cccaed901c4bd8248a2', original_execution_replaced=False, new_execution=True, dataset_sha256=expected, production_accepted=False)
+          Path('/tmp/preserved-plans/provenance.json').write_text(json.dumps(provenance, indent=2))
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('matrix=' + json.dumps({'shard': list(range(32))}) + '\n')
+              stream.write('source=' + os.environ['HEPTA_MEMORY_TESTED_COMMIT'] + '\n')
+              stream.write('plan_sha256=' + hashlib.sha256(path.read_bytes()).hexdigest() + '\n')
+              stream.write('archive_sha256=' + hashlib.sha256(Path('/tmp/memory-inputs.tar.gz').read_bytes()).hexdigest() + '\n')
+          PY
+          /tmp/mcell-python/bin/pip freeze > /tmp/preserved-plans/python-lock.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: preserved-native-plan
+          path: /tmp/preserved-plans
+          if-no-files-found: error
+  execute:
+    needs: preregister
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix: ${{ fromJSON(needs.preregister.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.preregister.outputs.source }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: preserved-native-plan
+          path: /tmp/plans
+      - name: Check frozen source and all transferred input bytes
+        env:
+          SOURCE: ${{ needs.preregister.outputs.source }}
+          PLAN_SHA: ${{ needs.preregister.outputs.plan_sha256 }}
+          ARCHIVE_SHA: ${{ needs.preregister.outputs.archive_sha256 }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          printf '%s  %s\n' "$PLAN_SHA" /tmp/plans/longmemeval.json | sha256sum -c -
+          printf '%s  %s\n' "$ARCHIVE_SHA" /tmp/memory-inputs.tar.gz | sha256sum -c -
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz
+          python3 -m venv /tmp/mcell-python
+          /tmp/mcell-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/mcell-python/bin/pip install -r scripts/memory_cell/requirements.txt
+      - name: Execute every assigned native question and retain failures
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          TOKENIZERS_PARALLELISM: "false"
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ needs.preregister.outputs.source }}
+          SHARD: ${{ matrix.shard }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/memory-resource.txt /tmp/mcell-python/bin/python scripts/memory_cell/run_native.py \
+            /tmp/memory-inputs /tmp/native-record longmemeval --fold 0 --folds 1 --shard "$SHARD" --shards 32 --all-questions \
+            2>&1 | tee /tmp/memory-execution.log
+      - name: Retain exact source, resources, environment and artifact hashes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/native-record
+          git rev-parse HEAD > /tmp/native-record/tested-commit.txt
+          for file in /tmp/memory-resource.txt /tmp/memory-execution.log; do
+            if test -f "$file"; then cp "$file" /tmp/native-record/; fi
+          done
+          if test -x /tmp/mcell-python/bin/pip; then /tmp/mcell-python/bin/pip freeze > /tmp/native-record/python-lock.txt; fi
+          (cd /tmp/native-record && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: preserved-native-shard-${{ matrix.shard }}
+          path: /tmp/native-record
+          if-no-files-found: error
+  complete-review:
+    needs: [preregister, execute]
+    if: always() && !cancelled() && needs.preregister.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.preregister.outputs.source }}
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: preserved-native-plan
+          path: /tmp/plans
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: preserved-native-shard-*
+          path: /tmp/receipts
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Verify every shard and export the full unsigned adjudication census
+        env:
+          SOURCE: ${{ needs.preregister.outputs.source }}
+          PLAN_SHA: ${{ needs.preregister.outputs.plan_sha256 }}
+          ARCHIVE_SHA: ${{ needs.preregister.outputs.archive_sha256 }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/final-review
+          printf '%s  %s\n' "$PLAN_SHA" /tmp/plans/longmemeval.json | sha256sum -c -
+          printf '%s  %s\n' "$ARCHIVE_SHA" /tmp/memory-inputs.tar.gz | sha256sum -c -
+          tar -C /tmp -xzf /tmp/memory-inputs.tar.gz memory-inputs/longmemeval.json
+          for shard in /tmp/receipts/preserved-native-shard-*; do
+            (cd "$shard" && sha256sum -c SHA256SUMS > /dev/null)
+          done
+          python3 scripts/memory_cell/benchmark_review.py /tmp/plans/longmemeval.json /tmp/receipts /tmp/final-review/complete \
+            --validator-commit "$SOURCE" --benchmark-json /tmp/memory-inputs/longmemeval.json \
+            2>&1 | tee /tmp/final-review/review.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: preserved-native-complete-review
+          path: /tmp/final-review
+          if-no-files-found: error

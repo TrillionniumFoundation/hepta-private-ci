@@ -1,0 +1,17 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-types"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_types"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+sha2 = { workspace = true }

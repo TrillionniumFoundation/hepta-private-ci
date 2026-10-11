@@ -1,0 +1,28 @@
+{
+  "schema": "org.trillionnium.external-evidence-admission-policy.v1",
+  "version": "1",
+  "status": "UNPROVISIONED_TEMPLATE",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "required_uid": 0,
+  "grant_public_key_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "issuer_allowlist": [],
+  "allowed_subjects": [
+    {
+      "source_commit": "968968046d69d000f1f9fe03683e92aa7903cf99",
+      "source_tree": "04ba2fab66dfc41680784e1288e14c2fc54c58d9",
+      "promotion_pr_number": 41,
+      "promotion_pr_head": "7e1e611e7299391cf3d4edc1ded322da0d023cc6"
+    }
+  ],
+  "max_request_future_seconds": 86400,
+  "max_grant_lifetime_seconds": 3600,
+  "max_clock_skew_seconds": 300,
+  "evidence_kinds": {
+    "installed_root_linux_process_matrix": {"level":"L2","lane":"owner-open-r5-l2","authorization_class":"TARGET_CAPTURE","required_roles":["producer","target_operator","admission_issuer"],"minimum_independent_approvals":1},
+    "installed_codex_same_turn": {"level":"L2","lane":"owner-open-r5-l2","authorization_class":"TARGET_CAPTURE","required_roles":["producer","target_operator","admission_issuer"],"minimum_independent_approvals":1},
+    "clean_android_target_files": {"level":"L3","lane":"owner-open-r5-l3","authorization_class":"ANDROID_BUILD_CAPTURE","required_roles":["producer","android_builder","admission_issuer"],"minimum_independent_approvals":1},
+    "physical_android_adb": {"level":"L4","lane":"owner-open-r5-l4","authorization_class":"PHYSICAL_DEVICE_CAPTURE","required_roles":["producer","device_custodian","admission_issuer"],"minimum_independent_approvals":1},
+    "destructive_fault_matrix": {"level":"L5","lane":"owner-open-r5-l5","authorization_class":"DESTRUCTIVE_CAPTURE","required_roles":["producer","fault_operator","destructive_authorizer","admission_issuer"],"minimum_independent_approvals":2},
+    "signed_public_release": {"level":"L6","lane":"owner-open-r5-l6","authorization_class":"PUBLIC_RELEASE_SIGNING","required_roles":["producer","signing_custodian","release_authorizer","admission_issuer"],"minimum_independent_approvals":2}
+  }
+}

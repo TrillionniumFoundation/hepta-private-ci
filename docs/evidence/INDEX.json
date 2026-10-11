@@ -1,0 +1,243 @@
+{
+  "schema": "hepta.evidence-index.v5",
+  "schemaVersion": 5,
+  "documentClass": "canonical_registry",
+  "authorityScope": "evidence_type_and_non_substitution_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "evidenceTypes": [
+    {
+      "id": "source_identity",
+      "dynamic": false,
+      "exactCandidateBound": true,
+      "expires": false
+    },
+    {
+      "id": "source_inventory",
+      "dynamic": false,
+      "exactCandidateBound": true,
+      "expires": false
+    },
+    {
+      "id": "static_verification",
+      "dynamic": false,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "exact_head_execution",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "merge_candidate_execution",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "semantic_review",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "independent_review",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "fault_evidence",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "performance_evidence",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "physical_or_real_provider_evidence",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "operator_acceptance",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "promotion_decision",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "release_decision",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "complete_candidate_set",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "logged_propensity_and_support",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "causal_outcome_observation",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "credit_conservation",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "dataset_snapshot",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "support_aware_ope",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "future_time_holdout",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "retention_and_forgetting",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "unlearning_non_resurrection",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "real_local_model_artifact",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "real_neuron_consumer",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "temporal_state_recovery",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "prompt_delivery_observation",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "prompt_causal_uplift",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "operator_sensor_core_coverage",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "operator_regularity_and_gain",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "next_snapshot_reload",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "rollback_rehearsal",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "biomimetic_ablation",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    },
+    {
+      "id": "topology_canary",
+      "dynamic": true,
+      "exactCandidateBound": true,
+      "expires": true
+    }
+  ],
+  "externalReceiptPolicy": {
+    "storedInMutableCurrentRegistry": false,
+    "exactCommitTreeWorkflowRunJobArtifactBindingRequired": true,
+    "futureTimestampAllowed": false,
+    "maximumClockSkewSeconds": 300,
+    "expiryRequiredForDynamicEvidence": true
+  },
+  "neverPass": [
+    "queued_or_pending",
+    "cancelled",
+    "runner_id_zero",
+    "empty_steps",
+    "source_only_as_runtime",
+    "fixture_as_real_world",
+    "self_issued_independent_decision"
+  ],
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "org.trillionnium.external-evidence-execution-policy.v1",
+  "version": "1",
+  "status": "UNPROVISIONED_TEMPLATE",
+  "repository": "TrillionniumFoundation/trillionnium-os",
+  "required_uid": 0,
+  "admission_policy_sha256_allowlist": [],
+  "grant_public_key_sha256_allowlist": [],
+  "issuer_allowlist": [],
+  "allowed_subjects": [{"source_commit":"968968046d69d000f1f9fe03683e92aa7903cf99","source_tree":"04ba2fab66dfc41680784e1288e14c2fc54c58d9","promotion_pr_number":41,"promotion_pr_head":"7e1e611e7299391cf3d4edc1ded322da0d023cc6"}],
+  "max_bundle_files": 4096,
+  "max_bundle_bytes": 268435456,
+  "bundle_inspection_timeout_seconds": 30,
+  "evidence_kinds": {
+    "installed_root_linux_process_matrix": {"level":"L2","lane":"owner-open-r5-l2","authorization_class":"TARGET_CAPTURE","required_roles":["producer","target_operator","admission_issuer"],"custodian_role":"target_operator","environment_class":"installed_root_linux","timeout_seconds":1800,"stdout_max_bytes":4194304,"stderr_max_bytes":4194304},
+    "installed_codex_same_turn": {"level":"L2","lane":"owner-open-r5-l2","authorization_class":"TARGET_CAPTURE","required_roles":["producer","target_operator","admission_issuer"],"custodian_role":"target_operator","environment_class":"installed_root_linux","timeout_seconds":1800,"stdout_max_bytes":4194304,"stderr_max_bytes":4194304},
+    "clean_android_target_files": {"level":"L3","lane":"owner-open-r5-l3","authorization_class":"ANDROID_BUILD_CAPTURE","required_roles":["producer","android_builder","admission_issuer"],"custodian_role":"android_builder","environment_class":"clean_android_builder","timeout_seconds":21600,"stdout_max_bytes":8388608,"stderr_max_bytes":8388608},
+    "physical_android_adb": {"level":"L4","lane":"owner-open-r5-l4","authorization_class":"PHYSICAL_DEVICE_CAPTURE","required_roles":["producer","device_custodian","admission_issuer"],"custodian_role":"device_custodian","environment_class":"authorized_physical_android","timeout_seconds":3600,"stdout_max_bytes":8388608,"stderr_max_bytes":8388608},
+    "destructive_fault_matrix": {"level":"L5","lane":"owner-open-r5-l5","authorization_class":"DESTRUCTIVE_CAPTURE","required_roles":["producer","fault_operator","destructive_authorizer","admission_issuer"],"custodian_role":"fault_operator","environment_class":"destructive_fault_lab","timeout_seconds":21600,"stdout_max_bytes":8388608,"stderr_max_bytes":8388608},
+    "signed_public_release": {"level":"L6","lane":"owner-open-r5-l6","authorization_class":"PUBLIC_RELEASE_SIGNING","required_roles":["producer","signing_custodian","release_authorizer","admission_issuer"],"custodian_role":"signing_custodian","environment_class":"production_release_custody","timeout_seconds":21600,"stdout_max_bytes":8388608,"stderr_max_bytes":8388608}
+  }
+}

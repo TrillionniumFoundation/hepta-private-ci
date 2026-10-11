@@ -1,0 +1,37 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-memory-extension"
+version.workspace = true
+
+[lib]
+name = "codex_hepta_memory_extension"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-utils-path-uri = { path = "../../utils/path-uri" }
+codex-utils-absolute-path = { path = "../../utils/absolute-path" }
+codex-hepta-paths = { path = "../../hepta-paths" }
+codex-extension-api = { workspace = true }
+codex-hepta-contracts = { workspace = true }
+codex-hepta-memory = { workspace = true }
+codex-protocol = { workspace = true }
+codex-state = { workspace = true }
+codex-tools = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+tokio = { workspace = true, features = ["time"] }
+
+[dev-dependencies]
+chrono = { workspace = true }
+codex-hepta-paths = { workspace = true }
+codex-utils-absolute-path = { workspace = true }
+codex-utils-output-truncation = { workspace = true }
+codex-utils-path-uri = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "test-util", "time"] }

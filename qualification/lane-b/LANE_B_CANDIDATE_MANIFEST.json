@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.lane-b-candidate-manifest.v3",
+  "schemaVersion": 3,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "laneId": "LANE-B-RUNTIME",
+  "sourceBase": {
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+  },
+  "candidateBranch": "codex/lane-b-full-gap-closure-20260911-r3",
+  "candidateHead": "derived_from_git_head_at_verification_time",
+  "historyPolicy": {
+    "sourceHeadMustBeLinearFromSourceBase": true,
+    "syntheticMergeMayHaveExactlyTwoParents": true,
+    "candidateControlledMutationForbidden": true
+  },
+  "allowedPathPrefixes": [
+    ".github/workflows/hepta-lane-b-",
+    "qualification/lane-b/",
+    "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md",
+    "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+    "docs/modules/runtime.codex/IMPLEMENTATION_MAP.json",
+    "docs/modules/inference.control/IMPLEMENTATION_MAP.json",
+    "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+    "docs/modules/automation.taskflow/IMPLEMENTATION_MAP.json",
+    "docs/modules/channel.matrix/IMPLEMENTATION_MAP.json",
+    "docs/modules/browser.servo/IMPLEMENTATION_MAP.json",
+    "docs/modules/ui.control/IMPLEMENTATION_MAP.json",
+    "docs/modules/ui.native/IMPLEMENTATION_MAP.json",
+    "scripts/hepta-lane-b-",
+    "scripts/test_hepta_lane_b_",
+    "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+    "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/lib.rs"
+  ],
+  "requiredModules": [
+    "runtime.supervisor",
+    "runtime.fleet",
+    "runtime.agentd",
+    "runtime.codex",
+    "inference.control",
+    "inference.worker",
+    "automation.taskflow",
+    "channel.matrix",
+    "browser.servo",
+    "ui.control",
+    "ui.native"
+  ],
+  "requiredOperations": 41,
+  "claimBoundary": {
+    "repositoryControlledClosureMayBeCertified": true,
+    "productExecutionMayBeSelfCertified": false,
+    "externalEffectMayBeSelfCertified": false,
+    "independentAcceptanceMayBeSelfCertified": false,
+    "promotionOrReleaseMayBeSelfCertified": false
+  }
+}

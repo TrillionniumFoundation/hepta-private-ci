@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.main-source-import.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "integrationBranch": "main",
+  "base": "9ae34b276ab8f23382cc371a15c0d036c32b5dd9",
+  "incoming": "7e6391d0567150da6a97e857dcb692010a583d38",
+  "mergeBase": "ca8e8f11b682e25cbd8bb07093edf59a2c53790d",
+  "policy": "Keep newer main implementations on overlap; import missing typed candidates and pinned bindings; retain original work-package decisions and all capability gates.",
+  "importedRustPackages": ["codex-hepta-authbus", "codex-hepta-authbus-p1-3-qualification", "codex-hepta-bao-adapter", "codex-hepta-codex-adapter", "codex-hepta-cognitive-read", "codex-hepta-cognitive-store", "codex-hepta-cognitive-types", "codex-hepta-compact-engine", "codex-hepta-context-compiler", "codex-hepta-control-plane", "codex-hepta-infer-core", "codex-hepta-inferd", "codex-hepta-intelligence", "codex-hepta-kg", "codex-hepta-memory-federation", "codex-hepta-memory-retrieval"],
+  "importedOtherRoots": ["apps/hepta-browser", "apps/hepta-native", "codex-rs/codex-app-server", "external/HeptaBao", "third_party/servo-patches"],
+  "retiredBuildInputs": [".github/workflows/hepta-wave2-materialize.yml", ".github/workflows/hepta-wave2-qualification.yml", "scripts/hepta-wave2-materialize.py", "scripts/hepta_remaining_source_wave.py", "scripts/hepta_wave2_control_sources.py", "scripts/hepta_wave2_external_sources.py", "scripts/hepta_wave2_primary_gate_patch.py"],
+  "retiredBuildInputReason": "Import their ordinary generated source, not self-pushing workflows or generators that can overwrite newer main fixes. Replace the old direct-cargo-test lane with a read-only repository-just-test lane.",
+  "notImported": ["docs/delivery/WORK_PACKAGES.json", "qualification/gap-closure/MANIFEST.json", "qualification/gap-closure/PLAN_AUDIT.json", "qualification/gap-closure/WAVE2_EXACT_HEAD_REQUEST.json", "scripts/hepta-gap-closure.py", "scripts/hepta-work-package-gap-classifier.py"],
+  "notImportedReason": "Keep current main decisions, source owner, gate implementation and evidence requirements. Recompute the audit from those unchanged decisions; do not import the incoming blanket source-completion transition or stale exact-head request.",
+  "moduleGuideTree": "d5dcdc90927faa50afdb7b31a03a5e8e56380d50",
+  "moduleIndexBlob": "8808fa2a0860f8dd48b1323b6df41f2dc8ef5f3a",
+  "localValidation": {
+    "moduleGuideCount": 40,
+    "moduleGuideDigestsAndRegistryProjection": "passed",
+    "validationCheckoutScope": "Exact module-document and directory/manifest projection reconstructed from the verified 08c017d source archive and selected incoming Git objects; not a full current runtime checkout.",
+    "newBrowserAndNativeTests": {"passed": 6, "failed": 0, "browserTree": "0e18c1893958b2288c701d92740a3d336b6554a0", "nativeTree": "112a1ac45cd4acdbb04ad57729119ca01c437663"},
+    "cargoManifestAndLockReconstruction": "matched incoming Git blob identities; no existing lock record changed",
+    "rustCompilationOrTestsExecuted": false,
+    "bazelLockRegenerationExecuted": false
+  },
+  "runtimeActivation": false,
+  "independentAcceptance": false,
+  "fullCandidateCiPassed": false,
+  "allCapabilityGapsClosed": false
+}

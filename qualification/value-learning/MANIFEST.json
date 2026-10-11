@@ -1,0 +1,61 @@
+{
+  "authority_posture": {
+    "external_effect": false,
+    "model_invocation": false,
+    "production_writer": false,
+    "promotion": false,
+    "provider_dispatch": false,
+    "release": false,
+    "runtime_activation": false,
+    "selection": false
+  },
+  "candidate": {
+    "base_commit": "726c4f1f548a39b6b1a679e8f2f17898a9a447bf",
+    "branch": "codex/hepta-v8-implementation-wave1-20260904",
+    "name": "hepta-v8-value-learning-core-wave1"
+  },
+  "claims": {
+    "autonomous_propagation_enabled": false,
+    "longitudinal_efficacy_proven": false,
+    "operator_acceptance_complete": false,
+    "physical_safety_qualified": false,
+    "production_selection_complete": false,
+    "release_authorized": false,
+    "runtime_activation_complete": false,
+    "source_implementation_complete_for_listed_roots": true
+  },
+  "implemented_source_roots": [
+    {
+      "module_id": "objective.compiler",
+      "package": "codex-hepta-objective",
+      "path": "codex-rs/hepta-objective"
+    },
+    {
+      "module_id": "utility.ndu",
+      "package": "codex-hepta-ndu",
+      "path": "codex-rs/hepta-ndu"
+    },
+    {
+      "module_id": "learning.ledger",
+      "package": "codex-hepta-learning-ledger",
+      "path": "codex-rs/hepta-learning-ledger"
+    },
+    {
+      "module_id": "learning.artifacts",
+      "package": "codex-hepta-learning-artifacts",
+      "path": "codex-rs/hepta-learning-artifacts"
+    }
+  ],
+  "qualification": {
+    "required_checks": [
+      "workspace-manifest-verification",
+      "format",
+      "cargo-check",
+      "clippy-deny-warnings",
+      "unit-tests",
+      "shadow-vertical-test"
+    ],
+    "vertical_test": "codex-rs/hepta-shadow-qualification/src/value_learning_tests.rs"
+  },
+  "schema_version": 1
+}

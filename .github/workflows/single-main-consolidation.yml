@@ -1,0 +1,111 @@
+name: single-main-consolidation
+on:
+  push:
+    branches: [integration/single-main-20260922]
+    paths: [.github/workflows/single-main-consolidation.yml]
+permissions:
+  contents: read
+concurrency:
+  group: single-main-consolidation
+  cancel-in-progress: false
+jobs:
+  stage-foundation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Import exact reviewed candidate without modifying main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, json, os, pathlib, subprocess, urllib.request
+          def git(*args):
+              p = subprocess.run(['git', *args], text=True, capture_output=True)
+              if p.returncode:
+                  print(p.stdout, p.stderr)
+                  raise RuntimeError('Git operation failed: ' + repr(args))
+              return p.stdout.strip()
+          git('fetch', '--no-tags', 'origin', '+refs/heads/*:refs/remotes/origin/*')
+          req = urllib.request.Request('https://api.github.com/repos/' + os.environ['GITHUB_REPOSITORY'] + '/git/blobs/bebbd180d9bcdd722d9b45e86006add0488adccf', headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+          with urllib.request.urlopen(req, timeout=60) as response:
+              data = base64.b64decode(json.load(response)['content'])
+          assert hashlib.sha256(data).hexdigest() == '77f94454e0225efc64685cb0296d2c4f77bda3d530d57cfb27ae9991e195510b'
+          path = pathlib.Path(os.environ['RUNNER_TEMP']) / 'foundation.bundle'
+          path.write_bytes(data)
+          git('bundle', 'verify', str(path))
+          git('fetch', str(path), 'refs/heads/consolidation-work:refs/heads/verified-foundation')
+          sha = 'a8f71be5d5eccd39090e054dc441e3e5f2a842a6'
+          assert git('rev-parse', 'verified-foundation') == sha
+          assert git('rev-parse', sha + '^{tree}') == '121cb9e5050c8d36e6130d178a38828b6d59bf57'
+          for parent in ['a74246c4d7657d4c6b09fc50c41f1d715ace5e0e', 'c9a335297271563a623cc9763df87e327abb7e79', 'c0c81f8f3cddac3c433ccf7ccd65cf4cf3210894', '809de22a3ad9abef7ea34c0534dda992838d23b4', '716b44b6531c6f07f3534bbd07200080c2d7a67b']:
+              git('merge-base', '--is-ancestor', parent, sha)
+          env = os.environ.copy()
+          env['GIT_CONFIG_COUNT'] = '1'
+          env['GIT_CONFIG_KEY_0'] = 'http.https://github.com/.extraheader'
+          env['GIT_CONFIG_VALUE_0'] = 'AUTHORIZATION: basic ' + base64.b64encode(('x-access-token:' + os.environ['GH_TOKEN']).encode()).decode()
+          subprocess.run(['git', 'push', '--porcelain', 'origin', sha + ':refs/heads/integration/single-main-foundation-20260922'], env=env, check=True)
+          print('Staged', sha, 'without changing main or deleting branches.')
+          PY
+  validate:
+    needs: stage-foundation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a8f71be5d5eccd39090e054dc441e3e5f2a842a6
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt
+      - name: Check exact source, regressions and Rust formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess
+          out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'foundation-evidence'
+          out.mkdir()
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          assert git('rev-parse', 'HEAD') == 'a8f71be5d5eccd39090e054dc441e3e5f2a842a6'
+          results = []
+          commands = [
+              ('workspace', ['python3', 'scripts/hepta_workspace.py']),
+              ('workspace-tests', ['python3', '-m', 'unittest', 'discover', '-v', '-s', 'scripts', '-p', 'test_hepta_workspace.py']),
+              ('source-tests', ['python3', '-m', 'unittest', 'discover', '-v', '-s', 'scripts', '-p', 'test_hepta_implementation*.py']),
+              ('source-proof', ['python3', 'scripts/hepta-implementation-maps.py', 'verify', '--require-current-source']),
+              ('rustfmt', ['cargo', 'fmt', '--manifest-path', 'codex-rs/Cargo.toml', '--', '--config', 'imports_granularity=Item', '--check']),
+              ('metadata', ['cargo', 'metadata', '--manifest-path', 'codex-rs/Cargo.toml', '--no-deps', '--format-version', '1'])
+          ]
+          for name, command in commands:
+              with (out / (name + '.log')).open('w') as log:
+                  p = subprocess.run(command, text=True, stdout=log, stderr=subprocess.STDOUT)
+              results.append({'name': name, 'command': command, 'exitCode': p.returncode})
+              print(name, p.returncode)
+          assert not git('status', '--porcelain')
+          if next(r for r in results if r['name'] == 'rustfmt')['exitCode']:
+              subprocess.run(['cargo', 'fmt', '--manifest-path', 'codex-rs/Cargo.toml', '--', '--config', 'imports_granularity=Item'], check=True)
+              with (out / 'proposed-rustfmt.patch').open('w') as patch:
+                  subprocess.run(['git', 'diff', '--binary'], stdout=patch, text=True, check=True)
+          receipt = {'candidateSha': git('rev-parse', 'HEAD'), 'candidateTree': git('rev-parse', 'HEAD^{tree}'), 'results': results, 'allPassed': all(r['exitCode'] == 0 for r in results), 'productQualified': False, 'mainChanged': False}
+          (out / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          print(json.dumps(receipt, indent=2))
+          raise SystemExit(0 if receipt['allPassed'] else 1)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: single-main-foundation-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/foundation-evidence/
+          retention-days: 30

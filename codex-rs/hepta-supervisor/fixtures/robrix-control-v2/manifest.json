@@ -1,0 +1,66 @@
+{
+  "authoritative_semantic_validator": "generated_cross_parser_corpus_with_rust_protocol_validation",
+  "files": {
+    "cross-parser-corpus-v2.json": {
+      "bytes": 1846236,
+      "sha256": "8227b8a80e21a2f7202b6127950c0e2c44b84b1b890c54748493f0d809b439e3"
+    },
+    "matrixd-control-v2.schema.json": {
+      "bytes": 25875,
+      "sha256": "16d3f43c4fd94dac8d55b2371a093ee8e6e4a5128cabdeff18b64528d09cc1e4"
+    },
+    "robrix_control_projection.rs": {
+      "bytes": 1202,
+      "sha256": "aeac02f987444d875bbfde01c931c21e8eebccb0513a583279c0eebed237764d"
+    },
+    "supervisord-readonly-v2.schema.json": {
+      "bytes": 21482,
+      "sha256": "09e09128d9681f154155dc609f606bdc2904abcef36ce7b62e989d648b08d962"
+    }
+  },
+  "json_schema_non_schema_invariant_classes": [
+    "selected_process_context",
+    "cross_object_field_equality",
+    "cross_element_key_uniqueness",
+    "requested_cursor_contiguity",
+    "cross_field_ordering"
+  ],
+  "json_schema_validation_role": "structural_and_locally_expressible_invariants_only",
+  "matrixd_bootstrap_methods": [
+    "health",
+    "snapshot"
+  ],
+  "matrixd_fenced_methods": [
+    "events",
+    "cancel_turn",
+    "resolve_approval"
+  ],
+  "matrixd_max_frame_bytes": 1048576,
+  "matrixd_non_schema_invariants": [
+    "request_agent_and_fence_match_selected_process",
+    "response_envelope_matches_selected_process_and_request",
+    "pending_approval_keys_are_unique",
+    "event_cursors_are_contiguous_from_requested_after_cursor",
+    "event_latest_cursor_is_not_less_than_next_cursor"
+  ],
+  "matrixd_schema_version": 2,
+  "required_json_schema_keywords": [
+    "x-hepta-max-utf8-bytes",
+    "x-hepta-safe-text-profile"
+  ],
+  "schema_version": 1,
+  "supervisord_allowed_methods": [
+    "health",
+    "roster",
+    "snapshot"
+  ],
+  "supervisord_max_frame_bytes": 65536,
+  "supervisord_non_schema_invariants": [
+    "response_request_id_matches_outstanding_request",
+    "agent_status_fields_equal_control_fence",
+    "matrix_attached_generation_equals_agent_spawn_generation",
+    "control_fence_spawn_generation_not_greater_than_runtime_generation",
+    "control_fence_current_and_previous_release_differ"
+  ],
+  "supervisord_schema_version": 2
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "protocol": "HPTN",
+  "formatVersion": 1,
+  "description": "current offer: wire versions 1,2 and capabilities 0x7",
+  "recordLength": 20,
+  "recordHex": "4850544e00010200000000000000000700010002",
+  "recordSha256": "350b41f9ed09225a2fb6262743489293681061b520dbd2601c24665664dba994",
+  "capabilities": {
+    "metadataBoundDigest": 1,
+    "schemaAdmission": 2,
+    "streamDecoding": 4,
+    "currentMask": 7
+  },
+  "wireVersions": [
+    1,
+    2
+  ],
+  "negativeCases": [
+    "unknown capability bit rejects",
+    "non-zero reserved byte rejects",
+    "zero or duplicate version rejects",
+    "noncanonical version order rejects",
+    "missing required capability fails negotiation",
+    "future raw version is never assigned local semantics"
+  ]
+}

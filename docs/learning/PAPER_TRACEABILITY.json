@@ -1,0 +1,807 @@
+{
+  "schema": "hepta.paper-traceability.v2",
+  "schemaVersion": 2,
+  "documentClass": "canonical_registry",
+  "authorityScope": "paper_identity_content_digest_claim_locator_nonclaim_and_hepta_extension_source",
+  "planId": "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN",
+  "planVersion": "8.0.0",
+  "papers": [
+    {
+      "id": "PAPER-NDU-FOUNDATIONS-2024",
+      "title": "Neural Foundations",
+      "author": "Qian Qi",
+      "dateWritten": "2024-12-25",
+      "publication": "SSRN 5072524",
+      "canonicalUrl": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5072524",
+      "fullTextUrl": null,
+      "sourceClass": "working_paper",
+      "claimsUsed": [
+        "resource_constrained_subject",
+        "endogenous_preference_state",
+        "recursive_utility_framing",
+        "neural_parameterization_motivation"
+      ],
+      "nonClaims": [
+        "no_hepta_hierarchy_proof",
+        "no_causal_policy_efficacy_proof",
+        "no_biological_mechanism_proof",
+        "no_autonomous_software_iteration_proof"
+      ],
+      "doi": "10.2139/ssrn.5072524",
+      "sourceLock": {
+        "sourceArtifactId": "ssrn-5072524-abstract-nfkc-ws-v1",
+        "identityClass": "publisher_abstract_sha256",
+        "publisher": "SSRN",
+        "recordId": "5072524",
+        "doi": "10.2139/ssrn.5072524",
+        "postedDate": "2025-02-18",
+        "sourceKind": "publisher_abstract",
+        "sourceScope": "publisher_abstract_statement_only",
+        "canonicalization": "unicode_nfkc_whitespace_collapse_v1",
+        "contentDigestAlgorithm": "sha256",
+        "contentDigest": "735d842f690836752de0fac6c36bba2c5f8608361f17c90a0c580192707a16eb",
+        "contentLengthBytes": 644,
+        "contentDigestStatus": "verified",
+        "pageCount": 173,
+        "canonicalUrl": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5072524",
+        "immutableUrl": null,
+        "publisherRepository": null,
+        "publisherCommit": null,
+        "publisherGitBlobSha": null,
+        "verifiedTitle": "Neural Foundations",
+        "verifiedAuthor": "Qian Qi",
+        "verifiedDateWritten": "2024-12-25",
+        "verificationStatus": "verified"
+      },
+      "claimAnchors": [
+        {
+          "claim": "resource_constrained_subject",
+          "sourceArtifactId": "ssrn-5072524-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 2,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "bdd5ede55b15ba28da08a2eeb1f402f7dfdb6301b81a68a79f50ccc2a65c2740",
+          "sourceTextLengthBytes": 129,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "endogenous_preference_state",
+          "sourceArtifactId": "ssrn-5072524-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 2,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "bdd5ede55b15ba28da08a2eeb1f402f7dfdb6301b81a68a79f50ccc2a65c2740",
+          "sourceTextLengthBytes": 129,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "recursive_utility_framing",
+          "sourceArtifactId": "ssrn-5072524-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 1,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "5c58e43d831c0ebd2ac5d73c0c115aec5998629a7c6bf6c0c72b88af920b2a39",
+          "sourceTextLengthBytes": 144,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "neural_parameterization_motivation",
+          "sourceArtifactId": "ssrn-5072524-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 1,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "5c58e43d831c0ebd2ac5d73c0c115aec5998629a7c6bf6c0c72b88af920b2a39",
+          "sourceTextLengthBytes": 144,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        }
+      ],
+      "nonClaimAnchors": [
+        {
+          "nonClaim": "no_hepta_hierarchy_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_causal_policy_efficacy_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_biological_mechanism_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_autonomous_software_iteration_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        }
+      ]
+    },
+    {
+      "id": "PAPER-NDU-UPA-2025",
+      "title": "Universal Preference Approximation",
+      "author": "Qian Qi",
+      "dateWritten": "2025-01-20",
+      "publication": "SSRN 5125219",
+      "canonicalUrl": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5125219",
+      "fullTextUrl": null,
+      "sourceClass": "working_paper",
+      "claimsUsed": [
+        "continuous_time_fbsde_preference_process",
+        "continuous_time_resnet_preference_parameterization",
+        "resnet_aggregator_approximation",
+        "weakly_compact_admissible_process_scope"
+      ],
+      "nonClaims": [
+        "no_identifiability_from_hepta_telemetry",
+        "no_hierarchical_coupling_stability_proof",
+        "no_production_learning_efficacy_proof",
+        "no_authority_safety_proof"
+      ],
+      "doi": "10.2139/ssrn.5125219",
+      "sourceLock": {
+        "sourceArtifactId": "ssrn-5125219-abstract-nfkc-ws-v1",
+        "identityClass": "publisher_abstract_sha256",
+        "publisher": "SSRN",
+        "recordId": "5125219",
+        "doi": "10.2139/ssrn.5125219",
+        "postedDate": "2025-02-24",
+        "sourceKind": "publisher_abstract",
+        "sourceScope": "publisher_abstract_statement_only",
+        "canonicalization": "unicode_nfkc_whitespace_collapse_v1",
+        "contentDigestAlgorithm": "sha256",
+        "contentDigest": "5716f408db9e2b98c53d7d508c3c2b20a3ce28f050e3ebc2cbd162feecc77dec",
+        "contentLengthBytes": 866,
+        "contentDigestStatus": "verified",
+        "pageCount": 73,
+        "canonicalUrl": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5125219",
+        "immutableUrl": null,
+        "publisherRepository": null,
+        "publisherCommit": null,
+        "publisherGitBlobSha": null,
+        "verifiedTitle": "Universal Preference Approximation",
+        "verifiedAuthor": "Qian Qi",
+        "verifiedDateWritten": "2025-01-20",
+        "verificationStatus": "verified"
+      },
+      "claimAnchors": [
+        {
+          "claim": "continuous_time_fbsde_preference_process",
+          "sourceArtifactId": "ssrn-5125219-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 2,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "109913c27bf17b1a4f7ac904a9a5885b108655807f32e343f9f849e348043bd7",
+          "sourceTextLengthBytes": 240,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "continuous_time_resnet_preference_parameterization",
+          "sourceArtifactId": "ssrn-5125219-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 2,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "109913c27bf17b1a4f7ac904a9a5885b108655807f32e343f9f849e348043bd7",
+          "sourceTextLengthBytes": 240,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "resnet_aggregator_approximation",
+          "sourceArtifactId": "ssrn-5125219-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 3,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "f1ca1c2d65f34ca4819da0906120ced5694746b6bca092ed19d66c0387355cc5",
+          "sourceTextLengthBytes": 307,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "weakly_compact_admissible_process_scope",
+          "sourceArtifactId": "ssrn-5125219-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 3,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "f1ca1c2d65f34ca4819da0906120ced5694746b6bca092ed19d66c0387355cc5",
+          "sourceTextLengthBytes": 307,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        }
+      ],
+      "nonClaimAnchors": [
+        {
+          "nonClaim": "no_identifiability_from_hepta_telemetry",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_hierarchical_coupling_stability_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_production_learning_efficacy_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_authority_safety_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        }
+      ]
+    },
+    {
+      "id": "PAPER-NDU-EU-2025",
+      "title": "Existence and Uniqueness of Neural Differential Utility",
+      "author": "Qian Qi",
+      "dateWritten": "2025-04-25",
+      "publication": "SSRN 5267854",
+      "canonicalUrl": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5267854",
+      "fullTextUrl": null,
+      "sourceClass": "working_paper",
+      "claimsUsed": [
+        "general_multidimensional_square_integrable_martingale",
+        "distinct_forward_and_backward_driver_components",
+        "forward_preference_state",
+        "backward_utility_aggregator",
+        "existence_and_uniqueness_require_explicit_conditions",
+        "optimal_control_requires_regularity_growth_concavity_and_weak_to_strong_continuity"
+      ],
+      "nonClaims": [
+        "no_hepta_event_discretization_error_bound",
+        "no_hepta_latent_state_identifiability_proof",
+        "no_hepta_hierarchy_stability_proof",
+        "no_longitudinal_causal_efficacy_proof"
+      ],
+      "doi": "10.2139/ssrn.5267854",
+      "sourceLock": {
+        "sourceArtifactId": "ssrn-5267854-abstract-nfkc-ws-v1",
+        "identityClass": "publisher_abstract_sha256",
+        "publisher": "SSRN",
+        "recordId": "5267854",
+        "doi": "10.2139/ssrn.5267854",
+        "postedDate": "2025-05-28",
+        "sourceKind": "publisher_abstract",
+        "sourceScope": "publisher_abstract_statement_only",
+        "canonicalization": "unicode_nfkc_whitespace_collapse_v1",
+        "contentDigestAlgorithm": "sha256",
+        "contentDigest": "f72a1cab40a82c668711682e8909d83b5346759d24d8ba25654cd253d2196c1c",
+        "contentLengthBytes": 831,
+        "contentDigestStatus": "verified",
+        "pageCount": 43,
+        "canonicalUrl": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5267854",
+        "immutableUrl": null,
+        "publisherRepository": null,
+        "publisherCommit": null,
+        "publisherGitBlobSha": null,
+        "verifiedTitle": "Existence and Uniqueness of Neural Differential Utility",
+        "verifiedAuthor": "Qian Qi",
+        "verifiedDateWritten": "2025-04-25",
+        "verificationStatus": "verified"
+      },
+      "claimAnchors": [
+        {
+          "claim": "general_multidimensional_square_integrable_martingale",
+          "sourceArtifactId": "ssrn-5267854-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 1,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "0e517302738db798a49dfc4836f86301f9d21c68d49762bca7c79f7c4f82b43e",
+          "sourceTextLengthBytes": 185,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "distinct_forward_and_backward_driver_components",
+          "sourceArtifactId": "ssrn-5267854-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 2,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "d5af987b16fcda258bd8f796cb9a0eaf46fe9f742a9633ca4500b5cc83e59e9d",
+          "sourceTextLengthBytes": 290,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "forward_preference_state",
+          "sourceArtifactId": "ssrn-5267854-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 2,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "d5af987b16fcda258bd8f796cb9a0eaf46fe9f742a9633ca4500b5cc83e59e9d",
+          "sourceTextLengthBytes": 290,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "backward_utility_aggregator",
+          "sourceArtifactId": "ssrn-5267854-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 2,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "d5af987b16fcda258bd8f796cb9a0eaf46fe9f742a9633ca4500b5cc83e59e9d",
+          "sourceTextLengthBytes": 290,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "existence_and_uniqueness_require_explicit_conditions",
+          "sourceArtifactId": "ssrn-5267854-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 3,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "d65636fb63fc0484f5e4f815882f47d421d1bb88ac116a05f4aa37d88ea02b60",
+          "sourceTextLengthBytes": 98,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "optimal_control_requires_regularity_growth_concavity_and_weak_to_strong_continuity",
+          "sourceArtifactId": "ssrn-5267854-abstract-nfkc-ws-v1",
+          "locator": {
+            "kind": "publisher_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 5,
+            "publicationPage": null,
+            "pdfPage": null,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "5336e30f4d1d176a49c0ed54ead6a570c846e79885ce065c1b9488e5be662f7d",
+          "sourceTextLengthBytes": 170,
+          "claimScope": "publisher_abstract_statement_only",
+          "verificationStatus": "verified"
+        }
+      ],
+      "nonClaimAnchors": [
+        {
+          "nonClaim": "no_hepta_event_discretization_error_bound",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_hepta_latent_state_identifiability_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_hepta_hierarchy_stability_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_longitudinal_causal_efficacy_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        }
+      ]
+    },
+    {
+      "id": "PAPER-HOLDER-Q-2026",
+      "title": "Deep Q-Learning on Hölder Spaces",
+      "author": "Qian Qi",
+      "dateWritten": "2026-06-15",
+      "publication": "Proceedings of Machine Learning Research 336, COLT 2026",
+      "canonicalUrl": "https://proceedings.mlr.press/v336/qi26a.html",
+      "fullTextUrl": "https://arxiv.org/pdf/2606.16846",
+      "sourceClass": "peer_reviewed_conference_paper",
+      "claimsUsed": [
+        "continuous_state_continuous_action_controlled_diffusion",
+        "uniform_ellipticity",
+        "holder_regular_coefficients",
+        "state_smoothing_action_lipschitz_anisotropy",
+        "tensor_product_deeponet",
+        "stiffness_complexity_tradeoff"
+      ],
+      "nonClaims": [
+        "no_full_sampled_dqn_convergence_theorem",
+        "no_exploration_replay_sgd_convergence_proof",
+        "no_discrete_jump_axis_regularization_proof",
+        "no_hepta_policy_efficacy_proof"
+      ],
+      "doi": null,
+      "sourceLock": {
+        "sourceArtifactId": "pmlr-v336-qi26a-pdf-sha256-git-blob",
+        "identityClass": "publisher_pdf_sha256_and_git_blob",
+        "publisher": "Proceedings of Machine Learning Research",
+        "recordId": "pmlr-v336-qi26a",
+        "doi": null,
+        "postedDate": "2026-06-29",
+        "sourceKind": "publisher_extended_abstract_pdf",
+        "sourceScope": "publisher_extended_abstract_statement_only",
+        "canonicalization": "raw_bytes",
+        "contentDigestAlgorithm": "sha256",
+        "contentDigest": "19892c98ba43ba1c01e0d4d01859f0d1e3bce601808414543f182b630338f60a",
+        "contentLengthBytes": 98363,
+        "contentDigestStatus": "verified",
+        "pageCount": 2,
+        "canonicalUrl": "https://proceedings.mlr.press/v336/qi26a.html",
+        "immutableUrl": "https://raw.githubusercontent.com/mlresearch/v336/a38f8ab26e793cff794c8017a29fb29a7c25c6b3/assets/qi26a/qi26a.pdf",
+        "publisherRepository": "mlresearch/v336",
+        "publisherCommit": "a38f8ab26e793cff794c8017a29fb29a7c25c6b3",
+        "publisherGitBlobSha": "6ed0be8d3e49ca1ae32d0e9f601eb133cdc2de92",
+        "verifiedTitle": "Deep Q-Learning on Hölder Spaces",
+        "verifiedAuthor": "Qian Qi",
+        "verifiedDateWritten": "2026-06-15",
+        "verificationStatus": "verified"
+      },
+      "claimAnchors": [
+        {
+          "claim": "continuous_state_continuous_action_controlled_diffusion",
+          "sourceArtifactId": "pmlr-v336-qi26a-pdf-sha256-git-blob",
+          "locator": {
+            "kind": "publisher_extended_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 1,
+            "publicationPage": 5397,
+            "pdfPage": 1,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "bf531440a9a7e987fe4ea15189b9a07e1c37b849163019c347583f5ae0fd1396",
+          "sourceTextLengthBytes": 124,
+          "claimScope": "publisher_extended_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "uniform_ellipticity",
+          "sourceArtifactId": "pmlr-v336-qi26a-pdf-sha256-git-blob",
+          "locator": {
+            "kind": "publisher_extended_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 2,
+            "publicationPage": 5397,
+            "pdfPage": 1,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "dbdd2ed9b141593a84b0946ee998cb77faa29d144e16a700a1e4973abee50898",
+          "sourceTextLengthBytes": 244,
+          "claimScope": "publisher_extended_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "holder_regular_coefficients",
+          "sourceArtifactId": "pmlr-v336-qi26a-pdf-sha256-git-blob",
+          "locator": {
+            "kind": "publisher_extended_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 3,
+            "publicationPage": 5397,
+            "pdfPage": 1,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "7b3211f59d946cf03713fcb36793f0b52b77ce994663808f51326318c48e3bc6",
+          "sourceTextLengthBytes": 253,
+          "claimScope": "publisher_extended_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "state_smoothing_action_lipschitz_anisotropy",
+          "sourceArtifactId": "pmlr-v336-qi26a-pdf-sha256-git-blob",
+          "locator": {
+            "kind": "publisher_extended_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 3,
+            "publicationPage": 5397,
+            "pdfPage": 1,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "7b3211f59d946cf03713fcb36793f0b52b77ce994663808f51326318c48e3bc6",
+          "sourceTextLengthBytes": 253,
+          "claimScope": "publisher_extended_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "tensor_product_deeponet",
+          "sourceArtifactId": "pmlr-v336-qi26a-pdf-sha256-git-blob",
+          "locator": {
+            "kind": "publisher_extended_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 4,
+            "publicationPage": 5397,
+            "pdfPage": 1,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "411df267ec4168dd8200450fbb7d51e6860fb213553e78de35f8449064056e6b",
+          "sourceTextLengthBytes": 159,
+          "claimScope": "publisher_extended_abstract_statement_only",
+          "verificationStatus": "verified"
+        },
+        {
+          "claim": "stiffness_complexity_tradeoff",
+          "sourceArtifactId": "pmlr-v336-qi26a-pdf-sha256-git-blob",
+          "locator": {
+            "kind": "publisher_extended_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 5,
+            "publicationPage": 5397,
+            "pdfPage": 1,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "0199dd83b5e85ef764d8c98f4926d39d78496ce5aa36a837b8fb9ccb4074b3c0",
+          "sourceTextLengthBytes": 131,
+          "claimScope": "publisher_extended_abstract_statement_only",
+          "verificationStatus": "verified"
+        }
+      ],
+      "nonClaimAnchors": [
+        {
+          "nonClaim": "no_full_sampled_dqn_convergence_theorem",
+          "basis": "explicit_publisher_extended_abstract_nonclaim",
+          "sourceArtifactId": "pmlr-v336-qi26a-pdf-sha256-git-blob",
+          "locator": {
+            "kind": "publisher_extended_abstract_sentence",
+            "section": "Abstract",
+            "paragraphIndex": 1,
+            "sentenceIndex": 6,
+            "publicationPage": 5397,
+            "pdfPage": 1,
+            "theoremOrEquation": null
+          },
+          "sourceTextDigestAlgorithm": "sha256",
+          "sourceTextDigest": "6bc394a19d18f298335ab050f5f08d7603a1f2f6a78244e604fda66494e71853",
+          "sourceTextLengthBytes": 188,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_exploration_replay_sgd_convergence_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_discrete_jump_axis_regularization_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        },
+        {
+          "nonClaim": "no_hepta_policy_efficacy_proof",
+          "basis": "explicit_engineering_non_substitution_boundary",
+          "sourceArtifactId": null,
+          "locator": null,
+          "sourceTextDigestAlgorithm": null,
+          "sourceTextDigest": null,
+          "sourceTextLengthBytes": null,
+          "verificationStatus": "verified"
+        }
+      ]
+    }
+  ],
+  "heptaExtensions": [
+    "system_domain_agent_episode_hierarchy",
+    "event_sourced_discretization",
+    "deterministic_authority_truth_and_deletion_axes",
+    "smooth_jump_hard_state_partition",
+    "causal_propensity_and_independent_outcome_ledger",
+    "next_snapshot_only_artifacts",
+    "functional_biomimicry_hypotheses",
+    "governed_self_iteration_and_role_separation",
+    "unlearning_non_resurrection",
+    "quasi_uniform_sensor_geometry",
+    "monotone_positive_reconstruction",
+    "near_greedy_residual_scope"
+  ],
+  "rules": {
+    "paperClaimRequiresApplicabilityOrWellPosednessCertificate": true,
+    "paperNonClaimsMustRemainExplicit": true,
+    "heptaExtensionsMayBeAttributedToPaper": false,
+    "paperReferenceMayAdvanceRuntimeClaim": false,
+    "documentationMayAdvanceCapabilityClaim": false,
+    "claimAnchorDigestRequired": true,
+    "exactLocatorRequiredForEveryUsedClaim": true,
+    "abstractStatementMaySatisfyTheoremOrEquationClaim": false,
+    "unsupportedPaperAttributionForbidden": true,
+    "sourceArtifactSubstitutionForbidden": true
+  },
+  "authorityFlags": {
+    "runtimeAuthority": false,
+    "productionCaller": false,
+    "productionWriter": false,
+    "modelInvocation": false,
+    "providerDispatch": false,
+    "toolExecution": false,
+    "networkConnect": false,
+    "externalFilesystemMutation": false,
+    "secretOperation": false,
+    "matrixSend": false,
+    "externalEffect": false,
+    "fleetMutation": false,
+    "canonicalSelection": false,
+    "merge": false,
+    "operatorAcceptance": false,
+    "promotion": false,
+    "release": false
+  },
+  "sourceLockPolicy": {
+    "publisherIdentityRequired": true,
+    "contentDigestRequiredForEveryCitedArtifact": true,
+    "claimSpecificTextDigestRequired": true,
+    "exactLocatorRequiredForEveryClaim": true,
+    "abstractOnlyScopeMaySupportTheoremOrEquation": false,
+    "htmlChallengeOrAccessDeniedBodyMaySatisfyContentDigest": false,
+    "mutableUrlWithoutContentLockMaySatisfyClaim": false,
+    "retrievalFailureMayAdvanceClaim": false,
+    "unsupportedPaperAttributionMayRemainInClaimsUsed": false,
+    "paperReferenceMayAdvanceRuntimeClaim": false
+  }
+}

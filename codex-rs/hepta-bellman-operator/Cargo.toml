@@ -1,0 +1,21 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-bellman-operator"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_bellman_operator"
+path = "src/lib.rs"
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
+codex-hepta-types = { path = "../hepta-types" }
+
+[dev-dependencies]
+ed25519-dalek = { workspace = true }

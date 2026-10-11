@@ -1,0 +1,36 @@
+name: MemoryCell reviewed source formatting
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reviewed*.py"
+      - "scripts/memory_cell/prepare_source_audit.py"
+      - "scripts/memory_cell/test_reviewed*.py"
+      - "scripts/memory_cell/test_source_audit*.py"
+      - ".github/workflows/hepta-memory-review-format-final.yml"
+permissions:
+  contents: read
+jobs:
+  check:
+    if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Check repository formatting without source writes or branch creation
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/reviewed-format.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-reviewed-format-log
+          path: /tmp/reviewed-format.log
+          if-no-files-found: warn
