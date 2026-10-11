@@ -571,3 +571,24 @@ native **document-level** weak support, not a reviewed window-level
 entailment or sufficient-evidence oracle. The analysis cannot certify
 semantic citations, prospective time/withdrawal authority, production
 benefit or an Encoder/Head winner.
+
+## Actual within-Head training fit before versus after each persistent checkpoint
+
+A parameter tensor delta alone does not show that the Head optimized the
+intended weak-source objective. The native runner now observes each unchanged
+**admitted TRAIN Supervision row's logits immediately before and after** the
+real 16/32/48 Head update, using precisely the same frozen Encoder features
+and exact same positive/null supervision. It retains all per-row weak-label
+loss changes, actual candidate top-1 flips, the Head snapshot SHA-256 pair,
+route, family and explicit train-only cut identity. No new Encoder/Reader
+execution or held-out target scoring is added by this diagnostic.
+
+For linear/gated Heads this is the same multi-positive/abstention log-sum-exp
+objective used by actual SGD. For the prototype Head it remains diagnostic
+cross-entropy, not a claim that its sufficient-statistics algorithm optimizes
+cross-entropy. This is **within-training-cut observation** and may reveal
+overfitting: any lower train loss must be contrasted with independent
+held-out source choices, fixed Reader answers and actual citations. Neither
+a train-set rank flip nor a loss decrease establishes unseen-family transfer.
+The report is `comparison/within-head-train-fit.json`, retained in the
+complete trial artifact and explicitly marked `production_accepted=false`.

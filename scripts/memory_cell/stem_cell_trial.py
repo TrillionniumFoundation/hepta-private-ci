@@ -41,6 +41,7 @@ from stem_reader_zero_evidence import (
 from stem_reader_paired_control import compare_frozen_to_no_evidence
 from stem_cell_geometry import inspect_selection, summarize_geometry
 from stem_cell_training_probe import train_probe, summarize_train_probes
+from stem_head_fit_dynamics import compare_train_head_before_after
 from stem_cell_cache import SharedFeatureCache
 from stem_cell_protocol import (
     ARMS,
@@ -437,7 +438,18 @@ def run(staged, ranker_dir, output):
                                 and route_text(queries[r.features.question_id].content)
                                 == cell
                             )
+                            # Matched admitted TRAIN rows, same Encoder features,
+                            # before vs after exactly this Head fit. This is not a
+                            # held-out score and never changes the policy decision.
+                            with torch.no_grad():
+                                prefit_logits = [
+                                    head(r.features).tolist() for r in current
+                                ]
                             receipt = head.fit(current, cut, revoked=set(), steps=128)
+                            with torch.no_grad():
+                                postfit_logits = [
+                                    head(r.features).tolist() for r in current
+                                ]
                         else:
                             receipt = dict(
                                 consumed_steps=0,
@@ -450,6 +462,16 @@ def run(staged, ranker_dir, output):
                         ):
                             raise ValueError("updating one head changed another cell")
                         payload = head.export()
+                        fit_dynamics = (
+                            compare_train_head_before_after(
+                                current, prefit_logits, postfit_logits,
+                                admitted_ids=admitted_ids,
+                                stage=stage, arm=arm, cell=cell,
+                                previous_head_sha256=old_digest,
+                                updated_head_sha256=sha256(payload),
+                            )
+                            if arm != "frozen_rerank" else None
+                        )
                         path = output / f"head-{stage}-{arm}-{cell}.json"
                         path.write_bytes(payload)
                         stamp = time.perf_counter()
@@ -475,6 +497,7 @@ def run(staged, ranker_dir, output):
                                 artifact_bytes=len(payload),
                                 restore_seconds=time.perf_counter() - stamp,
                                 receipt=receipt,
+                                within_train_fit_dynamics=fit_dynamics,
                                 inclusive_attempt_seconds=time.perf_counter()
                                 - attempt_started,
                                 other_head_states_unchanged=True,
@@ -656,6 +679,22 @@ def run(staged, ranker_dir, output):
                 flush=True,
             )
 
+        within_train_fit_dynamics = [
+            item["within_train_fit_dynamics"] for item in learning
+            if item["status"] == "succeeded"
+            and item["within_train_fit_dynamics"] is not None
+        ]
+        write(
+            output / "within-head-train-fit.json",
+            dict(
+                schema="hepta.stem-matched-head-train-fit-journal.v1",
+                checkpoints=within_train_fit_dynamics,
+                matched_train_only=True,
+                real_task_gain_verified=False,
+                semantic_citation_precision=None,
+                production_accepted=False,
+            ),
+        )
         census = validate_census(attempts, plan)
         scored = [
             score_attempt(
@@ -799,6 +838,7 @@ def run(staged, ranker_dir, output):
             plan=plan,
             selection_geometry=summarize_geometry(attempts),
             weak_training_probes=summarize_train_probes(training_probes),
+            within_head_train_fit=within_train_fit_dynamics,
             adapter_pair_opportunities=adapter_opportunities,
             census=census,
             **summarize(scored),
