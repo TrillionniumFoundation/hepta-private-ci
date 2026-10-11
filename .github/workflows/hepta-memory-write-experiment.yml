@@ -116,13 +116,20 @@ jobs:
           set -euo pipefail
           /tmp/experience-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/experience-model
           cp /tmp/experience-model/stage.json /tmp/experience-model/inventory.json /tmp/experience-model/publisher.json /tmp/experience-result/
+      - name: Prove source-only Qwen2.5-3B full versus sparse loss before writing
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/experience-result/parity-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/source-loss-parity.json --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee /tmp/experience-result/source-loss-parity.log
       - name: Write observed source facts with no test-plan argument
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
-          /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log
+          /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --loss-backend supervised_positions --parity-receipt /tmp/experience-result/source-loss-parity.json --parity-sha "$(sha256sum /tmp/experience-result/source-loss-parity.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log
           sha256sum /tmp/experience-result/snapshot/READY.json > /tmp/experience-result/snapshot-pin.txt
       - name: Probe in-sample source facts before opening any evaluation task
         env:
@@ -161,7 +168,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/experience-result/source
-          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py /tmp/experience-result/source/
+          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_loss_admission.py scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/experience-result/source/
           git rev-parse HEAD > /tmp/experience-result/tested-commit.txt
           # Base and research-derived model weights are not redistributed.
           find /tmp/experience-result -name '*.safetensors' -delete

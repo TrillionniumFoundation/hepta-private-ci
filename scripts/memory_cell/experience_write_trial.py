@@ -58,7 +58,8 @@ def model_inputs(model_dir, stage_sha):
 
 
 def write_memory(
-    sources, model_dir, output, *, source_sha, stage_sha, loss_backend="full"
+    sources, model_dir, output, *, source_sha, stage_sha, loss_backend="full",
+    parity_receipt=None, parity_sha=None,
 ):
     from pretrained import LoRAReader
     from source_completion_loss import BACKENDS
@@ -69,6 +70,14 @@ def write_memory(
     commit = exact_source()
     documents = original_documents(sources, source_sha)
     stage, inventory = model_inputs(model_dir, stage_sha)
+    from source_loss_admission import require_parity
+
+    parity_binding = require_parity(
+        loss_backend, parity_receipt, parity_sha,
+        source_sha=source_sha, source_commit=commit,
+        model_identity=inventory["inventory_digest"],
+        repository=stage["repository"], revision=stage["revision"],
+    )
     output.mkdir()
     write(
         output / "write-plan.json",
@@ -81,6 +90,7 @@ def write_memory(
             maximum_steps=STEPS,
             token_ceiling=TOKEN_CEILING,
             loss_backend=loss_backend,
+            source_loss_parity_sha256=parity_binding,
             evaluation_query_input=False,
             source_documents_digest=digest([asdict(d) for d in documents]),
             authored_controlled_sources=True,
@@ -119,6 +129,7 @@ def write_memory(
         scopes=sorted(reader.scopes),
         roots=sorted(reader.roots),
         training=training,
+        source_loss_parity_sha256=parity_binding,
         model_load_seconds=loaded - started,
         write_seconds=time.perf_counter() - started,
         retained_snapshot_bytes_before_marker=retained,
@@ -503,6 +514,8 @@ if __name__ == "__main__":
     p.add_argument(
         "--loss-backend", choices=("full", "supervised_positions"), default="full"
     )
+    p.add_argument("--parity-receipt", type=Path)
+    p.add_argument("--parity-sha")
     p = sub.add_parser("read")
     for name in ("plan", "inputs", "model", "snapshot", "output"):
         p.add_argument(name, type=Path)
@@ -519,6 +532,8 @@ if __name__ == "__main__":
             source_sha=a.source_sha,
             stage_sha=a.stage_sha,
             loss_backend=a.loss_backend,
+            parity_receipt=a.parity_receipt,
+            parity_sha=a.parity_sha,
         )
     else:
         read_memory(
