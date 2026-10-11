@@ -314,7 +314,8 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
 
 #[derive(Debug)]
 struct DecodedFrame {
-    sequence: u64,
+    // receive_frame already consumes and validates monotonic sequence before
+    // materializing this frame. Do not store a second unused authority hint.
     kind: String,
     request_id: String,
     payload: Value,
@@ -450,7 +451,6 @@ fn receive_frame<T: BrowserServoTransport>(
         ));
     }
     Ok(DecodedFrame {
-        sequence,
         kind: kind.to_string(),
         request_id: request_id.to_string(),
         payload,
