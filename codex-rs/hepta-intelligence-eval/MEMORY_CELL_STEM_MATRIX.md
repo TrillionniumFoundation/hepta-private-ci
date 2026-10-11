@@ -221,3 +221,15 @@ Hepta host, deployer credentials, independent human signatures, or extra
 generating Reader. Check its **terminal** result against its own exact
 source commit: a queued run or a successful unit test is not a successful
 original-artifact audit.
+
+### No fabricated end-to-end cost ratios
+
+The read-only `stem_audit_cost.py` pass reconciles every successful logged
+encoder cache hit/miss with its own backend counter, executed query–candidate
+pairs and tokens, measured encoding seconds, local Head training wall time and
+reported parameter/gradient bytes, persisted Head artifacts, Reader actual
+calls and reuse, index creation, cold loads and whole-process RSS. Missing
+or failed Encoder calls remain as unmatched misses, rather than zero-cost
+executions. Per-arm serving latency, energy, power, hardware amortization and
+dollar cost are **unmeasured**. These outputs cannot justify savings relative
+to independent 421M models, nor a production throughput/latency SLA.
