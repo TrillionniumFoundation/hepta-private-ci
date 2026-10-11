@@ -19,7 +19,12 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
+use codex_hepta_learning_ledger::DatasetFreezePlanV2;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LedgerSnapshot;
+use codex_hepta_learning_ledger::NeuronTrialLedgerSourceV1;
+use codex_hepta_learning_ledger::NeuronTrialSourceError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
@@ -28,6 +33,7 @@ use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::FederationConsumerAccess;
 use codex_hepta_memory::SharedExperiencePurposeV1;
 use codex_hepta_memory::SharedExperienceUseV1;
+use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use std::sync::Arc;
@@ -40,6 +46,8 @@ pub enum SharedTerminalCellError {
     Ledger(#[from] ProductionLedgerError),
     #[error("terminal cell: {0}")]
     Cell(#[from] TerminalCellError),
+    #[error("native Neuron ledger source: {0}")]
+    NeuronSource(#[from] NeuronTrialSourceError),
     #[error("shared terminal binding: {0}")]
     Binding(&'static str),
 }
@@ -75,6 +83,44 @@ pub struct AgentdSharedReplayHostV1 {
     purpose: SharedExperiencePurposeV1,
 }
 
+/// A narrowly scoped read-only bind of a live, granted Replay source to an
+/// owner-produced Ledger terminal cohort. It contains no source text or labels.
+/// This is not a signed host admission or a production no-change certificate.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SharedReplayNeuronTrialSourceV1 {
+    pub ledger_source: NeuronTrialLedgerSourceV1,
+    pub replay_policy_id: Sha256Digest,
+    pub replay_policy_revision: u64,
+    pub source_support_digest: Digest32,
+    pub diagnostic_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl SharedReplayNeuronTrialSourceV1 {
+    #[must_use]
+    pub fn computed_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.agentd.neuron-replay-ledger-source.v1\0".to_vec();
+        bytes.extend_from_slice(self.ledger_source.diagnostic_digest.as_array());
+        let raw = self.replay_policy_id.as_str().as_bytes();
+        bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(raw);
+        bytes.extend_from_slice(&self.replay_policy_revision.to_be_bytes());
+        bytes.extend_from_slice(self.source_support_digest.as_array());
+        Digest32::of_bytes(&bytes)
+    }
+
+    /// This only detects accidental mutation or a malformed binding, not a
+    /// dishonest issuer. The same owner must revalidate before final model use.
+    #[must_use]
+    pub fn validate_integrity(&self) -> bool {
+        self.authority == AuthorityPosture::DENY_ALL
+            && self.ledger_source.validate_integrity()
+            && self.replay_policy_revision > 0
+            && !self.source_support_digest.is_zero()
+            && self.diagnostic_digest == self.computed_digest()
+    }
+}
+
 impl AgentdSharedReplayHostV1 {
     pub fn new(
         source: Arc<CognitiveStore>,
@@ -97,6 +143,77 @@ impl AgentdSharedReplayHostV1 {
                 artifact_consumer,
             },
         })
+    }
+
+
+    /// Recheck the real Ledger owner and the current Memory Replay grant.
+    /// All admitted terminal decisions must cite the same exact Memory
+    /// source revision; multi-source cohorts require a separate policy.
+    ///
+    /// This is cross-owner best-effort read validation, NOT an atomic two-store
+    /// snapshot or authorization to deliver raw content to a model runner.
+    #[allow(clippy::too_many_arguments)]
+    pub async fn read_neuron_trial_shared_source_v1(
+        &self,
+        policy_id: &Sha256Digest,
+        ledger: &LedgerWriter,
+        frozen_ledger: &LedgerSnapshot,
+        plan: &DatasetFreezePlanV2,
+        signed_freeze: &SignedLearningEvidenceV1,
+        dataset: &DatasetSnapshotReceiptV3,
+        now: u64,
+    ) -> Result<SharedReplayNeuronTrialSourceV1, SharedTerminalCellError> {
+        // The host is constructed for Replay only. A Recall-only grant cannot
+        // authorize a trial dataset, even if its Memory text is identical.
+        let source = self
+            .source
+            .read_shared_experience(&self.consumer, policy_id, &self.purpose)
+            .await?;
+        let support: Digest32 = source
+            .source_support_digest()
+            .as_str()
+            .parse()
+            .map_err(|_| SharedTerminalCellError::Binding("source support identity"))?;
+        let ledger_source = ledger.read_neuron_trial_source_v1(
+            frozen_ledger,
+            plan,
+            signed_freeze,
+            dataset,
+            now,
+        )?;
+        if ledger_source.terminal_joins.is_empty()
+            || ledger_source
+                .terminal_joins
+                .iter()
+                .any(|join| join.decision_support_digest != support)
+        {
+            return Err(SharedTerminalCellError::Binding(
+                "Neuron trial source support mismatch",
+            ));
+        }
+        self.source.revalidate_shared_experience(&source).await?;
+        if ledger.read_neuron_trial_source_v1(
+            frozen_ledger,
+            plan,
+            signed_freeze,
+            dataset,
+            now,
+        )? != ledger_source
+        {
+            return Err(SharedTerminalCellError::Binding(
+                "Neuron trial ledger changed during source read",
+            ));
+        }
+        let mut binding = SharedReplayNeuronTrialSourceV1 {
+            ledger_source,
+            replay_policy_id: source.policy_id().clone(),
+            replay_policy_revision: source.policy_revision(),
+            source_support_digest: support,
+            diagnostic_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        binding.diagnostic_digest = binding.computed_digest();
+        Ok(binding)
     }
 
     pub async fn train(
