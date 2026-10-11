@@ -53,8 +53,8 @@ jobs:
           import re
 
           log = Path("/tmp/stem-strict-audit/negative-tests.log").read_text()
-          count = re.search(r"Ran (\\d+) tests?", log)
-          if not count or int(count.group(1)) != 6 or re.search(r"skipped=\\d+", log):
+          count = re.search(r"Ran (\d+) tests?", log)
+          if not count or int(count.group(1)) != 6 or re.search(r"skipped=\d+", log):
               raise SystemExit("External immutable audit must run all six real-data tests without skips")
           PY
           python3 scripts/memory_cell/stem_strict_success_audit.py \
