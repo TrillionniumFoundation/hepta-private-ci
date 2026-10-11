@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: true
       - uses: ./.github/actions/setup-ci
       - name: Format only strong-RAG shard code and tests, with no AST change
@@ -62,5 +62,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "style(memory-cell): format tested sharded strong-RAG files; remove temporary formatter"
-          git push origin "HEAD:refs/heads/codex/memory-strong-rag-format-\${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/codex/memory-strong-rag-format-${GITHUB_RUN_ID}"
           echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
