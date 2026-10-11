@@ -16,21 +16,61 @@ use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionCliOutcomeV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
 use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_with_admission_v1;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::neuron_ndu_read::NduReadVerifierV1;
 use crate::neuron_ndu_read::SignedNduSnapshotReadV1;
 
-/// The split identity must come from Agentd's independently selected, immutable
-/// runtime context. A signed Selection is an eligibility/choice proof, not an
-/// effect capability; real effect owners must enforce final use themselves.
+/// Independently owned current Control/Selector admission. This port MUST
+/// inspect the live scope registry and Selector membership/frontier, not
+/// derive the scope digest from a caller-provided snapshot or treat the old
+/// opaque VerifiedSelection token as a fresh authorization.
+pub trait CellSplitScopeSelectionAdmissionV1 {
+    type Error: std::fmt::Display;
+
+    fn current_scope_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error>;
+
+    fn verify_current_selection(
+        &self,
+        scope: &StableId,
+        split_id: &StableId,
+        selected: &VerifiedSelfEvolutionSelectionV1,
+    ) -> Result<(), Self::Error>;
+}
+
+/// Compatibility entry deliberately remains fail-closed: the original
+/// signature has no independent current-scope/Selector reader and therefore
+/// cannot establish that the signed NDU snapshot belongs to this split.
+/// Use advance_scope_bound_selected_cell_split_v1 with a real registry port.
 pub fn advance_selected_cell_split_v1(
+    _config_path: &Path,
+    _externally_pinned_config_sha256: &str,
+    _selected_split_id: &StableId,
+    _selection: &VerifiedSelfEvolutionSelectionV1,
+    _signed_ndu_read: &SignedNduSnapshotReadV1,
+    _ndu_read_verifier: &NduReadVerifierV1,
+) -> Result<CellSplitExecutionCliOutcomeV1, String> {
+    Err("CellSplit advancement requires independent live scope and Selector admission".into())
+}
+
+/// Opt-in admission-bound Agentd ingress. The external caller supplies the
+/// selected scope identity from the trusted runtime context; the independently
+/// backed Control registry supplies its digest. No cross-scope NDU token or
+/// stale Selector result can prepare the first coordinator intent.
+///
+/// Real Artifact/CNS/Supervisor owners still independently enforce final-use
+/// for each effect. This entry never activates a physical split or promotion.
+#[allow(clippy::too_many_arguments)]
+pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmissionV1>(
     config_path: &Path,
     externally_pinned_config_sha256: &str,
+    selected_scope_id: &StableId,
     selected_split_id: &StableId,
     selection: &VerifiedSelfEvolutionSelectionV1,
     signed_ndu_read: &SignedNduSnapshotReadV1,
     ndu_read_verifier: &NduReadVerifierV1,
+    admission: &A,
 ) -> Result<CellSplitExecutionCliOutcomeV1, String> {
     run_pinned_cell_split_execution_with_admission_v1(
         "advance",
@@ -47,14 +87,43 @@ pub fn advance_selected_cell_split_v1(
                 &selected.candidate_artifact_digest.to_string(),
                 &signed_ndu_read.snapshot.snapshot_digest.to_string(),
             )?;
-            // Verify signature, protected time and the live Control frontier
-            // here, not at construction time. Repeat on every advance.
+            validate_scope_binding(
+                plan,
+                selected_scope_id,
+                &signed_ndu_read.snapshot.scope_id,
+                admission,
+            )?;
+            // Independently refresh Selector membership, not merely the
+            // signature originally verified when the token was constructed.
+            admission
+                .verify_current_selection(selected_scope_id, selected_split_id, selection)
+                .map_err(|e| format!("current independent Selector rejected split: {e}"))?;
+            // Verify NDU signature, protected time and live Control frontier
+            // immediately before the coordinator can create an intent.
             ndu_read_verifier
                 .verify(signed_ndu_read)
-                .map_err(|error| format!("current signed NDU read denied: {error}"))?;
+                .map_err(|e| format!("current signed NDU read denied: {e}"))?;
             Ok(())
         },
     )
+}
+
+fn validate_scope_binding<A: CellSplitScopeSelectionAdmissionV1>(
+    plan: &CellSplitExecutionPlanV1,
+    requested_scope: &StableId,
+    ndu_read_scope: &StableId,
+    admission: &A,
+) -> Result<(), String> {
+    if requested_scope != ndu_read_scope {
+        return Err("NDU snapshot scope differs from selected execution scope".into());
+    }
+    let current = admission
+        .current_scope_digest(requested_scope)
+        .map_err(|e| format!("current Control scope unavailable: {e}"))?;
+    if current.to_string() != plan.scope_digest {
+        return Err("current Control scope differs from frozen CellSplit plan".into());
+    }
+    Ok(())
 }
 
 fn validate_selected_plan_lineage(
