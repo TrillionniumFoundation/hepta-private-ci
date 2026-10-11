@@ -89,7 +89,8 @@ def weak_hit(row, target):
     if target.unanswerable or target.unresolved_evidence or not target.evidence:
         return None
     parents = {source_id(s) for s in target.evidence}
-    return bool(parents.intersection(row["window_source_ids"]))
+    # A single matched prerequisite cannot count as a complete multi-hop set.
+    return parents.issubset(set(row["window_source_ids"]))
 
 
 def choose_from_train(plan, records, targets):
@@ -153,6 +154,7 @@ def assess(plan, records, targets, chosen):
         source_only_original_reader_calls=0,
         baseline_unchanged=True,
         native_document_weak_support_not_entailment=True,
+        requires_all_declared_native_support_sources=True,
         observed_original_answer_quality_gain=False,
         independently_authenticated_future_families=0,
         independent_semantic_citation_precision=None,

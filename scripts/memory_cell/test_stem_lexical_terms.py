@@ -111,6 +111,24 @@ class QueryTermTests(unittest.TestCase):
             with self.subTest(mutation=mutation), self.assertRaises(ValueError):
                 census(p, items)
 
+    def test_partial_two_hop_support_is_not_full_coverage(self):
+        from stem_lexical_probe import weak_hit
+        target = Obj(
+            unanswerable=False,
+            unresolved_evidence=(),
+            evidence=("supported", "other"),
+        )
+        self.assertFalse(weak_hit(
+            {"window_source_ids": ["supported"]}, target
+        ))
+        self.assertTrue(weak_hit(
+            {"window_source_ids": ["supported", "other"]}, target
+        ))
+        self.assertIsNone(weak_hit(
+            {"window_source_ids": ["supported"]},
+            Obj(unanswerable=True, unresolved_evidence=(), evidence=()),
+        ))
+
     def test_train_select_only_and_holdout_outcomes_are_distinct(self):
         plan, rows, targets = sample()
         records = census(plan, rows)
