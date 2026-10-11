@@ -11,9 +11,9 @@ use std::fmt;
 use std::str::FromStr;
 
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
-use codex_hepta_infer_core::neuron_feature_request_digest_v1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::RequestState;
+use codex_hepta_infer_core::neuron_feature_request_digest_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
