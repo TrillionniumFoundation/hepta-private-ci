@@ -221,7 +221,11 @@ fn round_q24(raw_q48: i128) -> Result<i64, Error> {
 
 fn dense_q24(input: &[i64], weights: &[i64], bias: &[i64]) -> Result<Vec<i64>, Error> {
     if input.is_empty()
-        || weights.len() != input.len().checked_mul(bias.len()).ok_or(Error::ArithmeticOverflow)?
+        || weights.len()
+            != input
+                .len()
+                .checked_mul(bias.len())
+                .ok_or(Error::ArithmeticOverflow)?
     {
         return Err(Error::FeatureLimit);
     }
