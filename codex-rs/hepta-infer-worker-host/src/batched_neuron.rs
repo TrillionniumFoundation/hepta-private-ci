@@ -310,6 +310,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     }
 }
 
+#[path = "batched_neuron_physical.rs"]
+mod physical;
+
 #[cfg(test)]
 #[path = "batched_neuron_tests.rs"]
 mod tests;
