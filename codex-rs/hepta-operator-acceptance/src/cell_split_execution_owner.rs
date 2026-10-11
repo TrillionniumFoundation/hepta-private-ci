@@ -492,6 +492,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // The pending intent is part of the durable replay boundary too.
         // Read-only transcript export must not silently accept post-open
         // mutation or an unacknowledged commit at the pending cursor.
+        if !self.pending && has_successor_frame(&self.root, self.cursor)? {
+            // Revalidate the *unexecuted* suffix too. A forged later intent
+            // injected after open must not let a current owner dispatch an
+            // earlier effect under a non-prefix durable history.
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "unexpected successor frame; reopen required",
+            ));
+        }
         if self.pending {
             let step = CellSplitExecutionStepV1::at(self.cursor)
                 .ok_or(CellSplitExecutionErrorV1::Invalid("pending step index"))?;
