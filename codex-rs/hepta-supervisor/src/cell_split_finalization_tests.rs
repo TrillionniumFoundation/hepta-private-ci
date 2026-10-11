@@ -526,7 +526,7 @@ fn real_supervisor_effect_inputs() -> (
 
 #[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
-fn signed_cns_predecessor_links_outer_receipt_and_original_runtime_bytes() {
+fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     use codex_hepta_operator_acceptance::{
         CellSplitCnsRuntimeCommitV1, CellSplitExecutionReceiptV1,
         CellSplitExecutionStepV1, cell_split_execution_receipt_digest_v1,
