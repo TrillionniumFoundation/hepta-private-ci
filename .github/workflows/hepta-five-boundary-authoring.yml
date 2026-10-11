@@ -1,0 +1,103 @@
+name: Explicit reviewed five-boundary source authoring
+on:
+  pull_request:
+    paths:
+      - .github/workflows/hepta-five-boundary-authoring.yml
+permissions:
+  contents: write
+jobs:
+  author:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      AUTHOR_SOURCE: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: e518fcdb6b25e2d6ef1320f80842d3bb8a606230
+          fetch-depth: 0
+      - name: Apply only the exact reviewed source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = e518fcdb6b25e2d6ef1320f80842d3bb8a606230
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/reviewed-source"
+          git fetch --no-tags origin "$AUTHOR_SOURCE"
+          test "$(git rev-parse "$AUTHOR_SOURCE:.github/scripts/test_run_bazel_failure_status.py")" = a1670b34b7e5da4337982bbaa7fa53ca65a5091e
+          git show "$AUTHOR_SOURCE:.github/scripts/test_run_bazel_failure_status.py" > .github/scripts/test_run_bazel_failure_status.py
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('.github/scripts/run-bazel-ci.sh')
+          s = p.read_text()
+          old = 'bazel_status=${PIPESTATUS[0]}\nset -e\n'
+          new = '''bazel_pipeline_status=("${PIPESTATUS[@]}")
+          bazel_status=${bazel_pipeline_status[0]}
+          bazel_console_status=${bazel_pipeline_status[1]}
+          set -e
+
+          # The Bazel result is primary. A failed capture must not turn a successful
+          # command into complete evidence, or replace an already failed Bazel result.
+          if [[ $bazel_status -eq 0 && $bazel_console_status -ne 0 ]]; then
+            bazel_status=$bazel_console_status
+          fi
+          '''
+          assert s.count(old) == 1
+          s = s.replace(old, new)
+          for function, label in [('print_bazel_action_failure_summary', 'action'), ('print_bazel_test_log_tails', 'test')]:
+              old = f'    {function} "$bazel_console_log"\n'
+              new = f'''    set +e
+              (set -e; {function} "$bazel_console_log")
+              bazel_diagnostic_status=$?
+              set -e
+              if [[ $bazel_diagnostic_status -ne 0 ]]; then
+                echo "Bazel {label} diagnostics failed; preserving exit $bazel_status." >&2
+              fi
+          '''
+              assert s.count(old) == 1
+              s = s.replace(old, new)
+          p.write_text(s)
+          p = Path('.github/workflows/hepta-pon-native-pair.yml')
+          s = p.read_text()
+          for old, new, count in [
+              ('563e461656feed66a0b9ddcf99b22f2f1d39d627', '5c25ed9eadbb10e8193d062ee92c14ef8a9db1b5', 2),
+              ('ae2d895bae454e271e8056f776813232c270fc3c', '66ea84baf9a8f5ca4890964ce341d10b48448168', 1),
+              ('for job in 114191442196 114191438176; do', 'for job in 114191442196 114191438176 114284747966 114284748042 114284748026; do', 1),
+          ]:
+              assert s.count(old) == count
+              s = s.replace(old, new)
+          # Inert reviewed bytes only. The authorized GitHub connection installs
+          # this blob into the final workflow; this job does not activate it.
+          Path('.github/scripts/pon-pair-review-candidate.txt').write_text(s)
+          PY
+          test "$(git hash-object .github/scripts/run-bazel-ci.sh)" = 6607bae39394c8b40fa04828ca2e79ee69f7f2f7
+          test "$(git hash-object .github/scripts/test_run_bazel_failure_status.py)" = a1670b34b7e5da4337982bbaa7fa53ca65a5091e
+          test "$(git hash-object .github/scripts/pon-pair-review-candidate.txt)" = d851b4a0c58ce8f427140975a6a897569c0892ba
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/scripts/run-bazel-ci.sh .github/scripts/test_run_bazel_failure_status.py .github/scripts/pon-pair-review-candidate.txt
+          git diff --cached --check
+          git commit -m 'stage(pon): freeze byte-identical failure ownership and inert pair source for review'
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/reviewed-source/identity.txt"
+          git diff HEAD^ HEAD > "$RUNNER_TEMP/reviewed-source/change.patch"
+      - name: Execute all retained wrapper controls before publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py' -v 2>&1 | tee "$RUNNER_TEMP/reviewed-source/tests.log"
+          bash -n .github/scripts/run-bazel-ci.sh
+          test -z "$(git status --porcelain)"
+          test "$(git hash-object .github/scripts/run-bazel-ci.sh)" = 6607bae39394c8b40fa04828ca2e79ee69f7f2f7
+          test "$(git hash-object .github/scripts/pon-pair-review-candidate.txt)" = d851b4a0c58ce8f427140975a6a897569c0892ba
+          branch=staging/hepta-pon-five-boundary-reviewed-bytes-20261011
+          test -z "$(git ls-remote --heads origin "refs/heads/$branch")"
+          git push origin "HEAD:refs/heads/$branch"
+          git ls-remote --heads origin "refs/heads/$branch" > "$RUNNER_TEMP/reviewed-source/published.txt"
+          printf '%s\n' 'Staged wrapper/fixture bytes and inert pair text only. Not final-source baseline, native Windows acceptance, independent evolution, work hardness, WAN or power-loss evidence. This job does not update main, any existing branch, protections, permissions, or an active workflow.' > "$RUNNER_TEMP/reviewed-source/SCOPE.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-five-boundary-reviewed-source
+          path: ${{ runner.temp }}/reviewed-source
+          retention-days: 7
