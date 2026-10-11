@@ -330,3 +330,6 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
     reader.invalidate();
     assert!(reader.is_sealed());
 }
+
+#[path = "model_worker_stem_artifact_integration_tests.rs"]
+mod integration;
