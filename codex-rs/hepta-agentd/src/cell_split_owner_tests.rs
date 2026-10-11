@@ -140,8 +140,17 @@ impl CellSplitExecutionPortsV1 for MockOwners {
         self.execute(p, CellSplitStepV1::SupervisorFence, k)
     }
     fn cutover_with_final_use(
-        &mut self, p: &CellSplitPlanV1, k: Digest32,
+        &mut self,
+        p: &CellSplitPlanV1,
+        k: Digest32,
+        selection: &CellSplitExternalReceiptV1,
+        final_use: &CellSplitExternalReceiptV1,
     ) -> Result<(), CellSplitErrorV1> {
+        if selection != &Self::receipt(p, CellSplitStepV1::IndependentSelection)
+            || final_use != &Self::receipt(p, CellSplitStepV1::FinalUseReady)
+        {
+            return Err(CellSplitErrorV1::Unapproved);
+        }
         self.execute(p, CellSplitStepV1::CnsRouteCutover, k)
     }
 }
