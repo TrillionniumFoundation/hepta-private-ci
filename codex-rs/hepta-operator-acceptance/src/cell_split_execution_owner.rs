@@ -443,9 +443,8 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // surviving lock is a local continuity marker: do not silently
         // initialize a different split from newly supplied plan/key bytes.
         // An external witness is still required against full root rollback.
-        let previously_opened = match fs::symlink_metadata(
-            root.join(crate::durable::SIDECAR_LOCK_FILE),
-        ) {
+        let sidecar_lock_path = root.join(crate::durable::SIDECAR_LOCK_FILE);
+        let previously_opened = match fs::symlink_metadata(&sidecar_lock_path) {
             Ok(_) => true,
             Err(error) if error.kind() == ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),
