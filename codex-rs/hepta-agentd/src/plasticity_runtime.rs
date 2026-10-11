@@ -76,6 +76,12 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    /// A closed bounded owner queue cannot accept a proposal. This is a
+    /// liveness admission observation, NOT approval to issue a proposal.
+    pub fn is_closed(&self) -> bool {
+        self.sender.is_closed()
+    }
+
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
