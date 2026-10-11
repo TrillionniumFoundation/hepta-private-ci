@@ -58,15 +58,15 @@ class DatasetTests(unittest.TestCase):
             strict_json_loads('{"probabilities":[Infinity,1]}')
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "cases.jsonl"
-            path.write_text('{"case_id":"first"}\\n{"case_id":"second"}\\n')
+            path.write_text('{"case_id":"first"}\n{"case_id":"second"}\n')
             self.assertEqual(len(read_jsonl(path)), 2)
-            path.write_text('{"case_id":"first"}\\n\\n')
+            path.write_text('{"case_id":"first"}\n\n')
             with self.assertRaisesRegex(ValueError, "blank evidence row"):
                 read_jsonl(path)
-            path.write_text('{"case_id":"first","case_id":"second"}\\n')
+            path.write_text('{"case_id":"first","case_id":"second"}\n')
             with self.assertRaisesRegex(ValueError, "duplicate JSON evidence field"):
                 read_jsonl(path)
-            path.write_text('[1,2]\\n')
+            path.write_text('[1,2]\n')
             with self.assertRaisesRegex(ValueError, "row is not an object"):
                 read_jsonl(path)
 
