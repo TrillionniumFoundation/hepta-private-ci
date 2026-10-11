@@ -15,6 +15,7 @@ from native import digest
 from stem_audit_archive import PinnedArchive, require
 from stem_audit_diagnosis import diagnose
 from stem_audit_cost import audit_resources
+from stem_audit_candidate import candidate_capacity
 
 ARMS = (
     "frozen_rerank", "prototype", "linear", "gated",
@@ -201,8 +202,10 @@ def audit_zip(path, pin, source, tree):
             archive.json("comparison/feature-failures.json"),
             archive.json("comparison/adapter-training.json"),
         )
-        result["resources"] = audit_resources(
-            report, archive.jsonl("comparison/encoding.jsonl")
+        encoding = archive.jsonl("comparison/encoding.jsonl")
+        result["resources"] = audit_resources(report, encoding)
+        result["candidate_capacity"] = candidate_capacity(
+            plan, encoding, raw, archive.json("comparison/feature-failures.json")
         )
         tests = archive.read("tests.log").decode("utf-8")
         matched = re.findall(r"(?m)^Ran (\d+) tests in [^\n]+\n\s*\nOK(?:\n|$)", tests)

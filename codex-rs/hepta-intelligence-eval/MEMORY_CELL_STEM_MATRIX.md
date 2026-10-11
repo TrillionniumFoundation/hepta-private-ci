@@ -263,3 +263,13 @@ whether this restores all 576 policies. A passed chronology fixture or
 preflight is not proof of task learning; no independent future windows are
 fabricated. The format's notion of equal timestamps is benchmark-coeval,
 not proof of within-session causal ordering or production chronology authority.
+
+## Structural opportunity for learning
+
+A Head cannot improve forced top-1 selection on a single-candidate evidence
+pool. Read-only `stem_audit_candidate.py` recomputes per-phase candidate count
+histograms from the **original frozen Encoder's committed extraction receipts**.
+This keeps no-candidate, one-candidate and two-or-more-candidate tasks separate,
+while verifying identities, full question coverage, and duplicate consistency.
+A multi-candidate pool only offers an opportunity to improve ranking: it does
+not establish true support, entailment, correct answers, or actual Head gain.
