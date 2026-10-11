@@ -579,7 +579,10 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
     assert_ne!(first_head, second_head);
     assert_eq!(batch.receipts[0].head_digest.to_string(), first_head);
     assert_eq!(batch.receipts[1].head_digest.to_string(), second_head);
-    assert_ne!(batch.receipts[0].receipt_digest, batch.receipts[1].receipt_digest);
+    assert_ne!(
+        batch.receipts[0].receipt_digest,
+        batch.receipts[1].receipt_digest
+    );
     assert!(batch.receipts.iter().all(|r| !r.authority.grants_any()));
     assert!(!batch_observation.production_authorized);
 
@@ -593,8 +596,7 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         .selector_verifier
         .verify(&bad_signed_projection, &bad_projection_current, 30)
         .expect("independent projection selection");
-    let (bad_head_file, bad_head_current) =
-        fx.current("head.invalid.load", Digest32::ZERO);
+    let (bad_head_file, bad_head_current) = fx.current("head.invalid.load", Digest32::ZERO);
     let bad_signed_head = fx.selection(&fx.bank, &bad_head_current);
     let bad_selected_head = fx
         .selector_verifier
@@ -636,8 +638,7 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         super::super::canonical_neuron_feature_payload_digest(&tampered);
     tampered.authorization.payload_digest = tampered_payload_digest.clone();
     tampered.authorization.lease_payload_digest = tampered_payload_digest;
-    let (_, bad_projection_live) =
-        fx.current("projection.invalid.use", Digest32::ZERO);
+    let (_, bad_projection_live) = fx.current("projection.invalid.use", Digest32::ZERO);
     let (_, bad_head_live) = fx.current("head.invalid.use", Digest32::ZERO);
     assert!(
         bad_head_reader
@@ -823,10 +824,8 @@ fn dual_cas_selection_time_must_be_identical_before_any_dispatched_model_call() 
         .expect("feature digest")
         .to_string(),
     };
-    let projected = super::super::stem_projection::project_bound_f32(
-        &proj, &binding, &features, 3,
-    )
-    .expect("exact Q24 source projection");
+    let projected = super::super::stem_projection::project_bound_f32(&proj, &binding, &features, 3)
+        .expect("exact Q24 source projection");
     let mut request = super::super::NeuronFeatureRequest {
         authorization: super::super::WorkerRequest {
             request_id: "request.clock.fenced".into(),
