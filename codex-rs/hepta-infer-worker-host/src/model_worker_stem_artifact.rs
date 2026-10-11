@@ -266,7 +266,8 @@ impl SelectedStemProjectionReaderV1 {
         if projected.projection_digest != self.projection_digest
             || binding.scope_digest != self.fence.scope_digest.to_string()
             || binding.generation != self.fence.worker_generation
-            || binding.revocation_frontier_digest != self.fence.revocation_frontier_digest.to_string()
+            || binding.revocation_frontier_digest
+                != self.fence.revocation_frontier_digest.to_string()
             || binding.encoder_digest != self.projection.encoder_digest
             || binding.preprocessor_digest != self.projection.preprocessor_digest
             || binding.runtime_digest != self.projection.runtime_digest
