@@ -18,7 +18,7 @@ import time
 from collections.abc import Mapping
 from pathlib import Path
 
-from decision_421m import SOURCES, audit_dataset, check_sha, sha256_file
+from decision_421m import SOURCES, audit_dataset, check_sha, input_fingerprint, sha256_file
 from model_runner import snapshot_digest
 from study import load_jsonl
 
@@ -237,6 +237,7 @@ def run(args):
                 raise ValueError("trained decision logits are nonfinite")
             predictions.append({
                 "arm": f"{args.model_key}:equal_budget", "sample_id": sid,
+                "input_digest": input_fingerprint(row),
                 "logits": logits.to(torch.float32).cpu().tolist(),
                 "weights_sha256": head_digest,
                 "latency_ms": encode_ms[sid] + head_ms,
