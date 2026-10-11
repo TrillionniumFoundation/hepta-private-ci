@@ -351,9 +351,9 @@ mod tests {
     use sha2::Digest;
     use sha2::Sha256;
     use std::collections::BTreeSet;
+    use std::fmt::Debug;
     use std::sync::atomic::AtomicU64;
     use std::sync::atomic::Ordering;
-    use std::fmt::Debug;
 
     fn must<T, E: Debug>(result: Result<T, E>) -> T {
         match result {
