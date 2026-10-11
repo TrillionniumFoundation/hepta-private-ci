@@ -87,7 +87,7 @@ class TrialTests(unittest.TestCase):
             evidence=("source",),
             answer="东京",
         )
-        q = Question("q", "family", "scope", "目的地是哪儿？", "2024")
+        q = Question("q", "family", "scope", "目的地是哪儿？", "2024-01-01")
         evidence, kind = oracle_sources(source, q, target)
         self.assertEqual(kind, "native-source-literal-span")
         item = evidence[0]
@@ -98,6 +98,25 @@ class TrialTests(unittest.TestCase):
         self.assertEqual(item["excerpt"], original)
         self.assertIn("东京", original)
         self.assertGreater(item["source_start"], 0)
+
+
+    def test_privileged_reference_rejects_mixed_precision_or_future_source(self):
+        doc = SimpleNamespace(
+            identity="source", root="root", scope="scope",
+            observed_at="2023-01-01",
+            content="原定目的地是东京。",
+        )
+        src = SimpleNamespace(history=lambda q: [doc])
+        target = SimpleNamespace(
+            unanswerable=False, unresolved_evidence=(),
+            evidence=("source",), answer="东京",
+        )
+        for observed_at in ("2024", "2022-01-01"):
+            q = Question("q", "family", "scope", "目的地是哪儿？", observed_at)
+            evidence, kind = oracle_sources(src, q, target)
+            with self.subTest(observed_at=observed_at):
+                self.assertIsNone(evidence)
+                self.assertEqual(kind, "no-admitted-literal-reference-span")
 
 
 if __name__ == "__main__":
