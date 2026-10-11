@@ -185,6 +185,18 @@ class PrequentialThreeWayTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "final Cell Head artifact"):
             review(self.rows, bad, self.journal, self.nochange, replicates=1000)
 
+    def test_historical_only_cell_retains_initial_weights(self):
+        dormant_key = str(("S", "cell-C"))
+        self.trial["initial_head_digests"][dormant_key] = "1" * 64
+        self.trial["final_head_digests"][dormant_key] = "1" * 64
+        result = self.run_report()
+        self.assertTrue(result["sealed_cell_update_chain_consistent"])
+        self.assertFalse(result["production_promotion_permitted"])
+        bad = copy.deepcopy(self.trial)
+        bad["final_head_digests"][dormant_key] = "2" * 64
+        with self.assertRaisesRegex(ValueError, "final Cell Head artifact"):
+            review(self.rows, bad, self.journal, self.nochange, replicates=1000)
+
     def test_no_optimizer_updates_can_never_prove_cell_learning(self):
         bad = copy.deepcopy(self.trial)
         bad["update_steps_per_future_event"] = 0
