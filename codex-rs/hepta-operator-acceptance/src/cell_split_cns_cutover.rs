@@ -305,6 +305,16 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             self.port
                 .verify_original_commit(record)
                 .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
+            // Direct backend consumers must get the same anti-rollback check
+            // as the outer RPC service. A valid old signature cannot prove
+            // a committed cutover if the CNS durable frontier has regressed.
+            let current_sequence = self
+                .port
+                .committed_sequence(&self.binding.cns_id)
+                .map_err(|e| CellSplitCnsCutoverErrorV1::External(e.to_string()))?;
+            if current_sequence == 0 || record.committed_sequence > current_sequence {
+                return Err(CellSplitCnsCutoverErrorV1::Invalid);
+            }
         }
         Ok(result)
     }
