@@ -27,6 +27,7 @@ EVAL_ARMS = (
     "hybrid_k4",
     "hybrid_k6",
     "hybrid_k4_reversed",
+    "entity_time",
     "organized",
     "program_support",
     "empty",
@@ -82,7 +83,13 @@ def eval_selections(case, chosen_k):
     if chosen_k not in KS or not 4 <= len(candidates) <= 32:
         raise ValueError("invalid evaluator policy or candidate census")
     controls = case["controls"]
-    if not {"organized", "program_support", "empty", "hybrid"}.issubset(controls):
+    if not {
+        "entity_time",
+        "organized",
+        "program_support",
+        "empty",
+        "hybrid",
+    }.issubset(controls):
         raise ValueError("existing controlled baseline required")
     if tuple(controls["hybrid"]["selected"]) != chosen_prefix(candidates, 4):
         raise ValueError("hybrid baseline no longer matches fixed retrieval")
@@ -91,6 +98,7 @@ def eval_selections(case, chosen_k):
         "hybrid_k4": chosen_prefix(candidates, 4),
         "hybrid_k6": chosen_prefix(candidates, 6),
         "hybrid_k4_reversed": tuple(reversed(chosen_prefix(candidates, 4))),
+        "entity_time": tuple(controls["entity_time"]["selected"]),
         "organized": tuple(controls["organized"]["selected"]),
         "program_support": tuple(controls["program_support"]["selected"]),
         "empty": (),
@@ -650,6 +658,8 @@ def evaluate(
     pairs = {
         "selected_minus_hybrid4": paired(group, "hybrid_k4", "selected_k"),
         "organized_minus_selected": paired(group, "selected_k", "organized"),
+        "entity_time_minus_hybrid4": paired(group, "hybrid_k4", "entity_time"),
+        "organized_minus_entity_time": paired(group, "entity_time", "organized"),
         "organized_minus_hybrid4": paired(group, "hybrid_k4", "organized"),
         "reversed_minus_hybrid4": paired(group, "hybrid_k4", "hybrid_k4_reversed"),
         "hybrid6_minus_hybrid4": paired(group, "hybrid_k4", "hybrid_k6"),

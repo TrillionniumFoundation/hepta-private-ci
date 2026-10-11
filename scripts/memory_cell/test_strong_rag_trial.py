@@ -53,6 +53,7 @@ class StrongRagPolicyTests(unittest.TestCase):
             candidate_digest=trial.digest(tuple(f"s{i}" for i in range(7))),
             controls={
                 "hybrid": dict(selected=[f"s{i}" for i in range(4)]),
+                "entity_time": dict(selected=["s3"]),
                 "organized": dict(selected=["s3", "s6"]),
                 "program_support": dict(selected=["s6"]),
                 "empty": dict(selected=[]),
@@ -68,6 +69,7 @@ class StrongRagPolicyTests(unittest.TestCase):
         self.assertEqual(baseline["hybrid_k4"], after["hybrid_k4"])
         self.assertEqual(baseline["hybrid_k4_reversed"], ("s3", "s2", "s1", "s0"))
         self.assertEqual(baseline["hybrid_k6"], tuple(f"s{i}" for i in range(6)))
+        self.assertEqual(baseline["entity_time"], ("s3",))
         for tamper in ("candidate_digest", "hybrid"):
             bad = deepcopy(case)
             if tamper == "candidate_digest":
@@ -191,7 +193,8 @@ class StrongRagPolicyTests(unittest.TestCase):
                         candidate_digest=trial.digest(tuple(candidates)),
                         controls=dict(
                             hybrid=dict(selected=candidates[:4]),
-                            organized=dict(selected=[candidates[0]]),
+                            entity_time=dict(selected=[candidates[0]]),
+                        organized=dict(selected=[candidates[0]]),
                             program_support=dict(selected=[candidates[0]]),
                             empty=dict(selected=[]),
                         ),
@@ -300,7 +303,9 @@ class StrongRagPolicyTests(unittest.TestCase):
                 chronological,
                 ["start_generation", "all_answers_durable", "opened_test_labels"],
             )
-            self.assertEqual(result["total_attempts"], 56)
+            self.assertEqual(result["total_attempts"], 64)
+            self.assertIn("entity_time_minus_hybrid4", result["paired_contrasts"])
+            self.assertIn("organized_minus_entity_time", result["paired_contrasts"])
             self.assertFalse(result["production_accepted"])
             self.assertFalse(result["statistical_superiority"])
 
@@ -316,7 +321,8 @@ class StrongRagPolicyTests(unittest.TestCase):
                     "candidate_digest": trial.digest(tuple(f"s{i}" for i in range(6))),
                     "controls": {
                         "hybrid": dict(selected=[f"s{i}" for i in range(4)]),
-                        "organized": dict(selected=["s1"]),
+                        "entity_time": dict(selected=["s1"]),
+                "organized": dict(selected=["s1"]),
                         "program_support": dict(selected=["s1"]),
                         "empty": dict(selected=[]),
                     },

@@ -363,6 +363,12 @@ def audit(archive, original, *, expected_commit):
             paired_results = {
                 "selected_minus_hybrid4": paired(groups, "hybrid_k4", "selected_k"),
                 "organized_minus_selected": paired(groups, "selected_k", "organized"),
+                "entity_time_minus_hybrid4": paired(
+                    groups, "hybrid_k4", "entity_time"
+                ),
+                "organized_minus_entity_time": paired(
+                    groups, "entity_time", "organized"
+                ),
                 "organized_minus_hybrid4": paired(groups, "hybrid_k4", "organized"),
                 "reversed_minus_hybrid4": paired(groups, "hybrid_k4", "hybrid_k4_reversed"),
                 "hybrid6_minus_hybrid4": paired(groups, "hybrid_k4", "hybrid_k6"),
@@ -383,7 +389,14 @@ def audit(archive, original, *, expected_commit):
             # Same original evidence and question -> same deterministic prompt IDs.
             for answers in groups.values():
                 baseline = answers["hybrid_k4"]
-                for arm in ("selected_k", "hybrid_k6", "hybrid_k4_reversed", "organized", "program_support"):
+                for arm in (
+                    "selected_k",
+                    "hybrid_k6",
+                    "hybrid_k4_reversed",
+                    "entity_time",
+                    "organized",
+                    "program_support",
+                ):
                     other = answers[arm]
                     if (
                         other["selected"] == baseline["selected"]

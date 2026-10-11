@@ -71,7 +71,7 @@ model-learning benefit is credited.
 
 **Phase 3 — distinct-process evaluation.** With frozen `frozen-policy.json`
 (exact model identity, source/plan pins and earlier generation hashes), perform
-seven arms on every original eight-case evaluation question:
+eight arms on every original eight-case evaluation question:
 
 | Arm | What it isolates |
 | --- | --- |
@@ -79,6 +79,7 @@ seven arms on every original eight-case evaluation question:
 | `hybrid_k4` | Historical fixed RAG top-four, newly generated in this run |
 | `hybrid_k6` | More retrieved evidence and possible extra distractors |
 | `hybrid_k4_reversed` | Same four exact bytes, reverse presentation order |
+| `entity_time` | Entity/revision filtering without relation completion |
 | `organized` | Existing deterministic entity/revision/bridge selection |
 | `program_support` | Diagnostic upper bound, NOT a human-certified oracle |
 | `empty` | Zero-evidence control under the same reader |
@@ -89,7 +90,7 @@ The no-evidence and program-support arms are included to make reader failures
 interpretable; oracle-derived labels **never** choose the RAG k or its ranking.
 No source bytes are truncated. A context overflow is a retained failed attempt,
 not a silently removed hard example. Final answer labels are parsed only after
-all seven-arm raw outputs are durable; `preflight` may hash the file for identity
+all eight-arm raw outputs are durable; `preflight` may hash the file for identity
 beforehand but does not interpret its target contents. An answer without the
 specified narrow identifier grammar is a strict failure. Program answers are
 checked by actual bounded worker execution. No generated citation is repaired.
@@ -104,8 +105,8 @@ support, and narrow program grammar forbid any prospective generalization claim.
 
 ## Execution and source of truth
 
-The read-only `.github/workflows/hepta-memory-strong-rag.yml` triggers for
-PR #1452 on source/test/workflow changes. It checks repository formatting,
+The read-only `.github/workflows/hepta-memory-strong-rag.yml` triggers on
+branch-scoped strong-RAG source/test/workflow pushes. It checks repository formatting,
 restores the exact audited archive and Python environment, runs the entire
 MemoryCell Python regression set, stages the publisher-pinned encoder and
 research-only Qwen2.5-3B model, then executes in separate Python processes:
@@ -261,3 +262,28 @@ establishes no Qwen task accuracy, parameter advantage, semantic judgement,
 future observation, or production acceptance. Only a completed exact-source
 40-answer calibration, 56-answer evaluation and separate artifact replay can
 supply the next bounded result.
+
+## Simple filtering versus relation-completion control
+
+The pinned historical Qwen reader had strict task successes of **8/8** for
+`entity_time` and **8/8** for `organized`, with the same ordered original
+evidence selected in 6/8 cases. For SmolLM2 the corresponding success counts
+were 2/8 and 3/8. These are authored previously exposed cases, not
+independently reviewed source families or future-window samples.
+
+To isolate the actual incremental effect of relation completion, the fixed
+`entity_time` arm now joins the SAME pretrained reader/prompt/decoder/tool
+controls in the new model evaluation. It uses the original selected evidence
+IDs from the frozen plan, never original test gold answers for selection.
+All original evidence bytes remain unchanged. This changes the test-stage
+census from **8 x 7 = 56** to **8 x 8 = 64** real answer executions, while
+calibration remains **8 x 5 = 40** model calls. This addition supersedes the
+prior 56-call proposal; incomplete historical runs are not rewritten.
+
+The independent artifact verifier repeats every original-source, prompt,
+citation, task-success and procedure check for this arm, and recomputes
+`entity_time_minus_hybrid4` and `organized_minus_entity_time` contrasts.
+Matching source selections must preserve prompt identity; any answer drift
+counts as repeatability instability, not a graph benefit. A nominal task
+improvement on eight authored cases is still neither statistically independent
+superiority nor production admission.
