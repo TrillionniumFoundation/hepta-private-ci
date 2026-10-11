@@ -763,6 +763,58 @@ fn missing_frozen_plan_after_committed_effect_fences_recovery() {
 }
 
 #[test]
+fn frozen_plan_cannot_reseed_missing_owner_keys_before_any_effect() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("frozen owner");
+        assert_eq!(owner.completed_steps(), 0);
+    }
+
+    let pins = root.path().join("cell-split-owner-trust-pins.json");
+    fs::remove_file(&pins).expect("remove original signer pins");
+
+    // Reusing the original keys does not justify recreating a deleted,
+    // previously frozen trust frontier.
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "frozen plan lost owner trust pins"
+        ))
+    ));
+
+    // In particular, no caller can rotate an original owner key by deleting
+    // the local pins while preserving the frozen plan.
+    let mut keys = [0, 1, 2, 3].map(|index| signing_key(index).verifying_key());
+    keys[2] = SigningKey::from_bytes(&[97; 32]).verifying_key();
+    let replacement = CellSplitOwnerTrustV1::new(&plan(), keys).expect("distinct signers");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            replacement,
+            FixturePort::new(state.clone()),
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "frozen plan lost owner trust pins"
+        ))
+    ));
+    assert!(!pins.exists());
+    assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
 fn missing_trust_pins_reject_recovery_after_effect_history() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
