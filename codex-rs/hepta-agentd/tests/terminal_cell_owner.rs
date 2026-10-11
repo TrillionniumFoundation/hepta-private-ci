@@ -518,8 +518,7 @@ async fn clean_agent_recall_replay_training_load_and_source_withdrawal() {
         objective_digest: digest("objective"),
         inclusion_policy_digest: digest("all-active-owner-episodes"),
     };
-    let freeze_payload =
-        dataset_freeze_signing_payload_v2(&frozen_ledger, &trial_plan).unwrap();
+    let freeze_payload = dataset_freeze_signing_payload_v2(&frozen_ledger, &trial_plan).unwrap();
     let frozen_signature = sign(
         ledger.verifier(),
         "evaluator",

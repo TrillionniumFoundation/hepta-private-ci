@@ -45,10 +45,10 @@ mod runtime_tasks;
 mod shared_terminal_cell;
 mod state;
 pub use shared_terminal_cell::AgentdSharedReplayHostV1;
+pub use shared_terminal_cell::SharedReplayNeuronTrialSourceV1;
 pub use shared_terminal_cell::SharedTerminalCandidateV1;
 pub use shared_terminal_cell::SharedTerminalCellError;
 pub use shared_terminal_cell::SharedTerminalModelV1;
-pub use shared_terminal_cell::SharedReplayNeuronTrialSourceV1;
 #[doc(hidden)]
 pub mod test_support;
 mod topology_plasticity_host;

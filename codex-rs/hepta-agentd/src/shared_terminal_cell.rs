@@ -21,13 +21,13 @@ use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactRegistry;
 use codex_hepta_learning_ledger::DatasetFreezePlanV2;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerSnapshot;
+use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::NeuronTrialLedgerSourceV1;
 use codex_hepta_learning_ledger::NeuronTrialSourceError;
-use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::FederationConsumerAccess;
@@ -145,7 +145,6 @@ impl AgentdSharedReplayHostV1 {
         })
     }
 
-
     /// Recheck the real Ledger owner and the current Memory Replay grant.
     /// All admitted terminal decisions must cite the same exact Memory
     /// source revision; multi-source cohorts require a separate policy.
@@ -174,13 +173,8 @@ impl AgentdSharedReplayHostV1 {
             .as_str()
             .parse()
             .map_err(|_| SharedTerminalCellError::Binding("source support identity"))?;
-        let ledger_source = ledger.read_neuron_trial_source_v1(
-            frozen_ledger,
-            plan,
-            signed_freeze,
-            dataset,
-            now,
-        )?;
+        let ledger_source =
+            ledger.read_neuron_trial_source_v1(frozen_ledger, plan, signed_freeze, dataset, now)?;
         if ledger_source.terminal_joins.is_empty()
             || ledger_source
                 .terminal_joins
@@ -192,13 +186,8 @@ impl AgentdSharedReplayHostV1 {
             ));
         }
         self.source.revalidate_shared_experience(&source).await?;
-        if ledger.read_neuron_trial_source_v1(
-            frozen_ledger,
-            plan,
-            signed_freeze,
-            dataset,
-            now,
-        )? != ledger_source
+        if ledger.read_neuron_trial_source_v1(frozen_ledger, plan, signed_freeze, dataset, now)?
+            != ledger_source
         {
             return Err(SharedTerminalCellError::Binding(
                 "Neuron trial ledger changed during source read",
