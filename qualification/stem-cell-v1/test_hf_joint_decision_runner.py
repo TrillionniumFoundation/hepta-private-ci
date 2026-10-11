@@ -11,7 +11,7 @@ from types import ModuleType, SimpleNamespace
 from hf_joint_decision_runner import (
     HF_KEYS, build_head, head_sha256, head_width, render_joint,
     snapshot_validation, train_head, validate_encoder_loading_info,
-    vectorize_case, verify_loaded_safetensors,
+    vectorize_case, vectorize_scope_batch, verify_loaded_safetensors,
 )
 
 
@@ -117,6 +117,61 @@ class TorchHeadEvidenceTests(unittest.TestCase):
         self.assertEqual(value.tolist(), [3., 5.])
         with self.assertRaisesRegex(ValueError, "no silent truncation"):
             vectorize_case(torch, Model(), Tokenizer(), row, "cpu", max_tokens=1)
+
+    def test_physical_scope_batch_matches_single_frozen_encoder_for_padding(self):
+        import torch
+
+        class Tokenizer:
+            def __call__(self, text, return_tensors, truncation):
+                ids = [1 + ord(c) % 31 for c in text]
+                ids = ids[:80]
+                tensor = torch.tensor([ids], dtype=torch.long)
+                return {"input_ids": tensor, "attention_mask": torch.ones_like(tensor)}
+
+            def pad(self, records, padding, return_tensors):
+                width = max(len(record["input_ids"]) for record in records)
+                ids = torch.zeros((len(records), width), dtype=torch.long)
+                mask = torch.zeros_like(ids)
+                for index, record in enumerate(records):
+                    length = len(record["input_ids"])
+                    ids[index, :length] = torch.tensor(record["input_ids"])
+                    mask[index, :length] = 1
+                return {"input_ids": ids, "attention_mask": mask}
+
+        class Encoder:
+            calls = 0
+
+            def __call__(self, **inputs):
+                self.calls += 1
+                v = inputs["input_ids"].float()
+                return SimpleNamespace(last_hidden_state=torch.stack(
+                    [v, v * 0.5], dim=-1))
+
+        tok = Tokenizer()
+        batch_model = Encoder()
+        a = {"scope": "alpha", "state": "s", "question": "q",
+             "options": ["left", "right"]}
+        b = {"scope": "alpha", "state": "a much longer state", "question": "q",
+             "options": ["left", "right"]}
+        results = vectorize_scope_batch(
+            torch, batch_model, tok, [a, b], "cpu", max_tokens=512)
+        self.assertEqual(batch_model.calls, 1)
+        single_model = Encoder()
+        for row, (feature, count) in zip((a, b), results):
+            expected, expected_count = vectorize_case(
+                torch, single_model, tok, row, "cpu", max_tokens=512)
+            self.assertEqual(count, expected_count)
+            self.assertTrue(torch.allclose(feature, expected))
+        self.assertEqual(single_model.calls, 2)
+        with self.assertRaisesRegex(ValueError, "cross-Scope"):
+            vectorize_scope_batch(
+                torch, Encoder(), tok, [a, {**b, "scope": "beta"}],
+                "cpu", max_tokens=512)
+        with self.assertRaisesRegex(ValueError, "silently truncate"):
+            vectorize_scope_batch(
+                torch, Encoder(), tok, [a, b], "cpu", max_tokens=4)
+        with self.assertRaisesRegex(ValueError, "2..32"):
+            vectorize_scope_batch(torch, Encoder(), tok, [a], "cpu", max_tokens=512)
 
     def test_actual_head_update_changes_weights_within_exact_budget(self):
         import torch
