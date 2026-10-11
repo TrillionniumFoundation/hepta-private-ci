@@ -112,6 +112,15 @@ fn runner(
     directory: &std::path::Path,
     model: ModelManifest,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    runner_with_batch_size(signing_key, directory, model, 1)
+}
+
+fn runner_with_batch_size(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
@@ -142,7 +151,7 @@ fn runner(
         authority,
         MicrobatchLimitsV1 {
             max_pending: 10,
-            max_batch_size: 1,
+            max_batch_size: batch_size,
             max_lanes_per_poll: 4,
             max_wait_ms: 5,
         },
@@ -254,4 +263,55 @@ fn revoked_scope_drops_queued_intent_without_driver_effect() {
     let outcome = execution.poll_and_execute(101).unwrap();
     assert!(outcome.outcomes.is_empty());
     assert_eq!(execution.pending(), 0);
+}
+
+
+#[test]
+fn same_lane_three_item_group_preserves_independent_final_use_nonces() {
+    // Scheduling a three-item group must not accidentally reuse one signed
+    // grant or bypass the native one-request-at-a-time model driver.
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[23; 32]);
+    let (model, fixture, key) = fixture_request();
+    let mut execution = runner_with_batch_size(&signer, dir.path(), model, 3);
+    for i in 0_u8..3 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("req-{i}");
+        request.authorization.reservation_id = format!("reservation-{i}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding =
+            neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("neuron-feature-{i}");
+        grant.grant.nonce = [i + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        execution
+            .enqueue(100, "model".to_owned(), request, key.clone(), grant)
+            .unwrap();
+    }
+    assert_eq!(execution.pending(), 3);
+    let completed = execution.poll_and_execute(101).unwrap();
+    assert_eq!(completed.outcomes.len(), 3);
+    assert_eq!(completed.pending, 0);
+    assert_eq!(
+        completed
+            .outcomes
+            .iter()
+            .map(|o| o.request_id.clone())
+            .collect::<BTreeSet<_>>()
+            .len(),
+        3
+    );
+    assert!(completed.outcomes.iter().all(|outcome| {
+        matches!(
+            outcome.result,
+            Ok(ref receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        )
+    }));
+    // This verifies admission grouping, not physical backend batching.
 }
