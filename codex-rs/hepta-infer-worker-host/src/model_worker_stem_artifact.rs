@@ -21,11 +21,11 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 
 use super::Error;
-use super::LowRankStemProjectionV1;
-use super::ProjectedStemFeatureV1;
-use super::StemProjectionBindingV1;
-use super::project_bound_f32;
-use super::verify_neuron_projected_request;
+use super::stem_projection::LowRankStemProjectionV1;
+use super::stem_projection::ProjectedStemFeatureV1;
+use super::stem_projection::StemProjectionBindingV1;
+use super::stem_projection::project_bound_f32;
+use super::stem_projection::verify_neuron_projected_request;
 
 const MAX_STEM_PROJECTION_JSON_BYTES: usize = 8 * 1024 * 1024;
 const STEM_PROJECTION_SCHEMA: &str = "hepta.stem.low-rank-projection-payload.v1";
