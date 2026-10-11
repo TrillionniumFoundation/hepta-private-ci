@@ -168,9 +168,8 @@ fn sync_verified_sidecar_parent(parent: &Path) -> Result<(), AcceptanceError> {
         const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
         const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
         let mut options = OpenOptions::new();
-        options.read(true).custom_flags(
-            FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT,
-        );
+        options.read(true);
+        options.custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT);
         options.open(parent)?
     };
     #[cfg(not(windows))]
