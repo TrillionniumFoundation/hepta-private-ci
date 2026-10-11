@@ -1,0 +1,32 @@
+name: Hepta Agentd Strict Clippy Conformance (shadow)
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-infer-worker-host/**'
+      - '.github/workflows/hepta-agentd-strict-clippy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-agentd-clippy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact stable toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Enforce repository-wide Rust formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Check Agentd owner and its genuine dependency graph
+        run: cargo +1.95.0 check --locked -p codex-hepta-agentd
+      - name: Strict Agentd and Worker Clippy without advisory exemptions
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-agentd -p codex-hepta-infer-worker-host --all-targets -- -D warnings
