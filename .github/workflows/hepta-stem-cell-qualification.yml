@@ -15,6 +15,13 @@ on:
 permissions:
   contents: read
 
+# Cancel only obsolete runs of this read-only research lane for the same PR.
+# Without this, each incremental source change queues a costly stale Rust build
+# while the only authoritative receipt must be from the latest SHA.
+concurrency:
+  group: hepta-stem-cell-l1-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   offline-contract-tests:
     name: Offline contract and trace tests (not model results)
