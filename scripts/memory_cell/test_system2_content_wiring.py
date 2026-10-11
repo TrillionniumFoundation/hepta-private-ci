@@ -136,11 +136,16 @@ class ContentWiringTests(unittest.TestCase):
                 run(args)
             self.assertFalse(args.output.exists())
 
-    def test_workflow_preserves_full_regressions_and_new_mode_has_no_reader(self):
+    def test_workflow_preserves_full_regressions_and_replay_avoids_model_staging(self):
         workflow = Path(__file__).resolve().parents[2] / ".github/workflows/hepta-system2-fbsde-ablation.yml"
         text = workflow.read_text()
         self.assertIn("-p 'test_*.py'", text)
-        self.assertIn("--development --content-preflight", text)
+        self.assertIn("scripts/memory_cell/system2_linear_solver.py", text)
+        self.assertIn("actions/artifacts/11706235289/zip", text)
+        self.assertIn("2d7d1058c724f79298b8ccd28c319629b929a842f2107301c3e1c1adef09bcea", text)
+        self.assertNotIn("snapshot_download", text)
+        self.assertNotIn("memory-native-staged-inputs", text)
+        self.assertIn("sha256sum -c -", text)
         self.assertNotIn("--development --learning-preflight", text)
         self.assertIn("cancel-in-progress: false", text)
         self.assertIn("if: always()", text)

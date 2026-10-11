@@ -25,6 +25,7 @@ jobs:
       HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
       HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-regression.zip
       HEPTA_SYSTEM2_ORIGINAL_ARCHIVE: /tmp/system2-original.zip
+      HEPTA_SYSTEM2_CONTENT_ARCHIVE: /tmp/system2-content.zip
       HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -54,55 +55,26 @@ jobs:
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11703482865/zip > "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE"
           printf '%s  %s\n' 80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" | sha256sum -c -
           /tmp/system2-python/bin/python scripts/memory_cell/system2_native_receipt.py "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" /tmp/system2-research/original-native-audit.json
+      - name: Download the exact saved content features and weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11706235289/zip > "$HEPTA_SYSTEM2_CONTENT_ARCHIVE"
+          printf '%s  %s\n' 2d7d1058c724f79298b8ccd28c319629b929a842f2107301c3e1c1adef09bcea "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" | sha256sum -c -
       - name: New mechanics, full Python regression set, and diagnostics
         run: |
           set -euo pipefail
           /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_system2*.py' -v 2>&1 | tee /tmp/system2-research/mechanics.log
           /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/system2-research/full-regression.log
           /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2*.py codex-rs/hepta-ndu/research/finite_tree_bsde.py 2>&1 | tee /tmp/system2-research/lint.log
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: memory-native-staged-inputs
-          run-id: 37862780268
-          github-token: ${{ github.token }}
-          path: /tmp
-      - name: Reuse exact native data, retrieval encoder, and frozen Reader
-        env:
-          PYTHONPATH: scripts/memory_cell
-        run: |
-          set -euo pipefail
-          /tmp/system2-python/bin/python - <<'PY'
-          from pathlib import Path, PurePosixPath
-          import tarfile
-          from huggingface_hub import snapshot_download
-          from native import digest
-          from pretrained import file_inventory
-          from relevance_ranker import RANKER_ID, RANKER_REVISION, RANKER_TENSOR_SHA256
-          with tarfile.open('/tmp/memory-inputs.tar.gz', 'r:gz') as archive:
-              members = archive.getmembers()
-              if sum(m.size for m in members) > 2 * 1024**3 or len(members) > 10000:
-                  raise ValueError('bounded archive required')
-              for member in members:
-                  path = PurePosixPath(member.name)
-                  if (path.is_absolute() or '..' in path.parts or not path.parts
-                      or path.parts[0] != 'memory-inputs'
-                      or not (member.isfile() or member.isdir())):
-                      raise ValueError('unsafe archive member')
-              archive.extractall('/tmp', members=members, filter='data')
-          if digest(file_inventory(Path('/tmp/memory-inputs/encoder'))) != '5afecdd6098fec07380bc10a30fd8debcffcd147274b3ffd18143f1fa86dc12a':
-              raise ValueError('retrieval encoder drift')
-          snapshot_download(RANKER_ID, revision=RANKER_REVISION, local_dir='/tmp/system2-ranker',
-              allow_patterns=['config.json', 'model.safetensors', 'tokenizer.json', 'tokenizer_config.json', 'special_tokens_map.json', 'vocab.txt'], token=False)
-          if file_inventory(Path('/tmp/system2-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
-              raise ValueError('paired encoder drift')
-          PY
-      - name: Equal-cardinality content preflight on train-only features, zero Reader calls
+      - name: Replay existing native features with real repository heads, no pretrained models
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
-          /usr/bin/time -v -o /tmp/system2-research/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_native_trial.py /tmp/memory-inputs /tmp/system2-ranker /tmp/system2-research/native --development --content-preflight 2>&1 | tee /tmp/system2-research/execution.log
+          /usr/bin/time -v -o /tmp/system2-research/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_linear_solver.py "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/system2-research/linear-replay 2>&1 | tee /tmp/system2-research/execution.log
       - name: Retain source identity, partial rows, failures, and full artifacts
         if: always()
         run: |
