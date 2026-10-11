@@ -402,6 +402,12 @@ impl DurableWriterHandoffJournalV1 {
                 return Err(WriterHandoffErrorV1::Corrupt);
             }
             let checkpoint = decode_checkpoint(&bytes[cursor..end])?;
+            // The signer must attest bytes which are *identical* to the
+            // original fsynced frame, not a normalized reserialization of
+            // attacker-controlled noncanonical JSON with the same digest.
+            if encode_checkpoint(&checkpoint)? != bytes[cursor..end] {
+                return Err(WriterHandoffErrorV1::Corrupt);
+            }
             validate_recovered_checkpoint(previous.as_ref(), &checkpoint)?;
             previous = Some(checkpoint);
             cursor = end + 1;
