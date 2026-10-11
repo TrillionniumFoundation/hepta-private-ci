@@ -971,7 +971,9 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
     // The sender survives in AgentdState but its only owning receiver
     // exited. Admission must fail closed without fabricating a new owner.
     assert!(
-        !state.plasticity_admission_ready().expect("current owner health"),
+        !state
+            .plasticity_admission_ready()
+            .expect("current owner health"),
         "closed durable plasticity channel cannot admit another proposal"
     );
     drop(state);
