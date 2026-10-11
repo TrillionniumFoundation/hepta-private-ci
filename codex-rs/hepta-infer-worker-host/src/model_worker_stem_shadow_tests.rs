@@ -76,6 +76,7 @@ fn shadow_row(cell: &str, scope: &str) -> CheckedShadowStemRow {
 
 fn shadow_batch(rows: Vec<CheckedShadowStemRow>) -> CheckedShadowStemBatch {
     CheckedShadowStemBatch {
+        pipeline_digest: shadow_pipeline().encoder_digest,
         unique_inputs: 1,
         actual_forward_calls_reported: 1,
         backend_latency_micros_reported: 10,
@@ -131,6 +132,13 @@ fn shadow_snapshot_batch_failure_is_atomic_and_scope_is_part_of_key() {
     .expect("different scope gets separate key");
     assert_eq!(cache.len(), 2);
     assert_eq!(separate[0].identity.scope_id.as_str(), "scope.b");
+    let mut wrong_model = base.clone();
+    wrong_model.pipeline_digest = Digest32::of_bytes(b"other-encoder");
+    assert!(matches!(
+        stage_shadow_feature_snapshots(&mut cache, &wrong_model, shadow_pipeline(), 10, 1000),
+        Err(Error::FeatureContract)
+    ));
+    assert_eq!(cache.len(), 2);
     let bad_ttl = stage_shadow_feature_snapshots(
         &mut cache, &base, shadow_pipeline(), 10, 600_000,
     );
