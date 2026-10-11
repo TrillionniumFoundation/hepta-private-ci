@@ -347,3 +347,59 @@ the *unnormalized* class-error sum. Do not rank models by Brier values
 from those two report schemas without first applying the explicit
 choice-count normalization. A model-selection reviewer must compare
 identically normalized scores on paired cases.
+
+
+### Real local HF execution: Experiment A DeBERTa / ModernBERT
+
+hf_joint_decision_runner.py now implements **actual local pretrained-weight
+inference + learned action Head** for two 395M–435M candidates. Unlike the
+model-free reviewer, this performs encoder forward passes over the full
+state + question + ordered options text, masked mean pooling, and
+deterministic AdamW updates for a parameter-counted bounded two-layer Head.
+The pretrained backbone is FROZEN. Strict locally reviewed safetensors,
+tokenizer, 40-hex upstream revision, complete local tree SHA, exact approved
+dataset bytes, and input length no larger than the shared 512-token profile
+are required. It refuses network download, remote-code execution, silent
+truncation and already existing output artifacts.
+
+Use exactly the same group- and future-window-separated corpus as
+decision_421m.py, with pretrained checkpoints provisioned by the
+independent model owner. Example for **one** of two HF arms:
+
+    python3 qualification/stem-cell-v1/hf_joint_decision_runner.py \
+      --dataset /approved/time-partitioned.jsonl \
+      --expected-dataset-sha256 <approved-source-byte-sha256> \
+      --model-key deberta_v3_large \
+      --snapshot /approved/deberta-v3-large-safetensors \
+      --expected-snapshot-sha256 <reviewed-tree-sha256> \
+      --upstream-revision <reviewed-40hex-upstream-sha> \
+      --license-approved --adapter-reviewed \
+      --train-steps 100 --trainable-budget 262144 \
+      --batch-size 16 --context-tokens 512 \
+      --seed 7347 --device cpu --dtype fp32 \
+      --output /scratch/deberta-equal-budget.jsonl
+
+Repeat with modernbert_large and its own reviewed checkpoint using the
+**identical data, Head architecture, steps, batch size, seed, context and
+target device**. The .run.json receipt contains the frozen Encoder
+parameter count, physical trainable Head count and Head weights digest,
+the exact runner source digest, dataset/upstream/model revision, measured
+per-row cold inference latency, RSS and training duration. It has the
+existing decision_421m.py reviewer metadata fields and an explicit
+non-authorizing status; a manifest hash is not an independently signed
+hardware or learning result. Source and license approval flags are operator
+claims and require external attestation.
+
+**Checkpoint-phase fairness limit:** raw pretrained DeBERTa-v3-large and
+ModernBERT-large do not include an original Laya-equivalent pretrained
+typed Decision Head. This runner therefore emits ONLY equal_budget arms,
+and NEVER fabricates untrained-Head zero-shot scores. The four-way
+reviewer continues to require eight valid arms before returning a complete
+comparison. Genuine reviewed checkpoint-stage decision adapters, both Laya
+model checkpoints and a shared operator-approved dataset still must be
+provided; until then, the final four-way assessment is BLOCKED.
+
+Local no-weights tests check Head size, actual tiny-PyTorch tensor updates,
+determinism, attention-mask pooling and failed provenance admission.
+They are L1 interface evidence, NOT pretrained 421M inference, full
+backbone fine-tuning or Hepta native 4096 Cell measurements.
