@@ -107,6 +107,22 @@ def _json_file(path, *, bound=8 * 1024 * 1024):
     return strict_json(path.read_text(encoding="utf-8"))
 
 
+def _runtime_receipt(directory, run):
+    """Bind the CPU host metadata to the exact generated run record."""
+    path = directory / "runtime-preflight.json"
+    runtime = _json_file(path)
+    torch_info = runtime.get("torch", {})
+    if (
+        runtime.get("schema") != "hepta.memory.runtime-preflight.v1"
+        or runtime.get("bounded_thread_diagnostic_requested") is not False
+        or run.get("runtime_preflight_sha256") != file_sha(path)
+        or type(torch_info.get("intra_op_threads")) is not int
+        or torch_info["intra_op_threads"] < 1
+    ):
+        raise ValueError("missing or unbound frozen CPU runtime receipt")
+    return runtime
+
+
 def _raw_lines(path, *, expected):
     if (
         path.is_symlink()
@@ -272,6 +288,8 @@ def audit(archive, original, *, expected_commit):
     calib_sources = _json_file(archive / "prep/calibration-sources.json")
     calib_labels = _json_file(archive / "prep/calibration-labels.json")
     inv = _json_file(archive / "inventory.json")
+    _runtime_receipt(archive / "calibration", run_cal)
+    _runtime_receipt(archive / "evaluation", run_eval)
     if (
         cal_plan["schema"] != SCHEMA
         or cal_plan["source_commit"] != expected_commit

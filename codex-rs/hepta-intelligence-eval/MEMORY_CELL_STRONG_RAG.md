@@ -402,3 +402,43 @@ independent model effect, semantic citation judgement, or production
 acceptance. It does not rescue files from a runner killed by its overall
 job timeout if GitHub does not execute subsequent `always()` steps.
 
+## Host runtime evidence and bounded-reader fail-fast (2026-10-11)
+
+The prior source-pinned [run 38111452963](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38111452963)
+reached actual Qwen2.5-3B BF16 inference but was cancelled before completing
+calibration. Its 26-file diagnostic artifact `11696974258` has ZIP SHA-256
+`129351221d56c9668c57e33f8dec79a6443c0252675752085538375b12ca25a8`.
+The complete artifact manifest is verified. Original `calibration/raw-answers.jsonl`
+contains **four succeeded calls, all for one question**, with measured
+input-token / model-seconds pairs (504, 923.31), (787, 1457.51),
+(1076, 2045.60), and (1370, 2641.52). No selected k, held-out result
+or independent replay was produced. These four raw answers must not be
+relabelled as a complete 40-call calibration.
+
+The archived successful Qwen reference run `38063870516` used the same
+research model revision, BF16/eager reference reader and OMP/MKL two-thread
+environment, yet generated 48 answers in the historical reader stage.
+The very large observed throughput difference is an **unresolved host
+performance/CPU instruction-set issue**, not evidence about memory quality.
+
+New runs now store `calibration/runtime-preflight.json` and
+`evaluation/runtime-preflight.json` using the existing bounded host
+snapshot facility. Each is SHA-256 bound to its phase's immutable `run.json`
+and must be independently checked against the final artifact manifest.
+The records include Torch intra/inter-op threads, allowlisted CI runner
+metadata, CPU features reported by `lscpu`, CPU affinity and host memory.
+They contain no model weights, user data or credentials. The frozen
+reader parameters, source bytes, prompts and answer scoring are unchanged.
+
+To stop repeatedly burning a 360-minute model slot on a host demonstrably
+too slow for a **40 + 72** call experiment, `_journal_answers` now fsyncs
+each exact raw answer before applying a **180-second observed per-call
+research feasibility bound**. A slower completed call raises an explicit
+resource infeasibility error, preserving that answer, the failed run and
+the host evidence, and refusing to issue a frozen k or model-gain claim.
+This is a **research resource gate, not a task metric, quality failure,
+hardware guarantee or production SLO**; it cannot prove an adequate runner
+exists. An accepted full census still requires 40 calibrated and 72
+matched Qwen generations with an independent read-only replay, followed
+by genuinely fresh independent source families for any generalization
+or production conclusion.

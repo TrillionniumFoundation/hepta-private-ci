@@ -116,6 +116,29 @@ def seal(root):
 
 
 class ReceiptValidationTests(unittest.TestCase):
+    def test_host_runtime_record_requires_original_hash_and_cpu_threads(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            path = directory / "runtime-preflight.json"
+            record = {
+                "schema": "hepta.memory.runtime-preflight.v1",
+                "bounded_thread_diagnostic_requested": False,
+                "torch": {"intra_op_threads": 2},
+            }
+            path.write_text(json.dumps(record), encoding="utf-8")
+            run = {
+                "runtime_preflight_sha256": hashlib.sha256(
+                    path.read_bytes()
+                ).hexdigest()
+            }
+            self.assertEqual(audit._runtime_receipt(directory, run), record)
+            path.write_text(json.dumps(record | {"torch": {}}))
+            with self.assertRaises(ValueError):
+                audit._runtime_receipt(directory, run)
+            path.write_text(json.dumps(record))
+            with self.assertRaises(ValueError):
+                audit._runtime_receipt(directory, {})
+
     def test_exact_pinned_original_and_derived_source_in_historical_profile(self):
         row, case, doc = source_case()
         profiles = set()

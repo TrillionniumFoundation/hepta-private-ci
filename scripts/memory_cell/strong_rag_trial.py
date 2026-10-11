@@ -12,6 +12,7 @@ import argparse
 from dataclasses import asdict
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -22,6 +23,7 @@ from native import Document, Question, digest
 from strong_rag_stability import KS, leave_one_out
 
 SCHEMA = "hepta.memory-strong-rag.v1"
+MAX_READER_CALL_SECONDS = 180.0
 EVAL_ARMS = (
     "selected_k",
     "hybrid_k4",
@@ -294,6 +296,20 @@ def _bundle(query, selected, originals, *, frontier, arm):
     return EvidenceBundle(digest(asdict(query)), frontier, tuple(spans), arm)
 
 
+def fail_if_unviable_reader(row, *, max_seconds=MAX_READER_CALL_SECONDS):
+    """Reject an impractically slow host only after its raw answer is durable."""
+    if row["status"] != "succeeded":
+        return
+    seconds = row["receipt"].get("seconds")
+    if type(seconds) not in (int, float) or not math.isfinite(seconds) or seconds < 0:
+        raise ValueError("invalid measured frozen reader wall time")
+    if seconds > max_seconds:
+        raise RuntimeError(
+            f"slow frozen reader: {seconds:.3f}s exceeds the "
+            f"{max_seconds:.0f}s per-call budget; original journal retained"
+        )
+
+
 def _journal_answers(reader, cases, originals, arms, selections, journal, *, seed):
     from native_citation import capture_native
 
@@ -349,6 +365,7 @@ def _journal_answers(reader, cases, originals, arms, selections, journal, *, see
                 target.flush()
                 os.fsync(target.fileno())
                 rows.append(row)
+                fail_if_unviable_reader(row)
     reader.verify_frozen()
     return rows
 
@@ -484,12 +501,17 @@ def calibrate(prep, model_dir, output, *, prep_sha, stage_sha):
         raise ValueError("missing original calibration scope")
     reader, stage, inventory = _reader(model_dir, stage_sha)
     output.mkdir()
+    import torch
+    from runtime_preflight import capture_runtime
+
+    dump(output / "runtime-preflight.json", capture_runtime(torch, bounded=False))
     dump(
         output / "run.json",
         dict(
             schema=SCHEMA,
             stage="calibration",
             source_commit=commit,
+            runtime_preflight_sha256=file_sha(output / "runtime-preflight.json"),
             calibration_sha256=prep_sha,
             model_stage_sha256=stage_sha,
             model=inventory,
@@ -624,12 +646,17 @@ def evaluate(
     if inventory["inventory_digest"] != locked_policy["reader_identity"]:
         raise ValueError("different reader between calibration and evaluation")
     output.mkdir()
+    import torch
+    from runtime_preflight import capture_runtime
+
+    dump(output / "runtime-preflight.json", capture_runtime(torch, bounded=False))
     dump(
         output / "run.json",
         dict(
             schema=SCHEMA,
             phase="evaluation",
             source_commit=commit,
+            runtime_preflight_sha256=file_sha(output / "runtime-preflight.json"),
             policy_sha256=policy_sha,
             policy=locked_policy,
             test_plan_sha256=plan_sha,

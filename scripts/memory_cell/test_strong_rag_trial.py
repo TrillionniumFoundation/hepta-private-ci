@@ -94,6 +94,57 @@ class StrongRagPolicyTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             trial.assert_calibration_publication(cases, sources, indices)
 
+    def test_unviable_reader_speed_gate_keeps_execution_unqualified(self):
+        trial.fail_if_unviable_reader(
+            {"status": "succeeded", "receipt": {"seconds": 180.0}}
+        )
+        trial.fail_if_unviable_reader({"status": "failed"})
+        for invalid in (True, -1, float("nan"), float("inf")):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError):
+                    trial.fail_if_unviable_reader(
+                        {"status": "succeeded", "receipt": {"seconds": invalid}}
+                    )
+        with self.assertRaisesRegex(RuntimeError, "slow frozen reader"):
+            trial.fail_if_unviable_reader(
+                {"status": "succeeded", "receipt": {"seconds": 180.01}}
+            )
+
+    def test_slow_reader_call_is_durable_before_resource_abort(self):
+        from native import Question
+
+        class SlowReader:
+            def answer(self, *_args, **_kwargs):
+                return "site_11111111 [E1]", {
+                    "seconds": 181.0,
+                    "input_ids_digest": "a" * 64,
+                    "delivered_evidence": [],
+                }
+
+        query = Question(
+            "q1", "family", "scope", "Which site?", "2026-01-01T00:00:00Z"
+        )
+        case = dict(
+            query=asdict(query), kind="new_fact",
+            candidate_digest="frozen", frontier="frontier"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            journal = Path(tmp) / "raw-answers.jsonl"
+            with (
+                patch.object(trial, "_bundle", return_value=object()),
+                patch("native_citation.capture_native", return_value={}),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "journal retained"):
+                    trial._journal_answers(
+                        SlowReader(), [case], {}, ("k1",),
+                        lambda _case, _arm: (), journal, seed="fixed"
+                    )
+            raw = [json.loads(line) for line in journal.read_text().splitlines()]
+            self.assertEqual(len(raw), 1)
+            self.assertEqual(raw[0]["status"], "succeeded")
+            self.assertEqual(raw[0]["receipt"]["seconds"], 181.0)
+            self.assertNotIn("strict_task_success", raw[0])
+
     def test_calibration_uses_actual_task_success_before_input_cost(self):
         correct = {("q1", 2), ("q2", 2), ("q1", 1)}
         rows = rows_for(successes=correct)
