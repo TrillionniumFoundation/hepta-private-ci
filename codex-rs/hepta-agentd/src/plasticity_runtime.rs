@@ -76,6 +76,11 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    #[must_use]
+    pub fn is_open(&self) -> bool {
+        !self.sender.is_closed()
+    }
+
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
@@ -298,10 +303,12 @@ impl PlasticityRuntimeOwnerV1 {
                     }
                     let result = propose_agentd_plasticity_v1(
                         *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
+                        crate::AgentdPlasticityAdmissionRefsV1 {
+                            artifacts: &self.artifacts,
+                            ledger: &self.ledger,
+                            owner_evidence_resolver: self.owner_evidence_resolver.as_ref(),
+                            owner_evidence_policy: &self.owner_evidence_policy,
+                        },
                         &self.verifier,
                         &mut self.parameter_writer,
                         &mut self.parameter_anchor_store,
@@ -343,6 +350,15 @@ mod lifetime_tests;
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn closed_plasticity_owner_channel_never_reports_ready() {
+        let (sender, receiver) = mpsc::channel(1);
+        let handle = PlasticityRuntimeHandleV1 { sender };
+        assert!(handle.is_open());
+        drop(receiver);
+        assert!(!handle.is_open());
+    }
 
     #[test]
     fn runtime_queue_capacity_is_bounded() {

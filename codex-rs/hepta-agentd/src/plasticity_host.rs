@@ -701,17 +701,29 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
+/// Immutable owner references for one plasticity admission decision.
+/// Binds artifact frontier, ledger, resolver and evidence policy together.
+pub struct AgentdPlasticityAdmissionRefsV1<'a> {
+    pub artifacts: &'a ArtifactRegistry,
+    pub ledger: &'a DurableLedger,
+    pub owner_evidence_resolver: &'a dyn PlasticityOwnerEvidenceResolverV1,
+    pub owner_evidence_policy: &'a PlasticityOwnerEvidencePolicyV1,
+}
+
 pub fn propose_agentd_plasticity_v1(
     mut request: ParameterPlasticityProductRequestV1,
-    artifacts: &ArtifactRegistry,
-    ledger: &DurableLedger,
-    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
-    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
+    owners: AgentdPlasticityAdmissionRefsV1<'_>,
     verifier: &LearningEvidenceVerifierV1,
     writer: &mut AnchoredPlasticityWriterV1,
     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    let AgentdPlasticityAdmissionRefsV1 {
+        artifacts,
+        ledger,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+    } = owners;
     let resolved = resolve_agentd_plasticity_admission_v1(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),

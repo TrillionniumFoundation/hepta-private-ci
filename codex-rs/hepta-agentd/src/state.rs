@@ -173,8 +173,10 @@ impl AgentdState {
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
-    /// Named Agentd-owned producer boundary for governed parameter plasticity.
-    /// Callers never receive the mutable writer or a second owner handle.
+    /// Real owner-lifetime/restart integration tests use these bounded
+    /// submission hooks. No executable production ingress exposes them:
+    /// that requires independently signed learning authorization first.
+    #[cfg(test)]
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
@@ -190,8 +192,7 @@ impl AgentdState {
         producer.submit_parameter(request, now).await
     }
 
-    /// Named Agentd-owned producer boundary for governed topology plasticity.
-    /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    #[cfg(test)]
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
@@ -425,9 +426,15 @@ impl AgentdState {
     /// current zero-authority revocation baseline is sufficient here; any
     /// effect-authorized composition must replace it before opening admission.
     pub(crate) fn mark_runtime_prerequisites_ready(&self) -> Result<(), AgentdError> {
-        let critical_stores_ready = self.cognitive.lock().map_err(poisoned_state)?.is_some();
+        let cognitive_store_ready = self.cognitive.lock().map_err(poisoned_state)?.is_some();
+        // Optional plasticity owner is required to be alive when attached;
+        // its sender liveness is NOT an authority grant or an outcome receipt.
+        let plasticity_owner_ready = self
+            .plasticity_runtime
+            .get()
+            .is_none_or(crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::owner_channel_open);
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        runtime.critical_stores_ready = critical_stores_ready;
+        runtime.critical_stores_ready = cognitive_store_ready && plasticity_owner_ready;
         runtime.revocation_ready = true;
         Ok(())
     }
