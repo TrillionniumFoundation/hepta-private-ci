@@ -538,7 +538,8 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
             current: live_cpu_current,
             selection_now: 30,
             binding: &binding,
-            projected: &projected,
+            source_features: &features,
+                    token_count: 3,
             request: admitted.clone(),
             worker_now_ms: 100,
             model_id: "model.selected.stem.cpu",
@@ -547,6 +548,55 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
     assert_eq!(actual.drive_q24, projected.values_q24);
     assert_eq!(actual.prediction_q24, vec![0, 0]);
     assert!(!actual.authority.grants_any());
+
+    // The digest fields alone cannot authorize a caller-forged Q24 vector.
+    // A separate signed CAS reader must recompute its selected matrix and
+    // reject the forged input BEFORE the local CPU Head runs.
+    let (forged_snapshot, forged_initial) = fx.current(
+        "current.forged.load", Digest32::ZERO,
+    );
+    let forged_selection = fx.selector_verifier
+        .verify(&signed, &forged_initial, 30)
+        .expect("independent artifact selection");
+    let mut forged_reader = SelectedStemProjectionReaderV1::load(
+        forged_snapshot,
+        File::open(fx.dir.path().join("payload")).expect("pinned payload"),
+        forged_selection,
+        forged_initial,
+        fx.manifest.compatibility_digest,
+        StemProjectionOwnerFenceV1 {
+            scope_digest: scope,
+            worker_generation: 7,
+            revocation_frontier_digest: frontier,
+        },
+    ).expect("independent CAS reader");
+    let mut forged_request = admitted.clone();
+    forged_request.feature_vector_q24[0] += 1;
+    let forged_payload = super::super::canonical_neuron_feature_payload_digest(&forged_request);
+    forged_request.authorization.payload_digest = forged_payload.clone();
+    forged_request.authorization.lease_payload_digest = forged_payload;
+    let (_file, forged_current) = fx.current("current.forged.use", Digest32::ZERO);
+    assert!(matches!(
+        forged_reader.run_selected_cpu_head(
+            &mut worker,
+            StemCpuHeadUseV1 {
+                selector: &fx.selector_verifier,
+                signed_selection: &signed,
+                current: forged_current,
+                selection_now: 30,
+                binding: &binding,
+                source_features: &features,
+                token_count: 3,
+                request: forged_request,
+                worker_now_ms: 100,
+                model_id: "model.selected.stem.cpu",
+            },
+        ),
+        Err(StemProjectionArtifactError::Numeric(
+            super::super::Error::FeatureContract
+        ))
+    ));
+    assert!(forged_reader.is_sealed());
 
     // Save a once-valid signed CURRENT to confirm that it cannot revive a
     // consumer after an observed revocation seals it.
@@ -574,7 +624,8 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
                     current: revoked,
                     selection_now: 30,
                     binding: &binding,
-                    projected: &projected,
+                    source_features: &features,
+                    token_count: 3,
                     request: admitted.clone(),
                     worker_now_ms: 100,
                     model_id: "model.selected.stem.cpu",
