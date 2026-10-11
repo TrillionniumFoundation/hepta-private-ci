@@ -29,6 +29,16 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
+    /// Fail closed when the sole generation-bound owner channel disappears.
+    #[must_use]
+    pub(crate) fn is_open(&self) -> bool {
+        self.handle.is_open()
+    }
+
+    // Historical direct producer submission is covered by lifetime tests.
+    // Product deployment still needs its independently authorized control
+    // caller; no unsigned production ingress is exposed by this wrapper.
+    #[cfg(test)]
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
@@ -37,6 +47,7 @@ impl AgentdLearningPlasticityProducerV1 {
         self.handle.propose_parameter(request, now).await
     }
 
+    #[cfg(test)]
     pub(crate) async fn submit_topology(
         &self,
         request: TopologyPlasticityProductRequestV1,
