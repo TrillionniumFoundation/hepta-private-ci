@@ -22,6 +22,12 @@ ARMS = (
 
 def nine_arms(*, answer=None):
     row, public, documents = case()
+    # A real evaluation scope must equal its query identity; the standalone
+    # historical fixture otherwise uses a generic, unrelated scope string.
+    for source in documents.values():
+        source["scope"] = row["question_id"]
+    for delivery in row["receipt"]["delivered_evidence"]:
+        delivery["scope"] = row["question_id"]
     if answer is not None:
         row["answer"] = answer
         row["citation_audit"]["request"]["answer"] = answer
