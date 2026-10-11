@@ -173,8 +173,11 @@ impl AgentdState {
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
-    /// Named Agentd-owned producer boundary for governed parameter plasticity.
-    /// Callers never receive the mutable writer or a second owner handle.
+    /// Historical private test path exercises the real bounded producer/
+    /// writer owner and its restart/anchor-replay invariants. No production
+    /// invocation route exists until an independent identity/final-use ingress
+    /// is authenticated; do not advertise this as live learning authority.
+    #[cfg(test)]
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
@@ -190,8 +193,10 @@ impl AgentdState {
         producer.submit_parameter(request, now).await
     }
 
-    /// Named Agentd-owned producer boundary for governed topology plasticity.
-    /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
+    /// Historical test-only topology path preserves the real signature,
+    /// durable anchor and replay checks without exporting an unsigned
+    /// production Cell split or topology mutation endpoint.
+    #[cfg(test)]
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
         request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
@@ -564,7 +569,11 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
-            && !runtime.fenced)
+            && !runtime.fenced
+            && self
+                .plasticity_runtime
+                .get()
+                .is_some_and(crate::AgentdLearningPlasticityProducerV1::is_open))
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
