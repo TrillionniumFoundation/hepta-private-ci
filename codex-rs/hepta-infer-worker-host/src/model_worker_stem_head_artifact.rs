@@ -78,7 +78,7 @@ pub fn encode_cpu_head_bank_candidate_v1(
     let mut values = Vec::with_capacity(heads.len());
     for head in heads {
         let head_digest = head.digest().map_err(|_| StemHeadArtifactError::InvalidPayload)?;
-        if previous.as_ref().is_some_and(|before| *before >= head_digest) {
+        if previous.as_ref().is_some_and(|before| before >= &head_digest) {
             return Err(StemHeadArtifactError::InvalidPayload);
         }
         previous = Some(head_digest);
