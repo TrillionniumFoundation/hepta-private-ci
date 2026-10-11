@@ -692,8 +692,16 @@ fn observed_completed_assistant_item_supplies_missing_text_without_duplicate_del
     }
 
     let mut empty = output();
-    observe_for_test(&mut empty, complete_item("foreign", "turn-a", "wrong".into())).unwrap();
-    observe_for_test(&mut empty, complete_item("thread-a", "foreign", "wrong".into())).unwrap();
+    observe_for_test(
+        &mut empty,
+        complete_item("foreign", "turn-a", "wrong".into()),
+    )
+    .unwrap();
+    observe_for_test(
+        &mut empty,
+        complete_item("thread-a", "foreign", "wrong".into()),
+    )
+    .unwrap();
     assert!(empty.output.is_empty());
     observe_for_test(
         &mut empty,
