@@ -463,7 +463,17 @@ def choose_k(rows, labels, expected):
 
 
 def _reader(model_dir, stage_sha):
+    import torch
+
     from event_reader_view import EventPresentationReader
+    from runtime_preflight import configure_torch
+
+    # Restore the proven reference-reader CPU setup before loading Qwen weights.
+    # The old reference job called torch.set_num_threads(2) explicitly; OMP/MKL
+    # environment variables alone are not a pinned PyTorch runtime contract.
+    threads = configure_torch(torch, bounded=False)
+    if threads["effective_intra_op"] != 2:
+        raise ValueError("reference reader requires exactly two intra-op threads")
 
     staged = read(model_dir / "stage.json", stage_sha)
     inventory = read(model_dir / "inventory.json", staged["inventory_sha256"])
