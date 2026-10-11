@@ -61,9 +61,14 @@ pub fn run_pinned_cell_split_execution_v1(
     config_path: &Path,
     externally_pinned_config_sha256: &str,
 ) -> Result<CellSplitExecutionCliOutcomeV1, String> {
-    // Legacy operator CLI entry. Real effect owners must still independently
-    // enforce final-use, NDU/Selector, and generation fencing. A product caller
-    // should use the admission-bound entry below instead.
+    // This legacy operator interface has no independent NDU/Selector token.
+    // In particular, a pinned configuration hash is not an effect grant.
+    // Only the admission-bound Agentd entry may start a durable side effect.
+    if action == "advance" {
+        return Err(
+            "CellSplit advance requires independently admitted NDU/Selector selection".to_string(),
+        );
+    }
     run_pinned_cell_split_execution_with_admission_v1(
         action,
         config_path,
@@ -237,7 +242,7 @@ mod tests {
         std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o600))
             .expect("private config");
         let error = run_pinned_cell_split_execution_v1(
-            "advance",
+            "transcript",
             &file,
             &format!("{:x}", Sha256::digest(b"different configuration")),
         )
@@ -329,7 +334,17 @@ mod tests {
         assert!(!execution_root.join("cell-split-frozen-plan.json").exists());
         assert!(!execution_root.join(".operator-acceptance.lock").exists());
 
-        assert!(run_pinned_cell_split_execution_v1("advance", &config_path, &pin).is_err());
+        // This is a fixture-only admitted call against absent, non-effectful
+        // sockets. Product calls must use independently verified selection.
+        assert!(
+            run_pinned_cell_split_execution_with_admission_v1(
+                "advance",
+                &config_path,
+                &pin,
+                |_| Ok(()),
+            )
+            .is_err()
+        );
         let read_only = run_pinned_cell_split_execution_v1("transcript", &config_path, &pin)
             .expect("read-only reopen of prepared intent");
         assert_eq!(read_only.completed_steps, 0);
@@ -349,9 +364,39 @@ mod tests {
 
         // Reopen may only consult the original owner. A missing socket cannot
         // turn a prepared intent into a second execution or terminal receipt.
-        assert!(run_pinned_cell_split_execution_v1("advance", &config_path, &pin).is_err());
+        // This is a fixture-only admitted call against absent, non-effectful
+        // sockets. Product calls must use independently verified selection.
+        assert!(
+            run_pinned_cell_split_execution_with_admission_v1(
+                "advance",
+                &config_path,
+                &pin,
+                |_| Ok(()),
+            )
+            .is_err()
+        );
         assert_eq!(std::fs::read(&pending).expect("same intent"), original);
         assert!(!terminal.exists());
+    }
+
+    #[test]
+    fn legacy_operator_advance_denied_before_any_config_or_effect() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let missing = dir.path().join("absent-config.json");
+        let error = run_pinned_cell_split_execution_v1(
+            "advance",
+            &missing,
+            &"00".repeat(32),
+        )
+        .expect_err("a configuration hash is not an NDU/Selector grant");
+        assert!(error.contains("independently admitted NDU/Selector"));
+        assert!(!missing.exists());
+        assert_eq!(
+            std::fs::read_dir(dir.path())
+                .expect("no generated state")
+                .count(),
+            0
+        );
     }
 
     #[test]
