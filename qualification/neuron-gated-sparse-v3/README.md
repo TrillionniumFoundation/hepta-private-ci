@@ -190,9 +190,20 @@ Every candidate must use identical input information, training sets, split
 boundaries, hyperparameter search budgets and total CPU/memory ceilings. Count
 encoder reuse and cache invalidation costs in the whole-system budget. Avoid
 claiming equivalent trainability merely because inference neuron widths match.
-SSM/minGRU/CfC are **planned candidates**, not implemented/trained models in
-this PR. minGRU's parallel-scan training property does not automatically apply
-to V3's state-dependent gate.
+The first A3 arm now exists in `codex-rs/hepta-neuron/src/diagonal_ssm_shadow.rs`:
+a stable per-channel Q24 diagonal recurrence with bounded `A^steps`, frozen
+per-channel input gains and an explicit microsecond time quantum. The SSM
+checkpoint uses its own digest domain and includes elapsed step count, original
+input and predecessor. It delegates V2 sparse projections/competition unchanged.
+Its tests check single- and multi-step transitions, time regression, 65,535-step
+caps, Q24 signed ties-to-even, original input/generation drift, full V2 parity
+at zero retention, saturation and deterministic cold replay. It is a **pure
+shadow comparator only**, not a trained SSM or independent durable Cell owner.
+
+Low-rank minGRU and Sparse CfC remain **planned, unimplemented and untrained**.
+Neither the V3 nor SSM experiments have a real trained artifact or target-host
+accuracy result. minGRU's parallel-scan training property does not
+automatically apply to V3's state-dependent gate.
 
 Research background: Feng et al., *Were RNNs All We Needed?* (2024),
 https://arxiv.org/abs/2410.01201 ; Hasani et al., *Closed-form continuous-time
