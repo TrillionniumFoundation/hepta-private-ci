@@ -49,11 +49,21 @@ def exact(obj: Any, fields: set[str], label: str) -> dict:
 
 
 def outcome(value: Any, label: str) -> dict:
-    obj = exact(value, {
+    fields = {
         "utility_micro", "long_reward_micro", "future_retained",
         "negative_transfer", "ood_false_accept",
         "cpu_micros", "peak_rss_bytes", "latency_micros",
-    }, label)
+    }
+    binary = {"binary_probability_ppm", "binary_label"}
+    need(isinstance(value, dict) and (set(value) == fields or set(value) == fields | binary),
+         f"{label}: unexpected fields or partial binary calibration outcome")
+    obj = value
+    if binary <= set(obj):
+        need(type(obj["binary_probability_ppm"]) is int
+             and 0 <= obj["binary_probability_ppm"] <= 1_000_000,
+             f"{label}: probability not in [0,1] ppm")
+        need(type(obj["binary_label"]) is bool,
+             f"{label}: binary_label must be Boolean")
     for key in ("utility_micro", "long_reward_micro"):
         need(type(obj[key]) is int and -10**12 <= obj[key] <= 10**12,
              f"{label}.{key}: invalid micro utility")
@@ -101,6 +111,38 @@ def clustered_mean_ci(delta_by_cell: dict[str, list[int]]) -> dict[str, Any]:
     }
 
 
+def calibration_metrics(rows: list[dict]) -> dict[str, Any]:
+    if not rows:
+        raise EvidenceError("calibration requires a nonempty sample")
+    if not all("binary_probability_ppm" in row for row in rows):
+        return {
+            "brier_ppm": None,
+            "ece_ppm": None,
+            "calibration_sample_count": 0,
+            "calibration_status": "NOT_OBSERVED",
+        }
+    n = len(rows)
+    squared_errors = 0
+    bins = [[0, 0, 0] for _ in range(10)]
+    for row in rows:
+        probability = row["binary_probability_ppm"]
+        label = int(row["binary_label"])
+        squared_errors += (probability - label * 1_000_000) ** 2
+        index = min(9, probability // 100_000)
+        bins[index][0] += 1
+        bins[index][1] += probability
+        bins[index][2] += label * 1_000_000
+    # Equal-width 10-bin expected calibration error; signed integers prevent
+    # accidental float rounding and the result remains descriptive only.
+    return {
+        "brier_ppm": squared_errors / (n * 1_000_000),
+        "ece_ppm": sum(abs(predictions - positives) for count, predictions, positives
+                       in bins if count > 0) / n,
+        "calibration_sample_count": n,
+        "calibration_status": "DESCRIPTIVE_10_BIN_BINARY_ONLY",
+    }
+
+
 def metrics(baseline: list[dict], candidate: list[dict],
             cell_ids: list[str]) -> dict:
     n = len(baseline)
@@ -109,7 +151,18 @@ def metrics(baseline: list[dict], candidate: list[dict],
     delta_by_cell = defaultdict(list)
     for cell, b, c in zip(cell_ids, baseline, candidate):
         delta_by_cell[cell].append(c["utility_micro"] - b["utility_micro"])
+    baseline_calibration = calibration_metrics(baseline)
+    candidate_calibration = calibration_metrics(candidate)
+    need(baseline_calibration["calibration_sample_count"]
+         == candidate_calibration["calibration_sample_count"],
+         "baseline and candidate have different binary calibration coverage")
+    if candidate_calibration["calibration_sample_count"] == n:
+        need(all(b["binary_label"] == c["binary_label"]
+                 for b, c in zip(baseline, candidate)),
+             "candidate and frozen baseline disagree on binary ground truth labels")
     return {**clustered_mean_ci(delta_by_cell),
+        "candidate_calibration": candidate_calibration,
+        "baseline_calibration": baseline_calibration,
         "paired_count": n,
         "mean_utility_delta_micro": sum(
             c["utility_micro"] - b["utility_micro"] for b, c in zip(baseline, candidate)
@@ -126,6 +179,7 @@ def metrics(baseline: list[dict], candidate: list[dict],
         "ood_false_accept_rate": sum(c["ood_false_accept"] for c in candidate) / n,
         "cpu_micros_sum": sum(c["cpu_micros"] for c in candidate),
         "maximum_peak_rss_bytes": max(c["peak_rss_bytes"] for c in candidate),
+        "p50_latency_micros": nearest_rank([c["latency_micros"] for c in candidate], 50),
         "p95_latency_micros": nearest_rank([c["latency_micros"] for c in candidate], 95),
         "p99_latency_micros": nearest_rank([c["latency_micros"] for c in candidate], 99),
         "baseline_p99_latency_micros": nearest_rank(
@@ -307,7 +361,8 @@ def analyze(payload: dict, evaluator_fingerprint: str) -> dict:
         "decision": "NO_PRODUCTION_PROMOTION",
         "limitations": [
             "Trusted key validation authenticates claimed evaluator input, not real host execution.",
-            "Clustered t intervals are unadjusted descriptive approximations, not causal or multiple-testing-adjusted inference.",
+            "Clustered t intervals and 10-bin binary Brier/ECE are descriptive only, not causal, calibrated acceptance or multiple-testing-adjusted inference.",
+            "Clock-order and dataset hash checks do not independently establish training/label non-leakage.",
             "Evaluator-signed role IDs alone do not authenticate Selector/Executor ownership; NDU final-use, CAS and migration remain external.",
             "A4 size slots do not alone prove resource claims without host attestation and replay.",
         ],
