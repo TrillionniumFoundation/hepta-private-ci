@@ -179,7 +179,8 @@ class PrequentialThreeWayTests(unittest.TestCase):
                 "production_microbatch_qualified": False,
                 "production_recovery_qualified": False,
                 "research_resource_gate_passed": True,
-                "scale": {"logical_cells": n, "measured_active_cell_coverage": True},
+                "scale": {"logical_cells": n, "active_heads": n,
+                          "distinct_ticked_cells": n, "measured_active_cell_coverage": True},
                 "metrics": {
                     "candidate_max_stage_p99_ms": 2.,
                     "candidate_rss_bytes": 1024.,
