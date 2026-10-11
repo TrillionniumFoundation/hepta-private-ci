@@ -153,7 +153,19 @@ jobs:
           from reader_reference_receipt import archive
           archive(Path('/tmp/experience-input.zip'), '23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b')
           PY
+          # A failed unrelated evaluation test must remain a failed required gate,
+          # but must not erase a source-only research run that can still be diagnosed.
+          # Both focused source suites MUST succeed before any pretrained model work.
+          /tmp/experience-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_*.py' -v 2>&1 | tee /tmp/experience-result/source-regressions.log
+          /tmp/experience-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_experience_*.py' -v 2>&1 | tee /tmp/experience-result/experience-regressions.log
+          set +e
           /tmp/experience-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/experience-result/tests.log
+          full_suite_rc=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$full_suite_rc" > /tmp/experience-result/full-regression-exit-code.txt
+          if [ "$full_suite_rc" -ne 0 ]; then
+            echo '::warning::Inherited full regression failed; results remain research-only and this job will be marked failed after evidence export.'
+          fi
       - name: Stage the existing research reader without changing its identity
         run: |
           set -euo pipefail
@@ -229,3 +241,17 @@ jobs:
           name: memory-source-only-write
           path: /tmp/experience-result
           if-no-files-found: error
+
+      - name: Enforce original full-regression exit code after artifact preservation
+        if: always()
+        run: |
+          set -euo pipefail
+          receipt=/tmp/experience-result/full-regression-exit-code.txt
+          if [ ! -f "$receipt" ]; then
+            echo '::error::Original full suite did not execute to completion.'
+            exit 1
+          fi
+          if [ "$(cat "$receipt")" != 0 ]; then
+            echo '::error::Full inherited regression gate failed; source-only research data cannot qualify the branch.'
+            exit 1
+          fi
