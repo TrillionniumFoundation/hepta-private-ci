@@ -3,18 +3,20 @@ name: Hepta Neuron model trial protocol
 on:
   pull_request:
     paths:
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
-      - "${1}"
+      - "scripts/hepta_neuron_model_trials.py"
+      - "scripts/hepta_neuron_trial_evidence_gate.py"
+      - "scripts/hepta_neuron_physical_receipt_verify.py"
+      - "scripts/hepta_neuron_artifact_preflight.py"
+      - "scripts/hepta_neuron_materialize_weights.py"
+      - "scripts/hepta_neuron_freeze_dataset.py"
+      - "scripts/hepta_neuron_physical_smoke.py"
+      - ".github/scripts/test_hepta_neuron_physical_smoke.py"
+      - ".github/scripts/test_hepta_neuron_physical_receipt_verify.py"
+      - ".github/scripts/test_hepta_neuron_model_trials.py"
+      - ".github/scripts/test_hepta_neuron_materialize_and_freeze.py"
+      - ".github/scripts/test_hepta_neuron_trial_evidence_gate.py"
+      - ".github/workflows/hepta-neuron-model-trials.yml"
+      - "qualification/neuron-model-trials/**"
   workflow_dispatch:
 
 permissions:
@@ -34,9 +36,15 @@ jobs:
           /tmp/hepta-neuron-trial-venv/bin/python -m pip install --disable-pip-version-check --no-input 'cryptography==46.0.4'
       - name: Strict offline protocol checks (no weights, no production model claims)
         run: |
-          /tmp/hepta-neuron-trial-venv/bin/python -m py_compile scripts/hepta_neuron_model_trials.py scripts/hepta_neuron_trial_evidence_gate.py scripts/hepta_neuron_artifact_preflight.py scripts/hepta_neuron_materialize_weights.py scripts/hepta_neuron_freeze_dataset.py scripts/hepta_neuron_physical_smoke.py
+          /tmp/hepta-neuron-trial-venv/bin/python -m py_compile scripts/hepta_neuron_model_trials.py scripts/hepta_neuron_trial_evidence_gate.py scripts/hepta_neuron_artifact_preflight.py scripts/hepta_neuron_materialize_weights.py scripts/hepta_neuron_freeze_dataset.py scripts/hepta_neuron_physical_smoke.py scripts/hepta_neuron_physical_receipt_verify.py
           /tmp/hepta-neuron-trial-venv/bin/python -m unittest discover -s .github/scripts -p 'test_hepta_neuron*.py' -v
           /tmp/hepta-neuron-trial-venv/bin/python scripts/hepta_neuron_artifact_preflight.py catalog \
             --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
             --output "$RUNNER_TEMP/hepta-neuron-upstream-metadata.json"
+          /tmp/hepta-neuron-trial-venv/bin/python scripts/hepta_neuron_physical_receipt_verify.py \
+            --directory qualification/neuron-model-trials/physical-smoke-receipts/run-38095795540 \
+            --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
+            --expected-run-id 38095795540 \
+            --expected-source-sha 5b542e100368f2e1aefeba6de7a156e19af27282 \
+            --output "$RUNNER_TEMP/hepta-neuron-public-receipt-replay.json"
           git diff --check
