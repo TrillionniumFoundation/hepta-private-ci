@@ -1,4 +1,5 @@
 """Standalone diagnostic archive verifier tests. No model weights or network."""
+
 import json
 import sys
 import tempfile
@@ -32,39 +33,69 @@ def fixture(root):
         tree = ("1" if arm == "laya" else "2" if arm == "typed" else "3") * 64
         parameters = 321908995 if arm == "multilingual" else 421293827
         mat = {
-            "schema": "hepta.neuron.weight-materialization.v1", "arm": arm,
-            "model_id": record["model_id"], "catalog_revision": locked["revision"],
-            "catalog_sha256": sha_file(catalog), "local_weight_bytes_verified": True,
-            "tensor_inventory_verified": True, "network_permission_used": True,
+            "schema": "hepta.neuron.weight-materialization.v1",
+            "arm": arm,
+            "model_id": record["model_id"],
+            "catalog_revision": locked["revision"],
+            "catalog_sha256": sha_file(catalog),
+            "local_weight_bytes_verified": True,
+            "tensor_inventory_verified": True,
+            "network_permission_used": True,
             "physical_artifact_tree_sha256": tree,
-            "relative_file_sha256": {name: "4" * 64 for name in record["required_files"]},
+            "relative_file_sha256": {
+                name: "4" * 64 for name in record["required_files"]
+            },
             "independently_attested_host": False,
-            "production_evidence_verified": False, "ndu_selection_authorized": False,
+            "production_evidence_verified": False,
+            "ndu_selection_authorized": False,
             "promotion_authorized": False,
         }
         mat["relative_file_sha256"]["model.safetensors"] = record["weights_sha256"]
         forward_ob = {
-            "id": "synthetic-no-label-control-1", "split": "holdout", "input_tokens": 39,
-            "latency_ms": 15.5, "probabilities": [0.9, 0.1],
+            "id": "synthetic-no-label-control-1",
+            "split": "holdout",
+            "input_tokens": 39,
+            "latency_ms": 15.5,
+            "probabilities": [0.9, 0.1],
         }
         f = {
-            "schema": "hepta.neuron.physical-forward-smoke.v1", "arm": arm,
-            "model_id": record["model_id"], "repository": locked["repository"],
-            "source_revision": locked["revision"], "source_catalog_sha256": sha_file(catalog),
-            "weights_sha256": record["weights_sha256"], "physical_artifact_tree_sha256": tree,
-            "model_forward_executed": True, "synthetic_question_only": True,
-            "target_host_independently_attested": False, "actual_hepta_data_used": False,
-            "ndu_net_gain_verified": False, "ndu_selection_authorized": False,
-            "production_evidence_verified": False, "promotion_authorized": False,
-            "installed_sdk_python_sha256": "5" * 64, "device": "cpu", "parameters": parameters,
-            "runtime": {"artifact_tree_sha256": tree, "sdk_tree_sha256": "5" * 64,
-                        "effective_context": 512, "effective_head_budget": 192, "torch": "2.5.1+cpu"},
+            "schema": "hepta.neuron.physical-forward-smoke.v1",
+            "arm": arm,
+            "model_id": record["model_id"],
+            "repository": locked["repository"],
+            "source_revision": locked["revision"],
+            "source_catalog_sha256": sha_file(catalog),
+            "weights_sha256": record["weights_sha256"],
+            "physical_artifact_tree_sha256": tree,
+            "model_forward_executed": True,
+            "synthetic_question_only": True,
+            "target_host_independently_attested": False,
+            "actual_hepta_data_used": False,
+            "ndu_net_gain_verified": False,
+            "ndu_selection_authorized": False,
+            "production_evidence_verified": False,
+            "promotion_authorized": False,
+            "installed_sdk_python_sha256": "5" * 64,
+            "device": "cpu",
+            "parameters": parameters,
+            "runtime": {
+                "artifact_tree_sha256": tree,
+                "sdk_tree_sha256": "5" * 64,
+                "effective_context": 512,
+                "effective_head_budget": 192,
+                "torch": "2.5.1+cpu",
+            },
             "synthetic_observation": forward_ob,
         }
-        observations[arm] = {"artifact_tree_sha256": tree, "weights_sha256": record["weights_sha256"],
-                             "model_forward_executed": True, "device": "cpu",
-                             "num_parameters": parameters, "latency_ms_single_sample": 15.5,
-                             "input_tokens": 39}
+        observations[arm] = {
+            "artifact_tree_sha256": tree,
+            "weights_sha256": record["weights_sha256"],
+            "model_forward_executed": True,
+            "device": "cpu",
+            "num_parameters": parameters,
+            "latency_ms_single_sample": 15.5,
+            "input_tokens": 39,
+        }
         materialization[arm] = mat
         forward[arm] = f
     for arm in ARMS:
@@ -73,14 +104,24 @@ def fixture(root):
     manifest = {
         "schema": "hepta.neuron.physical-smoke-three-arm-diagnostic.v1",
         "source": "untrusted GitHub Actions metadata; no independently signed host evidence",
-        "run_id": RUN, "run_url": URL_BASE + str(RUN), "source_commit": SHA,
-        "artifact_id": 111, "artifact_sha256": "6" * 64,
-        "actual_hepta_data_used": False, "production_evidence_verified": False,
-        "ndu_selection_authorized": False, "promotion_authorized": False,
+        "run_id": RUN,
+        "run_url": URL_BASE + str(RUN),
+        "source_commit": SHA,
+        "artifact_id": 111,
+        "artifact_sha256": "6" * 64,
+        "actual_hepta_data_used": False,
+        "production_evidence_verified": False,
+        "ndu_selection_authorized": False,
+        "promotion_authorized": False,
         "limitations": ["synthetic only", "not production"],
         "observations": observations,
-        "files": {name: {"bytes": (bundle / name).stat().st_size, "sha256": sha_file(bundle / name)}
-                  for name in FILES},
+        "files": {
+            name: {
+                "bytes": (bundle / name).stat().st_size,
+                "sha256": sha_file(bundle / name),
+            }
+            for name in FILES
+        },
     }
     dump(bundle / "manifest.json", manifest)
     return bundle, catalog
@@ -93,8 +134,13 @@ class PhysicalReceiptVerificationTests(unittest.TestCase):
         self.bundle, self.catalog = fixture(Path(self.tmp.name))
 
     def verify(self, **kw):
-        return verify_receipts(self.bundle, self.catalog,
-                               expected_run_id=RUN, expected_source_sha=SHA, **kw)
+        return verify_receipts(
+            self.bundle,
+            self.catalog,
+            expected_run_id=RUN,
+            expected_source_sha=SHA,
+            **kw,
+        )
 
     def mutate(self, name, fn):
         p = self.bundle / name
@@ -108,7 +154,9 @@ class PhysicalReceiptVerificationTests(unittest.TestCase):
             dump(mf, m)
 
     def test_three_arm_replay_is_diagnostic_without_promoting(self):
-        result = self.verify(expected_manifest_sha256=sha_file(self.bundle / "manifest.json"))
+        result = self.verify(
+            expected_manifest_sha256=sha_file(self.bundle / "manifest.json")
+        )
         self.assertTrue(result["all_six_receipts_match_archive_manifest"])
         self.assertFalse(result["promotion_authorized"])
         self.assertFalse(result["production_evidence_verified"])
@@ -121,26 +169,37 @@ class PhysicalReceiptVerificationTests(unittest.TestCase):
             self.verify()
 
     def test_self_consistent_fake_promotion_is_denied(self):
-        self.mutate("hepta-typed-physical-smoke.json", lambda d: d.update(promotion_authorized=True))
+        self.mutate(
+            "hepta-typed-physical-smoke.json",
+            lambda d: d.update(promotion_authorized=True),
+        )
         with self.assertRaises(InvalidTrial):
             self.verify()
 
     def test_wrong_publisher_weight_denied_even_when_file_reindexed(self):
-        self.mutate("hepta-multilingual-materialization.json",
-                    lambda d: d["relative_file_sha256"].update({"model.safetensors": "e" * 64}))
+        self.mutate(
+            "hepta-multilingual-materialization.json",
+            lambda d: d["relative_file_sha256"].update({"model.safetensors": "e" * 64}),
+        )
         with self.assertRaises(InvalidTrial):
             self.verify()
 
     def test_nan_probabilities_and_inconsistent_report_denied(self):
-        self.mutate("hepta-laya-physical-smoke.json",
-                    lambda d: d["synthetic_observation"].update(probabilities=[1.0, 1e999]))
+        self.mutate(
+            "hepta-laya-physical-smoke.json",
+            lambda d: d["synthetic_observation"].update(probabilities=[1.0, 1e999]),
+        )
         with self.assertRaises(InvalidTrial):
             self.verify()
 
     def test_false_manifest_source_sha_denied(self):
         with self.assertRaises(InvalidTrial):
-            verify_receipts(self.bundle, self.catalog, expected_run_id=RUN,
-                            expected_source_sha="a" * 40)
+            verify_receipts(
+                self.bundle,
+                self.catalog,
+                expected_run_id=RUN,
+                expected_source_sha="a" * 40,
+            )
 
     def test_synthetic_receipt_symlink_denied(self):
         p = self.bundle / "hepta-typed-physical-smoke.json"
