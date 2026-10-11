@@ -101,6 +101,28 @@ class StrictCompletedNativeTests(unittest.TestCase):
             with self.subTest(mode=mode), self.assertRaises(AuditError):
                 audit_records(*dataset)
 
+    def test_source_coverage_aggregation_and_frozen_binding_are_recomputed(self):
+        for damage in ("retrieval-miss-count", "source-scorer", "candidate-count"):
+            dataset = deepcopy(self.inputs)
+            if damage == "retrieval-miss-count":
+                dataset[5]["phases"]["test"]["support_missing_from_pool"] += 1
+            elif damage == "source-scorer":
+                registered = next(
+                    x for x in dataset[5]["decisions"] if x["phase"] == "test"
+                    and x["weak_native_support_resolved"]
+                    and not x["native_source_unanswerable"]
+                )
+                frozen = next(
+                    x for x in dataset[2] if x["stage"] == 48
+                    and x["phase"] == "test" and x["arm"] == "frozen_rerank"
+                    and x["question_id"] == registered["question_id"]
+                )
+                frozen["source_choice_correct"] = 1 - frozen["source_choice_correct"]
+            else:
+                dataset[5]["decisions"][0]["candidate_count"] += 1
+            with self.subTest(damage=damage), self.assertRaises(AuditError):
+                audit_records(*dataset)
+
     def test_source_census_and_no_evidence_denominators_stay_complete(self):
         for mode in ("lost-source", "no-reader-control", "noncomparable-time"):
             dataset = deepcopy(self.inputs)

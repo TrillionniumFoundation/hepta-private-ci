@@ -143,6 +143,52 @@ def audit_records(plan, raw, scored, report, fit, ceiling, no_evidence, chronolo
         original_ceiling[k] = row
     require(len(original_ceiling) == 32 and ceiling["production_accepted"] is False,
             "32 unique source ceiling rows required")
+    require(set(ceiling["phases"]) == set(PHASES),
+            "missing post-policy source-phase accounting")
+    checks = {
+        "attempted": lambda row: True,
+        "native_source_resolved": lambda row: row["weak_native_support_resolved"],
+        "native_unanswerable": lambda row: row["native_source_unanswerable"],
+        "native_unresolved_support": lambda row: row["unresolved_native_support"],
+        "candidate_pool_missing": lambda row: not row["candidate_pool_available"],
+        "support_available_within_pool":
+            lambda row: row["native_support_available_in_pool"] is True,
+        "frozen_correct_source_choices":
+            lambda row: row["frozen_selected_native_support"] is True,
+        "frozen_missed_available_support":
+            lambda row: row["missed_native_support_within_pool"] is True,
+        "frozen_not_chosen_or_unobserved":
+            lambda row: row["frozen_selected_native_support"] is None,
+        "frozen_reader_failed":
+            lambda row: not row["frozen_reader_execution_succeeded"],
+    }
+    for phase in PHASES:
+        subset = [row for (p, _), row in original_ceiling.items() if p == phase]
+        for metric, predicate in checks.items():
+            require(sum(bool(predicate(row)) for row in subset)
+                    == ceiling["phases"][phase][metric],
+                    "reported frozen source ceiling differs from its original rows")
+        missed = sum(row["native_support_available_in_pool"] is False
+                     for row in subset
+                     if row["weak_native_support_resolved"]
+                     and row["candidate_pool_available"])
+        require(missed == ceiling["phases"][phase]["support_missing_from_pool"],
+                "source retrieval miss count was not rederived")
+    for (phase, qid), row in original_ceiling.items():
+        original = raw_by_key[(48, phase, qid, "frozen_rerank")]
+        require(row["frozen_reader_execution_succeeded"] is True and
+                row["candidate_pool_available"] is True and
+                row["candidate_count"] ==
+                original["selection_geometry"]["candidate_count"],
+                "post-policy source ceiling became detached from frozen execution")
+        if row["weak_native_support_resolved"] and not row["native_source_unanswerable"]:
+            observed = scored_by_key[(48, phase, qid, "frozen_rerank")][
+                "source_choice_correct"
+            ]
+            require(type(observed) is int and observed in (0, 1) and
+                    row["frozen_selected_native_support"] is bool(observed),
+                    "original scored support and independent source ceiling disagree")
+
     effects, changed_rows = {}, []
     for arm in ARMS[1:]:
         flips = answer_changes = weak_support_gains = weak_support_losses = 0
