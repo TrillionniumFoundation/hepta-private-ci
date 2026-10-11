@@ -137,7 +137,7 @@ impl GatedSparseJournalV3 {
             let mut observed = [0_u8; HEADER_BYTES];
             file.seek(SeekFrom::Start(0))?;
             file.read_exact(&mut observed)?;
-            if observed != header.as_slice() {
+            if observed.as_slice() != header.as_slice() {
                 return Err(GatedJournalErrorV3::Corrupt);
             }
         }
