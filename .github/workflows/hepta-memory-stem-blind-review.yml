@@ -1,0 +1,64 @@
+name: MemoryCell blinded strict-reader semantic review worklist
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_blind_review_packet.py"
+      - "scripts/memory_cell/test_stem_blind_review_packet.py"
+      - "scripts/memory_cell/stem_blind_review_export.py"
+      - ".github/workflows/hepta-memory-stem-blind-review.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-private-blind-review-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  unreviewed-owner-handoff:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Run no-model packet binding and tampering regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-blind-review
+          git rev-parse HEAD > /tmp/stem-blind-review/exporter-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-blind-review/exporter-tree.txt
+          python3 -m unittest -v test_stem_blind_review_packet 2>&1 | tee /tmp/stem-blind-review/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_blind_review_packet.py scripts/memory_cell/stem_blind_review_export.py scripts/memory_cell/test_stem_blind_review_packet.py
+      - name: Read exact strictly gated native Reader bytes (no gold label files)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11702192907/zip > /tmp/stem-strict-reader-cb9e983.zip
+          printf '%s  %s\n' be3393f448993451c7860e8867e28a79f5fb7f95d5773f79ed55b30d12a84776 /tmp/stem-strict-reader-cb9e983.zip | sha256sum -c -
+      - name: Export all 32 paired unreviewed worklist cases and withheld mapping
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_blind_review_export.py --archive /tmp/stem-strict-reader-cb9e983.zip --output /tmp/stem-blind-review/owner-review
+          test "$(wc -l < /tmp/stem-blind-review/owner-review/blind-question-answer-worklist.jsonl)" -eq 32
+          test "$(wc -l < /tmp/stem-blind-review/owner-review/unsigned-reviewer-return-template.jsonl)" -eq 64
+      - name: Retain audited source, private worklist and failure evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-blind-review/source
+          cp scripts/memory_cell/stem_blind_review_packet.py scripts/memory_cell/stem_blind_review_export.py scripts/memory_cell/test_stem_blind_review_packet.py /tmp/stem-blind-review/source/
+          cp .github/workflows/hepta-memory-stem-blind-review.yml /tmp/stem-blind-review/source/
+          (cd /tmp/stem-blind-review && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: private-stem-unreviewed-blind-semantic-handoff
+          path: /tmp/stem-blind-review
+          if-no-files-found: error
+          retention-days: 7
