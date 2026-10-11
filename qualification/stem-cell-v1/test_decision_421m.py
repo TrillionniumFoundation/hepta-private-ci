@@ -71,6 +71,9 @@ class FourWayDecisionTests(unittest.TestCase):
                         "context_tokens": 512},
                     "train_steps": 0 if phase == "checkpoint" else 100,
                     "trainable_parameters": 0 if phase == "checkpoint" else 250000,
+                    "pretrained_typed_decision_head_present": phase == "checkpoint",
+                    "upstream_task_exposure": (
+                        "task_specific" if key == "laya_typed" else "unknown"),
                     "optimizer": "adamw" if phase == "equal_budget" else "none",
                     "training_split": "train" if phase == "equal_budget" else "none",
                 })
@@ -128,6 +131,15 @@ class FourWayDecisionTests(unittest.TestCase):
         altered[0]["upstream_revision"] = "b" * 40
         with self.assertRaisesRegex(ValueError, "provenance"):
             evaluate(self.plan, altered, self.predictions, self.indexed, replicates=1000)
+
+    def test_random_new_head_is_not_a_pretrained_zero_shot_baseline(self):
+        invalid = copy.deepcopy(self.runs)
+        candidate = next(r for r in invalid
+                         if r["arm"] == "deberta_v3_large:checkpoint")
+        candidate["pretrained_typed_decision_head_present"] = False
+        with self.assertRaisesRegex(ValueError, "genuinely pretrained"):
+            evaluate(self.plan, invalid, self.predictions, self.indexed,
+                     replicates=1000)
 
     def test_missing_prediction_and_leaked_labels_fail_closed(self):
         with self.assertRaisesRegex(ValueError, "incomplete"):
