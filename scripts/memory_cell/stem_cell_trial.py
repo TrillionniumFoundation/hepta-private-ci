@@ -35,6 +35,7 @@ from stem_cell_temporal import build_as_of_index
 from stem_cell_adapter_opportunity import eligible_pairs_by_stage
 from stem_cell_source_ceiling import retrospective_pool_ceiling
 from stem_train_heldout_bridge import train_to_heldout_gap
+from stem_effective_n import effective_heldout_subjects
 from stem_native_null_ablation import observe_null_choice, review_null_counterfactual
 from stem_reader_zero_evidence import (
     generate_empty_evidence_controls,
@@ -846,6 +847,10 @@ def run(staged, ranker_dir, output):
              for phase in PHASES for q in qs[phase]},
         )
         write(output / "train-heldout-gap.json", train_heldout_diagnostic)
+        heldout_effective_n = effective_heldout_subjects(
+            plan, train_heldout_diagnostic
+        )
+        write(output / "heldout-effective-n.json", heldout_effective_n)
         # Native target labels enter only after every original Reader answer;
         # the zero-offset null decision has never been used to choose evidence.
         null_choice_diagnostic = review_null_counterfactual(
@@ -885,6 +890,7 @@ def run(staged, ranker_dir, output):
             matched_frozen_vs_no_evidence=paired_reader_controls,
             retrospective_weak_source_ceiling=retrospective_source_ceiling,
             train_to_heldout_diagnostic=train_heldout_diagnostic,
+            effective_heldout_subjects=heldout_effective_n,
             zero_offset_null_counterfactual=null_choice_diagnostic,
             no_evidence_reader_call_accounting=dict(
                 same_pinned_reader_identity=generator.identity,

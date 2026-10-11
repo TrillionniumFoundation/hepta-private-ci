@@ -283,6 +283,19 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                     source_document_support_not_entailment=True,
                     production_accepted=False,
                 )
+    # Exactly 16 unique test/transfer questions are repeated at each of
+    # three training checkpoints. Preserve paired rows for unit-of-analysis
+    # accounting; 48 repeated observations are NOT 48 independent subjects.
+    heldout_panel = [
+        dict(row)
+        for stage in STAGES
+        for arm in ARMS[1:]
+        for phase in ("test", "transfer")
+        for cell in CELLS
+        for row in groups[(stage, arm, cell, phase)]
+    ]
+    if len(heldout_panel) != len(STAGES) * len(ARMS[1:]) * 16:
+        raise ValueError("missing registered test/transfer repeated observations")
     return dict(
         schema="hepta.stem-train-heldout-diagnostic-gap.v3",
         planned_source_policy_rows=len(scored),
@@ -296,5 +309,7 @@ def train_to_heldout_gap(plan, learning, scored, targets):
         train_fit_not_proof_of_generalization=True,
         independent_semantic_evidence_review=False,
         by_checkpoint_cell_arm=reports,
+        test_transfer_paired_panel_rows=heldout_panel,
+        panel_observations_are_not_independent_subjects=True,
         production_accepted=False,
     )

@@ -692,3 +692,31 @@ answer, independently verified sufficiency evidence, semantic citation
 precision or independent model-selection gate. It is exploratory and
 cannot be promoted to a production winner without a separate,
 predeclared model/Reader evaluation.
+
+## Held-out effective N: three checkpoints are repeated questions, not new subjects
+
+The `stem_effective_n.py` post-policy audit binds the complete matched
+frozen-vs-learned panel to **the same 16 registered test/transfer question
+identities** at the 16, 32 and 48 training checkpoints. There are 48
+repeated observations *per learned arm*, but only **16 unique held-out
+questions**, with **8 test and 8 transfer questions**; each routed Cell
+sees only 8 held-out questions. The **stage-48 comparison** is the
+declared descriptive primary cut. Earlier checkpoints are reported as
+a within-question exploratory trajectory, not additional independent
+samples or a best-checkpoint sweep.
+
+At the final cut, the audit separately counts labelled native
+document-support gains/regressions, genuine native unanswerable/abstention
+cases, unresolved native support, source-choice observations, actual
+fixed-Reader paired answers, and all-planned worst-case bounds for
+missing/failed questions. Counts of **distinct original source families**
+are descriptive only; no independent-family sampling or prospective
+source-time authority is assumed, and no formal significance,
+independently reviewed entailment, or production superiority is issued.
+
+The bridge retains all 240 matched test/transfer rows across the five
+learning arms and three checkpoints. Any missing/duplicate/forged
+question, Cell, family, native answerability, Reader status or row
+invalidates the unit-of-analysis census. Repeated observations are
+never combined as 240 independent trials. These are post-policy
+development diagnostics only: `production_accepted=false`.
