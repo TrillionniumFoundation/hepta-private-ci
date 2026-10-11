@@ -306,7 +306,7 @@ fn invalid_authentication_artifact_or_dataset_never_calls_any_port() {
             LedgerRecovery::Unacknowledged,
         )
         .unwrap();
-        assert!(reopened.records().is_empty());
+        assert!(reopened.records().unwrap().is_empty());
     }
 }
 
@@ -341,7 +341,7 @@ fn old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch() {
         LedgerRecovery::Unacknowledged,
     )
     .unwrap();
-    assert!(reopened.records().is_empty());
+    assert!(reopened.records().unwrap().is_empty());
 }
 
 #[test]
