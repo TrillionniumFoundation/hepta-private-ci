@@ -114,7 +114,9 @@ def clustered_mean_ci(delta_by_cell: dict[str, list[int]]) -> dict[str, Any]:
 def calibration_metrics(rows: list[dict]) -> dict[str, Any]:
     if not rows:
         raise EvidenceError("calibration requires a nonempty sample")
-    if not all("binary_probability_ppm" in row for row in rows):
+    present = sum("binary_probability_ppm" in row for row in rows)
+    need(present in (0, len(rows)), "selective or incomplete binary calibration coverage")
+    if present == 0:
         return {
             "brier_ppm": None,
             "ece_ppm": None,
