@@ -140,6 +140,21 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                         "owner sequence regressed",
                     ));
                 }
+                // The independent durable frontier read may observe a newer
+                // owner state than the original receipt verification. Verify
+                // the actual effect again immediately before signing: a
+                // revoked route/fence must never be laundered into a fresh
+                // nonce-bound positive readback by this gap.
+                if let Some(ref effect) = committed
+                    && !self
+                        .backend
+                        .verify_current(&request.intent, effect)
+                        .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?
+                {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "effect changed during signed readback",
+                    ));
+                }
                 let mut readback = CellSplitEffectReadbackV1 {
                     schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
                     intent: request.intent.clone(),
