@@ -547,7 +547,7 @@ fn signed_cns_predecessor_links_outer_receipt_and_original_runtime_bytes() {
         "{:x}",
         sha2::Sha256::digest(
             format!(
-                "hepta.learning.cell-split.execution-owner.v1\\0{}\\0{}\\0{}",
+                "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
                 plan.digest().expect("plan"),
                 CellSplitExecutionStepV1::CnsRouteCutover.index(),
                 cns_previous,
@@ -600,7 +600,7 @@ fn signed_cns_predecessor_links_outer_receipt_and_original_runtime_bytes() {
         "{:x}",
         sha2::Sha256::digest(
             format!(
-                "hepta.learning.cell-split.execution-owner.v1\\0{}\\0{}\\0{}",
+                "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
                 supervisor_intent.plan_digest,
                 supervisor_intent.step.index(),
                 supervisor_intent.previous_receipt_digest,
