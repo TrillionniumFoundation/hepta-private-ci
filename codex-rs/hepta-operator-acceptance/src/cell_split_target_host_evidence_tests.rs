@@ -875,10 +875,30 @@ fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
                 .sign(
                     "host-signer",
                     &host,
-                    [("observer-signer".to_string(), observer)],
+                    [("observer-signer".to_string(), observer.clone())],
                 )
                 .is_err(),
             "{mutation}: apparently complete source must not become signed target-host evidence",
+        );
+        // A compromised evidence producer may bypass our sign() helper and
+        // sign arbitrary canonical bytes with otherwise trusted keys. The
+        // independent verifier must still reject the coherent-looking chain.
+        let forged_bytes = payload.canonical_bytes().expect("forged canonical payload");
+        let forged = CellSplitSignedTargetHostEvidenceV1 {
+            schema: CELL_SPLIT_SIGNED_TARGET_HOST_EVIDENCE_SCHEMA_V1.to_string(),
+            schema_version: 1,
+            signature_algorithm: CELL_SPLIT_TARGET_HOST_EVIDENCE_SIGNATURE_ALGORITHM_V1.to_string(),
+            payload,
+            host_signature: sign_payload("host-signer".to_string(), &host, &forged_bytes),
+            observer_signatures: vec![sign_payload(
+                "observer-signer".to_string(),
+                &observer,
+                &forged_bytes,
+            )],
+        };
+        assert!(
+            verify_cell_split_target_host_evidence(&forged, &policy(&host, &observer)).is_err(),
+            "{mutation}: independently verified signatures must not launder a broken lifecycle",
         );
     }
 }
