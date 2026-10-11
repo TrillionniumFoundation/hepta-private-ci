@@ -760,6 +760,7 @@ fn replay_payload(
     // signature over a forged event stream cannot promote a recovery observed
     // on one route while the route-cutover/rollback evidence refers to another.
     let mut active_child_route = None;
+    let mut original_parent_route = None;
     let mut restored_parent_route = None;
     let mut committed_tombstone = None;
     for (offset, event) in payload.events.iter().enumerate() {
@@ -786,6 +787,7 @@ fn replay_payload(
             CellSplitTargetHostEventKindV1::ArtifactLoaded => {}
             CellSplitTargetHostEventKindV1::RouteCutover => {
                 active_child_route = Some(event.route_digest.as_str());
+                original_parent_route = Some(event.predecessor_digest.as_str());
             }
             CellSplitTargetHostEventKindV1::RestartRecovered
             | CellSplitTargetHostEventKindV1::PowerLossRecovered => {
@@ -795,7 +797,7 @@ fn replay_payload(
             }
             CellSplitTargetHostEventKindV1::RollbackCompleted => {
                 if active_child_route != Some(event.predecessor_digest.as_str())
-                    || event.route_digest.is_empty()
+                    || original_parent_route != Some(event.route_digest.as_str())
                     || Some(event.route_digest.as_str()) == active_child_route
                 {
                     return Err(invalid("rollback did not restore predecessor route"));
