@@ -44,7 +44,7 @@ sides were inspected; no historical or parallel PR pass is inherited.
 The paired CI pins Chain PR #248 `560d44ac28fee7b073d1740e372839ab52f057b6` and the
 matching GitHub prospective merge `6731581b65a6300e5c2bb73566d582227ee932b7` against its
 base `bf2f6c72cb4881545f03b6ebe55a5e5e6a7af988`, in both x64/ARM64 and source/merge
-lanes. That Chain PR fixes the *historical cost-report checker* after new
+lanes. That Chain PR fixes the _historical cost-report checker_ after new
 hostile/honest-arrival overlap screening without editing evidence or relaxing
 current work admission. The pair still executes the actual Chain binary,
 native growth-readback selectors, Agentd sealed submit/reconcile/reorg and
@@ -55,4 +55,3 @@ This is an exact-source integration increment only: no public-network hardness,
 new native storage capacity activation, genuine third-party model training/
 adoption, independently operated WAN campaign, physical power-loss, public
 service SLA, final-use override, production consensus, or release is accepted.
-

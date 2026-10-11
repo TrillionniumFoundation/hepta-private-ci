@@ -445,12 +445,12 @@ The configured product profile now routes authenticated `ObjectiveStart` through
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
+| Operation         | Native symbol             | Source path                                   | Tests                                               |
+| ----------------- | ------------------------- | --------------------------------------------- | --------------------------------------------------- |
 | `compose_runtime` | `pub fn compose_runtime(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
-| `start_run` | `pub fn start_run(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
-| `cancel_run` | `pub fn cancel_run(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
-| `attach_context` | `pub fn attach_context(` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `start_run`       | `pub fn start_run(`       | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `cancel_run`      | `pub fn cancel_run(`      | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
+| `attach_context`  | `pub fn attach_context(`  | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` | `codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Exact module-local source/test provenance is recorded as `currentSourceEvidence` and is verified by the Agentd process qualification workflow; the legacy repository-wide `sourceBase` remains a separate common baseline until the repository-wide migration.
