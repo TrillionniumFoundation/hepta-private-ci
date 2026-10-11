@@ -48,6 +48,7 @@ from stem_cell_training_probe import train_probe, summarize_train_probes
 from stem_head_fit_dynamics import compare_train_head_before_after
 from stem_cell_shadow_scale import (
     calibrate_shadow_scale, choose_shadow, summarize_shadow_heldout,
+    verify_shadow_source_receipts,
 )
 from stem_cell_cache import SharedFeatureCache
 from stem_cell_protocol import (
@@ -834,6 +835,12 @@ def run(staged, ranker_dir, output):
                 production_accepted=False,
             ),
         )
+        # Verify the sealed shadow source-pool, Head and TRAIN-scale receipts
+        # before the first held-out source annotation is opened for scoring.
+        shadow_provenance = verify_shadow_source_receipts(
+            shadow_choices, shadow_calibrations, pools,
+        )
+        write(output / "shadow-provenance.json", shadow_provenance)
         census = validate_census(attempts, plan)
         scored = [
             score_attempt(
@@ -1022,6 +1029,7 @@ def run(staged, ranker_dir, output):
             within_head_train_fit=within_train_fit_dynamics,
             adapter_pair_opportunities=adapter_opportunities,
             shadow_source_calibrations=shadow_calibrations,
+            shadow_source_provenance=shadow_provenance,
             shadow_source_support_postpolicy=shadow_source_report,
             census=census,
             **summarize(scored),

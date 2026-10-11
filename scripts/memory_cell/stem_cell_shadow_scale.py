@@ -123,6 +123,94 @@ def calibrate_shadow_scale(rows, *, arm, cell, stage, admitted_ids):
     )
 
 
+def verify_shadow_source_receipts(shadow_rows, calibrations, pools):
+    """Audit prediction provenance BEFORE accessing any held-out target.
+
+    A changed source ID is meaningful only if its two chosen indices come
+    from the same original sealed pool, with the exact checkpoint Head SHA
+    and TRAIN-chosen scale. Preserve every failed attempt in the denominator.
+    """
+    if len(calibrations) != 30 or len(shadow_rows) != 480:
+        raise ValueError("incomplete original shadow calibration/choice census")
+    calibration = {}
+    for row in calibrations:
+        key = row["stage"], row["arm"], row["cell"]
+        if (
+            key in calibration or key[0] not in STAGES
+            or key[1] not in ARMS or key[2] not in CELLS
+            or row["status"] not in ("succeeded", "failed")
+        ):
+            raise ValueError("duplicated or unregistered TRAIN scale checkpoint")
+        if row["status"] == "succeeded":
+            info = row["receipt"]
+            if (
+                info["winner_chosen_from_train_only"] is not True
+                or info["all_test_and_transfer_answers_and_labels_unseen"] is not True
+                or info["stage"] != key[0] or info["arm"] != key[1]
+                or info["cell"] != key[2]
+                or info["chosen_scale"] not in GRID
+                or not isinstance(row["checkpoint_head_sha256"], str)
+                or len(row["checkpoint_head_sha256"]) != 64
+            ):
+                raise ValueError("unbound or contaminated TRAIN scale")
+        calibration[key] = row
+    if len(calibration) != 30:
+        raise ValueError("missing TRAIN scale checkpoint")
+
+    seen, succeeded = set(), 0
+    for row in shadow_rows:
+        key = row["stage"], row["phase"], row["question_id"], row["arm"]
+        cell = row["cell"]
+        calib = calibration.get((key[0], key[3], cell))
+        if (
+            key in seen or key[0] not in STAGES or key[1] not in
+            ("select", "retention", "test", "transfer")
+            or key[3] not in ARMS or cell not in CELLS
+            or row["status"] not in ("succeeded", "failed")
+            or calib is None
+        ):
+            raise ValueError("unregistered, duplicate or uncalibrated shadow choice")
+        seen.add(key)
+        if row["status"] != "succeeded":
+            continue
+        if calib["status"] != "succeeded":
+            raise ValueError("successful shadow selected with failed TRAIN calibration")
+        pool = pools.get(key[2])
+        if pool is None:
+            raise ValueError("successful shadow choice has no source pool")
+        candidates = pool.windows
+        winner, frozen = row["selected_index"], row["frozen_index"]
+        if (
+            not candidates
+            or type(winner) is not int or type(frozen) is not int
+            or not 0 <= winner < len(candidates)
+            or not 0 <= frozen < len(candidates)
+            or row["chosen_scale"] != calib["receipt"]["chosen_scale"]
+            or row["head_sha256"] != calib["checkpoint_head_sha256"]
+            or row["original_pool_digest"] != pool.seal()
+            or row["candidate_identity_sha256"] !=
+            _pin(tuple(w.identity() for w in candidates))
+            or row["selected_source_id"] != candidates[winner].source_id
+            or row["frozen_selected_source_id"] != candidates[frozen].source_id
+            or type(row["changed_frozen_top1"]) is not bool
+            or row["changed_frozen_top1"] != (winner != frozen)
+            or row["native_targets_unread"] is not True
+            or row["actual_reader_executions"] != 0
+        ):
+            raise ValueError("shadow source choice/pool/head/scale receipt drift")
+        succeeded += 1
+    return dict(
+        schema="hepta.stem-shadow-provenance-audit.v1",
+        planned_shadow_calibrations=30,
+        planned_shadow_source_choices=480,
+        source_choices_verified=succeeded,
+        failed_source_choices=480 - succeeded,
+        no_gold_target_read=True,
+        no_additional_reader_call=True,
+        production_accepted=False,
+    )
+
+
 def summarize_shadow_heldout(shadow_rows, phase_questions, registered_routes, targets):
     """Inspect weak source labels only after all official choices are sealed."""
     phases = ("select", "retention", "test", "transfer")

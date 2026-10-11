@@ -863,3 +863,16 @@ achieved Head gain at original scale**, is not a new Reader answer,
 and does not authenticate window entailment, citation quality or
 independent source-family generalization. Even a weak-source label
 gain is diagnostic only. `production_accepted=false`.
+
+### Shadow prediction provenance checked before answer labels
+
+`verify_shadow_source_receipts` validates the **30** stage/arm/Cell
+TRAIN-only scale receipts and **480** planned held-out Shadow choices
+before native test annotations are consulted. For every successful
+decision it rebinds the recorded Head artifact SHA, TRAIN-chosen grid
+scale, exact original candidate-pool seal, ordered window-identity
+digest, chosen source indexes and source IDs. Duplicate/missing
+calibration, failed calibration reused as a success, fabricated source
+identity, or mismatched frozen-vs-Shadow top-1 fails closed.
+Failed decisions stay in the full denominator. Independent test source
+entailment and actual Reader answer improvements are not asserted.

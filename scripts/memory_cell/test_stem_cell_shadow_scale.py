@@ -6,6 +6,7 @@ import unittest
 
 from stem_cell_shadow_scale import (
     GRID, calibrate_shadow_scale, choose_shadow, summarize_shadow_heldout,
+    verify_shadow_source_receipts, _pin,
 )
 
 
@@ -112,6 +113,66 @@ class ShadowScaleTests(unittest.TestCase):
         self.assertEqual(check["shadow_weak_source_gains"], 0)
         with self.assertRaises(ValueError):
             summarize_shadow_heldout(rows[:-1], qids, routes, targets)
+
+    def test_shadow_provenance_binds_all_480_choices_to_train_calibration(self):
+        class Window:
+            source_id = "source"
+            def identity(self):
+                return "fixed-window"
+        class Pool:
+            windows = (Window(),)
+            def seal(self):
+                return "sealed-original-pool"
+        phases = ("select", "retention", "test", "transfer")
+        arms = ("prototype", "linear", "gated",
+                "lineage_lora_gated", "independent_lora_gated")
+        pools = {f"{p}-{n}": Pool() for p in phases for n in range(8)}
+        calibration = [
+            dict(
+                stage=stage, arm=arm, cell=cell, status="succeeded",
+                checkpoint_head_sha256="a" * 64,
+                receipt=dict(
+                    stage=stage, arm=arm, cell=cell, chosen_scale=0.0,
+                    winner_chosen_from_train_only=True,
+                    all_test_and_transfer_answers_and_labels_unseen=True,
+                ),
+            )
+            for stage in (16, 32, 48) for arm in arms
+            for cell in ("general", "temporal")
+        ]
+        selected = [
+            dict(
+                stage=stage, phase=phase, arm=arm, cell="general",
+                question_id=f"{phase}-{n}", status="succeeded",
+                chosen_scale=0.0, selected_index=0, frozen_index=0,
+                selected_source_id="source", frozen_selected_source_id="source",
+                changed_frozen_top1=False,
+                original_pool_digest="sealed-original-pool",
+                candidate_identity_sha256=_pin(("fixed-window",)),
+                head_sha256="a" * 64, native_targets_unread=True,
+                actual_reader_executions=0,
+            )
+            for stage in (16, 32, 48) for phase in phases
+            for n in range(8) for arm in arms
+        ]
+        census = verify_shadow_source_receipts(selected, calibration, pools)
+        self.assertEqual(census["source_choices_verified"], 480)
+        self.assertEqual(census["failed_source_choices"], 0)
+        for field, wrong in (
+            ("chosen_scale", 8.0), ("selected_source_id", "fabricated"),
+            ("head_sha256", "b" * 64), ("original_pool_digest", "another"),
+            ("candidate_identity_sha256", "other"),
+            ("changed_frozen_top1", True),
+        ):
+            damaged = [dict(row) for row in selected]
+            damaged[0][field] = wrong
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                verify_shadow_source_receipts(damaged, calibration, pools)
+        damaged = [dict(row) for row in selected]
+        damaged[0]["status"] = "failed"
+        result = verify_shadow_source_receipts(damaged, calibration, pools)
+        self.assertEqual(result["source_choices_verified"], 479)
+        self.assertEqual(result["failed_source_choices"], 1)
 
     def test_weak_source_gain_is_not_reader_or_semantic_gain(self):
         phases = ("select", "retention", "test", "transfer")
