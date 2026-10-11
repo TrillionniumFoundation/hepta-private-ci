@@ -57,7 +57,8 @@ jobs:
   reader:
     needs: experiment-format
     runs-on: ubuntu-latest
-    timeout-minutes: 180
+    # 40 calibration + 72 frozen evaluation generations on CPU, with a SHA-sealed checkpoint.
+    timeout-minutes: 360
     env:
       PYTHONPATH: scripts/memory_cell
       HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"

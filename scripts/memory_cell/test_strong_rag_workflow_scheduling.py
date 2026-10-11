@@ -81,6 +81,20 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
         self.assertIn('  reader:\n    needs: experiment-format', program)
         self.assertIn('  independent-replay:\n    needs: reader', program)
 
+    def test_reader_long_census_has_bounded_timeout_and_checkpoint(self):
+        reader = self.text.split("\n  reader:\n", 1)[1].split(
+            "\n  independent-replay:\n", 1
+        )[0]
+        self.assertIn("timeout-minutes: 360", reader)
+        self.assertIn("name: memory-strong-rag-calibration-checkpoint", reader)
+        self.assertIn("name: memory-strong-rag-calibrated-reader", reader)
+        self.assertLess(
+            reader.index("name: memory-strong-rag-calibration-checkpoint"),
+            reader.index("name: Different process, frozen top-k"),
+        )
+        self.assertIn("test -z \"$(find \"$checkpoint\" -type l -print -quit)\"", reader)
+        self.assertIn("SHA256SUMS", reader)
+
     def test_global_format_remains_separately_observable(self):
         self.assertNotIn("\n  format:\n", self.text)
         standalone = WORKFLOW.with_name("hepta-memory-review-format-final.yml")
