@@ -86,30 +86,70 @@ jobs:
           /tmp/memory-format-py/bin/pip freeze > /tmp/format-repair/freeze.txt
           diff -u /tmp/format-repair/requirements.txt /tmp/format-repair/freeze.txt
           /tmp/memory-format-py/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/format-repair/tests.log
-      - name: Commit only AST-identical formatting and remove this temporary workflow
+      - name: Revalidate current head and publish only AST-preserving formatting
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git rm .github/workflows/hepta-memory-format-repair-once.yml
-          git add -u -- scripts/memory_cell
-          python3 - <<'PY'
-          import json, subprocess
-          from pathlib import Path
-          formatted = set(json.loads(Path("/tmp/format-repair/changed.json").read_text()))
-          actual = set(subprocess.check_output(["git", "diff", "--cached", "--name-only"], text=True).splitlines())
-          expected = formatted | {".github/workflows/hepta-memory-format-repair-once.yml"}
-          if actual != expected:
-              raise ValueError("staged changes differ from checked AST-equivalent formatting")
-          PY
+          export PATH="$HOME/.local/bin:$PATH"
+          branch=codex/memory-cell-evidence-20261008
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m "style(memory-cell): apply checked AST-equivalent Python formatting"
-          git rev-parse HEAD > /tmp/format-repair/committed-sha.txt
-          if ! git push origin HEAD:refs/heads/codex/memory-cell-evidence-20261008; then
-              git push origin "HEAD:refs/heads/codex/memory-format-candidate-${GITHUB_RUN_ID}"
-              echo "Source branch moved; preserve validated candidate without force" >&2
-              exit 1
-          fi
+          for attempt in 1 2 3 4; do
+            echo "format publish attempt $attempt"
+            git fetch --no-tags origin "refs/heads/$branch"
+            remote_sha="$(git rev-parse FETCH_HEAD)"
+            git reset --hard "$remote_sha"
+            printf '%s\n' "$remote_sha" > /tmp/format-repair/revalidated-head.txt
+            python3 - <<'PY'
+          import ast, json, subprocess
+          from pathlib import Path
+          base = "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+          paths = subprocess.check_output(
+              ["git", "diff", "--name-only", base, "HEAD", "--", "scripts/memory_cell"],
+              text=True,
+          ).splitlines()
+          paths = sorted(p for p in paths if p.endswith(".py") and Path(p).is_file())
+          if not paths or len(paths) > 400:
+              raise ValueError("invalid bounded current source census")
+          before = {p: ast.dump(ast.parse(Path(p).read_text(encoding="utf-8"))) for p in paths}
+          subprocess.run(["uv", "run", "--frozen", "--project", "scripts",
+                          "ruff", "format", *paths], check=True)
+          for p, expected in before.items():
+              if ast.dump(ast.parse(Path(p).read_text(encoding="utf-8"))) != expected:
+                  raise ValueError(f"formatter changed executable AST: {p}")
+          changed = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
+          if set(changed) - set(paths):
+              raise ValueError("unexpected non-Python modifications")
+          Path("/tmp/format-repair/changed.json").write_text(json.dumps(sorted(changed)))
+          Path("/tmp/format-repair/revalidated-source-count.json").write_text(
+              json.dumps({"changed": len(changed), "census": len(paths)}))
+          PY
+            just fmt --check --base "$BASE" 2>&1 | tee /tmp/format-repair/revalidated-format.log
+            /tmp/memory-format-py/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/format-repair/revalidated-tests.log
+            git add -u -- scripts/memory_cell
+            python3 - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          expected = set(json.loads(Path("/tmp/format-repair/changed.json").read_text()))
+          actual = set(subprocess.check_output(
+              ["git", "diff", "--cached", "--name-only"], text=True
+          ).splitlines())
+          if actual != expected:
+              raise ValueError("staged changes differ from AST-verified Python formatting")
+          PY
+            if git diff --cached --quiet; then
+              echo "Latest branch already matches the verified formatter" | tee /tmp/format-repair/publish-result.txt
+              exit 0
+            fi
+            git commit -m "style(memory-cell): revalidated AST-equivalent Python formatting"
+            git rev-parse HEAD > /tmp/format-repair/committed-sha.txt
+            if git push origin "HEAD:refs/heads/$branch"; then
+              echo "Published non-forced formatting against $remote_sha" | tee /tmp/format-repair/publish-result.txt
+              exit 0
+            fi
+            echo "Remote head advanced, revalidating the next exact head" >&2
+          done
+          echo "Unable to obtain a fast-forward lease after four fully revalidated attempts" >&2
+          exit 1
       - name: Preserve formatter and test evidence
         if: always()
         run: |
