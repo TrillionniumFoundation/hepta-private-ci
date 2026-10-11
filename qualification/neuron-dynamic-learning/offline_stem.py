@@ -225,11 +225,23 @@ class OfflineSharedStem:
         if not 1 <= len(requests) <= MAX_BATCH:
             raise StemQualificationError("unbounded request fanout")
         started = time.perf_counter_ns()
+        # Do not mix trust domains in one physical Transformer forward.
+        # The caller must partition independently admitted batches by owner.
+        first = requests[0]
+        domain = (
+            first["scope_id"], first["principal_id"], first["purpose_id"],
+            first["generation"], first["authority_epoch"],
+        )
         seen_cells: set[tuple[str, str, str]] = set()
         keys: list[tuple[Any, ...]] = []
         unique: dict[tuple[Any, ...], str] = {}
         for request in requests:
             key, text = verify_request(request)
+            if (
+                request["scope_id"], request["principal_id"], request["purpose_id"],
+                request["generation"], request["authority_epoch"],
+            ) != domain:
+                raise StemQualificationError("mixed authority domain in one physical forward")
             cell_key = (request["scope_id"], request["principal_id"], request["cell_id"])
             if cell_key in seen_cells:
                 raise StemQualificationError("duplicate Cell use in one batch")
