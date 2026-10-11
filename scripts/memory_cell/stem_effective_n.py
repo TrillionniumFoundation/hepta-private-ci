@@ -71,6 +71,8 @@ def effective_heldout_subjects(plan, paired_bridge):
     }
     indexed = {}
     truth_kind = {}
+    pinned_pool_by_question = {}
+    pinned_reader_request_by_question = {}
     for row in rows:
         key = row["stage"], row["arm"], row["phase"], row["question_id"]
         if key not in expected or key in indexed:
@@ -91,6 +93,27 @@ def effective_heldout_subjects(plan, paired_bridge):
         if q in truth_kind and truth_kind[q] != cat:
             raise ValueError("question native answerability changed across checkpoints")
         truth_kind[q] = cat
+        pool = row["matched_original_pool_digest"]
+        if row["both_source_choices_observed"]:
+            if not isinstance(pool, str) or not pool:
+                raise ValueError("missing frozen-matched original candidate pool")
+            previous = pinned_pool_by_question.setdefault(q, pool)
+            if previous != pool:
+                raise ValueError("frozen candidate pool changed between checkpoints")
+        elif pool is not None:
+            raise ValueError("unobserved selection acquired a false pool binding")
+        reader = row["matched_reader_request_identity"]
+        if row["both_original_reader_calls_succeeded"]:
+            if (
+                not isinstance(reader, (tuple, list)) or len(reader) != 3
+                or any(not isinstance(v, str) or not v for v in reader)
+            ):
+                raise ValueError("unbound matched Reader source/prompt/question")
+            previous = pinned_reader_request_by_question.setdefault(q, tuple(reader))
+            if previous != tuple(reader):
+                raise ValueError("frozen Reader/prompt changed between checkpoints")
+        elif reader is not None:
+            raise ValueError("failed Reader pair received a forged identity")
         change = row["changed_top1"]
         if (change is not None and type(change) is not bool) or (
             row["both_source_choices_observed"] != (change is not None)
@@ -140,6 +163,12 @@ def effective_heldout_subjects(plan, paired_bridge):
                 unresolved_native_support_questions=by_type[KINDS[2]],
                 both_top1_selections_observed=sum(
                     x["both_source_choices_observed"] for x in cohort
+                ),
+                original_pool_binding_verified_for_observed_selections=sum(
+                    x["matched_original_pool_digest"] is not None for x in cohort
+                ),
+                matched_reader_identity_verified_for_success_pairs=sum(
+                    x["matched_reader_request_identity"] is not None for x in cohort
                 ),
                 changed_top1_decisions=sum(x["changed_top1"] is True for x in cohort),
                 source_support_scored_pairs=len(gain),
@@ -196,13 +225,15 @@ def effective_heldout_subjects(plan, paired_bridge):
             repeated_checkpoint_observations=48,
             unique_heldout_questions=16,
             independent_sampling_units_authenticated=False,
+            original_pool_stable_across_three_checkpoints_when_observed=True,
+            frozen_reader_and_prompt_stable_when_observed=True,
             repeated_observations_must_not_be_48_independent_examples=True,
             exploratory_all_three_checkpoint_subjects=repeat_panel,
             variance_or_significance_from_nonindependent_questions=None,
             independent_generalization_proven=False,
         )
     return dict(
-        schema="hepta.stem-effective-heldout-repeated-panel.v1",
+        schema="hepta.stem-effective-heldout-repeated-panel.v2",
         declared_phases=PHASES,
         stage_48_primary_predeclared_no_best_checkpoint_search=True,
         repeated_stages=STAGES,

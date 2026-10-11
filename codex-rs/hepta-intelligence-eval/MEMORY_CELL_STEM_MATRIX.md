@@ -720,3 +720,20 @@ question, Cell, family, native answerability, Reader status or row
 invalidates the unit-of-analysis census. Repeated observations are
 never combined as 240 independent trials. These are post-policy
 development diagnostics only: `production_accepted=false`.
+
+### Repeated-measure provenance checks
+
+The effective-N panel requires the **same original sealed candidate-pool
+digest** for every observed frozen-matched selection of a registered question
+across all three training checkpoints and learned arms. It separately
+requires the **same pinned frozen Reader identity, prompt profile and
+observable question digest** across checkpoints whenever both Readers
+actually succeeded. Unknown pool exposure or failed Reader calls retain a
+separate missing-verification state; they cannot fabricate positive
+provenance or independent observations. Drift rejects the audit rather than
+quietly counting the task as an unseen new sample.
+
+The aggregate report is explicitly versioned
+`hepta.stem-effective-heldout-repeated-panel.v2`; none of these
+cryptographic consistency checks establish independent source-family
+sampling, held-out answer benefit or semantic citation entailment.

@@ -8,6 +8,8 @@ alter native target labels, or treat weak document support as entailment.
 from collections import defaultdict
 import math
 
+from native import digest
+
 ARMS = ("frozen_rerank", "prototype", "linear", "gated",
         "lineage_lora_gated", "independent_lora_gated")
 STAGES = (16, 32, 48)
@@ -167,10 +169,24 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                             ):
                                 raise ValueError("invalid paired Reader token F1")
                             f1_delta = new_f1 - orig_f1
+                    paired_pool_digest = (
+                        baseline["pool_digest"] if b_selection and l_selection
+                        else None
+                    )
+                    frozen_request_identity = (
+                        (
+                            b_receipt["generator_identity"],
+                            b_receipt["generator_profile"],
+                            digest(b_receipt["observable_query"]),
+                        )
+                        if good_pair else None
+                    )
                     row = dict(
                         stage=stage, phase=phase, arm=arm, cell=routes[qid],
                         question_id=qid, source_family=baseline["family"],
                         both_source_choices_observed=b_selection and l_selection,
+                        matched_original_pool_digest=paired_pool_digest,
+                        matched_reader_request_identity=frozen_request_identity,
                         native_source_label_category=category,
                         native_answerable_source_support=weak_native_source_support,
                         weak_native_source_labels_scored=native_scored,

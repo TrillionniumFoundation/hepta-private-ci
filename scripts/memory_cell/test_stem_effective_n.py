@@ -131,6 +131,42 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
             with self.subTest(scenario=scenario), self.assertRaises(ValueError):
                 effective_heldout_subjects(plan, candidate)
 
+    def test_stable_frozen_pool_and_reader_must_match_across_checkpoints(self):
+        for drift, replacement in (
+            ("matched_original_pool_digest", "silently-changed-pool"),
+            ("matched_reader_request_identity",
+             ("same-model", "different-prompt", "wrong-request-hash")),
+        ):
+            plan, paired = realistic_fixture()
+            row = next(
+                x for x in paired["test_transfer_paired_panel_rows"]
+                if x["stage"] == 32 and x["arm"] == "gated"
+                and x["question_id"] == "test-0"
+            )
+            row[drift] = replacement
+            with self.subTest(drift=drift), self.assertRaisesRegex(
+                ValueError, "changed between checkpoints"
+            ):
+                effective_heldout_subjects(plan, paired)
+
+    def test_no_observed_selection_cannot_claim_old_pool_identity(self):
+        plan, paired = realistic_fixture()
+        row = paired["test_transfer_paired_panel_rows"][0]
+        row["both_source_choices_observed"] = False
+        row["changed_top1"] = None
+        row["weak_support_gain"] = None
+        with self.assertRaisesRegex(ValueError, "false pool binding"):
+            effective_heldout_subjects(plan, paired)
+
+    def test_failed_reader_pair_cannot_claim_verified_prompt(self):
+        plan, paired = realistic_fixture()
+        row = paired["test_transfer_paired_panel_rows"][0]
+        row["both_original_reader_calls_succeeded"] = False
+        row["both_reader_answers_scored"] = False
+        row["diagnostic_answer_f1_delta"] = None
+        with self.assertRaisesRegex(ValueError, "forged identity"):
+            effective_heldout_subjects(plan, paired)
+
     def test_unknown_test_names_and_forged_independence_are_rejected(self):
         plan, paired = realistic_fixture()
         for mode in ("question", "route", "schema"):
