@@ -312,6 +312,9 @@ pub struct CellSplitExecutionOwnerV1 {
     accepted: Vec<CellSplitExternalReceiptV1>,
     pending: Option<CellSplitStepV1>,
     heads: Vec<Digest32>,
+    // Never report completion before the independent observer has durably
+    // acknowledged the exact last ledger head in this process.
+    witnessed_sequence: Option<u64>,
     poisoned: bool,
 }
 
@@ -334,6 +337,7 @@ impl CellSplitExecutionOwnerV1 {
             accepted: Vec::new(),
             pending: None,
             heads: vec![Digest32::of_bytes(&header)],
+            witnessed_sequence: None,
             poisoned: false,
         })
     }
@@ -378,6 +382,7 @@ impl CellSplitExecutionOwnerV1 {
             accepted: Vec::new(),
             pending: None,
             heads: vec![Digest32::of_bytes(&bytes[..HEADER_SIZE])],
+            witnessed_sequence: None,
             poisoned: false,
         };
         let mut offset = HEADER_SIZE;
@@ -431,7 +436,8 @@ impl CellSplitExecutionOwnerV1 {
 
     pub fn progress(&self) -> CellSplitProgressV1 {
         CellSplitProgressV1 {
-            completed: self.accepted.len() == STEPS.len(),
+            completed: self.accepted.len() == STEPS.len()
+                && self.witnessed_sequence == Some(self.anchor().sequence),
             accepted_steps: self.accepted.len(),
             anchor: self.anchor(),
         }
@@ -473,7 +479,7 @@ impl CellSplitExecutionOwnerV1 {
             }
             // No external mutation before the pending intent is independently
             // acknowledged outside the potentially rolled-back ledger file.
-            ports.retain_ledger_anchor(&self.plan, self.anchor())?;
+            self.retain_anchor(ports)?;
 
             let observed = match ports.observe(&self.plan, step)? {
                 CellSplitObservationV1::Applied(receipt) => {
@@ -521,13 +527,25 @@ impl CellSplitExecutionOwnerV1 {
             })?;
             // The next mutation must not run until this real receipt has
             // reached an independently protected observer high-watermark.
-            ports.retain_ledger_anchor(&self.plan, self.anchor())?;
+            self.retain_anchor(ports)?;
         }
         // Also reconcile fully recovered, already terminal owners: only
         // complete re-observation of every accepted external effect allows
         // witness advancement over an unauthenticated-but-valid journal tail.
-        ports.retain_ledger_anchor(&self.plan, self.anchor())?;
+        self.retain_anchor(ports)?;
         Ok(self.progress())
+    }
+
+    /// Record successful independent high-watermark acknowledgement only
+    /// after the observer has durably committed the exact chain head.
+    fn retain_anchor<P: CellSplitExecutionPortsV1>(
+        &mut self,
+        ports: &mut P,
+    ) -> Result<(), CellSplitErrorV1> {
+        let anchor = self.anchor();
+        ports.retain_ledger_anchor(&self.plan, anchor)?;
+        self.witnessed_sequence = Some(anchor.sequence);
+        Ok(())
     }
 
     fn accept_replayed(&mut self, frame: LedgerFrame) -> Result<(), CellSplitErrorV1> {

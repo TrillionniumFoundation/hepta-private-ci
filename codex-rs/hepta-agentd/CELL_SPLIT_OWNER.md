@@ -26,6 +26,12 @@ The durable order is:
    signed Final-use evidence, check/consume Final-use at the real effect boundary,
    and compare-and-swap the CNS route against the pinned parent generation
 
+The informational `progress().completed` flag is false until all seven
+accepted receipts have been independently acknowledged by the observer at
+the exact terminal head. An accepted final ledger frame with a lost observer
+ACK is *not* completed; a re-entry must revalidate every real owner before
+advancing the observer. Progress is never itself production authority.
+
 Every step first durably records pending intent. It then obtains a current
 authoritative readback. The executor may issue mutation only after an
 authoritative Missing observation, using the exact deterministic operation

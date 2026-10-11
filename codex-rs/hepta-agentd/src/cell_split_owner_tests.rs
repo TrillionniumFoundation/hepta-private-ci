@@ -40,6 +40,7 @@ struct MockOwners {
     fail_observe_once: Option<CellSplitStepV1>,
     fail_cutover: bool,
     fail_anchor_once: bool,
+    fail_anchor_sequence_once: Option<u64>,
     anchors: BTreeMap<u64, Digest32>,
 }
 
@@ -106,8 +107,9 @@ impl CellSplitExecutionPortsV1 for MockOwners {
         _plan: &CellSplitPlanV1,
         anchor: CellSplitLedgerAnchorV1,
     ) -> Result<(), CellSplitErrorV1> {
-        if self.fail_anchor_once {
+        if self.fail_anchor_once || self.fail_anchor_sequence_once == Some(anchor.sequence) {
             self.fail_anchor_once = false;
+            self.fail_anchor_sequence_once = None;
             return Err(CellSplitErrorV1::Indeterminate);
         }
         if let Some(previous) = self.anchors.get(&anchor.sequence)
@@ -483,4 +485,31 @@ fn public_recovery_requires_independently_authenticated_observer_anchor() {
     )
     .expect("observer-validated journal");
     assert_eq!(recovered.anchor(), anchored);
+}
+
+#[test]
+fn terminal_receipt_without_independent_ack_is_not_completed() {
+    let file = NamedTempFile::new().expect("temp ledger");
+    let p = plan();
+    let mut owner = CellSplitExecutionOwnerV1::bootstrap(reopen(&file), p.clone())
+        .expect("bootstrap");
+    let mut actors = MockOwners {
+        // Seven steps each write a pending frame and accepted frame.
+        // The completed cutover receipt is sequence 14, not an approved
+        // terminal outcome until the independent observer retains it.
+        fail_anchor_sequence_once: Some(14),
+        ..Default::default()
+    };
+    actors.install(&p, CellSplitStepV1::IndependentSelection);
+    actors.install(&p, CellSplitStepV1::FinalUseReady);
+
+    assert_eq!(owner.drive(&mut actors), Err(CellSplitErrorV1::Indeterminate));
+    assert_eq!(owner.progress().accepted_steps, 7);
+    assert!(!owner.progress().completed);
+    assert_eq!(owner.anchor().sequence, 14);
+    assert!(!actors.anchors.contains_key(&14));
+
+    assert!(owner.drive(&mut actors).expect("revalidate and retain").completed);
+    assert_eq!(actors.attempts.len(), 5);
+    assert_eq!(actors.anchors.get(&14), Some(&owner.anchor().head_digest));
 }
