@@ -250,11 +250,13 @@ scoped to the branch, so pending duplicate research work is bounded without
 automatically cancelling a reader that is already executing. The source-only
 `experiment-format` gate still runs before actual Qwen inference.
 
-The broad `format` job is preserved and checks the current default-branch
-comparison. It is separately observable but is not a reader prerequisite,
-because unrelated files can fail it. The repository's independent required
-`blocking-ci` and other PR-wide gates are unchanged; their failure still
-blocks merge and production qualification. The scheduling contract is
+The broad format check remains in the separate PR workflow
+`.github/workflows/hepta-memory-review-format-final.yml`; it is no longer
+duplicated inside the exact-source reader experiment. The standalone PR
+format check and `blocking-ci` continue to report independently and must
+be assessed before a merge or production decision. Removing duplicate
+research-job work does not waive either PR-wide quality obligation.
+The scheduling contract is
 regression-tested by `test_strong_rag_workflow_scheduling.py`.
 
 Previously queued PR-triggered runs are not retroactively cancelled, renamed,
@@ -355,3 +357,23 @@ The model-free historical audit's 10 existing tests and the new six nine-arm
 bridge regressions run before real Qwen staging; both are rerun by the
 separate replay job. They do not replace the frozen-model experiment or
 any PR-wide quality checks.
+
+## Research-workflow result isolation (2026-10-11)
+
+The hosted source `02c12b4a` passed `experiment-format`, but its duplicate
+research `format` job failed on **36 unrelated changed MemoryCell Python files**.
+The separate PR-wide `MemoryCell reviewed source formatting` check remains.
+Because the reader/replay job did not depend on that duplicate, the model
+could run, but the scientific workflow would be marked failed even if
+the exact-source model results and independent replay succeeded.
+
+The frozen-reader workflow therefore keeps only its source-scoped Ruff and
+model-free regression prerequisite, actual calibrated Qwen generation,
+and the read-only independent replayer. It does not issue merge approvals.
+Full-repository formatting and required `blocking-ci` remain independent.
+The previous completed run is not retroactively reclassified, and currently
+queued reader jobs remain source-pinned without synthetic model results.
+
+Research success still requires completed **40 calibration plus 72 evaluation**
+generations, immutable source artifact and separately checked citation/score
+replay. A passing research workflow does not itself qualify production.

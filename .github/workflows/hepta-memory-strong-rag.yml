@@ -27,42 +27,8 @@ concurrency:
   group: memorycell-strong-rag-${{ github.sha }}
   cancel-in-progress: false
 jobs:
-  format:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-        with:
-          ref: ${{ github.sha }}
-          persist-credentials: false
-      - uses: ./.github/actions/setup-ci
-      - name: Verify exact repository formatting and retain repair on failure
-        env:
-          BASE: ${{ github.event.repository.default_branch }}
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/strong-rag-format
-          python3 -m pip install uv==0.8.22
-          git fetch --no-tags --depth=1 origin "$BASE"
-          BASE_COMMIT="$(git rev-parse FETCH_HEAD)"
-          set +e
-          just fmt --check --base "$BASE_COMMIT" > /tmp/strong-rag-format/check.log 2>&1
-          code=$?
-          set -e
-          cat /tmp/strong-rag-format/check.log
-          if [ "$code" -ne 0 ]; then
-            just fmt --base "$BASE_COMMIT"
-            cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_hop_control.py scripts/memory_cell/test_strong_rag_hop_control.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py scripts/memory_cell/strong_rag_repeatability.py scripts/memory_cell/test_strong_rag_repeatability.py scripts/memory_cell/strong_rag_stability.py scripts/memory_cell/test_strong_rag_stability.py scripts/memory_cell/historical_event_citation_chain.py scripts/memory_cell/test_historical_event_citation_chain.py scripts/memory_cell/test_strong_rag_citation_bridge.py /tmp/strong-rag-format/
-          fi
-          git rev-parse HEAD > /tmp/strong-rag-format/tested-commit.txt
-          exit "$code"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: memory-strong-rag-format
-          path: /tmp/strong-rag-format
-          if-no-files-found: error
+  # PR-wide formatting remains a standalone pull-request check.
+  # Only scoped source checks, the pinned reader and independent replay belong here.
   # Research execution prerequisite only; the PR-wide format gate remains intact.
   # A Stem formatting failure must not suppress an otherwise valid reader trial.
   experiment-format:

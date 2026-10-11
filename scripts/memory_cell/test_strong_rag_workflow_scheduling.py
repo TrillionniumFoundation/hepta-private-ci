@@ -55,9 +55,13 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
         self.assertIn("cancel-in-progress: false", self.text)
 
     def test_global_format_remains_separately_observable(self):
-        self.assertIn("  format:\n", self.text)
-        self.assertIn('BASE_COMMIT="$(git rev-parse FETCH_HEAD)"', self.text)
-        self.assertIn('just fmt --check --base "$BASE_COMMIT"', self.text)
+        self.assertNotIn("\n  format:\n", self.text)
+        standalone = WORKFLOW.with_name("hepta-memory-review-format-final.yml")
+        self.assertTrue(standalone.is_file())
+        gate = standalone.read_text(encoding="utf-8")
+        self.assertIn("  pull_request:\n", gate)
+        self.assertIn('just fmt --check --base "$BASE"', gate)
+        self.assertIn("github.event.pull_request.number == 1452", gate)
         self.assertIn("cancel-in-progress: false", self.text)
         self.assertIn("group: memorycell-strong-rag-${{ github.sha }}", self.text)
 
