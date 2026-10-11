@@ -27,6 +27,12 @@ from stem_frozen_retrieval_grid import (
     posthoc_all_registered_grid_ceiling,
 )
 
+from stem_root_diversity import (
+    root_distinct,
+    validate_diverse_receipts,
+    compare_diversity,
+)
+
 SOURCE = "675970bb610c70bb0ec30a2dee05c025440510e6"
 TREE = "d280ba53070fb6457c04ff0d97fbb14ebbdbc3fb"
 ZIP_SHA256 = "1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8"
@@ -148,7 +154,7 @@ def replay_pinned(artifact, staged, output):
             "frozen retrieval Encoder model file pin drift",
         )
         started = time.perf_counter()
-        observations = []
+        observations, distinct_candidates = [], []
         index_times = {}
         with tempfile.TemporaryDirectory() as temporary:
             opened = {}
@@ -219,6 +225,71 @@ def replay_pinned(artifact, staged, output):
                                     == admiss[key]["as_of_cut"],
                                     "frozen retrieval source/cut identity mismatch",
                                 )
+                            if (channel_k, lexical_weight) == BASELINE:
+                                # Same frozen index/vector; widen only the
+                                # preselection list, never the delivered K=8.
+                                larger, larger_cost = index.query(
+                                    q,
+                                    vector,
+                                    RetrievalPolicy(
+                                        top_k=64, channel_k=64,
+                                        lexical_weight=0.5, rrf_constant=60,
+                                    ),
+                                    current_cut=admiss[key]["as_of_cut"],
+                                    revoked=set(),
+                                )
+                                require(
+                                    [d.identity for d in larger[:len(retrieved)]]
+                                    == [d.identity for d in retrieved]
+                                    and larger_cost["index_artifact_digest"]
+                                    == cost["index_artifact_digest"],
+                                    "root diversification moved the original RRF source rank or cut",
+                                )
+                                ordered_roots = [
+                                    dict(id=d.identity, root=d.root)
+                                    for d in larger
+                                ]
+                                unique_ids = root_distinct(
+                                    ordered_roots, len(retrieved)
+                                )
+                                selected_by_id = {d.identity: d for d in larger}
+                                root_docs = tuple(
+                                    selected_by_id[identity]
+                                    for identity in unique_ids
+                                )
+                                root_pool = candidate_windows(
+                                    root_docs,
+                                    q,
+                                    revoked=set(),
+                                    budget=budgets,
+                                    profile="query_windows",
+                                )
+                                distinct_candidates.append(
+                                    dict(
+                                        phase=phase,
+                                        question_id=qid,
+                                        source_family=plan["question_families"][qid],
+                                        original_as_of_index_sha256=cost[
+                                            "index_artifact_digest"
+                                        ],
+                                        original_baseline_source_ids=[
+                                            source_id(d.identity) for d in retrieved
+                                        ],
+                                        ranked_original_source_roots=ordered_roots,
+                                        selected_original_identities=unique_ids,
+                                        retrieved_source_ids=[
+                                            source_id(d.identity) for d in root_docs
+                                        ],
+                                        window_source_ids=sorted({
+                                            source_id(w.source_id)
+                                            for w in root_pool.windows
+                                        }),
+                                        pool_sha256=root_pool.seal(),
+                                        source_text_exported=False,
+                                        read_targets_for_retrieval=False,
+                                        pretrained_reader_calls=0,
+                                    )
+                                )
                             observations.append(
                                 dict(
                                     phase=phase,
@@ -247,7 +318,11 @@ def replay_pinned(artifact, staged, output):
                     idx.close()
         # Commit ALL 800 label-blind receipts BEFORE any score/label is read.
         write_jsonl(output / "all-label-blind-candidates.jsonl", observations)
+        write_jsonl(output / "root-diverse-label-blind.jsonl", distinct_candidates)
         unlabelled = validate_unlabelled(plan, observations)
+        diverse = validate_diverse_receipts(
+            plan, unlabelled, distinct_candidates
+        )
         labels = {
             qid: source_for[qid].targets[qid] for qid in plan["questions"]["train"]
         }
@@ -261,6 +336,12 @@ def replay_pinned(artifact, staged, output):
         }
         evaluated = evaluate_fixed(plan, unlabelled, eval_targets, calibration)
         write(output / "unseen-question-source-recall.json", evaluated)
+        # Purely exploratory. The original TRAIN-selected RRF policy remains
+        # frozen, and no root-diverse option is selected on test answers.
+        root_report = compare_diversity(
+            plan, unlabelled, diverse, labels | eval_targets
+        )
+        write(output / "root-diversity-weak-source-diagnostic.json", root_report)
         # Hindsight ceiling runs ONLY after every unlabeled grid receipt was
         # frozen AND the TRAIN-only selected policy was already written.
         # The oracle does not return a policy to the retriever or Reader.
@@ -280,6 +361,8 @@ def replay_pinned(artifact, staged, output):
                 number_label_blind_candidate_queries=len(observations),
                 number_asof_immutable_indexes=len(index_times),
                 original_pool_identities_replayed=80,
+                exploratory_root_diversity_rows=len(distinct_candidates),
+                source_root_diversity_is_not_a_learned_gain=True,
                 immutable_source_cuts=list(index_times.values()),
                 actual_frozen_query_encoder_seconds=time.perf_counter() - started,
                 original_pretrained_reader_calls=0,
