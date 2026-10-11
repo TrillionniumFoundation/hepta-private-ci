@@ -17,28 +17,37 @@ NDU_CONTROLS = ("fixed_12", "best_fixed", "cost_aware_exit", "stopping_router", 
 def arms_for(plan, gate, original):
     if plan["schema"] != V2:
         return original
-    return original + (REASON_CONTROLS if gate == "reasoning" else NDU_CONTROLS)
+    if gate == "reasoning":
+        cfg = plan[gate]
+        require(type(cfg["exact_algorithm_applicable"]) is bool, "explicit exact-comparator applicability")
+        if not cfg["exact_algorithm_applicable"]:
+            sha(cfg["exact_algorithm_assessment_sha256"])
+            reason = cfg["exact_algorithm_inapplicability_reason"]
+            require(type(reason) is str and 0 < len(reason) <= 2048, "preregistered inapplicability reason")
+            return original + REASON_CONTROLS[:-1]
+        return original + REASON_CONTROLS
+    return original + NDU_CONTROLS
 
 
 def validate_control_plan(plan):
     for gate in ("reasoning", "ndu"):
         cfg = plan[gate]
         sha(cfg["validation_sha256"])
-        require(cfg["validation_depths"] == list(DEPTHS), "complete preregistered fixed-depth grid")
+        require(cfg["validation_depths"] == list(DEPTHS) and
+                all(type(d) is int for d in cfg["validation_depths"]), "complete preregistered fixed-depth grid")
         weights = cfg["selection_cost_weights"]
         require(type(weights) is dict and set(weights) <= set(plan["required_cost_axes"]) - {"wall_ns"},
                 "selection cost must use measured additive axes")
         for value in weights.values():
             number(value, "selection cost weight")
-    require(plan["reasoning"]["exact_algorithm_applicable"] is True,
-            "this v2 profile requires an applicable deterministic comparator")
+    arms_for(plan, "reasoning", ())
 
 
 def validate_selection(plan, evidence, gate, episodes):
     """Recompute the fixed-depth choice from original historical validation rows."""
     cfg = plan[gate]
     validation = evidence["fixed_depth_validation"]
-    require(type(validation) is dict and set(validation) == {"schema", "rows"}, "validation envelope")
+    require(type(validation) is dict and set(validation) == {"schema", "job_id", "rows"}, "validation envelope")
     require(validation["schema"] == "hepta.fixed-depth.validation.v1", "validation schema")
     require(digest(validation) == cfg["validation_sha256"], "validation changed after registration")
     rows = validation["rows"]
@@ -73,6 +82,12 @@ def validate_selection(plan, evidence, gate, episodes):
         for cid, score in scores[depth].items():
             by_group.setdefault(groups[cid], []).append(score)
         cluster_scores[depth] = sum(sum(v) / len(v) for v in by_group.values()) / len(by_group)
+    # The actual grid execution is preparation, not free information for best_fixed.
+    job = evidence["arms"]["best_fixed"]["lifecycle"]["search"]
+    require(validation["job_id"] == job["job_id"], "unbound fixed-depth preparation job")
+    for axis in set(plan["required_cost_axes"]) - {"wall_ns"}:
+        require(job["cost"][axis] >= sum(r["cost"][axis] for r in rows),
+                "unpaid fixed-depth validation compute")
     selected = max(DEPTHS, key=lambda d: (cluster_scores[d], -d))
     for (_, arm), item in episodes.items():
         row = item["row"]

@@ -5,6 +5,8 @@ never used as the outcome. These are read-only, unauthenticated diagnostics.
 """
 from collections import defaultdict
 
+from four_gate_controls import V2, arms_for, depth_distribution, generation_overhead, validate_selection
+
 from four_gate_common import (
     costs, grouped_interval, integer, lifecycle, number, require,
     result, sha, text, timestamp,
@@ -169,7 +171,11 @@ def compare(plan, deltas, comparisons, seed):
 
 
 def review_reasoning(plan, evidence):
-    cases, episodes, totals = paired_evidence(plan, evidence, "reasoning", REASON_ARMS)
+    arms = arms_for(plan, "reasoning", REASON_ARMS)
+    cases, episodes, totals = paired_evidence(plan, evidence, "reasoning", arms)
+    selection = (validate_selection(plan, evidence, "reasoning", episodes)
+                 if plan["schema"] == V2 else None)
+    controls = tuple(arm for arm in arms if arm != "fixed_depth")
     cfg = plan["reasoning"]
     matched = True
     comparisons = {}
@@ -191,22 +197,26 @@ def review_reasoning(plan, evidence):
     for window in WINDOWS:
         for stratum in STRATA:
             cohort = [c for c in cases.values() if (c["window"], c["stratum"]) == (window, stratum)]
-            for control in ("single_step", "equal_compute_control"):
+            for control in controls:
                 rows = [(c["source_cluster"],
                          episodes[(c["case_id"], "fixed_depth")]["row"]["external_outcome"]["score"] -
                          episodes[(c["case_id"], control)]["row"]["external_outcome"]["score"])
                         for c in cohort]
-                interval = compare(plan, rows, 20, plan["seed"] + len(comparisons))
+                interval = compare(plan, rows, len(WINDOWS) * len(STRATA) * len(controls), plan["seed"] + len(comparisons))
                 comparisons[f"{window}:{stratum}:{control}"] = interval
                 passes.append(interval["enough_groups"] and interval["lcb"] > cfg["minimum_score_gain"])
     return result(matched and all(passes), {"paired_comparisons": comparisons,
-                  "equal_compute_matched": matched,
+                  "equal_compute_matched": matched, "fixed_depth_selection": selection,
+                  "depth_distribution": depth_distribution(episodes),
                   "observed_depth": {f"{cid}:{arm}": item["depth"] for (cid, arm), item in episodes.items()}},
                   [] if matched and all(passes) else ["novelty benefit or equal-compute requirement not met"])
 
 
 def review_ndu(plan, evidence):
-    cases, episodes, totals = paired_evidence(plan, evidence, "ndu", NDU_ARMS)
+    arms = arms_for(plan, "ndu", NDU_ARMS)
+    cases, episodes, totals = paired_evidence(plan, evidence, "ndu", arms)
+    selection = (validate_selection(plan, evidence, "ndu", episodes)
+                 if plan["schema"] == V2 else None)
     cfg = plan["ndu"]
     require(evidence["utility_profile_sha256"] == sha(cfg["utility_profile_sha256"]), "NDU profile changed")
     require(evidence["utility_profile"] == "registered_linear_external_score_minus_lifecycle_cost",
@@ -217,17 +227,24 @@ def review_ndu(plan, evidence):
     for value in weights.values():
         number(value, "fixed external cost weight", 1e-30)
     n = len(cases)
+    generation_cost = (generation_overhead(plan, evidence, cases, episodes)
+                       if plan["schema"] == V2 else None)
     full_cost = {}
     for (cid, arm), item in episodes.items():
         overhead = {axis: (totals[arm][axis] - evidence["arms"][arm]["lifecycle"]["inference"]["cost"][axis]) / n
                     for axis in weights}
-        full_cost[(cid, arm)] = sum(weights[axis] * (item["row"]["cost"][axis] + overhead[axis])
-                                   for axis in weights)
+        full_cost[(cid, arm)] = (sum(weights[axis] * item["row"]["cost"][axis] for axis in weights)
+                                 + (generation_cost[(cid, arm)] if generation_cost is not None else
+                                    sum(weights[axis] * overhead[axis] for axis in weights)))
     comparisons = {}
     passes = []
     pairs = (("ndu_deterministic", "fixed_budget"), ("ndu_deterministic", "confidence"),
              ("ndu_stochastic", "fixed_budget"), ("ndu_stochastic", "confidence"),
              ("ndu_stochastic", "ndu_deterministic"))
+    if plan["schema"] == V2:
+        pairs += tuple((candidate, control) for candidate in ("ndu_deterministic", "ndu_stochastic")
+                       for control in arms if control not in NDU_ARMS)
+    family_size = len(WINDOWS) * len(pairs) * (3 + len(STRATA))
     for window in WINDOWS:
         cohort = [c for c in cases.values() if c["window"] == window]
         for candidate, control in pairs:
@@ -239,7 +256,7 @@ def review_ndu(plan, evidence):
                 quality.append((group, gain))
                 cost_delta.append((group, extra))
                 net.append((group, gain - extra))
-            cis = {name: compare(plan, values, 80, plan["seed"] + len(comparisons))
+            cis = {name: compare(plan, values, family_size, plan["seed"] + len(comparisons))
                    for name, values in (("quality", quality), ("cost", cost_delta), ("net", net))}
             supported = all(ci["enough_groups"] for ci in cis.values())
             better = (cis["quality"]["lcb"] > 0 and cis["cost"]["ucb"] <= cfg["cost_noninferiority_margin"])
@@ -252,7 +269,7 @@ def review_ndu(plan, evidence):
                         cid = case["case_id"]
                         delta = episodes[(cid, candidate)]["row"]["external_outcome"]["score"] - episodes[(cid, control)]["row"]["external_outcome"]["score"]
                         values.append((case["source_cluster"], delta))
-                retention[stratum] = compare(plan, values, 80, plan["seed"] + len(comparisons))
+                retention[stratum] = compare(plan, values, family_size, plan["seed"] + len(comparisons))
             retained = all(ci["enough_groups"] and ci["lcb"] >= -cfg["quality_noninferiority_margin"]
                            for ci in retention.values())
             passed = supported and retained and (better or cheaper) and cis["net"]["lcb"] > 0
@@ -261,6 +278,8 @@ def review_ndu(plan, evidence):
             passes.append(passed)
     return result(all(passes), {"paired_comparisons": comparisons,
                   "lifecycle_cost": totals, "actual_amortization_episodes": n,
+                  "generation_local_amortization": generation_cost is not None,
+                  "fixed_depth_selection": selection, "depth_distribution": depth_distribution(episodes),
                   "internal_utility_and_bsde_residual_used_as_outcome": False,
                   "general_fbsde_conformance_established": False},
                   [] if all(passes) else ["cost-adjusted external benefit not established for every registered comparison"])

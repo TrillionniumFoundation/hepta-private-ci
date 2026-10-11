@@ -16,13 +16,18 @@ from four_gate_common import (
     result, sha, timestamp, write_once,
 )
 from four_gate_compute import review_compute
+from four_gate_controls import V2, validate_control_plan
+from four_gate_selective import review_selective, validate_selective_plan
 from four_gate_outcomes import WINDOWS, review_ndu, review_reasoning
 
 GATES = ("compute", "learning", "reasoning", "ndu")
 
 
 def validate_plan(plan, now):
-    require(plan["schema"] == "hepta.four-gate.plan.v1", "plan schema")
+    require(plan["schema"] in ("hepta.four-gate.plan.v1", V2), "plan schema")
+    if plan["schema"] == V2:
+        validate_control_plan(plan)
+        validate_selective_plan(plan["learning"]["selective"])
     sha(plan["source_sha"], 40)
     sha(plan["objective_sha256"])
     require(plan["evidence_kind"] in ("observed", "synthetic_diagnostic"), "unknown evidence kind")
@@ -56,7 +61,7 @@ def validate_plan(plan, now):
             for value in cfg[name].values():
                 number(value, "resource ceiling", 1e-30)
     reasoning = plan["reasoning"]
-    require(reasoning["selected_depth"] in (2, 4, 8, 16), "registered reasoning depth required")
+    require(reasoning["selected_depth"] in ((2, 4, 8, 12, 16) if plan["schema"] == V2 else (2, 4, 8, 16)), "registered reasoning depth required")
     require(0 <= number(reasoning["matching_relative_tolerance"], "cost-match tolerance") <= .05,
             "equal-compute tolerance must be <=5 percent")
     require(reasoning["match_axes"] and set(reasoning["match_axes"]) <= set(axes),
@@ -75,7 +80,10 @@ def validate_plan(plan, now):
 def review_learning(plan, refs, root):
     import prequential_threeway_review as legacy
 
-    require(set(refs) == {"dataset", "trial", "prelabel_journal", "no_change", "ood_receipts"},
+    expected_refs = {"dataset", "trial", "prelabel_journal", "no_change", "ood_receipts"}
+    if plan["schema"] == V2:
+        expected_refs.add("selective")
+    require(set(refs) == expected_refs,
             "all original learning evidence references are required")
     dataset = read_pinned(root, refs["dataset"], form="jsonl")
     trial = read_pinned(root, refs["trial"])
@@ -108,7 +116,7 @@ def review_learning(plan, refs, root):
                     a = legacy.measure(item["trained"], row["label"])[column]
                     b = legacy.measure(item[control], row["label"])[column]
                     pairs.append((digest([row["scope_id"], row["group_id"]]), a - b))
-                ci = grouped_interval(pairs, alpha=plan["alpha"] / 10,
+                ci = grouped_interval(pairs, alpha=plan["alpha"] / (20 if plan["schema"] == V2 else 10),
                                       replicates=plan["bootstrap_replicates"], seed=plan["seed"],
                                       min_groups=plan["min_groups"])
                 intervals[f"{window}:{control}:{metric}"] = ci
@@ -125,13 +133,20 @@ def review_learning(plan, refs, root):
                 delta = int(max(by_case[(cid, "trained")]) >= thresholds["trained"]) - int(
                     max(by_case[(cid, control)]) >= thresholds[control])
                 pairs.append((digest([row["scope_id"], row["group_id"]]), delta))
-        ci = grouped_interval(pairs, alpha=plan["alpha"] / 10,
+        ci = grouped_interval(pairs, alpha=plan["alpha"] / (20 if plan["schema"] == V2 else 10),
                               replicates=plan["bootstrap_replicates"], seed=plan["seed"],
                               min_groups=plan["min_groups"])
         intervals[f"ood:{control}"] = ci
-        passes.append(ci["enough_groups"] and ci["ucb"] <= plan["learning"]["ood_far_regression_cap"])
+        if plan["schema"] != V2:
+            passes.append(ci["enough_groups"] and ci["ucb"] <= plan["learning"]["ood_far_regression_cap"])
+    selective = None
+    if plan["schema"] == V2:
+        selective = review_selective(plan, read_pinned(root, refs["selective"]),
+                                     trial=trial, nochange_identity=owner)
+        passes.append(selective["status"] == "diagnostic_pass")
     passed = changed and report["quality_three_way_precheck_passed"] and all(passes)
-    return result(passed, {"legacy_review": report, "family_adjusted_comparisons": intervals},
+    return result(passed, {"legacy_review": report, "family_adjusted_comparisons": intervals,
+                           "labelled_selective_review": selective},
                   [] if passed else ["learning/retention/OOD benefit not established against both controls"])
 
 
@@ -165,6 +180,9 @@ def review_all(plan, bundle, root, *, now=None):
     all_passed = all(r["status"] == "diagnostic_pass" for r in reports.values())
     return {
         "schema": "hepta.four-gate.research-review.v1",
+        "acceptance_plan_schema": plan["schema"],
+        "strong_controls_required": plan["schema"] == V2,
+        "current_acceptance_profile_passed": all_passed and plan["schema"] == V2,
         "plan_sha256": digest(plan), "bundle_sha256": digest(bundle),
         "evidence_kind": plan["evidence_kind"], "experiment_source_sha": plan["source_sha"],
         "gates": reports, "all_offline_diagnostics_passed": all_passed,
