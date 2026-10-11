@@ -76,6 +76,30 @@ class Q24Tests(unittest.TestCase):
         )
 
 
+    def test_rust_stable_id_and_pipeline_contract_rejects_cross_language_drift(self):
+        digest = hashlib.sha256(b"valid-weight-artifact").hexdigest()
+        source = (digest, digest, digest, digest)
+
+        def pipeline(model_id="jina-v5-text-nano", generation=7, digests=source):
+            return rust_stem_encoder_pipeline_digest_v1(
+                model_id, generation, 256, *digests)
+
+        for invalid_id in ("", "中文", "has space", "has/slash", "x" * 129):
+            with self.subTest(model_id=invalid_id), self.assertRaises(ValueError):
+                pipeline(model_id=invalid_id)
+        for invalid_gen in (0, -1, True, 1 << 64):
+            with self.subTest(generation=invalid_gen), self.assertRaises(ValueError):
+                pipeline(generation=invalid_gen)
+        for position in range(4):
+            digests = list(source)
+            digests[position] = "0" * 64
+            with self.subTest(position=position), self.assertRaises(ValueError):
+                pipeline(digests=tuple(digests))
+        self.assertEqual(pipeline(), pipeline())
+        self.assertNotEqual(pipeline(), pipeline(generation=8))
+        self.assertEqual(len(pipeline(model_id="scope:stem-1")), 64)
+
+
 class StemTests(unittest.TestCase):
     def make_stem(self, model="jina-v5-text-nano", **kwargs):
         return FrozenJinaV5(
