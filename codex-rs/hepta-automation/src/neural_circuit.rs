@@ -95,6 +95,17 @@ impl CircuitEdgeV1 {
     }
 }
 
+/// Immutable identity and predecessor binding for one Neural Circuit
+/// generation. Route/parameter/resource digests remain separate mandatory
+/// inputs to the candidate's canonical content hash.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuralCircuitIdentityV1 {
+    pub circuit_id: String,
+    pub version: u32,
+    pub predecessor_digest: Option<Sha256Digest>,
+    pub entry_node: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct NeuralCircuitCandidateV1 {
@@ -123,10 +134,7 @@ pub struct CircuitCompilationReceiptV1 {
 
 impl NeuralCircuitCandidateV1 {
     pub fn new(
-        circuit_id: impl Into<String>,
-        version: u32,
-        predecessor_digest: Option<Sha256Digest>,
-        entry_node: impl Into<String>,
+        identity: NeuralCircuitIdentityV1,
         mut nodes: Vec<CircuitNodeV1>,
         mut edges: Vec<CircuitEdgeV1>,
         mut capability_set: Vec<String>,
@@ -134,6 +142,12 @@ impl NeuralCircuitCandidateV1 {
         parameter_bundle_digest: Sha256Digest,
         resource_profile_digest: Sha256Digest,
     ) -> Result<Self, TaskFlowError> {
+        let NeuralCircuitIdentityV1 {
+            circuit_id,
+            version,
+            predecessor_digest,
+            entry_node,
+        } = identity;
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
         edges.sort_by(|left, right| {
             left.from
@@ -142,10 +156,10 @@ impl NeuralCircuitCandidateV1 {
         });
         capability_set.sort();
         let mut candidate = Self {
-            circuit_id: circuit_id.into(),
+            circuit_id,
             version,
             predecessor_digest,
-            entry_node: entry_node.into(),
+            entry_node,
             nodes,
             edges,
             capability_set,
