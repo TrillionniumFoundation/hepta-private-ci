@@ -21,27 +21,29 @@ def synthetic_matrix():
             }[mode]
             work = 1000
             optimized = mode == "optimized_logical_split"
-            runs.append({
-                "mode": mode,
-                "scopes": scopes,
-                "attempted_request_trace_sha256": "b" * 64,
-                "attempted": work,
-                "completed": work,
-                "failed_requests": 0,
-                "elapsed_seconds": 10 / speed,
-                "p50_ms": 2 if not optimized else 1,
-                "p95_ms": 5 if not optimized else 3,
-                "p99_ms": 10 if not optimized else 7,
-                "cpu_seconds": 30 if not optimized else 20,
-                "rss_peak_bytes": 10000000,
-                "communication_bytes": 100000 if not optimized else 70000,
-                "native_backend_calls": 1000 if not optimized else 250,
-                "native_batch_requests": 0 if not optimized else 1000,
-                "fsync_count": 500 if not optimized else 125,
-                "lock_wait_ms": 500 if not optimized else 200,
-                "recovery_ms": 100,
-                "negative_transfer_rate": 0,
-            })
+            runs.append(
+                {
+                    "mode": mode,
+                    "scopes": scopes,
+                    "attempted_request_trace_sha256": "b" * 64,
+                    "attempted": work,
+                    "completed": work,
+                    "failed_requests": 0,
+                    "elapsed_seconds": 10 / speed,
+                    "p50_ms": 2 if not optimized else 1,
+                    "p95_ms": 5 if not optimized else 3,
+                    "p99_ms": 10 if not optimized else 7,
+                    "cpu_seconds": 30 if not optimized else 20,
+                    "rss_peak_bytes": 10000000,
+                    "communication_bytes": 100000 if not optimized else 70000,
+                    "native_backend_calls": 1000 if not optimized else 250,
+                    "native_batch_requests": 0 if not optimized else 1000,
+                    "fsync_count": 500 if not optimized else 125,
+                    "lock_wait_ms": 500 if not optimized else 200,
+                    "recovery_ms": 100,
+                    "negative_transfer_rate": 0,
+                }
+            )
     return {
         "schema": "hepta.cell-split.performance.v1",
         "source_sha": "a" * 40,
@@ -77,13 +79,17 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
 
     def test_physical_split_must_not_regress_against_no_change(self):
         packet = synthetic_matrix()
-        candidate = next(row for row in packet["runs"]
-                         if row["scopes"] == 4096 and row["mode"] == "physical_split")
+        candidate = next(
+            row
+            for row in packet["runs"]
+            if row["scopes"] == 4096 and row["mode"] == "physical_split"
+        )
         candidate["elapsed_seconds"] = 12
         result = analyze(packet)
         self.assertFalse(result["comparative_gate_passed"])
-        self.assertTrue(any("4096: physical throughput" in reason
-                            for reason in result["violations"]))
+        self.assertTrue(
+            any("4096: physical throughput" in reason for reason in result["violations"])
+        )
         self.assertFalse(result["production_activation_authorized"])
 
     def test_reject_missing_and_duplicate_runs(self):
@@ -98,8 +104,11 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
 
     def test_detect_p99_and_communication_regression(self):
         packet = synthetic_matrix()
-        target = next(row for row in packet["runs"]
-                      if row["scopes"] == 1024 and row["mode"] == "optimized_logical_split")
+        target = next(
+            row
+            for row in packet["runs"]
+            if row["scopes"] == 1024 and row["mode"] == "optimized_logical_split"
+        )
         target["p99_ms"] = 20
         target["communication_bytes"] = 200000
         result = analyze(packet)
@@ -109,10 +118,16 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
 
     def test_p50_p95_regressions_are_independent_gate_failures(self):
         packet = synthetic_matrix()
-        optimized = next(row for row in packet["runs"]
-                         if row["scopes"] == 256 and row["mode"] == "optimized_logical_split")
-        physical = next(row for row in packet["runs"]
-                        if row["scopes"] == 1024 and row["mode"] == "physical_split")
+        optimized = next(
+            row
+            for row in packet["runs"]
+            if row["scopes"] == 256 and row["mode"] == "optimized_logical_split"
+        )
+        physical = next(
+            row
+            for row in packet["runs"]
+            if row["scopes"] == 1024 and row["mode"] == "physical_split"
+        )
         optimized["p95_ms"] = 6
         physical["p50_ms"] = 3
         result = analyze(packet)
