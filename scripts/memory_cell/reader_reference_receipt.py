@@ -17,7 +17,15 @@ import zipfile
 from bundle_trial import decode_bundle, write
 from native import Document, Question, digest
 from native_citation import capture_native
-from reader_reference import GENERATION, MODELS, PINS, PRECISION, SYSTEM, summarize
+from reader_reference import (
+    GENERATION,
+    MODELS,
+    PINS,
+    PRECISION,
+    SYSTEM,
+    strict_records,
+    summarize,
+)
 from reviewed_diagnostic import capability_plan, outcome
 from selector_answer_metrics import answer_scores
 from tensor_contract import strict_json
@@ -166,7 +174,9 @@ def replay(inputs, files):
         .decode("utf-8")
         .splitlines()
     ]
-    scored = object_at(files, "run/diagnostic/execution/scored-answers.json")
+    scored = strict_records(
+        files["run/diagnostic/execution/scored-answers.json"].decode("utf-8")
+    )
     by_key = align_records(raw, scored, expected)
     labels = object_at(inputs, "labels.json")
     requests, spans = 0, 0

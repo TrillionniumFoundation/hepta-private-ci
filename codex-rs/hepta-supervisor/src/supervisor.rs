@@ -900,7 +900,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
         if let Some(message) = directive_error {
-            return Err(SupervisorError::Invalid(message.to_string()));
+            return Err(SupervisorError::Invalid(message));
         }
         Ok(())
     }

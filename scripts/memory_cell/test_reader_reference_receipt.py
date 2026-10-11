@@ -8,6 +8,7 @@ import tempfile
 import unittest
 import zipfile
 
+from reader_reference import strict_records
 from reader_reference_receipt import align_records, archive, matched_view
 
 
@@ -40,6 +41,35 @@ def scored(raw):
 
 
 class ReceiptTests(unittest.TestCase):
+    def test_scored_records_require_a_strict_outcomes_array(self):
+        failed = dict(question_id="q", arm="empty", status="failed")
+        payload = json.dumps([failed])
+        self.assertEqual(strict_records(payload), [failed])
+        for payload in (
+            json.dumps({"question_id": "q", "arm": "empty", "status": "failed"}),
+            json.dumps([{"question_id": "q", "arm": "empty"}]),
+            json.dumps(["failed"]),
+            '[{"question_id":"q","arm":"empty","status":"failed",'
+            '"status":"succeeded"}]',
+            '[{"question_id":"q","arm":"empty","status":NaN}]',
+        ):
+            with self.assertRaises(ValueError):
+                strict_records(payload)
+
+    def test_failed_and_unavailable_rows_stay_in_the_complete_census(self):
+        raw = [
+            row(),
+            row(q="failed", status="failed"),
+            row(q="missing", status="unavailable"),
+        ]
+        expected = [(r["question_id"], r["arm"]) for r in raw]
+        result = align_records(raw, scored(raw), expected)
+        self.assertEqual(len(result), len(raw))
+        self.assertEqual(
+            [result[key]["status"] for key in expected],
+            ["succeeded", "failed", "unavailable"],
+        )
+
     def test_complete_census_keeps_unavailable(self):
         raw = [row(), row(q="missing", status="unavailable")]
         expected = [(r["question_id"], r["arm"]) for r in raw]
