@@ -22,6 +22,7 @@ use codex_hepta_operator_acceptance::{
 };
 use ed25519_dalek::{Signature, VerifyingKey};
 use sha2::{Digest as _, Sha256};
+use codex_hepta_types::AuthorityPosture;
 
 use crate::{
     HeptaRuntime, RuntimeTopologyApplyReceiptV1,
@@ -259,12 +260,20 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         {
             return Err("CNS successor differs from admitted routing plan".into());
         }
+        // An admitted request can be prepared before revocation or another
+        // concurrent route writer changes the runtime. Recheck both sources
+        // immediately before consuming the signed final-use grant.
+        self.verify_preconditions(plan, intent)?;
+        if self.live_runtime()? != before {
+            return Err("CNS route changed after admitted successor preparation".into());
+        }
         let actual = self.runtime.apply_governed_topology(
             &authority, &grant, request,
         ).map_err(|e| e.to_string())?;
         // This is the genuine live runtime operation receipt, *not* a digest
         // fixture. It must describe precisely the transition just observed.
-        if actual.predecessor_generation.get() != plan.parent_generation
+        if actual.authority != AuthorityPosture::DENY_ALL
+            || actual.predecessor_generation.get() != plan.parent_generation
             || actual.successor_generation.get() != plan.child_generation
             || actual.predecessor_hierarchy_digest != before.hierarchy_digest()
             || actual.successor_hierarchy_digest.to_string() != binding.successor_route_digest
