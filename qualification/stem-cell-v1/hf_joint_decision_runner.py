@@ -137,6 +137,38 @@ def snapshot_validation(args):
     return path
 
 
+def validate_encoder_loading_info(info):
+    """Refuse missing/randomly initialized or silently ignored pretrained tensors.
+
+    A safetensors file and checkpoint SHA alone do not guarantee that AutoModel
+    successfully loaded every intended pretrained parameter. Model-specific
+    intentional drops must be resolved by a reviewed base-model conversion
+    before this qualification lane, not suppressed in this evaluator.
+    """
+    required = ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")
+    if not isinstance(info, Mapping) or any(key not in info for key in required):
+        raise ValueError("pretrained Encoder missing complete loading report")
+    problems = {}
+    for key in required:
+        values = info[key]
+        if not isinstance(values, (list, tuple)):
+            raise ValueError("pretrained Encoder loading report has invalid field: " + key)
+        if values:
+            problems[key] = len(values)
+    if problems:
+        raise ValueError(
+            "pretrained Encoder partially initialized or ignored weights: "
+            + json.dumps(problems, sort_keys=True))
+    return {
+        "schema": "hepta.local-hf-encoder-weight-load.v1",
+        "complete": True,
+        "missing_keys": 0,
+        "unexpected_keys": 0,
+        "mismatched_keys": 0,
+        "error_msgs": 0,
+    }
+
+
 def vectorize_case(torch, model, tokenizer, row, device, *, max_tokens):
     text = render_joint(row)
     tokens = tokenizer(text, return_tensors="pt", truncation=False)
@@ -179,9 +211,15 @@ def run(args):
     tokenizer = AutoTokenizer.from_pretrained(
         str(checkpoint), local_files_only=True, trust_remote_code=False)
     began = time.perf_counter()
-    model = AutoModel.from_pretrained(
+    loaded = AutoModel.from_pretrained(
         str(checkpoint), local_files_only=True, trust_remote_code=False,
-        use_safetensors=True, torch_dtype=dtype).to(args.device).eval()
+        use_safetensors=True, output_loading_info=True,
+        torch_dtype=dtype)
+    if not isinstance(loaded, tuple) or len(loaded) != 2:
+        raise ValueError("HF backend did not provide audited pretrained loading report")
+    model, loading_info = loaded
+    loading_receipt = validate_encoder_loading_info(loading_info)
+    model = model.to(args.device).eval()
     load_seconds = time.perf_counter() - began
     for parameter in model.parameters():
         parameter.requires_grad_(False)
@@ -282,6 +320,7 @@ def run(args):
         "optimizer": "adamw", "training_split": "train",
         "train_steps": args.train_steps, "trainable_parameters": head_parameters,
         "frozen_encoder_parameters": encoder_params,
+        "verified_encoder_loading": loading_receipt,
         "model_load_seconds": load_seconds, "training_seconds": train_seconds,
         "feature_bytes": feature_bytes, "process_rss_after_bytes": rss,
         "output_predictions_sha256": sha256_file(target),
