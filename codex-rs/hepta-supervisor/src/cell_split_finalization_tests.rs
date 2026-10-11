@@ -172,7 +172,8 @@ fn externally_tampered_open_journal_cannot_sign_a_cached_terminal_checkpoint() {
     let path = root.path().join("writer-handoff.log");
     let original = fs::read(&path).expect("original journal");
     let marker = b"\"phase\":\"prepared\"";
-    let start = original.windows(marker.len())
+    let start = original
+        .windows(marker.len())
         .position(|part| part == marker)
         .expect("original prepared phase");
     let mut corrupted = original.clone();
