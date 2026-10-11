@@ -20,18 +20,20 @@ from model_runner import snapshot_digest
 
 
 @contextmanager
-def scoped_fake_transformers(module):
-    """Restore only one import slot, not every Torch submodule imported in test."""
+def scoped_fake_transformers(module, safetensors_module):
+    """Restore only mocked import keys, never the entire PyTorch module graph."""
     missing = object()
-    previous = sys.modules.get("transformers", missing)
-    sys.modules["transformers"] = module
+    replacements = {"transformers": module, "safetensors": safetensors_module}
+    previous = {key: sys.modules.get(key, missing) for key in replacements}
+    sys.modules.update(replacements)
     try:
         yield
     finally:
-        if previous is missing:
-            sys.modules.pop("transformers", None)
-        else:
-            sys.modules["transformers"] = previous
+        for key, original in previous.items():
+            if original is missing:
+                sys.modules.pop(key, None)
+            else:
+                sys.modules[key] = original
 
 
 @unittest.skipUnless(importlib.util.find_spec("torch") is not None,
@@ -66,12 +68,31 @@ class FullPipelineModelFreeTests(unittest.TestCase):
             def parameters(self):
                 return (FakeParameterCount(),)
 
+            def state_dict(self):
+                return {"synthetic.registered_weight": torch.tensor([0.5])}
+
             def __call__(self, **inputs):
                 values = inputs["input_ids"].float().unsqueeze(-1)
                 states = torch.cat(
                     [values / (index + 1) for index in range(16)], dim=-1)
                 return SimpleNamespace(last_hidden_state=states)
 
+        class FakeSafetensorsFile:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def keys(self):
+                return ["synthetic.registered_weight"]
+
+            def get_tensor(self, key):
+                assert key == "synthetic.registered_weight"
+                return torch.tensor([0.5])
+
+        fake_safetensors = ModuleType("safetensors")
+        fake_safetensors.safe_open = lambda *_args, **_kw: FakeSafetensorsFile()
         fake_hf = ModuleType("transformers")
         fake_hf.__version__ = "synthetic-fixture-only"
         fake_hf.AutoTokenizer = SimpleNamespace(
@@ -121,7 +142,7 @@ class FullPipelineModelFreeTests(unittest.TestCase):
                 batch_size=4, context_tokens=512, seed=7347,
                 device="cpu", dtype="fp32",
                 snapshot=str(model), dataset=str(data), output=str(output))
-            with scoped_fake_transformers(fake_hf):
+            with scoped_fake_transformers(fake_hf, fake_safetensors):
                 receipt = run(args)
             predictions = [
                 json.loads(line) for line in output.read_text().splitlines()]
@@ -134,6 +155,9 @@ class FullPipelineModelFreeTests(unittest.TestCase):
             self.assertFalse(receipt["production_promotion_permitted"])
             self.assertEqual(receipt["model_source"], "microsoft/deberta-v3-large")
             self.assertEqual(receipt["verified_encoder_loading"]["complete"], True)
+            materialization = receipt["verified_exact_tensor_materialization"]
+            self.assertEqual(materialization["tensor_count"], 1)
+            self.assertTrue(materialization["all_state_dict_tensors_compared"])
             self.assertEqual(receipt["output_predictions_sha256"],
                              hashlib.sha256(output.read_bytes()).hexdigest())
             source_by_id = {row["sample_id"]: row for row in rows}
@@ -146,7 +170,7 @@ class FullPipelineModelFreeTests(unittest.TestCase):
                 row["arm"] == "deberta_v3_large:equal_budget" and
                 "label" not in row and "external_ndu_utility" not in row
                 for row in predictions))
-            with scoped_fake_transformers(fake_hf):
+            with scoped_fake_transformers(fake_hf, fake_safetensors):
                 with self.assertRaises(FileExistsError):
                     run(args)
 
