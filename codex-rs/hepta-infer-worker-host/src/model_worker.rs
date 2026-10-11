@@ -724,6 +724,7 @@ fn validate_neuron_feature_output(
 mod physical_batch;
 pub use physical_batch::{
     NeuronPhysicalBatchDriver, PhysicalBatchItemObservationV1, PhysicalBatchRunObservationV1,
+    canonical_physical_batch_submission_digest_v1,
 };
 
 #[cfg(test)]
