@@ -312,7 +312,10 @@ mod tests {
             .expect("insert");
         let mut other = original.clone();
         other.scope_id = StableId::new("scope.b".to_string()).expect("scope");
-        assert_ne!(original.digest().expect("digest"), other.digest().expect("digest"));
+        assert_ne!(
+            original.digest().expect("digest"),
+            other.digest().expect("digest")
+        );
         assert!(cache.get(20, &other).expect("different scope").is_none());
         assert!(cache.get(20, &original).expect("same scope").is_some());
         assert_eq!(stored.identity.scope_id, original.scope_id);
