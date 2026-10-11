@@ -338,3 +338,12 @@ The converter neither authenticates the data-use owner, executes Jina v5,
 nor supplies token-state Landmark/Cross-attention support. Those Jina
 representation cells stay UNQUALIFIED until their own task-adapter
 implementation can supply demonstrably equivalent token states.
+
+
+**Metric compatibility:** decision_421m.py reports multiclass Brier as
+sum of squared class errors divided by the number of options, matching
+PR #1499's qualified_eval. The earlier stem-cell-v1 study.py reports
+the *unnormalized* class-error sum. Do not rank models by Brier values
+from those two report schemas without first applying the explicit
+choice-count normalization. A model-selection reviewer must compare
+identically normalized scores on paired cases.
