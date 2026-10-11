@@ -206,7 +206,10 @@ fn uncertain_unload_remains_accounted_and_rejects_all_future_use() {
         Err(Error::DriverFailure("injected unload failure".to_string()))
     );
     assert_eq!(worker.models.len(), 1, "model capacity remains occupied");
-    assert_eq!(worker.driver.loaded, 1, "driver resource is not claimed freed");
+    assert_eq!(
+        worker.driver.loaded, 1,
+        "driver resource is not claimed freed"
+    );
     assert_eq!(worker.driver.unload_calls, 1);
     assert_eq!(
         worker.run(100, "model.1", request()),
@@ -231,11 +234,21 @@ fn uncertain_unload_remains_accounted_and_rejects_all_future_use() {
 
 #[test]
 fn observed_unload_releases_the_registered_handle_once() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.unload-ok".to_string(), 3, grant(), Driver::default())
-            .expect("worker");
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.unload-ok".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
     worker.load_model(100, manifest()).expect("load");
-    assert!(worker.unload_model(100, "model.1").expect("unload").terminal_observed);
+    assert!(
+        worker
+            .unload_model(100, "model.1")
+            .expect("unload")
+            .terminal_observed
+    );
     assert_eq!(worker.driver.loaded, 0);
     assert_eq!(worker.driver.unload_calls, 1);
     assert_eq!(worker.models.len(), 0);
@@ -594,4 +607,3 @@ fn failed_release_blocks_native_backend_batch_without_dispatch() {
     assert_eq!(worker.driver.inner.unload_calls, 1);
     assert_eq!(worker.models.len(), 1);
 }
-
