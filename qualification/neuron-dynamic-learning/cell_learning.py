@@ -253,12 +253,22 @@ def paired_future_score(
     """A strict three-way *scoring* seam, not a signed independent Evaluator."""
     if trained.cell_id != frozen.cell_id or trained.encoder_digest != frozen.encoder_digest:
         raise LearningContractError("frozen control identity mismatch")
+    if (trained.width, trained.groups, trained.rank) != (
+        frozen.width, frozen.groups, frozen.rank
+    ):
+        raise LearningContractError("frozen control architecture mismatch")
     if no_change_probabilities is None:
         raise LearningContractError("real frozen production no-change required")
+    features = np.asarray(future_x, dtype=np.float64)
     y = np.asarray(future_y, dtype=np.float64)
     no_change = np.asarray(no_change_probabilities, dtype=np.float64)
-    if y.shape != no_change.shape or len(y) != len(future_x):
-        raise LearningContractError("paired future group cardinality mismatch")
+    if (
+        features.ndim != 2 or features.shape[1] != trained.width
+        or len(features) == 0 or not np.isfinite(features).all()
+        or y.shape != (len(features),) or no_change.shape != y.shape
+        or not np.isfinite(y).all() or not np.isin(y, [0.0, 1.0]).all()
+    ):
+        raise LearningContractError("future labels/features or baseline are not aligned binary rows")
     if np.any((no_change <= 0) | (no_change >= 1)) or not np.isfinite(no_change).all():
         raise LearningContractError("invalid production baseline")
     def bce(logits: np.ndarray) -> float:
