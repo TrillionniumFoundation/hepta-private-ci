@@ -35,7 +35,7 @@ jobs:
       - name: Compile actual native Ledger owner and test targets
         run: cargo check --locked -p codex-hepta-learning-ledger --all-targets
       - name: Run native signed frozen-source and durable event-join tests
-        run: cargo test --locked -p codex-hepta-learning-ledger neuron_trial_source --lib -- --nocapture
+        run: cargo test --locked -p codex-hepta-learning-ledger --lib
       - name: Strict native Ledger correctness lint
         run: cargo clippy --locked -p codex-hepta-learning-ledger --lib -- -D clippy::correctness
       - name: Check tracked source hygiene

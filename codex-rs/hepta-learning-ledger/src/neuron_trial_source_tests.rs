@@ -10,7 +10,8 @@ use ed25519_dalek::{Signer, SigningKey};
 use crate::{
     ActivatedLearningTrustV1, AuthenticatedOutcomeV1, AuthenticatedPrincipalV1,
     CandidateSetCompletenessReceiptV1, DatasetFreezePlanV2, DurableLedger, LearningEvidenceTrustV1,
-    LearningTrustDistributionV1, LearningTrustRootV1, LedgerWitnessStore, OutcomeTerminalityV1,
+    LearningTrustDistributionV1, LearningTrustRootV1, LedgerRecovery, LedgerWitnessStore,
+    OutcomeTerminalityV1,
     OutcomeWatermarkV1, ProductionDecisionV2, SignedLearningTrustDistributionV1,
     TrustedLearningSignerV1, activate_learning_trust, candidate_ids_digest_v2,
     candidate_order_digest_v2, decision_signing_payload_v2, outcome_signing_payload_v2,
@@ -355,4 +356,82 @@ fn native_owner_rejects_frozen_ledger_that_is_not_current_prefix() {
             .read_neuron_trial_source_v1(&snapshot, &plan, &signature, &dataset, 50)
             .is_err()
     );
+}
+
+#[test]
+fn native_owner_invalidates_frozen_terminal_after_corrected_outcome() {
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    let head = append_decision(&mut writer);
+    append_terminal(&mut writer, head);
+    let (frozen, plan, evidence, dataset) = freeze(&writer);
+    assert_eq!(
+        writer
+            .read_neuron_trial_source_v1(&frozen, &plan, &evidence, &dataset, 50)
+            .unwrap()
+            .terminal_joins
+            .len(),
+        1
+    );
+    let corrected = AuthenticatedOutcomeV1 {
+        record_id: id("outcome-corrected"),
+        outcome_id: id("outcome-id-corrected"),
+        episode_id: id("episode-1"),
+        observer: signer("observer", LearningEvidenceRoleV1::Observer).principal,
+        observed_at: Some(47),
+        value: Some(FixedQ32::from_raw(202)),
+        unit_profile_digest: digest("units"),
+        support_digest: digest("corrected-support"),
+        watermark: OutcomeWatermarkV1 {
+            latest_observable_at: 49,
+            expected_delay_profile_digest: digest("delay"),
+            terminality: OutcomeTerminalityV1::Terminal,
+            censoring_reason: None,
+            correction_predecessor: Some(id("outcome-id-1")),
+            finalized_at: Some(49),
+        },
+    };
+    let payload = outcome_signing_payload_v2(&corrected);
+    let signature = signed(
+        &writer,
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        &payload,
+    );
+    let predecessor = writer.snapshot().unwrap().head_digest;
+    writer
+        .append_outcome(predecessor, corrected, &signature, 50)
+        .unwrap();
+    assert!(
+        writer
+            .read_neuron_trial_source_v1(&frozen, &plan, &evidence, &dataset, 50)
+            .is_err()
+    );
+}
+
+#[test]
+fn native_owner_reopens_durable_ledger_and_preserves_freeze_identity() {
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    let head = append_decision(&mut writer);
+    append_terminal(&mut writer, head);
+    let (frozen, plan, evidence, dataset) = freeze(&writer);
+    let frontier = writer.witness_frontier().unwrap();
+    drop(writer);
+    let ledger = DurableLedger::recover(
+        fixture.file("ledger"),
+        digest("binding"),
+        64,
+        LedgerRecovery::Acknowledged(frontier.anchor),
+    )
+    .unwrap();
+    let witness = LedgerWitnessStore::recover(fixture.file("witness"), digest("binding")).unwrap();
+    let directory = fixture.directory();
+    let recovered =
+        LedgerWriter::from_durable(ledger, witness, trust(), &directory, &directory).unwrap();
+    let source = recovered
+        .read_neuron_trial_source_v1(&frozen, &plan, &evidence, &dataset, 50)
+        .unwrap();
+    assert_eq!(source.terminal_joins.len(), 1);
+    assert!(source.validate_integrity());
 }
