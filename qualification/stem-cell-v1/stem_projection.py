@@ -399,3 +399,59 @@ def load_shadow_projection(path, *, expected_file_sha256):
     if projector.digest != data["projection_digest"]:
         raise ValueError("projector weights changed without revision")
     return projector
+
+# Only candidate bytes for the existing Learning Artifact CAS; no signature,
+# publication, selection, CURRENT witness or inference authority is issued.
+CAS_PROJECTION_PAYLOAD_SCHEMA = "hepta.stem.low-rank-projection-payload.v1"
+CAS_PROJECTION_MAX_BYTES = 8 * 1024 * 1024
+
+
+def encode_cas_projection_candidate(projection):
+    """Encode a candidate payload; training/source lineage belongs to the
+    separately signed ArtifactManifest and independent evaluator."""
+    import json
+    projection.validate()
+    payload = {"schema": CAS_PROJECTION_PAYLOAD_SCHEMA, "projection": {}}
+    for name in projection.__dataclass_fields__:
+        value = getattr(projection, name)
+        payload["projection"][name] = list(value) if isinstance(value, tuple) else value
+    raw = (json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                      ensure_ascii=True, allow_nan=False) + "\n").encode("ascii")
+    if len(raw) > CAS_PROJECTION_MAX_BYTES:
+        raise ValueError("CAS candidate exceeds pinned payload cap")
+    return raw
+
+
+def decode_cas_projection_candidate(raw, *, expected_payload_sha256,
+                                    expected_projection_digest):
+    """Untrusted shadow decoder; does NOT verify signatures or CURRENT."""
+    import json
+    if (type(raw) is not bytes or not 0 < len(raw) <= CAS_PROJECTION_MAX_BYTES or
+            not _sha(expected_payload_sha256) or not _sha(expected_projection_digest) or
+            hashlib.sha256(raw).hexdigest() != expected_payload_sha256):
+        raise ValueError("CAS content digest/size mismatch")
+    def unique(pairs):
+        out = {}
+        for key, value in pairs:
+            if key in out:
+                raise ValueError("duplicate CAS candidate key")
+            out[key] = value
+        return out
+    try:
+        data = json.loads(raw, object_pairs_hook=unique)
+    except (UnicodeError, json.JSONDecodeError) as error:
+        raise ValueError("invalid CAS payload JSON") from error
+    if (type(data) is not dict or set(data) != {"schema", "projection"} or
+            data["schema"] != CAS_PROJECTION_PAYLOAD_SCHEMA or
+            type(data["projection"]) is not dict or
+            set(data["projection"]) != set(LowRankProjectionQ24.__dataclass_fields__)):
+        raise ValueError("CAS projection schema mismatch")
+    props = dict(data["projection"])
+    for name in ("a_q24", "b_q24", "bias_q24"):
+        if type(props[name]) is not list:
+            raise ValueError("invalid CAS projection tensor")
+        props[name] = tuple(props[name])
+    candidate = LowRankProjectionQ24(**props)
+    if candidate.digest != expected_projection_digest or raw != encode_cas_projection_candidate(candidate):
+        raise ValueError("CAS projection revision/canonical bytes mismatch")
+    return candidate
