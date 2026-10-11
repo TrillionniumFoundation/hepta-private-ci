@@ -491,10 +491,7 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
             .transcript_digest,
         expected_digest,
     );
-    assert_eq!(
-        state.borrow().verifications - before_recovery_readbacks,
-        4
-    );
+    assert_eq!(state.borrow().verifications - before_recovery_readbacks, 4);
     let last = recovered.verified_transcript().unwrap().unwrap().receipts[3]
         .intent
         .idempotency_key
