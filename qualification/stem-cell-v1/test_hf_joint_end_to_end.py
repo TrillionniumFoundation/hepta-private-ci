@@ -56,6 +56,16 @@ class FullPipelineModelFreeTests(unittest.TestCase):
                 ids = torch.tensor([values], dtype=torch.long)
                 return {"input_ids": ids, "attention_mask": torch.ones_like(ids)}
 
+            def pad(self, samples, padding, return_tensors):
+                width = max(len(sample["input_ids"]) for sample in samples)
+                ids = torch.zeros((len(samples), width), dtype=torch.long)
+                mask = torch.zeros_like(ids)
+                for index, sample in enumerate(samples):
+                    n = len(sample["input_ids"])
+                    ids[index, :n] = torch.tensor(sample["input_ids"])
+                    mask[index, :n] = 1
+                return {"input_ids": ids, "attention_mask": mask}
+
         class FakeEncoder:
             config = SimpleNamespace(hidden_size=16, max_position_embeddings=512)
 
@@ -139,7 +149,8 @@ class FullPipelineModelFreeTests(unittest.TestCase):
                 expected_dataset_sha256=hashlib.sha256(data.read_bytes()).hexdigest(),
                 license_approved=True, adapter_reviewed=True,
                 train_steps=4, trainable_budget=262144,
-                batch_size=4, context_tokens=512, seed=7347,
+                batch_size=4, encoder_microbatch_size=4,
+                context_tokens=512, seed=7347,
                 device="cpu", dtype="fp32",
                 snapshot=str(model), dataset=str(data), output=str(output))
             with scoped_fake_transformers(fake_hf, fake_safetensors):
@@ -151,6 +162,10 @@ class FullPipelineModelFreeTests(unittest.TestCase):
             self.assertTrue(0 < receipt["trainable_parameters"] <= 262144)
             self.assertEqual(receipt["train_steps"], 4)
             self.assertEqual(receipt["truncated_input_count"], 0)
+            self.assertEqual(receipt["physical_encoder_forward_calls"], 6)
+            self.assertEqual(receipt["observed_physical_encoder_batch_sizes"], [4] * 6)
+            self.assertTrue(receipt["per_case_latency_conservatively_charged_full_batch"])
+            self.assertFalse(receipt["production_microbatch_qualified"])
             self.assertFalse(receipt["checkpoint_zero_shot_score_emitted"])
             self.assertFalse(receipt["production_promotion_permitted"])
             self.assertEqual(receipt["model_source"], "microsoft/deberta-v3-large")
