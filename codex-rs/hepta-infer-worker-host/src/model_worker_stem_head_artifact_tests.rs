@@ -813,8 +813,8 @@ fn dual_cas_selection_time_must_be_identical_before_any_dispatched_model_call() 
         generation: fence.worker_generation,
         revocation_frontier_digest: fence.revocation_frontier_digest.to_string(),
         encoder_digest: proj.encoder_digest.clone(),
-        preprocessor_digest: proj.preprocessor_digest,
-        runtime_digest: proj.runtime_digest,
+        preprocessor_digest: proj.preprocessor_digest.clone(),
+        runtime_digest: proj.runtime_digest.clone(),
         source_input_digest: digest(b"approved-input").to_string(),
         source_feature_digest: super::super::stem_projection::stem_feature_f32_digest(
             &features, 3, "mean",
