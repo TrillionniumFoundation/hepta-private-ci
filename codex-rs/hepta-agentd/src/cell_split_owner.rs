@@ -464,21 +464,7 @@ impl CellSplitExecutionOwnerV1 {
     }
 
     fn accept_replayed(&mut self, frame: LedgerFrame) -> Result<(), CellSplitErrorV1> {
-        let expected = STEPS.get(self.accepted.len()).copied().ok_or(CellSplitErrorV1::Corrupt)?;
-        if frame.step != expected {
-            return Err(CellSplitErrorV1::Corrupt);
-        }
-        match frame.accepted {
-            None if self.pending.is_none() => self.pending = Some(frame.step),
-            Some(receipt) if self.pending == Some(frame.step) => {
-                validate_receipt(&self.plan, frame.step, &receipt)
-                    .map_err(|_| CellSplitErrorV1::Corrupt)?;
-                self.accepted.push(receipt);
-                self.pending = None;
-            }
-            _ => return Err(CellSplitErrorV1::Corrupt),
-        }
-        Ok(())
+        apply_replayed_state(&self.plan, &mut self.accepted, &mut self.pending, frame)
     }
 
     fn append(&mut self, frame: LedgerFrame) -> Result<(), CellSplitErrorV1> {
@@ -486,15 +472,9 @@ impl CellSplitExecutionOwnerV1 {
             return Err(CellSplitErrorV1::Poisoned);
         }
         // Reject noncanonical transitions before touching the durable file.
-        let mut probe = Self {
-            file: LockedFile(self.file.0.try_clone()?),
-            plan: self.plan.clone(),
-            accepted: self.accepted.clone(),
-            pending: self.pending,
-            heads: Vec::new(),
-            poisoned: false,
-        };
-        probe.accept_replayed(frame.clone())?;
+        let mut accepted = self.accepted.clone();
+        let mut pending = self.pending;
+        apply_replayed_state(&self.plan, &mut accepted, &mut pending, frame.clone())?;
         // A duplicate descriptor is never an acknowledgement.
         let prev = self.anchor().head_digest;
         let bytes = encode_frame(
@@ -516,11 +496,34 @@ impl CellSplitExecutionOwnerV1 {
             self.poisoned = true;
             return Err(CellSplitErrorV1::Indeterminate);
         }
-        self.accepted = probe.accepted;
-        self.pending = probe.pending;
+        self.accepted = accepted;
+        self.pending = pending;
         self.heads.push(Digest32::of_bytes(&bytes));
         Ok(())
     }
+}
+
+fn apply_replayed_state(
+    plan: &CellSplitPlanV1,
+    accepted: &mut Vec<CellSplitExternalReceiptV1>,
+    pending: &mut Option<CellSplitStepV1>,
+    frame: LedgerFrame,
+) -> Result<(), CellSplitErrorV1> {
+    let expected = STEPS.get(accepted.len()).copied().ok_or(CellSplitErrorV1::Corrupt)?;
+    if frame.step != expected {
+        return Err(CellSplitErrorV1::Corrupt);
+    }
+    match frame.accepted {
+        None if pending.is_none() => *pending = Some(frame.step),
+        Some(receipt) if *pending == Some(frame.step) => {
+            validate_receipt(plan, frame.step, &receipt)
+                .map_err(|_| CellSplitErrorV1::Corrupt)?;
+            accepted.push(receipt);
+            *pending = None;
+        }
+        _ => return Err(CellSplitErrorV1::Corrupt),
+    }
+    Ok(())
 }
 
 fn validate_receipt(
