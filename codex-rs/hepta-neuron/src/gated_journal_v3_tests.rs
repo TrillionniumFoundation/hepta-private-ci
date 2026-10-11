@@ -100,12 +100,6 @@ impl Fixture {
         checked(OpenOptions::new().read(true).write(true).open(&self.file))
     }
 
-    fn open(&self) -> GatedSparseJournalV3 {
-        checked(GatedSparseJournalV3::open(
-            self.reopen(), config(), scope(), 16
-        ))
-    }
-
     fn open_anchored(&self, anchor: JournalAnchor)
         -> Result<GatedSparseJournalV3, GatedJournalErrorV3>
     {
