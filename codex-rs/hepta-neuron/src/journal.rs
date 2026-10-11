@@ -461,6 +461,10 @@ impl SparseJournal {
     /// Return the current durable checkpoint frontier. This is an observation,
     /// not an external acknowledgement; hosts still retain JournalAnchor in an
     /// independent rollback domain before treating the frontier as acknowledged.
+    pub(crate) fn registered_scope(&self) -> JournalScope {
+        self.scope
+    }
+
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, JournalError> {
         if self.poisoned {
             return Err(JournalError::Poisoned);
