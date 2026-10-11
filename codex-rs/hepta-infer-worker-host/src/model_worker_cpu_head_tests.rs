@@ -232,6 +232,20 @@ fn compact_constant_gate_and_zero_prediction_do_not_triple_head_storage() {
         .expect("compact inference");
     assert_eq!(drive, vec![Q24 / 2, Q24 / 4]);
     assert_eq!(prediction, vec![0, 0]);
+
+    // The explicit all-zero 2x2 gate matrix is a *valid dense matrix*.
+    // Its digest differs from the compact zero-matrix profile, but arithmetic
+    // must be identical. This is also asserted by the Python Q24 reference.
+    let mut dense_zero = compact.clone();
+    dense_zero.gate_weights_q24 = vec![0; 4];
+    assert_ne!(
+        dense_zero.digest().expect("dense gate digest"),
+        compact.digest().expect("compact gate digest")
+    );
+    assert_eq!(
+        dense_zero.infer(&[Q24 / 2, Q24 / 4]).expect("dense zero gate"),
+        compact.infer(&[Q24 / 2, Q24 / 4]).expect("compact gate")
+    );
 }
 
 #[test]
