@@ -355,6 +355,64 @@ impl DurableWriterHandoffJournalV1 {
         &self.checkpoint
     }
 
+    /// Re-read the original durable checkpoint chain from the exclusively
+    /// locked file before any externally signed readback or CellSplit retirement.
+    ///
+    /// A cached in-memory checkpoint is not evidence that a non-cooperating
+    /// writer has not replaced, truncated, or appended to the actual journal.
+    /// This check is read-only; an unexpected or incomplete tail fails closed
+    /// instead of being truncated into a plausible successful checkpoint.
+    pub fn verify_current_on_disk(&mut self) -> Result<(), WriterHandoffErrorV1> {
+        if self.poisoned {
+            return Err(WriterHandoffErrorV1::Poisoned);
+        }
+        let result = self.verify_current_on_disk_inner();
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
+    }
+
+    fn verify_current_on_disk_inner(&mut self) -> Result<(), WriterHandoffErrorV1> {
+        let length = self.file.metadata()?.len();
+        if length > MAX_JOURNAL_BYTES {
+            return Err(WriterHandoffErrorV1::JournalTooLarge);
+        }
+        if length != self.durable_length {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        self.file.seek(SeekFrom::Start(0))?;
+        let mut bytes = Vec::new();
+        Read::take(&mut self.file, MAX_JOURNAL_BYTES + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 != self.durable_length
+            || self.file.metadata()?.len() != self.durable_length
+            || !bytes.starts_with(MAGIC)
+        {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        let mut cursor = MAGIC.len();
+        let mut previous: Option<WriterHandoffCheckpointV1> = None;
+        while cursor < bytes.len() {
+            let relative_newline = bytes[cursor..]
+                .iter()
+                .position(|byte| *byte == b'\n')
+                .ok_or(WriterHandoffErrorV1::Corrupt)?;
+            let end = cursor + relative_newline;
+            if end == cursor || end - cursor > MAX_RECORD_BYTES {
+                return Err(WriterHandoffErrorV1::Corrupt);
+            }
+            let checkpoint = decode_checkpoint(&bytes[cursor..end])?;
+            validate_recovered_checkpoint(previous.as_ref(), &checkpoint)?;
+            previous = Some(checkpoint);
+            cursor = end + 1;
+        }
+        if previous.as_ref() != Some(&self.checkpoint) {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        self.file.seek(SeekFrom::Start(self.durable_length))?;
+        Ok(())
+    }
+
     /// Persist one observed handoff phase. Exact retries of the currently
     /// committed checkpoint are idempotent and never append another record.
     pub fn advance(
