@@ -243,7 +243,9 @@ fn compact_constant_gate_and_zero_prediction_do_not_triple_head_storage() {
         compact.digest().expect("compact gate digest")
     );
     assert_eq!(
-        dense_zero.infer(&[Q24 / 2, Q24 / 4]).expect("dense zero gate"),
+        dense_zero
+            .infer(&[Q24 / 2, Q24 / 4])
+            .expect("dense zero gate"),
         compact.infer(&[Q24 / 2, Q24 / 4]).expect("compact gate")
     );
 }
