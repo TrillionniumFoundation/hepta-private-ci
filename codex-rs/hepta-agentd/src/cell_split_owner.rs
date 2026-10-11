@@ -207,10 +207,15 @@ pub trait CellSplitExecutionPortsV1 {
         key: Digest32,
     ) -> Result<(), CellSplitErrorV1>;
 
+    /// Reverify the SAME independently verified selection and signed grant
+    /// accepted earlier. Consume authorization at the real CNS CAS boundary,
+    /// never by trusting a previously captured digest or issuance alone.
     fn cutover_with_final_use(
         &mut self,
         plan: &CellSplitPlanV1,
         key: Digest32,
+        selection: &CellSplitExternalReceiptV1,
+        final_use: &CellSplitExternalReceiptV1,
     ) -> Result<(), CellSplitErrorV1>;
 }
 
@@ -423,20 +428,9 @@ impl CellSplitExecutionOwnerV1 {
                     }
                     _ => return Err(CellSplitErrorV1::Conflict),
                 }
-                // Re-acknowledge only the prefix already revalidated. Never
-                // bless an unverified suffix recovered beyond the last anchor.
-                let prefix = self
-                    .heads
-                    .get(2 * (index + 1))
-                    .copied()
-                    .ok_or(CellSplitErrorV1::Corrupt)?;
-                ports.retain_ledger_anchor(
-                    &self.plan,
-                    CellSplitLedgerAnchorV1 {
-                        sequence: (2 * (index + 1)) as u64,
-                        head_digest: prefix,
-                    },
-                )?;
+                // Never advance the external witness over an unverified
+                // recovered suffix. The pending or terminal boundary commits
+                // the latest anchor only after all prior receipts pass.
                 continue;
             }
             if self.pending.is_none() {
@@ -471,7 +465,17 @@ impl CellSplitExecutionOwnerV1 {
                             ports.fence_predecessor(&self.plan, key)?;
                         }
                         CellSplitStepV1::CnsRouteCutover => {
-                            ports.cutover_with_final_use(&self.plan, key)?;
+                            let selection = self.accepted.get(3)
+                                .ok_or(CellSplitErrorV1::Unapproved)?;
+                            let final_use = self.accepted.get(4)
+                                .ok_or(CellSplitErrorV1::Unapproved)?;
+                            validate_receipt(
+                                &self.plan, CellSplitStepV1::IndependentSelection, selection,
+                            )?;
+                            validate_receipt(
+                                &self.plan, CellSplitStepV1::FinalUseReady, final_use,
+                            )?;
+                            ports.cutover_with_final_use(&self.plan, key, selection, final_use)?;
                         }
                     }
                     ports.observe(&self.plan, step)?
@@ -490,6 +494,10 @@ impl CellSplitExecutionOwnerV1 {
             // reached an independently protected observer high-watermark.
             ports.retain_ledger_anchor(&self.plan, self.anchor())?;
         }
+        // Also reconcile fully recovered, already terminal owners: only
+        // complete re-observation of every accepted external effect allows
+        // witness advancement over an unauthenticated-but-valid journal tail.
+        ports.retain_ledger_anchor(&self.plan, self.anchor())?;
         Ok(self.progress())
     }
 
