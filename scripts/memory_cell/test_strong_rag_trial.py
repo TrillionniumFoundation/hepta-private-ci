@@ -39,7 +39,9 @@ def rows_for(qids=("q1", "q2"), *, successes=None, failures=()):
 
 def targets(qids=("q1", "q2")):
     return [
-        dict(id=qid, kind="new_fact", expected="site_11111111", support=["source-" + qid])
+        dict(
+            id=qid, kind="new_fact", expected="site_11111111", support=["source-" + qid]
+        )
         for qid in qids
     ]
 
@@ -103,9 +105,7 @@ class StrongRagPolicyTests(unittest.TestCase):
         self.assertEqual(chosen, 1)
 
     def test_missing_attempt_cannot_be_optimized_away(self):
-        rows = rows_for(
-            successes={("q1", 2), ("q2", 2)}, failures={('q2', 'k6')}
-        )
+        rows = rows_for(successes={("q1", 2), ("q2", 2)}, failures={("q2", "k6")})
         chosen, stats = trial.choose_k(rows, targets(), ["q1", "q2"])
         self.assertIsNone(chosen)
         self.assertEqual(stats["k6"]["failed"], 1)
@@ -138,18 +138,24 @@ class StrongRagPolicyTests(unittest.TestCase):
     def test_strict_census_rejects_missing_or_rewritten_answers(self):
         rows = rows_for()
         scored = trial._score(
-            rows, targets(), expected=["q1", "q2"],
+            rows,
+            targets(),
+            expected=["q1", "q2"],
             arms=tuple(f"k{k}" for k in trial.KS),
         )
         self.assertTrue(all("strict_task_success" in r for r in scored))
         with self.assertRaises(ValueError):
             trial._score(
-                rows[:-1], targets(), expected=["q1", "q2"],
+                rows[:-1],
+                targets(),
+                expected=["q1", "q2"],
                 arms=tuple(f"k{k}" for k in trial.KS),
             )
         with self.assertRaises(ValueError):
             trial._score(
-                rows + rows[:1], targets(), expected=["q1", "q2"],
+                rows + rows[:1],
+                targets(),
+                expected=["q1", "q2"],
                 arms=tuple(f"k{k}" for k in trial.KS),
             )
 
@@ -163,37 +169,56 @@ class StrongRagPolicyTests(unittest.TestCase):
             qids = [f"t{i}" for i in range(8)]
             cases, docs, answer_labels = [], {}, []
             for i, qid in enumerate(qids):
-                question = Question(qid, qid, qid, "What is the code?", "2026-01-01T00:00:00Z")
+                question = Question(
+                    qid, qid, qid, "What is the code?", "2026-01-01T00:00:00Z"
+                )
                 candidates = [f"{qid}-s{j}" for j in range(6)]
-                original = Document(candidates[0], "root" + qid, qid, qid,
-                                    "2026-01-01T00:00:00Z", "site_11111111")
+                original = Document(
+                    candidates[0],
+                    "root" + qid,
+                    qid,
+                    qid,
+                    "2026-01-01T00:00:00Z",
+                    "site_11111111",
+                )
                 docs[original.identity] = original
-                cases.append(dict(
-                    query=asdict(question), kind="new_fact",
-                    frontier="frozen-frontier", candidate_ids=candidates,
-                    candidate_digest=trial.digest(tuple(candidates)),
-                    controls=dict(
-                        hybrid=dict(selected=candidates[:4]),
-                        organized=dict(selected=[candidates[0]]),
-                        program_support=dict(selected=[candidates[0]]),
-                        empty=dict(selected=[]),
-                    ),
-                ))
-                answer_labels.append(dict(
-                    id=qid, kind="new_fact", expected="site_11111111",
-                    support=[candidates[0]],
-                ))
+                cases.append(
+                    dict(
+                        query=asdict(question),
+                        kind="new_fact",
+                        frontier="frozen-frontier",
+                        candidate_ids=candidates,
+                        candidate_digest=trial.digest(tuple(candidates)),
+                        controls=dict(
+                            hybrid=dict(selected=candidates[:4]),
+                            organized=dict(selected=[candidates[0]]),
+                            program_support=dict(selected=[candidates[0]]),
+                            empty=dict(selected=[]),
+                        ),
+                    )
+                )
+                answer_labels.append(
+                    dict(
+                        id=qid,
+                        kind="new_fact",
+                        expected="site_11111111",
+                        support=[candidates[0]],
+                    )
+                )
             trial.dump(root / "inputs/labels.json", answer_labels)
             trial.dump(root / "model/stage.json", dict(tier="qwen-3b"))
-            trial.dump(root / "calibration/frozen-policy.json", dict(
-                schema=trial.SCHEMA,
-                selected_k=2,
-                original_test_plan_sha256=trial.HISTORIC_PLAN_SHA,
-                stage_sha256="a" * 64,
-                reader_identity="reader",
-                frozen_before_evaluation=True,
-                candidate_accepted=False,
-            ))
+            trial.dump(
+                root / "calibration/frozen-policy.json",
+                dict(
+                    schema=trial.SCHEMA,
+                    selected_k=2,
+                    original_test_plan_sha256=trial.HISTORIC_PLAN_SHA,
+                    stage_sha256="a" * 64,
+                    reader_identity="reader",
+                    frozen_before_evaluation=True,
+                    candidate_accepted=False,
+                ),
+            )
             policy_sha = trial.file_sha(root / "calibration/frozen-policy.json")
             raw_read = trial.read
             original_journal = trial._journal_answers
@@ -207,7 +232,9 @@ class StrongRagPolicyTests(unittest.TestCase):
                     self.assertTrue(all("strict_task_success" not in x for x in raw))
                 return raw_read(path, sha)
 
-            def fake_journal(reader, test_cases, originals, arms, selections, journal, *, seed):
+            def fake_journal(
+                reader, test_cases, originals, arms, selections, journal, *, seed
+            ):
                 chronological.append("start_generation")
                 entries = []
                 with journal.open("x") as f:
@@ -215,11 +242,15 @@ class StrongRagPolicyTests(unittest.TestCase):
                         for arm in arms:
                             row = dict(
                                 question_id=case["query"]["identity"],
-                                kind="new_fact", arm=arm, status="succeeded",
+                                kind="new_fact",
+                                arm=arm,
+                                status="succeeded",
                                 answer="site_11111111 [E1]",
                                 selected=list(selections(case, arm)),
                                 candidate_digest=case["candidate_digest"],
-                                receipt=dict(input_tokens=4, generated_tokens=2, seconds=0.1),
+                                receipt=dict(
+                                    input_tokens=4, generated_tokens=2, seconds=0.1
+                                ),
                             )
                             f.write(json.dumps(row) + "\n")
                             f.flush()
@@ -233,18 +264,26 @@ class StrongRagPolicyTests(unittest.TestCase):
                 patch.object(trial, "read", side_effect=audited_read),
                 patch.object(trial, "_reader", return_value=(model, {}, inventory)),
                 patch.object(trial, "_journal_answers", side_effect=fake_journal),
-                patch("event_reader_experiment.preflight", return_value=(
-                    dict(
-                        cases=cases,
-                        labels_sha=trial.file_sha(root / "inputs/labels.json"),
-                        extraction={}, frozen=dict(costs={}),
-                    ), docs,
-                )),
+                patch(
+                    "event_reader_experiment.preflight",
+                    return_value=(
+                        dict(
+                            cases=cases,
+                            labels_sha=trial.file_sha(root / "inputs/labels.json"),
+                            extraction={},
+                            frozen=dict(costs={}),
+                        ),
+                        docs,
+                    ),
+                ),
                 patch.dict("os.environ", {"HEPTA_MEMORY_TESTED_COMMIT": "b" * 40}),
             ):
                 result = trial.evaluate(
-                    root / "plan", root / "inputs", root / "model",
-                    root / "calibration", root / "out",
+                    root / "plan",
+                    root / "inputs",
+                    root / "model",
+                    root / "calibration",
+                    root / "out",
                     plan_sha=trial.HISTORIC_PLAN_SHA,
                     stage_sha="a" * 64,
                     policy_sha=policy_sha,
@@ -262,16 +301,21 @@ class StrongRagPolicyTests(unittest.TestCase):
         self.assertIn(4, trial.KS)
         self.assertNotIn("parametric", trial.EVAL_ARMS)
         self.assertNotIn("trained_policy", trial.EVAL_ARMS)
-        self.assertFalse(trial.eval_selections({
-            "candidate_ids": [f"s{i}" for i in range(6)],
-            "candidate_digest": trial.digest(tuple(f"s{i}" for i in range(6))),
-            "controls": {
-                "hybrid": dict(selected=[f"s{i}" for i in range(4)]),
-                "organized": dict(selected=["s1"]),
-                "program_support": dict(selected=["s1"]),
-                "empty": dict(selected=[]),
-            },
-        }, 4)["empty"])
+        self.assertFalse(
+            trial.eval_selections(
+                {
+                    "candidate_ids": [f"s{i}" for i in range(6)],
+                    "candidate_digest": trial.digest(tuple(f"s{i}" for i in range(6))),
+                    "controls": {
+                        "hybrid": dict(selected=[f"s{i}" for i in range(4)]),
+                        "organized": dict(selected=["s1"]),
+                        "program_support": dict(selected=["s1"]),
+                        "empty": dict(selected=[]),
+                    },
+                },
+                4,
+            )["empty"]
+        )
 
 
 if __name__ == "__main__":
