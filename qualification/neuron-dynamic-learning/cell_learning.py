@@ -166,6 +166,30 @@ class DynamicCell:
         }
 
 
+
+def budgeted_cell(
+    cell_id: str, encoder_digest: str, width: int, ceiling: int, seed: int,
+) -> DynamicCell:
+    """Pick a real dynamic gate capacity within a pre-registered Cell budget."""
+    if ceiling not in (2048, 8192, 16384):
+        raise LearningContractError("unknown primary capacity tier")
+    candidates = []
+    for rank in range(1, 33):
+        for groups in (1, 2, 4, 8, 16, 32, 64):
+            if groups > width:
+                continue
+            parameter_count = rank * width + groups * rank + 2 * groups + 2 * width + 2
+            if parameter_count <= ceiling:
+                candidates.append((parameter_count, rank, groups))
+    if not candidates:
+        raise LearningContractError("budget too small for declared feature width")
+    _, rank, groups = max(candidates)
+    cell = DynamicCell.initialize(cell_id, encoder_digest, width, groups, rank, seed)
+    if cell.parameter_count() > ceiling:
+        raise LearningContractError("unadmitted Cell capacity")
+    return cell
+
+
 def rust_candidate_digest(candidate: dict) -> str:
     """Exact field order/domain separator of DynamicGateArtifactV3::new."""
     h = hashlib.sha256(b"hepta.infer.dynamic-cell-gate.v3")
