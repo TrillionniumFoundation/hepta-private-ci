@@ -758,6 +758,7 @@ mod tests {
         let h_second = driver.register_head(second).expect("head b");
         let mut cache = SharedFeatureCacheV2::new(2, 512).expect("cache");
         let identity = SharedFeatureIdentityV2 {
+            scope_id: id("scope.a"),
             principal_id: id("principal.a"),
             purpose_id: id("purpose.prediction"),
             generation: Generation::new(3).expect("generation"),
@@ -786,6 +787,7 @@ mod tests {
                     reservation_maximum_tokens: 32,
                     cancelled: false,
                 },
+                scope_id: id("scope.a"),
                 principal_id: id("principal.a"),
                 purpose_id: id("purpose.prediction"),
                 cell_id: id(cell),
