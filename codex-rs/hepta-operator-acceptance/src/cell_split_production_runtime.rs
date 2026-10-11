@@ -45,7 +45,7 @@ impl ProductionTargetHostRuntime {
     pub fn new(config: ProductionTargetHostRuntimeConfig) -> Self {
         Self {
             packet: CellSplitProductionPacketV1 {
-                schema: CELL_SPLIT_PRODUCTION_RUNTIME_SCHEMA_V1.to_string(),
+                schema: CELL_SPLIT_PRODUCTION_RUNTIME_SCHEMA_V2.to_string(),
                 ..CellSplitProductionPacketV1::default()
             },
             config,
@@ -141,7 +141,7 @@ impl ProductionTargetHostRuntime {
             }
         }
         CellSplitProductionBlockedPacketV1 {
-            schema: CELL_SPLIT_PRODUCTION_RUNTIME_SCHEMA_V1.to_owned(),
+            schema: CELL_SPLIT_PRODUCTION_RUNTIME_SCHEMA_V2.to_owned(),
             split_id: config.split_id.clone(),
             target_host_id: config.target_host_id.clone(),
             reason: if blocked_inputs.is_empty() {
@@ -187,7 +187,7 @@ impl ProductionTargetHostRuntime {
                     "lifecycle did not advance",
                 ))?;
         Ok(CellSplitProductionLifecycleReceiptV1 {
-            schema: CELL_SPLIT_PRODUCTION_RUNTIME_SCHEMA_V1.to_string(),
+            schema: CELL_SPLIT_PRODUCTION_RUNTIME_SCHEMA_V2.to_string(),
             split_id: self.config.split_id.clone(),
             target_host_id: self.config.target_host_id.clone(),
             final_step,
@@ -240,7 +240,7 @@ impl ProductionTargetHostRuntime {
         packet.canonical_verification = None;
         canonical_json(&packet)
             .map(|bytes| sha256(&bytes))
-            .map_err(std::string::ToString::to_string)
+            .map_err(|error| error.to_string())
     }
 }
 

@@ -16,6 +16,8 @@ use crate::CellSplitTargetResourceSampleV1;
 
 pub const CELL_SPLIT_PRODUCTION_RUNTIME_SCHEMA_V1: &str =
     "hepta.learning.cell-split.production-target-host-runtime.v1";
+pub const CELL_SPLIT_PRODUCTION_RUNTIME_SCHEMA_V2: &str =
+    "hepta.learning.cell-split.production-target-host-runtime.v2";
 pub(crate) const ZERO_DIGEST: &str =
     "0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -258,7 +260,9 @@ pub struct CellSplitProductionPacketV1 {
     pub taskflow: Option<TaskFlowEventChainPacketV1>,
     pub learning_ledger: Option<LearningLedgerWitnessFrontierPacketV1>,
     pub independent_evaluator: Option<IndependentEvaluatorReceiptPacketV1>,
+    #[serde(default)]
     pub transient_receipts: ProductionTransientReceiptPacketV1,
+    #[serde(default)]
     pub canonical_verification: Option<ProductionCanonicalPacketVerificationReceiptV1>,
 }
 
@@ -614,6 +618,7 @@ pub struct CellSplitProductionBlockedPacketV1 {
     pub blocked_inputs: Vec<String>,
     pub reason: String,
     pub production_evidence: bool,
+    #[serde(default)]
     pub transient_receipts: ProductionTransientReceiptPacketV1,
 }
 
@@ -627,5 +632,6 @@ pub struct CellSplitProductionLifecycleReceiptV1 {
     pub receipt_chain_digest: String,
     pub production_evidence: bool,
     pub blocked_inputs: Vec<String>,
+    #[serde(default)]
     pub transient_receipts: ProductionTransientReceiptPacketV1,
 }

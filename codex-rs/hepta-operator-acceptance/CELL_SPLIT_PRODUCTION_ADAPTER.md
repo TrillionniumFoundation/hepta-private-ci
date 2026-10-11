@@ -32,6 +32,11 @@ must attest the exact packet digest before `run_production_lifecycle` can set
 receipt with `productionEvidence: false`. The existing signed-evidence
 verifier remains the only path that can accept a host/observer envelope.
 
+The packet layout containing these verifier and transient-receipt fields is
+exported as schema V2. V2 readers default missing new fields so previously
+stored V1 packets remain readable; V1 consumers must reject V2 packets by
+schema before processing them.
+
 No target host, hardware attestation, fault injector, observer/evaluator, or
 production owner is connected in this repository checkout. Therefore no
 production evidence or activation claim is emitted here.
