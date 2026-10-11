@@ -275,10 +275,12 @@ impl AgentdState {
                     self.identity.spawn_generation,
                     &query,
                     limit,
-                    self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
+                    crate::cognitive_context::RetrievalLearningContext {
+                        ranker: self.cognitive_ranker.get(),
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                        learning_sink: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
                 )
                 .await;
                 self.refresh_generation()?;
