@@ -906,3 +906,34 @@ training cut in this audit. The separate TRAIN-only shadow experiment
 must select its scale before reading any held-out support label, and no
 shadow Reader call is allowed. It cannot certify independent generalization,
 semantic citation entailment, per-Cell TCO or production admission.
+
+## Frozen Retriever TRAIN-only source-recall grid (new read-only experiment)
+
+A strict, independent, source-pinned RetrievalPolicy experiment now replays
+the **original strict 576/576 as-of source archive** at its externally pinned
+ZIP SHA256, original Encoder file inventory, registered 80 native questions,
+fixed `WindowBudget`, actual immutable as-of SQLite index cuts and original
+top-8 candidate pool identities. The **original** `channel_k=64,
+lexical_weight=0.5` policy must reconstruct the original `pool.seal()` for
+**all 80 questions**; otherwise the experiment fails before any learning
+claims are made.
+
+Exactly ten fixed candidate policies are evaluated on those identical inputs:
+`channel_k∈{64,128}`, `lexical_weight∈{0,.25,.5,.75,1}`, with
+`top_k=8` and original RRF constant 60. Every query/policy/index/window
+source identity is emitted **before labels are opened**. Only the original
+48 TRAIN native-document labels select one fixed grid point using
+equal-source-family-macro candidate-window recall; test, transfer, retention
+and select labels are consulted **only after the selection is persisted**.
+Reported held-out values distinguish original retrieved document recall
+from actual source-window coverage and from changes in frozen Reader QA.
+
+This is a bounded **frozen Retriever** alternative, not Head or LoRA
+learning. It does not run a Reader, modify the native six arms, change
+the source chronology, or use held-out answer labels for selection.
+It may show that the original candidate ceiling is addressable by a
+fixed retrieval policy; a support-document hit still does **not** certify
+passage entailment, semantic citation accuracy or prospective benefit.
+A successful protocol test alone is not evidence of a successful model
+replay. The work is not eligible for production without independent
+source-family/time windows, Reader outcomes, p95/TCO, and review.
