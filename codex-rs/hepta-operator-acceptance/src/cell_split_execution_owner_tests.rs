@@ -366,6 +366,115 @@ fn post_open_frozen_plan_tampering_fences_first_effect() {
 }
 
 #[test]
+fn persisted_owner_keys_cannot_drift_after_a_committed_effect() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("owner");
+        owner.advance().expect("original CAS effect");
+    }
+    let mut replacement_keys = [0, 1, 2, 3].map(|index| signing_key(index).verifying_key());
+    replacement_keys[1] = SigningKey::from_bytes(&[91; 32]).verifying_key();
+    let replacement = CellSplitOwnerTrustV1::new(&plan(), replacement_keys)
+        .expect("distinct replacement keys");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            replacement,
+            FixturePort::new(state.clone())
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid("persisted effect owner keys changed"))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
+fn rewritten_trust_pins_fence_live_dispatch() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("owner");
+    let path = root.path().join("cell-split-owner-trust-pins.json");
+    fs::write(path, b"{}").expect("alter pin");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"))
+    ));
+    assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
+fn erased_trust_pins_reject_recovery_after_effect_history() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("owner");
+        owner.advance().expect("first commit");
+    }
+    fs::remove_file(root.path().join("cell-split-owner-trust-pins.json"))
+        .expect("erase pinned trust");
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone())
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid("effect history lost trust pins"))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
+fn receipt_whitespace_rewrite_fails_closed_before_successor() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("owner");
+    owner.advance().expect("original owner receipt");
+    let path = root.path().join("cell-split-00-committed.json");
+    let mut bytes = fs::read(&path).expect("signed original");
+    bytes.push(b'\n');
+    fs::write(&path, bytes).expect("noncanonical rewrite");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid("noncanonical committed receipt bytes"))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+    drop(owner);
+    assert!(CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state),
+    )
+    .is_err());
+}
+
+#[test]
 fn post_open_pending_intent_tampering_cannot_reconcile_or_dispatch() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
