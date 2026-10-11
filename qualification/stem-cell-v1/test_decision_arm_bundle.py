@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from decision_421m import SOURCES
+from decision_421m import SOURCES, input_fingerprint
 from decision_arm_bundle import assemble, sha256_file
 
 
@@ -20,8 +20,14 @@ class DecisionArmBundleTests(unittest.TestCase):
                       "future_2", "ood"):
             for i in range(2):
                 case = split + str(i)
-                self.dataset[case] = {"sample_id": case,
-                                      "split": split, "label": i}
+                self.dataset[case] = {
+                    "sample_id": case, "source_group": case,
+                    "episode_id": case, "split": split, "label": i,
+                    "scope": "authorized", "language": "en",
+                    "state": "state " + case, "question": "choose?",
+                    "options": ["first", "second"],
+                    "event_time": "2026-01-01T00:00:00Z",
+                }
         self.plan = {
             "checkpoints": {
                 model: {
@@ -49,6 +55,7 @@ class DecisionArmBundleTests(unittest.TestCase):
                         continue
                     f.write(json.dumps({
                         "arm": arm, "sample_id": sid,
+                        "input_digest": input_fingerprint(row),
                         "logits": [1.5, -.5], "weights_sha256": weights,
                         "latency_ms": 1.25,
                     }, sort_keys=True) + "\n")
@@ -130,6 +137,20 @@ class DecisionArmBundleTests(unittest.TestCase):
         fake[0]["run_manifest_path"] = "/tmp/foreign.json"
         with self.assertRaisesRegex(ValueError, "strictly relative"):
             self.build(fake)
+
+    def test_rehashed_source_input_mismatch_is_still_rejected(self):
+        item = self.entries[0]
+        prediction = self.root / item["prediction_path"]
+        rows = [json.loads(line) for line in prediction.read_text().splitlines()]
+        rows[0]["input_digest"] = "f" * 64
+        prediction.write_text(
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
+        manifest_path = self.root / item["run_manifest_path"]
+        run = json.loads(manifest_path.read_text())
+        run["output_predictions_sha256"] = sha256_file(prediction)
+        manifest_path.write_text(json.dumps(run))
+        with self.assertRaisesRegex(ValueError, "source/options digest"):
+            self.build()
 
     def test_model_source_and_token_envelope_are_bound(self):
         item = self.entries[0]
