@@ -90,8 +90,12 @@ def _features(args: argparse.Namespace, rows: list[dict]) -> tuple[torch.Tensor,
         return torch.stack([_mock_embedding(r, args.dimension) for r in rows]), None
     if not args.checkpoint_dir or not args.weights_sha256:
         raise ValueError('real encoder requires --checkpoint-dir and --weights-sha256')
-    backend = OfflineEncoder(args.encoder, args.checkpoint_dir, args.weights_sha256,
-                             args.device, args.max_length)
+    if not args.checkpoint_bundle_sha256:
+        raise ValueError('real encoder requires --checkpoint-bundle-sha256')
+    backend = OfflineEncoder(
+        args.encoder, args.checkpoint_dir, args.weights_sha256,
+        args.device, args.max_length, expected_bundle_sha256=args.checkpoint_bundle_sha256,
+    )
     return backend.encode(rows, batch=args.encoder_batch), backend
 
 
@@ -312,6 +316,7 @@ def _parser() -> argparse.ArgumentParser:
                    default='synthetic-hash')
     p.add_argument('--checkpoint-dir', default='')
     p.add_argument('--weights-sha256')
+    p.add_argument('--checkpoint-bundle-sha256')
     p.add_argument('--allow-synthetic', action='store_true')
     p.add_argument('--device', default='cpu')
     p.add_argument('--dimension', type=int, default=256)

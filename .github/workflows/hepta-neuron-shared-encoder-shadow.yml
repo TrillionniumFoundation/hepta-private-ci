@@ -46,7 +46,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m pytest -q tests/test_qualification.py
+          python3 -m pytest -q tests/
           python3 -m compileall -q neuron_shared_encoder tests
 
       - name: Execute isolated synthetic grids, never production

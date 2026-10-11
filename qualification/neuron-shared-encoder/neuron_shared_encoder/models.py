@@ -12,6 +12,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from .contracts import sha256_file
+from .bundle import verify_checkpoint_bundle
 
 KINDS = ('linear', 'film', 'lowrank8', 'lowrank16', 'mlp', 'swiglu')
 
@@ -83,7 +84,8 @@ class OrganExpertBank(nn.Module):
 
 class OfflineEncoder:
     def __init__(self, kind: str, local_path: str, expected_weights_sha256: str,
-                 device: str = 'cpu', max_length: int = 512):
+                 device: str = 'cpu', max_length: int = 512,
+                 expected_bundle_sha256: str | None = None):
         if kind not in ('laya-joint', 'modernbert-joint'):
             raise ValueError('real backend required: laya-joint or modernbert-joint')
         root = Path(local_path)
@@ -95,6 +97,8 @@ class OfflineEncoder:
         actual = sha256_file(weight)
         if actual != expected_weights_sha256:
             raise ValueError('model weights SHA256 mismatch')
+        self.root = root
+        self.bundle_sha256 = verify_checkpoint_bundle(root, kind, expected_bundle_sha256)
         self.weights_sha256 = actual
         self.kind = kind
         self.device = torch.device(device)
@@ -120,6 +124,10 @@ class OfflineEncoder:
             self.dimension = self.model.config.hidden_size
             for p in self.model.parameters():
                 p.requires_grad_(False)
+        self._check_bundle_unchanged()
+
+    def _check_bundle_unchanged(self) -> None:
+        verify_checkpoint_bundle(self.root, self.kind, self.bundle_sha256)
 
     def encode(self, records: list[dict[str, Any]], batch: int = 8) -> torch.Tensor:
         if not records or batch <= 0:
@@ -162,6 +170,7 @@ class OfflineEncoder:
                     mask = enc['attention_mask'][..., None]
                     embed = (hidden * mask).sum(1) / mask.sum(1).clamp(min=1)
                 chunks.append(embed.detach().float().cpu())
+        self._check_bundle_unchanged()
         return torch.cat(chunks, dim=0)
 
     def laya_baseline_probabilities(self, records: list[dict[str, Any]]) -> torch.Tensor:
@@ -174,6 +183,7 @@ class OfflineEncoder:
             result = self.agent.system_one(row['state'], q)
             answers = result['answers']['q']['probabilities']
             predictions.append([answers[o] for o in row['options']])
+        self._check_bundle_unchanged()
         return torch.tensor(predictions, dtype=torch.float32)
 
 

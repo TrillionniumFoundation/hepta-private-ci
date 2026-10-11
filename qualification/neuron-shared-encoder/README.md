@@ -27,17 +27,18 @@ python -m neuron_shared_encoder.experiment gate --output gate.json
 
 ## Real pretrained offline trial (when provisioned)
 
-Provide a local already-downloaded **pinned** checkpoint including `model.safetensors`, tokenizer and model configuration; record the SHA-256 of the exact model weights and complete dataset bytes. The real loader fails closed if weights are missing or modified. Running with a synthetic encoder is explicitly prohibited for `representation`:
+Provide a local already-downloaded **pinned** checkpoint including `model.safetensors`, tokenizer and model configuration; record the SHA-256 of the exact model weights, the **complete checkpoint bundle** and the dataset bytes. Stage the bundle in a private, read-only directory with real files, not Hugging Face cache symlinks. This qualification hashes every file and refuses symlinks or missing local encoder config; it checks the same bundle before loading and after inference. Operator-computed hashes alone do **not** constitute an independent signature or trusted source attestation; review and pin the manifest separately. The real loader fails closed if weights are missing or modified. Running with a synthetic encoder is explicitly prohibited for `representation`:
 
 ```bash
 MODEL=/absolute/path/to/pinned/laya
 DATA=/absolute/path/to/approved-labelled-splits.jsonl
 SHA_MODEL=$(sha256sum "$MODEL/model.safetensors" | cut -d' ' -f1)
+SHA_BUNDLE=$(python -c 'import sys; from neuron_shared_encoder.bundle import checkpoint_bundle_sha256; print(checkpoint_bundle_sha256(sys.argv[1], "laya-joint"))' "$MODEL")
 SHA_DATA=$(sha256sum "$DATA" | cut -d' ' -f1)
 python -m neuron_shared_encoder.experiment representation \
   --encoder laya-joint --checkpoint-dir "$MODEL" \
-  --weights-sha256 "$SHA_MODEL" --dataset "$DATA" \
-  --dataset-sha256 "$SHA_DATA" --output laya_real_shadow.json
+  --weights-sha256 "$SHA_MODEL" --checkpoint-bundle-sha256 "$SHA_BUNDLE" \
+  --dataset "$DATA" --dataset-sha256 "$SHA_DATA" --output laya_real_shadow.json
 ```
 
 `laya-joint` builds question+option marker sequences via Laya's own encoding functions and measures the original Laya model's true `system_one` policy (when that pinned package/checkpoint is locally installed). The lightweight head receives **lossy pooled CLS + option-marker statistics**, intentionally quantifying the representation loss; this does not claim Laya functional equivalence. Checkpoints using parallel option attention are explicitly rejected pending a compatible masked Encoder path. The exact installed Laya package source identity also needs independent attestation.
