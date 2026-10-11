@@ -42,7 +42,9 @@ def eligible_pairs(documents, tokenizer, *, roots, revision=2, maximum=MAX_SCOPE
         q = Question(**ex["query"])
         grouped.setdefault(q.scope, []).append(ex)
     chosen, unavailable = [], []
-    for scope in sorted(grouped)[:maximum]:
+    for scope in sorted(grouped):
+        if len(chosen) >= maximum:
+            break
         projection = EventProjection(tuple(d for d in documents if d.scope == scope))
         annotated = []
         for ex in grouped[scope]:
@@ -172,8 +174,6 @@ def probe(
         if training is not None
         else (None, None)
     )
-    if not pairs:
-        raise ValueError("no eligible same-length source relation confusions")
     if visits is not None and any(
         p["positive"]["query"]["identity"] not in visits
         or p["negative"]["query"]["identity"] not in visits
@@ -280,6 +280,9 @@ def probe(
         plan_sha256=hashlib.sha256(plan_path.read_bytes()).hexdigest(),
         raw_sha256=hashlib.sha256(raw_path.read_bytes()).hexdigest(),
         available_relation_pairs=len(pairs),
+        comparison_eligible=bool(pairs),
+        no_eligible_pair_cannot_establish_gain=True,
+        scanned_source_scopes=len(pairs) + len(unavailable),
         unavailable_source_scopes=len(unavailable),
         scores_expected=len(pairs) * len(WORDINGS) * len(ARMS) * len(KINDS),
         scores_completed=sum(r["status"] == "succeeded" for r in rows),

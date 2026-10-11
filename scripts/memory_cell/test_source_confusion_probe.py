@@ -115,9 +115,13 @@ class ConfusionTests(unittest.TestCase):
         self.reader.tokenizer.encode = lambda value, **kwargs: (
             [1] if value == "site_a" else [1, 2]
         )
-        with self.assertRaisesRegex(ValueError, "no eligible"):
-            self.run_probe()
-        self.assertFalse(self.output.exists())
+        calls = []
+        result = self.run_probe(lambda *args: calls.append(args))
+        self.assertFalse(result["comparison_eligible"])
+        self.assertEqual(result["available_relation_pairs"], 0)
+        self.assertEqual(result["scores_expected"], 0)
+        self.assertIsNone(result["results_by_wording"]["training"]["mean_margin_delta"])
+        self.assertEqual(calls, [])
 
     def test_wrong_scope_or_source_dependency_rejected_before_scoring(self):
         for docs, sha in ((self.docs[:1], "a" * 64), (self.docs, "invalid")):
