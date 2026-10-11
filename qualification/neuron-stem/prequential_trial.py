@@ -121,6 +121,32 @@ def prediction_precommit(row, probabilities, head_digest, event_order):
     }
 
 
+def model_only_ood_receipt(row, arm, probabilities, *, model, revision,
+                           weights_digest, generation):
+    """Label-free model output, deliberately without production no-change."""
+    if arm not in ("frozen", "trained") or row.get("split") not in ("calibration", "ood"):
+        raise ValueError("only learned/frozen calibration and OOD model records allowed")
+    if (not isinstance(revision, str) or len(revision) != 40 or
+            not isinstance(weights_digest, str) or len(weights_digest) != 64 or
+            type(generation) is not int or generation <= 0):
+        raise ValueError("OOD model snapshot revision/generation not pinned")
+    if (not isinstance(probabilities, list) or
+            len(probabilities) != len(row["options"]) or
+            any(type(p) not in (float, int) or not math.isfinite(p) or p < 0 or p > 1
+                for p in probabilities) or abs(sum(probabilities) - 1.0) > 1e-5):
+        raise ValueError("OOD model predictions must be finite and normalized")
+    return {
+        "case_id": row["case_id"], "arm": arm,
+        "scope_id": row["scope_id"], "cell_id": row["cell_id"],
+        "split": row["split"], "event_time": row["event_time"],
+        "input_digest": sha256_record([row["state"], row["question"], row["options"]]),
+        "probabilities": probabilities,
+        "model_id": model, "model_revision": revision,
+        "weights_digest": weights_digest, "generation": generation,
+        "status": "Succeeded", "production_promotion_permitted": False,
+    }
+
+
 def trial(args):
     import psutil
     import torch
@@ -154,7 +180,11 @@ def trial(args):
     args.output.parent.mkdir(parents=True, exist_ok=True)
     manifest = Path(str(args.output) + ".manifest.json")
     prediction_journal_path = Path(str(args.output) + ".prediction-journal.jsonl")
-    if any(p.exists() for p in (args.output, manifest, prediction_journal_path)):
+    ood_model_path = Path(str(args.output) + ".ood-model-receipts.jsonl")
+    destinations = [args.output, manifest, prediction_journal_path]
+    if args.emit_ood_model_receipts:
+        destinations.append(ood_model_path)
+    if any(p.exists() for p in destinations):
         raise ValueError("refusing to overwrite frozen evidence")
     torch.manual_seed(args.seed)
     torch.set_num_threads(args.threads)
@@ -227,6 +257,26 @@ def trial(args):
     retention_before = retention_by_cell()
     initial_digests = {
         str(key): effective_weights_digest(cell_heads[key]) for key in keys}
+
+    # Capture historical calibration BEFORE any future label-driven update.
+    # Two Head arms are recorded; the genuine production no-change baseline
+    # MUST be supplied independently and is never fabricated here.
+    ood_partials = []
+    if args.emit_ood_model_receipts:
+        for row in sorted((r for r in task_rows if r["split"] == "calibration"),
+                          key=lambda r: (iso_time(r), r["case_id"])):
+            key = (row["scope_id"], row["cell_id"])
+            with torch.inference_mode():
+                frozen_p = torch.softmax(control_heads[key](feature(row)),
+                                         dim=-1).cpu().tolist()
+                initial_p = torch.softmax(cell_heads[key](feature(row)),
+                                          dim=-1).cpu().tolist()
+            if any(abs(x - y) > 1e-6 for x, y in zip(frozen_p, initial_p)):
+                raise ValueError("learned/frozen calibration heads differ before future learning")
+            for arm, prob in (("frozen", frozen_p), ("trained", initial_p)):
+                ood_partials.append(model_only_ood_receipt(
+                    row, arm, prob, model=args.model, revision=args.revision,
+                    weights_digest=initial_digests[str(key)], generation=args.generation))
 
     outcomes, frozen_outcomes, records = [], [], []
     update_ms = 0.
@@ -308,6 +358,35 @@ def trial(args):
         str(key): effective_weights_digest(control_heads[key]) for key in keys}
     if frozen_final_digests != initial_digests:
         raise ValueError("frozen historical-control Head tensor changed during future events")
+    if args.emit_ood_model_receipts:
+        ood_rows = sorted((row for row in task_rows if row["split"] == "ood"),
+                          key=lambda row: (iso_time(row), row["case_id"]))
+        if not ood_rows or min(iso_time(row) for row in ood_rows) <= max(
+                iso_time(row) for row in future):
+            raise ValueError("OOD model traces require post-future chronological events")
+        for row in ood_rows:
+            key = (row["scope_id"], row["cell_id"])
+            with torch.inference_mode():
+                learned_p = torch.softmax(cell_heads[key](feature(row)),
+                                          dim=-1).cpu().tolist()
+                frozen_p = torch.softmax(control_heads[key](feature(row)),
+                                         dim=-1).cpu().tolist()
+            for arm, prob, digest in (
+                    ("frozen", frozen_p, frozen_final_digests[str(key)]),
+                    ("trained", learned_p, final_digests[str(key)])):
+                ood_partials.append(model_only_ood_receipt(
+                    row, arm, prob, model=args.model, revision=args.revision,
+                    weights_digest=digest, generation=args.generation))
+        raw_ood = "".join(json.dumps(row, ensure_ascii=False, sort_keys=True,
+                                     allow_nan=False, separators=(",", ":")) + "\n"
+                          for row in ood_partials).encode("utf-8")
+        with ood_model_path.open("xb") as stream:
+            stream.write(raw_ood)
+            stream.flush()
+            os.fsync(stream.fileno())
+        ood_model_sha256 = hashlib.sha256(raw_ood).hexdigest()
+    else:
+        ood_model_sha256 = None
     retention_after = retention_by_cell()
     retention_regressions = {
         key: retention_after[key]["multiclass_brier"]
@@ -346,6 +425,10 @@ def trial(args):
         "initial_head_digests": initial_digests,
         "final_head_digests": final_digests,
         "frozen_final_head_digests": frozen_final_digests,
+        "offline_ood_model_receipts_sha256": ood_model_sha256,
+        "offline_ood_model_receipts_path": (
+            str(ood_model_path) if args.emit_ood_model_receipts else None),
+        "production_no_change_ood_receipts_present": False,
         "frozen_future_metrics": accuracy_brier(frozen_outcomes),
         "learned_future_metrics": accuracy_brier(outcomes),
         "held_out_test_retention_before": retention_before,
@@ -404,6 +487,8 @@ def main():
     p.add_argument("--max-dataset-cases", type=int, default=100000)
     p.add_argument("--max-future-events", type=int, default=50000)
     p.add_argument("--max-retention-brier-regression", type=float, default=.01)
+    p.add_argument("--emit-ood-model-receipts", action="store_true",
+                   help="Emit only real frozen/learned model traces; never invent no-change")
     p.add_argument("--max-tokens", type=int, default=512)
     p.add_argument("--cache-entries", type=int, default=256)
     p.add_argument("--device", default="cpu")
