@@ -183,6 +183,48 @@ fn committed_artifact_restarts_and_refuses_changed_parent_or_plan() {
 }
 
 #[test]
+fn complete_orphaned_cas_object_cannot_be_adopted_after_lost_commit() {
+    let fixture = Fixture::new();
+    let authority = ExternalFinalUse(Arc::new(AtomicBool::new(true)));
+    let request = intent(&plan());
+    let mut owner = fixture.owner(authority.clone());
+    let orphan = owner.object_path();
+
+    // Simulate a process dying after object and directory fsync but before
+    // the intent-bound commit record. Valid bytes are not a commit receipt.
+    fs::copy(&fixture.child, &orphan).expect("orphaned complete object");
+    fs::File::open(&orphan)
+        .expect("orphan file")
+        .sync_all()
+        .expect("durable orphan");
+    fs::File::open(&fixture.store)
+        .expect("CAS directory")
+        .sync_all()
+        .expect("durable directory");
+    assert_eq!(
+        fs::read(&orphan).expect("object"),
+        b"real child artifact bytes"
+    );
+    assert!(matches!(
+        owner.commit_once(&request),
+        Err(CellSplitArtifactCasErrorV1::Ambiguous)
+    ));
+    assert!(owner.read_committed(&request).expect("readback").is_none());
+    assert!(!owner.commit_path(&request).exists());
+    drop(owner);
+
+    // Reopening cannot reset the unknown effect or turn valid bytes into a
+    // newly signed commit. The coordinator must reconcile, not re-execute.
+    let mut reopened = fixture.owner(authority);
+    assert!(matches!(
+        reopened.commit_once(&request),
+        Err(CellSplitArtifactCasErrorV1::Ambiguous)
+    ));
+    assert!(reopened.read_committed(&request).expect("restart readback").is_none());
+    assert!(!reopened.commit_path(&request).exists());
+}
+
+#[test]
 fn real_cas_socket_receipt_requires_fresh_state_even_after_backend_restart() {
     let fixture = Fixture::new();
     let socket = fixture.root.path().join("cas.sock");
