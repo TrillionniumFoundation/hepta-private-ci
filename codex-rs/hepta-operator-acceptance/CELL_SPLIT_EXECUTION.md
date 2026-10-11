@@ -130,11 +130,25 @@ composition proof, signed deployment authorization, power-loss witness,
 no-change NDU improvement, future-window retention, or a 16-case performance
 qualification. All remain separately enforced production gates.
 
+### Artifact CAS object-before-commit recovery
+
+An on-disk child artifact is not sufficient proof of an accepted CAS operation.
+The object may have been fully copied and fsynced just before the process died,
+without writing the original, idempotency-key-bound commit record. Even when its
+SHA-256 matches the frozen child artifact, a subsequent `Execute` must return
+an ambiguous outcome and must not create a replacement commit receipt.
+`ReadBack` remains non-authoritative until the original commit can be
+independently verified; the execution coordinator never resends a prepared
+intent. Recovery needs an independently approved reconciliation procedure,
+not an opportunistic adoption of orphan bytes.
+
 ## Native source checks
 
 ```sh
 cargo test --locked --manifest-path codex-rs/Cargo.toml \
   -p codex-hepta-operator-acceptance --lib cell_split_execution
+cargo test --locked --manifest-path codex-rs/Cargo.toml \
+  -p codex-hepta-operator-acceptance --lib cell_split_artifact_cas
 cargo check --locked --manifest-path codex-rs/Cargo.toml \
   -p codex-hepta-operator-acceptance --all-targets
 ```
