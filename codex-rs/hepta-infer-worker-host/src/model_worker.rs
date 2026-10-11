@@ -588,7 +588,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // Enforce the full reported resident + extra transient footprint.
+        // The driver must report disjoint categories; on overcounting we
+        // conservatively reject instead of relaxing the resource grant.
+        let total_reported_bytes = observed
+            .observed_memory_bytes
+            .checked_add(observed.transient_allocation_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if total_reported_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
