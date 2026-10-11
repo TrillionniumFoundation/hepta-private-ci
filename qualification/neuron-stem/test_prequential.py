@@ -49,11 +49,11 @@ class PrequentialTests(unittest.TestCase):
                 generation=7, feature_manifest_digest="b" * 64)["input_digest"])
         for invalid_kwargs, error in (
                 ({"arm": "no_change"}, "only learned/frozen"),
-                ({"weights_digest": "unpinned"}, "revision/generation not pinned"),
-                ({"generation": 0}, "revision/generation not pinned"),
+                ({"weights_digest": "unpinned"}, "revision/generation/Encoder manifest not pinned"),
+                ({"generation": 0}, "revision/generation/Encoder manifest not pinned"),
                 ({"feature_manifest_digest": "unpinned"}, "Encoder manifest not pinned"),
                 ({"feature_manifest_digest": "G" * 64}, "Encoder manifest not pinned"),
-                ({"revision": "G" * 40}, "revision/generation not pinned"),
+                ({"revision": "G" * 40}, "revision/generation/Encoder manifest not pinned"),
                 ({"probabilities": [float("nan"), 1.0]}, "normalized"),
                 ({"probabilities": [.9, .9]}, "normalized")):
             values = dict(
