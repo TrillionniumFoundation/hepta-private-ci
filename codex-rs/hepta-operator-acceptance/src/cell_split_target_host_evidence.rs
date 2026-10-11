@@ -220,6 +220,18 @@ impl CellSplitTargetHostEvidenceTrustPolicyV1 {
         if self.host_keys.is_empty() || self.observer_keys.is_empty() {
             return Err(invalid("target-host trust policy is empty"));
         }
+        if self
+            .host_keys
+            .values()
+            .chain(self.observer_keys.values())
+            .any(VerifyingKey::is_weak)
+            || self
+                .host_keys
+                .values()
+                .any(|host| self.observer_keys.values().any(|observer| host == observer))
+        {
+            return Err(invalid("weak or shared host/observer trust key"));
+        }
         let file = CellSplitTargetHostEvidenceTrustPolicyFileV1 {
             schema: CELL_SPLIT_TARGET_HOST_TRUST_POLICY_SCHEMA_V1.to_string(),
             schema_version: 1,
@@ -627,6 +639,7 @@ fn decode_trusted_keys(
     role: &str,
 ) -> Result<BTreeMap<String, VerifyingKey>, CellSplitTargetHostEvidenceErrorV1> {
     let mut decoded = BTreeMap::new();
+    let mut seen_keys = BTreeSet::new();
     for (signer_id, value) in encoded {
         if signer_id.is_empty() {
             return Err(invalid(format!("duplicate or empty {role} signer id")));
@@ -641,6 +654,9 @@ fn decode_trusted_keys(
             .map_err(|_| invalid(format!("malformed {role} verifying key")))?;
         if key.is_weak() {
             return Err(invalid(format!("weak {role} verifying key")));
+        }
+        if !seen_keys.insert(key.to_bytes()) {
+            return Err(invalid(format!("duplicate {role} signer verification key")));
         }
         if decoded.insert(signer_id, key).is_some() {
             return Err(invalid(format!("duplicate {role} signer id")));
