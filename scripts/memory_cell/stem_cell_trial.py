@@ -37,6 +37,7 @@ from stem_cell_source_ceiling import retrospective_pool_ceiling
 from stem_train_heldout_bridge import train_to_heldout_gap
 from stem_effective_n import effective_heldout_subjects
 from stem_native_null_ablation import observe_null_choice, review_null_counterfactual
+from stem_null_reader_splice import observed_zero_offset_reader_splice
 from stem_reader_zero_evidence import (
     generate_empty_evidence_controls,
     evaluate_empty_evidence_controls,
@@ -860,6 +861,18 @@ def run(staged, ranker_dir, output):
         )
         write(output / "zero-offset-null-counterfactual.json",
               null_choice_diagnostic)
+        # The real isolated zero-evidence answers were already generated.
+        # A fixed zero-offset null score selects between existing raw answers;
+        # this retrospective splice NEVER generates a new Reader answer.
+        null_reader_splice = observed_zero_offset_reader_splice(
+            plan, scored, empty_controls,
+            {q.identity: source_for[q.identity].targets[q.identity]
+             for phase in PHASES for q in qs[phase]},
+            diagnose,
+            reader_identity=generator.identity,
+            reader_profile=generator.profile,
+        )
+        write(output / "null-reader-reused-answer-effect.json", null_reader_splice)
         no_evidence_reader_after = control_session.summary()
         # The diagnostic is nonqualifying if its isolated Reader quarantined.
         if not control_generator.quarantined:
@@ -892,6 +905,7 @@ def run(staged, ranker_dir, output):
             train_to_heldout_diagnostic=train_heldout_diagnostic,
             effective_heldout_subjects=heldout_effective_n,
             zero_offset_null_counterfactual=null_choice_diagnostic,
+            reused_zero_offset_null_reader_answers=null_reader_splice,
             no_evidence_reader_call_accounting=dict(
                 same_pinned_reader_identity=generator.identity,
                 same_pinned_reader_profile=generator.profile,

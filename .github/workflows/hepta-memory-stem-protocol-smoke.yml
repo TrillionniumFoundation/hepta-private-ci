@@ -22,6 +22,8 @@ on:
       - "scripts/memory_cell/stem_effective_n.py"
       - "scripts/memory_cell/test_stem_effective_n.py"
       - "scripts/memory_cell/stem_native_null_ablation.py"
+      - "scripts/memory_cell/stem_null_reader_splice.py"
+      - "scripts/memory_cell/test_stem_null_reader_splice.py"
       - "scripts/memory_cell/test_stem_native_null_ablation.py"
       - "scripts/memory_cell/test_stem_train_heldout_bridge.py"
       - "scripts/memory_cell/stem_head_fit_dynamics.py"
@@ -66,7 +68,8 @@ jobs:
             test_stem_head_fit_dynamics \
             test_stem_train_heldout_bridge \
             test_stem_native_null_ablation \
-            test_stem_effective_n             2>&1 | tee /tmp/stem-protocol/tests.log
+            test_stem_effective_n \
+            test_stem_null_reader_splice             2>&1 | tee /tmp/stem-protocol/tests.log
       - name: Retain source, failure logs and manifest
         if: always()
         run: |
@@ -90,6 +93,8 @@ jobs:
           cp scripts/memory_cell/test_stem_effective_n.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_native_null_ablation.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_native_null_ablation.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_null_reader_splice.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_stem_null_reader_splice.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_reader_zero_evidence.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_reader_zero_evidence.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_reader_paired_control.py /tmp/stem-protocol/source/
