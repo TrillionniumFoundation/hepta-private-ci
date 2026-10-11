@@ -18,11 +18,7 @@ fn sample_projector() -> LowRankStemProjectionV1 {
 }
 
 fn payload_for(projection: &LowRankStemProjectionV1) -> Vec<u8> {
-    serde_json::to_vec(&serde_json::json!({
-        "schema": STEM_PROJECTION_SCHEMA,
-        "projection": projection,
-    }))
-    .expect("serialize projection")
+    canonical_projection_payload(projection).expect("canonical CAS projection bytes")
 }
 
 #[test]
@@ -39,6 +35,36 @@ fn strict_cas_projection_payload_roundtrip_matches_numeric_digest() {
             .expect("project"),
         vec![1 << 23, 1 << 23]
     );
+}
+
+#[test]
+fn cross_language_cas_payload_exact_python_sha256_golden() {
+    // Golden generated with Python:
+    // json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True) + "\\n"
+    let canonical = payload_for(&sample_projector());
+    assert_eq!(canonical.len(), 548);
+    assert_eq!(
+        Digest32::of_bytes(&canonical).to_string(),
+        "542fe1a25af049d36e2aa2a92aac0513535f5828761812112888a2d88bcaec93"
+    );
+    assert!(canonical.ends_with(b"\n"));
+    let without_newline = &canonical[..canonical.len() - 1];
+    assert!(matches!(
+        decode_projection(without_newline),
+        Err(StemProjectionArtifactError::InvalidPayload)
+    ));
+    let mut whitespace = b" ".to_vec();
+    whitespace.extend_from_slice(&canonical);
+    assert!(matches!(
+        decode_projection(&whitespace),
+        Err(StemProjectionArtifactError::InvalidPayload)
+    ));
+    let mut extra_newline = canonical;
+    extra_newline.push(b'\n');
+    assert!(matches!(
+        decode_projection(&extra_newline),
+        Err(StemProjectionArtifactError::InvalidPayload)
+    ));
 }
 
 #[test]
