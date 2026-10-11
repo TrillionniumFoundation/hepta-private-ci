@@ -277,7 +277,6 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     assert!(!receipt.authority.grants_any());
 }
 
-
 fn scoped_shared_stem_fixture() -> (
     StemFeatureRefV1,
     StemAccessContextV1,
@@ -430,7 +429,12 @@ fn scoped_stem_never_repairs_forged_lease_or_borrows_another_scope() {
     forged.lease_payload_digest = "d".repeat(64);
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &access, head.clone(), &features, forged
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            forged
         ),
         Err(Error::PayloadMismatch)
     );
@@ -439,7 +443,12 @@ fn scoped_stem_never_repairs_forged_lease_or_borrows_another_scope() {
     other_principal.principal_id = StableId::new("another-principal").expect("ID");
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &other_principal, head.clone(), &features, auth.clone()
+            100,
+            &source,
+            &other_principal,
+            head.clone(),
+            &features,
+            auth.clone()
         ),
         Err(Error::FeatureContract)
     );
@@ -447,7 +456,12 @@ fn scoped_stem_never_repairs_forged_lease_or_borrows_another_scope() {
     other_scope.scope_id = StableId::new("scope.other").expect("Scope");
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &other_scope, head.clone(), &features, auth.clone()
+            100,
+            &source,
+            &other_scope,
+            head.clone(),
+            &features,
+            auth.clone()
         ),
         Err(Error::FeatureContract)
     );
@@ -455,7 +469,12 @@ fn scoped_stem_never_repairs_forged_lease_or_borrows_another_scope() {
     stale.authority_epoch = 3;
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &stale, head.clone(), &features, auth.clone()
+            100,
+            &source,
+            &stale,
+            head.clone(),
+            &features,
+            auth.clone()
         ),
         Err(Error::InvalidGrant)
     );
@@ -463,16 +482,19 @@ fn scoped_stem_never_repairs_forged_lease_or_borrows_another_scope() {
     incorrect_clock.now_ms = 99;
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &incorrect_clock, head.clone(), &features, auth.clone()
+            100,
+            &source,
+            &incorrect_clock,
+            head.clone(),
+            &features,
+            auth.clone()
         ),
         Err(Error::InvalidGrant)
     );
     let mut revoked = access.clone();
     revoked.revocation_observed = true;
     assert_eq!(
-        worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &revoked, head, &features, auth
-        ),
+        worker.run_bound_stem_feature_receipt_v1(100, &source, &revoked, head, &features, auth),
         Err(Error::FeatureContract)
     );
 }
@@ -494,7 +516,12 @@ fn scoped_stem_rejects_wrong_head_weights_and_feature_mutation() {
     altered_head.head_weights_digest = Digest32::of_bytes(b"unloaded-weights");
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &access, altered_head, &features, auth.clone()
+            100,
+            &source,
+            &access,
+            altered_head,
+            &features,
+            auth.clone()
         ),
         Err(Error::ModelMismatch)
     );
@@ -502,7 +529,12 @@ fn scoped_stem_rejects_wrong_head_weights_and_feature_mutation() {
     changed_feature[0] += 1;
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &access, head.clone(), &changed_feature, auth.clone()
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &changed_feature,
+            auth.clone()
         ),
         Err(Error::FeatureContract)
     );
@@ -510,7 +542,12 @@ fn scoped_stem_rejects_wrong_head_weights_and_feature_mutation() {
     wrong_request_id.request_id = "request.other".to_string();
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &access, head, &features, wrong_request_id
+            100,
+            &source,
+            &access,
+            head,
+            &features,
+            wrong_request_id
         ),
         Err(Error::FeatureContract)
     );
@@ -538,7 +575,11 @@ fn scoped_stem_worker_payload_cannot_replay_across_principals_or_scopes() {
     // still rejected because the signed-payload *claim* is scoped.
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &other_source, &other_access, head.clone(), &features,
+            100,
+            &other_source,
+            &other_access,
+            head.clone(),
+            &features,
             authorization.clone()
         ),
         Err(Error::PayloadMismatch)
@@ -549,7 +590,12 @@ fn scoped_stem_worker_payload_cannot_replay_across_principals_or_scopes() {
     other_access.principal_id = other_source.principal_id.clone();
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &other_source, &other_access, head, &features, authorization
+            100,
+            &other_source,
+            &other_access,
+            head,
+            &features,
+            authorization
         ),
         Err(Error::PayloadMismatch)
     );
@@ -569,7 +615,12 @@ fn scoped_stem_respects_worker_grant_expiry_and_driver_output_validation() {
     expired_worker.load_model(100, manifest()).expect("loaded");
     assert_eq!(
         expired_worker.run_bound_stem_feature_receipt_v1(
-            10_000, &source, &access, head.clone(), &features, auth.clone()
+            10_000,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            auth.clone()
         ),
         Err(Error::GrantExpired)
     );
@@ -578,23 +629,14 @@ fn scoped_stem_respects_worker_grant_expiry_and_driver_output_validation() {
         corrupt_neuron_head: true,
         ..Driver::default()
     };
-    let mut corrupt = InferenceWorker::new(
-        100,
-        "worker.corrupt".to_string(),
-        3,
-        grant(),
-        driver,
-    )
-    .expect("worker");
+    let mut corrupt = InferenceWorker::new(100, "worker.corrupt".to_string(), 3, grant(), driver)
+        .expect("worker");
     corrupt.load_model(100, manifest()).expect("loaded");
     assert_eq!(
-        corrupt.run_bound_stem_feature_receipt_v1(
-            100, &source, &access, head, &features, auth
-        ),
+        corrupt.run_bound_stem_feature_receipt_v1(100, &source, &access, head, &features, auth),
         Err(Error::FeatureOutputMismatch)
     );
 }
-
 
 #[test]
 fn neuron_feature_runtime_enforces_real_model_and_reservation_token_ceilings() {
@@ -629,24 +671,24 @@ fn neuron_feature_runtime_enforces_real_model_and_reservation_token_ceilings() {
     auth.reservation_maximum_tokens = 129;
     assert_eq!(
         worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &access, head.clone(), &features, auth
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            auth
         ),
         Err(Error::TokenLimit)
     );
 
-    let mut auth = approved_fixture_authorization(
-        &source, &access, &head, &features, request()
-    );
+    let mut auth = approved_fixture_authorization(&source, &access, &head, &features, request());
     auth.maximum_tokens = 65;
     auth.reservation_maximum_tokens = 64;
     assert_eq!(
-        worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &access, head, &features, auth
-        ),
+        worker.run_bound_stem_feature_receipt_v1(100, &source, &access, head, &features, auth),
         Err(Error::TokenLimit)
     );
 }
-
 
 #[test]
 fn neuron_driver_total_reported_peak_cannot_bypass_memory_resource_grant() {
@@ -654,14 +696,8 @@ fn neuron_driver_total_reported_peak_cannot_bypass_memory_resource_grant() {
         excessive_neuron_transient: true,
         ..Driver::default()
     };
-    let mut worker = InferenceWorker::new(
-        100,
-        "worker.memory".to_string(),
-        3,
-        grant(),
-        driver,
-    )
-    .expect("worker");
+    let mut worker =
+        InferenceWorker::new(100, "worker.memory".to_string(), 3, grant(), driver).expect("worker");
     worker.load_model(100, manifest()).expect("loaded");
     assert_eq!(
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
@@ -669,9 +705,7 @@ fn neuron_driver_total_reported_peak_cannot_bypass_memory_resource_grant() {
     );
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
     assert_eq!(
-        worker.run_bound_stem_feature_receipt_v1(
-            100, &source, &access, head, &features, auth
-        ),
+        worker.run_bound_stem_feature_receipt_v1(100, &source, &access, head, &features, auth),
         Err(Error::ModelCapacity)
     );
 }
