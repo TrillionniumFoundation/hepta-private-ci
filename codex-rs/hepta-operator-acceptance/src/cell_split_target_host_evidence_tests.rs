@@ -191,6 +191,11 @@ fn host_observer_keys_must_be_independent_and_signer_aliases_unique() {
     let observer = key(43);
     let shared = policy(&host, &host);
     assert!(shared.to_json_bytes().is_err());
+    let mut duplicate = policy(&host, &observer);
+    duplicate
+        .observer_keys
+        .insert("observer-alias".to_string(), observer.verifying_key());
+    assert!(duplicate.to_json_bytes().is_err());
 
     let mut file = CellSplitTargetHostEvidenceTrustPolicyFileV1 {
         schema: CELL_SPLIT_TARGET_HOST_TRUST_POLICY_SCHEMA_V1.to_string(),
