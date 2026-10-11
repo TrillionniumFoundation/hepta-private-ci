@@ -769,7 +769,8 @@ mod tests {
                 .expect("generation payload");
         generation_drift.authorization.payload_digest = generation_payload.clone();
         generation_drift.authorization.lease_payload_digest = generation_payload;
-        assert_eq!(worker.run_shared_neuron_features_batch_v2(100, "model.gated", vec![generation_drift],),
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(100, "model.gated", vec![generation_drift],),
             Err(Error::FeatureContract)
         );
         assert_eq!(worker.driver.batch_calls(), 0);
@@ -784,7 +785,8 @@ mod tests {
             .expect("epoch payload");
         epoch_drift.authorization.payload_digest = epoch_payload.clone();
         epoch_drift.authorization.lease_payload_digest = epoch_payload;
-        assert_eq!(worker.run_shared_neuron_features_batch_v2(100, "model.gated", vec![epoch_drift],),
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(100, "model.gated", vec![epoch_drift],),
             Err(Error::FeatureContract)
         );
         assert_eq!(worker.driver.batch_calls(), 0);
