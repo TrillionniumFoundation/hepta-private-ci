@@ -84,6 +84,8 @@ class FullPipelineModelFreeTests(unittest.TestCase):
             model = root / "checkpoint"
             model.mkdir()
             (model / "config.json").write_text('{"fixture_only": true}')
+            # The local fake encoder ignores these explicitly synthetic bytes.
+            (model / "model.safetensors").write_bytes(b"synthetic-fixture-not-a-real-checkpoint")
             data = root / "dataset.jsonl"
             rows = []
             for day, split in enumerate((
