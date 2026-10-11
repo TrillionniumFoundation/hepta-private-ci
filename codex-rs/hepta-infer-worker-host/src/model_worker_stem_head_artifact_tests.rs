@@ -89,7 +89,11 @@ fn selected_head_bank_encoding_is_exact_and_read_only() {
     );
     assert!(bytes.ends_with(b"\n"));
     assert!(bytes.starts_with(b"{\"encoder_digest\":"));
-    assert!(!bytes.windows(b"production_authorized".len()).any(|x| x == b"production_authorized"));
+    assert!(
+        !bytes
+            .windows(b"production_authorized".len())
+            .any(|x| x == b"production_authorized")
+    );
 }
 
 #[test]
@@ -183,11 +187,15 @@ impl CasPair {
                 }],
             },
             &trust,
-        ).expect("selector trust");
+        )
+        .expect("selector trust");
         let proj = projection();
         let mut proj_map = BTreeMap::new();
         proj_map.insert("projection", serde_json::json!(&proj));
-        proj_map.insert("schema", serde_json::json!("hepta.stem.low-rank-projection-payload.v1"));
+        proj_map.insert(
+            "schema",
+            serde_json::json!("hepta.stem.low-rank-projection-payload.v1"),
+        );
         // The projection reader requires *exact canonical Python-compatible*
         // bytes. The nested projection object uses sorted keys.
         let mut proj_fields = BTreeMap::new();
@@ -196,9 +204,15 @@ impl CasPair {
         proj_fields.insert("bias_q24", serde_json::json!(&proj.bias_q24));
         proj_fields.insert("encoder_digest", serde_json::json!(&proj.encoder_digest));
         proj_fields.insert("input_width", serde_json::json!(proj.input_width));
-        proj_fields.insert("normalizer_digest", serde_json::json!(&proj.normalizer_digest));
+        proj_fields.insert(
+            "normalizer_digest",
+            serde_json::json!(&proj.normalizer_digest),
+        );
         proj_fields.insert("output_width", serde_json::json!(proj.output_width));
-        proj_fields.insert("preprocessor_digest", serde_json::json!(&proj.preprocessor_digest));
+        proj_fields.insert(
+            "preprocessor_digest",
+            serde_json::json!(&proj.preprocessor_digest),
+        );
         proj_fields.insert("rank", serde_json::json!(proj.rank));
         proj_fields.insert("representation", serde_json::json!(&proj.representation));
         proj_fields.insert("runtime_digest", serde_json::json!(&proj.runtime_digest));
@@ -237,23 +251,28 @@ impl CasPair {
         };
         let mut registry = ArtifactRegistry::new();
         for (i, manifest) in [projection_manifest.clone(), bank_manifest.clone()]
-            .into_iter().enumerate()
+            .into_iter()
+            .enumerate()
         {
-            registry.append(ArtifactEvent::Register {
-                event_id: id(&format!("registration-{i}")),
-                manifest,
-            }).expect("register");
+            registry
+                .append(ArtifactEvent::Register {
+                    event_id: id(&format!("registration-{i}")),
+                    manifest,
+                })
+                .expect("register");
         }
         for (label, manifest, bytes) in [
             ("projection.payload", &projection_manifest, &proj_bytes),
             ("bank.payload", &bank_manifest, &bank_bytes),
         ] {
             write_candidate_payload(
-                CreateOnlyArtifactFile::create(root.path().join(label)).expect("create CAS payload"),
+                CreateOnlyArtifactFile::create(root.path().join(label))
+                    .expect("create CAS payload"),
                 &registry,
                 &manifest.artifact_id,
                 bytes,
-            ).expect("durable CAS payload");
+            )
+            .expect("durable CAS payload");
         }
         Self {
             root,
@@ -275,7 +294,8 @@ impl CasPair {
             CreateOnlyArtifactFile::create(&path).expect("create snapshot"),
             &self.registry,
             digest(b"fixed-owner-storage"),
-        ).expect("snapshot");
+        )
+        .expect("snapshot");
         let generation = Generation::new(receipt.records as u64).expect("generation");
         let mut head = SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: self.withdrawal_scope,
@@ -294,24 +314,29 @@ impl CasPair {
             signature: [0; 64],
         };
         head.signature = self.owner_key.sign(&head.signing_bytes()).to_bytes();
-        let current = self.owner_verifier.verify_current_registry_view(
-            File::open(&path).expect("snapshot"),
-            receipt,
-            &head,
-            &RegistryHeadRequirementV1 {
-                registry_id: self.registry_id.clone(),
-                minimum_generation: generation,
-                expected_predecessor_head_digest: predecessor,
-                minimum_authority_epoch: 1,
-                now: 30,
-            },
-        ).expect("verified current");
+        let current = self
+            .owner_verifier
+            .verify_current_registry_view(
+                File::open(&path).expect("snapshot"),
+                receipt,
+                &head,
+                &RegistryHeadRequirementV1 {
+                    registry_id: self.registry_id.clone(),
+                    minimum_generation: generation,
+                    expected_predecessor_head_digest: predecessor,
+                    minimum_authority_epoch: 1,
+                    now: 30,
+                },
+            )
+            .expect("verified current");
         (File::open(&path).expect("CAS snapshot"), current)
     }
 
-    fn selection(&self, manifest: &ArtifactManifest, view: &VerifiedCurrentRegistryViewV1)
-        -> SignedArtifactSelectionV1
-    {
+    fn selection(
+        &self,
+        manifest: &ArtifactManifest,
+        view: &VerifiedCurrentRegistryViewV1,
+    ) -> SignedArtifactSelectionV1 {
         let mut value = SignedArtifactSelectionV1 {
             selection_id: id(&format!("selection-{}", manifest.artifact_id)),
             artifact_id: manifest.artifact_id.clone(),
@@ -346,12 +371,16 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
     let mut fx = CasPair::new();
     let (projection_file, projection_current) = fx.current("projection.initial", Digest32::ZERO);
     let signed_projection = fx.selection(&fx.projection, &projection_current);
-    let selected_projection = fx.selector_verifier
-        .verify(&signed_projection, &projection_current, 30).expect("selected projection");
+    let selected_projection = fx
+        .selector_verifier
+        .verify(&signed_projection, &projection_current, 30)
+        .expect("selected projection");
     let (head_file, head_current) = fx.current("head.initial", Digest32::ZERO);
     let signed_head = fx.selection(&fx.bank, &head_current);
-    let selected_head = fx.selector_verifier
-        .verify(&signed_head, &head_current, 30).expect("selected head");
+    let selected_head = fx
+        .selector_verifier
+        .verify(&signed_head, &head_current, 30)
+        .expect("selected head");
     let fence = StemProjectionOwnerFenceV1 {
         scope_digest: digest(b"principal-purpose"),
         worker_generation: 7,
@@ -364,7 +393,8 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         projection_current,
         fx.projection.compatibility_digest,
         fence,
-    ).expect("projection selected CAS");
+    )
+    .expect("projection selected CAS");
     let mut head_reader = SelectedStemHeadBankReaderV1::load(
         head_file,
         File::open(fx.root.path().join("bank.payload")).expect("head payload"),
@@ -373,7 +403,8 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         &projection().encoder_digest,
         &fx.bank.compatibility_digest.to_string(),
         fence,
-    ).expect("head selected CAS");
+    )
+    .expect("head selected CAS");
     let model = super::super::ModelManifest {
         model_id: "model.two.signed.cas".into(),
         model_digest: "2".repeat(64),
@@ -385,9 +416,8 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         device_digest: "8".repeat(64),
         maximum_tokens: 128,
     };
-    let cpu = CpuGatedHeadDriver::new(
-        model.clone(), projection().encoder_digest, sorted_heads(),
-    ).expect("selected immutable weights");
+    let cpu = CpuGatedHeadDriver::new(model.clone(), projection().encoder_digest, sorted_heads())
+        .expect("selected immutable weights");
     let mut worker = InferenceWorker::new(
         100,
         "worker.two.selected.cas".into(),
@@ -404,7 +434,8 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
             semantic_digest: "1".repeat(64),
         },
         cpu,
-    ).expect("native CPU owner");
+    )
+    .expect("native CPU owner");
     worker.load_model(100, model).expect("load CPU model");
     let features = [0.5f32, -0.25, 0.125];
     let bound = super::super::stem_projection::StemProjectionBindingV1 {
@@ -417,7 +448,9 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         source_input_digest: digest(b"approved-input").to_string(),
         source_feature_digest: super::super::stem_projection::stem_feature_f32_digest(
             &features, 3, "mean",
-        ).expect("feature digest").to_string(),
+        )
+        .expect("feature digest")
+        .to_string(),
     };
     let candidate = sorted_heads()[0].digest().expect("selected head hash");
     let mut request = super::super::NeuronFeatureRequest {
@@ -440,9 +473,9 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         feature_vector_q24: vec![Q / 2, Q / 2],
         expected_output_width: 2,
     };
-    let projected = super::super::stem_projection::project_bound_f32(
-        &projection(), &bound, &features, 3,
-    ).expect("true Q24 projection");
+    let projected =
+        super::super::stem_projection::project_bound_f32(&projection(), &bound, &features, 3)
+            .expect("true Q24 projection");
     request.input_digest = projected.projected_input_digest.to_string();
     request.feature_vector_q24 = projected.values_q24;
     let payload = super::super::canonical_neuron_feature_payload_digest(&request);
@@ -475,38 +508,49 @@ fn two_independently_selected_cas_payloads_gate_one_real_cpu_head_then_revoke() 
         .expect("two signed and current CAS artifacts");
     assert_eq!(receipt.drive_q24.len(), 2);
     assert!(!receipt.authority.grants_any());
-    assert_eq!(observation.bank_weights_digest, fx.bank.compatibility_digest.to_string());
+    assert_eq!(
+        observation.bank_weights_digest,
+        fx.bank.compatibility_digest.to_string()
+    );
     assert!(!observation.production_authorized);
 
     let old_head = fx.registry.snapshot().head_digest;
-    fx.registry.append(ArtifactEvent::Revoke(StateChange {
-        event_id: id("revoke-head-bank"),
-        artifact_id: fx.bank.artifact_id.clone(),
-        evaluator_id: id("independent-evaluator"),
-        reason_digest: digest(b"head-withdrawn"),
-    })).expect("revoke Head bank");
+    fx.registry
+        .append(ArtifactEvent::Revoke(StateChange {
+            event_id: id("revoke-head-bank"),
+            artifact_id: fx.bank.artifact_id.clone(),
+            evaluator_id: id("independent-evaluator"),
+            reason_digest: digest(b"head-withdrawn"),
+        }))
+        .expect("revoke Head bank");
     let (_, revoked_head) = fx.current("head.revoked", old_head);
     let (_, stale_proj) = fx.current("projection.after.head.revoked", old_head);
-    assert!(head_reader.run_selected_cpu_head(
-        &mut projection_reader,
-        &mut worker,
-        StemCpuHeadUseV1 {
-            selector: &fx.selector_verifier,
-            signed_selection: &signed_projection,
-            current: stale_proj,
-            selection_now: 30,
-            binding: &bound,
-            source_features: &features,
-            token_count: 3,
-            request,
-            worker_now_ms: 100,
-            model_id: "model.two.signed.cas",
-        },
-        &fx.selector_verifier,
-        &signed_head,
-        revoked_head,
-        30,
-    ).is_err());
+    assert!(
+        head_reader
+            .run_selected_cpu_head(
+                &mut projection_reader,
+                &mut worker,
+                StemCpuHeadUseV1 {
+                    selector: &fx.selector_verifier,
+                    signed_selection: &signed_projection,
+                    current: stale_proj,
+                    selection_now: 30,
+                    binding: &bound,
+                    source_features: &features,
+                    token_count: 3,
+                    request,
+                    worker_now_ms: 100,
+                    model_id: "model.two.signed.cas",
+                },
+                &fx.selector_verifier,
+                &signed_head,
+                revoked_head,
+                30,
+            )
+            .is_err()
+    );
     assert!(head_reader.is_sealed());
-    worker.unload_model(100, "model.two.signed.cas").expect("safe model unload");
+    worker
+        .unload_model(100, "model.two.signed.cas")
+        .expect("safe model unload");
 }
