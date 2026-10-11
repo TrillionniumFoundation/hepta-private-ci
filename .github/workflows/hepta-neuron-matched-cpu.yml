@@ -10,7 +10,9 @@ permissions:
 jobs:
   matched-cpu-diagnostic:
     # Explicit opt-in only. Existing public-weights label must be added.
-    if: github.event.action == 'labeled' && github.event.label.name == 'hepta-neuron-physical-smoke'
+    if: >-
+      github.event.action == 'labeled' &&
+      github.event.label.name == 'hepta-neuron-physical-smoke'
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
@@ -42,10 +44,11 @@ jobs:
       - name: Download and verify three immutable public model weights
         shell: bash
         env:
-          HF_HUB_DISABLE_TELEMETRY: '1'
+          HF_HUB_DISABLE_TELEMETRY: "1"
         run: |
           set -euo pipefail
           PY="$RUNNER_TEMP/hepta-laya-benchmark-venv/bin/python"
+          test "$HF_HUB_DISABLE_TELEMETRY" = "1"
           for arm in laya typed multilingual; do
             "$PY" scripts/hepta_neuron_materialize_weights.py \
               --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
@@ -55,14 +58,17 @@ jobs:
       - name: Repeat 100 real serial CPU forwards per arm after 5 warmups
         shell: bash
         env:
-          HF_HUB_OFFLINE: '1'
-          TRANSFORMERS_OFFLINE: '1'
-          USE_TF: '0'
-          TOKENIZERS_PARALLELISM: 'false'
-          OMP_NUM_THREADS: '2'
-          MKL_NUM_THREADS: '2'
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+          OMP_NUM_THREADS: "2"
+          MKL_NUM_THREADS: "2"
         run: |
           set -euo pipefail
+          test "$HF_HUB_OFFLINE" = "1"
+          test "$TRANSFORMERS_OFFLINE" = "1"
+          test "$USE_TF" = "0"
           PY="$RUNNER_TEMP/hepta-laya-benchmark-venv/bin/python"
           SDK_SHA=$(PYTHONPATH=scripts "$PY" -c 'from pathlib import Path; from hepta_neuron_model_trials import sha_tree; print(sha_tree(Path("upstream/laya/laya"), only_python=True))')
           mkdir -p hepta-neuron-benchmark-output

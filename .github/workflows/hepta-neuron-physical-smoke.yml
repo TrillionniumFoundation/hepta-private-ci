@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
     inputs:
       run:
-        description: "${1}"
+        description: "Execute pinned public Laya physical diagnostics (no private data)"
         type: boolean
         required: true
         default: false
@@ -55,10 +55,11 @@ jobs:
       - name: Materialize all three pinned public Laya variants with explicit network opt-in
         shell: bash
         env:
-          HF_HUB_DISABLE_TELEMETRY: "${1}"
+          HF_HUB_DISABLE_TELEMETRY: "1"
           HF_HOME: ${{ runner.temp }}/hepta-hf-readonly-cache
         run: |
           set -euo pipefail
+          test "$HF_HUB_DISABLE_TELEMETRY" = "1"
           for arm in laya typed multilingual; do
             "$RUNNER_TEMP/hepta-laya-venv/bin/python" scripts/hepta_neuron_materialize_weights.py \
               --catalog qualification/neuron-model-trials/upstream-weights.lock.json \
@@ -68,11 +69,14 @@ jobs:
       - name: Execute identical synthetic no-label CPU forward on each pinned variant
         shell: bash
         env:
-          HF_HUB_OFFLINE: "${1}"
-          TRANSFORMERS_OFFLINE: "${1}"
-          USE_TF: "${1}"
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          USE_TF: "0"
         run: |
           set -euo pipefail
+          test "$HF_HUB_OFFLINE" = "1"
+          test "$TRANSFORMERS_OFFLINE" = "1"
+          test "$USE_TF" = "0"
           SDK_SHA=$(PYTHONPATH=scripts "$RUNNER_TEMP/hepta-laya-venv/bin/python" - <<'PYSDK'
           from pathlib import Path
           from hepta_neuron_model_trials import sha_tree
