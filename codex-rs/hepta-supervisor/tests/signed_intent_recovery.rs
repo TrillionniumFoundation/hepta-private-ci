@@ -302,12 +302,7 @@ fn mismatched_abort_directive_is_fail_closed() -> Result<(), SupervisorError> {
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let recovery = Supervisor::recover(
-        fleet.registry,
-        NoProcessDriver,
-        config(),
-        Instant::now(),
-    );
+    let recovery = Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now());
     assert!(matches!(
         recovery,
         Err(SupervisorError::Invalid(message))
