@@ -17,8 +17,7 @@ FUNCTION_WORDS = frozenset(
     will shall can may might what which who whom whose where when why how
     this that these those it its they them their he she his her we our
     you your i me my us there here please tell about explain describe
-    give show find name identify according based question answer"""
-    .split()
+    give show find name identify according based question answer""".split()
 )
 PROFILE = "content-filtered-or-v1"
 
@@ -61,7 +60,8 @@ def query_filtered(index, question, vector, policy, *, current_cut, revoked):
     if terms:
         expr = " OR ".join('"' + term.replace('"', '""') + '"' for term in terms)
         lexical = [
-            r[0] - 1 for r in index.db.execute(
+            r[0] - 1
+            for r in index.db.execute(
                 "SELECT rowid FROM lexical WHERE lexical MATCH ? "
                 "ORDER BY bm25(lexical), rowid LIMIT ?",
                 (expr, policy.channel_k),
