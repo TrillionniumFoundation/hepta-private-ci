@@ -187,3 +187,37 @@ Python regression suite and all declared policy attempts. It uses read-only
 repository/actions permissions, no dedicated Hepta host and no production state.
 All failures are uploaded with source/tree and environment receipts. Formatting
 diffs are retained as diagnostics and are not mislabeled as a formatting pass.
+
+## Byte-pinned retrospective audit and failure-classification receipt
+
+The original terminal matrix at source `e9c8f9c9cfc8df8887290db707598897cbc26ede`
+produced **503 passing tests but an unsuccessful native experiment**. The
+job log reports 576 logical policy attempts, 396 successes and 180 failures;
+Reader-policy successes include 22 actual calls plus 374 reused outputs.
+Those counts are not grounds for task-quality or cost-efficiency claims.
+An earlier contradictory conversational and PR summary was withdrawn.
+
+The separate read-only `stem_audit.py` audit requires the original external
+ZIP SHA-256, inner per-file SHA256SUMS census, generating commit and tree. It
+compares original raw predictions with later scored rows, all six arms and
+three checkpoints, exact canonical Reader request keys and direct reuse links,
+failure-inclusive denominators, and original reported aggregate scores. It
+does not rerun any model, edit answers, create a gold-label oracle, or assert
+independent semantic correctness. Unjournalled failed Reader calls cannot
+receive per-call verification.
+
+`stem_audit_diagnosis.py` additionally reports admitted versus merely
+attempted training questions (including reasons for skipped native support),
+full six-arm common failures versus modality/adapter-arm-specific failures,
+actual Adapter attempt status, each Head checkpoint's tensor-update evidence,
+exact per-answer Head snapshot digests and matched-arm changes in selected
+candidate and answer bytes. All these are retrospective diagnostics of the
+immutable original artifact; they cannot prove Head superiority, independent
+future-window benefit or production capacity.
+
+The dedicated hosted audit workflow is
+`.github/workflows/hepta-memory-stem-audit.yml`. It uses no dedicated
+Hepta host, deployer credentials, independent human signatures, or extra
+generating Reader. Check its **terminal** result against its own exact
+source commit: a queued run or a successful unit test is not a successful
+original-artifact audit.

@@ -13,6 +13,7 @@ import re
 
 from native import digest
 from stem_audit_archive import PinnedArchive, require
+from stem_audit_diagnosis import diagnose
 
 ARMS = (
     "frozen_rerank", "prototype", "linear", "gated",
@@ -188,11 +189,16 @@ def audit_zip(path, pin, source, tree):
         require(archive.read("tested-tree.txt").decode().strip() == tree, "source tree mismatch")
         plan = archive.json("comparison/preregistered.json")
         require(plan["source_commit"] == source, "generating source mismatch")
-        result = validate_records(
-            plan, archive.jsonl("comparison/policy-predictions.jsonl"),
-            archive.json("comparison/scored-policy-attempts.json"),
-            archive.jsonl("comparison/oracle-diagnostic.jsonl"),
-            archive.json("comparison/report.json"),
+        raw = archive.jsonl("comparison/policy-predictions.jsonl")
+        scored = archive.json("comparison/scored-policy-attempts.json")
+        oracles = archive.jsonl("comparison/oracle-diagnostic.jsonl")
+        report = archive.json("comparison/report.json")
+        result = validate_records(plan, raw, scored, oracles, report)
+        result["diagnosis"] = diagnose(
+            plan, raw, scored, report,
+            archive.json("comparison/training-dispositions.json"),
+            archive.json("comparison/feature-failures.json"),
+            archive.json("comparison/adapter-training.json"),
         )
         tests = archive.read("tests.log").decode("utf-8")
         matched = re.findall(r"(?m)^Ran (\d+) tests in [^\n]+\n\s*\nOK(?:\n|$)", tests)

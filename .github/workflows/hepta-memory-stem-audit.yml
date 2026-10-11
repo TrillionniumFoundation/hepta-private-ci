@@ -4,7 +4,7 @@ on:
     branches: ["codex/memory-cell-evidence-20261008"]
     paths:
       - "scripts/memory_cell/stem_audit*.py"
-      - "scripts/memory_cell/test_stem_audit.py"
+      - "scripts/memory_cell/test_stem_audit*.py"
       - ".github/workflows/hepta-memory-stem-audit.yml"
 permissions:
   contents: read
@@ -32,7 +32,7 @@ jobs:
           mkdir -p /tmp/stem-audit
           git rev-parse HEAD > /tmp/stem-audit/auditing-commit.txt
           git rev-parse HEAD^{tree} > /tmp/stem-audit/auditing-tree.txt
-          python3 -m unittest discover -s scripts/memory_cell -p 'test_stem_audit.py' -v 2>&1 | tee /tmp/stem-audit/auditor-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_stem_audit*.py' -v 2>&1 | tee /tmp/stem-audit/auditor-tests.log
       - name: Download original completed-run artifact without executing it
         env:
           GH_TOKEN: ${{ github.token }}
@@ -56,14 +56,14 @@ jobs:
           /tmp/stem-audit-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
           /tmp/stem-audit-python/bin/pip freeze > /tmp/stem-audit/environment.txt
           /tmp/stem-audit-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/stem-audit/full-tests.log
-          /tmp/stem-audit-python/bin/ruff check --select F,E9 scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit.py 2>&1 | tee /tmp/stem-audit/lint.log
-          /tmp/stem-audit-python/bin/ruff format --diff scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit.py > /tmp/stem-audit/format.patch || true
+          /tmp/stem-audit-python/bin/ruff check --select F,E9 scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit*.py 2>&1 | tee /tmp/stem-audit/lint.log
+          /tmp/stem-audit-python/bin/ruff format --diff scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit*.py > /tmp/stem-audit/format.patch || true
       - name: Retain auditor source and all failures
         if: always()
         run: |
           set -euo pipefail
           mkdir -p /tmp/stem-audit/source
-          cp scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit.py /tmp/stem-audit/source/
+          cp scripts/memory_cell/stem_audit*.py scripts/memory_cell/test_stem_audit*.py /tmp/stem-audit/source/
           cp .github/workflows/hepta-memory-stem-audit.yml /tmp/stem-audit/source/
           (cd /tmp/stem-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
