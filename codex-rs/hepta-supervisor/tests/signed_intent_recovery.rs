@@ -181,7 +181,7 @@ fn write_process_lease_raw(run_root: &Path, agent_id: &AgentId, spawn_generation
         run_root.join("supervisor-process.json"),
         serde_json::json!({
             "schema_version": 2,
-            "agent_id": agent_id,
+            "agent_id": agent_id.to_string(),
             "spawn_generation": spawn_generation,
             "release_id": "unversioned",
             "identity": {
