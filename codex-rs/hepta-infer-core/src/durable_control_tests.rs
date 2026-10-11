@@ -586,7 +586,9 @@ fn poisoned_owner_never_acknowledges_idempotent_legacy_receipts() {
         consumed_tokens: 10,
         usage_units: 5,
     };
-    owner.settle("request.1", 4, "6".repeat(64), observed.clone()).unwrap();
+    owner
+        .settle("request.1", 4, "6".repeat(64), observed.clone())
+        .unwrap();
     owner.poisoned = true;
     assert_eq!(
         owner.settle("request.1", 5, "6".repeat(64), observed),
@@ -596,7 +598,10 @@ fn poisoned_owner_never_acknowledges_idempotent_legacy_receipts() {
     // The real repair boundary is a fresh lock-acquiring journal replay, not a
     // resurrected in-memory receipt from the poisoned instance.
     let recovered = DurableInferenceControl::open(&journal, 32).unwrap();
-    assert_eq!(recovered.get("request.1").unwrap().state, RequestState::Completed);
+    assert_eq!(
+        recovered.get("request.1").unwrap().state,
+        RequestState::Completed
+    );
     drop(recovered);
     fs::remove_file(journal).unwrap();
 }
