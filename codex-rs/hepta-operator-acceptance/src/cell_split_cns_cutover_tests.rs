@@ -310,6 +310,32 @@ fn owner(root: &Path, ready: Arc<AtomicBool>) -> CellSplitCnsCutoverOwnerV1<Disk
 }
 
 #[test]
+fn deleted_frozen_binding_before_cutover_does_not_rebind_initialized_owner() {
+    let root = private_root();
+    let ready = Arc::new(AtomicBool::new(true));
+    {
+        let original = owner(root.path(), ready.clone());
+        drop(original);
+    }
+    let frozen = root.path().join(FROZEN);
+    fs::remove_file(&frozen).expect("simulate missing frozen plan before cutover");
+    let runtime = DiskCns::open(
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
+        ready,
+    );
+    assert_eq!(runtime.route().generation, plan().parent_generation);
+    let reopened = CellSplitCnsCutoverOwnerV1::open(
+        root.path(),
+        plan(),
+        binding(),
+        runtime,
+    );
+    assert!(matches!(reopened, Err(CellSplitCnsCutoverErrorV1::Invalid)));
+    assert!(!frozen.exists(), "a missing plan must not be recreated");
+}
+
+#[test]
 fn deleted_frozen_binding_after_real_cutover_cannot_reinitialize_owner() {
     let root = private_root();
     let ready = Arc::new(AtomicBool::new(true));
