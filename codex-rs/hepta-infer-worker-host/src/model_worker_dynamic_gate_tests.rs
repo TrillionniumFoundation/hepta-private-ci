@@ -51,7 +51,11 @@ fn cell_state_is_private_and_all_model_bytes_change_digest() {
         first.compute(&"a".repeat(64), "cell.b", &[Q24, Q24], 1),
         second.compute(&"a".repeat(64), "cell.b", &[Q24, Q24], 1)
     );
-    assert!(second.compute(&"a".repeat(64), "cell.a", &[Q24, Q24], 1).is_err());
+    assert!(
+        second
+            .compute(&"a".repeat(64), "cell.a", &[Q24, Q24], 1)
+            .is_err()
+    );
 }
 
 #[test]
@@ -75,5 +79,8 @@ fn impossible_intermediate_q24_value_is_rejected_not_saturated() {
     let mut large = candidate();
     large.down_q24[0] = 8 * Q24;
     let head = DynamicGateArtifactV3::new(large).expect("bounded static weights");
-    assert!(head.compute(&"a".repeat(64), "cell.a", &[8 * Q24, Q24], 1).is_err());
+    assert!(
+        head.compute(&"a".repeat(64), "cell.a", &[8 * Q24, Q24], 1)
+            .is_err()
+    );
 }
