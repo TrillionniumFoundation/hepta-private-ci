@@ -30,6 +30,7 @@ fn config() -> ProductionTargetHostRuntimeConfig {
         learning_ledger_owner: None,
         future_window_evaluator_owner: None,
         evidence_signing_owner: None,
+        canonical_packet_verifier_owner: None,
     }
 }
 
@@ -46,6 +47,29 @@ impl ArtifactOwnerHandleV1 for BoundArtifact {
     ) -> Result<ProductionOwnerOperationReceiptV1, ProductionExternalErrorV1> {
         Err(ProductionExternalErrorV1 {
             detail: "test owner must not be called".to_owned(),
+        })
+    }
+}
+
+#[derive(Debug)]
+struct RejectingCanonicalVerifier(ProductionOwnerBindingV1);
+
+impl ProductionCanonicalPacketVerifierOwnerHandleV1 for RejectingCanonicalVerifier {
+    fn binding(&self) -> &ProductionOwnerBindingV1 {
+        &self.0
+    }
+
+    fn verify_canonical_packet(
+        &self,
+        _request: &ProductionOwnerRequestV1,
+        _packet: &CellSplitProductionPacketV1,
+    ) -> Result<ProductionCanonicalPacketVerificationReceiptV1, ProductionExternalErrorV1> {
+        Ok(ProductionCanonicalPacketVerificationReceiptV1 {
+            verifier_id: "verifier.test".to_owned(),
+            canonical_packet_digest: "0".repeat(64),
+            signed_envelope_digest: DIGEST_A.to_owned(),
+            canonical_packet_verified: false,
+            signed_envelope_verified: true,
         })
     }
 }
@@ -116,4 +140,51 @@ fn error_is_displayable_without_exposing_external_secrets() {
     let rendered = error.to_string();
     assert!(rendered.contains("observer-signing"));
     assert!(!rendered.contains("private"));
+}
+
+#[test]
+fn canonical_verifier_gate_blocks_unverified_envelope() {
+    let mut configuration = config();
+    configuration.canonical_packet_verifier_owner = Some(Arc::new(RejectingCanonicalVerifier(
+        ProductionOwnerBindingV1 {
+            owner_id: "verifier-owner".to_owned(),
+            namespace: configuration.namespace.clone(),
+            trust_root_digest: configuration.trust_root_digest.clone(),
+        },
+    )));
+    let mut runtime = ProductionTargetHostRuntime::new(configuration);
+    runtime.step = Some(CellSplitProductionLifecycleStepV1::IndependentlyVerified);
+
+    assert!(!runtime.verify_canonical_packet_and_signed_envelope());
+    assert!(runtime.packet().canonical_verification.is_none());
+    let blocked = runtime.blocked_packet();
+    assert!(!blocked.production_evidence);
+}
+
+#[test]
+fn blocked_packet_retains_transient_owner_receipts() {
+    let mut runtime = ProductionTargetHostRuntime::new(config());
+    let receipt = |operation_id: &str| ProductionOwnerOperationReceiptV1 {
+        operation_id: operation_id.to_owned(),
+        step: CellSplitProductionLifecycleStepV1::TaskFlowLedgerReplayed,
+        occurred_at_unix_nanos: 1,
+        generation: 8,
+        predecessor_receipt_digest: DIGEST_A.to_owned(),
+        artifact_digest: DIGEST_B.to_owned(),
+        route_digest: DIGEST_C.to_owned(),
+        tombstone_digest: DIGEST_A.to_owned(),
+        witness_digest: DIGEST_B.to_owned(),
+        receipt_digest: DIGEST_C.to_owned(),
+    };
+    runtime.packet.transient_receipts.taskflow_run_receipt = Some(receipt("run"));
+    runtime.packet.transient_receipts.learning_ledger_witness_receipt =
+        Some(receipt("ledger"));
+    runtime.packet.transient_receipts.tombstone_no_resurrection_receipt =
+        Some(receipt("tombstone"));
+
+    let blocked = runtime.blocked_packet();
+    assert_eq!(
+        blocked.transient_receipts,
+        runtime.packet.transient_receipts
+    );
 }

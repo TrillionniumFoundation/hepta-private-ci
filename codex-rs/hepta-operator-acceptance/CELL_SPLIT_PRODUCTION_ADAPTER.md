@@ -24,8 +24,13 @@ Exported packets cover artifact/CAS/registry, CNS dispatch, route-fence restart
 replay, restart/power-loss/rollback/tombstone/no-resurrection, resource samples
 and attestation, baseline/future-window observer evidence, signed target-host
 evidence, TaskFlow event chains, learning-ledger witness frontiers, and
-independent evaluator receipts. The existing signed-evidence verifier remains
-the only path that can accept a host/observer envelope.
+independent evaluator receipts. TaskFlow run, learning-ledger append, and
+no-resurrection tombstone receipts are retained as transient packet evidence
+even when a later step blocks. The canonical packet/signed-envelope verifier
+must attest the exact packet digest before `run_production_lifecycle` can set
+`productionEvidence: true`; missing or failed verification returns a blocked
+receipt with `productionEvidence: false`. The existing signed-evidence
+verifier remains the only path that can accept a host/observer envelope.
 
 No target host, hardware attestation, fault injector, observer/evaluator, or
 production owner is connected in this repository checkout. Therefore no

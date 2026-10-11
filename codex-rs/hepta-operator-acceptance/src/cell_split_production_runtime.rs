@@ -6,6 +6,8 @@ use std::fmt;
 use crate::CellSplitTargetHostMeasurementV1;
 use crate::CellSplitTargetHostOperationReceiptV1;
 use crate::CellSplitTargetHostRuntimeV1;
+use crate::durable::canonical_json;
+use crate::durable::sha256;
 
 pub use super::cell_split_production_contract::*;
 
@@ -129,6 +131,10 @@ impl ProductionTargetHostRuntime {
                 config.future_window_evaluator_owner.is_some(),
             ),
             ("evidence-signing", config.evidence_signing_owner.is_some()),
+            (
+                "canonical-packet-verifier",
+                config.canonical_packet_verifier_owner.is_some(),
+            ),
         ] {
             if !present {
                 blocked_inputs.push(name.to_owned());
@@ -145,6 +151,7 @@ impl ProductionTargetHostRuntime {
             },
             blocked_inputs,
             production_evidence: false,
+            transient_receipts: self.packet.transient_receipts.clone(),
         }
     }
 
@@ -173,6 +180,7 @@ impl ProductionTargetHostRuntime {
         self.sign_evidence()?;
         self.replay_taskflow_and_ledger()?;
         self.independent_verify()?;
+        let production_evidence = self.verify_canonical_packet_and_signed_envelope();
         let final_step =
             self.step
                 .ok_or(CellSplitTargetHostRuntimeErrorV1::InvalidConfiguration(
@@ -184,10 +192,60 @@ impl ProductionTargetHostRuntime {
             target_host_id: self.config.target_host_id.clone(),
             final_step,
             receipt_chain_digest: self.receipt_chain_digest(),
-            production_evidence: true,
-            blocked_inputs: Vec::new(),
+            production_evidence,
+            blocked_inputs: if production_evidence {
+                Vec::new()
+            } else {
+                vec!["canonical-packet-signed-envelope-verifier".to_owned()]
+            },
+            transient_receipts: self.packet.transient_receipts.clone(),
         })
     }
+
+    /// Run the externally owned canonical packet and signed-envelope verifier.
+    /// Any missing, misbound, failed, or incomplete verification is a blocked
+    /// outcome; it can never be promoted to production evidence locally.
+    pub(crate) fn verify_canonical_packet_and_signed_envelope(&mut self) -> bool {
+        let Some(verifier) = self.config.canonical_packet_verifier_owner.as_ref() else {
+            return false;
+        };
+        if self
+            .check_binding("canonical-packet-verifier", Some(verifier.binding()))
+            .is_err()
+        {
+            return false;
+        }
+        let packet_digest = match self.canonical_packet_digest() {
+            Ok(digest) => digest,
+            Err(_) => return false,
+        };
+        let result = match verifier.verify_canonical_packet(&self.owner_request(), &self.packet) {
+            Ok(result) => result,
+            Err(_) => return false,
+        };
+        if !result.canonical_packet_verified
+            || !result.signed_envelope_verified
+            || result.verifier_id.is_empty()
+            || result.canonical_packet_digest != packet_digest
+            || !digest_shape(&result.signed_envelope_digest)
+        {
+            return false;
+        }
+        self.packet.canonical_verification = Some(result);
+        true
+    }
+
+    fn canonical_packet_digest(&self) -> Result<String, String> {
+        let mut packet = self.packet.clone();
+        packet.canonical_verification = None;
+        canonical_json(&packet)
+            .map(|bytes| sha256(&bytes))
+            .map_err(std::string::ToString::to_string)
+    }
+}
+
+fn digest_shape(value: &str) -> bool {
+    value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
 }
 
 impl CellSplitTargetHostRuntimeV1 for ProductionTargetHostRuntime {

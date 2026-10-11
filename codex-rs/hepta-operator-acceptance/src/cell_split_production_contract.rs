@@ -215,6 +215,32 @@ pub struct IndependentEvaluatorReceiptPacketV1 {
     pub verified_ledger_frontier_digest: String,
 }
 
+/// Receipts returned by owner calls that are needed for canonical packet
+/// verification but do not themselves advance the fourteen-step lifecycle.
+/// These are retained in the exported packet so a later verifier or blocked
+/// receipt can account for every external call that was made.
+#[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ProductionTransientReceiptPacketV1 {
+    pub taskflow_run_receipt: Option<ProductionOwnerOperationReceiptV1>,
+    pub learning_ledger_witness_receipt: Option<ProductionOwnerOperationReceiptV1>,
+    pub tombstone_no_resurrection_receipt: Option<ProductionOwnerOperationReceiptV1>,
+}
+
+/// Canonical packet and signed-envelope verification result supplied by the
+/// externally owned verifier.  The runtime only treats a lifecycle as
+/// production evidence when both verification flags are true and the packet
+/// digest matches the exact canonical packet presented to this owner.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ProductionCanonicalPacketVerificationReceiptV1 {
+    pub verifier_id: String,
+    pub canonical_packet_digest: String,
+    pub signed_envelope_digest: String,
+    pub canonical_packet_verified: bool,
+    pub signed_envelope_verified: bool,
+}
+
 /// All packet schemas are carried together for durable export.  Empty optional
 /// fields are absent until the corresponding owner has returned a receipt.
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
@@ -232,6 +258,8 @@ pub struct CellSplitProductionPacketV1 {
     pub taskflow: Option<TaskFlowEventChainPacketV1>,
     pub learning_ledger: Option<LearningLedgerWitnessFrontierPacketV1>,
     pub independent_evaluator: Option<IndependentEvaluatorReceiptPacketV1>,
+    pub transient_receipts: ProductionTransientReceiptPacketV1,
+    pub canonical_verification: Option<ProductionCanonicalPacketVerificationReceiptV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -409,6 +437,19 @@ pub trait EvidenceSigningOwnerHandleV1: fmt::Debug + Send + Sync {
     ) -> Result<ProductionOwnerOperationReceiptV1, ProductionExternalErrorV1>;
 }
 
+/// Owner of the canonical production packet and signed-envelope verifier.
+/// Implementations must verify the exact packet bytes supplied by the runtime
+/// and the externally signed target-host envelope; returning a positive flag
+/// without those checks is invalid and is rejected by the runtime gate.
+pub trait ProductionCanonicalPacketVerifierOwnerHandleV1: fmt::Debug + Send + Sync {
+    fn binding(&self) -> &ProductionOwnerBindingV1;
+    fn verify_canonical_packet(
+        &self,
+        request: &ProductionOwnerRequestV1,
+        packet: &CellSplitProductionPacketV1,
+    ) -> Result<ProductionCanonicalPacketVerificationReceiptV1, ProductionExternalErrorV1>;
+}
+
 /// Non-secret composition inputs.  Private keys, credentials and tokens are
 /// intentionally absent; the signing owner receives only a digest-bound request.
 #[derive(Default)]
@@ -436,6 +477,8 @@ pub struct ProductionTargetHostRuntimeConfig {
     pub learning_ledger_owner: Option<Arc<dyn LearningLedgerOwnerHandleV1>>,
     pub future_window_evaluator_owner: Option<Arc<dyn FutureWindowEvaluatorOwnerHandleV1>>,
     pub evidence_signing_owner: Option<Arc<dyn EvidenceSigningOwnerHandleV1>>,
+    pub canonical_packet_verifier_owner:
+        Option<Arc<dyn ProductionCanonicalPacketVerifierOwnerHandleV1>>,
 }
 
 impl fmt::Debug for ProductionTargetHostRuntimeConfig {
@@ -455,6 +498,10 @@ impl fmt::Debug for ProductionTargetHostRuntimeConfig {
             .field(
                 "minimum_future_window_samples",
                 &self.minimum_future_window_samples,
+            )
+            .field(
+                "canonical_packet_verifier_owner",
+                &self.canonical_packet_verifier_owner.is_some(),
             )
             .finish_non_exhaustive()
     }
@@ -567,6 +614,7 @@ pub struct CellSplitProductionBlockedPacketV1 {
     pub blocked_inputs: Vec<String>,
     pub reason: String,
     pub production_evidence: bool,
+    pub transient_receipts: ProductionTransientReceiptPacketV1,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -579,4 +627,5 @@ pub struct CellSplitProductionLifecycleReceiptV1 {
     pub receipt_chain_digest: String,
     pub production_evidence: bool,
     pub blocked_inputs: Vec<String>,
+    pub transient_receipts: ProductionTransientReceiptPacketV1,
 }

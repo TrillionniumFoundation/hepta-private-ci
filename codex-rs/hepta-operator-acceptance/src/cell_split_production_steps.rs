@@ -420,6 +420,9 @@ impl ProductionTargetHostRuntime {
         let no_resurrection = tombstone
             .verify_no_resurrection(&self.owner_request())
             .map_err(|error| self.external("tombstone", error))?;
+        self.packet
+            .transient_receipts
+            .tombstone_no_resurrection_receipt = Some(no_resurrection.clone());
         if no_resurrection.tombstone_digest.is_empty()
             || receipt.generation != self.config.parent_generation
         {
@@ -534,12 +537,16 @@ impl ProductionTargetHostRuntime {
         let run = taskflow
             .run(&self.owner_request())
             .map_err(|error| self.external("taskflow", error))?;
+        self.packet.transient_receipts.taskflow_run_receipt = Some(run);
         let replay = taskflow
             .replay(&self.owner_request())
             .map_err(|error| self.external("taskflow", error))?;
         let witness = ledger
             .append_witness(&self.owner_request())
             .map_err(|error| self.external("learning-ledger", error))?;
+        self.packet
+            .transient_receipts
+            .learning_ledger_witness_receipt = Some(witness.clone());
         let ledger_replay = ledger
             .replay(&self.owner_request())
             .map_err(|error| self.external("learning-ledger", error))?;
@@ -554,7 +561,6 @@ impl ProductionTargetHostRuntime {
         )?;
         self.packet.taskflow = Some(replay.taskflow);
         self.packet.learning_ledger = Some(ledger_replay.frontier);
-        let _ = run;
         Ok(())
     }
 
