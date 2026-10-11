@@ -517,8 +517,8 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\\\.\\\\s*with_verified_batch_effect\\\\s*\\\\(",
-        "FinalUseAuthority\\\\s*::\\\\s*with_verified_batch_effect\\\\s*\\\\("
+        "\\.\\s*with_verified_batch_effect\\s*\\(",
+        "FinalUseAuthority\\s*::\\s*with_verified_batch_effect\\s*\\("
       ],
       "allowedCallers": [
         "codex-rs/hepta-infer-worker-host/src/batched_neuron_physical.rs"
