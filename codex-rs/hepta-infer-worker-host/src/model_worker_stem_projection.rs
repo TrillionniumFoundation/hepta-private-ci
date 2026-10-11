@@ -25,7 +25,11 @@ fn push_field(buffer: &mut Vec<u8>, value: &str) -> Result<(), Error> {
 }
 
 fn checked_identity(digest: &str) -> Result<(), Error> {
-    if digest.len() != 64 || !digest.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase()) {
+    if digest.len() != 64
+        || !digest
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+    {
         return Err(Error::FeatureContract);
     }
     Ok(())
@@ -89,9 +93,13 @@ impl LowRankStemProjectionV1 {
         {
             return Err(Error::FeatureLimit);
         }
-        if self.a_q24.iter().chain(&self.b_q24).chain(&self.bias_q24).any(|v| {
-            !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(v)
-        }) {
+        if self
+            .a_q24
+            .iter()
+            .chain(&self.b_q24)
+            .chain(&self.bias_q24)
+            .any(|v| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(v))
+        {
             return Err(Error::FeatureLimit);
         }
         Ok(())
@@ -127,7 +135,9 @@ impl LowRankStemProjectionV1 {
     pub fn project_q24(&self, input: &[i64]) -> Result<Vec<i64>, Error> {
         self.validate()?;
         if input.len() != self.input_width
-            || input.iter().any(|v| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(v))
+            || input
+                .iter()
+                .any(|v| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(v))
         {
             return Err(Error::FeatureLimit);
         }
@@ -140,9 +150,12 @@ impl LowRankStemProjectionV1 {
         }
         let mut projected = Vec::with_capacity(self.output_width);
         for (bias, row) in self.bias_q24.iter().zip(self.b_q24.chunks_exact(self.rank)) {
-            let acc = row.iter().zip(&hidden).fold((*bias as i128) * Q, |sum, (w, v)| {
-                sum + (*w as i128) * (*v as i128)
-            });
+            let acc = row
+                .iter()
+                .zip(&hidden)
+                .fold((*bias as i128) * Q, |sum, (w, v)| {
+                    sum + (*w as i128) * (*v as i128)
+                });
             projected.push(q48_round_ties_even(acc)?);
         }
         Ok(projected)
@@ -188,7 +201,9 @@ pub fn stem_feature_f32_digest(
     token_count: u64,
     representation: &str,
 ) -> Result<Digest32, Error> {
-    if values.is_empty() || values.len() > MAX_SOURCE_WIDTH || token_count == 0
+    if values.is_empty()
+        || values.len() > MAX_SOURCE_WIDTH
+        || token_count == 0
         || !matches!(representation, "mean" | "landmark8")
         || values.iter().any(|v| !v.is_finite())
     {
