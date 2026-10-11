@@ -105,10 +105,18 @@ class StemContracts(unittest.TestCase):
                 "model_id": "jhu-clsp/mmBERT-small",
                 "revision": "a" * 40, "snapshot": "snapshot",
                 "files": files, "max_tokens": 8192,
+                "runtime": {"torch": "2.8.0", "transformers": "4.57.0",
+                            "tokenizers": "0.22.1", "safetensors": "0.6.2"},
             }
             path = root / "manifest.json"
             path.write_text(json.dumps(manifest), encoding="utf-8")
             self.assertEqual(load_pinned_snapshot(path)[0]["files"], files)
+            invalid_runtime = dict(manifest)
+            invalid_runtime["runtime"] = {"torch": "2.8.0"}
+            path.write_text(json.dumps(invalid_runtime), encoding="utf-8")
+            with self.assertRaises(StemQualificationError):
+                load_pinned_snapshot(path)
+            path.write_text(json.dumps(manifest), encoding="utf-8")
             (snap / "config.json").write_text("tampered", encoding="utf-8")
             with self.assertRaises(StemQualificationError):
                 load_pinned_snapshot(path)
