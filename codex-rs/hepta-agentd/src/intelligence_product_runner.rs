@@ -197,7 +197,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                         candidate_ids,
                         run_snapshot,
                         context_attachment,
-                    },
+                    }),
                 ))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
