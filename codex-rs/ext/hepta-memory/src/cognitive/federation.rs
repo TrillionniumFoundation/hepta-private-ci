@@ -1272,12 +1272,14 @@ mod tests {
         // Windows verbatim (\\\\?\\) canonicalization spelling. Bind the
         // federated grant to that exact same physical workspace identity,
         // preserving the scope digest through the URI boundary on Windows.
-        let workspace_uri = PathUri::from_host_native_path(&canonical_workspace)
-            .expect("canonical workspace URI");
+        let workspace_uri =
+            PathUri::from_host_native_path(&canonical_workspace).expect("canonical workspace URI");
         let workspace = workspace_uri.to_path_buf();
         assert!(workspace.is_absolute() && workspace.is_dir());
         assert_eq!(
-            workspace.canonicalize().expect("round-trip canonical workspace"),
+            workspace
+                .canonicalize()
+                .expect("round-trip canonical workspace"),
             canonical_workspace
         );
         let capability = owner
