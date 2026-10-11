@@ -15,11 +15,19 @@ use std::thread;
 use std::time::Duration;
 use std::time::Instant;
 use std::path::PathBuf;
+use std::str::FromStr;
+use std::sync::Arc;
 use std::process::Command;
 use std::process::Stdio;
 
+use codex_hepta_infer_core::shared_feature_v2::ImmutableFeatureSnapshotV2;
+use codex_hepta_infer_core::shared_feature_v2::SharedFeatureCacheV2;
+use codex_hepta_infer_core::shared_feature_v2::SharedFeatureIdentityV2;
 use codex_hepta_infer_core::shared_feature_v2::feature_content_digest_v2;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::NonAuthorizingPosture;
+use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest as _;
@@ -69,6 +77,8 @@ pub(crate) struct CheckedShadowStemRow {
     pub principal_id: String,
     pub purpose_id: String,
     pub cell_id: String,
+    pub generation: u64,
+    pub authority_epoch: u64,
     pub input_digest: String,
     pub feature_digest: String,
     pub features_q24: Vec<i64>,
@@ -346,6 +356,8 @@ pub(crate) fn run_pinned_shadow_stem_batch(
             principal_id: row.principal_id,
             purpose_id: row.purpose_id,
             cell_id: row.cell_id,
+            generation: row.generation,
+            authority_epoch: row.authority_epoch,
             input_digest: row.input_digest,
             feature_digest: row.feature_digest,
             features_q24: row.features_q24,
@@ -358,6 +370,99 @@ pub(crate) fn run_pinned_shadow_stem_batch(
         backend_latency_micros_reported: response.encoder_latency_micros,
         authority: NonAuthorizingPosture::DENY_ALL,
     })
+}
+
+
+const MAX_SHADOW_SNAPSHOT_TTL_MS: u64 = 5 * 60 * 1000;
+
+/// An independently reviewed, immutable Stem pipeline identity. These are
+/// digest *claims* for shadow staging, not signed Artifact CAS observations.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ShadowSnapshotPipeline {
+    pub encoder_digest: Digest32,
+    pub tokenizer_digest: Digest32,
+    pub normalizer_digest: Digest32,
+    pub quantization_digest: Digest32,
+}
+
+/// Stages an all-or-nothing mapping of verified offline feature rows into the
+/// existing shared Arc snapshot cache. Committed snapshots carry DENY_ALL and
+/// never bypass owner final-use admission, even when two Cells reuse one Arc.
+///
+/// Cloning the BTreeMap is intentional for the small research-only batch:
+/// tensor buffers are Arc-shared, but this O(cache_entries) staging method is
+/// NOT the production 4096-Cell hot-path transaction design.
+pub(crate) fn stage_shadow_feature_snapshots(
+    cache: &mut SharedFeatureCacheV2,
+    batch: &CheckedShadowStemBatch,
+    pipeline: ShadowSnapshotPipeline,
+    now_ms: u64,
+    expires_at_ms: u64,
+) -> Result<Vec<Arc<ImmutableFeatureSnapshotV2>>, Error> {
+    if batch.rows.is_empty()
+        || batch.rows.len() > MAX_SHADOW_BATCH
+        || expires_at_ms <= now_ms
+        || expires_at_ms.saturating_sub(now_ms) > MAX_SHADOW_SNAPSHOT_TTL_MS
+        || batch.authority.grants_any()
+        || [
+            pipeline.encoder_digest,
+            pipeline.tokenizer_digest,
+            pipeline.normalizer_digest,
+            pipeline.quantization_digest,
+        ]
+        .iter()
+        .any(Digest32::is_zero)
+    {
+        return Err(Error::FeatureContract);
+    }
+    let mut staged = cache.clone();
+    let mut all = Vec::with_capacity(batch.rows.len());
+    for row in &batch.rows {
+        let input = Digest32::from_str(&row.input_digest).map_err(|_| Error::FeatureContract)?;
+        let content = Digest32::from_str(&row.feature_digest).map_err(|_| Error::FeatureContract)?;
+        if row.features_q24.is_empty()
+            || row.features_q24.len() > 512
+            || content != feature_content_digest_v2(&row.features_q24)
+        {
+            return Err(Error::FeatureContract);
+        }
+        let identity = SharedFeatureIdentityV2 {
+            scope_id: StableId::new(row.scope_id.clone()).map_err(|_| Error::FeatureContract)?,
+            principal_id: StableId::new(row.principal_id.clone())
+                .map_err(|_| Error::FeatureContract)?,
+            purpose_id: StableId::new(row.purpose_id.clone()).map_err(|_| Error::FeatureContract)?,
+            generation: Generation::new(row.generation).map_err(|_| Error::FeatureContract)?,
+            authority_epoch: row.authority_epoch,
+            encoder_digest: pipeline.encoder_digest,
+            tokenizer_digest: pipeline.tokenizer_digest,
+            normalizer_digest: pipeline.normalizer_digest,
+            quantization_digest: pipeline.quantization_digest,
+            input_digest: input,
+        };
+        let snapshot = if let Some(existing) =
+            staged.get(now_ms, &identity).map_err(|_| Error::FeatureContract)?
+        {
+            if existing.content_digest != content
+                || existing.expires_at_ms != expires_at_ms
+                || existing.features_q24.as_ref() != row.features_q24.as_slice()
+            {
+                return Err(Error::FeatureContract);
+            }
+            existing
+        } else {
+            staged
+                .insert(
+                    now_ms,
+                    identity,
+                    expires_at_ms,
+                    Arc::from(row.features_q24.clone()),
+                )
+                .map_err(|_| Error::FeatureContract)?
+        };
+        all.push(snapshot);
+    }
+    *cache = staged;
+    Ok(all)
 }
 
 #[cfg(test)]
