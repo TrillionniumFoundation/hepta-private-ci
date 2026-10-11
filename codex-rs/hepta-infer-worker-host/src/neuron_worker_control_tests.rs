@@ -273,7 +273,7 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
     assert!(receipt.prediction_q24.is_empty());
     assert!(!port.reservation_unconsumed());
 
-    let mut worker = worker(Arc::clone(&calls), false, true);
+    let mut worker = self::worker(Arc::clone(&calls), false, true);
     let mut port = WorkerNeuronControlPort::from_reserved_worker(
         &mut worker,
         "model.1".to_owned(),
