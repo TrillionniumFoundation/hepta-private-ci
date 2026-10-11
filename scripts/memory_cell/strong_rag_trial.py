@@ -19,9 +19,9 @@ import time
 
 from event_memory_trial import LIMIT, read, strict_identifier
 from native import Document, Question, digest
+from strong_rag_stability import KS, leave_one_out
 
 SCHEMA = "hepta.memory-strong-rag.v1"
-KS = (1, 2, 3, 4, 6)
 EVAL_ARMS = (
     "selected_k",
     "hybrid_k4",
@@ -494,6 +494,7 @@ def calibrate(prep, model_dir, output, *, prep_sha, stage_sha):
     labels = read(prep / "calibration-labels.json", locked["calibration_labels_sha256"])
     expected = [case["query"]["identity"] for case in locked["cases"]]
     choice, statistics = choose_k(rows, labels, expected)
+    sensitivity = leave_one_out(rows, expected)
     dump(output / "scored-answers.json", rows)
     elapsed = time.perf_counter() - started
     report = dict(
@@ -505,6 +506,7 @@ def calibrate(prep, model_dir, output, *, prep_sha, stage_sha):
         ks=KS,
         selection_objective="actual strict task success, then fewer observed input tokens, then smaller k",
         arms=statistics,
+        calibration_sensitivity=sensitivity,
         total_elapsed_seconds=elapsed,
         reader_identity=inventory["inventory_digest"],
         model_stage_sha256=stage_sha,
@@ -532,6 +534,7 @@ def calibrate(prep, model_dir, output, *, prep_sha, stage_sha):
             reader_identity=inventory["inventory_digest"],
             raw_answers_sha256=report["raw_answers_sha256"],
             scored_answers_sha256=file_sha(output / "scored-answers.json"),
+            calibration_sensitivity_digest=digest(sensitivity),
             selection_objective=report["selection_objective"],
             calibration_task_count=8,
             evaluation_task_count=8,

@@ -17,6 +17,7 @@ import stat
 
 from event_memory_trial import LIMIT, read
 from native import Question, digest
+from strong_rag_stability import leave_one_out
 from strong_rag_trial import (
     EVAL_ARMS,
     HISTORIC_COLLECTION_SHA,
@@ -346,12 +347,16 @@ def audit(archive, original, *, expected_commit):
         summary, groups = _stats(replay, arms, questions)
         if stage == "calibration":
             choice, derived = choose_k(deepcopy(raw), target, questions)
+            sensitivity = leave_one_out(replay, questions)
             if (
                 choice is None or choice != frozen["selected_k"]
                 or summary != derived
                 or file_sha(path / "raw-answers.jsonl") != frozen["raw_answers_sha256"]
                 or file_sha(path / "scored-answers.json") != frozen["scored_answers_sha256"]
                 or _json_file(path / "report.json")["arms"] != summary
+                or _json_file(path / "report.json").get("calibration_sensitivity")
+                != sensitivity
+                or frozen.get("calibration_sensitivity_digest") != digest(sensitivity)
             ):
                 raise ValueError("frozen k is not derived from original calibration answers")
         else:

@@ -204,3 +204,31 @@ A model-free audit of the already executed Qwen 48-answer event-reader archive
 pairs and zero disagreements** in answer bytes, output-token digests or task
 success. This is historical generated evidence checked read-only, not new
 inference or independent future sampling.
+
+
+## Leave-one-calibration-question-out sensitivity (no additional inference)
+
+Five top-k choices on only eight exposed authored calibration tasks can select
+an idiosyncratic winner. After all 40 original calibration answers have been
+fsynced and scored, `strong_rag_stability.py` separately omits each of the
+eight calibration questions and **reselects k using only the other seven**.
+For the omitted question, the frozen answers for this selected k are contrasted
+against fixed k=4. All eight folds, their chosen k values, win/loss/tie/missing
+counts and worst-case missing-outcome bounds are recorded.
+
+This does **not** produce eight independent experiments: folds share most
+training questions, source stories are authored, and none of the eight final
+test labels is involved. A stable choice does not establish generalization,
+a statistical confidence bound or MemoryCell's learned benefit; instability
+is evidence to distrust this tiny calibration. The predeclared full-eight-case
+choice still controls the evaluation and is never retuned from its answers.
+
+The actual calibration report retains the full sensitivity record. The
+frozen policy contains its digest, while the separate read-only replay
+recomputes the eight omissions from sealed raw answers and rejects a changed,
+missing or inconsistent stability receipt. The independent replay job also
+runs the new leakage, failure-denominator and digest-integration tests.
+
+This is a **calibration-quality diagnostic only**. Independent source families,
+real future tasks, semantic source review, and production qualification remain
+unmet; `production_accepted=false`.
