@@ -1292,7 +1292,7 @@ mod tests {
         // A different ACTIVE module changes the full topology while Neuron's
         // generation/selection remain unchanged; old receipts fail closed.
         supervisor
-            .register_bootstrap(abi(1, "independent-memory-runtime", None))
+            .register_bootstrap(self::abi(1, "independent-memory-runtime", None))
             .expect("other module selected");
         assert!(observation.validate_integrity());
         assert!(
