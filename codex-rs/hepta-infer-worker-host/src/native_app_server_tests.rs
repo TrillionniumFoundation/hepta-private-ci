@@ -454,6 +454,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        // The native Worker observes App Server item/agentMessage/delta
+        // notifications, not an invented terminal output string. A mock
+        // containing only output_item.done can complete successfully yet
+        // legitimately produce no streamed output for this observer.
+        // Use the same actual Responses streaming sequence exercised by
+        // the App Server integration suite; do not weaken output checks.
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
