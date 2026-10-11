@@ -9,9 +9,12 @@ import re
 from selector_evaluation import correctness, diagnose
 from sessions import source_id
 
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank", "prototype", "linear", "gated",
+    "lineage_lora_gated", "independent_lora_gated",
+)
 CURVE = (16, 32, 48)
+PHASES = ("select", "retention", "test", "transfer")
 
 
 def write(path, value):
@@ -29,12 +32,32 @@ def append(path, value):
         os.fsync(stream.fileno())
 
 
-def oracle_sources(source, query, target):
-    """Privileged diagnostic only; never use this to select/train policy arms.
+def validate_census(attempts, plan):
+    expected = {
+        (stage, phase, qid, arm)
+        for stage in CURVE for phase in PHASES
+        for qid in plan["questions"][phase] for arm in ARMS
+    }
+    actual = [
+        (r["stage"], r["phase"], r["question_id"], r["arm"]) for r in attempts
+    ]
+    if len(actual) != len(set(actual)) or set(actual) != expected:
+        raise ValueError("missing, duplicate or extra policy attempt")
+    for row in attempts:
+        if row["status"] not in ("succeeded", "failed"):
+            raise ValueError("unknown policy execution status")
+        if row["family"] != plan["question_families"][row["question_id"]]:
+            raise ValueError("policy source-family drift")
+    return dict(planned=len(expected), recorded=len(actual), complete=True)
 
-    A native supporting source plus literal reference-answer span is not an
-    independently adjudicated entailment label. Missing spans stay unavailable;
-    no answer annotation is ever inserted into the source text.
+
+def oracle_sources(source, query, target):
+    """Privileged reference-SPAN diagnostic, not an accepted gold-evidence oracle.
+
+    Native supporting source plus literal reference-answer text is not independent
+    entailment adjudication. The answer-dependent window is deliberately labelled
+    privileged and cannot be compared as an ordinary retrieval policy. No answer
+    annotation is inserted into source text; missing spans stay unavailable.
     """
     if target.unanswerable:
         return (), "annotated-unanswerable"
@@ -47,17 +70,24 @@ def oracle_sources(source, query, target):
         match = re.search(re.escape(target.answer), doc.content, re.IGNORECASE)
         if match is None or match.end() - match.start() > 512:
             continue
-        start, end = max(0, match.start() - 192), min(len(doc.content), match.end() + 192)
-        return (dict(label="E1", id=doc.identity, original_id=doc.identity,
-                     root=doc.root, scope=doc.scope, excerpt=doc.content[start:end],
-                     source_start=start, source_end=end, observed_at=doc.observed_at),), "native-source-literal-span"
+        start = max(0, match.start() - 192)
+        end = min(len(doc.content), match.end() + 192)
+        evidence = dict(
+            label="E1", id=doc.identity, original_id=doc.identity,
+            root=doc.root, scope=doc.scope, excerpt=doc.content[start:end],
+            source_start=start, source_end=end, observed_at=doc.observed_at,
+        )
+        return (evidence,), "native-source-literal-span"
     return None, "no-admitted-literal-reference-span"
 
 
 def score_attempt(item, pool, target):
     result = dict(item)
+    # Reader failure must not erase an already observed correct selector choice.
+    result["source_choice_correct"] = (
+        correctness(pool, target, item["selected"]) if "selected" in item else 0
+    )
     if item["status"] == "succeeded":
-        result["source_choice_correct"] = correctness(pool, target, item["selected"])
         result["diagnostic_answer_f1"] = diagnose(item["answer"], target)
         labels = re.findall(r"\[E(\d+)\]", item["answer"])
         delivered = {s["label"] for s in item["receipt"]["delivered_evidence"]}
@@ -68,10 +98,12 @@ def score_attempt(item, pool, target):
             semantic_precision=None,
         )
     else:
-        # Failures remain zero in unconditional scores, not silently discarded.
-        result.update(source_choice_correct=0, diagnostic_answer_f1=0.0,
-                      citation_structure=dict(markers=0, delivered_markers=0,
-                                              precision=None, semantic_precision=None))
+        result.update(
+            diagnostic_answer_f1=0.0,
+            citation_structure=dict(
+                markers=0, delivered_markers=0, precision=None, semantic_precision=None
+            ),
+        )
     return result
 
 
@@ -81,28 +113,43 @@ def summarize(attempts):
         grouped[(row["stage"], row["phase"], row["arm"])].append(row)
     reports = {}
     for key, rows in sorted(grouped.items()):
-        valid_source = [r["source_choice_correct"] for r in rows
-                        if r["source_choice_correct"] is not None]
-        valid_f1 = [r["diagnostic_answer_f1"] for r in rows
-                    if r["diagnostic_answer_f1"] is not None]
+        valid_source = [
+            r["source_choice_correct"] for r in rows
+            if r["source_choice_correct"] is not None
+        ]
+        valid_f1 = [
+            r["diagnostic_answer_f1"] for r in rows
+            if r["diagnostic_answer_f1"] is not None
+        ]
         latencies = sorted(r["head_seconds"] for r in rows if "head_seconds" in r)
         markers = sum(r["citation_structure"]["markers"] for r in rows)
         delivered = sum(r["citation_structure"]["delivered_markers"] for r in rows)
         reports["/".join(map(str, key))] = dict(
-            attempted=len(rows), succeeded=sum(r["status"] == "succeeded" for r in rows),
+            attempted=len(rows),
+            succeeded=sum(r["status"] == "succeeded" for r in rows),
             failed=sum(r["status"] != "succeeded" for r in rows),
             source_scored=len(valid_source), source_unresolved=len(rows) - len(valid_source),
             source_accuracy=None if not valid_source else sum(valid_source) / len(valid_source),
+            source_all_planned_bounds=[
+                sum(valid_source) / len(rows),
+                (sum(valid_source) + len(rows) - len(valid_source)) / len(rows),
+            ],
             answer_scored=len(valid_f1), answer_unscored=len(rows) - len(valid_f1),
             diagnostic_f1=None if not valid_f1 else sum(valid_f1) / len(valid_f1),
-            head_p95_seconds=None if not latencies else latencies[math.ceil(.95 * len(latencies)) - 1],
-            emitted_citation_markers=markers, delivered_citation_markers=delivered,
+            answer_all_planned_bounds=[
+                sum(valid_f1) / len(rows),
+                (sum(valid_f1) + len(rows) - len(valid_f1)) / len(rows),
+            ],
+            head_p95_seconds=(
+                None if not latencies else latencies[math.ceil(.95 * len(latencies)) - 1]
+            ),
+            emitted_citation_markers=markers,
+            delivered_citation_markers=delivered,
             citation_structural_precision=None if not markers else delivered / markers,
             semantic_citation_precision=None,
         )
-    # Family clusters, not question rows or execution shards, set the interval size.
     contrasts = {}
-    comparisons = max(1, len(CURVE) * 4 * (len(ARMS) - 1))
+    comparisons = len(CURVE) * len(PHASES) * (len(ARMS) - 1)
     for (stage, phase, arm), rows in sorted(grouped.items()):
         if arm == ARMS[0]:
             continue
@@ -114,15 +161,21 @@ def summarize(attempts):
             b = base[r["question_id"]]
             if r["family"] != b["family"]:
                 raise ValueError("paired source-family drift")
-            if r["source_choice_correct"] is not None and b["source_choice_correct"] is not None:
-                families[r["family"]].append(r["source_choice_correct"] - b["source_choice_correct"])
-        means = [sum(v) / len(v) for v in families.values()]
-        mean = None if not means else sum(means) / len(means)
-        radius = None if not means else math.sqrt(2 * math.log(2 * comparisons / .05) / len(means))
+            candidate, baseline = r["source_choice_correct"], b["source_choice_correct"]
+            low = (0 if candidate is None else candidate) - (1 if baseline is None else baseline)
+            high = (1 if candidate is None else candidate) - (0 if baseline is None else baseline)
+            families[r["family"]].append((low, high))
+        lows = [sum(v[0] for v in group) / len(group) for group in families.values()]
+        highs = [sum(v[1] for v in group) / len(group) for group in families.values()]
+        low, high = sum(lows) / len(lows), sum(highs) / len(highs)
+        radius = math.sqrt(2 * math.log(2 * comparisons / .05) / len(families))
         contrasts[f"{stage}/{phase}/{arm}"] = dict(
-            family_count=len(means), mean_source_delta=mean,
-            simultaneous_conditional_95_interval=None if mean is None else
-                [max(-1.0, mean - radius), min(1.0, mean + radius)],
+            family_count=len(families),
+            mean_source_delta=low if low == high else None,
+            all_planned_family_delta_bounds=[low, high],
+            simultaneous_conditional_95_interval=[
+                max(-1.0, low - radius), min(1.0, high + radius)
+            ],
             family_independence_authenticated=False,
             superiority_claim=False,
         )
