@@ -75,6 +75,11 @@ def load_predictions(path, expected_arm, run, scored_ids, classes):
                 raise ValueError("malformed aligned legal-action logits")
             if row.get("weights_sha256") != run.get("weights_sha256"):
                 raise ValueError("predicted Head weights differ from run manifest")
+            if "token_count" in row:
+                limit = run["runtime_profile"]["context_tokens"]
+                if (type(row["token_count"]) is not int or
+                        not 1 <= row["token_count"] <= limit):
+                    raise ValueError("prediction exceeded registered token budget")
             duration = row.get("latency_ms")
             if type(duration) not in (int, float) or not math.isfinite(duration) or duration < 0:
                 raise ValueError("missing measured per-sample latency")
@@ -113,6 +118,7 @@ def assemble(plan, evidence_root, entries, dataset, scope):
             raise ValueError("run metadata must be object")
         original = plan["checkpoints"][model]
         if (run.get("arm") != arm or
+                run.get("model_source") != SOURCES[model][0] or
                 run.get("checkpoint_sha256") != original["sha256"] or
                 run.get("upstream_revision") != original["upstream_revision"] or
                 run.get("dataset_sha256") != plan["dataset_sha256"] or
@@ -203,6 +209,7 @@ def main():
                                allow_nan=False) + "\n" for p in predictions)
     runs_json = json.dumps(runs, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     summary.update({
+        "assembler_source_sha256": sha256_file(__file__),
         "plan_sha256": plan_sha,
         "dataset_sha256": plan["dataset_sha256"],
         "runs_bundle_sha256": hashlib.sha256(runs_json.encode("utf-8")).hexdigest(),
