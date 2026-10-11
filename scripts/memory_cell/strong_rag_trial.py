@@ -469,6 +469,12 @@ def _reader(model_dir, stage_sha):
     inventory = read(model_dir / "inventory.json", staged["inventory_sha256"])
     if staged["tier"] != "qwen-3b":
         raise ValueError("only separately pinned stronger Qwen reference reader")
+
+    # Match the original successful frozen reference runner BEFORE model load.
+    import torch
+    from runtime_preflight import configure_torch
+
+    configure_torch(torch, bounded=False)
     return (
         EventPresentationReader(
             model_dir / "reader", expected_inventory=inventory["inventory_digest"]

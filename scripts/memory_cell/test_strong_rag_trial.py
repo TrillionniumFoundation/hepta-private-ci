@@ -48,6 +48,39 @@ def targets(qids=("q1", "q2")):
 
 
 class StrongRagPolicyTests(unittest.TestCase):
+    def test_reference_reader_sets_two_cpu_threads_before_loading(self):
+        calls = []
+        fake_torch = ModuleType("torch")
+        fake_torch.set_num_threads = lambda n: calls.append(("threads", n))
+        fake_torch.get_num_threads = lambda: 2
+        fake_torch.get_num_interop_threads = lambda: 4
+
+        def manifest(path, _expected):
+            if path.name == "stage.json":
+                return {"tier": "qwen-3b", "inventory_sha256": "inventory"}
+            return {"inventory_digest": "pinned-reader"}
+
+        def construct(_path, *, expected_inventory):
+            calls.append(("model", expected_inventory))
+            return object()
+
+        with (
+            patch.dict("sys.modules", {"torch": fake_torch}),
+            patch.object(trial, "read", side_effect=manifest),
+            patch(
+                "event_reader_view.EventPresentationReader",
+                side_effect=construct,
+            ),
+        ):
+            reader, staged, inventory = trial._reader(Path("/model"), "stage")
+        self.assertIsNotNone(reader)
+        self.assertEqual(staged["tier"], "qwen-3b")
+        self.assertEqual(inventory["inventory_digest"], "pinned-reader")
+        self.assertEqual(
+            calls,
+            [("threads", 2), ("model", "pinned-reader")],
+        )
+
     def test_top_k_does_not_consult_oracle_or_test_labels(self):
         case = dict(
             candidate_ids=[f"s{i}" for i in range(7)],

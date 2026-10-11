@@ -442,3 +442,32 @@ exists. An accepted full census still requires 40 calibrated and 72
 matched Qwen generations with an independent read-only replay, followed
 by genuinely fresh independent source families for any generalization
 or production conclusion.
+
+## Frozen reader CPU threading parity and prior timeout (2026-10-11)
+
+The completed historical Qwen run `38063870516` had the identical Qwen
+model inventory and pinned Python environment as the interrupted strong-RAG
+calibration of source `02c12b4a` (run `38111452963`, artifact `11696974258`).
+The original reference runner explicitly called `torch.set_num_threads(2)`
+before model loading. The newer strong-RAG `_reader` had omitted that call.
+
+The interrupted calibration artifact has a complete 25/25 SHA256SUMS census,
+but only four real successful answers out of the planned forty. Their original
+per-answer read durations were approximately 923, 1458, 2046 and 2642
+seconds, versus around 419 seconds total for the historical 48-answer Qwen
+experiment. The host/model execution mismatch is real; the precise cause is
+not yet proven, and CPU features or runner contention can also differ.
+
+The strong-RAG reader now restores the reference's intra-op setting with
+`configure_torch(torch, bounded=False)` **before** constructing the same
+pinned Qwen reader. This keeps the exact model weights, BF16/eager attention,
+prompts, source selection, decoding parameters and score unchanged. The
+existing `runtime-preflight.json` records effective host/thread metadata.
+An isolated unit test verifies two threads are requested before reader
+construction. The experiment still has a 180-second observed per-answer
+fail-closed viability threshold; a slow host is not counted as model progress.
+
+No new model speed, actual task gain, future generalization or production
+qualification is established until a fresh exact-source hosted run completes
+and the independent verifier checks the generated answers and runtime
+receipts.
