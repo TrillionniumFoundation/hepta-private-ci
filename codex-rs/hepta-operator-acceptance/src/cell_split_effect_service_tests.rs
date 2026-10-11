@@ -445,3 +445,91 @@ fn four_independent_socket_owners_recover_exact_committed_prefix_and_fence_revoc
         assert_eq!(handle.join().expect("owner thread"), 1);
     }
 }
+
+
+/// An external writer may revoke an effect between the first live validation
+/// and the separately retained frontier read. This fixture deliberately makes
+/// that change *inside* the second frontier call, not after an RPC completes.
+struct RevokeDuringFrontierRead {
+    inner: DiskEffect,
+    sequence_reads: usize,
+}
+
+impl CellSplitDurableEffectBackendV1 for RevokeDuringFrontierRead {
+    type Error = io::Error;
+
+    fn authorize_execute(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        self.inner.authorize_execute(intent)
+    }
+
+    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
+        self.inner.commit_once(intent)
+    }
+
+    fn read_committed(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<Option<CellSplitOwnedEffectV1>, Self::Error> {
+        self.inner.read_committed(intent)
+    }
+
+    fn verify_current(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+        effect: &CellSplitOwnedEffectV1,
+    ) -> Result<bool, Self::Error> {
+        self.inner.verify_current(intent, effect)
+    }
+
+    fn current_sequence(&mut self) -> Result<u64, Self::Error> {
+        let sequence = self.inner.current_sequence()?;
+        self.sequence_reads += 1;
+        if self.sequence_reads == 2 {
+            fs::remove_file(self.inner.live_path())?;
+        }
+        Ok(sequence)
+    }
+}
+
+#[test]
+fn frontier_advance_between_verification_and_signature_rejects_stale_readback() {
+    let root = tempfile::tempdir().expect("fixture");
+    let mut live = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
+    live.commit_once(&intent()).expect("original durable effect");
+    let backend = RevokeDuringFrontierRead {
+        inner: live,
+        sequence_reads: 0,
+    };
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+    )
+    .expect("signed service");
+
+    let (mut client, mut server) = UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::ReadBack,
+            intent: intent(),
+            challenge_nonce: Some("bb".repeat(32)),
+        },
+    )
+    .expect("readback request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect changed during signed readback"
+        ))
+    ));
+    assert_eq!(service.backend().sequence_reads, 2);
+    assert!(!root.path().join("live-owner-state").exists());
+    assert!(root.path().join("committed").exists());
+}
