@@ -449,7 +449,7 @@ if [[ "${RUNNER_OS:-}" == "macOS" ]] \
   && [[ "$bazel_status" -eq 37 ]] \
   && grep -Fq "Server terminated abruptly" "$bazel_console_log" \
   && grep -Fq "Socket closed" "$bazel_console_log" \
-  && ! grep -Eq '(^|[[:space:]])(FAIL:|ERROR:)' "$bazel_console_log"; then
+  && ! grep -Eq '(FAIL:|ERROR:)' "$bazel_console_log"; then
   echo "::warning::Bazel server socket died without failed tests/actions; retrying the identical full target set once."
   echo "Bazel local server transport retry 1/1 (previous status $bazel_status)" >> "$bazel_console_log"
   set +e
