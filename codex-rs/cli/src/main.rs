@@ -1,8 +1,3 @@
-// The Windows Bazel-built CLI expands a deeply nested async state machine.
-// Start with the compiler-suggested bound; a higher limit is not a substitute
-// for fixing pathological types if an exact-head build still overflows.
-#![recursion_limit = "256"]
-
 use clap::Args;
 use clap::CommandFactory;
 use clap::FromArgMatches;
