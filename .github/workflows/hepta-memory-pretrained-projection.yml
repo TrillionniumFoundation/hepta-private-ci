@@ -14,6 +14,30 @@ concurrency:
   group: memory-source-pretrained-parity-${{ github.sha }}
   cancel-in-progress: false
 jobs:
+  repository-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Require unchanged repository-wide format gate
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-parity-format
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/memory-parity-format/format.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-pretrained-projection-format
+          path: /tmp/memory-parity-format
+          if-no-files-found: warn
   qwen2-peft-contracts:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -53,12 +77,6 @@ jobs:
           set -euo pipefail
           /tmp/memory-parity/venv/bin/python -m unittest -v test_source_completion_qwen test_source_completion_loss test_source_write_schedule test_experience_memory 2>&1 | tee /tmp/memory-parity/qwen2-peft-contracts.log
           /tmp/memory-parity/venv/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' 2>&1 | tee /tmp/memory-parity/full-regression.log
-      - name: Enforce repository formatter without exemptions
-        run: |
-          set -euo pipefail
-          python3 -m pip install uv==0.8.22
-          git fetch --no-tags --depth=1 origin 78fdb0cf8537e3a84fc6e0a849707559c80881e8
-          just fmt --check --base 78fdb0cf8537e3a84fc6e0a849707559c80881e8 2>&1 | tee /tmp/memory-parity/format.log
       - name: Preserve exact checked source and failures
         if: always()
         run: |

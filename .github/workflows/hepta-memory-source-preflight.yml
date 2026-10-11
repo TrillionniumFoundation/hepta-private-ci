@@ -13,6 +13,30 @@ permissions:
   contents: read
   actions: read
 jobs:
+  repository-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Require unchanged repository-wide format gate
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/write-preflight-format
+          python3 -m pip install uv==0.8.22
+          git fetch --no-tags --depth=1 origin "$BASE"
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/write-preflight-format/format.log
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-write-preflight-format
+          path: /tmp/write-preflight-format
+          if-no-files-found: warn
   preflight:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -52,24 +76,10 @@ jobs:
           /tmp/preflight-python/bin/pip install -r /tmp/write-preflight/environment.txt
           /tmp/preflight-python/bin/pip freeze > /tmp/write-preflight/actual-environment.txt
           diff -u /tmp/write-preflight/environment.txt /tmp/write-preflight/actual-environment.txt
-      - name: Full regression suite and unchanged repository formatting
-        env:
-          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+      - name: Full inherited regression suite, independent of the formatting job
         run: |
           set -euo pipefail
           /tmp/preflight-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/write-preflight/tests.log
-          export PATH="/tmp/preflight-python/bin:$PATH"
-          git fetch --no-tags --depth=1 origin "$BASE"
-          set +e
-          just fmt --check --base "$BASE" > /tmp/write-preflight/format.log 2>&1
-          status=$?
-          set -e
-          cat /tmp/write-preflight/format.log
-          if [ "$status" -ne 0 ]; then
-            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_write_schedule.py scripts/memory_cell/test_source_write_schedule.py scripts/memory_cell/experience_memory.py scripts/memory_cell/research_disposition.py scripts/memory_cell/test_research_disposition.py > /tmp/write-preflight/format.diff || true
-            cat /tmp/write-preflight/format.diff
-          fi
-          exit "$status"
       - name: Measure actual pinned-tokenizer exposure without loading a model
         run: |
           set -euo pipefail
