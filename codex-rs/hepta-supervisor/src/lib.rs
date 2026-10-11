@@ -96,6 +96,7 @@ pub use module_runtime::RuntimeModuleInitializationWitnessV1;
 pub use module_runtime::RuntimeModuleRetirementWitnessV1;
 pub use module_runtime::RuntimeModuleSupervisorErrorV1;
 pub use module_runtime::RuntimeModuleSupervisorV1;
+pub use module_runtime::SupervisorNeuronActiveCandidateV1;
 pub use process_deadline::ProcessDeadlineOutcomeV1;
 pub use process_deadline::ProcessDeadlinePolicyErrorV1;
 pub use process_deadline::ProcessDeadlinePolicyV1;
