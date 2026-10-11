@@ -69,3 +69,35 @@ have real target-host evidence and durable automatic long-horizon selection,
 the production result remains **0/8 fully complete** until the external
 evidence column is supplied. The missing evidence is intentionally represented
 as typed gates rather than inferred from a digest or a unit test.
+
+## First-party CNS kernel execution bridge (opt-in, not production-complete)
+
+The non-default `codex-hepta-runtime` feature `cell-split-cns-port` now
+provides `CellSplitCnsKernelRuntimePortV1`. It invokes the real
+`HeptaRuntime::apply_governed_topology`, not a simulated route or an
+advisory file swap. Every attempted cutover requires an independently pinned
+`FinalUseAuthority`, an accepted successor, the runtime's genuine transition
+receipt, fresh challenge-signed old-writer/route observations, and matching
+Artifact/generation/fence identities. A candidate cannot supply or replace
+the trust root. The separate source must persist the original runtime
+commit and retain an independently witnessed monotone owner sequence.
+
+Source tests cover missing final-use refusal, signer/challenge mismatch,
+actual generation replacement, fsynced original cutover attestation, and
+restart safety. A fresh process-local runtime at its predecessor generation
+cannot claim that a prior signed successor receipt makes it current.
+Recovery must fail closed until the canonical serving owner is restored.
+None of the fixture credentials are production keys or NDU/Selector grants.
+
+Still required: authenticated startup rehydration under an external minimum
+checkpoint, independently signed migration/Selector/NDU preflight readers,
+a real persistent CNS runtime witness, target-host fault injection,
+the real Supervisor finalization call connected to the same coordinator,
+and independent Observer confirmation. The strict production result stays
+**0/8 fully accepted**. Native tests do not authorize physical splitting.
+
+Global cargo-deny is separately blocked by `RUSTSEC-2026-0318` for
+`matrix-sdk-crypto` 0.18.0 (patched in 0.19.0) and `RUSTSEC-2026-0319`
+for the unmaintained `anymap2` crate. Matrix SDK 0.19.1 still depends on
+`anymap2`, so bumping the SDK without migrating that dependency cannot
+make the security gate green. Neither advisory may be ignored for release.
