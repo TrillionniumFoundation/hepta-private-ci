@@ -6,6 +6,7 @@ on:
     paths:
       - "scripts/memory_cell/experience_*.py"
       - "scripts/memory_cell/test_experience_*.py"
+      - "scripts/memory_cell/test_source_write_execution_gate.py"
       - ".github/workflows/hepta-memory-write-experiment.yml"
   workflow_dispatch:
 permissions:
