@@ -47,7 +47,7 @@ class PrequentialTests(unittest.TestCase):
                 generation=7)["input_digest"])
         for invalid_kwargs, error in (
                 ({"arm": "no_change"}, "only learned/frozen"),
-                ({"weights_digest": "unpinned"}, "checkpoint revision"),
+                ({"weights_digest": "unpinned"}, "revision/generation not pinned"),
                 ({"generation": 0}, "checkpoint revision"),
                 ({"revision": "G" * 40}, "checkpoint revision"),
                 ({"probabilities": [float("nan"), 1.0]}, "normalized"),
