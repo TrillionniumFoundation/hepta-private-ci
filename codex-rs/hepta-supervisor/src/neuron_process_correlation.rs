@@ -112,10 +112,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         module_generation: Generation,
         expected_module_candidate_digest: Digest32,
     ) -> Result<SupervisorNeuronAgentProcessV1, NeuronAgentProcessCorrelationErrorV1> {
-        let module = module_owner.read_neuron_active_candidate_v1(
-            module_generation,
-            expected_module_candidate_digest,
-        )?;
+        let module = module_owner
+            .read_neuron_active_candidate_v1(module_generation, expected_module_candidate_digest)?;
         if module.owner_id.as_str() != agent_id.as_str() {
             return Err(NeuronAgentProcessCorrelationErrorV1::OwnerMismatch);
         }

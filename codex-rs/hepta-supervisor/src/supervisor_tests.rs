@@ -2302,7 +2302,8 @@ fn finish_release_drain(
 }
 
 #[test]
-fn read_current_neuron_agent_process_v1_requires_live_unfenced_agentd() -> Result<(), SupervisorError> {
+fn read_current_neuron_agent_process_v1_requires_live_unfenced_agentd()
+-> Result<(), SupervisorError> {
     use codex_hepta_control_plane::RuntimeModuleAbiV1;
     use codex_hepta_control_plane::RuntimeModuleStateClassV1;
     use codex_hepta_types::Digest32;
@@ -2350,7 +2351,9 @@ fn read_current_neuron_agent_process_v1_requires_live_unfenced_agentd() -> Resul
     modules
         .register_shadow_for_test(abi, digest("signed-selection-fixture"))
         .expect("selected Shadow fixture");
-    modules.enter_canary(&module_id, generation).expect("canary");
+    modules
+        .enter_canary(&module_id, generation)
+        .expect("canary");
     modules
         .promote_new_initialized_module(
             &module_id,
@@ -2366,23 +2369,24 @@ fn read_current_neuron_agent_process_v1_requires_live_unfenced_agentd() -> Resul
     // ACTIVE module is not enough without the live process.
     assert!(matches!(
         supervisor.read_current_neuron_agent_process_v1(
-            &modules, &fleet.first, generation, candidate,
+            &modules,
+            &fleet.first,
+            generation,
+            candidate,
         ),
         Err(NeuronAgentProcessCorrelationErrorV1::NotRunning),
     ));
     supervisor.start(&fleet.first, command()?, now)?;
     // A process awaiting health is not a serving process.
     assert!(
-        supervisor.read_current_neuron_agent_process_v1(
-            &modules, &fleet.first, generation, candidate,
-        ).is_err()
+        supervisor
+            .read_current_neuron_agent_process_v1(&modules, &fleet.first, generation, candidate,)
+            .is_err()
     );
     control.set_healthy(&fleet.first);
     supervisor.tick(now);
     let observation = supervisor
-        .read_current_neuron_agent_process_v1(
-            &modules, &fleet.first, generation, candidate,
-        )
+        .read_current_neuron_agent_process_v1(&modules, &fleet.first, generation, candidate)
         .expect("live selected module and healthy process");
     assert!(observation.validate_integrity());
     assert_eq!(observation.selected_module.module_generation, generation);
@@ -2395,22 +2399,26 @@ fn read_current_neuron_agent_process_v1_requires_live_unfenced_agentd() -> Resul
     // A healthy different Agentd process cannot be substituted merely
     // because a selected module exists elsewhere in this Supervisor.
     assert!(
-        supervisor.read_current_neuron_agent_process_v1(
-            &modules, &fleet.second, generation, candidate,
-        ).is_err()
+        supervisor
+            .read_current_neuron_agent_process_v1(&modules, &fleet.second, generation, candidate,)
+            .is_err()
     );
     let mut forged = observation.clone();
     forged.process_system_id += 1;
     forged.diagnostic_digest = forged.computed_digest();
     assert!(forged.validate_integrity());
     assert!(
-        supervisor.revalidate_current_neuron_agent_process_v1(&modules, &forged).is_err()
+        supervisor
+            .revalidate_current_neuron_agent_process_v1(&modules, &forged)
+            .is_err()
     );
 
     // Restart immediately invalidates the previously observed generation.
     supervisor.restart(&fleet.first, now)?;
     assert!(
-        supervisor.revalidate_current_neuron_agent_process_v1(&modules, &observation).is_err()
+        supervisor
+            .revalidate_current_neuron_agent_process_v1(&modules, &observation)
+            .is_err()
     );
     Ok(())
 }
