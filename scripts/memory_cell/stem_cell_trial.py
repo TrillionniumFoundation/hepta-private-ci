@@ -15,7 +15,7 @@ import time
 
 import torch
 
-from index import PersistentIndex, RetrievalPolicy
+from index import RetrievalPolicy
 from native import digest, load
 from pretrained import Encoder, file_inventory
 from selector_answering import (
