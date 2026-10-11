@@ -145,7 +145,7 @@ class DecisionArmBundleTests(unittest.TestCase):
         rows = [json.loads(line) for line in prediction.read_text().splitlines()]
         rows[0]["token_count"] = 513
         prediction.write_text(
-            "".join(json.dumps(row, sort_keys=True) + "\\n" for row in rows))
+            "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows))
         document["output_predictions_sha256"] = sha256_file(prediction)
         manifest.write_text(json.dumps(document))
         with self.assertRaisesRegex(ValueError, "token budget"):
