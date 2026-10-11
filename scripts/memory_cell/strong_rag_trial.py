@@ -32,7 +32,9 @@ EVAL_ARMS = (
     "empty",
 )
 HISTORIC_PLAN_SHA = "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
-HISTORIC_COLLECTION_SHA = "be47e85e87692fa0c5036ebf1aa6090e040334b70719a9103e880960e6a60da9"
+HISTORIC_COLLECTION_SHA = (
+    "be47e85e87692fa0c5036ebf1aa6090e040334b70719a9103e880960e6a60da9"
+)
 
 
 def file_sha(path):
@@ -204,26 +206,29 @@ def prepare(inputs, plan_dir, encoder_dir, output, *, plan_sha):
     output.mkdir()
     dump(output / "calibration-sources.json", sources)
     dump(output / "calibration-labels.json", calibration_labels)
-    dump(output / "calibration-plan.json", dict(
-        schema=SCHEMA,
-        source_commit=commit,
-        historical_plan_sha256=plan_sha,
-        historical_collection_sha256=HISTORIC_COLLECTION_SHA,
-        encoder_inventory_sha256=encoder_pin,
-        reader_profile="hepta.controlled-event.schema-expansion.v1",
-        selected_prior_lexical_weight=weight,
-        ks=KS,
-        token_limit=LIMIT,
-        cases=cases,
-        calibration_only=True,
-        test_cases_materialized=False,
-        calibration_labels_sha256=file_sha(output / "calibration-labels.json"),
-        calibration_sources_sha256=file_sha(output / "calibration-sources.json"),
-        frozen_indices=index_hashes,
-        human_sufficient_context_census=0,
-        independent_sources=False,
-        production_accepted=False,
-    ))
+    dump(
+        output / "calibration-plan.json",
+        dict(
+            schema=SCHEMA,
+            source_commit=commit,
+            historical_plan_sha256=plan_sha,
+            historical_collection_sha256=HISTORIC_COLLECTION_SHA,
+            encoder_inventory_sha256=encoder_pin,
+            reader_profile="hepta.controlled-event.schema-expansion.v1",
+            selected_prior_lexical_weight=weight,
+            ks=KS,
+            token_limit=LIMIT,
+            cases=cases,
+            calibration_only=True,
+            test_cases_materialized=False,
+            calibration_labels_sha256=file_sha(output / "calibration-labels.json"),
+            calibration_sources_sha256=file_sha(output / "calibration-sources.json"),
+            frozen_indices=index_hashes,
+            human_sufficient_context_census=0,
+            independent_sources=False,
+            production_accepted=False,
+        ),
+    )
     return dict(
         cases=len(cases),
         encoder_sha256=encoder_pin,
@@ -238,10 +243,19 @@ def _bundle(query, selected, originals, *, frontier, arm):
     spans = []
     for key in selected:
         doc = originals[key]
-        spans.append(EvidenceSpan(
-            doc.identity, doc.root, doc.scope, doc.session, doc.observed_at,
-            0, len(doc.content.encode()), doc.content, digest(doc.content)
-        ))
+        spans.append(
+            EvidenceSpan(
+                doc.identity,
+                doc.root,
+                doc.scope,
+                doc.session,
+                doc.observed_at,
+                0,
+                len(doc.content.encode()),
+                doc.content,
+                digest(doc.content),
+            )
+        )
     return EvidenceBundle(digest(asdict(query)), frontier, tuple(spans), arm)
 
 
@@ -264,14 +278,17 @@ def _journal_answers(reader, cases, originals, arms, selections, journal, *, see
                 try:
                     answer, receipt = reader.answer(
                         query,
-                        _bundle(query, picked, originals, frontier=case["frontier"], arm=arm),
+                        _bundle(
+                            query, picked, originals, frontier=case["frontier"], arm=arm
+                        ),
                         originals,
                         frontier=case["frontier"],
                         revoked=set(),
                         token_limit=LIMIT,
                     )
                     audit = capture_native(
-                        query, answer,
+                        query,
+                        answer,
                         dict(
                             input_ids_sha256=receipt["input_ids_digest"],
                             delivered_evidence=receipt["delivered_evidence"],
@@ -279,14 +296,21 @@ def _journal_answers(reader, cases, originals, arms, selections, journal, *, see
                         experiment_digest=digest((seed, arm)),
                         family_digest=digest(query.family),
                     )
-                    row.update(status="succeeded", answer=answer, receipt=receipt, citation_audit=audit)
+                    row.update(
+                        status="succeeded",
+                        answer=answer,
+                        receipt=receipt,
+                        citation_audit=audit,
+                    )
                 except Exception as error:
                     row.update(
                         status="failed",
                         error_type=type(error).__name__,
                         error=str(error)[:1024],
                     )
-                target.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+                target.write(
+                    json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                )
                 target.flush()
                 os.fsync(target.fileno())
                 rows.append(row)
@@ -315,14 +339,19 @@ def _score(rows, labels, *, expected, arms):
         parsed = strict_identifier(row["answer"])
         row["parsed_identifier"] = parsed
         row["strict_task_success"] = parsed == truth["expected"]
-        row["required_sources_covered"] = set(truth["support"]).issubset(row["selected"])
+        row["required_sources_covered"] = set(truth["support"]).issubset(
+            row["selected"]
+        )
         if truth["kind"] != row["kind"]:
             raise ValueError("task kind drift")
         if truth["kind"] == "procedure":
-            verified = call_worker(dict(
-                operation="execute", recipe=truth["procedure"],
-                supplied=parsed or "invalid_response"
-            ))
+            verified = call_worker(
+                dict(
+                    operation="execute",
+                    recipe=truth["procedure"],
+                    supplied=parsed or "invalid_response",
+                )
+            )
             row["procedure_verification"] = verified
             row["strict_task_success"] = verified["exit_code"] == 0
     return rows
@@ -350,8 +379,14 @@ def _stats(rows, arms, expected):
             per_kind={
                 kind: dict(
                     planned=sum(r["kind"] == kind for r in records),
-                    succeeded=sum(r["kind"] == kind and r["status"] == "succeeded" for r in records),
-                    task_success=sum(r["kind"] == kind and r.get("strict_task_success") is True for r in records),
+                    succeeded=sum(
+                        r["kind"] == kind and r["status"] == "succeeded"
+                        for r in records
+                    ),
+                    task_success=sum(
+                        r["kind"] == kind and r.get("strict_task_success") is True
+                        for r in records
+                    ),
                 )
                 for kind in sorted({r["kind"] for r in records})
             },
@@ -382,9 +417,13 @@ def _reader(model_dir, stage_sha):
     inventory = read(model_dir / "inventory.json", staged["inventory_sha256"])
     if staged["tier"] != "qwen-3b":
         raise ValueError("only separately pinned stronger Qwen reference reader")
-    return EventPresentationReader(
-        model_dir / "reader", expected_inventory=inventory["inventory_digest"]
-    ), staged, inventory
+    return (
+        EventPresentationReader(
+            model_dir / "reader", expected_inventory=inventory["inventory_digest"]
+        ),
+        staged,
+        inventory,
+    )
 
 
 def calibrate(prep, model_dir, output, *, prep_sha, stage_sha):
@@ -400,25 +439,41 @@ def calibrate(prep, model_dir, output, *, prep_sha, stage_sha):
         or locked["token_limit"] != LIMIT
     ):
         raise ValueError("must use frozen calibration-only manifest")
-    originals = documents(read(
-        prep / "calibration-sources.json", locked["calibration_sources_sha256"]
-    ))
-    if not all(q["query"]["identity"] in {d.scope for d in originals.values()} for q in locked["cases"]):
+    originals = documents(
+        read(prep / "calibration-sources.json", locked["calibration_sources_sha256"])
+    )
+    if not all(
+        q["query"]["identity"] in {d.scope for d in originals.values()}
+        for q in locked["cases"]
+    ):
         raise ValueError("missing original calibration scope")
     reader, stage, inventory = _reader(model_dir, stage_sha)
     output.mkdir()
-    dump(output / "run.json", dict(
-        schema=SCHEMA, stage="calibration", source_commit=commit,
-        calibration_sha256=prep_sha, model_stage_sha256=stage_sha,
-        model=inventory, optimizer_executed=False, test_tasks_opened=False,
-        human_reviewed=False, production_accepted=False,
-    ))
+    dump(
+        output / "run.json",
+        dict(
+            schema=SCHEMA,
+            stage="calibration",
+            source_commit=commit,
+            calibration_sha256=prep_sha,
+            model_stage_sha256=stage_sha,
+            model=inventory,
+            optimizer_executed=False,
+            test_tasks_opened=False,
+            human_reviewed=False,
+            production_accepted=False,
+        ),
+    )
     started = time.perf_counter()
     arms = tuple(f"k{k}" for k in KS)
     rows = _journal_answers(
-        reader, locked["cases"], originals, arms,
+        reader,
+        locked["cases"],
+        originals,
+        arms,
         lambda case, arm: chosen_prefix(case["candidate_ids"], int(arm[1:])),
-        output / "raw-answers.jsonl", seed=prep_sha,
+        output / "raw-answers.jsonl",
+        seed=prep_sha,
     )
     # Exactly here, AFTER every original answer was synced, open CALIBRATION-only labels.
     labels = read(prep / "calibration-labels.json", locked["calibration_labels_sha256"])
@@ -427,33 +482,50 @@ def calibrate(prep, model_dir, output, *, prep_sha, stage_sha):
     dump(output / "scored-answers.json", rows)
     elapsed = time.perf_counter() - started
     report = dict(
-        schema=SCHEMA, source_commit=commit, phase="calibration",
-        planned_attempts=len(rows), frozen_k=choice, ks=KS,
+        schema=SCHEMA,
+        source_commit=commit,
+        phase="calibration",
+        planned_attempts=len(rows),
+        frozen_k=choice,
+        ks=KS,
         selection_objective="actual strict task success, then fewer observed input tokens, then smaller k",
-        arms=statistics, total_elapsed_seconds=elapsed,
+        arms=statistics,
+        total_elapsed_seconds=elapsed,
         reader_identity=inventory["inventory_digest"],
         model_stage_sha256=stage_sha,
         raw_answers_sha256=file_sha(output / "raw-answers.jsonl"),
         original_cases_are_exposed_development=True,
-        statistical_superiority=False, independent_semantic_review=False,
+        statistical_superiority=False,
+        independent_semantic_review=False,
         production_accepted=False,
     )
     dump(output / "report.json", report)
     if choice is None:
-        raise ValueError("incomplete calibration observations; no frozen selected baseline")
-    dump(output / "frozen-policy.json", dict(
-        schema=SCHEMA, selected_k=choice, ks=KS,
-        source_commit=commit, calibration_plan_sha256=prep_sha,
-        original_test_plan_sha256=HISTORIC_PLAN_SHA,
-        stage_sha256=stage_sha, reader_identity=inventory["inventory_digest"],
-        raw_answers_sha256=report["raw_answers_sha256"],
-        scored_answers_sha256=file_sha(output / "scored-answers.json"),
-        selection_objective=report["selection_objective"],
-        calibration_task_count=8, evaluation_task_count=8,
-        frozen_before_evaluation=True,
-        independent_source_families=0, candidate_accepted=False,
-        production_accepted=False,
-    ))
+        raise ValueError(
+            "incomplete calibration observations; no frozen selected baseline"
+        )
+    dump(
+        output / "frozen-policy.json",
+        dict(
+            schema=SCHEMA,
+            selected_k=choice,
+            ks=KS,
+            source_commit=commit,
+            calibration_plan_sha256=prep_sha,
+            original_test_plan_sha256=HISTORIC_PLAN_SHA,
+            stage_sha256=stage_sha,
+            reader_identity=inventory["inventory_digest"],
+            raw_answers_sha256=report["raw_answers_sha256"],
+            scored_answers_sha256=file_sha(output / "scored-answers.json"),
+            selection_objective=report["selection_objective"],
+            calibration_task_count=8,
+            evaluation_task_count=8,
+            frozen_before_evaluation=True,
+            independent_source_families=0,
+            candidate_accepted=False,
+            production_accepted=False,
+        ),
+    )
     return report
 
 
@@ -464,13 +536,18 @@ def paired(group, left, right):
         if first["status"] != "succeeded" or second["status"] != "succeeded":
             unknown += 1
         else:
-            difference = int(second["strict_task_success"]) - int(first["strict_task_success"])
+            difference = int(second["strict_task_success"]) - int(
+                first["strict_task_success"]
+            )
             wins += difference > 0
             losses += difference < 0
             ties += difference == 0
     n = len(group)
     return dict(
-        wins=wins, losses=losses, ties=ties, unknown_pairs=unknown,
+        wins=wins,
+        losses=losses,
+        ties=ties,
+        unknown_pairs=unknown,
         planned_delta_lower=(wins - losses - unknown) / n,
         planned_delta_upper=(wins - losses + unknown) / n,
         # These are missing-outcome bounds, NOT confidence intervals.
@@ -478,8 +555,17 @@ def paired(group, left, right):
     )
 
 
-def evaluate(plan_dir, inputs, model_dir, calibration_dir, output, *,
-             plan_sha, stage_sha, policy_sha):
+def evaluate(
+    plan_dir,
+    inputs,
+    model_dir,
+    calibration_dir,
+    output,
+    *,
+    plan_sha,
+    stage_sha,
+    policy_sha,
+):
     from event_reader_experiment import preflight
 
     commit = commit_source()
@@ -499,27 +585,39 @@ def evaluate(plan_dir, inputs, model_dir, calibration_dir, output, *,
     if inventory["inventory_digest"] != locked_policy["reader_identity"]:
         raise ValueError("different reader between calibration and evaluation")
     output.mkdir()
-    dump(output / "run.json", dict(
-        schema=SCHEMA, phase="evaluation", source_commit=commit,
-        policy_sha256=policy_sha, policy=locked_policy,
-        test_plan_sha256=plan_sha, stage_sha256=stage_sha,
-        model=inventory, original_case_census=len(locked["cases"]),
-        training_during_query=False, new_future_sources=False,
-        human_verified_sufficiency=False, production_accepted=False,
-    ))
+    dump(
+        output / "run.json",
+        dict(
+            schema=SCHEMA,
+            phase="evaluation",
+            source_commit=commit,
+            policy_sha256=policy_sha,
+            policy=locked_policy,
+            test_plan_sha256=plan_sha,
+            stage_sha256=stage_sha,
+            model=inventory,
+            original_case_census=len(locked["cases"]),
+            training_during_query=False,
+            new_future_sources=False,
+            human_verified_sufficiency=False,
+            production_accepted=False,
+        ),
+    )
     selections = {
-        case["query"]["identity"]: eval_selections(
-            case, locked_policy["selected_k"]
-        )
+        case["query"]["identity"]: eval_selections(case, locked_policy["selected_k"])
         for case in locked["cases"]
     }
     if len(selections) != len(locked["cases"]):
         raise ValueError("duplicate evaluation task")
     started = time.perf_counter()
     rows = _journal_answers(
-        reader, locked["cases"], originals, EVAL_ARMS,
+        reader,
+        locked["cases"],
+        originals,
+        EVAL_ARMS,
         lambda case, arm: selections[case["query"]["identity"]][arm],
-        output / "raw-answers.jsonl", seed=digest((plan_sha, policy_sha)),
+        output / "raw-answers.jsonl",
+        seed=digest((plan_sha, policy_sha)),
     )
     # Never open the original test answer labels until the full output is durable.
     labels = read(inputs / "labels.json", locked["labels_sha"])
@@ -536,13 +634,19 @@ def evaluate(plan_dir, inputs, model_dir, calibration_dir, output, *,
         "hybrid6_minus_hybrid4": paired(group, "hybrid_k4", "hybrid_k6"),
     }
     report = dict(
-        schema=SCHEMA, phase="evaluation", source_commit=commit,
+        schema=SCHEMA,
+        phase="evaluation",
+        source_commit=commit,
         selected_k=locked_policy["selected_k"],
-        test_task_count=len(expected), total_attempts=len(rows),
-        success_by_arm=stats, paired_contrasts=pairs,
+        test_task_count=len(expected),
+        total_attempts=len(rows),
+        success_by_arm=stats,
+        paired_contrasts=pairs,
         source_and_index_costs=locked["frozen"]["costs"],
         extraction_costs=locked["extraction"],
-        retained_original_source_bytes=sum(len(d.content.encode()) for d in originals.values()),
+        retained_original_source_bytes=sum(
+            len(d.content.encode()) for d in originals.values()
+        ),
         calibration_training_optimizer_seconds=0.0,
         reader_optimizer_seconds=0.0,
         wall_seconds=time.perf_counter() - started,
@@ -559,7 +663,9 @@ def evaluate(plan_dir, inputs, model_dir, calibration_dir, output, *,
     )
     dump(output / "report.json", report)
     if any(row["status"] != "succeeded" for row in rows):
-        raise ValueError("failed model attempts preserved; complete evaluation not established")
+        raise ValueError(
+            "failed model attempts preserved; complete evaluation not established"
+        )
     return report
 
 
@@ -583,13 +689,27 @@ def main():
     ev.add_argument("--policy-sha", required=True)
     args = p.parse_args()
     if args.cmd == "prepare":
-        result = prepare(args.inputs, args.plan, args.encoder, args.output, plan_sha=args.plan_sha)
+        result = prepare(
+            args.inputs, args.plan, args.encoder, args.output, plan_sha=args.plan_sha
+        )
     elif args.cmd == "calibrate":
-        result = calibrate(args.prep, args.model, args.output, prep_sha=args.prep_sha, stage_sha=args.stage_sha)
+        result = calibrate(
+            args.prep,
+            args.model,
+            args.output,
+            prep_sha=args.prep_sha,
+            stage_sha=args.stage_sha,
+        )
     else:
         result = evaluate(
-            args.plan, args.inputs, args.model, args.calibration, args.output,
-            plan_sha=args.plan_sha, stage_sha=args.stage_sha, policy_sha=args.policy_sha,
+            args.plan,
+            args.inputs,
+            args.model,
+            args.calibration,
+            args.output,
+            plan_sha=args.plan_sha,
+            stage_sha=args.stage_sha,
+            policy_sha=args.policy_sha,
         )
     print(json.dumps(result, ensure_ascii=False, allow_nan=False))
 
