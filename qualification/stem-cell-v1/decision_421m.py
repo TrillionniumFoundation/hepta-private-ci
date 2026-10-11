@@ -125,7 +125,8 @@ def audit_dataset(rows):
 
 
 def build_plan(dataset_path, descriptors, *, train_steps, trainable_budget,
-               batch_size, context_tokens, seed, device, dtype):
+               batch_size, context_tokens, seed, device, dtype,
+               encoder_microbatch_size=1):
     dataset_path = Path(dataset_path).resolve()
     data = list(read_strict_jsonl(dataset_path))
     _, width, train_group_digest = audit_dataset(data)
@@ -134,6 +135,9 @@ def build_plan(dataset_path, descriptors, *, train_steps, trainable_budget,
     if any(type(n) is not int or n <= 0 for n in
            (train_steps, trainable_budget, batch_size, context_tokens)):
         raise ValueError("invalid fixed training budget")
+    if (type(encoder_microbatch_size) is not int or
+            not 1 <= encoder_microbatch_size <= 32):
+        raise ValueError("unregistered physical Encoder batch size")
     if not isinstance(seed, int) or not device or dtype not in ("fp32", "bf16", "fp16"):
         raise ValueError("invalid fixed environment")
     pinned = {}
@@ -171,6 +175,7 @@ def build_plan(dataset_path, descriptors, *, train_steps, trainable_budget,
         "phases": list(PHASES), "train_steps": train_steps,
         "trainable_parameter_budget": trainable_budget,
         "batch_size": batch_size, "context_tokens": context_tokens,
+        "encoder_microbatch_size": encoder_microbatch_size,
         "seed": seed, "device": device, "dtype": dtype,
         "comparison_note": ("checkpoint phase includes any upstream task exposure; "
                             "it is not assumed to be a zero-shot model comparison"),
@@ -320,6 +325,8 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *,
                     "context_tokens": plan["context_tokens"]} or
                 item.get("training_sample_groups_sha256") != plan["training_sample_groups_sha256"] or
                 item.get("seed") != plan["seed"] or
+                item.get("physical_encoder_microbatch_ceiling", 1) !=
+                plan.get("encoder_microbatch_size", 1) or
                 item.get("truncated_input_count") != 0 or
                 item.get("input_contract") != plan["input_contract"] or
                 not check_sha(item.get("weights_sha256"))):
@@ -449,6 +456,7 @@ def main():
     p.add_argument("--train-steps", type=int, required=True)
     p.add_argument("--trainable-budget", type=int, default=262144)
     p.add_argument("--batch-size", type=int, default=16)
+    p.add_argument("--encoder-microbatch-size", type=int, default=1)
     p.add_argument("--context-tokens", type=int, default=512)
     p.add_argument("--seed", type=int, default=7347)
     p.add_argument("--device", required=True)
@@ -469,7 +477,7 @@ def main():
             a.dataset, records, train_steps=a.train_steps,
             trainable_budget=a.trainable_budget, batch_size=a.batch_size,
             context_tokens=a.context_tokens, seed=a.seed, device=a.device,
-            dtype=a.dtype))
+            dtype=a.dtype, encoder_microbatch_size=a.encoder_microbatch_size))
     else:
         plan, token = load_plan(a.plan)
         indexed, _, groups = audit_dataset(list(read_strict_jsonl(plan["dataset_path"])))
