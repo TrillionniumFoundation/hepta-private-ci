@@ -54,6 +54,28 @@ jobs:
             scripts/memory_cell/strong_rag*.py \
             scripts/memory_cell/test_strong_rag*.py
           git rev-parse HEAD
+      - name: Retain the exact Ruff repair patch without weakening the failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-rag-scoped-repair
+          git rev-parse HEAD > /tmp/strong-rag-scoped-repair/tested-commit.txt
+          uv run --frozen --project scripts ruff format \
+            scripts/memory_cell/strong_rag*.py \
+            scripts/memory_cell/test_strong_rag*.py
+          git diff --binary -- scripts/memory_cell/strong_rag*.py \
+            scripts/memory_cell/test_strong_rag*.py \
+            > /tmp/strong-rag-scoped-repair/ruff-fix.patch
+          cp scripts/memory_cell/test_strong_rag_trial.py \
+            /tmp/strong-rag-scoped-repair/test_strong_rag_trial.py
+          sha256sum /tmp/strong-rag-scoped-repair/* \
+            > /tmp/strong-rag-scoped-repair/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-strong-rag-ruff-repair
+          path: /tmp/strong-rag-scoped-repair
+          if-no-files-found: warn
   reader:
     needs: experiment-format
     runs-on: ubuntu-latest
