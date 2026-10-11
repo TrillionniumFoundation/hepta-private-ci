@@ -489,9 +489,9 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
         gate_bias_q24: vec![q, q],
     };
     let head_digest = head.digest().expect("head weights");
-    let weights_digest = super::super::cpu_gated_bundle_weights_digest(
-        &binding.encoder_digest, &[head.clone()],
-    ).expect("local weight bundle");
+    let weights_digest =
+        super::super::cpu_gated_bundle_weights_digest(&binding.encoder_digest, &[head.clone()])
+            .expect("local weight bundle");
     let model = super::super::ModelManifest {
         model_id: "model.selected.stem.cpu".to_string(),
         model_digest: "2".repeat(64),
@@ -504,8 +504,11 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
         maximum_tokens: 128,
     };
     let cpu_driver = super::super::CpuGatedHeadDriver::new(
-        model.clone(), binding.encoder_digest.clone(), vec![head],
-    ).expect("real local Q24 Head driver");
+        model.clone(),
+        binding.encoder_digest.clone(),
+        vec![head],
+    )
+    .expect("real local Q24 Head driver");
     let resource_grant = super::super::ResourceGrant {
         grant_id: "grant.selected.stem.cpu".to_string(),
         authority_epoch: 2,
@@ -518,10 +521,16 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
         semantic_digest: "1".repeat(64),
     };
     let mut worker = super::super::InferenceWorker::new(
-        100, "worker.selected.stem".to_string(), 7,
-        resource_grant, cpu_driver,
-    ).expect("local inference worker");
-    worker.load_model(100, model).expect("pinned local model load");
+        100,
+        "worker.selected.stem".to_string(),
+        7,
+        resource_grant,
+        cpu_driver,
+    )
+    .expect("local inference worker");
+    worker
+        .load_model(100, model)
+        .expect("pinned local model load");
 
     admitted.head_digest = head_digest;
     admitted.weights_digest = weights_digest;
@@ -530,21 +539,23 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
     admitted.authorization.lease_payload_digest = payload_digest;
 
     let (_file, live_cpu_current) = fx.current("current.cpu", Digest32::ZERO);
-    let actual = reader.run_selected_cpu_head(
-        &mut worker,
-        StemCpuHeadUseV1 {
-            selector: &fx.selector_verifier,
-            signed_selection: &signed,
-            current: live_cpu_current,
-            selection_now: 30,
-            binding: &binding,
-            source_features: &features,
-                    token_count: 3,
-            request: admitted.clone(),
-            worker_now_ms: 100,
-            model_id: "model.selected.stem.cpu",
-        },
-    ).expect("real CPU Head under signed CURRENT");
+    let actual = reader
+        .run_selected_cpu_head(
+            &mut worker,
+            StemCpuHeadUseV1 {
+                selector: &fx.selector_verifier,
+                signed_selection: &signed,
+                current: live_cpu_current,
+                selection_now: 30,
+                binding: &binding,
+                source_features: &features,
+                token_count: 3,
+                request: admitted.clone(),
+                worker_now_ms: 100,
+                model_id: "model.selected.stem.cpu",
+            },
+        )
+        .expect("real CPU Head under signed CURRENT");
     assert_eq!(actual.drive_q24, projected.values_q24);
     assert_eq!(actual.prediction_q24, vec![0, 0]);
     assert!(!actual.authority.grants_any());
@@ -552,10 +563,9 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
     // The digest fields alone cannot authorize a caller-forged Q24 vector.
     // A separate signed CAS reader must recompute its selected matrix and
     // reject the forged input BEFORE the local CPU Head runs.
-    let (forged_snapshot, forged_initial) = fx.current(
-        "current.forged.load", Digest32::ZERO,
-    );
-    let forged_selection = fx.selector_verifier
+    let (forged_snapshot, forged_initial) = fx.current("current.forged.load", Digest32::ZERO);
+    let forged_selection = fx
+        .selector_verifier
         .verify(&signed, &forged_initial, 30)
         .expect("independent artifact selection");
     let mut forged_reader = SelectedStemProjectionReaderV1::load(
@@ -569,7 +579,8 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
             worker_generation: 7,
             revocation_frontier_digest: frontier,
         },
-    ).expect("independent CAS reader");
+    )
+    .expect("independent CAS reader");
     let mut forged_request = admitted.clone();
     forged_request.feature_vector_q24[0] += 1;
     let forged_payload = super::super::canonical_neuron_feature_payload_digest(&forged_request);
@@ -646,7 +657,8 @@ fn cas_selected_projection_requires_signed_current_and_dies_on_revocation() {
         ),
         Err(StemProjectionArtifactError::ConsumerSealed)
     ));
-    worker.unload_model(100, "model.selected.stem.cpu")
+    worker
+        .unload_model(100, "model.selected.stem.cpu")
         .expect("model can safely unload after refused replay");
     reader.invalidate();
     assert!(reader.is_sealed());
