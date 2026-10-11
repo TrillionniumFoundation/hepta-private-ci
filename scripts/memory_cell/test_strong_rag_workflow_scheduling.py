@@ -29,6 +29,8 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
     def test_path_filter_excludes_concurrent_stem_work(self):
         for path in (
             '"scripts/memory_cell/strong_rag_trial.py"',
+            '"scripts/memory_cell/strong_rag_shards.py"',
+            '"scripts/memory_cell/test_strong_rag_shards.py"',
             '"scripts/memory_cell/strong_rag_receipt.py"',
             '"scripts/memory_cell/strong_rag_repeatability.py"',
             '"scripts/memory_cell/strong_rag_stability.py"',
