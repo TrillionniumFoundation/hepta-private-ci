@@ -71,6 +71,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         let input_width = requests[0].feature_vector_q24.len();
         let output_width = requests[0].expected_output_width;
         let mut ids = BTreeSet::new();
+        let mut reservation_ids = BTreeSet::new();
         for item in &requests {
             validate_request(now_ms, &item.authorization)?;
             validate_neuron_feature_request(item)?;
@@ -101,6 +102,10 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                     .contains_key(&item.authorization.request_id)
             {
                 return Err(Error::RequestCapacity);
+            }
+            // One reservation must not be double-spent by different batch rows.
+            if !reservation_ids.insert(item.authorization.reservation_id.as_str()) {
+                return Err(Error::FeatureContract);
             }
             let actual = canonical_neuron_feature_payload_digest(item);
             if item.authorization.payload_digest != actual
@@ -405,6 +410,16 @@ mod tests {
                 vec![feature("request.1", 'b'), feature("request.1", 'b'),]
             ),
             Err(Error::RequestCapacity)
+        );
+        let first = feature("request.1", 'b');
+        let mut same_reservation = feature("request.2", 'c');
+        same_reservation.authorization.reservation_id = first.authorization.reservation_id.clone();
+        let digest = canonical_neuron_feature_payload_digest(&same_reservation);
+        same_reservation.authorization.payload_digest = digest.clone();
+        same_reservation.authorization.lease_payload_digest = digest;
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", vec![first, same_reservation]),
+            Err(Error::FeatureContract)
         );
         let mut changed = feature("request.2", 'c');
         changed.feature_vector_q24[0] += 1;
