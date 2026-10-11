@@ -415,7 +415,7 @@ pub(crate) fn stage_shadow_feature_snapshots(
             pipeline.quantization_digest,
         ]
         .iter()
-        .any(Digest32::is_zero)
+        .any(|digest| digest.is_zero())
     {
         return Err(Error::FeatureContract);
     }
