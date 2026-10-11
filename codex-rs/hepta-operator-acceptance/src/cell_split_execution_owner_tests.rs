@@ -323,6 +323,63 @@ fn external_predecessor_revocation_fences_every_successor_and_completed_replay()
 }
 
 #[test]
+fn post_open_future_frame_fences_first_effect_and_read_only_export() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+
+    // This frame arrived after open, without the earlier durable intent
+    // required for a valid prefix. It must not be ignored on a live owner.
+    crate::durable::write_private_new(
+        &root.path().join("cell-split-02-prepared.json"),
+        b"{}",
+    )
+    .expect("inject private future frame");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "unexpected successor frame; reopen required"
+        ))
+    ));
+    assert!(owner.verified_transcript().is_err());
+    assert_eq!(state.borrow().executions, 0);
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+}
+
+#[test]
+fn post_open_future_frame_fences_successor_after_valid_commit() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    owner.advance().expect("first committed effect");
+    crate::durable::write_private_new(
+        &root.path().join("cell-split-03-committed.json"),
+        b"{}",
+    )
+    .expect("inject future frame");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "unexpected successor frame; reopen required"
+        ))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+    assert!(!root.path().join("cell-split-01-prepared.json").exists());
+}
+
+#[test]
 fn post_open_ledger_tampering_cannot_dispatch_a_successor() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
