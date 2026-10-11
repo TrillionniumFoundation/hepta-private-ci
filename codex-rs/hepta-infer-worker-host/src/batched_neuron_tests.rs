@@ -363,6 +363,10 @@ impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
             })
             .collect();
         Ok(crate::model_worker::PhysicalBatchRunObservationV1 {
+            submission_digest: crate::model_worker::canonical_physical_batch_submission_digest_v1(
+                "worker-one", "model", 3, requests,
+            )
+            .to_string(),
             batch_execution_digest: digest(b"mock-batch-call").to_string(),
             claimed_encoder_forward_count: 1,
             observed_peak_memory_bytes: 3072,
