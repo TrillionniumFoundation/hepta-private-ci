@@ -230,24 +230,30 @@ fn incomplete_unacknowledged_tail_is_repaired_after_valid_anchor() {
 
 #[test]
 fn config_generation_drift_and_v1_header_are_rejected() {
-    let (fixture, _, _, _) = committed_fixture();
+    let (fixture, _, anchor, _) = committed_fixture();
+    // Nonempty history without a separately held witness MUST be fenced
+    // before config/header validation, rather than silently reopened.
+    assert_eq!(
+        GatedSparseJournalV3::open(fixture.reopen(), config(), scope(), 16).err(),
+        Some(GatedJournalErrorV3::ExistingJournalRequiresAnchor)
+    );
     let mut changed = config();
     changed.gates[0].bias_q24 += 1;
     assert_eq!(
-        GatedSparseJournalV3::open(fixture.reopen(), changed, scope(), 16).err(),
+        GatedSparseJournalV3::open_anchored(fixture.reopen(), changed, scope(), 16, anchor).err(),
         Some(GatedJournalErrorV3::Corrupt)
     );
     changed = config();
     changed.base.generation = checked(Generation::new(32));
     assert_eq!(
-        GatedSparseJournalV3::open(fixture.reopen(), changed, scope(), 16).err(),
+        GatedSparseJournalV3::open_anchored(fixture.reopen(), changed, scope(), 16, anchor).err(),
         Some(GatedJournalErrorV3::Corrupt)
     );
     let old = checked(fs::read(&fixture.file));
     assert_eq!(&old[..8], MAGIC);
     checked(fs::write(&fixture.file, b"HPTNSJ01"));
     assert_eq!(
-        GatedSparseJournalV3::open(fixture.reopen(), config(), scope(), 16).err(),
+        GatedSparseJournalV3::open_anchored(fixture.reopen(), config(), scope(), 16, anchor).err(),
         Some(GatedJournalErrorV3::Corrupt)
     );
 }
