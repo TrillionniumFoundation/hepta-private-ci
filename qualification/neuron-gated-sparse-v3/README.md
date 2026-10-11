@@ -96,6 +96,30 @@ applicable, Brier, ECE, OOD acceptance, future utility, negative transfer,
 checkpoint/replay failures, CPU/RSS, p50/p95/p99 and sustained throughput.
 Neither fixture output nor untrusted simulated timing can select the V2 arm.
 
+`paired_shadow_analysis.py` accepts an evaluator-signed
+`hepta.neuron.paired-shadow-evaluation.v1` envelope. Each joined case must
+carry all arm outcomes for an identical input digest. Arm records must declare
+the actual frozen artifact hash, shared Encoder, common training dataset,
+identical optimizer steps, counted total parameters and state bytes. The
+signed experiment binds registration and train cutoff dates, separate
+Evaluator/Selector/Executor key IDs and the A0 registry hash. It rejects
+mixed budgets, future-window leakage, missing OOD cases and incomplete A4
+scale coverage. The report intentionally always says
+`NO_PRODUCTION_PROMOTION`, regardless of its paired metrics.
+
+```sh
+python3 qualification/neuron-gated-sparse-v3/paired_shadow_analysis.py \
+  --signed-evaluation /path/to/evaluator-signed-shadow.json \
+  --trusted-evaluator-public-key /path/to/independently-trusted-evaluator.pem \
+  --report /path/to/review/paired-shadow-report.json
+```
+
+The contract and synthetic negative examples are tested in
+`test_paired_shadow_analysis.py`. This evaluator signature alone cannot
+authenticate target-host execution or make a causal NDU estimate. A4's
+independent final-use evaluator, confidence intervals and CAS proofs remain
+separate production blockers.
+
 ## A2 — Gated Sparse V3 temporal mechanism (in this PR)
 
 `codex-rs/hepta-neuron/src/gated_sparse_v3.rs` contains a separate versioned
