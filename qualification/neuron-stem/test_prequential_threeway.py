@@ -54,6 +54,8 @@ class PrequentialThreeWayTests(unittest.TestCase):
             head_after = sha256_record(["head_after_update", row["case_id"], head_before])
             last_postupdate[key] = head_after
             prec = prediction_precommit(row, trained, head_before, event_order)
+            prec["frozen_control_head_digest"] = self.initial[str(key)]
+            prec["frozen_control_probabilities"] = frozen
             prec["record_digest"] = sha256_record(prec)
             journal.append(json.dumps(prec, sort_keys=True, ensure_ascii=False,
                                       separators=(",", ":")) + "\n")
@@ -64,6 +66,7 @@ class PrequentialThreeWayTests(unittest.TestCase):
                 "prediction_seal_before_label_update": prec["record_digest"],
                 "preupdate_head_digest": head_before,
                 "postupdate_head_digest": head_after,
+                "frozen_control_head_digest": self.initial[str(key)],
                 "trained_probabilities": trained,
                 "frozen_same_initialization_probabilities": frozen,
                 "outcome_label_revealed_after_prediction": True,
@@ -92,6 +95,7 @@ class PrequentialThreeWayTests(unittest.TestCase):
             "final_head_digests": {
                 str(key): digest for key, digest in last_postupdate.items()},
             "update_steps_per_future_event": 1,
+            "frozen_final_head_digests": self.initial.copy(),
             "pre_label_prediction_journal_sha256":
                 hashlib.sha256(self.journal).hexdigest(),
             "pre_label_prediction_journal_event_count": len(self.records),
@@ -189,6 +193,7 @@ class PrequentialThreeWayTests(unittest.TestCase):
         dormant_key = str(("S", "cell-C"))
         self.trial["initial_head_digests"][dormant_key] = "1" * 64
         self.trial["final_head_digests"][dormant_key] = "1" * 64
+        self.trial["frozen_final_head_digests"][dormant_key] = "1" * 64
         result = self.run_report()
         self.assertTrue(result["sealed_cell_update_chain_consistent"])
         self.assertFalse(result["production_promotion_permitted"])
@@ -196,6 +201,29 @@ class PrequentialThreeWayTests(unittest.TestCase):
         bad["final_head_digests"][dormant_key] = "2" * 64
         with self.assertRaisesRegex(ValueError, "final Cell Head artifact"):
             review(self.rows, bad, self.journal, self.nochange, replicates=1000)
+
+    def test_frozen_head_weights_and_prelabel_probabilities_cannot_drift(self):
+        mutated = copy.deepcopy(self.trial)
+        mutated["temporal_receipts"][4]["frozen_control_head_digest"] = "9" * 64
+        with self.assertRaisesRegex(ValueError, "frozen Head weights"):
+            review(self.rows, mutated, self.journal, self.nochange, replicates=1000)
+        mutated = copy.deepcopy(self.trial)
+        mutated["frozen_final_head_digests"][str(("S", "cell-A"))] = "9" * 64
+        with self.assertRaisesRegex(ValueError, "frozen final Head"):
+            review(self.rows, mutated, self.journal, self.nochange, replicates=1000)
+        journal = [json.loads(line) for line in self.journal.decode().splitlines()]
+        journal[4]["frozen_control_probabilities"] = [.99, .01]
+        journal[4]["record_digest"] = sha256_record({
+            key: value for key, value in journal[4].items() if key != "record_digest"
+        })
+        content = ("".join(json.dumps(p, sort_keys=True, ensure_ascii=False,
+                                      separators=(",", ":")) + "\n" for p in journal)).encode()
+        changed = copy.deepcopy(self.trial)
+        changed["pre_label_prediction_journal_sha256"] = hashlib.sha256(content).hexdigest()
+        changed["temporal_receipts"][4]["prediction_seal_before_label_update"] = (
+            journal[4]["record_digest"])
+        with self.assertRaisesRegex(ValueError, "frozen Head weights"):
+            review(self.rows, changed, content, self.nochange, replicates=1000)
 
     def test_no_optimizer_updates_can_never_prove_cell_learning(self):
         bad = copy.deepcopy(self.trial)
