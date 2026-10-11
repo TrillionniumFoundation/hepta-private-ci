@@ -31,6 +31,7 @@ from selector_head import Supervision, TrainingCut
 from selector_windows import WindowBudget, candidate_windows
 from stem_cell import StemHead, route_text, sha256
 from stem_cell_adapter import DifferentiatedEncoder
+from stem_cell_geometry import inspect_selection, summarize_geometry
 from stem_cell_cache import SharedFeatureCache
 from stem_cell_protocol import (
     ARMS,
@@ -158,6 +159,7 @@ def run(staged, ranker_dir, output):
         generator_config=GENERATION,
         generator_template_digest=digest(SYSTEM),
         primary_policy="same-forced-top1-except-empty-for-all-six-arms",
+        score_geometry_policy="frozen-native-logits-versus-head; forced-top1; label-free",
         calibration_or_final_label_hyperparameter_search=False,
         reference_oracle="post-policy answer-dependent source span; NOT independently verified gold evidence",
         reader_cache="exact canonical request reuse; failed and successful actual executions counted separately",
@@ -501,6 +503,12 @@ def run(staged, ranker_dir, output):
                                     else head(f).tolist()
                                 )
                             selected = choose(values, f.candidate_ids, allow_null=False)
+                            item["selection_geometry"] = inspect_selection(
+                                f.frozen_scores.tolist(),
+                                values[: len(f.candidate_ids)],
+                                f.candidate_ids,
+                                selected,
+                            )
                             item["head_seconds"] = time.perf_counter() - stamp
                             evidence = selected_window(
                                 q, pools[q.identity], f, selected, set()
@@ -620,6 +628,7 @@ def run(staged, ranker_dir, output):
         generator.verify_frozen()
         result = dict(
             plan=plan,
+            selection_geometry=summarize_geometry(attempts),
             census=census,
             **summarize(scored),
             learning=learning,

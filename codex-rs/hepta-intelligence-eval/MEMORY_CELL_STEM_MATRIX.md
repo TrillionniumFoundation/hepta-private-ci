@@ -273,3 +273,23 @@ This keeps no-candidate, one-candidate and two-or-more-candidate tasks separate,
 while verifying identities, full question coverage, and duplicate consistency.
 A multi-candidate pool only offers an opportunity to improve ranking: it does
 not establish true support, entailment, correct answers, or actual Head gain.
+
+## Label-free ranking geometry at every persistent checkpoint
+
+`stem_cell_geometry.py` records each unchanged six-arm forced-top1 policy
+decision's frozen native relevance-logit gap, Head-adjusted gap, absolute
+learned residual magnitude, candidate count, rank flip and a pinned score
+digest **before** invoking the Reader. The policy's own deterministic
+selection function remains unchanged. A Reader admission/generation failure
+must not erase already observed feature/decision telemetry.
+
+This distinguishes an unrankable single-window pool from frozen logits whose
+margin dwarfs the Head's update. It can detect rank flips, but it cannot
+judge whether any flipped decision cites the right document or entails the
+answer. Statistics are labelled `label_free`; no gold answer, temporal oracle,
+selection threshold search, or task metric enters the online decision. Score
+margins are raw logits, never calibrated probabilities.
+
+The per-checkpoint `selection_geometry` summary is diagnostic only.
+Do not promote parameter deltas, larger Head scores, cache reuse or candidate
+count into claims of generalizable learning or production readiness.
