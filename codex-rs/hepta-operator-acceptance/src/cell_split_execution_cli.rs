@@ -225,6 +225,39 @@ mod tests {
     }
 
     #[test]
+    fn rejects_group_readable_config_even_if_hash_is_pinned() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let file = dir.path().join("config.json");
+        std::fs::write(&file, b"{}").expect("fixture");
+        use std::os::unix::fs::PermissionsExt as _;
+        std::fs::set_permissions(&file, std::fs::Permissions::from_mode(0o644))
+            .expect("readable fixture");
+        let error = run_pinned_cell_split_execution_v1(
+            "transcript",
+            &file,
+            &format!("{:x}", Sha256::digest(b"{}")),
+        )
+        .expect_err("readable config must fail");
+        assert!(error.contains("group or others"));
+    }
+
+    #[test]
+    fn rejects_symlinked_config_even_if_target_digest_matches() {
+        let dir = tempfile::tempdir().expect("tempdir");
+        let target = dir.path().join("canonical.json");
+        let link = dir.path().join("linked.json");
+        std::fs::write(&target, b"{}").expect("fixture");
+        std::os::unix::fs::symlink(&target, &link).expect("symlink");
+        let error = run_pinned_cell_split_execution_v1(
+            "transcript",
+            &link,
+            &format!("{:x}", Sha256::digest(b"{}")),
+        )
+        .expect_err("symlinked configuration must fail");
+        assert!(error.contains("symlink-free"));
+    }
+
+    #[test]
     fn rejects_unknown_action_before_any_disk_or_network_access() {
         let error = run_pinned_cell_split_execution_v1(
             "promote",
