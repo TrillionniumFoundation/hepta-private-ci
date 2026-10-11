@@ -17,22 +17,36 @@ import torch
 import torch._dynamo  # Eagerly load before patching sys.modules in the fixtures.
 
 from test_source_completion_loss import CausalFixture
+from source_write_coverage import audit_coverage
+from source_write_schedule import schedule
+
+
+def source_only_fixture_examples():
+    # The real source curriculum has immutable source IDs and a unique
+    # question identity; its audit must reject missing provenance.
+    return [
+        dict(
+            query=dict(
+                identity="fixture-source-q", family="source-only", scope="s",
+                content="What happened?", observed_at="2024-01-01",
+            ),
+            sources=["original-source-root"],
+            source_digest="fixture-original-source-digest",
+            target="fixture",
+        )
+    ]
 
 
 def mock_source_schedule(*args, **kwargs):
     ids = [1, 2, 3, 4, 5]
     labels = [-100, -100, -100, 4, 5]
-    plan = dict(
-        schema="hepta.source-write.schedule.v1",
-        entries=[0] * 7,
-        scopes=["s"],
-        planned_steps=7,
-        planned_input_tokens=35,
-        planned_supervised_tokens=14,
-        maximum_steps=8,
-        token_ceiling=39,
+    prepared = [(ids, labels)]
+    # Use the current immutable production scheduler rather than a stale
+    # hand-authored partial plan. 8×5 tokens exceeds the 39-token ceiling:
+    # precisely seven real steps (35 input, 14 supervised tokens).
+    return prepared, schedule(
+        prepared, {"s": [0]}, maximum_steps=8, token_ceiling=39
     )
-    return [(ids, labels)], plan
 
 
 def writer_loop():
@@ -44,8 +58,7 @@ def writer_loop():
     )
     ns = dict(
         source_examples=lambda *a, **kw: (
-            [dict(query=dict(scope="s"), target="fixture")],
-            [],
+            source_only_fixture_examples(), []
         ),
         Question=lambda **kw: SimpleNamespace(**kw),
         render=lambda *a: [1, 2, 3],
@@ -85,6 +98,33 @@ def frozen_state(model):
 
 
 class SourceWriterLoopTests(unittest.TestCase):
+    def test_mock_plan_matches_full_original_source_admission_contract(self):
+        examples = source_only_fixture_examples()
+        prepared, plan = mock_source_schedule()
+        receipt = audit_coverage(
+            examples, prepared, plan, curriculum="single_hop"
+        )
+        self.assertEqual(plan["planned_steps"], 7)
+        self.assertEqual(plan["planned_input_tokens"], 35)
+        self.assertEqual(plan["planned_supervised_tokens"], 14)
+        self.assertEqual(plan["visits_per_example"], [7])
+        self.assertEqual(receipt["by_kind"]["direct"]["planned_updates"], 7)
+        self.assertEqual(
+            receipt["by_kind"]["direct"]["unique_training_source_ids"], 1
+        )
+        for corruption in ("identity", "sources", "source_digest"):
+            damaged = [
+                dict(examples[0], query=dict(examples[0]["query"]))
+            ]
+            if corruption == "identity":
+                damaged[0]["query"].pop("identity")
+            else:
+                damaged[0].pop(corruption)
+            with self.subTest(corruption=corruption), self.assertRaises(ValueError):
+                audit_coverage(
+                    damaged, prepared, plan, curriculum="single_hop"
+                )
+
     def test_same_schedule_full_token_budget_roots_and_frozen_state(self):
         results = []
         for backend in ("full", "supervised_positions"):
