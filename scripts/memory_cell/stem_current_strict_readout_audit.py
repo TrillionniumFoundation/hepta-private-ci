@@ -70,7 +70,18 @@ def evaluate_strict_run(plan, raw, scored, report, ceiling):
         and reader["actual_successes"] == 48
         and reader["actual_failed_attempts"] == 0
         and reader["cache_hits"] == 543,
-        "pinned model Reader invocation accounting changed",
+        "pinned model Reader invocation accounting changed: "
+        + json.dumps(
+            dict(
+                expected=dict(actual_attempts=48, actual_successes=48,
+                              actual_failed_attempts=0, cache_hits=543),
+                observed={k: reader.get(k) for k in (
+                    "actual_attempts", "actual_successes",
+                    "actual_failed_attempts", "cache_hits"
+                )},
+            ),
+            sort_keys=True,
+        ),
     )
     require(report["no_evidence_reader_report"]["planned_controls"] == 32,
             "control reader census is missing")
