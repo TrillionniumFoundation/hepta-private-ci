@@ -18,6 +18,7 @@ use crate::AcceptanceError;
 #[path = "durable_windows.rs"]
 mod windows;
 
+pub(crate) const SIDECAR_LOCK_FILE: &str = ".operator-acceptance.lock";
 pub(crate) const MAX_SMALL_FILE_BYTES: usize = 1024 * 1024;
 pub(crate) const MAX_ARTIFACT_BYTES: u64 = 2 * 1024 * 1024 * 1024;
 
@@ -256,7 +257,7 @@ pub(crate) fn lock_existing_sidecar(root: &Path) -> Result<SidecarLock, Acceptan
 
 fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, AcceptanceError> {
     verify_secure_directory(root, "sidecar directory")?;
-    let path = root.join(".operator-acceptance.lock");
+    let path = root.join(SIDECAR_LOCK_FILE);
     let mut options = OpenOptions::new();
     options.create(create).read(true).write(true);
     #[cfg(unix)]
