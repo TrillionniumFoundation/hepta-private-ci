@@ -509,6 +509,11 @@ def run(staged, ranker_dir, output):
                             probe=train_probe(
                                 train_features.frozen_scores.tolist() + [0.0],
                                 snapshot_scores, train_row.positive_indices,
+                                fit_strategy=(
+                                    "frozen" if arm == "frozen_rerank"
+                                    else "prototype" if arm == "prototype"
+                                    else "sgd"
+                                ),
                             ),
                         )
                     except Exception as exc:

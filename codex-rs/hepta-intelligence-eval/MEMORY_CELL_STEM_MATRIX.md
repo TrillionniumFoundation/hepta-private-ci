@@ -310,3 +310,20 @@ entailment. Decreasing the admitted training loss is never a successful answer,
 a new-task transfer score or reliable citation. Only the separate held-out
 source/Reader/citation evaluation can establish downstream benefit, and even
 that requires independent family/semantic review before production admission.
+
+## Weak-label loss audit requires fit-strategy discrimination
+
+The `stem_cell_training_probe.py` receipt now distinguishes real
+multi-positive **SGD Head fit** (and only when at least one candidate was
+available), **prototype sufficient-statistics accumulation**, and the
+**frozen, nonlearning control**. The same post-hoc cross-entropy diagnostic may
+be calculated for every arm, but it is **not** the actual optimization
+objective of the prototype or frozen control.
+
+At checkpoint 16/32/48, the diagnostic is a cross-sectional comparison of
+saved Head logits with original frozen logits on *admitted training rows*,
+not an observed pre/post optimization curve for the same evolving Head.
+The separate held-out task/citation/retention census remains the sole place
+to look for task benefit. A lower diagnostic training loss does not establish
+representation transfer, supported citations, prospective evaluation, or
+independent production admission. Failure rows remain in the denominator.
