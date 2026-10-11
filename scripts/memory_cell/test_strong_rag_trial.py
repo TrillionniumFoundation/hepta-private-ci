@@ -351,6 +351,15 @@ class StrongRagPolicyTests(unittest.TestCase):
             model = object()
             inventory = dict(inventory_digest="reader")
             with (
+                # This fixture exercises label-read ordering with a fake
+                # Reader, not the real pinned model. Preserve production
+                # torch runtime capture, but avoid requiring the heavyweight
+                # model dependency in the isolated source-only CI job.
+                patch.dict("sys.modules", {"torch": ModuleType("torch")}),
+                patch(
+                    "runtime_preflight.capture_runtime",
+                    return_value={"schema": "synthetic-host-fixture-only"},
+                ),
                 patch.object(trial, "read", side_effect=audited_read),
                 patch.object(trial, "_reader", return_value=(model, {}, inventory)),
                 patch.object(trial, "freeze_single_hop", side_effect=frozen_mock_hop),
@@ -397,6 +406,11 @@ class StrongRagPolicyTests(unittest.TestCase):
                     "opened_test_labels",
                     "citation_audit_after_labels",
                 ],
+            )
+            self.assertEqual(
+                trial.read(root / "out/runtime-preflight.json",
+                           trial.file_sha(root / "out/runtime-preflight.json"))["schema"],
+                "synthetic-host-fixture-only",
             )
             self.assertEqual(result["total_attempts"], 72)
             self.assertEqual(
