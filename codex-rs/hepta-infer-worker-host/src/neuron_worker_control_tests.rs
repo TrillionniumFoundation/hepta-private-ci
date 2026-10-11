@@ -13,9 +13,9 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::model_worker::DriverModelHandle;
-use crate::model_worker::Error as WorkerError;
 use crate::model_worker::DriverNeuronFeatureObservation;
 use crate::model_worker::DriverRunObservation;
+use crate::model_worker::Error as WorkerError;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::ResourceGrant;
 
