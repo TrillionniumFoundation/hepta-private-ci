@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
@@ -19,6 +20,9 @@ const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
 const MAX_NEURON_FEATURES: usize = 512;
+// Bounded in-process tombstones. Production restart replay still requires the
+// independent durable reservation owner and a new generation fence.
+const MAX_NEURON_ATTEMPTS: usize = 65_536;
 const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -137,6 +141,8 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    NeuronReservationReplay,
+    NeuronReservationCapacity,
 }
 
 impl fmt::Display for Error {
@@ -172,6 +178,10 @@ pub struct InferenceWorker<D: ModelDriver> {
     driver: D,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
+    // Exact request and reservation identity cannot run twice within one
+    // Worker instance, even if a fresh ModelPort is constructed around it.
+    used_neuron_requests: BTreeSet<Digest32>,
+    used_neuron_reservations: BTreeSet<Digest32>,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -194,6 +204,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
+            used_neuron_requests: BTreeSet::new(),
+            used_neuron_reservations: BTreeSet::new(),
         })
     }
 
@@ -357,6 +369,39 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
+    /// Consume one preexisting invocation identity before any model/lease check.
+    /// This is NOT reservation authentication or crash-durable deduplication.
+    /// A full tombstone budget fails closed until a separately admitted new
+    /// Worker generation is created by the authoritative host.
+    pub(crate) fn consume_neuron_attempt(&mut self, request: &WorkerRequest) -> Result<(), Error> {
+        validate_identity(&request.request_id, "request")?;
+        validate_identity(&request.reservation_id, "reservation")?;
+        let request_hash = Digest32::of_bytes(request.request_id.as_bytes());
+        let reservation_hash = Digest32::of_bytes(request.reservation_id.as_bytes());
+        let replay = self.used_neuron_requests.contains(&request_hash)
+            || self.used_neuron_reservations.contains(&reservation_hash);
+        if replay {
+            // Also tombstone the unused half of a mixed duplicate pair.
+            // Otherwise two rejected attempts could be recombined to form a
+            // third usable request without fresh external admission.
+            if self.used_neuron_requests.len() < MAX_NEURON_ATTEMPTS {
+                self.used_neuron_requests.insert(request_hash);
+            }
+            if self.used_neuron_reservations.len() < MAX_NEURON_ATTEMPTS {
+                self.used_neuron_reservations.insert(reservation_hash);
+            }
+            return Err(Error::NeuronReservationReplay);
+        }
+        if self.used_neuron_requests.len() >= MAX_NEURON_ATTEMPTS
+            || self.used_neuron_reservations.len() >= MAX_NEURON_ATTEMPTS
+        {
+            return Err(Error::NeuronReservationCapacity);
+        }
+        self.used_neuron_requests.insert(request_hash);
+        self.used_neuron_reservations.insert(reservation_hash);
+        Ok(())
+    }
+
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
         validate_grant(now_ms, &self.grant)
     }
@@ -507,6 +552,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureExecutionObservation, Error> {
+        self.consume_neuron_attempt(&request.authorization)?;
+        self.run_neuron_features_consumed(now_ms, model_id, request)
+    }
+
+    /// Internal continuation after an in-process identity tombstone has been
+    /// committed. Only the owner that consumed the identity may call this.
+    fn run_neuron_features_consumed(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: NeuronFeatureRequest,
+    ) -> Result<NeuronFeatureExecutionObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
@@ -607,8 +664,20 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
+        self.consume_neuron_attempt(&request.authorization)?;
+        self.run_neuron_features_receipt_consumed(now_ms, model_id, request)
+    }
+
+    /// Used by WorkerNeuronControlPort after it records the attempt BEFORE
+    /// its own preflight. Never call without consuming in the same Worker.
+    pub(crate) fn run_neuron_features_receipt_consumed(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: NeuronFeatureRequest,
+    ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
-        let observed = self.run_neuron_features(now_ms, model_id, request)?;
+        let observed = self.run_neuron_features_consumed(now_ms, model_id, request)?;
         let generation =
             Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
         let control_request = NeuronFeatureRequestV1 {

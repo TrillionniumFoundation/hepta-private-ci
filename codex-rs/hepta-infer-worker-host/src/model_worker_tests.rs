@@ -271,3 +271,53 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
 }
+
+#[test]
+fn worker_owned_neuron_attempt_log_blocks_direct_feature_replay() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.replay".to_owned(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let request = neuron_feature_request();
+    assert!(worker.run_neuron_features(100, "model.1", request.clone()).is_ok());
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", request),
+        Err(Error::NeuronReservationReplay)
+    );
+}
+
+#[test]
+fn neuron_attempt_capacity_fails_closed_without_eviction() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.capacity".to_owned(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .unwrap();
+    let mut authorization = request();
+    for index in 0..MAX_NEURON_ATTEMPTS {
+        authorization.request_id = format!("request.{index}");
+        authorization.reservation_id = format!("reservation.{index}");
+        worker.consume_neuron_attempt(&authorization).unwrap();
+    }
+    authorization.request_id = "request.overflow".to_owned();
+    authorization.reservation_id = "reservation.overflow".to_owned();
+    assert_eq!(
+        worker.consume_neuron_attempt(&authorization),
+        Err(Error::NeuronReservationCapacity)
+    );
+    // A later attempt cannot evict an older tombstone to make room.
+    authorization.request_id = "request.0".to_owned();
+    authorization.reservation_id = "reservation.overflow".to_owned();
+    assert_eq!(
+        worker.consume_neuron_attempt(&authorization),
+        Err(Error::NeuronReservationReplay)
+    );
+}

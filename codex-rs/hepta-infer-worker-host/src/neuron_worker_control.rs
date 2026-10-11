@@ -67,6 +67,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
         // Take before any check or driver invocation. A stale/invalid request,
         // failed worker or unknown terminal outcome never reuses this identity.
         let authorization = self.reservation.take().ok_or(NeuronModelError::Rejected)?;
+        // A fresh port wrapping the same Worker must never replay this request
+        // or reservation. Record before ALL preflight checks: rejection,
+        // cancellation or indeterminate execution consumes the attempt.
+        self.worker
+            .consume_neuron_attempt(&authorization)
+            .map_err(|_| NeuronModelError::Rejected)?;
         if self.model_id != request.model_id.as_str()
             || self.worker.worker_generation() != request.generation.get()
             || authorization.request_id != request.request_id.as_str()
@@ -95,7 +101,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
         // grant/manifest/lease/cancellation/resource/terminality logic.
         let receipt = self
             .worker
-            .run_neuron_features_receipt(self.observed_now_ms, &self.model_id, feature)
+            .run_neuron_features_receipt_consumed(self.observed_now_ms, &self.model_id, feature)
             .map_err(|error| match error {
                 WorkerError::DriverFailure(_) | WorkerError::MissingTerminalOutput => {
                     NeuronModelError::Indeterminate

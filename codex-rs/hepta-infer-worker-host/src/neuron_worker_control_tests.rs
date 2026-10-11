@@ -523,3 +523,124 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
         pinned.anchor
     );
 }
+
+#[test]
+fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker(Arc::clone(&calls), false, false);
+    let typed = typed_request();
+    let original = preadmitted_reservation(&typed);
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "model.1".to_owned(),
+            original.clone(),
+            100,
+        );
+        assert!(port.execute_feature(&typed).is_ok());
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    // Reopening the port must not reset the Worker-owned tombstones.
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "model.1".to_owned(),
+            original,
+            100,
+        );
+        assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+    }
+    let mut new_reservation = preadmitted_reservation(&typed);
+    new_reservation.reservation_id = "reservation.2".to_owned();
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "model.1".to_owned(),
+            new_reservation,
+            100,
+        );
+        assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+    }
+    let mut fresh = typed.clone();
+    fresh.request_id = StableId::new("tick.2").unwrap();
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "model.1".to_owned(),
+            preadmitted_reservation(&fresh),
+            100,
+        );
+        assert_eq!(port.execute_feature(&fresh), Err(NeuronModelError::Rejected));
+    }
+    // A genuinely new pair from the external reservation owner remains usable.
+    let mut distinct = preadmitted_reservation(&fresh);
+    distinct.reservation_id = "reservation.2".to_owned();
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "model.1".to_owned(),
+            distinct,
+            100,
+        );
+        // This particular pair has a previously denied request ID and so must
+        // still fail closed. Use a new request+reservation below instead.
+        assert_eq!(port.execute_feature(&fresh), Err(NeuronModelError::Rejected));
+    }
+    fresh.request_id = StableId::new("tick.3").unwrap();
+    let mut third = preadmitted_reservation(&fresh);
+    third.reservation_id = "reservation.3".to_owned();
+    let mut port = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        third,
+        100,
+    );
+    assert!(port.execute_feature(&fresh).is_ok());
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+}
+
+#[test]
+fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
+    let typed = typed_request();
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker(Arc::clone(&calls), false, false);
+    let reservation = preadmitted_reservation(&typed);
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "wrong.model".to_owned(),
+            reservation.clone(),
+            100,
+        );
+        assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+    }
+    let mut port = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        reservation,
+        100,
+    );
+    assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+
+    let mut worker = worker(Arc::clone(&calls), true, false);
+    let reservation = preadmitted_reservation(&typed);
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "model.1".to_owned(),
+            reservation.clone(),
+            100,
+        );
+        let observed = port.execute_feature(&typed).unwrap();
+        assert_eq!(observed.status, NeuronFeatureTerminalStatusV1::Indeterminate);
+    }
+    let mut port = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        reservation,
+        100,
+    );
+    assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Rejected));
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
