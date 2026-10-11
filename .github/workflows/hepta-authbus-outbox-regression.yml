@@ -3,8 +3,8 @@ name: Hepta AuthBus Outbox capacity conformance (research gate)
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-evidence/src/authbus_outbox*.rs'
-      - '.github/workflows/hepta-authbus-outbox-regression.yml'
+      - "codex-rs/hepta-evidence/src/authbus_outbox*.rs"
+      - ".github/workflows/hepta-authbus-outbox-regression.yml"
   workflow_dispatch:
 
 permissions:
