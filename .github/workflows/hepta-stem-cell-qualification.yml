@@ -11,6 +11,8 @@ on:
       - 'MODULE.bazel.lock'
       - 'codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs'
       - 'codex-rs/hepta-fleet/src/**'
+      - '.github/scripts/run-bazel-ci.sh'
+      - '.github/scripts/test_run_bazel_ci.py'
       - '.github/workflows/hepta-stem-cell-qualification.yml'
 
 permissions:
@@ -44,6 +46,9 @@ jobs:
         run: |
           python3 -m compileall -q qualification/stem-cell-v1
           python3 -m unittest discover -v -s qualification/stem-cell-v1 -p 'test_*.py'
+          # Exercise all BuildBuddy/Bazel wrapper transports with a fake
+          # executable; no network or real model data is needed here.
+          python3 -m unittest discover -v -s .github/scripts -p 'test_run_bazel_ci.py'
           python3 -m json.tool qualification/stem-cell-v1/protocol.json > /dev/null
       - name: Check tested source remains unmodified
         run: |
