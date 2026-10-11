@@ -55,6 +55,40 @@ jobs:
           git diff --check
           git diff --exit-code
 
+  yaml-prettier-diagnostic:
+    name: Capture exact workflow Prettier patch (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288
+        with:
+          run_install: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+      - name: Install pinned formatter
+        run: pnpm install --frozen-lockfile
+      - name: Export canonical source patch without retaining modifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm exec prettier --write .github/workflows/hepta-stem-cell-qualification.yml
+          git diff --binary -- .github/workflows/hepta-stem-cell-qualification.yml > "$RUNNER_TEMP/stem-prettier.patch"
+          git restore --worktree -- .github/workflows/hepta-stem-cell-qualification.yml
+          git diff --check
+          git diff --exit-code
+      - name: Upload formatter patch
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-prettier-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stem-prettier.patch
+          if-no-files-found: warn
+          retention-days: 7
+
   formatter-diagnostic:
     name: Capture exact Rust formatter patch (diagnostic only)
     runs-on: ubuntu-24.04
