@@ -391,35 +391,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     pub fn verified_transcript(
         &mut self,
     ) -> Result<Option<CellSplitExecutionTranscriptV1>, CellSplitExecutionErrorV1> {
-        self.verify_committed_prefix()?;
+        // This same readback validates the frozen plan, complete receipt chain,
+        // pinned signatures and the current real owner state. Do not repeat
+        // the four potentially remote owner reads just to export the bytes.
+        let receipts = self.read_verified_prefix()?;
         if !self.is_complete() {
             return Ok(None);
-        }
-        let mut predecessor = self.plan_digest.clone();
-        let mut receipts = Vec::with_capacity(STEP_COUNT);
-        for index in 0..STEP_COUNT {
-            let step = CellSplitExecutionStepV1::at(index)
-                .ok_or(CellSplitExecutionErrorV1::Invalid("transcript step"))?;
-            let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
-            let prepared = read_frame(&frame_path(&self.root, index, "prepared"))?.ok_or(
-                CellSplitExecutionErrorV1::Invalid("transcript missing intent"),
-            )?;
-            if prepared != canonical_json(&intent)? {
-                return Err(CellSplitExecutionErrorV1::Invalid(
-                    "transcript intent drift",
-                ));
-            }
-            let stored = read_frame(&frame_path(&self.root, index, "committed"))?.ok_or(
-                CellSplitExecutionErrorV1::Invalid("transcript missing commit"),
-            )?;
-            let receipt: CellSplitExecutionReceiptV1 = serde_json::from_slice(&stored)?;
-            validate_receipt(&intent, &receipt)?;
-            self.trust.verify(&intent, &receipt)?;
-            self.port
-                .verify_committed(&intent, &receipt)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
-            predecessor = receipt.receipt_digest.clone();
-            receipts.push(receipt);
         }
         let mut payload = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
         payload.extend_from_slice(&canonical_json(&self.plan)?);
@@ -436,8 +413,15 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// rollback, stale route or post-open sidecar tamper must fence execution,
     /// even when the coordinator previously opened successfully.
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
-        // A live coordinator must also re-validate its immutable plan before
-        // every effect; validating it only at open leaves a post-open window.
+        self.read_verified_prefix().map(|_| ())
+    }
+
+    /// One canonical pass for execution preflight and transcript export.
+    /// Retain real-owner readback on every invocation, but never perform it
+    /// twice within the same export. None of these receipts grants authority.
+    fn read_verified_prefix(
+        &mut self,
+    ) -> Result<Vec<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
         let frozen = read_frame(&self.root.join("cell-split-frozen-plan.json"))?.ok_or(
             CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"),
         )?;
@@ -445,6 +429,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
         }
         let mut predecessor = self.plan_digest.clone();
+        let mut receipts = Vec::with_capacity(self.cursor);
         for index in 0..self.cursor {
             let step = CellSplitExecutionStepV1::at(index)
                 .ok_or(CellSplitExecutionErrorV1::Invalid("step index"))?;
@@ -464,12 +449,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             self.port
                 .verify_committed(&intent, &receipt)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
-            predecessor = receipt.receipt_digest;
+            predecessor = receipt.receipt_digest.clone();
+            receipts.push(receipt);
         }
         if predecessor != self.previous_receipt_digest {
             return Err(CellSplitExecutionErrorV1::Invalid("committed prefix drift"));
         }
-        Ok(())
+        Ok(receipts)
     }
 
     /// Advances at most one durable owner effect; never drives a later stage
