@@ -170,6 +170,67 @@ mod tests {
         }
     }
 
+
+    struct CurrentScope {
+        expected_scope: StableId,
+        current_digest: Digest32,
+        unavailable: bool,
+    }
+
+    impl CellSplitScopeSelectionAdmissionV1 for CurrentScope {
+        type Error = &'static str;
+
+        fn current_scope_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error> {
+            if self.unavailable || scope != &self.expected_scope {
+                Err("independent Control scope missing")
+            } else {
+                Ok(self.current_digest)
+            }
+        }
+
+        fn verify_current_selection(
+            &self,
+            _scope: &StableId,
+            _split_id: &StableId,
+            _selected: &VerifiedSelfEvolutionSelectionV1,
+        ) -> Result<(), Self::Error> {
+            Err("fixture never issues Selector approval")
+        }
+    }
+
+    #[test]
+    fn scope_bound_admission_rejects_cross_scope_ndu_and_scope_frontier_drift() {
+        let requested = StableId::new("scope-a").expect("scope");
+        let other = StableId::new("scope-b").expect("other scope");
+        let current = CurrentScope {
+            expected_scope: requested.clone(),
+            current_digest: Digest32::from_array([0x11; 32]),
+            unavailable: false,
+        };
+        let frozen = plan();
+        assert!(validate_scope_binding(&frozen, &requested, &requested, &current).is_ok());
+        assert!(
+            validate_scope_binding(&frozen, &requested, &other, &current).is_err(),
+            "a signed NDU snapshot for another scope must not prepare an intent"
+        );
+        let changed = CurrentScope {
+            current_digest: Digest32::from_array([0x77; 32]),
+            ..current
+        };
+        assert!(
+            validate_scope_binding(&frozen, &requested, &requested, &changed).is_err(),
+            "a previous Control scope digest is not a current binding"
+        );
+        let unavailable = CurrentScope {
+            unavailable: true,
+            ..changed
+        };
+        assert!(
+            validate_scope_binding(&frozen, &requested, &requested, &unavailable).is_err(),
+            "loss of live scope authority fails closed"
+        );
+    }
+
     #[test]
     fn independently_selected_lineage_must_match_every_frozen_identity() {
         let selected = plan();
