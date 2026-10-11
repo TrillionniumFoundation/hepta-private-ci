@@ -34,7 +34,6 @@ use crate::CognitiveAccess;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::CognitiveWriteReceipt;
-use crate::cognitive_intelligence_writer::CognitiveCorrectionTarget;
 use crate::ForgetMemoryDraft;
 use crate::KgFactSetDraft;
 use crate::LocalAdmission;
@@ -51,6 +50,7 @@ use crate::MemoryRevisionDraft;
 use crate::QueuedReceipt;
 use crate::SourceDraft;
 use crate::StableMemoryId;
+use crate::cognitive_intelligence_writer::CognitiveCorrectionTarget;
 use crate::local_lease_outbox::InheritedQueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
 #[cfg(test)]
