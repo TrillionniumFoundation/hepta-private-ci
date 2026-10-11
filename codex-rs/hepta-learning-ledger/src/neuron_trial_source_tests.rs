@@ -11,10 +11,10 @@ use crate::{
     ActivatedLearningTrustV1, AuthenticatedOutcomeV1, AuthenticatedPrincipalV1,
     CandidateSetCompletenessReceiptV1, DatasetFreezePlanV2, DurableLedger, LearningEvidenceTrustV1,
     LearningTrustDistributionV1, LearningTrustRootV1, LedgerRecovery, LedgerWitnessStore,
-    OutcomeTerminalityV1,
-    OutcomeWatermarkV1, ProductionDecisionV2, SignedLearningTrustDistributionV1,
-    TrustedLearningSignerV1, activate_learning_trust, candidate_ids_digest_v2,
-    candidate_order_digest_v2, decision_signing_payload_v2, outcome_signing_payload_v2,
+    OutcomeTerminalityV1, OutcomeWatermarkV1, ProductionDecisionV2,
+    SignedLearningTrustDistributionV1, TrustedLearningSignerV1, activate_learning_trust,
+    candidate_ids_digest_v2, candidate_order_digest_v2, decision_signing_payload_v2,
+    outcome_signing_payload_v2,
 };
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
