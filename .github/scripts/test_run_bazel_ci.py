@@ -3,6 +3,7 @@
 
 import json
 import os
+import platform
 import shlex
 import shutil
 import subprocess
@@ -386,7 +387,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertNotIn("--host_platform=//:local_windows", args)
         self.assertNotIn("--jobs=8", args)
 
-    @unittest.skipIf(os.name == "nt", "macOS Intel transport probe runs under POSIX bash")
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
     def test_macos_intel_transient_server_socket_retries_same_full_targets(self) -> None:
         self.env["RUNNER_OS"] = "macOS"
         self.env["BAZEL_PROBE_SERVER_CRASH_ONCE"] = str(self.root / "server-crashed.marker")
@@ -397,7 +401,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("retrying the identical full target set once", result.stdout)
         self.assertIn("Server terminated abruptly", result.stdout)
 
-    @unittest.skipIf(os.name == "nt", "macOS Intel transport probe runs under POSIX bash")
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
     def test_macos_intel_persistent_socket_crash_cannot_pass_after_one_retry(self) -> None:
         self.env["RUNNER_OS"] = "macOS"
         self.env["BAZEL_PROBE_SERVER_CRASH_ALWAYS"] = "1"
@@ -406,7 +413,10 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(len(calls), 2, "persistent infrastructure failure must remain blocking")
         self.assertEqual(calls[0], calls[1])
 
-    @unittest.skipIf(os.name == "nt", "macOS Intel transport probe runs under POSIX bash")
+    @unittest.skipUnless(
+        os.name != "nt" and platform.machine().lower() in ("x86_64", "amd64"),
+        "macOS Intel transport simulation requires an x86_64 POSIX shell",
+    )
     def test_macos_intel_real_test_failure_never_gets_server_retry(self) -> None:
         self.env["RUNNER_OS"] = "macOS"
         self.env["BAZEL_PROBE_FAIL"] = "1"
