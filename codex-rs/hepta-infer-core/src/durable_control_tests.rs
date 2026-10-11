@@ -433,7 +433,10 @@ fn large_request_table_updates_one_record_and_replays_exactly() {
     );
     assert_eq!(reopened.get("request.0").unwrap().revision, 4);
     assert_eq!(*reopened.get("request.63").unwrap(), unrelated);
-    assert_eq!(reopened.get("request.1").unwrap().state, RequestState::Pending);
+    assert_eq!(
+        reopened.get("request.1").unwrap().state,
+        RequestState::Pending
+    );
     drop(reopened);
     fs::remove_file(&journal).unwrap();
 }
@@ -476,10 +479,38 @@ fn malformed_legacy_submit_and_short_reservation_wal_fail_closed_on_replay() {
 #[test]
 fn forged_legacy_terminal_wal_cannot_relabel_or_overcharge_on_recovery() {
     for (case, observed_request, tokens, terminal, status, output) in [
-        ("wrong-request", "request.2", 1, "1", "completed", "5".repeat(64)),
-        ("over-quota", "request.1", 129, "1", "completed", "5".repeat(64)),
-        ("invalid-terminal", "request.1", 1, "0", "completed", "none".to_string()),
-        ("missing-output", "request.1", 1, "1", "completed", "none".to_string()),
+        (
+            "wrong-request",
+            "request.2",
+            1,
+            "1",
+            "completed",
+            "5".repeat(64),
+        ),
+        (
+            "over-quota",
+            "request.1",
+            129,
+            "1",
+            "completed",
+            "5".repeat(64),
+        ),
+        (
+            "invalid-terminal",
+            "request.1",
+            1,
+            "0",
+            "completed",
+            "none".to_string(),
+        ),
+        (
+            "missing-output",
+            "request.1",
+            1,
+            "1",
+            "completed",
+            "none".to_string(),
+        ),
     ] {
         let journal = path(case);
         let mut owner = DurableInferenceControl::open(&journal, 32).unwrap();
