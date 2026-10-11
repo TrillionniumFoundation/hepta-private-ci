@@ -76,6 +76,11 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    #[must_use]
+    pub fn is_open(&self) -> bool {
+        !self.sender.is_closed()
+    }
+
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
