@@ -255,10 +255,18 @@ def bootstrap(groups, seed, *, replicates=2000, alpha=.05 / 24):
     }
 
 
-def evaluate(plan, run_receipts, prediction_rows, indexed, *, replicates=2000):
+def evaluate(plan, run_receipts, prediction_rows, indexed, *,
+             replicates=2000, comparison_scope="full"):
     if type(replicates) is not int or replicates < 1000:
         raise ValueError("at least 1000 grouped bootstrap samples required")
-    expected = {f"{key}:{phase}" for key in SOURCES for phase in PHASES}
+    if comparison_scope not in ("full", "equal_budget"):
+        raise ValueError("unknown preregistered comparison scope")
+    # Original full comparison remains strict. Raw HF encoder checkpoints
+    # cannot be relabelled zero-shot DecisionModels without an upstream
+    # pretrained typed Head. The narrower paired equal-budget report is
+    # useful, but is explicitly NOT a complete model-vs-model assessment.
+    phases = PHASES if comparison_scope == "full" else ("equal_budget",)
+    expected = {f"{key}:{phase}" for key in SOURCES for phase in phases}
     runs = {}
     budgets = []
     for item in run_receipts:
@@ -299,7 +307,9 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *, replicates=2000):
             budgets.append(n)
         runs[arm] = item
     if set(runs) != expected:
-        raise ValueError("full four-model two-phase comparison is required")
+        if comparison_scope == "full":
+            raise ValueError("full four-model two-phase comparison is required")
+        raise ValueError("all four equal-budget arms must have actual run evidence")
     if min(budgets) / max(budgets) < .90:
         raise ValueError("equal-budget arms differ by more than 10% trainable parameters")
 
@@ -347,7 +357,7 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *, replicates=2000):
                                indexed, cutoff) for split in SCORING},
         }
     pairs = {}
-    for phase in PHASES:
+    for phase in phases:
         base = calibrated["laya_original:" + phase]
         for key in SOURCES:
             if key == "laya_original":
@@ -366,7 +376,15 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *, replicates=2000):
         "independent_ndu_signature_verified": False,
         "owner_backend_receipts_authenticated": False,
         "model_weights_executed_by_this_script": False,
-        "full_comparison_present": True,
+        "full_comparison_present": comparison_scope == "full",
+        "comparison_scope": comparison_scope,
+        "checkpoint_comparison_status": (
+            "operator_claimed_pretrained_typed_heads_not_proven_zero_shot"
+            if comparison_scope == "full"
+            else "NOT_COMPARABLE_missing_genuine_HF_pretrained_decision_heads"),
+        "excluded_checkpoint_arms": (
+            sorted(f"{key}:checkpoint" for key in SOURCES)
+            if comparison_scope == "equal_budget" else []),
         "checkpoint_is_not_proven_zero_shot": True,
         "pretrained_typed_checkpoint_head_required": True,
         "brier_definition": "sum_squared_class_error_divided_by_number_of_options",
@@ -375,6 +393,7 @@ def evaluate(plan, run_receipts, prediction_rows, indexed, *, replicates=2000):
         "limitations": [
             "Model and run metadata are operator assertions, not signed owner receipts",
             "Checkpoint arms may contain upstream task-specific supervised training",
+            "Equal-budget-only report cannot establish superior zero-shot decisions",
             "Equal trainable parameters and steps do not prove equal total FLOPs",
             "Descriptive held-out labels are not independently authenticated NDU utility",
             "No production worker, Cell state/CAS, recovery or 4096 Cell evidence",
@@ -402,6 +421,9 @@ def main():
     p.add_argument("--predictions", required=True)
     p.add_argument("--output", required=True)
     p.add_argument("--bootstrap-replicates", type=int, default=2000)
+    p.add_argument("--comparison-scope", choices=("full", "equal_budget"),
+                   default="full",
+                   help="equal_budget never fabricates HF pretrained Decision Heads")
     a = parser.parse_args()
     if a.command == "plan":
         records = json.loads(Path(a.descriptors).read_text(encoding="utf-8"))
@@ -418,7 +440,8 @@ def main():
         report = evaluate(
             plan, json.loads(Path(a.runs).read_text(encoding="utf-8")),
             list(load_jsonl(a.predictions)), indexed,
-            replicates=a.bootstrap_replicates)
+            replicates=a.bootstrap_replicates,
+            comparison_scope=a.comparison_scope)
         report.update({
             "plan_sha256": token,
             "run_receipts_sha256": sha256_file(a.runs),
