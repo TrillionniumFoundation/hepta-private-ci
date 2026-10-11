@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+"""Execute the two exact mechanisms; never selects or promotes a Hepta model."""
+import argparse
+import hashlib
+from pathlib import Path
+import time
+
+from four_gate_common import write_once, require
+import fbsde_local
+import fbsde_tree
+
+
+def run(output):
+    output.mkdir(parents=True,exist_ok=False)
+    sources={name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+             for name in ('fbsde_local.py','fbsde_tree.py','fbsde_study.py','four_gate_common.py')}
+    write_once(output/'design.json',{'schema':'hepta.fbsde.exact-study.design.v1','sources':sources,
+        'deterministic_mesh':[8,16,32,64,128,256,512],'segments':4,
+        'stochastic_paths':128,'stochastic_finest':1024,'scenario_cases':16,
+        'scope':'numerical_and_exhaustive_mechanism_checks_not_model_efficacy',
+        'production_promotion_permitted':False})
+    results={}
+    for name,module in (('local',fbsde_local),('tree',fbsde_tree)):
+        cpu,wall=time.process_time_ns(),time.perf_counter_ns()
+        result=module.experiment()
+        result['execution_cost']={'cpu_ns':time.process_time_ns()-cpu,'wall_ns':time.perf_counter_ns()-wall}
+        write_once(output/(name+'.json'),result)
+        results[name]=result
+    rows=results['local']['mesh']
+    require(all(r['stitched']['same_discrete_global_problem'] and
+                not r['wrong_reset']['same_discrete_global_problem'] for r in rows),'pasting check')
+    require(all(abs(r['whole']['initial_y']-r['stitched']['initial_y'])<1e-9 for r in rows),'monolithic check')
+    require(rows[-1]['stitched']['max_trajectory_error']<rows[0]['stitched']['max_trajectory_error']/20,
+            'analytic convergence check')
+    require(all(r['reference']==r['root_value'] for r in results['tree']['rows']),'exhaustive policy check')
+    write_once(output/'summary.json',{'exact_mechanism_checks_passed':True,
+        'fbsde_global_general_theorem_proved':False,'real_encoder_experiment_executed_here':False,
+        'production_promotion_permitted':False,
+        'results_sha256':{n:hashlib.sha256((output/(n+'.json')).read_bytes()).hexdigest() for n in results}})
+
+
+if __name__=='__main__':
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output',type=Path,required=True)
+    run(parser.parse_args().output)
