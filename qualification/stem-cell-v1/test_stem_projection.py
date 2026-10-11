@@ -287,14 +287,14 @@ class CasProjectionCandidateTests(unittest.TestCase):
         raw = encode_cas_projection_candidate(spec())
         obj = json.loads(raw)
         obj["production_authorized"] = True
-        tampered = (json.dumps(obj, sort_keys=True, separators=(",", ":"))+"\\n").encode()
+        tampered = (json.dumps(obj, sort_keys=True, separators=(",", ":"))+"\n").encode()
         with self.assertRaisesRegex(ValueError, "schema mismatch"):
             decode_cas_projection_candidate(
                 tampered, expected_payload_sha256=hashlib.sha256(tampered).hexdigest(),
                 expected_projection_digest=spec().digest)
         obj = json.loads(raw)
         obj["projection"]["a_q24"][0] += 1
-        tampered = (json.dumps(obj, sort_keys=True, separators=(",", ":"))+"\\n").encode()
+        tampered = (json.dumps(obj, sort_keys=True, separators=(",", ":"))+"\n").encode()
         with self.assertRaisesRegex(ValueError, "revision"):
             decode_cas_projection_candidate(
                 tampered, expected_payload_sha256=hashlib.sha256(tampered).hexdigest(),
