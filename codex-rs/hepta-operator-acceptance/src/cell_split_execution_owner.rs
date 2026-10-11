@@ -215,6 +215,12 @@ impl CellSplitOwnerTrustV1 {
         self.owner_keys.iter().any(|owner| owner == key)
     }
 
+    /// The independent four-key trust set must match every live RPC reader
+    /// key; accepting a caller-chosen second key set could fake freshness.
+    pub(crate) fn owner_verifying_keys(&self) -> &[VerifyingKey; STEP_COUNT] {
+        &self.owner_keys
+    }
+
     fn verify(
         &self,
         intent: &CellSplitExecutionIntentV1,
