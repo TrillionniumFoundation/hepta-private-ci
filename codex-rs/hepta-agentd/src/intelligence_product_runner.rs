@@ -356,13 +356,15 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         match journal.append_qualification(expected_predecessor, event.clone()) {
             Ok(receipt) => Ok(receipt),
-            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
-                AgentdIntelligenceLedgerError::Indeterminate(Box::new(PendingIntelligenceLedgerAppendV1 {
-                    expected_predecessor,
-                    snapshot,
-                    event,
-                })),
-            ),
+            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => {
+                Err(AgentdIntelligenceLedgerError::Indeterminate(Box::new(
+                    PendingIntelligenceLedgerAppendV1 {
+                        expected_predecessor,
+                        snapshot,
+                        event,
+                    },
+                )))
+            }
             Err(error) => Err(AgentdIntelligenceLedgerError::Ledger(error)),
         }
     }
