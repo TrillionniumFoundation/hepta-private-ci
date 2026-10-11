@@ -2,11 +2,15 @@
 import copy
 import hashlib
 import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from jina_v5 import sha256_record
 from prequential_trial import prediction_precommit
-from prequential_threeway_review import future_calibration_metrics, read_journal, review
+from prequential_threeway_review import (
+    future_calibration_metrics, read_journal, review, write_frozen_report,
+)
 from qualified_eval import audit_dataset
 
 
@@ -172,6 +176,21 @@ class PrequentialThreeWayTests(unittest.TestCase):
         forged[-1]["generation"] = 2
         with self.assertRaisesRegex(ValueError, "changed"):
             review(self.rows, self.trial, self.journal, forged, replicates=1000)
+
+    def test_completed_threeway_report_is_immutable_and_finite(self):
+        summary = self.run_report()
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "threeway.json"
+            write_frozen_report(path, summary)
+            original = path.read_bytes()
+            self.assertFalse(json.loads(original)["production_promotion_permitted"])
+            with self.assertRaises(FileExistsError):
+                write_frozen_report(path, {**summary, "production_promotion_permitted": True})
+            self.assertEqual(path.read_bytes(), original)
+            unfinished = Path(root) / "invalid.json"
+            with self.assertRaises(ValueError):
+                write_frozen_report(unfinished, {"ece": float("nan")})
+            self.assertFalse(unfinished.exists())
 
     def test_rehashed_duplicate_field_journal_never_passes(self):
         # Without strict decoding, Python's json.loads silently keeps the
