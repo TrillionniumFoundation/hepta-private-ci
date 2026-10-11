@@ -37,6 +37,7 @@ jobs:
       MKL_NUM_THREADS: "2"
       TOKENIZERS_PARALLELISM: "false"
       HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-original-675970bb-for-regressions.zip
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -50,6 +51,17 @@ jobs:
           /tmp/stem-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/stem-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
           /tmp/stem-python/bin/pip freeze > /tmp/stem-native/environment.txt
+      - name: Provide exact independent strict-as-of artifact for native regression tests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_STEM_STRICT_ARCHIVE"
+          printf '%s  %s\n' \
+            1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 \
+            "$HEPTA_STEM_STRICT_ARCHIVE" | sha256sum -c -
+          printf '%s\n' 'archive_id=11693693993' 'source_commit=675970bb610c70bb0ec30a2dee05c025440510e6' 'zip_sha256=1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8' \
+            > /tmp/stem-native/strict-regression-external-pin.txt
       - name: Full regression set and static diagnostics
         run: |
           set -euo pipefail
