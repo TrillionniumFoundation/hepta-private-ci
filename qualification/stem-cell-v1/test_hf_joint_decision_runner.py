@@ -9,7 +9,7 @@ from types import SimpleNamespace
 
 from hf_joint_decision_runner import (
     HF_KEYS, build_head, head_sha256, head_width, render_joint,
-    snapshot_validation, train_head, vectorize_case,
+    snapshot_validation, train_head, validate_encoder_loading_info, vectorize_case,
 )
 
 
@@ -35,6 +35,25 @@ class DecisionHeadContractTests(unittest.TestCase):
         self.assertGreater(count, 260000)
         with self.assertRaisesRegex(ValueError, "budget"):
             head_width(1024, 3, 3)
+
+    def test_weights_file_cannot_mask_randomized_or_ignored_layers(self):
+        valid = {
+            "missing_keys": [], "unexpected_keys": [],
+            "mismatched_keys": [], "error_msgs": [],
+        }
+        result = validate_encoder_loading_info(valid)
+        self.assertTrue(result["complete"])
+        self.assertEqual(result["missing_keys"], 0)
+        for kind in valid:
+            invalid = {key: list(value) for key, value in valid.items()}
+            invalid[kind] = ["layer.example"]
+            with self.assertRaisesRegex(ValueError, "partially initialized"):
+                validate_encoder_loading_info(invalid)
+        with self.assertRaisesRegex(ValueError, "complete loading report"):
+            validate_encoder_loading_info({"missing_keys": []})
+        with self.assertRaisesRegex(ValueError, "invalid field"):
+            validate_encoder_loading_info({
+                **valid, "missing_keys": "not-an-array"})
 
     def test_unapproved_model_revision_denied_before_model_load(self):
         with tempfile.TemporaryDirectory() as temp:
