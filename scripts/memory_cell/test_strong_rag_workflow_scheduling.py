@@ -92,7 +92,7 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
             reader.index("name: memory-strong-rag-calibration-checkpoint"),
             reader.index("name: Different process, frozen top-k"),
         )
-        self.assertIn("test -z \"$(find \"$checkpoint\" -type l -print -quit)\"", reader)
+        self.assertIn('test -z "$(find "$checkpoint" -type l -print -quit)"', reader)
         self.assertIn("SHA256SUMS", reader)
 
     def test_global_format_remains_separately_observable(self):
