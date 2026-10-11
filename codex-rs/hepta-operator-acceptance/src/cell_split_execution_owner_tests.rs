@@ -402,10 +402,14 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
                 assert!(owner.verified_transcript().expect("partial").is_none());
             }
         }
+        let before_readbacks = state.borrow().verifications;
         let proof = owner
             .verified_transcript()
             .expect("four owner reads")
             .expect("complete transcript");
+        // Export must revalidate all four original effects against their
+        // current owner, but not perform the same remote readback twice.
+        assert_eq!(state.borrow().verifications - before_readbacks, 4);
         assert_eq!(proof.receipts.len(), 4);
         assert_eq!(proof.plan, plan());
         assert_eq!(
@@ -427,6 +431,7 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
         FixturePort::new(state.clone()),
     )
     .expect("recovered");
+    let before_recovery_readbacks = state.borrow().verifications;
     assert_eq!(
         recovered
             .verified_transcript()
@@ -434,6 +439,10 @@ fn full_transcript_uses_only_four_current_owner_receipts() {
             .expect("four original effects")
             .transcript_digest,
         expected_digest,
+    );
+    assert_eq!(
+        state.borrow().verifications - before_recovery_readbacks,
+        4
     );
     let last = recovered.verified_transcript().unwrap().unwrap().receipts[3]
         .intent
