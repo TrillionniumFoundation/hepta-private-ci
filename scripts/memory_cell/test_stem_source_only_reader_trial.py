@@ -140,7 +140,9 @@ class SourceOnlyReaderTrialTests(unittest.TestCase):
     def test_original_success_census_cannot_be_truncated(self):
         archive = FakeOriginalArchive()
         archive.rows.pop()
-        with self.assertRaisesRegex(ValueError, "complete 576"):
+        with self.assertRaisesRegex(
+            ValueError, "complete 576.*missing originally sealed answer"
+        ):
             pinned_original(archive)
 
     def test_model_or_question_profile_mismatch_cannot_be_called_support_gain(self):
