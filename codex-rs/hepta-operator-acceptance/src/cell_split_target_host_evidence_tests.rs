@@ -64,9 +64,7 @@ fn event(
         } else {
             String::new()
         },
-        receipt_digest: crate::durable::sha256(
-            format!("receipt-{sequence}").as_bytes(),
-        ),
+        receipt_digest: crate::durable::sha256(format!("receipt-{sequence}").as_bytes()),
         resource: None,
         previous_event_digest: payload
             .events
@@ -845,7 +843,9 @@ fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
             .find(|event| event.event_kind == kind)
             .expect("fixture has every required lifecycle event");
         match mutation {
-            "recovery-route" => matching.route_digest = crate::durable::sha256(b"unrelated-live-route"),
+            "recovery-route" => {
+                matching.route_digest = crate::durable::sha256(b"unrelated-live-route");
+            }
             "rollback-predecessor" => {
                 matching.predecessor_digest = crate::durable::sha256(b"unrelated-active-route");
             }
