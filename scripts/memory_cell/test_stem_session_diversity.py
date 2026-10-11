@@ -35,9 +35,7 @@ def setup():
                     phase=phase,
                     question_id=qid,
                     source_family=first["source_family"],
-                    original_as_of_index_sha256=first[
-                        "original_as_of_index_sha256"
-                    ],
+                    original_as_of_index_sha256=first["original_as_of_index_sha256"],
                     original_baseline_source_ids=first["retrieved_source_ids"],
                     ranked_original_source_sessions=ranked,
                     selected_original_identities=selected,
@@ -92,7 +90,10 @@ class SessionDiversityTests(unittest.TestCase):
         for row in rows:
             row["ranked_original_source_sessions"][1]["session"] = "s2"
             row["ranked_original_source_sessions"][2]["session"] = "s3"
-            row["selected_original_identities"] = ["source-distractor", "source-duplicate"]
+            row["selected_original_identities"] = [
+                "source-distractor",
+                "source-duplicate",
+            ]
             row["retrieved_source_ids"] = ["source-distractor", "source-duplicate"]
             # The original window is the distractor. The synthetic setup's
             # previous diversified window was sourced from "source-positive",
@@ -113,7 +114,10 @@ class SessionDiversityTests(unittest.TestCase):
             elif change == "rank":
                 rows[0]["ranked_original_source_sessions"][0]["id"] = "changed"
             elif change == "choice":
-                rows[0]["selected_original_identities"] = ["source-positive", "source-distractor"]
+                rows[0]["selected_original_identities"] = [
+                    "source-positive",
+                    "source-distractor",
+                ]
             elif change == "pool":
                 rows[0]["pool_sha256"] = ""
             elif change == "window":
@@ -132,9 +136,12 @@ class SessionDiversityTests(unittest.TestCase):
                 validate_session_receipts(plan, original, bad)
         observed = validate_session_receipts(plan, original, rows)
         with self.assertRaises(ValueError):
-            compare_session_diversity(plan, original, observed, {
-                q: v for q, v in targets.items() if q != "test-0"
-            })
+            compare_session_diversity(
+                plan,
+                original,
+                observed,
+                {q: v for q, v in targets.items() if q != "test-0"},
+            )
 
     def test_native_unknown_is_not_accepted_as_negative(self):
         plan, original, rows, targets = setup()

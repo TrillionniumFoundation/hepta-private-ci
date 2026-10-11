@@ -22,8 +22,10 @@ def session_distinct(ranked, limit):
         and all(
             isinstance(row, dict)
             and set(row) == {"id", "root", "session"}
-            and all(isinstance(row[key], str) and bool(row[key])
-                    for key in ("id", "root", "session"))
+            and all(
+                isinstance(row[key], str) and bool(row[key])
+                for key in ("id", "root", "session")
+            )
             for row in ranked
         )
         and len({row["id"] for row in ranked}) == len(ranked),
@@ -42,9 +44,7 @@ def session_distinct(ranked, limit):
 def validate_session_receipts(plan, originals, receipts):
     """Require an unchanged top-K, original index and pre-answer source census."""
     expected = {
-        (phase, question)
-        for phase in PHASES
-        for question in plan["questions"][phase]
+        (phase, question) for phase in PHASES for question in plan["questions"][phase]
     }
     require(
         isinstance(receipts, list) and len(receipts) == len(expected) == 80,
@@ -70,7 +70,7 @@ def validate_session_receipts(plan, originals, receipts):
             and item["pretrained_reader_calls"] == 0
             and isinstance(ranked, list)
             and len(ranked) >= len(topk)
-            and [source_id(v["id"]) for v in ranked[:len(topk)]] == topk,
+            and [source_id(v["id"]) for v in ranked[: len(topk)]] == topk,
             "original candidate ranking, cutoff, family or admission changed",
         )
         chosen = session_distinct(ranked, len(topk))
@@ -97,9 +97,8 @@ def compare_session_diversity(plan, originals, receipts, targets):
     wanted = {q for phase in PHASES for q in plan["questions"][phase]}
     require(
         set(targets) == wanted
-        and set(receipts) == {
-            (phase, q) for phase in PHASES for q in plan["questions"][phase]
-        },
+        and set(receipts)
+        == {(phase, q) for phase in PHASES for q in plan["questions"][phase]},
         "complete, separately admitted post-generation target census required",
     )
     totals, decisions = {}, []
@@ -119,8 +118,8 @@ def compare_session_diversity(plan, originals, receipts, targets):
             head = ranked[:cutoff]
             different = before["retrieved_source_ids"] != after["retrieved_source_ids"]
             counts["planned"] += 1
-            counts["original_topk_duplicate_session_slots"] += (
-                len(head) - len({row["session"] for row in head})
+            counts["original_topk_duplicate_session_slots"] += len(head) - len(
+                {row["session"] for row in head}
             )
             counts["distinct_sessions_available_at_depth"] += len(
                 {row["session"] for row in ranked}
@@ -145,9 +144,7 @@ def compare_session_diversity(plan, originals, receipts, targets):
                     source_family=before["source_family"],
                     changed_source_topk=different,
                     original_unique_topk_sessions=len({r["session"] for r in head}),
-                    available_distinct_sessions=len(
-                        {r["session"] for r in ranked}
-                    ),
+                    available_distinct_sessions=len({r["session"] for r in ranked}),
                     weak_original_document_hit=(
                         None if original is None else original[0]
                     ),

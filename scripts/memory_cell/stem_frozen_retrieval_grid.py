@@ -242,7 +242,8 @@ def posthoc_all_registered_grid_ceiling(plan, unlabelled, targets, selection):
     eval_ids = [q for p in PHASES[1:] for q in plan["questions"][p]]
     if (
         set(targets) != set(eval_ids)
-        or len(eval_ids) != 32 or len(set(eval_ids)) != 32
+        or len(eval_ids) != 32
+        or len(set(eval_ids)) != 32
         or selection["train_only"] is not True
         or selection["evaluation_labels_were_not_read_to_select"] is not True
         or selection["selected_policy"] not in {label_key(g) for g in GRID}
@@ -256,17 +257,19 @@ def posthoc_all_registered_grid_ceiling(plan, unlabelled, targets, selection):
         counts = defaultdict(int)
         for qid in plan["questions"][phase]:
             variants = [unlabelled[(phase, qid, label_key(config))] for config in GRID]
-            if any(row["source_family"] != plan["question_families"][qid]
-                   or row["read_targets_for_retrieval"] is not False
-                   for row in variants):
+            if any(
+                row["source_family"] != plan["question_families"][qid]
+                or row["read_targets_for_retrieval"] is not False
+                for row in variants
+            ):
                 raise ValueError("hindsight labels were available during retrieval")
             support = [annotate(row, targets[qid]) for row in variants]
             if any((s is None) != (support[0] is None) for s in support):
                 raise ValueError("inconsistent native support across original grid")
             baseline = support[GRID.index(BASELINE)]
-            selected = support[[label_key(c) for c in GRID].index(
-                selection["selected_policy"]
-            )]
+            selected = support[
+                [label_key(c) for c in GRID].index(selection["selected_policy"])
+            ]
             counts["planned"] += 1
             item = dict(
                 phase=phase,

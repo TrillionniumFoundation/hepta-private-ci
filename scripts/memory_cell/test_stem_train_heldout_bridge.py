@@ -211,7 +211,9 @@ class GeneralizationBridgeTests(unittest.TestCase):
         plan, learning, scored, targets = fixture()
         for row in scored:
             if (row["stage"], row["phase"], row["question_id"]) == (
-                48, "test", "test-0"
+                48,
+                "test",
+                "test-0",
             ):
                 row["source_choice_correct"] = None
         out = train_to_heldout_gap(plan, learning, scored, targets)

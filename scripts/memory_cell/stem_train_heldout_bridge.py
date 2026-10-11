@@ -369,26 +369,31 @@ def train_to_heldout_gap(plan, learning, scored, targets):
     # Repeated evaluations at 16/32/48 share the same native questions.
     # Do not count them as 48 independent test/transfer subjects per arm.
     # The final checkpoint is a single descriptive cohort, not a new test.
-    final_panel = [
-        row for row in heldout_panel if row["stage"] == STAGES[-1]
-    ]
+    final_panel = [row for row in heldout_panel if row["stage"] == STAGES[-1]]
     unique_native_questions = {
-        (row["phase"], row["question_id"])
-        for row in final_panel
+        (row["phase"], row["question_id"]) for row in final_panel
     }
     if len(unique_native_questions) != 16:
         raise ValueError("test/transfer effective independent question census drift")
     stage_question_units = {}
     for arm in ARMS[1:]:
         arm_final = [row for row in final_panel if row["arm"] == arm]
-        if len(arm_final) != 16 or {
-            (row["phase"], row["question_id"]) for row in arm_final
-        } != unique_native_questions:
+        if (
+            len(arm_final) != 16
+            or {(row["phase"], row["question_id"]) for row in arm_final}
+            != unique_native_questions
+        ):
             raise ValueError("final checkpoint missing frozen-matched question")
-        source = [row["weak_support_gain"] for row in arm_final
-                  if row["weak_support_gain"] is not None]
-        f1 = [row["diagnostic_answer_f1_delta"] for row in arm_final
-              if row["diagnostic_answer_f1_delta"] is not None]
+        source = [
+            row["weak_support_gain"]
+            for row in arm_final
+            if row["weak_support_gain"] is not None
+        ]
+        f1 = [
+            row["diagnostic_answer_f1_delta"]
+            for row in arm_final
+            if row["diagnostic_answer_f1_delta"] is not None
+        ]
         missing_source = 16 - len(source)
         missing_f1 = 16 - len(f1)
         stage_question_units[arm] = dict(
@@ -398,7 +403,8 @@ def train_to_heldout_gap(plan, learning, scored, targets):
             native_answerability_unknown_or_not_comparable=missing_source,
             native_source_net_gain=sum(source),
             native_source_all_planned_net_gain_bounds=[
-                sum(source) - missing_source, sum(source) + missing_source
+                sum(source) - missing_source,
+                sum(source) + missing_source,
             ],
             observed_reader_answer_pairs=len(f1),
             unanswered_or_unscored_reader_pairs=missing_f1,

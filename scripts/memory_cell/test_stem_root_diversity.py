@@ -2,7 +2,11 @@
 
 import unittest
 
-from stem_root_diversity import root_distinct, validate_diverse_receipts, compare_diversity
+from stem_root_diversity import (
+    root_distinct,
+    validate_diverse_receipts,
+    compare_diversity,
+)
 from stem_frozen_retrieval_grid import BASELINE, label_key, validate_unlabelled
 from test_stem_frozen_retrieval_grid import fixture
 from sessions import source_id
@@ -25,21 +29,23 @@ def varied_fixture():
                 {"id": "source-positive", "root": "new-root"},
             ]
             chosen = root_distinct(ranked, 2)
-            alternative.append(dict(
-                phase=phase,
-                question_id=qid,
-                source_family=top["source_family"],
-                original_as_of_index_sha256=top["original_as_of_index_sha256"],
-                original_baseline_source_ids=top["retrieved_source_ids"],
-                ranked_original_source_roots=ranked,
-                selected_original_identities=chosen,
-                retrieved_source_ids=[source_id(x) for x in chosen],
-                window_source_ids=[source_id(x) for x in chosen],
-                pool_sha256="f"*64,
-                source_text_exported=False,
-                read_targets_for_retrieval=False,
-                pretrained_reader_calls=0,
-            ))
+            alternative.append(
+                dict(
+                    phase=phase,
+                    question_id=qid,
+                    source_family=top["source_family"],
+                    original_as_of_index_sha256=top["original_as_of_index_sha256"],
+                    original_baseline_source_ids=top["retrieved_source_ids"],
+                    ranked_original_source_roots=ranked,
+                    selected_original_identities=chosen,
+                    retrieved_source_ids=[source_id(x) for x in chosen],
+                    window_source_ids=[source_id(x) for x in chosen],
+                    pool_sha256="f" * 64,
+                    source_text_exported=False,
+                    read_targets_for_retrieval=False,
+                    pretrained_reader_calls=0,
+                )
+            )
     return plan, registered, alternative, targets
 
 
@@ -87,7 +93,7 @@ class RootDiversityTests(unittest.TestCase):
             elif mode == "pool":
                 raw[0]["pool_sha256"] = ""
             elif mode == "source":
-                raw[0]["original_as_of_index_sha256"] = "a"*64
+                raw[0]["original_as_of_index_sha256"] = "a" * 64
             elif mode == "review":
                 raw[0]["read_targets_for_retrieval"] = True
             else:
@@ -97,6 +103,7 @@ class RootDiversityTests(unittest.TestCase):
 
     def test_unknown_labels_preserved_and_test_labels_not_used_for_choice(self):
         from types import SimpleNamespace
+
         plan, original, raw, targets = varied_fixture()
         diverse = validate_diverse_receipts(plan, original, raw)
         targets["test-0"] = SimpleNamespace(
@@ -105,9 +112,12 @@ class RootDiversityTests(unittest.TestCase):
         x = compare_diversity(plan, original, diverse, targets)
         self.assertEqual(x["results"]["test"]["unscored_native_label"], 1)
         with self.assertRaises(ValueError):
-            compare_diversity(plan, original, diverse, {
-                k: v for k, v in targets.items() if k != "test-0"
-            })
+            compare_diversity(
+                plan,
+                original,
+                diverse,
+                {k: v for k, v in targets.items() if k != "test-0"},
+            )
 
 
 if __name__ == "__main__":

@@ -4,26 +4,45 @@ from copy import deepcopy
 import unittest
 
 from stem_latest_native_pair_audit import (
-    EARLIER, LATER, equal_policy, ARMS, STAGES, PHASES,
+    EARLIER,
+    LATER,
+    equal_policy,
+    ARMS,
+    STAGES,
+    PHASES,
 )
 
 
 def fixture():
     return dict(
-        stage=48, phase="test", question_id="q-fixed", arm="gated",
-        status="succeeded", family="locked-family", cell="general",
-        selected=0, answer="Frozen Reader text.",
-        pool_digest="pinned-pool", feature_digest="features",
-        head_sha256="a" * 64, encoder_identity="locked-encoder",
-        head_seconds=0.0001, inclusive_attempt_seconds=1.0,
+        stage=48,
+        phase="test",
+        question_id="q-fixed",
+        arm="gated",
+        status="succeeded",
+        family="locked-family",
+        cell="general",
+        selected=0,
+        answer="Frozen Reader text.",
+        pool_digest="pinned-pool",
+        feature_digest="features",
+        head_sha256="a" * 64,
+        encoder_identity="locked-encoder",
+        head_seconds=0.0001,
+        inclusive_attempt_seconds=1.0,
         receipt=dict(
             generator_parameter_updates=0,
-            generator_identity="locked-reader", generator_profile="locked-template",
-            semantic_citation_precision=None, production_accepted=False,
+            generator_identity="locked-reader",
+            generator_profile="locked-template",
+            semantic_citation_precision=None,
+            production_accepted=False,
             delivered_evidence=[dict(root="root", original_id="source", label="E1")],
-            input_ids_digest="reader-input", generated_ids_digest="reader-output",
-            actual_reader_execution=True, reused_from=None,
-            generation_seconds=1.1, incremental_generation_seconds=1.1,
+            input_ids_digest="reader-input",
+            generated_ids_digest="reader-output",
+            actual_reader_execution=True,
+            reused_from=None,
+            generation_seconds=1.1,
+            incremental_generation_seconds=1.1,
         ),
     )
 

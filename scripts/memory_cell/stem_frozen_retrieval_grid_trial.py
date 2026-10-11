@@ -237,30 +237,30 @@ def replay_pinned(artifact, staged, output):
                                     q,
                                     vector,
                                     RetrievalPolicy(
-                                        top_k=64, channel_k=64,
-                                        lexical_weight=0.5, rrf_constant=60,
+                                        top_k=64,
+                                        channel_k=64,
+                                        lexical_weight=0.5,
+                                        rrf_constant=60,
                                     ),
                                     current_cut=admiss[key]["as_of_cut"],
                                     revoked=set(),
                                 )
                                 require(
-                                    [d.identity for d in larger[:len(retrieved)]]
+                                    [d.identity for d in larger[: len(retrieved)]]
                                     == [d.identity for d in retrieved]
                                     and larger_cost["index_artifact_digest"]
                                     == cost["index_artifact_digest"],
                                     "root diversification moved the original RRF source rank or cut",
                                 )
                                 ordered_roots = [
-                                    dict(id=d.identity, root=d.root)
-                                    for d in larger
+                                    dict(id=d.identity, root=d.root) for d in larger
                                 ]
                                 unique_ids = root_distinct(
                                     ordered_roots, len(retrieved)
                                 )
                                 selected_by_id = {d.identity: d for d in larger}
                                 root_docs = tuple(
-                                    selected_by_id[identity]
-                                    for identity in unique_ids
+                                    selected_by_id[identity] for identity in unique_ids
                                 )
                                 root_pool = candidate_windows(
                                     root_docs,
@@ -285,10 +285,12 @@ def replay_pinned(artifact, staged, output):
                                         retrieved_source_ids=[
                                             source_id(d.identity) for d in root_docs
                                         ],
-                                        window_source_ids=sorted({
-                                            source_id(w.source_id)
-                                            for w in root_pool.windows
-                                        }),
+                                        window_source_ids=sorted(
+                                            {
+                                                source_id(w.source_id)
+                                                for w in root_pool.windows
+                                            }
+                                        ),
                                         pool_sha256=root_pool.seal(),
                                         source_text_exported=False,
                                         read_targets_for_retrieval=False,
@@ -305,8 +307,7 @@ def replay_pinned(artifact, staged, output):
                                     ordered_sessions, len(retrieved)
                                 )
                                 session_docs = tuple(
-                                    selected_by_id[identity]
-                                    for identity in session_ids
+                                    selected_by_id[identity] for identity in session_ids
                                 )
                                 session_pool = candidate_windows(
                                     session_docs,
@@ -374,9 +375,7 @@ def replay_pinned(artifact, staged, output):
         write_jsonl(output / "root-diverse-label-blind.jsonl", distinct_candidates)
         write_jsonl(output / "session-diverse-label-blind.jsonl", session_candidates)
         unlabelled = validate_unlabelled(plan, observations)
-        diverse = validate_diverse_receipts(
-            plan, unlabelled, distinct_candidates
-        )
+        diverse = validate_diverse_receipts(plan, unlabelled, distinct_candidates)
         session_receipts = validate_session_receipts(
             plan, unlabelled, session_candidates
         )
@@ -410,7 +409,10 @@ def replay_pinned(artifact, staged, output):
         # frozen AND the TRAIN-only selected policy was already written.
         # The oracle does not return a policy to the retriever or Reader.
         hindsight = posthoc_all_registered_grid_ceiling(
-            plan, unlabelled, eval_targets, calibration,
+            plan,
+            unlabelled,
+            eval_targets,
+            calibration,
         )
         write(output / "posthoc-registered-grid-ceiling.json", hindsight)
         write(
