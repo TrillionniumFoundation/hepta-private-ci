@@ -424,3 +424,18 @@ and full_quality_and_ood_gate_passed=false, even if the future predictive
 gain precheck passes. An offline ECE value, even with paired bootstrap,
 cannot substitute for real OOD false-acceptance evidence, external NDU
 outcome signatures or production model promotion authorization.
+
+
+### Fail-closed JSON evidence decoding
+
+The existing qualified_eval.read_jsonl reader and the C three-way
+prequential journal now use the same strict decoder: duplicate object keys,
+NaN/Infinity extensions, empty physical rows, and non-object JSONL records
+are rejected. This covers dataset labels, ordered options, externally
+supplied no-change predictions, post-training trial evidence, and frozen
+pre-label prediction journals. A new test specifically rehashes a journal
+with two case_id fields that Python's default json.loads otherwise resolves
+silently to the last value. The immutable journal byte SHA alone is not
+sufficient to prohibit ambiguous physical input. This change is a research
+integrity requirement and adds no cryptographic signatures, independent
+NDU permissions or production capability.
