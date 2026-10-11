@@ -94,8 +94,18 @@ def audit_multimodal(rows):
             "future_temporal_order_checked": True}
 
 
-def paired_ranking(examples):
-    """Cosine is a dot product because the model adapter validates L2 norms."""
+def paired_ranking(examples, direction="media-to-text"):
+    """Evaluate a registered asymmetric Jina query/document direction.
+
+    Both modalities use task-aligned encoders; cosine is a dot product
+    because the feature adapter verifies L2 normalization.
+    """
+    if direction not in ("media-to-text", "text-to-media"):
+        raise ValueError("unregistered cross-modal retrieval direction")
+    query_key, document_key = (
+        ("media_vector", "text_vector") if direction == "media-to-text"
+        else ("text_vector", "media_vector")
+    )
     buckets = defaultdict(list)
     for row in examples:
         buckets[(row["scope_id"], row["split"])].append(row)
@@ -105,7 +115,7 @@ def paired_ranking(examples):
             raise ValueError("at least two independently labeled pairs per ranking cohort")
         for row in items:
             similarities = [sum(a * b for a, b in zip(
-                row["media_vector"], other["text_vector"])) for other in items]
+                row[query_key], other[document_key])) for other in items]
             if not all(math.isfinite(x) for x in similarities):
                 raise ValueError("non-finite similarity")
             ranked = sorted(range(len(items)), key=lambda i: (-similarities[i], items[i]["case_id"]))
@@ -114,7 +124,9 @@ def paired_ranking(examples):
             position = ranked.index(actual)
             results.append({
                 "case_id": row["case_id"], "scope_id": scope, "split": split,
-                "modality": row["modality"], "recall_at_1": int(position == 0),
+                "modality": row["modality"],
+                "retrieval_direction": direction,
+                "recall_at_1": int(position == 0),
                 "rank": position + 1, "paired_cosine": similarities[actual],
                 "media_sha256": row["media_sha256"],
                 "media_wall_ms": row["media_wall_ms"],
@@ -134,6 +146,10 @@ def run(args):
         raise ValueError("Text and Omni must be from matching Nano/Small families")
     if args.modality not in ("vision", "audio", "omni"):
         raise ValueError("the approved multimodal tower must be explicit")
+    if args.direction not in ("media-to-text", "text-to-media"):
+        raise ValueError("unknown asymmetric retrieval direction")
+    text_intent = "document" if args.direction == "media-to-text" else "query"
+    media_intent = "query" if args.direction == "media-to-text" else "document"
     validate_identity(args.omni_model, args.omni_revision, "retrieval",
                       args.dimension, args.modality, args.max_tokens)
     validate_identity(args.text_model, args.text_revision, "retrieval",
@@ -166,12 +182,12 @@ def run(args):
         start = time.perf_counter_ns()
         tvec, _ = text_stem.encode_batch(
             [row["paired_text"]], scope_id=row["scope_id"], principal_id=args.principal_id,
-            generation=args.generation, authority_epoch=args.authority_epoch, intent="document")
+            generation=args.generation, authority_epoch=args.authority_epoch, intent=text_intent)
         text_ms = (time.perf_counter_ns() - start) / 1e6
         start = time.perf_counter_ns()
         mvec, _ = omni_stem.encode_batch(
             [path], scope_id=row["scope_id"], principal_id=args.principal_id,
-            generation=args.generation, authority_epoch=args.authority_epoch, intent="document")
+            generation=args.generation, authority_epoch=args.authority_epoch, intent=media_intent)
         media_ms = (time.perf_counter_ns() - start) / 1e6
         # Detect common stale-file races. This is not a filesystem-level
         # immutable CAS proof; host artifact ownership remains external.
@@ -184,7 +200,7 @@ def run(args):
             "text_wall_ms": text_ms, "media_wall_ms": media_ms,
             "rss_bytes": process.memory_info().rss,
         })
-    results = paired_ranking(observations)
+    results = paired_ranking(observations, direction=args.direction)
     by_modality = {}
     for modality in EXTENSIONS:
         vals = [row for row in results if row["modality"] == modality]
@@ -204,6 +220,8 @@ def run(args):
         "text_feature_manifest_digest": text_stem.manifest_digest,
         "omni_feature_manifest_digest": omni_stem.manifest_digest,
         "modality_loading": args.modality, "task_adapter": "retrieval",
+        "retrieval_direction": args.direction,
+        "text_embedding_intent": text_intent, "media_embedding_intent": media_intent,
         "embedding_dimensions": args.dimension,
         "data": audit, "results": results, "by_modality": by_modality,
         "environment": research_environment(),
@@ -230,6 +248,8 @@ def main():
     p.add_argument("--dimension", type=int, default=256)
     p.add_argument("--max-tokens", type=int, default=512)
     p.add_argument("--modality", choices=("vision", "audio", "omni"), default="omni")
+    p.add_argument("--direction", choices=("media-to-text", "text-to-media"),
+                   default="media-to-text")
     p.add_argument("--device", default="cpu")
     p.add_argument("--generation", type=int, default=1)
     p.add_argument("--authority-epoch", type=int, default=1)
