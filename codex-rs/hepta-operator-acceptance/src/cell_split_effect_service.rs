@@ -219,6 +219,19 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
             .read_committed(intent)
             .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
         if let Some(ref committed) = effect {
+            // The signed receipt must not outrun the real durable owner
+            // frontier. Check here for both Execute and ReadBack: a backend
+            // may have written a payload but lost the authoritative commit
+            // before acknowledgement.
+            let durable_sequence = self
+                .backend
+                .current_sequence()
+                .map_err(|error| CellSplitEffectRpcErrorV1::Rejected(error.to_string()))?;
+            if durable_sequence == 0 || committed.owner_sequence > durable_sequence {
+                return Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "committed effect exceeds durable owner frontier",
+                ));
+            }
             if committed.owner_sequence == 0
                 || committed.owner_receipt_bytes.is_empty()
                 || committed.owner_receipt_bytes.len() > 32 * 1024
