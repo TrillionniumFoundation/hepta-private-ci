@@ -190,6 +190,24 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
             return Err(CellSplitSupervisorMinimumErrorV1::Invalid);
         }
         let root = secure_root(root, "independent Supervisor minimum store")?;
+        // The lock file is a persistent first-open continuity marker.
+        // Losing either half of an initialized source must never let a
+        // restarted caller silently create a replacement trusted minimum.
+        let had_lock = match fs::symlink_metadata(
+            root.join(crate::durable::SIDECAR_LOCK_FILE),
+        ) {
+            Ok(_) => true,
+            Err(error) if error.kind() == ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
+        let had_record = match fs::symlink_metadata(root.join(STORE_FILE)) {
+            Ok(_) => true,
+            Err(error) if error.kind() == ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
+        if had_lock != had_record {
+            return Err(CellSplitSupervisorMinimumErrorV1::Invalid);
+        }
         let lock = if existing_only {
             lock_existing_sidecar(&root)?
         } else {
