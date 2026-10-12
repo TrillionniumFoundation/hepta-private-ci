@@ -22,8 +22,10 @@ def fixture():
     ready = dict(
         schema="hepta.source-knowledge.snapshot.v1",
         writer_source="a" * 40,
-        base_identity="reader", reader_profile="profile",
-        task_payload_consumed=False, production_accepted=False,
+        base_identity="reader",
+        reader_profile="profile",
+        task_payload_consumed=False,
+        production_accepted=False,
         training=dict(
             schedule_sha256="schedule-digest",
             write_schedule=dict(visits_per_example=[2, 0, 0]),
@@ -36,26 +38,42 @@ def fixture():
     )
     plan = dict(
         schema="hepta.source-recall.probe-plan.v1",
-        writer_source="a" * 40, probe_source="b" * 40,
-        reader_identity="reader", reader_profile="profile",
+        writer_source="a" * 40,
+        probe_source="b" * 40,
+        reader_identity="reader",
+        reader_profile="profile",
         snapshot_sha256="a" * 64,
         question_mode="training",
         in_sample_training_recall=True,
-        training_exposure_verified=True, training_schedule_sha256="schedule-digest",
-        source_questions=[q0], source_training_question_ids=["q0"],
+        training_exposure_verified=True,
+        training_schedule_sha256="schedule-digest",
+        source_questions=[q0],
+        source_training_question_ids=["q0"],
         source_example_optimizer_visits=[2],
     )
-    raw = [dict(
-        question_id="q0", arm=arm, scope="scope-a", status="succeeded",
-        answer="I do not have enough evidence." if arm == "base" else "site_33333333",
-        source_training_question_id="q0", source_example_optimizer_visits=2,
-        result_is_in_sample_training_recall=True,
-        delivered_evidence=[],
-    ) for arm in ("base", "memory")]
+    raw = [
+        dict(
+            question_id="q0",
+            arm=arm,
+            scope="scope-a",
+            status="succeeded",
+            answer="I do not have enough evidence."
+            if arm == "base"
+            else "site_33333333",
+            source_training_question_id="q0",
+            source_example_optimizer_visits=2,
+            result_is_in_sample_training_recall=True,
+            delivered_evidence=[],
+        )
+        for arm in ("base", "memory")
+    ]
     report = dict(
         schema="hepta.source-recall.diagnostic.v1",
-        writer_source="a" * 40, generating_commit="b" * 40,
-        model_calls=2, snapshot_sha256="a" * 64, training_exposure_verified=True,
+        writer_source="a" * 40,
+        generating_commit="b" * 40,
+        model_calls=2,
+        snapshot_sha256="a" * 64,
+        training_exposure_verified=True,
         training_schedule_sha256="schedule-digest",
         arms={arm: dict(exact_targets=0, failed=0) for arm in ("base", "memory")},
     )
@@ -67,9 +85,12 @@ class SourceValueBindingTests(unittest.TestCase):
         ready, plan, raw, report = fixture()
         result = audit(ready, plan, raw, report)
         self.assertEqual(result["arms"]["base"]["counts"], {"explicit_refusal": 1})
-        self.assertEqual(result["arms"]["memory"]["counts"], {
-            "fabricated_identifier_not_in_any_source_target": 1,
-        })
+        self.assertEqual(
+            result["arms"]["memory"]["counts"],
+            {
+                "fabricated_identifier_not_in_any_source_target": 1,
+            },
+        )
         self.assertFalse(result["production_accepted"])
         self.assertIsNone(result["semantic_citation_precision"])
 
@@ -91,25 +112,34 @@ class SourceValueBindingTests(unittest.TestCase):
             audit(ready, plan, raw, report)
         report["arms"]["memory"]["exact_targets"] = 1
         result = audit(ready, plan, raw, report)
-        self.assertEqual(result["arms"]["memory"]["counts"], {
-            "exact_source_target": 1,
-        })
+        self.assertEqual(
+            result["arms"]["memory"]["counts"],
+            {
+                "exact_source_target": 1,
+            },
+        )
 
     def test_citation_cannot_be_invented_for_empty_context(self):
         ready, plan, raw, report = fixture()
         raw[1]["answer"] += " [E1]"
-        self.assertEqual(audit(ready, plan, raw, report)["arms"]["memory"]["counts"], {
-            "unbacked_citation_in_empty_context": 1,
-        })
+        self.assertEqual(
+            audit(ready, plan, raw, report)["arms"]["memory"]["counts"],
+            {
+                "unbacked_citation_in_empty_context": 1,
+            },
+        )
 
     def test_failures_are_not_deleted_or_turned_into_refusals(self):
         ready, plan, raw, report = fixture()
         raw[1].pop("answer")
         raw[1]["status"] = "failed"
         report["arms"]["memory"]["failed"] = 1
-        self.assertEqual(audit(ready, plan, raw, report)["arms"]["memory"]["counts"], {
-            "execution_failed": 1,
-        })
+        self.assertEqual(
+            audit(ready, plan, raw, report)["arms"]["memory"]["counts"],
+            {
+                "execution_failed": 1,
+            },
+        )
         report["arms"]["memory"]["failed"] = 0
         with self.assertRaises(ValueError):
             audit(ready, plan, raw, report)
@@ -166,9 +196,12 @@ class SourceValueBindingTests(unittest.TestCase):
             (base / "source-recall/report.json").write_text(json.dumps(report))
             output = base / "binding.json"
             result = inspect(base, output, auditor_commit="c" * 40)
-            self.assertEqual(result["arms"]["memory"]["counts"], {
-                "fabricated_identifier_not_in_any_source_target": 1,
-            })
+            self.assertEqual(
+                result["arms"]["memory"]["counts"],
+                {
+                    "fabricated_identifier_not_in_any_source_target": 1,
+                },
+            )
             with self.assertRaises(ValueError):
                 inspect(base, output, auditor_commit="c" * 40)
             original_path.write_text(

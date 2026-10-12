@@ -122,8 +122,7 @@ def audit(ready, plan, original, published):
     ):
         raise ValueError("original optimizer visits missing")
     by_q_visits = {
-        row["query"]["identity"]: planned[i]
-        for i, row in enumerate(supervision)
+        row["query"]["identity"]: planned[i] for i, row in enumerate(supervision)
     }
     question_ids = [q["identity"] for q in questions]
     if (
@@ -229,9 +228,7 @@ def inspect(root, output, *, auditor_commit):
         raw = load(path)
         original[key] = (
             raw,
-            [parse(x) for x in raw.splitlines()]
-            if key == "original"
-            else parse(raw),
+            [parse(x) for x in raw.splitlines()] if key == "original" else parse(raw),
         )
     ready_raw, ready = original["ready"]
     plan_raw, plan = original["plan"]
