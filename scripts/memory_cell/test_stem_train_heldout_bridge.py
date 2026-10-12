@@ -188,7 +188,9 @@ class GeneralizationBridgeTests(unittest.TestCase):
         plan, learning, scored, targets = fixture()
         for row in scored:
             if (row["stage"], row["phase"], row["question_id"]) == (
-                48, "transfer", "transfer-0"
+                48,
+                "transfer",
+                "transfer-0",
             ):
                 row.pop("selected", None)
                 row.pop("pool_digest", None)

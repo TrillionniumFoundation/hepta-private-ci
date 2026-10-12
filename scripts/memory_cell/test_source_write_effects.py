@@ -28,7 +28,9 @@ def fixture():
                 reader_profile="profile",
                 knowledge_module_enabled=arm in ("knowledge", "parameter_only"),
                 input_ids_digest="empty" if empty else "same",
-                delivered_evidence=[] if empty else [dict(label="E1", excerpt="original")],
+                delivered_evidence=[]
+                if empty
+                else [dict(label="E1", excerpt="original")],
                 derived_evidence=[] if empty else [dict(original_id="source")],
                 input_tokens=3,
                 generated_tokens=1,
@@ -178,7 +180,6 @@ class SourceEffectTests(unittest.TestCase):
         self.assertEqual(item["changed_answers"], 2)
         self.assertEqual(item["wins"], 0)
 
-
     def test_saturated_organizer_has_zero_identifiable_task_success_headroom(self):
         raw, scored, cases = fixture()
         contrasts = effects(raw, scored, cases)["contrasts"]
@@ -192,14 +193,20 @@ class SourceEffectTests(unittest.TestCase):
     def test_unsupported_or_missing_citations_are_counted_not_repaired(self):
         raw, scored, cases = fixture()
         for records in (raw, scored):
-            next(row for row in records if row["arm"] == "parameter_only")["answer"] = "value [E1]"
-            next(row for row in records if row["arm"] == "knowledge")["answer"] = "value [E9]"
+            next(row for row in records if row["arm"] == "parameter_only")["answer"] = (
+                "value [E1]"
+            )
+            next(row for row in records if row["arm"] == "knowledge")["answer"] = (
+                "value [E9]"
+            )
         report = effects(raw, scored, cases)
         by_arm = report["structural_citations"]["by_arm"]
         self.assertEqual(by_arm["parameter_only"]["markers_without_any_sources"], 1)
         self.assertEqual(by_arm["knowledge"]["markers_without_delivered_labels"], 1)
         self.assertEqual(by_arm["organized"]["uncited_answers_with_sources"], 2)
-        self.assertIsNone(report["structural_citations"]["independently_adjudicated_precision"])
+        self.assertIsNone(
+            report["structural_citations"]["independently_adjudicated_precision"]
+        )
         self.assertFalse(report["production_accepted"])
         self.assertEqual(raw[0]["answer"], "value")
 

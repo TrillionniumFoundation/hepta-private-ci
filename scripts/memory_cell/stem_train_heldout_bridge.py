@@ -331,10 +331,14 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                 heldout_regressions = sum(
                     g["native_support_regressions"] for g in heldout
                 )
-                heldout_source_coverage_complete = all(
-                    g["source_compared"] == g["answerable_native_document_support_rows"]
-                    for g in heldout
-                ) and sum(g["source_compared"] for g in heldout) > 0
+                heldout_source_coverage_complete = (
+                    all(
+                        g["source_compared"]
+                        == g["answerable_native_document_support_rows"]
+                        for g in heldout
+                    )
+                    and sum(g["source_compared"] for g in heldout) > 0
+                )
                 reports[f"{stage}/{arm}/{cell}"] = dict(
                     head_trained_checkpoint_succeeded=observed,
                     within_head_train_mean_weak_loss_delta=(
@@ -355,8 +359,7 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                         g["source_compared"] for g in heldout
                     ),
                     heldout_answerable_source_planned=sum(
-                        g["answerable_native_document_support_rows"]
-                        for g in heldout
+                        g["answerable_native_document_support_rows"] for g in heldout
                     ),
                     heldout_test_transfer_native_support_net_gain=(
                         heldout_gains - heldout_regressions

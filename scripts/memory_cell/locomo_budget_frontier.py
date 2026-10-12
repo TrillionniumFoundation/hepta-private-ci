@@ -15,13 +15,16 @@ import re
 
 
 ARMS = tuple(
-    f"{name}_k{k}" for name in ("lexical", "recent", "fusion")
-    for k in (2, 4, 8)
+    f"{name}_k{k}" for name in ("lexical", "recent", "fusion") for k in (2, 4, 8)
 )
 SOURCE_COMMIT = "fcc24ad653700ad5f47f09350cf7815242dc5de8"
 PUBLISHED_REPORT_GIT_BLOB = "6b7592e000bf5e0569b47dc2bcce1ec5b5004717"
-ORIGINAL_DECISIONS_SHA256 = "0c80477394abadce7cfd192404ac2531c571e14a9dabdefb371633c1ae3aec89"
-REPLAY_JOURNAL_SHA256 = "d3c09d944f5bfc855056d109fa0cc379a9a2dc11a3e628556af0448f8be82197"
+ORIGINAL_DECISIONS_SHA256 = (
+    "0c80477394abadce7cfd192404ac2531c571e14a9dabdefb371633c1ae3aec89"
+)
+REPLAY_JOURNAL_SHA256 = (
+    "d3c09d944f5bfc855056d109fa0cc379a9a2dc11a3e628556af0448f8be82197"
+)
 SCHEMA = "hepta.memorycell.locomo-nine-arm-independent-evaluation.v1"
 
 
@@ -74,15 +77,17 @@ def _phase(rows, *, name, eligible, unknown, outside):
                 for k, v in families.items()
             )
             and sum(v["covered"] for v in families.values())
-                == row["full_annotated_support_covered"]
+            == row["full_annotated_support_covered"]
             and sum(v["eligible"] for v in families.values()) == eligible,
             "family proxy labels not bound to original coverage totals",
         )
         covered = row["full_annotated_support_covered"]
         lo, hi = row["missing_outcome_lower"], row["missing_outcome_upper"]
         _require(
-            type(lo) in (float, int) and type(hi) in (float, int)
-            and math.isfinite(lo) and math.isfinite(hi)
+            type(lo) in (float, int)
+            and type(hi) in (float, int)
+            and math.isfinite(lo)
+            and math.isfinite(hi)
             and math.isclose(lo, covered / 16, abs_tol=1e-12)
             and math.isclose(hi, (covered + unknown) / 16, abs_tol=1e-12),
             "all-planned missing-outcome bounds changed",
@@ -111,7 +116,7 @@ def audit_frontier(report):
         and report.get("selected_arm") == "lexical_k8"
         and report.get("models_generated") == 0
         and report.get("original_pinned_six_arm_decisions_sha256")
-            == ORIGINAL_DECISIONS_SHA256
+        == ORIGINAL_DECISIONS_SHA256
         and report.get("journal_sha256") == REPLAY_JOURNAL_SHA256
         and report.get("original_six_arm_replay_agrees") is True
         and report.get("independent_source_family_authentication") is False
@@ -119,18 +124,28 @@ def audit_frontier(report):
         and report.get("citation_entailment_precision") is None
         and report.get("production_accepted") is False
         and all(
-            isinstance(report.get(k), str)
-            and re.fullmatch(r"[0-9a-f]{64}", report[k])
-            for k in ("frozen_policy_sha256", "journal_sha256",
-                      "original_pinned_six_arm_decisions_sha256")
+            isinstance(report.get(k), str) and re.fullmatch(r"[0-9a-f]{64}", report[k])
+            for k in (
+                "frozen_policy_sha256",
+                "journal_sha256",
+                "original_pinned_six_arm_decisions_sha256",
+            )
         ),
         "unqualified or incorrect sealed nine-arm original source report",
     )
     selected = _phase(
-        report["selection"], name="selection", eligible=10, unknown=6, outside=1,
+        report["selection"],
+        name="selection",
+        eligible=10,
+        unknown=6,
+        outside=1,
     )
     evals = _phase(
-        report["evaluation"], name="evaluation", eligible=13, unknown=3, outside=0,
+        report["evaluation"],
+        name="evaluation",
+        eligible=13,
+        unknown=3,
+        outside=0,
     )
     # A descriptive post-hoc budget frontier is NOT a new selected arm.
     frontier = []
@@ -138,14 +153,16 @@ def audit_frontier(report):
     for arm in ARMS:
         x = evals[arm]
         dominators = sorted(
-            other for other in ARMS if other != arm
+            other
+            for other in ARMS
+            if other != arm
             and evals[other]["selected_source_bytes"] <= x["selected_source_bytes"]
             and evals[other]["annotated_full_source_support_covered"]
-                >= x["annotated_full_source_support_covered"]
+            >= x["annotated_full_source_support_covered"]
             and (
                 evals[other]["selected_source_bytes"] < x["selected_source_bytes"]
                 or evals[other]["annotated_full_source_support_covered"]
-                    > x["annotated_full_source_support_covered"]
+                > x["annotated_full_source_support_covered"]
             )
         )
         dominated_by[arm] = dominators
@@ -158,16 +175,22 @@ def audit_frontier(report):
     )
     delta_bytes = k8["selected_source_bytes"] - k4["selected_source_bytes"]
     _require(
-        delta_coverage >= 0 and delta_bytes > 0
+        delta_coverage >= 0
+        and delta_bytes > 0
         and selected["lexical_k8"]["annotated_full_source_support_covered"]
-            >= selected["lexical_k4"]["annotated_full_source_support_covered"],
+        >= selected["lexical_k4"]["annotated_full_source_support_covered"],
         "precommitted BM25 source-size controls inconsistent",
     )
     return dict(
         schema="hepta.memorycell.locomo-posthoc-source-budget-frontier.v1",
         original_report_sha256=hashlib.sha256(
-            json.dumps(report, sort_keys=True, separators=(",", ":"),
-                       ensure_ascii=False, allow_nan=False).encode()
+            json.dumps(
+                report,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            ).encode()
         ).hexdigest(),
         selected_policy_from_original_selection_cut=report["selected_arm"],
         selection=selected,
@@ -201,6 +224,7 @@ def main():
         raise ValueError("original result must be regular pinned local file")
     data = args.source.read_bytes()
     original_byte_sha256 = verified_original_report_bytes(data)
+
     def unique(pairs):
         o = {}
         for k, v in pairs:
@@ -208,8 +232,10 @@ def main():
                 raise ValueError("duplicate original JSON key")
             o[k] = v
         return o
+
     report = json.loads(
-        data, object_pairs_hook=unique,
+        data,
+        object_pairs_hook=unique,
         parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)),
     )
     output = audit_frontier(report)
@@ -218,13 +244,19 @@ def main():
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(output, stream, ensure_ascii=False, indent=2, allow_nan=False)
         stream.write("\n")
-    print(json.dumps({
-        "schema": output["schema"],
-        "frontier": output["posthoc_evaluation_pareto_frontier"],
-        "frozen_source_size_control":
-            output["preexisting_fixed_budget_comparison"],
-        "production_accepted": False,
-    }, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "schema": output["schema"],
+                "frontier": output["posthoc_evaluation_pareto_frontier"],
+                "frozen_source_size_control": output[
+                    "preexisting_fixed_budget_comparison"
+                ],
+                "production_accepted": False,
+            },
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":

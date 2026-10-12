@@ -181,12 +181,16 @@ def citation_structure(grouped):
                 continue
             sources = row["receipt"]["delivered_evidence"]
             labels = [s["label"] for s in sources]
-            if (
-                any(not isinstance(label, str) or not re.fullmatch(r"E[1-9][0-9]{0,5}", label) for label in labels)
-                or len(set(labels)) != len(labels)
-            ):
+            if any(
+                not isinstance(label, str)
+                or not re.fullmatch(r"E[1-9][0-9]{0,5}", label)
+                for label in labels
+            ) or len(set(labels)) != len(labels):
                 raise ValueError("invalid delivered citation labels")
-            emitted = [m.group()[1:-1].decode("ascii") for m in MARKER.finditer(row["answer"].encode())]
+            emitted = [
+                m.group()[1:-1].decode("ascii")
+                for m in MARKER.finditer(row["answer"].encode())
+            ]
             matched = sum(label in labels for label in emitted)
             stats["answers_with_delivered_sources"] += bool(sources)
             stats["uncited_answers_with_sources"] += bool(sources) and not emitted
@@ -240,7 +244,9 @@ def effects(raw, scored, cases):
                 ],
                 observed_win_without_loss=missing == 0 and wins > 0 and losses == 0,
                 observed_baseline_success_headroom=len(ids) - missing - baseline_good,
-                baseline_saturated_on_all_planned_pairs=(missing == 0 and baseline_good == len(ids)),
+                baseline_saturated_on_all_planned_pairs=(
+                    missing == 0 and baseline_good == len(ids)
+                ),
                 significance_established=False,
             )
     return dict(

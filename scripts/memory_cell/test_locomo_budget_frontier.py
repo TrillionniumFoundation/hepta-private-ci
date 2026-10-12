@@ -6,7 +6,9 @@ from pathlib import Path
 import unittest
 
 from locomo_budget_frontier import (
-    ARMS, audit_frontier, verified_original_report_bytes,
+    ARMS,
+    audit_frontier,
+    verified_original_report_bytes,
 )
 
 
@@ -22,8 +24,9 @@ class BudgetFrontierTests(unittest.TestCase):
         report = audit_frontier(original())
         self.assertEqual(len(report["evaluation"]), 9)
         self.assertEqual(set(report["evaluation"]), set(ARMS))
-        self.assertEqual(report["selected_policy_from_original_selection_cut"],
-                         "lexical_k8")
+        self.assertEqual(
+            report["selected_policy_from_original_selection_cut"], "lexical_k8"
+        )
         x = report["preexisting_fixed_budget_comparison"]
         self.assertEqual(x["net_annotated_support_coverage_difference"], 1)
         self.assertEqual(x["extra_delivered_utf8_source_bytes"], 8449)
@@ -35,22 +38,27 @@ class BudgetFrontierTests(unittest.TestCase):
         raw = PINNED.read_bytes()
         self.assertEqual(len(verified_original_report_bytes(raw)), 64)
         for modified in (raw + b" ", raw.replace(b"lexical_k8", b"lexical_k4", 1)):
-            with self.subTest(size=len(modified)), self.assertRaisesRegex(
-                ValueError, "blob pin drift"
+            with (
+                self.subTest(size=len(modified)),
+                self.assertRaisesRegex(ValueError, "blob pin drift"),
             ):
                 verified_original_report_bytes(modified)
 
     def test_posthoc_frontier_does_not_choose_a_new_policy(self):
         out = audit_frontier(original())
-        self.assertEqual(out["posthoc_evaluation_pareto_frontier"],
-                         ["lexical_k2", "lexical_k4", "lexical_k8", "fusion_k2"])
+        self.assertEqual(
+            out["posthoc_evaluation_pareto_frontier"],
+            ["lexical_k2", "lexical_k4", "lexical_k8", "fusion_k2"],
+        )
         self.assertTrue(out["dominated_by"]["fusion_k4"])
         self.assertTrue(out["dominated_by"]["fusion_k8"])
         self.assertTrue(out["dominated_by"]["recent_k8"])
-        self.assertEqual(out["evaluation"]["lexical_k4"]
-                         ["annotated_full_source_support_covered"], 8)
-        self.assertEqual(out["evaluation"]["lexical_k8"]
-                         ["annotated_full_source_support_covered"], 9)
+        self.assertEqual(
+            out["evaluation"]["lexical_k4"]["annotated_full_source_support_covered"], 8
+        )
+        self.assertEqual(
+            out["evaluation"]["lexical_k8"]["annotated_full_source_support_covered"], 9
+        )
         self.assertTrue(out["delivered_source_bytes_are_not_reader_input_tokens"])
         self.assertTrue(out["end_to_end_reader_p95_dollars_energy_not_measured"])
 
