@@ -410,6 +410,8 @@ fn scoped_stem_dispatches_through_loaded_driver_and_keeps_authority_denied() {
     assert!(!result.worker_receipt.receipt_digest.is_zero());
     assert!(!result.authority.grants_any());
     assert!(!result.worker_receipt.authority.grants_any());
+    assert_eq!(result.final_use_entry_evidence, None);
+    assert_eq!(validate_stem_final_use_entry_evidence_v1(&result), Err(Error::FinalUseDenied));
 }
 
 #[test]
@@ -800,6 +802,11 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
     let token = authority
         .claim(&signed, &expected)
         .expect("cryptographically verified one-use test token");
+    let token_witness_digest =
+        Digest32::from_array(token.witness_sha256());
+    let revocation_head_digest =
+        Digest32::from_array(token.claimed_revocation_head_sha256());
+    let revocation_revision = token.claimed_revocation_revision();
     let observed = worker
         .run_verified_stem_feature_receipt_v1(
             &authority,
@@ -819,6 +826,32 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
         codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded,
     );
     assert!(observed.final_use_binding_digest.is_some());
+    assert_eq!(validate_stem_final_use_entry_evidence_v1(&observed), Ok(()));
+    let evidence = observed
+        .final_use_entry_evidence
+        .as_ref()
+        .expect("real consumed final-use token witness");
+    assert_eq!(evidence.claimed_authority_epoch, 2);
+    assert_eq!(evidence.claimed_revocation_revision, revocation_revision);
+    assert_eq!(evidence.claimed_revocation_head_digest, revocation_head_digest);
+    assert_eq!(evidence.verified_token_witness_digest, token_witness_digest);
+    assert_eq!(evidence.worker_receipt_digest, observed.worker_receipt.receipt_digest);
+    assert_eq!(Some(evidence.final_use_binding_digest), observed.final_use_binding_digest);
+    assert!(!evidence.linked_evidence_digest.is_zero());
+    let mut tampered = observed.clone();
+    tampered.worker_receipt.receipt_digest =
+        Digest32::of_bytes(b"forged Worker receipt");
+    assert_eq!(validate_stem_final_use_entry_evidence_v1(&tampered), Err(Error::FinalUseDenied));
+    let mut tampered = observed.clone();
+    tampered
+        .final_use_entry_evidence
+        .as_mut()
+        .expect("evidence")
+        .claimed_revocation_revision += 1;
+    assert_eq!(validate_stem_final_use_entry_evidence_v1(&tampered), Err(Error::FinalUseDenied));
+    let mut tampered = observed.clone();
+    tampered.stem_feature_ref_digest = Digest32::of_bytes(b"another scope");
+    assert_eq!(validate_stem_final_use_entry_evidence_v1(&tampered), Err(Error::FinalUseDenied));
     assert!(!observed.worker_receipt.receipt_digest.is_zero());
     assert!(!observed.authority.grants_any());
     assert!(!observed.worker_receipt.authority.grants_any());
