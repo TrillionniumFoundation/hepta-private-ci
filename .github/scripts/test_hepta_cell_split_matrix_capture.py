@@ -136,7 +136,9 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
             # source-only unit test; they never authorize production.
             data = {"measurement": observed(packet)}
             with (
-                patch("hepta_cell_split_matrix_capture.verify_exact_source") as source_check,
+                patch(
+                    "hepta_cell_split_matrix_capture.verify_exact_source"
+                ) as source_check,
                 patch.dict(os.environ, {"HEPTA_TEST_PACKET": json.dumps(data)}),
             ):
                 result = execute_matrix(packet, ROOT, output, 30)
@@ -153,7 +155,6 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
                 self.assertRaises(FileExistsError),
             ):
                 execute_matrix(packet, ROOT, output, 30)
-
 
     @unittest.skipUnless(shutil.which("git"), "git is required")
     def test_workload_mutating_tracked_source_aborts_before_second_run(self):
