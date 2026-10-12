@@ -214,6 +214,53 @@ class BatchTests(unittest.TestCase):
         engine.run([req(3, "alpha")])
         self.assertEqual(len(backend.calls), 3)
 
+    def test_cache_hit_evicted_by_same_batch_miss_remains_valid(self):
+        # One entry fits, but inserting a new miss necessarily evicts the
+        # already-hit feature before the batch assembles its receipts. The
+        # immutable hit must remain readable for this invocation only.
+        from cache_accounting import estimated_python_cache_entry_bytes
+
+        for repeated_hits in (1, 2):
+            with self.subTest(repeated_hits=repeated_hits):
+                backend = FakeBackend(width=8)
+                old = req(1, "cached-alpha")
+                new = req(2, "uncached-beta")
+                old_feature = FrozenFeature.from_values(
+                    [len(old.text) / 100.0] * 8, 2, "mean")
+                new_feature = FrozenFeature.from_values(
+                    [len(new.text) / 100.0] * 8, 2, "mean")
+                limit = max(
+                    estimated_python_cache_entry_bytes(
+                        old.cache_key(), old_feature, old_feature.values),
+                    estimated_python_cache_entry_bytes(
+                        new.cache_key(), new_feature, new_feature.values),
+                )
+                engine = SharedStemEngine(backend, max_cache_bytes=limit)
+                engine.run([old])
+                self.assertIsNotNone(engine.cache.get(old.cache_key()))
+
+                joined = [req(3, "cached-alpha"), new]
+                if repeated_hits == 2:
+                    joined.append(req(4, "cached-alpha"))
+                observed, features = engine.run(joined, return_features=True)
+                self.assertEqual(observed.cache_hits, repeated_hits)
+                self.assertEqual(observed.distinct_inputs, 1)
+                self.assertEqual(observed.backend_batch_widths, (1,))
+                self.assertEqual(len(backend.calls), 2)
+                self.assertEqual(len(features), len(joined))
+                self.assertEqual(features[0].feature_digest, old_feature.feature_digest)
+                self.assertEqual(features[1].feature_digest, new_feature.feature_digest)
+                if repeated_hits == 2:
+                    self.assertEqual(features[2].feature_digest, old_feature.feature_digest)
+                # Capacity is real: the hit survives only in this invocation's
+                # immutable ref, not as an unbounded resurrected cache entry.
+                self.assertIsNone(engine.cache.get(old.cache_key()))
+                self.assertLessEqual(engine.cache.size_bytes, limit)
+                self.assertEqual(
+                    [r.feature_digest for r in observed.receipts],
+                    [f.feature_digest for f in features],
+                )
+
     def test_large_vector_is_never_silently_represented_as_native_512(self):
         backend = FakeBackend(width=768)
         engine = SharedStemEngine(backend)
