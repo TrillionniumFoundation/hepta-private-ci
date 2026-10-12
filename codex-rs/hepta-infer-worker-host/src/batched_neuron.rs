@@ -442,8 +442,9 @@ pub struct ProductionNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureDriv
 #[derive(Debug)]
 pub struct ProductionBatchPollV1 {
     pub poll: BatchWorkerPollV1,
-    /// True only after the configured Evidence sink acknowledged a flush.
-    pub metrics_durable: bool,
+    /// True only after the configured sink acknowledged flush. The host must
+    /// independently ensure the sink is the durable Evidence implementation.
+    pub metrics_flush_acknowledged: bool,
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> ProductionNeuronMicrobatchWorkerV1<D> {
@@ -496,10 +497,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> ProductionNeuronMicrobatchWorkerV1<D>
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
         let poll = self.inner.poll_and_execute(now_ms)?;
-        let metrics_durable = self.inner.flush_production_metrics();
+        let metrics_flush_acknowledged = self.inner.flush_production_metrics();
         Ok(ProductionBatchPollV1 {
             poll,
-            metrics_durable,
+            metrics_flush_acknowledged,
         })
     }
 
