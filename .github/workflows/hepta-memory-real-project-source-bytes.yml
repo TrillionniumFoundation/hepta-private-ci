@@ -7,6 +7,8 @@ on:
       - scripts/memory_cell/project_pr_source_materialize.py
       - scripts/memory_cell/test_project_pr_source_materialize.py
       - scripts/memory_cell/project_pr_review_packet.py
+      - scripts/memory_cell/project_pr_parent_context.py
+      - scripts/memory_cell/test_project_pr_parent_context.py
       - scripts/memory_cell/test_project_pr_review_packet.py
       - scripts/memory_cell/project_pr_source_precommit.py
       - scripts/memory_cell/data/real-project-pr-source-cut-20261012.json
@@ -33,6 +35,8 @@ jobs:
           python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_source_precommit.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/precommit-tests.log
           python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_review_packet.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/packet-tests.log
           python3 -m py_compile scripts/memory_cell/project_pr_source_materialize.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_parent_context.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/parent-tests.log
+          python3 -m py_compile scripts/memory_cell/project_pr_parent_context.py
       - name: Check exact new source formatting, not a bypass of repository gates
         run: |
           set -euo pipefail
@@ -75,6 +79,27 @@ jobs:
             /tmp/hepta-project-source-bytes/unsigned-review-packet.json \
             --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
             2>&1 | tee /tmp/hepta-project-source-bytes/packet.log
+      - name: Obtain separately bounded, SHA-pinned first-parent code context
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_parent_context.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/first-parent \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            2>&1 | tee /tmp/hepta-project-source-bytes/parent-collect.log
+          test -f /tmp/hepta-project-source-bytes/first-parent/READY.json
+      - name: Independently reopen all first-parent bytes and unresolved cases
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_parent_context.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/first-parent \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            --reopen-only 2>&1 | tee /tmp/hepta-project-source-bytes/parent-reopen.log
       - name: Seal tested source and byte-level receipts
         if: always()
         run: |
@@ -84,6 +109,8 @@ jobs:
              scripts/memory_cell/test_project_pr_source_materialize.py \
              scripts/memory_cell/project_pr_review_packet.py \
              scripts/memory_cell/test_project_pr_review_packet.py \
+             scripts/memory_cell/project_pr_parent_context.py \
+             scripts/memory_cell/test_project_pr_parent_context.py \
              /tmp/hepta-project-source-bytes/research-source/
           git rev-parse HEAD > /tmp/hepta-project-source-bytes/tested-commit.txt
           (cd /tmp/hepta-project-source-bytes && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
