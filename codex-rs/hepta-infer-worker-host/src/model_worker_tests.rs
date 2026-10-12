@@ -1128,6 +1128,37 @@ fn feature_transient_exceeding_generation_memory_budget_seals_single_request() {
 }
 
 #[test]
+fn single_feature_never_uses_driver_underreported_residency_to_hide_scratch_peak() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.feature-resident-floor".to_string(),
+        3,
+        grant(),
+        Driver {
+            reported_memory_bytes: 3_072,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("3 KiB loaded model");
+
+    // The driver's feature observation claims only 1 KiB resident but also
+    // allocates 2 KiB scratch. The loader already observed 3 KiB resident,
+    // so 3 + 2 KiB exceeds the generation's 4 KiB grant.
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(worker.driver.feature_run_calls, 1);
+    assert!(worker.requires_external_recovery());
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert_eq!(worker.driver.feature_run_calls, 1);
+}
+
+#[test]
 fn feature_transient_plus_other_loaded_model_cannot_exceed_global_grant() {
     let mut resource_grant = grant();
     resource_grant.maximum_memory_bytes = 3_600;
