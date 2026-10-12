@@ -26,10 +26,10 @@ use thiserror::Error;
 use crate::CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1;
 use crate::CellSplitSupervisorMonotonicFrontierPortV1;
 use crate::CellSplitSupervisorMonotonicFrontierV1;
-use crate::cell_split_supervisor_monotonic_frontier_signing_payload_v1;
 use crate::cell_split_effect_rpc::CellSplitEffectRpcErrorV1;
 use crate::cell_split_effect_rpc::receive_frame_with_deadline;
 use crate::cell_split_effect_rpc::send_frame_with_deadline;
+use crate::cell_split_supervisor_monotonic_frontier_signing_payload_v1;
 
 pub const CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1: &str =
     "hepta.learning.cell-split.monotonic-frontier-rpc.v1";
@@ -123,7 +123,10 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
         }
         // A socket symlink can be swapped after validation; the independent
         // pinned signature must still be verified against the exact challenge.
-        if !fs::symlink_metadata(&self.socket_path)?.file_type().is_socket() {
+        if !fs::symlink_metadata(&self.socket_path)?
+            .file_type()
+            .is_socket()
+        {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
         let mut connection = UnixStream::connect(&self.socket_path)?;
@@ -136,9 +139,7 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
         send_frame_with_deadline(&mut connection, &request, self.timeout)?;
         let response: CellSplitMonotonicRpcResponseV1 =
             receive_frame_with_deadline(&mut connection, self.timeout)?;
-        if response.schema != CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1
-            || response.method != READ_METHOD
-        {
+        if response.schema != CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1 || response.method != READ_METHOD {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
         if let Some(reason) = response.error {
@@ -147,7 +148,9 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
             }
             return Err(CellSplitMonotonicRpcErrorV1::Denied(reason));
         }
-        let proof = response.proof.ok_or(CellSplitMonotonicRpcErrorV1::Invalid)?;
+        let proof = response
+            .proof
+            .ok_or(CellSplitMonotonicRpcErrorV1::Invalid)?;
         if proof.schema != CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1
             || proof.journal_domain_id != journal_domain_id
             || proof.challenge_nonce != challenge_nonce
@@ -191,7 +194,6 @@ fn canonical_digest(value: &str) -> bool {
             .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
         && value.bytes().any(|byte| byte != b'0')
 }
-
 
 /// A typed high-water observation from the independently administered domain
 /// registry. Unlike a proposed revision, this is an observation fetched by
@@ -248,7 +250,11 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
-        Ok(Self { source, signer, timeout })
+        Ok(Self {
+            source,
+            signer,
+            timeout,
+        })
     }
 
     /// Authenticate one request against a *currently durable* remote-domain
@@ -317,7 +323,9 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         &mut self,
         domain: &str,
     ) -> Result<CellSplitMonotonicDurableFrontierV1, CellSplitMonotonicRpcErrorV1> {
-        let current = self.source.read_committed_domain(domain)
+        let current = self
+            .source
+            .read_committed_domain(domain)
             .map_err(|error| CellSplitMonotonicRpcErrorV1::Denied(error.to_string()))?;
         if current.journal_domain_id != domain
             || current.journal_authority_epoch == 0
@@ -325,7 +333,9 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
             || current.durable_source_sequence == 0
             || !canonical_digest(&current.minimum_checkpoint_digest)
             || !canonical_digest(&current.original_store_record_digest)
-            || !self.source.verify_still_current(&current)
+            || !self
+                .source
+                .verify_still_current(&current)
                 .map_err(|error| CellSplitMonotonicRpcErrorV1::Denied(error.to_string()))?
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);

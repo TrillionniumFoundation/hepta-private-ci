@@ -59,7 +59,9 @@ pub trait CellSplitCasFinalUsePortV1 {
 pub enum CellSplitArtifactCasErrorV1 {
     #[error("artifact CAS frozen binding, operation, or state mismatch")]
     Invalid,
-    #[error("artifact CAS contains an object without its original committed receipt; reconcile before retry")]
+    #[error(
+        "artifact CAS contains an object without its original committed receipt; reconcile before retry"
+    )]
     Ambiguous,
     #[error("artifact CAS final-use authority rejected effect: {0}")]
     Denied(String),
@@ -116,7 +118,9 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
     ) -> Result<Self, CellSplitArtifactCasErrorV1> {
         // Require the coordinator's complete frozen-plan contract even when
         // this effect owner is opened independently of Agentd.
-        let plan_digest = plan.digest().map_err(|_| CellSplitArtifactCasErrorV1::Invalid)?;
+        let plan_digest = plan
+            .digest()
+            .map_err(|_| CellSplitArtifactCasErrorV1::Invalid)?;
         let root = secure_root(root, "artifact CAS owner root")?;
         // The lock inode survives crashes and owner restarts. Once it exists,
         // losing the durable frontier is an unknown/rolled-back owner history,
@@ -420,9 +424,11 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1
         self.authority
             .verify_current_authority(&self.plan, intent)
             .map_err(|e| CellSplitArtifactCasErrorV1::Denied(e.to_string()))?;
-        Ok(effect.owner_sequence == self.current_sequence_for_intent(intent)?
-            && record.object_bytes == self.object_size()?
-            && effect.owner_receipt_bytes == bytes)
+        Ok(
+            effect.owner_sequence == self.current_sequence_for_intent(intent)?
+                && record.object_bytes == self.object_size()?
+                && effect.owner_receipt_bytes == bytes,
+        )
     }
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {

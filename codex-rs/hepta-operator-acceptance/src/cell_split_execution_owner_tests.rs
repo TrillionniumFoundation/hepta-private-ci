@@ -527,11 +527,8 @@ fn post_open_future_frame_fences_first_effect_and_read_only_export() {
 
     // This frame arrived after open, without the earlier durable intent
     // required for a valid prefix. It must not be ignored on a live owner.
-    crate::durable::write_private_new(
-        &root.path().join("cell-split-02-prepared.json"),
-        b"{}",
-    )
-    .expect("inject private future frame");
+    crate::durable::write_private_new(&root.path().join("cell-split-02-prepared.json"), b"{}")
+        .expect("inject private future frame");
     assert!(matches!(
         owner.advance(),
         Err(CellSplitExecutionErrorV1::Invalid(
@@ -555,11 +552,8 @@ fn post_open_future_frame_fences_successor_after_valid_commit() {
     )
     .expect("open");
     owner.advance().expect("first committed effect");
-    crate::durable::write_private_new(
-        &root.path().join("cell-split-03-committed.json"),
-        b"{}",
-    )
-    .expect("inject future frame");
+    crate::durable::write_private_new(&root.path().join("cell-split-03-committed.json"), b"{}")
+        .expect("inject future frame");
     assert!(matches!(
         owner.advance(),
         Err(CellSplitExecutionErrorV1::Invalid(
@@ -740,8 +734,7 @@ fn rewritten_trust_pins_fence_live_dispatch_and_transcript() {
         FixturePort::new(state.clone()),
     )
     .expect("owner");
-    fs::write(root.path().join("cell-split-owner-trust-pins.json"), b"{}")
-        .expect("rewrite pins");
+    fs::write(root.path().join("cell-split-owner-trust-pins.json"), b"{}").expect("rewrite pins");
     assert!(matches!(
         owner.advance(),
         Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"))
@@ -947,8 +940,7 @@ fn missing_trust_pins_reject_recovery_after_effect_history() {
         .expect("owner");
         owner.advance().expect("first commit");
     }
-    fs::remove_file(root.path().join("cell-split-owner-trust-pins.json"))
-        .expect("remove pins");
+    fs::remove_file(root.path().join("cell-split-owner-trust-pins.json")).expect("remove pins");
     assert!(matches!(
         CellSplitExecutionOwnerV1::open(
             root.path(),
@@ -1010,20 +1002,21 @@ fn missing_trust_pins_cannot_be_hidden_by_dangling_prepared_symlink() {
         .expect("owner");
         assert_eq!(owner.completed_steps(), 0);
     }
-    fs::remove_file(root.path().join("cell-split-owner-trust-pins.json"))
-        .expect("remove pins");
+    fs::remove_file(root.path().join("cell-split-owner-trust-pins.json")).expect("remove pins");
     symlink(
         root.path().join("missing-intent"),
         root.path().join("cell-split-00-prepared.json"),
     )
     .expect("inject dangling prepared frame");
-    assert!(CellSplitExecutionOwnerV1::open(
-        root.path(),
-        plan(),
-        trust(),
-        FixturePort::new(state.clone()),
-    )
-    .is_err());
+    assert!(
+        CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .is_err()
+    );
     assert_eq!(state.borrow().executions, 0);
 }
 
@@ -1156,7 +1149,10 @@ fn original_writer_lock_must_not_be_recreated_around_frozen_or_committed_state()
         )
         .expect("original writer");
         for _ in 0..completed {
-            original.advance().expect("durable effect").expect("receipt");
+            original
+                .advance()
+                .expect("durable effect")
+                .expect("receipt");
         }
         let frozen = root.path().join("cell-split-frozen-plan.json");
         let pins = root.path().join("cell-split-owner-trust-pins.json");
@@ -1471,7 +1467,6 @@ fn independent_transcript_signature_verifier_rejects_mutations_without_live_effe
     assert_eq!(observed.borrow().executions, 4);
 }
 
-
 #[test]
 fn weak_effect_owner_public_key_fails_before_any_coordinator_io() {
     let mut keys = [0, 1, 2, 3].map(|index| signing_key(index).verifying_key());
@@ -1513,7 +1508,6 @@ fn invalid_frozen_plans_cannot_derive_a_trusted_effect_digest() {
     invalid.split_id.clear();
     assert!(invalid.digest().is_err());
 }
-
 
 #[test]
 fn unknown_step_frame_fences_owner_before_first_effect_and_after_open() {

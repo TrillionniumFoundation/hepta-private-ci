@@ -22,8 +22,8 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::durable::{
-    SidecarLock, canonical_json, lock_existing_sidecar, lock_sidecar,
-    secure_read, secure_root, sha256, write_private_new,
+    SidecarLock, canonical_json, lock_existing_sidecar, lock_sidecar, secure_read, secure_root,
+    sha256, write_private_new,
 };
 
 const SCHEMA: &str = "hepta.learning.cell-split.supervisor-minimum-online.v1";
@@ -193,9 +193,7 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
         // The lock file is a persistent first-open continuity marker.
         // Losing either half of an initialized source must never let a
         // restarted caller silently create a replacement trusted minimum.
-        let had_lock = match fs::symlink_metadata(
-            root.join(crate::durable::SIDECAR_LOCK_FILE),
-        ) {
+        let had_lock = match fs::symlink_metadata(root.join(crate::durable::SIDECAR_LOCK_FILE)) {
             Ok(_) => true,
             Err(error) if error.kind() == ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),
@@ -289,9 +287,7 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
 
     fn read_stored_bytes(&self) -> Result<Vec<u8>, CellSplitSupervisorMinimumErrorV1> {
         match secure_read(&self.root.join(STORE_FILE), MAX_RECORD_BYTES) {
-            Err(crate::AcceptanceError::Io(error))
-                if error.kind() == ErrorKind::NotFound =>
-            {
+            Err(crate::AcceptanceError::Io(error)) if error.kind() == ErrorKind::NotFound => {
                 Err(CellSplitSupervisorMinimumErrorV1::Missing)
             }
             result => result.map_err(Into::into),
@@ -346,7 +342,9 @@ impl CellSplitSupervisorMinimumOnlinePortV1 for CellSplitSupervisorMinimumFileSt
         };
         proof.signature_bytes = self
             .signer
-            .sign(&cell_split_supervisor_minimum_readback_signing_payload_v1(&proof)?)
+            .sign(&cell_split_supervisor_minimum_readback_signing_payload_v1(
+                &proof,
+            )?)
             .to_bytes()
             .to_vec();
         // The state may have changed even under an advisory single-writer
@@ -388,7 +386,9 @@ pub fn verify_cell_split_supervisor_minimum_online_v1(
 
 fn digest_shape(value: &str) -> bool {
     value.len() == 64
-        && value.bytes().all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
         && value.bytes().any(|b| b != b'0')
 }
 

@@ -212,9 +212,8 @@ impl CellSplitUnixEffectPortV1 {
         crate::cell_split_execution_owner::validate_receipt(intent, receipt).map_err(|_| {
             CellSplitEffectRpcErrorV1::Invalid("malformed original owner effect receipt")
         })?;
-        let signature = Signature::from_slice(&receipt.owner_signature_bytes).map_err(|_| {
-            CellSplitEffectRpcErrorV1::Invalid("malformed owner effect signature")
-        })?;
+        let signature = Signature::from_slice(&receipt.owner_signature_bytes)
+            .map_err(|_| CellSplitEffectRpcErrorV1::Invalid("malformed owner effect signature"))?;
         let payload = crate::cell_split_execution_signing_payload_v1(receipt).map_err(|_| {
             CellSplitEffectRpcErrorV1::Invalid("invalid owner effect signing payload")
         })?;
@@ -617,13 +616,9 @@ mod tests {
         let listener = UnixListener::bind(&cas_socket).expect("socket");
         let server = thread::spawn(move || {
             let (mut socket, _) = listener.accept().expect("accepted");
-            let request: CellSplitEffectRpcRequestV1 =
-                receive_frame(&mut socket).expect("request");
+            let request: CellSplitEffectRpcRequestV1 = receive_frame(&mut socket).expect("request");
             assert_eq!(request.action, CellSplitEffectRpcActionV1::Execute);
-            let forged = committed(
-                &request.intent,
-                &SigningKey::from_bytes(&[9_u8; 32]),
-            );
+            let forged = committed(&request.intent, &SigningKey::from_bytes(&[9_u8; 32]));
             send_frame(
                 &mut socket,
                 &CellSplitEffectRpcResponseV1 {
@@ -691,19 +686,20 @@ mod tests {
     #[test]
     fn rpc_port_rejects_weak_pinned_owner_key() {
         let root = tempfile::tempdir().expect("root");
-        let mut keys =
-            [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let mut keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
         let mut identity = [0_u8; 32];
         identity[0] = 1;
         let weak = VerifyingKey::from_bytes(&identity).expect("valid compressed identity");
         assert!(weak.is_weak());
         keys[2] = weak;
-        assert!(CellSplitUnixEffectPortV1::new(
-            [0, 1, 2, 3].map(|i| root.path().join(format!("{i}.sock"))),
-            keys,
-            Duration::from_secs(1),
-        )
-        .is_err());
+        assert!(
+            CellSplitUnixEffectPortV1::new(
+                [0, 1, 2, 3].map(|i| root.path().join(format!("{i}.sock"))),
+                keys,
+                Duration::from_secs(1),
+            )
+            .is_err()
+        );
     }
 
     #[test]

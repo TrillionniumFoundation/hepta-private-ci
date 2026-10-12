@@ -986,7 +986,10 @@ mod tests {
         bytes.extend_from_slice(b"{\"uncommitted\":");
         std::fs::write(&path, bytes).expect("external torn append");
         assert_eq!(
-            journal.advance(step(WriterHandoffPhaseV1::AdmissionStopped, "admission-stopped")),
+            journal.advance(step(
+                WriterHandoffPhaseV1::AdmissionStopped,
+                "admission-stopped"
+            )),
             Err(WriterHandoffErrorV1::Corrupt)
         );
     }

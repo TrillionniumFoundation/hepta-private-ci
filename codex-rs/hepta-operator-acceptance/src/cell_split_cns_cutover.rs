@@ -249,7 +249,9 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
     ) -> Result<Self, CellSplitCnsCutoverErrorV1> {
         // Require the coordinator's complete frozen-plan contract even when
         // this effect owner is opened independently of Agentd.
-        let plan_digest = plan.digest().map_err(|_| CellSplitCnsCutoverErrorV1::Invalid)?;
+        let plan_digest = plan
+            .digest()
+            .map_err(|_| CellSplitCnsCutoverErrorV1::Invalid)?;
         if binding.cns_id.is_empty()
             || binding.cns_id.len() > 256
             || !digest_shape(&plan.scope_digest)
@@ -271,9 +273,7 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
         // losing the frozen binding is an ambiguous interrupted lifecycle:
         // a fresh observation of the old route cannot prove that the caller
         // supplied the same plan and independent owner trust as before.
-        let initialized_before = match fs::symlink_metadata(
-            root.join(SIDECAR_LOCK_FILE),
-        ) {
+        let initialized_before = match fs::symlink_metadata(root.join(SIDECAR_LOCK_FILE)) {
             Ok(_) => true,
             Err(error) if error.kind() == ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),

@@ -263,7 +263,9 @@ impl SidecarLock {
             || !same_file_snapshot(&held, &at_path)
             || !same_file_snapshot(&held, &link)
         {
-            return Err(invalid("held sidecar lock no longer names the live lock path"));
+            return Err(invalid(
+                "held sidecar lock no longer names the live lock path",
+            ));
         }
         #[cfg(windows)]
         {
@@ -295,7 +297,9 @@ pub(crate) fn reject_recreated_sidecar_for_owner_history(
             .to_str()
             .ok_or_else(|| invalid("non-UTF8 entry in owner directory"))?;
         if owned_filenames.contains(&name)
-            || owned_prefixes.iter().any(|prefix| name.starts_with(*prefix))
+            || owned_prefixes
+                .iter()
+                .any(|prefix| name.starts_with(*prefix))
         {
             return Err(invalid(
                 "initialized durable owner lost its original sidecar writer lock",

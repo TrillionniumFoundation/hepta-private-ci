@@ -20,13 +20,12 @@ use thiserror::Error;
 use crate::CellSplitCnsRuntimeAttestationV1;
 #[cfg(unix)]
 use crate::CellSplitCnsRuntimeCommitV1;
-#[cfg(unix)]
-use crate::CellSplitSupervisorCommitV1;
 use crate::CellSplitExecutionPortV1;
-#[cfg(unix)]
-use crate::CellSplitUnixEffectPortV1;
 use crate::CellSplitExecutionTranscriptV1;
 use crate::CellSplitOwnerTrustV1;
+use crate::CellSplitSignedTargetHostEvidenceV1;
+#[cfg(unix)]
+use crate::CellSplitSupervisorCommitV1;
 #[cfg(unix)]
 use crate::CellSplitSupervisorMinimumOnlinePortV1;
 #[cfg(unix)]
@@ -37,17 +36,18 @@ use crate::CellSplitSupervisorMinimumSubjectV1;
 use crate::CellSplitSupervisorMonotonicFrontierPortV1;
 #[cfg(unix)]
 use crate::CellSplitSupervisorMonotonicFrontierV1;
-#[cfg(unix)]
-use crate::verify_cell_split_supervisor_monotonic_frontier_v1;
-#[cfg(unix)]
-use crate::verify_cell_split_supervisor_minimum_online_v1;
-use crate::CellSplitSignedTargetHostEvidenceV1;
 use crate::CellSplitTargetHostEventKindV1;
 use crate::CellSplitTargetHostEvidenceTrustPolicyV1;
 use crate::CellSplitTargetHostSignatureV1;
+#[cfg(unix)]
+use crate::CellSplitUnixEffectPortV1;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::verify_cell_split_execution_transcript_signatures_v1;
+#[cfg(unix)]
+use crate::verify_cell_split_supervisor_minimum_online_v1;
+#[cfg(unix)]
+use crate::verify_cell_split_supervisor_monotonic_frontier_v1;
 use crate::verify_cell_split_target_host_evidence;
 
 pub const CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1: &str =
@@ -171,12 +171,20 @@ pub fn cell_split_observer_join_payload_v1(
             "host and four-owner identities do not agree",
         ));
     }
-    let artifact_event = target.events.iter().find(|event| {
-        event.event_kind == CellSplitTargetHostEventKindV1::ArtifactLoaded
-    }).ok_or(CellSplitObserverJoinErrorV1::Invalid("missing artifact event"))?;
-    let route_event = target.events.iter().find(|event| {
-        event.event_kind == CellSplitTargetHostEventKindV1::RouteCutover
-    }).ok_or(CellSplitObserverJoinErrorV1::Invalid("missing cutover event"))?;
+    let artifact_event = target
+        .events
+        .iter()
+        .find(|event| event.event_kind == CellSplitTargetHostEventKindV1::ArtifactLoaded)
+        .ok_or(CellSplitObserverJoinErrorV1::Invalid(
+            "missing artifact event",
+        ))?;
+    let route_event = target
+        .events
+        .iter()
+        .find(|event| event.event_kind == CellSplitTargetHostEventKindV1::RouteCutover)
+        .ok_or(CellSplitObserverJoinErrorV1::Invalid(
+            "missing cutover event",
+        ))?;
 
     // A shared split ID and a correctly signed pair are insufficient: both
     // host lifecycle events must identify the exact independently signed
@@ -206,9 +214,9 @@ pub fn cell_split_observer_join_payload_v1(
         child_artifact_digest: plan.child_artifact_digest.clone(),
         ndu_snapshot_digest: plan.ndu_snapshot_digest.clone(),
         route_fence_digest: plan.route_fence_digest.clone(),
-        plan_digest: plan.digest().map_err(|_| {
-            CellSplitObserverJoinErrorV1::Invalid("invalid frozen execution plan")
-        })?,
+        plan_digest: plan
+            .digest()
+            .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("invalid frozen execution plan"))?,
         transcript_digest: transcript.transcript_digest.clone(),
         target_host_evidence_digest: target.evidence_digest.clone(),
         owner_receipt_digests: std::array::from_fn(|index| {
@@ -257,9 +265,9 @@ pub fn cell_split_supervisor_minimum_signing_payload_v1(
             "minimum checkpoint witness is not bound to the frozen host execution",
         ));
     }
-    let plan_digest = plan.digest().map_err(|_| {
-        CellSplitObserverJoinErrorV1::Invalid("invalid minimum checkpoint plan")
-    })?;
+    let plan_digest = plan
+        .digest()
+        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("invalid minimum checkpoint plan"))?;
     let mut payload = b"hepta.learning.cell-split.supervisor-minimum-observer.v1\0".to_vec();
     payload.extend_from_slice(&canonical_json(&(
         plan_digest,
@@ -283,7 +291,8 @@ fn verify_join_signature(
     message: &[u8],
 ) -> Result<(), CellSplitObserverJoinErrorV1> {
     if trusted_key.is_weak()
-        || BASE64.decode(&signature.verifying_key_base64)
+        || BASE64
+            .decode(&signature.verifying_key_base64)
             .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("unreadable signer key"))?
             != trusted_key.to_bytes().to_vec()
     {
@@ -291,11 +300,13 @@ fn verify_join_signature(
             "join signer is not independently trusted",
         ));
     }
-    let raw = BASE64.decode(&signature.signature_base64)
+    let raw = BASE64
+        .decode(&signature.signature_base64)
         .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("invalid join signature"))?;
     let signature = Signature::from_slice(&raw)
         .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("malformed join signature"))?;
-    trusted_key.verify_strict(message, &signature)
+    trusted_key
+        .verify_strict(message, &signature)
         .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("untrusted join signature"))
 }
 
@@ -324,7 +335,12 @@ pub fn verify_cell_split_observer_join_v1(
         ));
     }
     verify_cell_split_observer_join_with_port_v1(
-        join, transcript, owner_trust, evidence, evidence_policy, live_owners,
+        join,
+        transcript,
+        owner_trust,
+        evidence,
+        evidence_policy,
+        live_owners,
     )
 }
 
@@ -337,14 +353,19 @@ fn verify_cell_split_observer_join_static_v1(
     evidence: &CellSplitSignedTargetHostEvidenceV1,
     evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
 ) -> Result<(), CellSplitObserverJoinErrorV1> {
-    verify_cell_split_execution_transcript_signatures_v1(transcript, owner_trust)
-        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
-            "four original owner signatures or predecessor chain failed",
-        ))?;
-    let host_receipt = verify_cell_split_target_host_evidence(evidence, evidence_policy)
-        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
-            "target-host signatures, observer or lifecycle replay failed",
-        ))?;
+    verify_cell_split_execution_transcript_signatures_v1(transcript, owner_trust).map_err(
+        |_| {
+            CellSplitObserverJoinErrorV1::Invalid(
+                "four original owner signatures or predecessor chain failed",
+            )
+        },
+    )?;
+    let host_receipt =
+        verify_cell_split_target_host_evidence(evidence, evidence_policy).map_err(|_| {
+            CellSplitObserverJoinErrorV1::Invalid(
+                "target-host signatures, observer or lifecycle replay failed",
+            )
+        })?;
     if !host_receipt.production_gate_passed
         || join.schema != CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1
         || join.payload != cell_split_observer_join_payload_v1(transcript, evidence)?
@@ -355,14 +376,21 @@ fn verify_cell_split_observer_join_static_v1(
     }
     let host_id = &evidence.host_signature.signer_id;
     let observer_id = &join.observer_signature.signer_id;
-    let host_key = evidence_policy.host_keys.get(host_id)
-        .ok_or(CellSplitObserverJoinErrorV1::Invalid("host trust root missing"))?;
-    let observer_key = evidence_policy.observer_keys.get(observer_id)
-        .ok_or(CellSplitObserverJoinErrorV1::Invalid("observer trust root missing"))?;
+    let host_key =
+        evidence_policy
+            .host_keys
+            .get(host_id)
+            .ok_or(CellSplitObserverJoinErrorV1::Invalid(
+                "host trust root missing",
+            ))?;
+    let observer_key = evidence_policy.observer_keys.get(observer_id).ok_or(
+        CellSplitObserverJoinErrorV1::Invalid("observer trust root missing"),
+    )?;
     if join.host_signature.signer_id != *host_id
-        || !evidence.observer_signatures.iter().any(|record| {
-            record.signer_id == *observer_id
-        })
+        || !evidence
+            .observer_signatures
+            .iter()
+            .any(|record| record.signer_id == *observer_id)
         || join.observer_signature.signer_id == *host_id
         || host_key == observer_key
         || owner_trust.contains_owner_key(host_key)
@@ -389,12 +417,17 @@ pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecution
     live_owners: &mut P,
 ) -> Result<CellSplitObserverJoinReceiptV1, CellSplitObserverJoinErrorV1> {
     verify_cell_split_observer_join_static_v1(
-        join, transcript, owner_trust, evidence, evidence_policy,
+        join,
+        transcript,
+        owner_trust,
+        evidence,
+        evidence_policy,
     )?;
     // Never accept a signed join to a former owner state. A real production
     // caller supplies the pinned Unix RPC owner port, not a mock.
     for receipt in &transcript.receipts {
-        live_owners.verify_committed(&receipt.intent, receipt)
+        live_owners
+            .verify_committed(&receipt.intent, receipt)
             .map_err(|e| CellSplitObserverJoinErrorV1::Owner(e.to_string()))?;
     }
     Ok(CellSplitObserverJoinReceiptV1 {
@@ -409,7 +442,6 @@ pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecution
         production_activation_authorized: false,
     })
 }
-
 
 /// Strict production-facing deep verifier. Unlike the historical detached
 /// minimum signature, this requires a *fresh*, challenge-bound observation
@@ -489,7 +521,11 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
     // The cold-path signature check runs before both online challenges;
     // original owner readbacks remain independent later in this function.
     verify_cell_split_observer_join_static_v1(
-        join, transcript, owner_trust, evidence, evidence_policy,
+        join,
+        transcript,
+        owner_trust,
+        evidence,
+        evidence_policy,
     )?;
     let cns_key = original_runtime_trust.cns_original_runtime_key;
     let supervisor_key = original_runtime_trust.supervisor_original_journal_key;
@@ -497,7 +533,10 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
         || trusted_minimum_store_key == cns_key
         || trusted_minimum_store_key == supervisor_key
         || owner_trust.contains_owner_key(trusted_minimum_store_key)
-        || evidence_policy.host_keys.values().any(|key| key == trusted_minimum_store_key)
+        || evidence_policy
+            .host_keys
+            .values()
+            .any(|key| key == trusted_minimum_store_key)
         || evidence_policy
             .observer_keys
             .values()
@@ -525,25 +564,25 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
             "monotonic frontier signer is not independent from the minimum and effect owners",
         ));
     }
-    let journal: CellSplitSupervisorCommitV1 = serde_json::from_slice(
-        &transcript.receipts[3].owner_receipt_bytes,
-    )?;
+    let journal: CellSplitSupervisorCommitV1 =
+        serde_json::from_slice(&transcript.receipts[3].owner_receipt_bytes)?;
     let plan = &transcript.plan;
     let subject = CellSplitSupervisorMinimumSubjectV1 {
         split_id: plan.split_id.clone(),
         target_host_id: evidence.payload.target_host_id.clone(),
         target_host_nonce: evidence.payload.target_host_nonce.clone(),
-        plan_digest: plan.digest().map_err(|_| {
-            CellSplitObserverJoinErrorV1::Invalid("invalid frozen split")
-        })?,
+        plan_digest: plan
+            .digest()
+            .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("invalid frozen split"))?,
         host_evidence_digest: evidence.payload.evidence_digest.clone(),
         journal_domain_id: journal.domain_id.clone(),
         journal_idempotency_key: journal.idempotency_key.clone(),
         journal_authority_epoch: journal.authority_epoch,
         journal_revision: journal.committed_revision,
         original_checkpoint_bytes_digest: sha256(&journal.original_checkpoint_bytes),
-        minimum_checkpoint_digest:
-            original_runtime_trust.supervisor_minimum_checkpoint_digest.to_owned(),
+        minimum_checkpoint_digest: original_runtime_trust
+            .supervisor_minimum_checkpoint_digest
+            .to_owned(),
     };
     let nonce = rand::random::<[u8; 32]>()
         .iter()
@@ -558,9 +597,11 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
         &proof,
         trusted_minimum_store_key,
     )
-    .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
-        "current independent minimum checkpoint readback invalid",
-    ))?;
+    .map_err(|_| {
+        CellSplitObserverJoinErrorV1::Invalid(
+            "current independent minimum checkpoint readback invalid",
+        )
+    })?;
     // A signed local minimum can be replayed after restoring its *entire*
     // directory. Consult a separate monotonic high-water source that is
     // queried by authoritative domain, never by caller-supplied revision.
@@ -578,9 +619,11 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
         &watermark,
         trusted_monotonic_frontier_key,
     )
-    .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
-        "current monotonic frontier rejects historical Supervisor checkpoint",
-    ))?;
+    .map_err(|_| {
+        CellSplitObserverJoinErrorV1::Invalid(
+            "current monotonic frontier rejects historical Supervisor checkpoint",
+        )
+    })?;
     let mut receipt = verify_cell_split_observer_join_deep_with_port_v1(
         join,
         transcript,
@@ -607,9 +650,11 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
         &final_proof,
         trusted_minimum_store_key,
     )
-    .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
-        "final independent minimum checkpoint readback invalid",
-    ))?;
+    .map_err(|_| {
+        CellSplitObserverJoinErrorV1::Invalid(
+            "final independent minimum checkpoint readback invalid",
+        )
+    })?;
     if final_proof.original_store_record_digest != proof.original_store_record_digest {
         return Err(CellSplitObserverJoinErrorV1::Invalid(
             "independent minimum frontier changed during four-owner readback",
@@ -632,9 +677,11 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
         &final_watermark,
         trusted_monotonic_frontier_key,
     )
-    .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
-        "final monotonic frontier rejects Supervisor checkpoint",
-    ))?;
+    .map_err(|_| {
+        CellSplitObserverJoinErrorV1::Invalid(
+            "final monotonic frontier rejects Supervisor checkpoint",
+        )
+    })?;
     if final_watermark.journal_revision != watermark.journal_revision
         || final_watermark.minimum_checkpoint_digest != watermark.minimum_checkpoint_digest
         || final_watermark.original_store_record_digest != watermark.original_store_record_digest
@@ -644,14 +691,9 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
             "monotonic frontier changed during four-owner readback",
         ));
     }
-    receipt.live_minimum_readback_digest = Some(sha256(&canonical_json(&(
-        proof,
-        final_proof,
-    ))?));
-    receipt.live_monotonic_frontier_digest = Some(sha256(&canonical_json(&(
-        watermark,
-        final_watermark,
-    ))?));
+    receipt.live_minimum_readback_digest = Some(sha256(&canonical_json(&(proof, final_proof))?));
+    receipt.live_monotonic_frontier_digest =
+        Some(sha256(&canonical_json(&(watermark, final_watermark))?));
     Ok(receipt)
 }
 
@@ -710,14 +752,16 @@ fn verify_original_runtime_receipts_v1(
     evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
     runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
 ) -> Result<(String, String), CellSplitObserverJoinErrorV1> {
-    verify_cell_split_execution_transcript_signatures_v1(transcript, owner_trust)
-        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
-            "original owner transcript signature or lineage failed",
-        ))?;
-    verify_cell_split_target_host_evidence(evidence, evidence_policy)
-        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
-            "signed original host lifecycle failed verification",
-        ))?;
+    verify_cell_split_execution_transcript_signatures_v1(transcript, owner_trust).map_err(
+        |_| {
+            CellSplitObserverJoinErrorV1::Invalid(
+                "original owner transcript signature or lineage failed",
+            )
+        },
+    )?;
+    verify_cell_split_target_host_evidence(evidence, evidence_policy).map_err(|_| {
+        CellSplitObserverJoinErrorV1::Invalid("signed original host lifecycle failed verification")
+    })?;
     let cns_key = runtime_trust.cns_original_runtime_key;
     let supervisor_key = runtime_trust.supervisor_original_journal_key;
     if cns_key.is_weak()
@@ -725,8 +769,14 @@ fn verify_original_runtime_receipts_v1(
         || cns_key == supervisor_key
         || owner_trust.contains_owner_key(cns_key)
         || owner_trust.contains_owner_key(supervisor_key)
-        || evidence_policy.host_keys.values().any(|key| key == cns_key || key == supervisor_key)
-        || evidence_policy.observer_keys.values().any(|key| key == cns_key || key == supervisor_key)
+        || evidence_policy
+            .host_keys
+            .values()
+            .any(|key| key == cns_key || key == supervisor_key)
+        || evidence_policy
+            .observer_keys
+            .values()
+            .any(|key| key == cns_key || key == supervisor_key)
     {
         return Err(CellSplitObserverJoinErrorV1::Invalid(
             "original runtime keys are not independent from owners and Observer",
@@ -737,9 +787,14 @@ fn verify_original_runtime_receipts_v1(
     let original_cns: CellSplitCnsRuntimeCommitV1 =
         serde_json::from_slice(&cns.owner_receipt_bytes)?;
     let plan = &transcript.plan;
-    let host_route = evidence.payload.events.iter()
+    let host_route = evidence
+        .payload
+        .events
+        .iter()
         .find(|event| event.event_kind == CellSplitTargetHostEventKindV1::RouteCutover)
-        .ok_or(CellSplitObserverJoinErrorV1::Invalid("missing host cutover event"))?;
+        .ok_or(CellSplitObserverJoinErrorV1::Invalid(
+            "missing host cutover event",
+        ))?;
     if original_cns.idempotency_key != cns.intent.idempotency_key
         || original_cns.committed_sequence != cns.owner_sequence
         || original_cns.predecessor_route_digest != host_route.predecessor_digest
@@ -793,11 +848,7 @@ fn verify_original_runtime_receipts_v1(
         "independent original Supervisor journal signature is invalid",
     )?;
 
-    verify_original_supervisor_checkpoint_v1(
-        &journal.original_checkpoint_bytes,
-        &journal,
-        plan,
-    )?;
+    verify_original_supervisor_checkpoint_v1(&journal.original_checkpoint_bytes, &journal, plan)?;
     let original: OriginalSupervisorCheckpointV1 =
         serde_json::from_slice(&journal.original_checkpoint_bytes)?;
     if original.receipt_digest != runtime_trust.supervisor_minimum_checkpoint_digest {
@@ -818,13 +869,17 @@ fn verify_original_runtime_receipts_v1(
             "Supervisor minimum witness signer is not an independent Observer",
         ))?;
     if witness.signer_id == evidence.host_signature.signer_id
-        || !evidence.observer_signatures.iter().any(|signature| {
-            signature.signer_id == witness.signer_id
-        })
+        || !evidence
+            .observer_signatures
+            .iter()
+            .any(|signature| signature.signer_id == witness.signer_id)
         || owner_trust.contains_owner_key(observer_key)
         || observer_key == cns_key
         || observer_key == supervisor_key
-        || evidence_policy.host_keys.values().any(|key| key == observer_key)
+        || evidence_policy
+            .host_keys
+            .values()
+            .any(|key| key == observer_key)
     {
         return Err(CellSplitObserverJoinErrorV1::Invalid(
             "Supervisor minimum witness does not come from an independent Observer",
@@ -877,9 +932,11 @@ impl OriginalSupervisorCheckpointV1 {
     /// Domain and exact byte sequence from writer_handoff::checkpoint_digest.
     /// The owner stores ten ordered checkpoints, retiring at revision ten.
     pub(crate) fn content_digest_v1(&self) -> Result<String, CellSplitObserverJoinErrorV1> {
-        let malformed = || CellSplitObserverJoinErrorV1::Invalid(
-            "original Supervisor checkpoint has invalid digest encoding",
-        );
+        let malformed = || {
+            CellSplitObserverJoinErrorV1::Invalid(
+                "original Supervisor checkpoint has invalid digest encoding",
+            )
+        };
         let mut bytes = b"hepta.writer-handoff.checkpoint.v1".to_vec();
         for identity in [
             &self.operation_id,
@@ -922,11 +979,11 @@ impl OriginalSupervisorCheckpointV1 {
 }
 
 #[cfg(unix)]
-fn decode_supervisor_digest_v1(
-    value: &str,
-) -> Result<[u8; 32], CellSplitObserverJoinErrorV1> {
+fn decode_supervisor_digest_v1(value: &str) -> Result<[u8; 32], CellSplitObserverJoinErrorV1> {
     if value.len() != 64
-        || !value.bytes().all(|c| c.is_ascii_hexdigit() && !c.is_ascii_uppercase())
+        || !value
+            .bytes()
+            .all(|c| c.is_ascii_hexdigit() && !c.is_ascii_uppercase())
     {
         return Err(CellSplitObserverJoinErrorV1::Invalid(
             "original Supervisor checkpoint has invalid digest encoding",
@@ -934,10 +991,11 @@ fn decode_supervisor_digest_v1(
     }
     let mut bytes = [0_u8; 32];
     for (index, byte) in bytes.iter_mut().enumerate() {
-        *byte = u8::from_str_radix(&value[index * 2..index * 2 + 2], 16)
-            .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
+        *byte = u8::from_str_radix(&value[index * 2..index * 2 + 2], 16).map_err(|_| {
+            CellSplitObserverJoinErrorV1::Invalid(
                 "original Supervisor checkpoint has invalid digest encoding",
-            ))?;
+            )
+        })?;
     }
     if bytes == [0_u8; 32] {
         return Err(CellSplitObserverJoinErrorV1::Invalid(
@@ -1053,7 +1111,6 @@ mod authority_epoch_tests {
     }
 }
 
-
 #[cfg(all(test, unix))]
 mod original_checkpoint_integrity_tests {
     use super::*;
@@ -1069,8 +1126,10 @@ mod original_checkpoint_integrity_tests {
             ndu_snapshot_digest: "44".repeat(32),
             route_fence_digest: "55".repeat(32),
             owner_ids: [
-                "artifact".into(), "migration".into(),
-                "cns".into(), "supervisor".into(),
+                "artifact".into(),
+                "migration".into(),
+                "cns".into(),
+                "supervisor".into(),
             ],
         };
         let json = serde_json::json!({
@@ -1114,9 +1173,14 @@ mod original_checkpoint_integrity_tests {
     #[test]
     fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() {
         let (plan, journal) = fixture();
-        assert!(verify_original_supervisor_checkpoint_v1(
-            &journal.original_checkpoint_bytes, &journal, &plan,
-        ).is_ok());
+        assert!(
+            verify_original_supervisor_checkpoint_v1(
+                &journal.original_checkpoint_bytes,
+                &journal,
+                &plan,
+            )
+            .is_ok()
+        );
 
         let original: OriginalSupervisorCheckpointV1 =
             serde_json::from_slice(&journal.original_checkpoint_bytes)
@@ -1129,18 +1193,43 @@ mod original_checkpoint_integrity_tests {
         );
         for (name, key, value) in [
             ("false terminal revision", "revision", serde_json::json!(11)),
-            ("missing drain watermark", "outboxWatermark", serde_json::Value::Null),
-            ("forged prior digest", "previousReceiptDigest",
-                serde_json::json!("ff".repeat(32))),
+            (
+                "missing drain watermark",
+                "outboxWatermark",
+                serde_json::Value::Null,
+            ),
+            (
+                "forged prior digest",
+                "previousReceiptDigest",
+                serde_json::json!("ff".repeat(32)),
+            ),
             ("invalid schema", "schemaVersion", serde_json::json!(2)),
-            ("different handoff domain", "domainId",
-                serde_json::json!("other-domain")),
-            ("illegal owner identity", "sourceWriter",
-                serde_json::json!("invalid writer")),
-            ("different final-use epoch", "authorityEpoch", serde_json::json!(10)),
+            (
+                "different handoff domain",
+                "domainId",
+                serde_json::json!("other-domain"),
+            ),
+            (
+                "illegal owner identity",
+                "sourceWriter",
+                serde_json::json!("invalid writer"),
+            ),
+            (
+                "different final-use epoch",
+                "authorityEpoch",
+                serde_json::json!(10),
+            ),
             ("stale generation", "newGeneration", serde_json::json!(9)),
-            ("nonterminal phase", "phase", serde_json::json!("route_published")),
-            ("unknown effect remains", "unknownEffectCount", serde_json::json!(1)),
+            (
+                "nonterminal phase",
+                "phase",
+                serde_json::json!("route_published"),
+            ),
+            (
+                "unknown effect remains",
+                "unknownEffectCount",
+                serde_json::json!(1),
+            ),
         ] {
             let mut altered = serde_json::to_value(&original).expect("json value");
             altered[key] = value;
@@ -1150,7 +1239,8 @@ mod original_checkpoint_integrity_tests {
             // digest so the test exercises semantic validation independently
             // of the self-hash check.
             if name != "forged prior digest" {
-                changed.receipt_digest = changed.content_digest_v1()
+                changed.receipt_digest = changed
+                    .content_digest_v1()
                     .expect("rehash well-formed tampering");
             }
             let bytes = serde_json::to_vec(&changed).expect("typed encoding");
@@ -1162,22 +1252,28 @@ mod original_checkpoint_integrity_tests {
 
         let sorted_json = canonical_json(&original).expect("sorted JSON object");
         assert_ne!(sorted_json, journal.original_checkpoint_bytes);
-        assert!(verify_original_supervisor_checkpoint_v1(
-            &sorted_json, &journal, &plan,
-        ).is_err(), "native WriterHandoff serialisation cannot be replaced");
+        assert!(
+            verify_original_supervisor_checkpoint_v1(&sorted_json, &journal, &plan,).is_err(),
+            "native WriterHandoff serialisation cannot be replaced"
+        );
 
         let mut dropped = serde_json::to_value(&original).expect("value");
-        dropped.as_object_mut().expect("checkpoint object").remove("sourceWriter");
+        dropped
+            .as_object_mut()
+            .expect("checkpoint object")
+            .remove("sourceWriter");
         let bytes = serde_json::to_vec(&dropped).expect("incomplete JSON");
-        assert!(verify_original_supervisor_checkpoint_v1(
-            &bytes, &journal, &plan,
-        ).is_err(), "all durable writer-handoff fields are mandatory");
+        assert!(
+            verify_original_supervisor_checkpoint_v1(&bytes, &journal, &plan,).is_err(),
+            "all durable writer-handoff fields are mandatory"
+        );
 
         let mut extra = serde_json::to_value(&original).expect("value");
         extra["pretendAuthorized"] = serde_json::json!(true);
         let bytes = serde_json::to_vec(&extra).expect("extra JSON");
-        assert!(verify_original_supervisor_checkpoint_v1(
-            &bytes, &journal, &plan,
-        ).is_err(), "unrecognized checkpoint claims must be rejected");
+        assert!(
+            verify_original_supervisor_checkpoint_v1(&bytes, &journal, &plan,).is_err(),
+            "unrecognized checkpoint claims must be rejected"
+        );
     }
 }

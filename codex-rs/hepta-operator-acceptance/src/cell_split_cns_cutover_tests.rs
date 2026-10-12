@@ -182,10 +182,11 @@ impl CellSplitCnsRuntimePortV1 for DiskCns {
             original_runtime_receipt_bytes: Vec::new(),
             original_runtime_signature_bytes: Vec::new(),
         };
-        let proof = canonical_json(&CellSplitCnsRuntimeAttestationV1::for_commit(plan, &receipt))
-            .map_err(|e| e.to_string())?;
-        receipt.original_runtime_signature_bytes =
-            self.signer.sign(&proof).to_bytes().to_vec();
+        let proof = canonical_json(&CellSplitCnsRuntimeAttestationV1::for_commit(
+            plan, &receipt,
+        ))
+        .map_err(|e| e.to_string())?;
+        receipt.original_runtime_signature_bytes = self.signer.sign(&proof).to_bytes().to_vec();
         receipt.original_runtime_receipt_bytes = proof;
         crate::durable::write_private_new(
             &self.commit_path(&intent.idempotency_key),
@@ -330,7 +331,10 @@ fn missing_original_cns_writer_lock_never_creates_second_writer() {
             ready,
         ),
     );
-    assert!(matches!(reopened, Err(CellSplitCnsCutoverErrorV1::Durable(_))));
+    assert!(matches!(
+        reopened,
+        Err(CellSplitCnsCutoverErrorV1::Durable(_))
+    ));
     assert!(!lock.exists(), "must not mint a replacement writer lock");
     assert!(root.path().join(FROZEN).exists());
 }
@@ -351,12 +355,7 @@ fn deleted_frozen_binding_before_cutover_does_not_rebind_initialized_owner() {
         ready,
     );
     assert_eq!(runtime.route().generation, plan().parent_generation);
-    let reopened = CellSplitCnsCutoverOwnerV1::open(
-        root.path(),
-        plan(),
-        binding(),
-        runtime,
-    );
+    let reopened = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), runtime);
     assert!(matches!(reopened, Err(CellSplitCnsCutoverErrorV1::Invalid)));
     assert!(!frozen.exists(), "a missing plan must not be recreated");
 }
@@ -369,10 +368,12 @@ fn deleted_frozen_binding_after_real_cutover_cannot_reinitialize_owner() {
     {
         let mut original = owner(root.path(), ready.clone());
         original.commit_once(&request).expect("durable CNS cutover");
-        assert!(original
-            .read_committed(&request)
-            .expect("original signed CNS effect")
-            .is_some());
+        assert!(
+            original
+                .read_committed(&request)
+                .expect("original signed CNS effect")
+                .is_some()
+        );
     }
 
     let frozen = root.path().join(FROZEN);
@@ -388,7 +389,10 @@ fn deleted_frozen_binding_after_real_cutover_cannot_reinitialize_owner() {
         ),
     );
     assert!(matches!(reopened, Err(CellSplitCnsCutoverErrorV1::Invalid)));
-    assert!(!frozen.exists(), "reopening must not mint new frozen evidence");
+    assert!(
+        !frozen.exists(),
+        "reopening must not mint new frozen evidence"
+    );
 
     let actual = DiskCns::open(
         root.path().to_path_buf(),
@@ -413,12 +417,7 @@ fn new_cns_binding_requires_authenticated_fenced_predecessor() {
     backend
         .durable_replace(&route)
         .expect("unfenced serving route");
-    let opened = CellSplitCnsCutoverOwnerV1::open(
-        root.path(),
-        plan(),
-        binding(),
-        backend,
-    );
+    let opened = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), backend);
     assert!(matches!(opened, Err(CellSplitCnsCutoverErrorV1::Invalid)));
     assert!(!root.path().join(FROZEN).exists());
 }
@@ -433,10 +432,12 @@ fn direct_cns_readback_rejects_original_receipt_ahead_of_durable_frontier() {
         original
             .commit_once(&request)
             .expect("real signed CNS cutover");
-        assert!(original
-            .read_committed(&request)
-            .expect("current frontier")
-            .is_some());
+        assert!(
+            original
+                .read_committed(&request)
+                .expect("current frontier")
+                .is_some()
+        );
     }
 
     // Retain both the valid original signature and the actually serving child
@@ -447,9 +448,8 @@ fn direct_cns_readback_rejects_original_receipt_ahead_of_durable_frontier() {
         ready,
     )
     .with_stale_sequence();
-    let mut recovered =
-        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), stale)
-            .expect("same frozen CNS owner");
+    let mut recovered = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), stale)
+        .expect("same frozen CNS owner");
     assert!(matches!(
         recovered.read_committed(&request),
         Err(CellSplitCnsCutoverErrorV1::Invalid)
@@ -682,9 +682,8 @@ fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
         Arc::new(AtomicBool::new(true)),
     )
     .with_stale_readback();
-    let mut reopened =
-        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), stale)
-            .expect("preexisting frozen CNS binding");
+    let mut reopened = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), stale)
+        .expect("preexisting frozen CNS binding");
     assert!(matches!(
         reopened.read_committed(&intent()),
         Err(CellSplitCnsCutoverErrorV1::Invalid)
@@ -697,7 +696,8 @@ fn genuinely_signed_but_wrong_scope_runtime_cutover_is_denied() {
     let ready = Arc::new(AtomicBool::new(true));
     let request = intent();
     let mut cns = owner(root.path(), ready);
-    cns.commit_once(&request).expect("original live CNS cutover");
+    cns.commit_once(&request)
+        .expect("original live CNS cutover");
     let original = cns
         .read_committed(&request)
         .expect("current CNS")
@@ -719,8 +719,11 @@ fn genuinely_signed_but_wrong_scope_runtime_cutover_is_denied() {
     let signer = SigningKey::from_bytes(&[9; 32]);
     forged.original_runtime_signature_bytes = signer.sign(&unrelated).to_bytes().to_vec();
     forged.original_runtime_receipt_bytes = unrelated;
-    fs::write(&path, canonical_json(&forged).expect("changed outer commit"))
-        .expect("simulate out-of-band receipt substitution");
+    fs::write(
+        &path,
+        canonical_json(&forged).expect("changed outer commit"),
+    )
+    .expect("simulate out-of-band receipt substitution");
     assert!(
         cns.verify_current(&request, &original).is_err(),
         "independently signed but wrong-scope CNS proof cannot be current"
@@ -733,7 +736,8 @@ fn re_signed_noncanonical_runtime_statement_cannot_be_replayed() {
     let root = private_root();
     let request = intent();
     let mut cns = owner(root.path(), Arc::new(AtomicBool::new(true)));
-    cns.commit_once(&request).expect("authentic CNS route publication");
+    cns.commit_once(&request)
+        .expect("authentic CNS route publication");
     let committed = cns
         .read_committed(&request)
         .expect("authenticated readback")
@@ -742,8 +746,7 @@ fn re_signed_noncanonical_runtime_statement_cannot_be_replayed() {
         .path()
         .join(format!("runtime-cutover-{}.json", request.idempotency_key));
     let original: CellSplitCnsRuntimeCommitV1 =
-        serde_json::from_slice(&fs::read(&path).expect("original receipt"))
-            .expect("typed commit");
+        serde_json::from_slice(&fs::read(&path).expect("original receipt")).expect("typed commit");
     let typed: CellSplitCnsRuntimeAttestationV1 =
         serde_json::from_slice(&original.original_runtime_receipt_bytes)
             .expect("typed runtime statement");

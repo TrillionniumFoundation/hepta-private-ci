@@ -10,18 +10,18 @@
 //! a production authorization grant. Deployments must provision a separate
 //! Supervisor signer, signed CNS/selection readers and a trusted minimum.
 
-use codex_hepta_operator_acceptance::CellSplitCnsRuntimeCommitV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1;
+use codex_hepta_operator_acceptance::CellSplitCnsRuntimeCommitV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionIntentV1;
-use codex_hepta_operator_acceptance::CellSplitExecutionReceiptV1;
-use codex_hepta_operator_acceptance::verify_cell_split_cns_step_receipt_v1;
 use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
+use codex_hepta_operator_acceptance::CellSplitExecutionReceiptV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
 use codex_hepta_operator_acceptance::CellSplitSupervisorCommitV1;
 use codex_hepta_operator_acceptance::CellSplitSupervisorFenceBindingV1;
 use codex_hepta_operator_acceptance::CellSplitSupervisorLiveFenceV1;
 use codex_hepta_operator_acceptance::CellSplitSupervisorPhaseV1;
 use codex_hepta_operator_acceptance::CellSplitSupervisorRuntimePortV1;
+use codex_hepta_operator_acceptance::verify_cell_split_cns_step_receipt_v1;
 use codex_hepta_types::Digest32;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer as _;
@@ -279,9 +279,7 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
         })
     }
 
-    fn committed_record(
-        &mut self,
-    ) -> Result<Option<CellSplitSupervisorCommitV1>, String> {
+    fn committed_record(&mut self) -> Result<Option<CellSplitSupervisorCommitV1>, String> {
         let Some(original) = self
             .finalizer
             .read_retired_receipt_bytes()
@@ -292,7 +290,10 @@ impl<A: CellSplitFinalizationAuthorityV1> CellSplitSupervisorJournalRuntimePortV
         let checkpoint = self.finalizer.checkpoint();
         let signed = self
             .signer
-            .sign(&commit_signing_payload(&self.intent.idempotency_key, &original))
+            .sign(&commit_signing_payload(
+                &self.intent.idempotency_key,
+                &original,
+            ))
             .to_bytes()
             .to_vec();
         Ok(Some(CellSplitSupervisorCommitV1 {
@@ -452,63 +453,87 @@ mod original_cns_signature_tests {
         let evidence = b"original fsynced CNS runtime cutover";
         let valid = runtime.sign(evidence).to_bytes();
 
-        assert!(verify_independent_cns_runtime_signature(
-            evidence,
-            &valid,
-            &outer.verifying_key(),
-            &runtime.verifying_key(),
-            &supervisor.verifying_key(),
-        ).is_ok());
-        assert!(verify_independent_cns_runtime_signature(
-            b"forged runtime cutover",
-            &valid,
-            &outer.verifying_key(),
-            &runtime.verifying_key(),
-            &supervisor.verifying_key(),
-        ).is_err());
+        assert!(
+            verify_independent_cns_runtime_signature(
+                evidence,
+                &valid,
+                &outer.verifying_key(),
+                &runtime.verifying_key(),
+                &supervisor.verifying_key(),
+            )
+            .is_ok()
+        );
+        assert!(
+            verify_independent_cns_runtime_signature(
+                b"forged runtime cutover",
+                &valid,
+                &outer.verifying_key(),
+                &runtime.verifying_key(),
+                &supervisor.verifying_key(),
+            )
+            .is_err()
+        );
         let mut tampered = valid;
         tampered[0] ^= 0x80;
-        assert!(verify_independent_cns_runtime_signature(
-            evidence,
-            &tampered,
-            &outer.verifying_key(),
-            &runtime.verifying_key(),
-            &supervisor.verifying_key(),
-        ).is_err());
-        assert!(verify_independent_cns_runtime_signature(
-            evidence,
-            &valid,
-            &outer.verifying_key(),
-            &alternate.verifying_key(),
-            &supervisor.verifying_key(),
-        ).is_err());
-        assert!(verify_independent_cns_runtime_signature(
-            evidence,
-            &outer.sign(evidence).to_bytes(),
-            &outer.verifying_key(),
-            &outer.verifying_key(),
-            &supervisor.verifying_key(),
-        ).is_err());
-        assert!(verify_independent_cns_runtime_signature(
-            evidence,
-            &valid[..63],
-            &outer.verifying_key(),
-            &runtime.verifying_key(),
-            &supervisor.verifying_key(),
-        ).is_err());
-        assert!(verify_independent_cns_runtime_signature(
-            evidence,
-            &valid,
-            &outer.verifying_key(),
-            &runtime.verifying_key(),
-            &runtime.verifying_key(),
-        ).is_err());
-        assert!(verify_independent_cns_runtime_signature(
-            evidence,
-            &valid,
-            &outer.verifying_key(),
-            &runtime.verifying_key(),
-            &outer.verifying_key(),
-        ).is_err());
+        assert!(
+            verify_independent_cns_runtime_signature(
+                evidence,
+                &tampered,
+                &outer.verifying_key(),
+                &runtime.verifying_key(),
+                &supervisor.verifying_key(),
+            )
+            .is_err()
+        );
+        assert!(
+            verify_independent_cns_runtime_signature(
+                evidence,
+                &valid,
+                &outer.verifying_key(),
+                &alternate.verifying_key(),
+                &supervisor.verifying_key(),
+            )
+            .is_err()
+        );
+        assert!(
+            verify_independent_cns_runtime_signature(
+                evidence,
+                &outer.sign(evidence).to_bytes(),
+                &outer.verifying_key(),
+                &outer.verifying_key(),
+                &supervisor.verifying_key(),
+            )
+            .is_err()
+        );
+        assert!(
+            verify_independent_cns_runtime_signature(
+                evidence,
+                &valid[..63],
+                &outer.verifying_key(),
+                &runtime.verifying_key(),
+                &supervisor.verifying_key(),
+            )
+            .is_err()
+        );
+        assert!(
+            verify_independent_cns_runtime_signature(
+                evidence,
+                &valid,
+                &outer.verifying_key(),
+                &runtime.verifying_key(),
+                &runtime.verifying_key(),
+            )
+            .is_err()
+        );
+        assert!(
+            verify_independent_cns_runtime_signature(
+                evidence,
+                &valid,
+                &outer.verifying_key(),
+                &runtime.verifying_key(),
+                &outer.verifying_key(),
+            )
+            .is_err()
+        );
     }
 }

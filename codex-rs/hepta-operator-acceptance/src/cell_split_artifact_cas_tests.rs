@@ -139,7 +139,9 @@ fn missing_frontier_after_owner_initialization_never_resets_durable_cas_history(
         let request = intent(&plan());
         let mut owner = fixture.owner(authority.clone());
         if committed {
-            owner.commit_once(&request).expect("real child artifact committed");
+            owner
+                .commit_once(&request)
+                .expect("real child artifact committed");
             assert!(owner.read_committed(&request).unwrap().is_some());
         }
         drop(owner);
@@ -157,9 +159,15 @@ fn missing_frontier_after_owner_initialization_never_resets_durable_cas_history(
             matches!(reopened, Err(CellSplitArtifactCasErrorV1::Ambiguous)),
             "an initialized owner cannot recreate a missing frontier, committed={committed}"
         );
-        assert!(!frontier.exists(), "recovery must not manufacture a new frontier");
+        assert!(
+            !frontier.exists(),
+            "recovery must not manufacture a new frontier"
+        );
         assert_eq!(
-            fixture.store.join(format!("sha256-{}", plan().child_artifact_digest)).exists(),
+            fixture
+                .store
+                .join(format!("sha256-{}", plan().child_artifact_digest))
+                .exists(),
             committed,
             "the original CAS object must not be created or removed by denied recovery"
         );
@@ -184,7 +192,9 @@ fn create_only_cas_has_real_bytes_and_fails_closed_when_final_use_denied() {
 
     allowed.store(true, Ordering::Release);
     assert_eq!(
-        owner.current_sequence_for_intent(&request).expect("pre-commit"),
+        owner
+            .current_sequence_for_intent(&request)
+            .expect("pre-commit"),
         1
     );
     owner.commit_once(&request).expect("create-only effect");
@@ -296,7 +306,12 @@ fn complete_orphaned_cas_object_cannot_be_adopted_after_lost_commit() {
         reopened.commit_once(&request),
         Err(CellSplitArtifactCasErrorV1::Ambiguous)
     ));
-    assert!(reopened.read_committed(&request).expect("restart readback").is_none());
+    assert!(
+        reopened
+            .read_committed(&request)
+            .expect("restart readback")
+            .is_none()
+    );
     assert!(!reopened.commit_path(&request).exists());
 }
 

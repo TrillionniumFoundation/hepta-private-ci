@@ -306,6 +306,29 @@ impl DecisionCellOwnerV1 {
         state_owner: StateCheckpointOwnerV1,
         initial_state: StateCommitReceiptV1,
     ) -> Result<Self, DecisionCellOwnerErrorV1> {
+        Self::new_recovered(
+            definition,
+            profile,
+            artifact,
+            artifact_owner,
+            state_owner,
+            initial_state,
+            false,
+        )
+    }
+
+    /// Reopened tombstones are audit-only. No model or historical state bytes
+    /// may be reloaded via this path, including the initial checkpoint.
+    #[allow(clippy::too_many_arguments)]
+    fn new_recovered(
+        definition: CellDefinitionV2,
+        profile: CanonicalPolicyProfileV1,
+        artifact: DecisionPolicyArtifactBindingV1,
+        artifact_owner: ArtifactCasOwnerV1,
+        state_owner: StateCheckpointOwnerV1,
+        initial_state: StateCommitReceiptV1,
+        tombstoned: bool,
+    ) -> Result<Self, DecisionCellOwnerErrorV1> {
         definition
             .validate()
             .map_err(DecisionCellOwnerErrorV1::Definition)?;
@@ -332,7 +355,23 @@ impl DecisionCellOwnerV1 {
         if initial_state.state_digest.is_zero() || initial_state.authority.grants_any() {
             return Err(DecisionCellOwnerErrorV1::InvalidReceipt);
         }
-        state_owner.reload(&definition.cell_id, &initial_state)?;
+        if tombstoned {
+            // The durable loader already authenticated the full snapshot and
+            // its tombstones. Prove this caller-supplied initial receipt is in
+            // that exact signed history, without exposing its state bytes.
+            let snapshot = state_owner.snapshot();
+            if !snapshot.tombstones.iter().any(|receipt| {
+                receipt.cell_id == definition.cell_id && receipt.generation == definition.generation
+            }) || !snapshot
+                .entries
+                .iter()
+                .any(|(receipt, _)| receipt == &initial_state)
+            {
+                return Err(DecisionCellOwnerErrorV1::Binding("tombstoned history"));
+            }
+        } else {
+            state_owner.reload(&definition.cell_id, &initial_state)?;
+        }
         Ok(Self {
             definition,
             profile,
@@ -345,7 +384,11 @@ impl DecisionCellOwnerV1 {
             loaded: None,
             pending: None,
             last: None,
-            phase: DecisionCellPhaseV1::Unloaded,
+            phase: if tombstoned {
+                DecisionCellPhaseV1::Tombstoned
+            } else {
+                DecisionCellPhaseV1::Unloaded
+            },
             host_evidence_digest: None,
             observer_evidence_digest: None,
         })
@@ -366,8 +409,10 @@ impl DecisionCellOwnerV1 {
         artifact_owner: ArtifactCasOwnerV1,
         initial_state: StateCommitReceiptV1,
     ) -> Result<Self, DecisionCellOwnerErrorV1> {
-        let snapshot = DurableStateOwnerV1::load(path.as_ref())?;
         let state_owner = DurableStateOwnerV1::reopen(path, owner_id, signing_key)?;
+        // Observe only the already authenticated snapshot. A second unverified
+        // file read could race a replacement between validation and inspection.
+        let snapshot = state_owner.snapshot();
         let active_head = snapshot
             .active_heads
             .iter()
@@ -387,23 +432,24 @@ impl DecisionCellOwnerV1 {
         {
             return Err(DecisionCellOwnerErrorV1::Binding("active state identity"));
         }
-        state_owner.reload(&definition.cell_id, &current_state)?;
-        let mut owner = Self::new(
+        let tombstoned = snapshot.tombstones.iter().any(|receipt| {
+            receipt.cell_id == definition.cell_id && receipt.generation == definition.generation
+        });
+        if !tombstoned {
+            // A recovered live owner may execute only the current head, never
+            // a historical predecessor with an otherwise valid signature.
+            state_owner.reload_active(&definition.cell_id, &current_state)?;
+        }
+        let mut owner = Self::new_recovered(
             definition,
             profile,
             artifact,
             artifact_owner,
             state_owner,
             initial_state,
+            tombstoned,
         )?;
         owner.current_state = current_state;
-        if snapshot
-            .tombstones
-            .iter()
-            .any(|receipt| receipt.cell_id == owner.definition.cell_id)
-        {
-            owner.phase = DecisionCellPhaseV1::Tombstoned;
-        }
         Ok(owner)
     }
 

@@ -192,12 +192,16 @@ fn externally_tampered_open_journal_cannot_sign_a_cached_terminal_checkpoint() {
     fs::write(&path, corrupted).expect("out-of-band corruption");
     assert!(matches!(
         owner.read_retired_receipt_bytes(),
-        Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Corrupt)),
+        Err(CellSplitFinalizationErrorV1::Handoff(
+            WriterHandoffErrorV1::Corrupt
+        )),
     ));
     fs::write(&path, original).expect("restore original journal");
     assert!(matches!(
         owner.finalize_once(),
-        Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Poisoned)),
+        Err(CellSplitFinalizationErrorV1::Handoff(
+            WriterHandoffErrorV1::Poisoned
+        )),
     ));
 }
 
@@ -218,11 +222,15 @@ fn externally_appended_uncommitted_tail_cannot_reuse_a_signed_checkpoint() {
     fs::write(&path, bytes).expect("interrupted external append");
     assert!(matches!(
         owner.read_retired(),
-        Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Corrupt)),
+        Err(CellSplitFinalizationErrorV1::Handoff(
+            WriterHandoffErrorV1::Corrupt
+        )),
     ));
     assert!(matches!(
         owner.finalize_once(),
-        Err(CellSplitFinalizationErrorV1::Handoff(WriterHandoffErrorV1::Poisoned)),
+        Err(CellSplitFinalizationErrorV1::Handoff(
+            WriterHandoffErrorV1::Poisoned
+        )),
     ));
 }
 
@@ -433,7 +441,8 @@ fn independent_writer_lock_blocks_second_owner() {
             WriterHandoffErrorV1::Busy
         ))
     ));
-}#[test]
+}
+#[test]
 fn schema_rollback_and_writer_identity_are_frozen_for_retirement() {
     let root = tempfile::tempdir().expect("dir");
     let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
@@ -528,7 +537,6 @@ fn lost_ack_after_real_journal_fsync_recovers_without_second_retirement() {
     assert_eq!(owner.finalize_once().expect("never append twice"), original);
 }
 
-
 #[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 fn real_supervisor_effect_inputs() -> (
     codex_hepta_operator_acceptance::CellSplitExecutionPlanV1,
@@ -595,12 +603,11 @@ fn real_supervisor_effect_inputs() -> (
 #[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
 fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
-    use codex_hepta_operator_acceptance::{
-        CellSplitCnsRuntimeCommitV1, CellSplitExecutionReceiptV1,
-        CellSplitExecutionStepV1, cell_split_execution_receipt_digest_v1,
-        cell_split_execution_signing_payload_v1,
-    };
     use codex_hepta_operator_acceptance::CellSplitSupervisorRuntimePortV1;
+    use codex_hepta_operator_acceptance::{
+        CellSplitCnsRuntimeCommitV1, CellSplitExecutionReceiptV1, CellSplitExecutionStepV1,
+        cell_split_execution_receipt_digest_v1, cell_split_execution_signing_payload_v1,
+    };
     use ed25519_dalek::Signer as _;
     use ed25519_dalek::SigningKey;
     use sha2::Digest as _;
@@ -644,17 +651,14 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         original_runtime_receipt_bytes: Vec::new(),
         original_runtime_signature_bytes: Vec::new(),
     };
-    let attested =
-        codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1::for_commit(
-            &plan,
-            &original_cns,
-        )
-        .canonical_bytes()
-        .expect("canonical original CNS runtime attestation");
-    original_cns.original_runtime_signature_bytes = cns_runtime_signer
-        .sign(&attested)
-        .to_bytes()
-        .to_vec();
+    let attested = codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1::for_commit(
+        &plan,
+        &original_cns,
+    )
+    .canonical_bytes()
+    .expect("canonical original CNS runtime attestation");
+    original_cns.original_runtime_signature_bytes =
+        cns_runtime_signer.sign(&attested).to_bytes().to_vec();
     original_cns.original_runtime_receipt_bytes = attested;
     let mut verified_binding = binding();
     verified_binding.cns_cutover_receipt_digest =
@@ -793,15 +797,15 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
     let unrelated = cross_scope_attestation
         .canonical_bytes()
         .expect("canonical unrelated CNS runtime statement");
-    cross_scope_original.original_runtime_signature_bytes = cns_runtime_signer
-        .sign(&unrelated)
-        .to_bytes()
-        .to_vec();
+    cross_scope_original.original_runtime_signature_bytes =
+        cns_runtime_signer.sign(&unrelated).to_bytes().to_vec();
     cross_scope_original.original_runtime_receipt_bytes = unrelated;
     cross_scope_cns.owner_receipt_bytes =
         serde_json::to_vec(&cross_scope_original).expect("outer CNS receipt");
-    cross_scope_cns.output_digest =
-        format!("{:x}", sha2::Sha256::digest(&cross_scope_cns.owner_receipt_bytes));
+    cross_scope_cns.output_digest = format!(
+        "{:x}",
+        sha2::Sha256::digest(&cross_scope_cns.owner_receipt_bytes)
+    );
     cross_scope_cns.owner_signature_bytes = cns_signer
         .sign(
             &cell_split_execution_signing_payload_v1(&cross_scope_cns)
@@ -809,9 +813,8 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         )
         .to_bytes()
         .to_vec();
-    cross_scope_cns.receipt_digest =
-        cell_split_execution_receipt_digest_v1(&cross_scope_cns)
-            .expect("authentic outer signed receipt");
+    cross_scope_cns.receipt_digest = cell_split_execution_receipt_digest_v1(&cross_scope_cns)
+        .expect("authentic outer signed receipt");
     let mut cross_scope_intent = supervisor_intent.clone();
     cross_scope_intent.previous_receipt_digest = cross_scope_cns.receipt_digest.clone();
     cross_scope_intent.idempotency_key = format!(
@@ -827,8 +830,7 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
         ),
     );
     let root_cross_scope = tempfile::tempdir().expect("separate journal for wrong scope");
-    let minimum_cross_scope =
-        prepare(&root_cross_scope, WriterHandoffPhaseV1::RoutePublished);
+    let minimum_cross_scope = prepare(&root_cross_scope, WriterHandoffPhaseV1::RoutePublished);
     let finalizer_cross_scope = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
         file(&root_cross_scope),
         &minimum_cross_scope,
@@ -888,8 +890,7 @@ fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
     use std::os::unix::fs::PermissionsExt as _;
 
     let root = tempfile::tempdir().expect("private owner");
-    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
-        .expect("private root");
+    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700)).expect("private root");
     let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
     let authority = LiveAuthority::allowed();
     let (plan, fence, intent, accepted) = real_supervisor_effect_inputs();
@@ -898,35 +899,68 @@ fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
     let original;
     {
         let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
-            file(&root), &minimum, binding(), authority.clone(),
-        ).expect("real locked journal");
+            file(&root),
+            &minimum,
+            binding(),
+            authority.clone(),
+        )
+        .expect("real locked journal");
         let port = crate::CellSplitSupervisorJournalRuntimePortV1::new(
-            plan.clone(), fence.clone(), intent.clone(), accepted,
-            finalizer, signer.clone(),
-        ).expect("pinned source of truth");
-        let mut owner = CellSplitSupervisorFenceOwnerV1::open(
-            root.path(), plan.clone(), fence.clone(), port,
-        ).expect("real protocol owner");
+            plan.clone(),
+            fence.clone(),
+            intent.clone(),
+            accepted,
+            finalizer,
+            signer.clone(),
+        )
+        .expect("pinned source of truth");
+        let mut owner =
+            CellSplitSupervisorFenceOwnerV1::open(root.path(), plan.clone(), fence.clone(), port)
+                .expect("real protocol owner");
         assert!(owner.read_committed(&intent).expect("published").is_none());
-        owner.commit_once(&intent).expect("actual fsynced journal retirement");
-        original = owner.read_committed(&intent).expect("read").expect("commit");
+        owner
+            .commit_once(&intent)
+            .expect("actual fsynced journal retirement");
+        original = owner
+            .read_committed(&intent)
+            .expect("read")
+            .expect("commit");
         assert_eq!(original.owner_sequence, minimum.revision + 1);
-        assert!(owner.verify_current(&intent, &original).expect("live journal"));
+        assert!(
+            owner
+                .verify_current(&intent, &original)
+                .expect("live journal")
+        );
         owner.commit_once(&intent).expect("no second append");
     }
 
     let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
-        file(&root), &minimum, binding(), authority.clone(),
-    ).expect("authenticated original journal recovery");
+        file(&root),
+        &minimum,
+        binding(),
+        authority.clone(),
+    )
+    .expect("authenticated original journal recovery");
     let port = crate::CellSplitSupervisorJournalRuntimePortV1::new(
-        plan.clone(), fence.clone(), intent.clone(), accepted,
-        finalizer, signer,
-    ).expect("trusted replay");
-    let mut reopened = CellSplitSupervisorFenceOwnerV1::open(
-        root.path(), plan, fence, port,
-    ).expect("reopen frozen effect");
-    assert_eq!(reopened.read_committed(&intent).expect("fresh readback"), Some(original.clone()));
-    assert!(reopened.verify_current(&intent, &original).expect("authenticated original"));
+        plan.clone(),
+        fence.clone(),
+        intent.clone(),
+        accepted,
+        finalizer,
+        signer,
+    )
+    .expect("trusted replay");
+    let mut reopened = CellSplitSupervisorFenceOwnerV1::open(root.path(), plan, fence, port)
+        .expect("reopen frozen effect");
+    assert_eq!(
+        reopened.read_committed(&intent).expect("fresh readback"),
+        Some(original.clone())
+    );
+    assert!(
+        reopened
+            .verify_current(&intent, &original)
+            .expect("authenticated original")
+    );
     authority.final_use_live.store(false, Ordering::Release);
     assert!(reopened.verify_current(&intent, &original).is_err());
 }
@@ -942,16 +976,25 @@ fn real_journal_port_rejects_forged_nonce_and_unpinned_cutover() {
     let authority = LiveAuthority::allowed();
     let (plan, fence, intent, accepted) = real_supervisor_effect_inputs();
     let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
-        file(&root), &minimum, binding(), authority,
-    ).expect("original journal");
+        file(&root),
+        &minimum,
+        binding(),
+        authority,
+    )
+    .expect("original journal");
     let mut port = crate::CellSplitSupervisorJournalRuntimePortV1::new(
-        plan.clone(), fence.clone(), intent.clone(), accepted,
-        finalizer, SigningKey::from_bytes(&[23; 32]),
-    ).expect("pinned journal port");
+        plan.clone(),
+        fence.clone(),
+        intent.clone(),
+        accepted,
+        finalizer,
+        SigningKey::from_bytes(&[23; 32]),
+    )
+    .expect("pinned journal port");
 
-    let live = port.read_live(
-        &fence.supervisor_id, &fence.domain_id, &"aa".repeat(32),
-    ).expect("authenticated live read");
+    let live = port
+        .read_live(&fence.supervisor_id, &fence.domain_id, &"aa".repeat(32))
+        .expect("authenticated live read");
     port.verify_live(&live).expect("original signed challenge");
     let mut stale = live.clone();
     stale.challenge_nonce = "bb".repeat(32);
@@ -961,14 +1004,17 @@ fn real_journal_port_rejects_forged_nonce_and_unpinned_cutover() {
     unbound.previous_receipt_digest = digest("different cutover").to_string();
     assert!(port.verify_preconditions(&plan, &unbound, &fence).is_err());
 
-    port.finalize_once(&plan, &intent, &fence).expect("actual durable retirement");
-    let mut original = port.read_original_commit(&intent.idempotency_key)
-        .expect("source record").expect("durable receipt");
-    port.verify_original_commit(&original).expect("pinned original record");
+    port.finalize_once(&plan, &intent, &fence)
+        .expect("actual durable retirement");
+    let mut original = port
+        .read_original_commit(&intent.idempotency_key)
+        .expect("source record")
+        .expect("durable receipt");
+    port.verify_original_commit(&original)
+        .expect("pinned original record");
     original.original_checkpoint_bytes[0] ^= 1;
     assert!(port.verify_original_commit(&original).is_err());
 }
-
 
 #[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
@@ -984,75 +1030,100 @@ fn real_journal_port_signed_rpc_reconciles_original_after_restart() {
     use std::time::Duration;
 
     let root = tempfile::tempdir().expect("private owner directory");
-    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
-        .expect("private owner");
+    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700)).expect("private owner");
     let minimum = prepare(&root, WriterHandoffPhaseV1::RoutePublished);
     let authority = LiveAuthority::allowed();
     let (plan, fence, intent, accepted) = real_supervisor_effect_inputs();
-    let listener = UnixListener::bind(root.path().join("supervisor.sock"))
-        .expect("real supervisor endpoint");
+    let listener =
+        UnixListener::bind(root.path().join("supervisor.sock")).expect("real supervisor endpoint");
     let path = root.path().to_path_buf();
     let frozen_plan = plan.clone();
     let frozen_fence = fence.clone();
     let signer_authority = authority.clone();
     let server = thread::spawn(move || {
         let finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
-            OpenOptions::new().read(true).write(true)
+            OpenOptions::new()
+                .read(true)
+                .write(true)
                 .open(path.join("writer-handoff.log"))
                 .expect("original journal"),
             &minimum,
             binding(),
             signer_authority.clone(),
-        ).expect("real fsynced supervisor journal");
+        )
+        .expect("real fsynced supervisor journal");
         let port = crate::CellSplitSupervisorJournalRuntimePortV1::new(
-            frozen_plan.clone(), frozen_fence.clone(),
-            real_supervisor_effect_inputs().2, accepted,
-            finalizer, SigningKey::from_bytes(&[21; 32]),
-        ).expect("pinned runtime adapter");
+            frozen_plan.clone(),
+            frozen_fence.clone(),
+            real_supervisor_effect_inputs().2,
+            accepted,
+            finalizer,
+            SigningKey::from_bytes(&[21; 32]),
+        )
+        .expect("pinned runtime adapter");
         let backend = CellSplitSupervisorFenceOwnerV1::open(
-            &path, frozen_plan.clone(), frozen_fence.clone(), port,
-        ).expect("signed final effect");
+            &path,
+            frozen_plan.clone(),
+            frozen_fence.clone(),
+            port,
+        )
+        .expect("signed final effect");
         let mut service = CellSplitEffectServiceV1::new(
             CellSplitExecutionStepV1::SupervisorGenerationFence,
             frozen_plan.owner_ids[3].clone(),
             frozen_plan.digest().expect("frozen plan"),
             SigningKey::from_bytes(&[4; 32]),
             backend,
-        ).expect("independent operation signer");
+        )
+        .expect("independent operation signer");
         for _ in 0..3 {
             let (mut stream, _) = listener.accept().expect("original RPC");
-            service.serve_connection(&mut stream).expect("real signed journal read");
+            service
+                .serve_connection(&mut stream)
+                .expect("real signed journal read");
         }
         drop(service);
         let reopened_finalizer = CellSplitSupervisorJournalFinalizerV1::recover_at_least(
-            OpenOptions::new().read(true).write(true)
+            OpenOptions::new()
+                .read(true)
+                .write(true)
                 .open(path.join("writer-handoff.log"))
                 .expect("reopen original"),
             &minimum,
             binding(),
             signer_authority,
-        ).expect("authentic journal after restart");
+        )
+        .expect("authentic journal after restart");
         let reopened_port = crate::CellSplitSupervisorJournalRuntimePortV1::new(
-            frozen_plan.clone(), frozen_fence.clone(),
-            real_supervisor_effect_inputs().2, accepted,
-            reopened_finalizer, SigningKey::from_bytes(&[21; 32]),
-        ).expect("same independent signer");
+            frozen_plan.clone(),
+            frozen_fence.clone(),
+            real_supervisor_effect_inputs().2,
+            accepted,
+            reopened_finalizer,
+            SigningKey::from_bytes(&[21; 32]),
+        )
+        .expect("same independent signer");
         let reopened_backend = CellSplitSupervisorFenceOwnerV1::open(
-            &path, frozen_plan.clone(), frozen_fence, reopened_port,
-        ).expect("reopened signed owner");
+            &path,
+            frozen_plan.clone(),
+            frozen_fence,
+            reopened_port,
+        )
+        .expect("reopened signed owner");
         let mut reopened_service = CellSplitEffectServiceV1::new(
             CellSplitExecutionStepV1::SupervisorGenerationFence,
             frozen_plan.owner_ids[3].clone(),
             frozen_plan.digest().expect("plan"),
             SigningKey::from_bytes(&[4; 32]),
             reopened_backend,
-        ).expect("service restart");
+        )
+        .expect("service restart");
         let (mut stream, _) = listener.accept().expect("recovery RPC");
-        reopened_service.serve_connection(&mut stream)
+        reopened_service
+            .serve_connection(&mut stream)
             .expect("original checkpoint readback");
     });
-    let keys = [1_u8, 2, 3, 4]
-        .map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
+    let keys = [1_u8, 2, 3, 4].map(|n| SigningKey::from_bytes(&[n; 32]).verifying_key());
     let mut client = CellSplitUnixEffectPortV1::new(
         [
             root.path().join("cas.sock"),
@@ -1062,17 +1133,23 @@ fn real_journal_port_signed_rpc_reconciles_original_after_restart() {
         ],
         keys,
         Duration::from_secs(3),
-    ).expect("four distinct owner credentials");
+    )
+    .expect("four distinct owner credentials");
 
-    let signed = client.execute(&intent).expect("actual signed journal append");
-    client.verify_committed(&intent, &signed)
+    let signed = client
+        .execute(&intent)
+        .expect("actual signed journal append");
+    client
+        .verify_committed(&intent, &signed)
         .expect("fresh signed live journal readback");
     assert_eq!(
         client.reconcile(&intent).expect("original checkpoint read"),
         Some(signed.clone()),
     );
     assert_eq!(
-        client.reconcile(&intent).expect("journal read after restart"),
+        client
+            .reconcile(&intent)
+            .expect("journal read after restart"),
         Some(signed),
     );
     server.join().expect("real journal service restart");

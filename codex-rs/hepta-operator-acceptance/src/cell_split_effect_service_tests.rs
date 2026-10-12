@@ -112,13 +112,11 @@ impl CellSplitDurableEffectBackendV1 for DiskEffect {
     }
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
-        Ok(self.sequence_override.unwrap_or_else(|| {
-            if self.commit_path().exists() {
-                7
-            } else {
-                1
-            }
-        }))
+        Ok(self.sequence_override.unwrap_or_else(
+            || {
+                if self.commit_path().exists() { 7 } else { 1 }
+            },
+        ))
     }
 }
 
@@ -286,7 +284,10 @@ fn committed_effect_cannot_be_signed_ahead_of_durable_frontier() {
         .expect("frontier recovered");
     let response: CellSplitEffectRpcResponseV1 =
         receive_frame(&mut sender).expect("authenticated recovery");
-    assert_eq!(response.receipt.expect("original receipt").owner_sequence, 7);
+    assert_eq!(
+        response.receipt.expect("original receipt").owner_sequence,
+        7
+    );
     assert!(response.readback.is_some());
     assert_eq!(recovered.backend().commits, 0);
 }
@@ -446,7 +447,6 @@ fn four_independent_socket_owners_recover_exact_committed_prefix_and_fence_revoc
     }
 }
 
-
 /// An external writer may revoke an effect between the first live validation
 /// and the separately retained frontier read. This fixture deliberately makes
 /// that change *inside* the second frontier call, not after an RPC completes.
@@ -498,7 +498,8 @@ impl CellSplitDurableEffectBackendV1 for RevokeDuringFrontierRead {
 fn frontier_advance_between_verification_and_signature_rejects_stale_readback() {
     let root = tempfile::tempdir().expect("fixture");
     let mut live = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
-    live.commit_once(&intent()).expect("original durable effect");
+    live.commit_once(&intent())
+        .expect("original durable effect");
     let backend = RevokeDuringFrontierRead {
         inner: live,
         sequence_reads: 0,
@@ -533,7 +534,6 @@ fn frontier_advance_between_verification_and_signature_rejects_stale_readback() 
     assert!(!root.path().join("live-owner-state").exists());
     assert!(root.path().join("committed").exists());
 }
-
 
 #[derive(Clone, Copy)]
 enum MutationAtFrontier {
@@ -661,7 +661,8 @@ fn negative_readback_refuses_commit_appearing_during_frontier_check() {
 fn positive_readback_refuses_frontier_revision_after_live_verification() {
     let root = tempfile::tempdir().expect("private owner root");
     let mut disk = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
-    disk.commit_once(&intent()).expect("real durable first effect");
+    disk.commit_once(&intent())
+        .expect("real durable first effect");
     let backend = MutateAtFrontierRead {
         inner: disk,
         intent: intent(),
@@ -819,7 +820,6 @@ fn execute_acknowledgement_rejects_a_changing_durable_frontier() {
     assert!(root.path().join("live-owner-state").exists());
 }
 
-
 /// Simulate the independent Selector withdrawing final-use during the real
 /// disk commit. The effect may exist, but it must not receive a fresh signed
 /// Execute acknowledgement after the current authorization has been revoked.
@@ -908,7 +908,6 @@ fn execute_does_not_sign_after_independent_final_use_revocation() {
     assert!(root.path().join("live-owner-state").exists());
 }
 
-
 #[test]
 fn partial_owner_rpc_frame_times_out_without_signing_or_mutation() {
     use std::io::Write as _;
@@ -961,7 +960,6 @@ fn owner_rpc_timeout_must_be_bounded_and_nonzero() {
     }
 }
 
-
 #[test]
 fn partial_owner_rpc_payload_times_out_before_any_authority_check() {
     use std::io::Write as _;
@@ -992,7 +990,6 @@ fn partial_owner_rpc_payload_times_out_before_any_authority_check() {
     assert_eq!(service.backend().commits, 0);
     assert!(!root.path().join("committed").exists());
 }
-
 
 #[test]
 fn trickled_owner_request_cannot_extend_total_frame_deadline() {
@@ -1058,7 +1055,9 @@ fn new_execute_cannot_adopt_effect_created_after_negative_preflight() {
         },
     )
     .expect("readback request");
-    service.serve_connection(&mut server).expect("negative owner readback");
+    service
+        .serve_connection(&mut server)
+        .expect("negative owner readback");
     let negative: CellSplitEffectRpcResponseV1 =
         receive_frame(&mut client).expect("signed negative response");
     assert!(negative.receipt.is_none());
@@ -1067,7 +1066,9 @@ fn new_execute_cannot_adopt_effect_created_after_negative_preflight() {
     // A different writer commits exactly the same idempotency key between
     // the negative preflight and Execute; this signing service did not do it.
     let mut external = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
-    external.commit_once(&operation).expect("racing external durable commit");
+    external
+        .commit_once(&operation)
+        .expect("racing external durable commit");
     assert_eq!(external.commits, 1);
     assert_eq!(service.backend().commits, 0);
 
@@ -1102,7 +1103,9 @@ fn new_execute_cannot_adopt_effect_created_after_negative_preflight() {
         },
     )
     .expect("read-only reconciliation");
-    service.serve_connection(&mut server).expect("original durable readback");
+    service
+        .serve_connection(&mut server)
+        .expect("original durable readback");
     let recovery: CellSplitEffectRpcResponseV1 =
         receive_frame(&mut client).expect("recovered owner response");
     assert_eq!(recovery.receipt.expect("original effect").owner_sequence, 7);

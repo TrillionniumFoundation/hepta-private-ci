@@ -13,9 +13,9 @@ mod automation;
 mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
-mod client;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
 mod cell_split_execution;
+mod client;
 mod cognitive_context;
 mod cognitive_ranker;
 mod cognitive_retrieval_context;
@@ -64,13 +64,13 @@ pub use browser_servo::BrowserServoPort;
 pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
-pub use client::AgentdClient;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
-pub use cell_split_execution::advance_selected_cell_split_v1;
+pub use cell_split_execution::CellSplitScopeSelectionAdmissionV1;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
 pub use cell_split_execution::advance_scope_bound_selected_cell_split_v1;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
-pub use cell_split_execution::CellSplitScopeSelectionAdmissionV1;
+pub use cell_split_execution::advance_selected_cell_split_v1;
+pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;

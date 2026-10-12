@@ -127,7 +127,9 @@ fn signed_response_from_wrong_service_identity_is_refused() {
         .expect("attacker response");
     });
     let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
-        socket, signer().verifying_key(), Duration::from_secs(2),
+        socket,
+        signer().verifying_key(),
+        Duration::from_secs(2),
     )
     .expect("external trust pin");
     assert!(matches!(
@@ -144,8 +146,7 @@ fn old_nonce_or_other_domain_is_rejected_even_if_signed() {
         let (socket, listener) = listener(temp.path());
         let server = thread::spawn(move || {
             let (mut peer, _) = listener.accept().expect("query");
-            let request: CellSplitMonotonicRpcRequestV1 =
-                receive_frame(&mut peer).expect("read");
+            let request: CellSplitMonotonicRpcRequestV1 = receive_frame(&mut peer).expect("read");
             let domain = if other_domain {
                 "another.authority.domain"
             } else {
@@ -170,8 +171,11 @@ fn old_nonce_or_other_domain_is_rejected_even_if_signed() {
             .expect("signed but unrelated proof");
         });
         let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
-            socket, signer().verifying_key(), Duration::from_secs(2),
-        ).expect("external client");
+            socket,
+            signer().verifying_key(),
+            Duration::from_secs(2),
+        )
+        .expect("external client");
         assert!(matches!(
             client.read_domain_frontier(DOMAIN, &"ff".repeat(32)),
             Err(CellSplitMonotonicRpcErrorV1::Invalid)
@@ -188,8 +192,11 @@ fn absent_or_symlinked_socket_never_returns_a_monotonic_proof() {
     let alias = temp.path().join("alias.sock");
     std::os::unix::fs::symlink(&real, &alias).expect("alias");
     let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
-        alias, signer().verifying_key(), Duration::from_millis(25),
-    ).expect("path not trusted until use");
+        alias,
+        signer().verifying_key(),
+        Duration::from_millis(25),
+    )
+    .expect("path not trusted until use");
     assert!(matches!(
         client.read_domain_frontier(DOMAIN, &"aa".repeat(32)),
         Err(CellSplitMonotonicRpcErrorV1::Invalid)
@@ -198,8 +205,13 @@ fn absent_or_symlinked_socket_never_returns_a_monotonic_proof() {
         temp.path().join("not-serving.sock"),
         signer().verifying_key(),
         Duration::from_millis(25),
-    ).expect("client");
-    assert!(client.read_domain_frontier(DOMAIN, &"bb".repeat(32)).is_err());
+    )
+    .expect("client");
+    assert!(
+        client
+            .read_domain_frontier(DOMAIN, &"bb".repeat(32))
+            .is_err()
+    );
     assert!(CellSplitSupervisorMonotonicUnixPortV1::new(
         real, signer().verifying_key(), Duration::ZERO,
     ).is_err());
@@ -213,14 +225,22 @@ fn truncated_independent_response_cannot_hold_an_owner_forever() {
         let (mut peer, _) = listener.accept().expect("query");
         let _: CellSplitMonotonicRpcRequestV1 =
             receive_frame(&mut peer).expect("bounded client request");
-        peer.write_all(&64_u32.to_be_bytes()).expect("truncated header");
+        peer.write_all(&64_u32.to_be_bytes())
+            .expect("truncated header");
         peer.write_all(b"{").expect("incomplete JSON");
         thread::sleep(Duration::from_millis(60));
     });
     let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
-        socket, signer().verifying_key(), Duration::from_millis(12),
-    ).expect("timeout bounded client");
-    assert!(client.read_domain_frontier(DOMAIN, &"dd".repeat(32)).is_err());
+        socket,
+        signer().verifying_key(),
+        Duration::from_millis(12),
+    )
+    .expect("timeout bounded client");
+    assert!(
+        client
+            .read_domain_frontier(DOMAIN, &"dd".repeat(32))
+            .is_err()
+    );
     server.join().expect("slow service");
 }
 
@@ -230,8 +250,7 @@ fn invalid_and_dual_status_envelopes_fail_closed() {
     let (socket, listener) = listener(temp.path());
     let server = thread::spawn(move || {
         let (mut peer, _) = listener.accept().expect("query");
-        let request: CellSplitMonotonicRpcRequestV1 =
-            receive_frame(&mut peer).expect("read");
+        let request: CellSplitMonotonicRpcRequestV1 = receive_frame(&mut peer).expect("read");
         send_frame(
             &mut peer,
             &CellSplitMonotonicRpcResponseV1 {
@@ -248,15 +267,17 @@ fn invalid_and_dual_status_envelopes_fail_closed() {
         .expect("invalid response");
     });
     let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
-        socket, signer().verifying_key(), Duration::from_secs(1),
-    ).expect("pinned client");
+        socket,
+        signer().verifying_key(),
+        Duration::from_secs(1),
+    )
+    .expect("pinned client");
     assert!(matches!(
         client.read_domain_frontier(DOMAIN, &"dd".repeat(32)),
         Err(CellSplitMonotonicRpcErrorV1::Invalid)
     ));
     server.join().expect("service");
 }
-
 
 /// A disk-backed *test-only* view of an external domain high-water registry.
 /// A real deployment must replace this with independently operated monotonic
@@ -292,8 +313,7 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
         let record: CellSplitMonotonicDurableFrontierV1 =
             serde_json::from_slice(&bytes).map_err(std::io::Error::other)?;
         if record.journal_domain_id != domain
-            || crate::durable::canonical_json(&record)
-                .map_err(std::io::Error::other)? != bytes
+            || crate::durable::canonical_json(&record).map_err(std::io::Error::other)? != bytes
         {
             return Err(std::io::Error::other("untrusted domain registry record"));
         }
@@ -305,8 +325,7 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
         committed: &CellSplitMonotonicDurableFrontierV1,
     ) -> Result<bool, Self::Error> {
         let bytes = std::fs::read(&self.file)?;
-        Ok(crate::durable::canonical_json(committed)
-            .map_err(std::io::Error::other)? == bytes)
+        Ok(crate::durable::canonical_json(committed).map_err(std::io::Error::other)? == bytes)
     }
 }
 
@@ -323,7 +342,8 @@ fn write_test_registry(root: &Path) -> PathBuf {
     crate::durable::write_private_new(
         &path,
         &crate::durable::canonical_json(&record).expect("canonical highwater"),
-    ).expect("fsynced external fixture registry");
+    )
+    .expect("fsynced external fixture registry");
     path
 }
 
@@ -335,18 +355,21 @@ fn independent_server_reads_real_durable_domain_and_signs_client_challenge() {
     let server = thread::spawn(move || {
         let (mut peer, _) = listener.accept().expect("real Unix socket");
         let owner = DiskAuthoritativeRegistry::open(file);
-        let mut service = CellSplitMonotonicRpcServiceV1::new(
-            owner,
-            signer(),
-            Duration::from_secs(3),
-        ).expect("separately pinned signer");
-        service.serve_connection(&mut peer)
+        let mut service =
+            CellSplitMonotonicRpcServiceV1::new(owner, signer(), Duration::from_secs(3))
+                .expect("separately pinned signer");
+        service
+            .serve_connection(&mut peer)
             .expect("fresh durable frontier");
     });
     let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
-        socket, signer().verifying_key(), Duration::from_secs(3),
-    ).expect("original trusted signer");
-    let accepted = client.read_domain_frontier(DOMAIN, &"aa".repeat(32))
+        socket,
+        signer().verifying_key(),
+        Duration::from_secs(3),
+    )
+    .expect("original trusted signer");
+    let accepted = client
+        .read_domain_frontier(DOMAIN, &"aa".repeat(32))
         .expect("independently signed original source");
     assert_eq!(accepted.journal_authority_epoch, 7);
     assert_eq!(accepted.journal_revision, 10);
@@ -362,13 +385,10 @@ fn independent_server_fences_revoked_domain_before_signed_reply() {
     // First read succeeds; the next read observes an externally revoked
     // authoritative record and may not sign the old current snapshot.
     backend.revoke_on_read = Some(2);
-    let mut service = CellSplitMonotonicRpcServiceV1::new(
-        backend,
-        signer(),
-        Duration::from_secs(2),
-    ).expect("independent owner");
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let mut service =
+        CellSplitMonotonicRpcServiceV1::new(backend, signer(), Duration::from_secs(2))
+            .expect("independent owner");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
@@ -377,7 +397,8 @@ fn independent_server_fences_revoked_domain_before_signed_reply() {
             journal_domain_id: DOMAIN.into(),
             challenge_nonce: "cc".repeat(32),
         },
-    ).expect("read-only request");
+    )
+    .expect("read-only request");
     assert!(service.serve_connection(&mut server).is_err());
     assert!(!file.exists());
 }
@@ -390,9 +411,9 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
         Duration::from_secs(2),
-    ).expect("trusted signer");
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("pair");
+    )
+    .expect("trusted signer");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("pair");
     send_frame(
         &mut client,
         &serde_json::json!({
@@ -402,10 +423,10 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
             "challengeNonce": "dd".repeat(32),
             "journalRevision": 999,
         }),
-    ).expect("forged self-affirming request");
+    )
+    .expect("forged self-affirming request");
     assert!(service.serve_connection(&mut server).is_err());
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("pair");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
@@ -414,7 +435,8 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
             journal_domain_id: "unrelated.domain".into(),
             challenge_nonce: "ee".repeat(32),
         },
-    ).expect("wrong domain request");
+    )
+    .expect("wrong domain request");
     assert!(service.serve_connection(&mut server).is_err());
     assert!(file.exists());
 }
