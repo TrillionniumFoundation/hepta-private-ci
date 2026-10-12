@@ -54,6 +54,8 @@ struct GatedHeadArtifactV2 {
 }
 
 /// Qualification-only CPU driver; no signed artifact load/worker CAS.
+/// Its module and re-export remain crate-private; exposing this reference
+/// backend as a public execution port would bypass signed Final-use review.
 ///
 /// The `observed_memory_bytes` field in this reference adapter counts owned
 /// parameter tensors rather than full OS RSS, so it is not a production
@@ -1009,8 +1011,26 @@ mod tests {
             );
             assert_eq!(worker.driver.batch_calls(), 0);
         }
+        // Even when the per-request lease payload is recomputed to match
+        // forged metadata, real Q24 bytes must be hashed before dispatch.
+        let mut forged = b.clone();
+        let mut forged_snapshot = (*forged.snapshot).clone();
+        forged_snapshot.content_digest = Digest32::of_bytes(b"forged-feature-content");
+        forged.snapshot = std::sync::Arc::new(forged_snapshot);
+        let forged_payload = super::super::canonical_shared_neuron_payload_digest_v2(&forged)
+            .expect("forged payload binding");
+        forged.authorization.payload_digest = forged_payload.clone();
+        forged.authorization.lease_payload_digest = forged_payload;
+        assert_eq!(
+            worker
+                .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a.clone(), forged],),
+            Err(Error::FeatureContract)
+        );
+        assert_eq!(worker.driver.batch_calls(), 0);
+        assert!(worker.active_requests.is_empty());
+
         let results = worker
-            .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
+            .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a.clone(), b.clone()])
             .expect("batched references");
         assert_eq!(results.len(), 2);
         assert_eq!(results[0].drive_q24, vec![Q24 / 2]);
@@ -1021,6 +1041,37 @@ mod tests {
         assert!(!results[0].authority.grants_any());
         assert_eq!(worker.driver.batch_calls(), 1);
         assert_eq!(cache.resident_bytes(), 16);
+
+        // The second Cell's Head belongs to cell.b; swapping in cell.a's
+        // digest with a freshly recomputed lease reaches the real driver,
+        // which detects the mismatch after entry. The worker must not treat
+        // this ambiguous execution as a safe request-local rejection.
+        let mut wrong_head = b;
+        wrong_head.head_digest = a.head_digest.clone();
+        let payload = super::super::canonical_shared_neuron_payload_digest_v2(&wrong_head)
+            .expect("rebind wrong head");
+        wrong_head.authorization.payload_digest = payload.clone();
+        wrong_head.authorization.lease_payload_digest = payload;
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![a.clone(), wrong_head],
+            ),
+            Err(Error::FeatureOutputMismatch)
+        );
+        // The CPU reference driver counts only completed batches. The
+        // rejected mixed-head cohort entered the driver but did not complete,
+        // so it cannot increment successful batch accounting.
+        assert_eq!(worker.driver.batch_calls(), 1);
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(100, "model.gated", vec![a]),
+            Err(Error::IndeterminateLifecycle)
+        );
+        // A poisoned worker never starts another physical batch.
+        assert_eq!(worker.driver.batch_calls(), 1);
     }
 
     #[test]

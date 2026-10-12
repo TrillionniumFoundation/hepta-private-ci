@@ -132,7 +132,25 @@ pub fn canonical_shared_neuron_payload_digest_v2(
     Ok(Digest32::of_bytes(&bytes).to_string())
 }
 
+/// Standalone validator for tests. The production batch deduplicates the
+/// immutable Arc content check, but never skips any per-request identity,
+/// source, lease, expiry or model validation.
+#[cfg(test)]
 fn validate_item(
+    req: &SharedNeuronFeatureRequestV2,
+    now_ms: u64,
+    worker_generation: u64,
+    authority_epoch: u64,
+    manifest: &super::ModelManifest,
+) -> Result<(), Error> {
+    validate_item_without_content_hash(req, now_ms, worker_generation, authority_epoch, manifest)?;
+    if req.snapshot.content_digest != feature_content_digest_v2(&req.snapshot.features_q24) {
+        return Err(Error::FeatureContract);
+    }
+    Ok(())
+}
+
+fn validate_item_without_content_hash(
     req: &SharedNeuronFeatureRequestV2,
     now_ms: u64,
     worker_generation: u64,
@@ -163,7 +181,6 @@ fn validate_item(
         .digest()
         .map_err(|_| Error::FeatureContract)?
         .is_zero()
-        || req.snapshot.content_digest != feature_content_digest_v2(&req.snapshot.features_q24)
     {
         return Err(Error::FeatureContract);
     }
@@ -201,6 +218,34 @@ fn validate_item(
 /// Scope ID. Until the producer/owner binds that Scope explicitly, a physical
 /// batch must never mix different principal/purpose partitions. Each member
 /// also undergoes its own signed-admission-independent V2 request validation.
+/// Verify real immutable feature bytes once per physically shared Arc buffer
+/// within one already isolated batch. Distinct Arc allocations always get
+/// their own hash, even if their lengths, payload digests or values match.
+/// This is only a computation cache, never a source-admission shortcut.
+fn validate_batch_feature_content_v2(
+    requests: &[SharedNeuronFeatureRequestV2],
+) -> Result<usize, Error> {
+    let mut checked: Vec<(&Arc<[i64]>, Digest32)> = Vec::with_capacity(requests.len());
+    for request in requests {
+        let buffer = &request.snapshot.features_q24;
+        let actual = match checked
+            .iter()
+            .find(|(previous, _)| Arc::ptr_eq(*previous, buffer))
+        {
+            Some((_, actual)) => *actual,
+            None => {
+                let actual = feature_content_digest_v2(buffer);
+                checked.push((buffer, actual));
+                actual
+            }
+        };
+        if request.snapshot.content_digest != actual {
+            return Err(Error::FeatureContract);
+        }
+    }
+    Ok(checked.len())
+}
+
 fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<(), Error> {
     let first = requests.first().ok_or(Error::FeatureLimit)?;
     if requests
@@ -286,7 +331,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         let mut request_ids = BTreeSet::new();
         let mut reservation_ids = BTreeSet::new();
         for item in &requests {
-            validate_item(
+            validate_item_without_content_hash(
                 item,
                 now_ms,
                 self.generation,
@@ -311,6 +356,11 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 return Err(Error::FeatureContract);
             }
         }
+
+        // Once all request-specific binding checks pass, hash each distinct
+        // immutable feature allocation exactly once. A forged content digest
+        // denies the entire cohort before any capacity mutation or driver call.
+        validate_batch_feature_content_v2(&requests)?;
 
         // Even a correct batch can exhaust its worker grant through many
         // independent drive/prediction buffers. Reject before touching
@@ -349,8 +399,18 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         }
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
 
-        let observed = driver_result?;
+        // A backend error or incomplete return does not prove the physical
+        // execution had no side effects. Release the counted slots above,
+        // then fence this worker until an independent owner reconciles it.
+        let observed = match driver_result {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
         if observed.len() != requests.len() {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         let mut outputs = Vec::with_capacity(requests.len());
@@ -358,6 +418,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             if batch_result.request_id != request.authorization.request_id
                 || batch_result.payload_digest != request.authorization.payload_digest
             {
+                self.poisoned = true;
                 return Err(Error::PayloadMismatch);
             }
             let features = batch_result.feature;
@@ -365,6 +426,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 || features.encoder_digest != request.snapshot.identity.encoder_digest.to_string()
                 || features.head_digest != request.head_digest
             {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
             }
             let status = if !features.terminal_observed {
@@ -383,10 +445,17 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                         .chain(features.prediction_q24.iter())
                         .any(|v| !(-MAX_FEATURE_ABS_Q24..=MAX_FEATURE_ABS_Q24).contains(v))
                 {
+                    self.poisoned = true;
                     return Err(Error::FeatureOutputMismatch);
                 }
             } else if !features.drive_q24.is_empty() || !features.prediction_q24.is_empty() {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
+            }
+            if status == ExecutionStatus::Indeterminate {
+                // Preserve the nonterminal observation but disallow another
+                // physical dispatch until a new generation/owner reconciles.
+                self.poisoned = true;
             }
             let identity_digest = request
                 .snapshot
@@ -544,6 +613,39 @@ mod tests {
         ));
         assert_eq!(minimum_batch_input_bytes_v2(&[a, independent]), Ok(32));
         assert_eq!(minimum_batch_input_bytes_v2(&[]), Ok(0));
+    }
+
+    #[test]
+    fn content_sha256_is_deduplicated_only_for_the_same_physical_arc() {
+        let frame = frame(2);
+        let a = req("cell.a", "request.a", Arc::clone(&frame));
+        let b = req("cell.b", "request.b", Arc::clone(&frame));
+        assert_eq!(
+            validate_batch_feature_content_v2(&[a.clone(), b.clone()]),
+            Ok(1)
+        );
+        // Different Arc buffers cost two SHA-256 evaluations, even if the
+        // immutable values and declared digest are identical.
+        let mut c = b.clone();
+        let mut independent = (*c.snapshot).clone();
+        independent.features_q24 = Arc::from(c.snapshot.features_q24.as_ref());
+        c.snapshot = Arc::new(independent);
+        assert!(!Arc::ptr_eq(
+            &a.snapshot.features_q24,
+            &c.snapshot.features_q24
+        ));
+        assert_eq!(
+            validate_batch_feature_content_v2(&[a.clone(), c.clone()]),
+            Ok(2)
+        );
+        // A forged metadata digest cannot be legitimized by reusing an Arc.
+        let mut forged = (*c.snapshot).clone();
+        forged.content_digest = Digest32::of_bytes(b"forged");
+        c.snapshot = Arc::new(forged);
+        assert_eq!(
+            validate_batch_feature_content_v2(&[a, c]),
+            Err(Error::FeatureContract)
+        );
     }
 
     #[test]
