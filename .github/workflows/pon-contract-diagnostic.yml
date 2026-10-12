@@ -9,59 +9,107 @@ permissions:
 jobs:
   readback:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           ref: 961b879f7e9f38fc40b901ac32065abbb6d68990
           fetch-depth: 1
           persist-credentials: false
-      - name: Read original compiler annotations without relabeling failures
+      - name: Retain original failures and exact source without executing product effects
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/pon-diagnostic"
           python3 - <<'PY'
-          import hashlib, json, os, pathlib, subprocess, urllib.request
+          import hashlib, json, os, pathlib, re, subprocess, urllib.request
           repo = 'TrillionniumFoundation/hepta-private-ci'
           head = '961b879f7e9f38fc40b901ac32065abbb6d68990'
           parent = '3ab51bb08d6c971fa6293da8b1b67a71246428bb'
           assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == head
           out = pathlib.Path(os.environ['RUNNER_TEMP']) / 'pon-diagnostic'
-          def get(path):
+          class PublicRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  result = super().redirect_request(req, fp, code, msg, headers, newurl)
+                  if result is not None:
+                      result.remove_header('Authorization')
+                  return result
+          opener = urllib.request.build_opener(PublicRedirect())
+          def read(path, limit=4 * 1024 * 1024):
               request = urllib.request.Request('https://api.github.com/repos/' + repo + path, headers={
                   'Authorization': 'Bearer ' + os.environ['GH_TOKEN'],
                   'Accept': 'application/vnd.github+json',
                   'X-GitHub-Api-Version': '2022-11-28',
               })
-              with urllib.request.urlopen(request, timeout=30) as response:
-                  raw = response.read(4 * 1024 * 1024 + 1)
-              if len(raw) > 4 * 1024 * 1024:
+              with opener.open(request, timeout=30) as response:
+                  raw = response.read(limit + 1)
+              if len(raw) > limit:
                   raise RuntimeError('diagnostic response exceeds explicit bound')
-              return json.loads(raw)
+              return raw
+          def get(path):
+              return json.loads(read(path))
           report = {'source': head, 'failed_parent': parent, 'jobs': [], 'source_matches': []}
-          for job in [114643596649, 114643596633, 114643596369, 114643596094]:
-              metadata = get('/actions/jobs/' + str(job))
+          def save():
+              (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
+          jobs = get('/actions/runs/38197133753/jobs?per_page=100')
+          assert jobs['total_count'] == len(jobs['jobs'])
+          (out / 'original-jobs.json').write_text(json.dumps(jobs, indent=2) + '\n')
+          failed = [job for job in jobs['jobs'] if job['conclusion'] == 'failure']
+          assert 0 < len(failed) <= 16
+          for metadata in failed:
               assert metadata['head_sha'] == parent
-              observations = get('/check-runs/' + str(job) + '/annotations?per_page=100')
-              row = {'job': job, 'name': metadata['name'], 'conclusion': metadata['conclusion'], 'annotations': observations}
+              job = metadata['id']
+              row = {'job': job, 'name': metadata['name'], 'conclusion': metadata['conclusion']}
               report['jobs'].append(row)
-              print(json.dumps(row, ensure_ascii=True)[:30000])
-          for path in sorted(pathlib.Path('codex-rs/hepta-control-plane').rglob('*.rs')):
-              lines = path.read_text().splitlines()
-              for index, line in enumerate(lines):
-                  if 'dependency_contracts' in line:
-                      match = {'path': str(path), 'line': index + 1, 'context': lines[max(0,index-8):index+9]}
-                      report['source_matches'].append(match)
-                      print(json.dumps(match, ensure_ascii=True))
-          (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
-          subprocess.run(['git', 'archive', '--format=tar', '-o', str(out / 'control-plane-source.tar'), head,
-                          'AGENTS.md', 'codex-rs/hepta-control-plane', 'codex-rs/hepta-types',
-                          'codex-rs/rustfmt.toml', 'codex-rs/rust-toolchain.toml'], check=True)
-          print('SOURCE_UNCHANGED', subprocess.check_output(['git','status','--porcelain'],text=True) == '')
+              try:
+                  row['annotations'] = get('/check-runs/' + str(job) + '/annotations?per_page=100')
+              except Exception as error:
+                  row['annotation_error'] = type(error).__name__
+              try:
+                  raw = read('/actions/jobs/' + str(job) + '/logs', 32 * 1024 * 1024)
+                  (out / (str(job) + '.log')).write_bytes(raw)
+                  row['log_sha256'] = hashlib.sha256(raw).hexdigest()
+                  lines = raw.decode('utf-8-sig', errors='replace').splitlines()
+                  selected = set()
+                  for index, line in enumerate(lines):
+                      if re.search(r'error\[E|missing field|dependency_contracts|error C[0-9]|fatal error|\[warn\]|panicked at|FAILED|Error:', line):
+                          selected.update(range(max(0, index - 8), min(len(lines), index + 16)))
+                  excerpts = '\n'.join(lines[index] for index in sorted(selected))
+                  (out / (str(job) + '.excerpt.txt')).write_text(excerpts)
+                  print('JOB', job, metadata['name'])
+                  print(excerpts[:30000])
+              except Exception as error:
+                  row['log_error'] = type(error).__name__
+              save()
+          matched = subprocess.run(['git', 'grep', '-n', '-C', '8', 'dependency_contracts', '--', '*.rs', '*.json', '*.py'], capture_output=True, text=True, timeout=30)
+          assert matched.returncode in (0, 1)
+          (out / 'dependency-contracts.txt').write_text(matched.stdout)
+          print(matched.stdout[:30000])
+          files = subprocess.check_output(['git', 'ls-files', '-z'], timeout=30).decode().split('\0')
+          selected = [path for path in files if path and (path.endswith(('.rs', '.toml', '.bzl', '.bazel', '.json', '.yml', '.yaml', '.py', '.md')) or pathlib.Path(path).name in ('AGENTS.md', '.prettierignore', '.prettierrc', 'justfile')) and pathlib.Path(path).is_file() and pathlib.Path(path).stat().st_size <= 2 * 1024 * 1024]
+          subprocess.run(['tar', '-czf', str(out / 'selected-source.tar.gz'), '--null', '-T', '-'], input=('\0'.join(selected) + '\0').encode(), check=True, timeout=60)
+          assert subprocess.check_output(['git','status','--porcelain'],text=True) == ''
+          print('SOURCE_UNCHANGED', head)
           print('REPORT_SHA256', hashlib.sha256((out / 'report.json').read_bytes()).hexdigest())
           PY
+      - uses: pnpm/action-setup@a8198c4bff370c8506180b035930dea56dbd5288
+        with:
+          run_install: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+      - name: Generate only the original pinned formatter repair
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/pon-diagnostic"
+          pnpm install --frozen-lockfile --ignore-scripts > "$out/formatter-install.log" 2>&1
+          pnpm exec prettier --write .github/workflows/hepta-pon-native-pair.yml > "$out/formatter-write.log" 2>&1
+          pnpm run format > "$out/formatter-complete-check.log" 2>&1
+          test "$(git diff --name-only)" = .github/workflows/hepta-pon-native-pair.yml
+          git diff --binary > "$out/formatter.patch"
+          cp .github/workflows/hepta-pon-native-pair.yml "$out/hepta-pon-native-pair.yml"
+          git hash-object .github/workflows/hepta-pon-native-pair.yml > "$out/formatter-blob.txt"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
