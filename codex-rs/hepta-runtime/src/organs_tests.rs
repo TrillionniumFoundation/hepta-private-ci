@@ -753,7 +753,6 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     Ok(())
 }
 
-
 /// The first-party split CNS port must invoke the real runtime topology
 /// executor with a signed single-use grant, not mutate an imitation route
 /// map. This intentionally uses only test-owned keys, candidate and storage.
@@ -766,19 +765,22 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     use std::path::PathBuf;
 
     use codex_hepta_contracts::SignedFinalUseGrant;
-    use codex_hepta_operator_acceptance::{
-        CellSplitCnsLiveRouteV1, CellSplitCnsRouteBindingV1,
-        CellSplitCnsRuntimeAttestationV1, CellSplitCnsRuntimeCommitV1,
-        CellSplitCnsRuntimePortV1, CellSplitExecutionIntentV1,
-        CellSplitExecutionPlanV1, CellSplitExecutionStepV1,
-    };
-    use ed25519_dalek::{Signer as _, SigningKey};
-    use sha2::{Digest as _, Sha256};
+    use codex_hepta_operator_acceptance::CellSplitCnsLiveRouteV1;
+    use codex_hepta_operator_acceptance::CellSplitCnsRouteBindingV1;
+    use codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1;
+    use codex_hepta_operator_acceptance::CellSplitCnsRuntimeCommitV1;
+    use codex_hepta_operator_acceptance::CellSplitCnsRuntimePortV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionIntentV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
+    use ed25519_dalek::Signer as _;
+    use ed25519_dalek::SigningKey;
+    use sha2::Digest as _;
+    use sha2::Sha256;
 
-    use crate::{
-        CellSplitCnsKernelRuntimePortV1, CellSplitCnsKernelWitnessV1,
-        cell_split_cns_live_route_signing_bytes_v1,
-    };
+    use crate::CellSplitCnsKernelRuntimePortV1;
+    use crate::CellSplitCnsKernelWitnessV1;
+    use crate::cell_split_cns_live_route_signing_bytes_v1;
 
     struct DurableTestCnsWitness {
         signer: SigningKey,
@@ -826,9 +828,11 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
                 challenge_nonce: nonce.to_owned(),
                 live_runtime_proof_bytes: Vec::new(),
             };
-            observed.live_runtime_proof_bytes = self.signer.sign(
-                &cell_split_cns_live_route_signing_bytes_v1(&observed)?
-            ).to_bytes().to_vec();
+            observed.live_runtime_proof_bytes = self
+                .signer
+                .sign(&cell_split_cns_live_route_signing_bytes_v1(&observed)?)
+                .to_bytes()
+                .to_vec();
             Ok(observed)
         }
 
@@ -837,11 +841,11 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
             _plan: &CellSplitExecutionPlanV1,
             _binding: &CellSplitCnsRouteBindingV1,
             _intent: &CellSplitExecutionIntentV1,
-        ) -> std::result::Result<
-            (SignedFinalUseGrant, RuntimeTopologyApplyRequestV1),
-            String,
-        > {
-            self.successor.take().ok_or_else(|| "signed successor consumed".into())
+        ) -> std::result::Result<(SignedFinalUseGrant, RuntimeTopologyApplyRequestV1), String>
+        {
+            self.successor
+                .take()
+                .ok_or_else(|| "signed successor consumed".into())
         }
 
         fn persist_actual_runtime_receipt(
@@ -855,8 +859,7 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
                 || actual.successor_generation.get() != plan.child_generation
                 || actual.predecessor_hierarchy_digest.to_string()
                     != binding.predecessor_route_digest
-                || actual.successor_hierarchy_digest.to_string()
-                    != binding.successor_route_digest
+                || actual.successor_hierarchy_digest.to_string() != binding.successor_route_digest
             {
                 return Err("runtime receipt drift".into());
             }
@@ -874,18 +877,26 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
             };
             record.original_runtime_receipt_bytes =
                 CellSplitCnsRuntimeAttestationV1::for_commit(plan, &record)
-                    .canonical_bytes().map_err(str::to_string)?;
-            record.original_runtime_signature_bytes = self.signer.sign(
-                &record.original_runtime_receipt_bytes,
-            ).to_bytes().to_vec();
+                    .canonical_bytes()
+                    .map_err(str::to_string)?;
+            record.original_runtime_signature_bytes = self
+                .signer
+                .sign(&record.original_runtime_receipt_bytes)
+                .to_bytes()
+                .to_vec();
             let bytes = serde_json::to_vec(&record).map_err(|e| e.to_string())?;
             let mut file = fs::OpenOptions::new()
-                .write(true).create_new(true).mode(0o600)
-                .open(&self.original_path).map_err(|e| e.to_string())?;
-            file.write_all(&bytes).and_then(|_| file.sync_all())
+                .write(true)
+                .create_new(true)
+                .mode(0o600)
+                .open(&self.original_path)
+                .map_err(|e| e.to_string())?;
+            file.write_all(&bytes)
+                .and_then(|_| file.sync_all())
                 .map_err(|e| e.to_string())?;
             fs::File::open(self.original_path.parent().ok_or("parent missing")?)
-                .and_then(|dir| dir.sync_all()).map_err(|e| e.to_string())
+                .and_then(|dir| dir.sync_all())
+                .map_err(|e| e.to_string())
         }
 
         fn read_original_commit(
@@ -894,34 +905,31 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         ) -> std::result::Result<Option<CellSplitCnsRuntimeCommitV1>, String> {
             match fs::read(&self.original_path) {
                 Ok(bytes) => serde_json::from_slice(&bytes)
-                    .map(Some).map_err(|e| e.to_string()),
+                    .map(Some)
+                    .map_err(|e| e.to_string()),
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
                 Err(e) => Err(e.to_string()),
             }
         }
 
-        fn current_durable_sequence(
-            &mut self,
-            _cns_id: &str,
-        ) -> std::result::Result<u64, String> {
+        fn current_durable_sequence(&mut self, _cns_id: &str) -> std::result::Result<u64, String> {
             Ok(if self.original_path.exists() { 9 } else { 1 })
         }
     }
 
     let calls = Arc::new(AtomicUsize::new(0));
-    let root = HeptaStateRoot::parse(
-        std::env::temp_dir().join("hepta-cell-split-real-kernel-e2e"),
-    )?;
-    let state: Arc<dyn RuntimeStateAdapter> =
-        Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let root =
+        HeptaStateRoot::parse(std::env::temp_dir().join("hepta-cell-split-real-kernel-e2e"))?;
+    let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
     let runtime = crate::HeptaRuntime::from_adapter(root.clone(), Arc::clone(&state));
     let before = runtime.topology_snapshot()?;
     let successor_host = build_host_generation(
-        root.clone(), Arc::clone(&state), before.generation().next()?,
+        root.clone(),
+        Arc::clone(&state),
+        before.generation().next()?,
     )?;
-    let successor = RuntimeTopologySuccessorV1::new(
-        successor_host.host, successor_host.route,
-    ).map_err(|e| anyhow::anyhow!("{e}"))?;
+    let successor = RuntimeTopologySuccessorV1::new(successor_host.host, successor_host.route)
+        .map_err(|e| anyhow::anyhow!("{e}"))?;
     let expected = successor.snapshot();
     let (governed, candidate_id) =
         governed_topology_for_runtime("cell-split-port", &before, &expected);
@@ -951,8 +959,10 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         ndu_snapshot_digest: "44".repeat(32),
         route_fence_digest: "55".repeat(32),
         owner_ids: [
-            "cas-owner".into(), "migration-owner".into(),
-            "cns-owner".into(), "supervisor-owner".into(),
+            "cas-owner".into(),
+            "migration-owner".into(),
+            "cns-owner".into(),
+            "supervisor-owner".into(),
         ],
     };
     let binding = CellSplitCnsRouteBindingV1 {
@@ -965,11 +975,15 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     let plan_digest = plan.digest().map_err(|e| anyhow::anyhow!("{e}"))?;
     let idempotency_key = format!(
         "{:x}",
-        Sha256::digest(format!(
-            "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
-            plan_digest, CellSplitExecutionStepV1::CnsRouteCutover.index(),
-            previous_receipt_digest,
-        ).as_bytes()),
+        Sha256::digest(
+            format!(
+                "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
+                plan_digest,
+                CellSplitExecutionStepV1::CnsRouteCutover.index(),
+                previous_receipt_digest,
+            )
+            .as_bytes()
+        ),
     );
     let intent = CellSplitExecutionIntentV1 {
         schema: "hepta.learning.cell-split.execution-owner.v1".into(),
@@ -990,22 +1004,32 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         successor: Some((signed_grant, request)),
     };
     let mut port = CellSplitCnsKernelRuntimePortV1::new(
-        runtime.clone(), Arc::clone(&pinned_authority),
-        plan.clone(), binding.clone(), intent.clone(),
-        runtime_signer.verifying_key(), witness,
-    ).map_err(|e| anyhow::anyhow!("{e}"))?;
+        runtime.clone(),
+        Arc::clone(&pinned_authority),
+        plan.clone(),
+        binding.clone(),
+        intent.clone(),
+        runtime_signer.verifying_key(),
+        witness,
+    )
+    .map_err(|e| anyhow::anyhow!("{e}"))?;
     port.publish_once(&plan, &binding, &intent)
         .map_err(|e| anyhow::anyhow!("{e}"))?;
     assert_eq!(runtime.topology_snapshot()?, expected);
     assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
     assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
-    let original = port.read_original_commit(&intent.idempotency_key)?
+    let original = port
+        .read_original_commit(&intent.idempotency_key)?
         .expect("fsynced original runtime receipt");
     port.verify_original_commit(&original)
         .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(original.committed_sequence, port.committed_sequence(&binding.cns_id)?);
+    assert_eq!(
+        original.committed_sequence,
+        port.committed_sequence(&binding.cns_id)?
+    );
     let live = port.inspect_live(&binding.cns_id, &plan.scope_digest, &"aa".repeat(32))?;
-    port.verify_live(&live).map_err(|e| anyhow::anyhow!("{e}"))?;
+    port.verify_live(&live)
+        .map_err(|e| anyhow::anyhow!("{e}"))?;
     assert_eq!(live.generation, plan.child_generation);
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
     assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
@@ -1023,14 +1047,23 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         successor: None,
     };
     let restarted_port = CellSplitCnsKernelRuntimePortV1::new(
-        after_restart, pinned_authority,
-        plan.clone(), binding.clone(), intent.clone(),
-        runtime_signer.verifying_key(), restarted_witness,
-    ).map_err(|e| anyhow::anyhow!("{e}"))?;
+        after_restart,
+        pinned_authority,
+        plan.clone(),
+        binding.clone(),
+        intent.clone(),
+        runtime_signer.verifying_key(),
+        restarted_witness,
+    )
+    .map_err(|e| anyhow::anyhow!("{e}"))?;
     let owner_root = tempfile::tempdir()?;
     let mut owner = codex_hepta_operator_acceptance::CellSplitCnsCutoverOwnerV1::open(
-        owner_root.path(), plan, binding, restarted_port,
-    ).map_err(|e| anyhow::anyhow!("{e}"))?;
+        owner_root.path(),
+        plan,
+        binding,
+        restarted_port,
+    )
+    .map_err(|e| anyhow::anyhow!("{e}"))?;
     use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1 as _;
     assert!(
         owner.read_committed(&intent).is_err(),

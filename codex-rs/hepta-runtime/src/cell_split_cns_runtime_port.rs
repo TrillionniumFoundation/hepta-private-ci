@@ -14,24 +14,29 @@ use std::fmt;
 use std::io::Read as _;
 use std::sync::Arc;
 
-use codex_hepta_contracts::{FinalUseAuthority, SignedFinalUseGrant};
-use codex_hepta_plasticity::{
-    TopologyCandidateKindV2, TopologyCandidateV2, TopologyOperationV2,
-};
-use codex_hepta_operator_acceptance::{
-    CellSplitCnsLiveRouteV1, CellSplitCnsRouteBindingV1,
-    CellSplitCnsRuntimeAttestationV1, CellSplitCnsRuntimeCommitV1,
-    CellSplitCnsRuntimePortV1, CellSplitExecutionIntentV1,
-    CellSplitExecutionPlanV1, CellSplitExecutionStepV1,
-};
-use ed25519_dalek::{Signature, VerifyingKey};
-use sha2::{Digest as _, Sha256};
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_operator_acceptance::CellSplitCnsLiveRouteV1;
+use codex_hepta_operator_acceptance::CellSplitCnsRouteBindingV1;
+use codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1;
+use codex_hepta_operator_acceptance::CellSplitCnsRuntimeCommitV1;
+use codex_hepta_operator_acceptance::CellSplitCnsRuntimePortV1;
+use codex_hepta_operator_acceptance::CellSplitExecutionIntentV1;
+use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
+use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
+use codex_hepta_plasticity::TopologyCandidateKindV2;
+use codex_hepta_plasticity::TopologyCandidateV2;
+use codex_hepta_plasticity::TopologyOperationV2;
 use codex_hepta_types::AuthorityPosture;
+use ed25519_dalek::Signature;
+use ed25519_dalek::VerifyingKey;
+use sha2::Digest as _;
+use sha2::Sha256;
 
-use crate::{
-    HeptaRuntime, RuntimeTopologyApplyReceiptV1,
-    RuntimeTopologyApplyRequestV1, RuntimeTopologySnapshotV1,
-};
+use crate::HeptaRuntime;
+use crate::RuntimeTopologyApplyReceiptV1;
+use crate::RuntimeTopologyApplyRequestV1;
+use crate::RuntimeTopologySnapshotV1;
 
 /// Independently authenticated registry and durable CNS commit source.
 ///
@@ -129,11 +134,22 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         {
             return Err("unbound CNS runtime port configuration".into());
         }
-        Ok(Self { runtime, authority, plan, binding, intent, runtime_key, witness })
+        Ok(Self {
+            runtime,
+            authority,
+            plan,
+            binding,
+            intent,
+            runtime_key,
+            witness,
+        })
     }
 
     fn live_runtime(&self) -> Result<RuntimeTopologySnapshotV1, String> {
-        let observed = self.runtime.topology_snapshot().map_err(|e| e.to_string())?;
+        let observed = self
+            .runtime
+            .topology_snapshot()
+            .map_err(|e| e.to_string())?;
         if observed.route.cns.as_str() != self.binding.cns_id {
             return Err("CNS runtime identity differs from frozen split".into());
         }
@@ -151,17 +167,18 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         Ok(())
     }
 
-    fn signed_route(
-        &mut self,
-        nonce: &str,
-    ) -> Result<CellSplitCnsLiveRouteV1, String> {
+    fn signed_route(&mut self, nonce: &str) -> Result<CellSplitCnsLiveRouteV1, String> {
         if nonce.len() != 64
-            || !nonce.bytes().all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+            || !nonce
+                .bytes()
+                .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
         {
             return Err("invalid CNS live-state challenge".into());
         }
         let actual = self.live_runtime()?;
-        let signed = self.witness.signed_current_route(&actual, nonce)
+        let signed = self
+            .witness
+            .signed_current_route(&actual, nonce)
             .map_err(|e| e.to_string())?;
         if signed.cns_id != self.binding.cns_id
             || signed.scope_digest != self.plan.scope_digest
@@ -194,13 +211,11 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         Ok(signed)
     }
 
-    fn verify_route_signature(
-        &self,
-        route: &CellSplitCnsLiveRouteV1,
-    ) -> Result<(), String> {
-        let signature = Signature::from_slice(&route.live_runtime_proof_bytes)
-            .map_err(|e| e.to_string())?;
-        self.runtime_key.verify_strict(&signed_route_payload(route)?, &signature)
+    fn verify_route_signature(&self, route: &CellSplitCnsLiveRouteV1) -> Result<(), String> {
+        let signature =
+            Signature::from_slice(&route.live_runtime_proof_bytes).map_err(|e| e.to_string())?;
+        self.runtime_key
+            .verify_strict(&signed_route_payload(route)?, &signature)
             .map_err(|_| "CNS runtime live-state signature is invalid".into())
     }
 }
@@ -225,7 +240,8 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
         self.verify_pin(plan, intent)?;
-        self.witness.verify_preconditions(plan, intent)
+        self.witness
+            .verify_preconditions(plan, intent)
             .map_err(|e| e.to_string())
     }
 
@@ -241,10 +257,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         self.signed_route(challenge_nonce)
     }
 
-    fn verify_live(
-        &mut self,
-        observed: &CellSplitCnsLiveRouteV1,
-    ) -> Result<(), Self::Error> {
+    fn verify_live(&mut self, observed: &CellSplitCnsLiveRouteV1) -> Result<(), Self::Error> {
         self.verify_route_signature(observed)?;
         if self.signed_route(&observed.challenge_nonce)? != *observed {
             return Err("CNS serving route changed before verification".into());
@@ -273,15 +286,23 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         {
             return Err("predecessor CNS host no longer serves the frozen route".into());
         }
-        if self.witness.read_original_commit(&intent.idempotency_key)
-            .map_err(|e| e.to_string())?.is_some()
+        if self
+            .witness
+            .read_original_commit(&intent.idempotency_key)
+            .map_err(|e| e.to_string())?
+            .is_some()
         {
             return Err("already committed CNS cutover cannot run again".into());
         }
-        let (grant, request) = self.witness
+        let (grant, request) = self
+            .witness
             .take_admitted_successor(plan, binding, intent)
             .map_err(|e| e.to_string())?;
-        let selected = request.governed.proposal.candidates.iter()
+        let selected = request
+            .governed
+            .proposal
+            .candidates
+            .iter()
             .find(|candidate| candidate.candidate_id == request.candidate_id)
             .ok_or("admitted topology omits selected CellSplit candidate")?;
         if !is_typed_cell_split_candidate_v1(selected) {
@@ -308,13 +329,13 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         // immediately before consuming the signed final-use grant.
         self.verify_preconditions(plan, intent)?;
         let refreshed = self.signed_route(&secure_cns_nonce()?)?;
-        if refreshed.generation != plan.parent_generation
-            || self.live_runtime()? != before {
+        if refreshed.generation != plan.parent_generation || self.live_runtime()? != before {
             return Err("CNS route changed after admitted successor preparation".into());
         }
-        let actual = self.runtime.apply_governed_topology(
-            &self.authority, &grant, request,
-        ).map_err(|e| e.to_string())?;
+        let actual = self
+            .runtime
+            .apply_governed_topology(&self.authority, &grant, request)
+            .map_err(|e| e.to_string())?;
         // This is the genuine live runtime operation receipt, *not* a digest
         // fixture. It must describe precisely the transition just observed.
         if actual.authority != AuthorityPosture::DENY_ALL
@@ -335,7 +356,8 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         }
         // If this externally owned durable fsync fails after runtime mutation,
         // the effect is ambiguous; no second cutover or positive receipt.
-        self.witness.persist_actual_runtime_receipt(plan, binding, intent, &actual)
+        self.witness
+            .persist_actual_runtime_receipt(plan, binding, intent, &actual)
             .map_err(|e| e.to_string())?;
         Ok(())
     }
@@ -347,7 +369,9 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         if key != self.intent.idempotency_key {
             return Err("unexpected CNS original idempotency key".into());
         }
-        self.witness.read_original_commit(key).map_err(|e| e.to_string())
+        self.witness
+            .read_original_commit(key)
+            .map_err(|e| e.to_string())
     }
 
     fn verify_original_commit(
@@ -367,14 +391,19 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         }
         let signature = Signature::from_slice(&commit.original_runtime_signature_bytes)
             .map_err(|e| e.to_string())?;
-        self.runtime_key.verify_strict(&commit.original_runtime_receipt_bytes, &signature)
+        self.runtime_key
+            .verify_strict(&commit.original_runtime_receipt_bytes, &signature)
             .map_err(|_| "original CNS runtime commit signature invalid".to_string())?;
-        let readback = self.witness.read_original_commit(&self.intent.idempotency_key)
+        let readback = self
+            .witness
+            .read_original_commit(&self.intent.idempotency_key)
             .map_err(|e| e.to_string())?;
         if readback.as_ref() != Some(commit) {
             return Err("original CNS commit no longer exists in durable owner".into());
         }
-        let frontier = self.witness.current_durable_sequence(&self.binding.cns_id)
+        let frontier = self
+            .witness
+            .current_durable_sequence(&self.binding.cns_id)
             .map_err(|e| e.to_string())?;
         if frontier == 0 || frontier < commit.committed_sequence {
             return Err("signed CNS receipt exceeds independently retained frontier".into());
@@ -386,7 +415,8 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         if cns_id != self.binding.cns_id {
             return Err("CNS sequence owner changed".into());
         }
-        self.witness.current_durable_sequence(cns_id)
+        self.witness
+            .current_durable_sequence(cns_id)
             .map_err(|e| e.to_string())
     }
 }

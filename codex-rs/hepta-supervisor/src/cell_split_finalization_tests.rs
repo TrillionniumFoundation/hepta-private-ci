@@ -544,10 +544,10 @@ fn real_supervisor_effect_inputs() -> (
     codex_hepta_operator_acceptance::CellSplitExecutionIntentV1,
     Digest32,
 ) {
-    use codex_hepta_operator_acceptance::{
-        CellSplitExecutionIntentV1, CellSplitExecutionPlanV1, CellSplitExecutionStepV1,
-        CellSplitSupervisorFenceBindingV1,
-    };
+    use codex_hepta_operator_acceptance::CellSplitExecutionIntentV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
+    use codex_hepta_operator_acceptance::CellSplitSupervisorFenceBindingV1;
     use sha2::Digest as _;
 
     let real = binding();
@@ -603,11 +603,12 @@ fn real_supervisor_effect_inputs() -> (
 #[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
 fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
+    use codex_hepta_operator_acceptance::CellSplitCnsRuntimeCommitV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionReceiptV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
     use codex_hepta_operator_acceptance::CellSplitSupervisorRuntimePortV1;
-    use codex_hepta_operator_acceptance::{
-        CellSplitCnsRuntimeCommitV1, CellSplitExecutionReceiptV1, CellSplitExecutionStepV1,
-        cell_split_execution_receipt_digest_v1, cell_split_execution_signing_payload_v1,
-    };
+    use codex_hepta_operator_acceptance::cell_split_execution_receipt_digest_v1;
+    use codex_hepta_operator_acceptance::cell_split_execution_signing_payload_v1;
     use ed25519_dalek::Signer as _;
     use ed25519_dalek::SigningKey;
     use sha2::Digest as _;
@@ -883,9 +884,8 @@ fn real_journal_port_links_signed_cns_predecessor_and_original_runtime_bytes() {
 #[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
 fn real_journal_port_finalizes_authenticated_fourth_step_and_reopens() {
-    use codex_hepta_operator_acceptance::{
-        CellSplitDurableEffectBackendV1, CellSplitSupervisorFenceOwnerV1,
-    };
+    use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1;
+    use codex_hepta_operator_acceptance::CellSplitSupervisorFenceOwnerV1;
     use ed25519_dalek::SigningKey;
     use std::os::unix::fs::PermissionsExt as _;
 
@@ -1019,10 +1019,11 @@ fn real_journal_port_rejects_forged_nonce_and_unpinned_cutover() {
 #[cfg(all(unix, feature = "cell-split-supervisor-port"))]
 #[test]
 fn real_journal_port_signed_rpc_reconciles_original_after_restart() {
-    use codex_hepta_operator_acceptance::{
-        CellSplitEffectServiceV1, CellSplitExecutionPortV1, CellSplitExecutionStepV1,
-        CellSplitSupervisorFenceOwnerV1, CellSplitUnixEffectPortV1,
-    };
+    use codex_hepta_operator_acceptance::CellSplitEffectServiceV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionPortV1;
+    use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
+    use codex_hepta_operator_acceptance::CellSplitSupervisorFenceOwnerV1;
+    use codex_hepta_operator_acceptance::CellSplitUnixEffectPortV1;
     use ed25519_dalek::SigningKey;
     use std::os::unix::fs::PermissionsExt as _;
     use std::os::unix::net::UnixListener;
