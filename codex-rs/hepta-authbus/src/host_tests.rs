@@ -449,3 +449,64 @@ async fn owner_child_process_holds_fence() {
     std::fs::write(marker, b"ready").expect("write child marker");
     tokio::time::sleep(Duration::from_secs(60)).await;
 }
+
+#[test]
+fn failed_create_does_not_unlink_an_existing_checkpoint() {
+    let paths = private_paths();
+    let checkpoint = super::AuthorityCheckpoint {
+        generation: 1,
+        digest: Digest32::of_bytes(b"existing-checkpoint"),
+    };
+    super::create_private_checkpoint(&paths.checkpoint, "create-owner", checkpoint)
+        .expect("create initial checkpoint");
+    let before = std::fs::read(&paths.checkpoint).expect("checkpoint bytes");
+    let unrelated = paths.checkpoint.with_file_name("unrelated-checkpoint");
+    std::fs::write(&unrelated, b"unrelated").expect("unrelated file");
+
+    assert!(
+        super::create_private_checkpoint(&paths.checkpoint, "other-owner", checkpoint).is_err()
+    );
+    pretty_assertions::assert_eq!(
+        std::fs::read(&paths.checkpoint).expect("checkpoint retained"),
+        before
+    );
+    pretty_assertions::assert_eq!(
+        std::fs::read(&unrelated).expect("unrelated file retained"),
+        b"unrelated"
+    );
+}
+
+#[test]
+fn failed_temporary_create_preserves_a_preexisting_file() {
+    let paths = private_paths();
+    let mut next = super::AuthorityCheckpoint {
+        generation: 1,
+        digest: Digest32::of_bytes(b"existing-checkpoint"),
+    };
+    super::create_private_checkpoint(&paths.checkpoint, "temp-owner", next)
+        .expect("create initial checkpoint");
+    let before = std::fs::read(&paths.checkpoint).expect("checkpoint bytes");
+    next.generation += 1;
+    let name = paths
+        .checkpoint
+        .file_name()
+        .expect("file name")
+        .to_str()
+        .expect("UTF-8 name");
+    let temporary = paths.checkpoint.parent().expect("parent").join(format!(
+        ".{name}.{}.{}.tmp",
+        std::process::id(),
+        next.generation,
+    ));
+    std::fs::write(&temporary, b"preexisting").expect("existing temporary file");
+
+    assert!(super::write_private_atomic(&paths.checkpoint, "temp-owner", next).is_err());
+    pretty_assertions::assert_eq!(
+        std::fs::read(&temporary).expect("preexisting file retained"),
+        b"preexisting"
+    );
+    pretty_assertions::assert_eq!(
+        std::fs::read(&paths.checkpoint).expect("checkpoint retained"),
+        before
+    );
+}

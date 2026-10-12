@@ -838,13 +838,14 @@ fn create_private_checkpoint(
     let parent = path
         .parent()
         .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    // A failed exclusive create must not remove a checkpoint we do not own.
+    let mut file = OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(path)
+        .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     let result = (|| -> Result<(), AuthBusAuthorityError> {
-        let mut file = OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(path)
-            .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
         file.write_all(&payload)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
         file.sync_all()
@@ -907,13 +908,14 @@ fn write_private_atomic(
         next.generation
     ));
     let payload = checkpoint_payload(owner_id, next)?;
+    // A failed exclusive create must not remove a temporary file we do not own.
+    let mut file = OpenOptions::new()
+        .create_new(true)
+        .write(true)
+        .mode(0o600)
+        .open(&temporary)
+        .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     let result = (|| -> Result<(), AuthBusAuthorityError> {
-        let mut file = OpenOptions::new()
-            .create_new(true)
-            .write(true)
-            .mode(0o600)
-            .open(&temporary)
-            .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
         checkpoint_failpoint(1)?;
         file.write_all(&payload)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
