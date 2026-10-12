@@ -110,3 +110,24 @@ Every artifact in this directory has `DENY_ALL` production authority.
 weights or future outcome data, and no target host-native full end-to-end
 measurement. Rust full-matrix CI and final-use/signed CAS convergence must
 also pass on the exact source SHA; synthetics are never a substitute.
+
+
+## Exact stacked source/base convergence (P0)
+
+A source-head research test success is **not** evidence that this stacked
+candidate can be merged. The checked two-parent GitHub prospective merge must
+bind (a) the **current**, not webhook-historical, upstream #1498 source SHA,
+(b) this exact dynamic-learning head SHA, and (c) the verified
+`git merge-tree` result. The architecture gate remains fail-closed if either
+parent or the merged tree differs, or the base changes during verification.
+
+The earlier architecture failure [run 38272131751](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38272131751)
+verified this PR's source head but rejected its stale-base prospective
+merge. It must not be relabelled green because native Q24 and offline learning
+tests passed independently. Refreshing the current source candidate triggers
+a new head/base comparison; an actual non-stale **base-merge** success and
+complete blocking CI are still required before even considering integration.
+
+This document adds no model weights, unreviewed data, real Encoder results,
+signed NDU, CAS/final-use authority, or measured 64–4096 Cell target-host
+throughput. This PR remains Draft/Shadow and never promotes automatically.
