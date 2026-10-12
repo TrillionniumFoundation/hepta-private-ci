@@ -294,7 +294,9 @@ fn minimum_batch_input_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Re
             .map_err(|_| Error::ArithmeticOverflow)?
             .checked_mul(8)
             .ok_or(Error::ArithmeticOverflow)?;
-        bytes = bytes.checked_add(item_bytes).ok_or(Error::ArithmeticOverflow)?;
+        bytes = bytes
+            .checked_add(item_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
     }
     Ok(bytes)
 }
@@ -403,8 +405,18 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         }
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
 
-        let observed = driver_result?;
+        // A backend error or incomplete return does not prove the physical
+        // execution had no side effects. Release the counted slots above,
+        // then fence this worker until an independent owner reconciles it.
+        let observed = match driver_result {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
         if observed.len() != requests.len() {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         let mut outputs = Vec::with_capacity(requests.len());
@@ -412,6 +424,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             if batch_result.request_id != request.authorization.request_id
                 || batch_result.payload_digest != request.authorization.payload_digest
             {
+                self.poisoned = true;
                 return Err(Error::PayloadMismatch);
             }
             let features = batch_result.feature;
@@ -419,6 +432,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 || features.encoder_digest != request.snapshot.identity.encoder_digest.to_string()
                 || features.head_digest != request.head_digest
             {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
             }
             let status = if !features.terminal_observed {
@@ -437,10 +451,17 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                         .chain(features.prediction_q24.iter())
                         .any(|v| !(-MAX_FEATURE_ABS_Q24..=MAX_FEATURE_ABS_Q24).contains(v))
                 {
+                    self.poisoned = true;
                     return Err(Error::FeatureOutputMismatch);
                 }
             } else if !features.drive_q24.is_empty() || !features.prediction_q24.is_empty() {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
+            }
+            if status == ExecutionStatus::Indeterminate {
+                // Preserve the nonterminal observation but disallow another
+                // physical dispatch until a new generation/owner reconciles.
+                self.poisoned = true;
             }
             let identity_digest = request
                 .snapshot
@@ -577,10 +598,16 @@ mod tests {
         let b = req("cell.b", "request.b", Arc::clone(&shared));
         assert!(Arc::ptr_eq(&a.snapshot, &b.snapshot));
         // Two Q24 output vectors, width two, for each of two Cells.
-        assert_eq!(minimum_batch_output_bytes_v2(&[a.clone(), b.clone()]), Ok(64));
+        assert_eq!(
+            minimum_batch_output_bytes_v2(&[a.clone(), b.clone()]),
+            Ok(64)
+        );
         assert_eq!(minimum_batch_output_bytes_v2(&[]), Ok(0));
         // The shared Arc allocation is counted once regardless of Cell count.
-        assert_eq!(minimum_batch_input_bytes_v2(&[a.clone(), b.clone()]), Ok(16));
+        assert_eq!(
+            minimum_batch_input_bytes_v2(&[a.clone(), b.clone()]),
+            Ok(16)
+        );
         // Identical bytes in a different Arc allocation still cost memory.
         let mut independent = b;
         let mut copied_snapshot = (*independent.snapshot).clone();

@@ -392,7 +392,10 @@ mod tests {
         assert_eq!(cache.resident_bytes(), 16);
         assert!(cache.get(20, &old_id).expect("expired lookup").is_none());
         assert!(cache.get(20, &new_id).expect("new lookup").is_some());
-        let live_hit = cache.get(20, &live_id).expect("live lookup").expect("present");
+        let live_hit = cache
+            .get(20, &live_id)
+            .expect("live lookup")
+            .expect("present");
         assert!(Arc::ptr_eq(&live_snapshot, &live_hit));
         assert_eq!(old_snapshot.features_q24.as_ref(), &[1]);
     }

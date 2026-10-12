@@ -894,8 +894,12 @@ mod tests {
         // Two equal-content but physically distinct Arc allocations cannot
         // exploit that grant to bypass memory admission before driver entry.
         let mut memory_driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("memory driver");
-        memory_driver.register_head(first.clone()).expect("memory head a");
-        memory_driver.register_head(second.clone()).expect("memory head b");
+        memory_driver
+            .register_head(first.clone())
+            .expect("memory head a");
+        memory_driver
+            .register_head(second.clone())
+            .expect("memory head b");
         let memory_grant = ResourceGrant {
             grant_id: "grant.shared-memory".into(),
             authority_epoch: 2,
@@ -1029,7 +1033,7 @@ mod tests {
         assert!(worker.active_requests.is_empty());
 
         let results = worker
-            .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
+            .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a.clone(), b.clone()])
             .expect("batched references");
         assert_eq!(results.len(), 2);
         assert_eq!(results[0].drive_q24, vec![Q24 / 2]);
@@ -1040,6 +1044,33 @@ mod tests {
         assert!(!results[0].authority.grants_any());
         assert_eq!(worker.driver.batch_calls(), 1);
         assert_eq!(cache.resident_bytes(), 16);
+
+        // The second Cell's Head belongs to cell.b; swapping in cell.a's
+        // digest with a freshly recomputed lease reaches the real driver,
+        // which detects the mismatch after entry. The worker must not treat
+        // this ambiguous execution as a safe request-local rejection.
+        let mut wrong_head = b;
+        wrong_head.head_digest = a.head_digest.clone();
+        let payload = super::super::canonical_shared_neuron_payload_digest_v2(&wrong_head)
+            .expect("rebind wrong head");
+        wrong_head.authorization.payload_digest = payload.clone();
+        wrong_head.authorization.lease_payload_digest = payload;
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![a.clone(), wrong_head],
+            ),
+            Err(Error::FeatureOutputMismatch)
+        );
+        assert_eq!(worker.driver.batch_calls(), 2);
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(100, "model.gated", vec![a]),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(worker.driver.batch_calls(), 2);
     }
 
     #[test]
