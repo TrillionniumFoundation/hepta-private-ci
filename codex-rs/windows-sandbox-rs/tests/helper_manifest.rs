@@ -3,6 +3,7 @@
 use anyhow::Context;
 use anyhow::Result;
 use std::io;
+use std::io::BufRead;
 use std::os::windows::ffi::OsStrExt;
 use std::path::PathBuf;
 use windows_sys::Win32::Foundation::FreeLibrary;
@@ -56,9 +57,12 @@ fn find_exact_manifest_runfile(
     if logical_path.is_empty() || logical_path.contains("../") {
         return Ok(None);
     }
-    let manifest = std::fs::read_to_string(manifest_path)
-        .with_context(|| format!("read Bazel runfiles manifest {}", manifest_path.display()))?;
-    for entry in manifest.lines() {
+    // Windows Bazel can expose a very large manifest; stream it rather than
+    // materializing the entire runfiles graph just to validate one executable.
+    let manifest = std::fs::File::open(manifest_path)
+        .with_context(|| format!("open Bazel runfiles manifest {}", manifest_path.display()))?;
+    for entry in std::io::BufReader::new(manifest).lines() {
+        let entry = entry.context("read Bazel runfiles manifest entry")?;
         let Some((logical, actual)) = entry.split_once(' ') else {
             continue;
         };
