@@ -128,3 +128,38 @@ be spent on retrieval/source-window improvement versus Reader capability.
 It does not replace the original matched frozen Reader `k4`/`k8` run,
 choose a serving policy, validate citation semantics, or authorize a
 production rollout. `production_accepted=false` throughout.
+
+## Evidence-based BF16 runner pool candidate (2026-10-12)
+
+The latest frozen LoCoMo Qwen job
+[#38263341402](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38263341402)
+passed the source/code `checks` job, then failed the **CPU BF16 host gate**
+before loading a model. A failed-jobs-only retry (attempt 2, same generating
+commit `093401c9aae9c2d38de17bc7755ab516fe1efd23`) again received an
+`AMD EPYC 9V74 80-Core Processor` runner whose visible CPU records had no
+accelerated BF16 feature flags. Both attempts recorded **zero new Qwen
+generations** and retained their host-eligibility evidence; the scorer was
+correctly skipped. These are hardware admission failures, not incorrect
+Reader answers or completed 16-question comparisons.
+
+The separately completed read-only hosted scout
+[#38224160872](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224160872)
+recorded an **eligible `ubuntu-24.04`** runner on an AMD EPYC 9V45 CPU
+with reported `avx512_bf16` support (artifact `11738073586`). It also
+recorded an eligible `ubuntu-22.04` Intel 8573C host (artifact
+`11734949120`); hence no Ubuntu image guarantees a CPU feature or
+reserves an eligible host. The proposed experimental change is *only* to
+sample the `ubuntu-24.04` hosted runner pool for the LoCoMo `reader` job.
+The same `strong_rag_host_gate.py` remains **mandatory before any model
+download**. No CPU fallback, quantization, precision relaxation, special
+token budget, alternate Qwen weights, changed answer scoring, or posthoc
+citation repair is permitted.
+
+Source checks, immutable public-history and frozen k4/k8 decisions, Qwen
+BF16/eager model and decoder pins, original 16-question/32-condition
+attempt denominator, journaling-before-answer-labels, separate scoring,
+and repository-wide `blocking-ci` remain unchanged. An additional queued
+or failed host is not model evidence; only completed original model
+answers with separate scoring and complete source/host receipts can be
+reported. Neither published LoCoMo proxies nor this runner change
+qualify independent future sources or production.
