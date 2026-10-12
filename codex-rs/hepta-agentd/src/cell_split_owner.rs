@@ -36,6 +36,9 @@ const MAX_LEDGER_SIZE: usize = 256 * 1024;
 pub struct CellSplitPlanV1 {
     pub split_id: StableId,
     pub scope_digest: Digest32,
+    /// Storage namespace authenticated by the immutable Artifact Owner,
+    /// distinct from the logical Split scope.
+    pub artifact_storage_binding_digest: Digest32,
     pub predecessor_id: StableId,
     pub child_id: StableId,
     /// Independently registered artifact lineage, never inferred from Cell IDs
@@ -71,6 +74,7 @@ impl CellSplitPlanV1 {
             || self.predecessor_generation.next() != Ok(self.child_generation)
             || [
                 self.scope_digest,
+                self.artifact_storage_binding_digest,
                 self.objective_digest,
                 self.no_change_baseline_digest,
                 self.evaluation_dataset_digest,
@@ -108,6 +112,7 @@ impl CellSplitPlanV1 {
         bytes.extend_from_slice(&self.minimum_future_window_micros.to_be_bytes());
         for value in [
             self.scope_digest,
+            self.artifact_storage_binding_digest,
             self.objective_digest,
             self.no_change_baseline_digest,
             self.evaluation_dataset_digest,
@@ -166,7 +171,8 @@ impl CellSplitPlanV1 {
     ) -> Result<(), CellSplitErrorV1> {
         self.validate()?;
         let manifest = &candidate.spec().manifest;
-        if manifest.artifact_id != self.child_artifact_id
+        if current.receipt().binding != self.artifact_storage_binding_digest
+            || manifest.artifact_id != self.child_artifact_id
             || manifest.predecessor_id.as_ref() != Some(&self.predecessor_artifact_id)
             || manifest.generation != self.child_generation
             || manifest.content_digest != self.child_artifact_digest
