@@ -56,8 +56,20 @@ def audit(metadata, sdk_root, hepta_root):
         by_name.setdefault(item["name"], []).append(item)
     if by_name.get("anymap2"):
         errors.append("RUSTSEC_2026_0319_ANYMAP2_STILL_PRESENT")
-    if not by_name.get("anymap3"):
-        errors.append("MAINTAINED_ANYMAP3_ABSENT")
+    if len(by_name.get("anymap3", [])) != 1:
+        errors.append("MISSING_OR_DUPLICATE_MAINTAINED_ANYMAP3")
+    # Guard the *whole* resolved Matrix family, not only four foreground
+    # packages. An unnoticed 0.18 common/store-encryption crate would retain
+    # transitive old crypto/SQLite assumptions despite a 0.19 SDK label.
+    for name, versions in by_name.items():
+        if not name.startswith("matrix-sdk-"):
+            continue
+        for item in versions:
+            try:
+                if version_number(item.get("version"))[:2] != (0, 19):
+                    errors.append("MIXED_MATRIX_FAMILY_PACKAGE_" + name.upper().replace("-", "_"))
+            except ValueError:
+                errors.append("INVALID_MATRIX_FAMILY_PACKAGE_" + name.upper().replace("-", "_"))
     for name in (*SDK_FAMILY, *HEPTA_CALLERS):
         if len(by_name.get(name, [])) != 1:
             errors.append("MISSING_OR_DUPLICATE_" + name.upper().replace("-", "_"))
