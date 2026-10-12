@@ -1509,3 +1509,32 @@ diagnostic changes neither the original six-arm training nor policy
 denominator; even a positive token-F1 difference does NOT certify semantic
 citation correctness, prospective family generalization or production
 suitability. `production_accepted=false`.
+
+## Pinned pairwise Shadow: deduplicate checkpoint and arm repetitions
+
+The immutable strictly-as-of native experiment at source `6235ccfb...`
+contains **192 source-only pairwise Shadow decisions**, two research Heads
+across the same 16/32/48 checkpoints and original 32 evaluation questions.
+Its **19 changed top-1 observations** involve just **five distinct
+questions** across four observed document-family labels. The five
+published weak-document support improvement events are **not five
+independent solved questions**. Four occurred on the *same one test
+question* across two Heads and two checkpoints, and one occurred in
+the already exposed select partition. Transfer has zero supported gains.
+Exactly **two distinct questions** account for all five gain events,
+including just **one** in test and **zero** in transfer.
+
+The `stem_pairwise_unique_questions.py` post-hoc audit uses only the
+original 192 label-blind source choices and the historical **aggregate**
+eight-question weak-source counters. It computes provable lower/upper
+bounds on the number of distinct improved source questions. It does
+not fabricate a per-question gain label when an aggregate has two
+flipped candidates but only one weak-source improvement. The review
+worklist contains original and Shadow top-1 candidate indices, repeated
+stage/arm IDs and source-family labels, but no answer, supporting
+excerpt, independent reviewer verdict or semantic citation score.
+
+The separate pinned archive audit enforces the historical exact
+19/5/2 counts while retaining the verified original 576 policy rows,
+HEAD and source-tree hashes, and all actual Head artifacts. This does
+not tune a new ranking policy or justify Cell scale-out.

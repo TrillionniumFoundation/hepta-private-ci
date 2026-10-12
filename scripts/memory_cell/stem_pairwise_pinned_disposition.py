@@ -13,6 +13,7 @@ from pathlib import Path
 
 from stem_audit_archive import PinnedArchive, require
 from stem_native_nonpromotion import audit_nonpromotion
+from stem_pairwise_unique_questions import unique_shadow_question_bounds
 
 SOURCE = "6235ccfb3ffc495c45284ff13f1e98b1644e31c2"
 TREE = "fcb329b7416b75d49624e500d4079f076fc86286"
@@ -284,6 +285,7 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
         and nonpromotion["scale_out_permitted"] is False,
         "original frozen Reader policy or nonpromotion verdict changed",
     )
+    distinct = unique_shadow_question_bounds(plan, choices, posthoc)
     return dict(
         schema="hepta.stem-native-pairwise-pinned-disposition.v1",
         source_commit=SOURCE, registered_stages=list(STAGES),
@@ -297,6 +299,7 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
         original_v1_not_relabelled_as_v2=True,
         shadow_reader_model_calls=0,
         observed_weak_document_source_counts=dict(total),
+        distinct_question_shadow=distinct,
         by_stage_phase_arm=results,
         original_arms_no_independent_task_superiority=not nonpromotion[
             "any_aggregate_source_or_answer_gain"
@@ -331,6 +334,19 @@ def audit_pinned_archive(path):
             artifact.json("comparison/pairwise-shadow-posthoc-source-support.json"),
             artifact.json("comparison/report.json"),
             saved,
+        )
+        distinct = result["distinct_question_shadow"]
+        require(
+            distinct["original_shadow_decision_count"] == 192
+            and distinct["repeated_rank_flip_events"] == 19
+            and distinct["distinct_changed_question_count"] == 5
+            and distinct["weak_document_source_gain_events"] == 5
+            and distinct["weak_document_source_regression_events"] == 0
+            and distinct["distinct_question_gain_bounds"] == [2, 2]
+            and distinct["distinct_test_transfer_question_gain_bounds"] == [1, 1]
+            and distinct["per_phase"]["test"]["weak_gain_events"] == 4
+            and distinct["per_phase"]["transfer"]["weak_gain_events"] == 0,
+            "pinned 192-event Shadow uniqueness drift",
         )
         result["transport_zip_sha256"] = artifact.sha256
         result["verified_sha256_manifest_entries"] = artifact.manifest_entries
