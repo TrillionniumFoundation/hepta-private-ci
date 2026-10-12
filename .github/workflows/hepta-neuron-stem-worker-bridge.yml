@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'codex-rs/hepta-infer-core/**'
-      - 'codex-rs/hepta-infer-worker-host/**'
-      - 'codex-rs/hepta-context-compiler/**'
-      - 'codex-rs/hepta-memory/**'
-      - 'codex-rs/hepta-automation/**'
-      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
-      - 'codex-rs/ext/hepta-memory/**'
-      - 'codex-rs/hepta-agentd/src/test_support.rs'
-      - 'qualification/neuron-stem/stem_worker_binding.py'
-      - 'qualification/neuron-stem/test_stem_worker_binding.py'
-      - '.github/workflows/hepta-neuron-stem-worker-bridge.yml'
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-context-compiler/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-agentd/src/automation_effect_host.rs"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/hepta-agentd/src/test_support.rs"
+      - "qualification/neuron-stem/stem_worker_binding.py"
+      - "qualification/neuron-stem/test_stem_worker_binding.py"
+      - ".github/workflows/hepta-neuron-stem-worker-bridge.yml"
 
 permissions:
   contents: read
