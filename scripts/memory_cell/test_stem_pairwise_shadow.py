@@ -1,6 +1,5 @@
 """Real CPU PyTorch pairwise-source Shadow Head regressions; not task gains."""
 
-from dataclasses import replace
 import unittest
 
 import torch
