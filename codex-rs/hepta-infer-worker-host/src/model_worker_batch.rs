@@ -178,14 +178,33 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
             .get_mut(model_id)
             .ok_or(Error::ModelNotLoaded)?
             .active_requests -= count;
-        let executed = executed?;
+        let executed = match executed {
+            Ok(value) => value,
+            Err(_) => {
+                // A driver error does not prove that the physical batch never
+                // began; prevent replay of any member in this generation.
+                self.execution_indeterminate = true;
+                return Err(Error::ExecutionIndeterminate);
+            }
+        };
 
         if executed.batch_digest != batch_digest
             || executed.members.len() != count
             || executed.observed_peak_memory_bytes > self.grant.maximum_memory_bytes
             || executed.observed_peak_memory_bytes < handle.observed_memory_bytes
         {
+            self.execution_indeterminate = true;
             return Err(Error::FeatureBatchMismatch);
+        }
+        if executed
+            .members
+            .iter()
+            .any(|member| !member.observation.terminal_observed)
+        {
+            // A partially observed batch cannot be split into safe
+            // successes/retries without an independent execution ledger.
+            self.execution_indeterminate = true;
+            return Err(Error::ExecutionIndeterminate);
         }
 
         let mut receipts = Vec::with_capacity(count);
@@ -194,13 +213,15 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
                 || member.input_digest != request.input_digest
                 || member.observation.observed_memory_bytes > executed.observed_peak_memory_bytes
             {
+                self.execution_indeterminate = true;
                 return Err(Error::FeatureBatchMismatch);
             }
             let observation = member.observation;
-            let status = if !observation.terminal_observed {
-                ExecutionStatus::Indeterminate
-            } else if observation.succeeded {
-                validate_neuron_feature_output(&request, &observation)?;
+            let status = if observation.succeeded {
+                if let Err(error) = validate_neuron_feature_output(&request, &observation) {
+                    self.execution_indeterminate = true;
+                    return Err(error);
+                }
                 ExecutionStatus::Succeeded
             } else {
                 ExecutionStatus::Failed
@@ -222,7 +243,13 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
                 latency_micros: observation.latency_micros,
                 terminal_observed: observation.terminal_observed,
             };
-            receipts.push(project_neuron_feature_receipt(request, checked)?);
+            match project_neuron_feature_receipt(request, checked) {
+                Ok(receipt) => receipts.push(receipt),
+                Err(error) => {
+                    self.execution_indeterminate = true;
+                    return Err(error);
+                }
+            }
         }
         Ok(NeuronBackendBatchReceipt {
             batch_digest,
