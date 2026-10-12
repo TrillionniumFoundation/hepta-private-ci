@@ -609,20 +609,40 @@ fn signed_owner_transcript_for_host(
             3 => {
                 // The Supervisor original journal is signed with a *distinct*
                 // key and a domain-separated payload, not the outer owner key.
-                let checkpoint = serde_json::json!({
+                let mut checkpoint = serde_json::json!({
                     "schemaVersion": 1,
                     "operationId": plan.split_id,
                     "domainId": "scope.fixture",
+                    "sourceWriter": "cell.parent",
+                    "targetWriter": "cell.child",
                     "oldGeneration": plan.parent_generation,
                     "newGeneration": plan.child_generation,
                     "authorityEpoch": 7,
+                    "migrationPlanDigest": "a1".repeat(32),
+                    "schemaDigest": "a2".repeat(32),
+                    "rollbackPredecessorDigest": "a3".repeat(32),
+                    "revision": 10,
                     "phase": "retired",
-                    "revision": 4,
+                    "outboxWatermark": 42,
                     "unknownEffectCount": 0,
-                    "receiptDigest": "99".repeat(32),
+                    "evidenceDigest": "a4".repeat(32),
+                    "previousReceiptDigest": "a5".repeat(32),
+                    "receiptDigest": "00".repeat(32),
                 });
-                let checkpoint_bytes =
-                    canonical_json(&checkpoint).expect("original Supervisor journal");
+                let decode = |value: serde_json::Value| {
+                    serde_json::from_value::<crate::cell_split_observer_join::OriginalSupervisorCheckpointV1>(
+                        value,
+                    )
+                    .expect("complete durable handoff schema")
+                };
+                let digest = decode(checkpoint.clone())
+                    .content_digest_v1()
+                    .expect("journal digest");
+                checkpoint["receiptDigest"] = serde_json::json!(digest);
+                // The actual Supervisor serializes its ordered persisted
+                // checkpoint struct, not a sorted generic JSON Value.
+                let checkpoint_bytes = serde_json::to_vec(&decode(checkpoint))
+                    .expect("original Supervisor journal checkpoint");
                 let mut signing_bytes =
                     b"hepta.supervisor.cell-split.original-journal.v1\0".to_vec();
                 signing_bytes.extend_from_slice(
@@ -640,7 +660,7 @@ fn signed_owner_transcript_for_host(
                     old_generation: plan.parent_generation,
                     new_generation: plan.child_generation,
                     authority_epoch: 7,
-                    committed_revision: 4,
+                    committed_revision: 10,
                     original_checkpoint_bytes: checkpoint_bytes,
                     original_checkpoint_signature_bytes: key(72)
                         .sign(&signing_bytes)
@@ -653,7 +673,7 @@ fn signed_owner_transcript_for_host(
         };
         let mut receipt = crate::CellSplitExecutionReceiptV1 {
             intent,
-            owner_sequence: index as u64 + 1,
+            owner_sequence: if index == 3 { 10 } else { index as u64 + 1 },
             output_digest: crate::durable::sha256(&owner_bytes),
             owner_receipt_bytes: owner_bytes,
             owner_signature_bytes: Vec::new(),
@@ -967,8 +987,10 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
         serde_json::from_slice(&journal.original_checkpoint_bytes)
             .expect("signed journal checkpoint");
     checkpoint["phase"] = serde_json::json!("route_published");
+    let mutated: crate::cell_split_observer_join::OriginalSupervisorCheckpointV1 =
+        serde_json::from_value(checkpoint).expect("valid nonterminal shape");
     journal.original_checkpoint_bytes =
-        canonical_json(&checkpoint).expect("nonterminal journal");
+        serde_json::to_vec(&mutated).expect("nonterminal journal");
     let mut payload = b"hepta.supervisor.cell-split.original-journal.v1\0".to_vec();
     payload.extend_from_slice(&(journal.idempotency_key.len() as u64).to_be_bytes());
     payload.extend_from_slice(journal.idempotency_key.as_bytes());
