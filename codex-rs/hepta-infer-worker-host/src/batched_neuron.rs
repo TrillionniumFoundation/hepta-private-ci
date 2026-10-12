@@ -434,7 +434,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 ///
 /// An admitted effect is never retried merely because telemetry failed after
 /// dispatch. Instead the completed outcomes are returned with an explicit
-/// durable-metrics status, and all subsequent admissions fail closed.
+/// sink-flush status, and all subsequent admissions fail closed.
 pub struct ProductionNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureDriver> {
     inner: AuthenticatedNeuronMicrobatchWorkerV1<D>,
 }
@@ -512,8 +512,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> ProductionNeuronMicrobatchWorkerV1<D>
         fence: u64,
         authority_epoch: u64,
     ) -> Vec<StableId> {
-        self.inner
-            .fence_scope(scope, generation, fence, authority_epoch)
+        self.inner.fence_scope(scope, generation, fence, authority_epoch)
     }
 }
 
