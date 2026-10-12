@@ -769,6 +769,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             self.port
                 .preflight_uncommitted(&intent)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            // External signed readback can take time. A revoked predecessor
+            // or a changed local frozen binding during that preflight must
+            // not lead to a new prepared intent or physical mutation. Check
+            // the entire original-owner prefix again while holding the
+            // coordinator's exclusive journal lock, before writing intent.
+            // The effect owner must still perform independent final-use.
+            self.verify_committed_prefix()?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,
