@@ -148,7 +148,9 @@ jobs:
         sqlite_arm: [retain_legacy_sqlite_patch, use_upstream_sqlite]
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      STAGE: ${{ runner.temp }}/hepta-matrix-stage-${{ matrix.sqlite_arm }}
+      # github and matrix are valid here; runner.temp is not available at job.env.
+      # Put the disposable worktree in a unique sibling of github.workspace.
+      STAGE: ${{ github.workspace }}/../hepta-matrix-stage-${{ github.run_id }}-${{ matrix.sqlite_arm }}
       RESOLVE_ARM: ${{ matrix.sqlite_arm }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
