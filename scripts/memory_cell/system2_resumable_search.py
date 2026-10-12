@@ -13,19 +13,24 @@ import torch
 from system2_ablation import model_digest
 from system2_verified_search import ARMS, digest, features, state_key, successors, validate_task, verify
 from finite_tree_bsde import recursive_utility
+from system2_canonical_generation import canonical_successors
 
 
 class SearchSession:
     """Single-task, single-policy cursor; not thread-safe or crash-recoverable."""
 
-    def __init__(self, numbers, goal, arm, critic=None, *, popped_ceiling=8192):
+    def __init__(self, numbers, goal, arm, critic=None, *, popped_ceiling=8192,
+                 generation_profile="reference"):
         validate_task(numbers, goal)
-        if arm not in ARMS or type(popped_ceiling) is not int or not 1 <= popped_ceiling <= 8192:
+        if (arm not in ARMS or type(popped_ceiling) is not int or not 1 <= popped_ceiling <= 8192
+                or generation_profile not in ("reference", "canonical_pair")):
             raise ValueError("unregistered policy or popped-state bound")
         neural = arm in ("value_search", "ndu_value", "shuffled_value")
         if neural and (critic is None or critic.training or any(p.requires_grad for p in critic.parameters())):
             raise ValueError("frozen evaluation-mode critic required")
         self.numbers, self.goal, self.arm = tuple(numbers), goal, arm
+        self.generation_profile = generation_profile
+        self.generation_counts = dict(pair_checks=0, pair_skips=0, symmetry_skips=0, emitted=0)
         self.critic = critic if neural else None
         self.model_seal = model_digest(self.critic) if neural else None
         root = tuple((Fraction(n), ("n"+str(i),)) for i, n in enumerate(numbers))
@@ -61,7 +66,9 @@ class SearchSession:
                         break
                     _, _, terms = heapq.heappop(self.queue)
                     self.costs["popped_states"] += 1
-                    self.pending, self.children, self.cursor = iter(successors(terms)), [], 0
+                    generator = (successors(terms) if self.generation_profile == "reference"
+                                 else canonical_successors(terms, self.generation_counts))
+                    self.pending, self.children, self.cursor = iter(generator), [], 0
                 try:
                     child = next(self.pending)
                 except StopIteration:
@@ -122,4 +129,5 @@ class SearchSession:
             visited_states=len(self.seen), status="failed" if self.failed else "completed",
             paused=self.proof is None and (self.pending is not None or bool(self.queue)),
             certified_impossible=False, in_memory_only=True, frozen_model=self.model_seal,
-            task_digest=digest(self.numbers))
+            task_digest=digest(self.numbers), generation_profile=self.generation_profile,
+            generation_filter=dict(self.generation_counts))
