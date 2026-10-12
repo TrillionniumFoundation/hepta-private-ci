@@ -18,7 +18,7 @@ from system2_multihop_completed_audit import (
     ARCHIVE_SHA, GENERATING_COMMIT, READER_IDENTITY, READER_PROFILE,
     behavior, digest, read_completed,
 )
-from system2_multihop_evidence import TASKS, choose, fixed_cases
+from system2_multihop_evidence import TASKS, choose
 from system2_multihop_trial import ABSTAIN, TOKEN_RE, evidence, score
 
 SOURCE_ARMS = ("no_evidence", "joined_top3", "premise_removed")
