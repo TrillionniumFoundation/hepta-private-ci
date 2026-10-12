@@ -6,6 +6,9 @@ on:
     paths:
       - "qualification/neuron-stem/fbsde_tracking_feedback*.py"
       - "qualification/neuron-stem/fbsde_depth*.py"
+      - "qualification/neuron-stem/fbsde_prepared_gate*.py"
+      - "qualification/neuron-stem/test_fbsde_prepared_gate.py"
+      - "qualification/neuron-stem/prepared_gate_artifact_checks.py"
       - "qualification/neuron-stem/fbsde_outcome*.py"
       - "qualification/neuron-stem/test_fbsde_outcome.py"
       - "qualification/neuron-stem/fbsde_planning_workspace.py"
@@ -81,6 +84,14 @@ jobs:
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile outcome_depth_routing_v1 --evidence-dir depth-reuse-study --output outcome-study 2>&1 | tee outcome-study.log
           /tmp/feedback-venv/bin/python -m unittest fbsde_outcome_artifact_checks -v 2>&1 | tee outcome-artifact-tests.log
           git diff --exit-code
+      - name: Compare prepared frozen gates without retuning policies
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile prepared_gate_execution_v1 --evidence-dir outcome-study --output prepared-gate-study 2>&1 | tee prepared-gate-study.log
+          /tmp/feedback-venv/bin/python -m unittest prepared_gate_artifact_checks -v 2>&1 | tee prepared-gate-artifact-tests.log
+          git diff --exit-code
       - name: Preserve original outputs and failures, never grant promotion
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -107,5 +118,8 @@ jobs:
             outcome-artifact-tests.log
             outcome-study.log
             outcome-study/
+            prepared-gate-study/
+            prepared-gate-study.log
+            prepared-gate-artifact-tests.log
           if-no-files-found: error
           retention-days: 30
