@@ -19,6 +19,8 @@ use std::io::SeekFrom;
 use std::io::Write;
 
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+use codex_hepta_learning_artifacts::RevalidatingCandidate;
+use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -36,6 +38,10 @@ pub struct CellSplitPlanV1 {
     pub scope_digest: Digest32,
     pub predecessor_id: StableId,
     pub child_id: StableId,
+    /// Independently registered artifact lineage, never inferred from Cell IDs
+    /// or a topology candidate ID. Required to pin real CAS publication.
+    pub predecessor_artifact_id: StableId,
+    pub child_artifact_id: StableId,
     /// Frozen candidate mapping; candidate identity is NOT the child Cell ID.
     pub selected_candidate_id: StableId,
     pub predecessor_generation: Generation,
@@ -52,6 +58,7 @@ pub struct CellSplitPlanV1 {
 impl CellSplitPlanV1 {
     fn validate(&self) -> Result<(), CellSplitErrorV1> {
         if self.predecessor_id == self.child_id
+            || self.predecessor_artifact_id == self.child_artifact_id
             || self.predecessor_generation.next() != Ok(self.child_generation)
             || [
                 self.scope_digest,
@@ -75,6 +82,8 @@ impl CellSplitPlanV1 {
             &self.split_id,
             &self.predecessor_id,
             &self.child_id,
+            &self.predecessor_artifact_id,
+            &self.child_artifact_id,
             &self.selected_candidate_id,
         ] {
             let raw = id.as_str().as_bytes();
@@ -117,6 +126,36 @@ impl CellSplitPlanV1 {
             || receipt.authority.grants_any()
         {
             return Err(CellSplitErrorV1::Unapproved);
+        }
+        Ok(())
+    }
+
+    /// Verify the actual native artifact payload against the separately
+    /// admitted immutable registry and an authority-verified CURRENT view.
+    /// This read-only helper cannot publish a CAS object or approve a split.
+    /// The product port MUST still execute the create-only CAS publication,
+    /// retain the original signed publication receipt and recheck CURRENT
+    /// eligibility at the final-use boundary. The effect's observer/receipt
+    /// and idempotent operation key are owned by the production adapter.
+    pub fn verify_current_child_artifact(
+        &self,
+        candidate: &mut RevalidatingCandidate,
+        current: VerifiedCurrentRegistryViewV1,
+    ) -> Result<(), CellSplitErrorV1> {
+        self.validate()?;
+        let manifest = &candidate.spec().manifest;
+        if manifest.artifact_id != self.child_artifact_id
+            || manifest.predecessor_id.as_ref() != Some(&self.predecessor_artifact_id)
+            || manifest.generation != self.child_generation
+            || manifest.content_digest != self.child_artifact_digest
+        {
+            return Err(CellSplitErrorV1::Conflict);
+        }
+        let actual = candidate
+            .with_current(current, Digest32::of_bytes)
+            .map_err(|_| CellSplitErrorV1::Conflict)?;
+        if actual != self.child_artifact_digest {
+            return Err(CellSplitErrorV1::Conflict);
         }
         Ok(())
     }
