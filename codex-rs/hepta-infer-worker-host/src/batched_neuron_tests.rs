@@ -265,7 +265,6 @@ fn revoked_scope_drops_queued_intent_without_driver_effect() {
     assert_eq!(execution.pending(), 0);
 }
 
-
 #[test]
 fn same_lane_three_item_group_preserves_independent_final_use_nonces() {
     // Scheduling a three-item group must not accidentally reuse one signed
@@ -281,8 +280,7 @@ fn same_lane_three_item_group_preserves_independent_final_use_nonces() {
         let payload = canonical_neuron_feature_payload_digest(&request);
         request.authorization.payload_digest = payload.clone();
         request.authorization.lease_payload_digest = payload;
-        let binding =
-            neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
         let mut grant = signed(&signer, binding);
         grant.grant.grant_id = format!("neuron-feature-{i}");
         grant.grant.nonce = [i + 1; 32];
