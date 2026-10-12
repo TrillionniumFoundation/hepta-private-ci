@@ -7,6 +7,9 @@ codex_rust_crate(
         "//conditions:default": ["sandbox"],
     }),
     crate_name = "codex_v8_poc",
+    # V8 initialization and sandbox address-space configuration are
+    # process-global. Run every test, but do not initialize concurrently.
+    unit_test_args = ["--test-threads=1"],
     deps_extra = ["@crates//:v8"],
 )
 
