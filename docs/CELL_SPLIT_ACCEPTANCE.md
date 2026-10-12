@@ -121,6 +121,30 @@ for the unmaintained `anymap2` crate. Matrix SDK 0.19.1 still depends on
 make the security gate green. Neither advisory may be ignored for release.
 
 
+## Execute causality versus read-only recovery (additional P0 gate)
+
+The signed effect service now refuses a **new Execute** if its original real
+owner already has a committed effect for the same idempotency key. A negative
+preflight may race another owner mutation before dispatch; a fresh readback of
+a previously existing effect must **not** be presented as proof that this
+specific Execute caused the effect. The source regression exercises: signed
+negative preflight, a competing durable write, rejected new Execute, and
+continued read-only reconciliation of the independently committed bytes.
+
+This defense deliberately does not change recovery semantics: once the
+coordinator has written a one-shot prepared intent, it never repeats Execute.
+If its acknowledgement was lost, it queries the original owner by ReadBack.
+
+**Remaining strict production gate:** a successful signed ReadBack does not,
+by itself, prove that the effect happened *after* this coordinator's prepared
+intent, only that the original owner durably committed these exact bytes and
+that its state is still current. Deployments must enforce a single authoritative
+writer per scope/intent, bind the preparation and current independently issued
+Selector/NDU/final-use authority to the operation, and retain an external
+anti-rollback witness. A competing writer with the same key cannot be
+disambiguated by an idempotency hash alone. Until origin causality is enforced
+at the authoritative owner, this source check is not production acceptance.
+
 ## Independent Observer join of real owner and host evidence (source gate)
 
 The new CellSplitSignedObserverJoinV1 addresses a distinct evidence-laundering
