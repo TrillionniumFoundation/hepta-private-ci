@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.memorycell.heldout-frozen-blob-byte-audit.v1",
+  "source_cut_utc": "2026-10-12T09:45:00Z",
+  "original_source_manifest_sha256": "ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463",
+  "original_source_manifest_git_blob_sha1": "656f221b3571aa187ab1c2fb106462ec3032d90c",
+  "method": "Read each original source with GitHub's immutable git/blobs/{sha} endpoint, re-encode UTF-8 bytes, calculate SHA1 of 'blob '+byte_length+'\\0'+bytes, compare to preregistered Git blob SHA1. The source bytes were not executed, transformed or used to produce answers.",
+  "status": "partial-source-only",
+  "source_population": {
+    "frozen_projects": 4,
+    "frozen_pr_histories": 8,
+    "frozen_file_bindings": 80,
+    "evaluation_projects": 2,
+    "evaluation_pr_histories": 4,
+    "evaluation_file_bindings": 48
+  },
+  "observed": {
+    "verified_project_histories": 2,
+    "verified_file_bindings": 8,
+    "verified_bytes": 920239,
+    "failed_git_blob_hash_checks": 0
+  },
+  "cases": [
+    {
+      "project": "numpy/numpy",
+      "pull_number": 32910,
+      "head_commit_sha1": "8807f4af3d58b4a6c883e8f3e66764696ee4bd46",
+      "verified_file_bindings": 3,
+      "verified_bytes": 112168,
+      "files": [
+        {
+          "path": "benchmarks/benchmarks/bench_itemselection.py",
+          "declared_git_blob_sha1": "5e20089db80c7a2ff08a5ad2afd96633baf4ebae",
+          "recomputed_git_blob_sha1": "5e20089db80c7a2ff08a5ad2afd96633baf4ebae",
+          "byte_length": 2219,
+          "verified": true
+        },
+        {
+          "path": "doc/release/upcoming_changes/32910.performance.rst",
+          "declared_git_blob_sha1": "01aa0eb8296cbbae95d014fdc43722b617981794",
+          "recomputed_git_blob_sha1": "01aa0eb8296cbbae95d014fdc43722b617981794",
+          "byte_length": 64,
+          "verified": true
+        },
+        {
+          "path": "numpy/_core/src/multiarray/item_selection.c",
+          "declared_git_blob_sha1": "f34132b940bfab549ca073a0208469f361f21158",
+          "recomputed_git_blob_sha1": "f34132b940bfab549ca073a0208469f361f21158",
+          "byte_length": 109885,
+          "verified": true
+        }
+      ]
+    },
+    {
+      "project": "astral-sh/ruff",
+      "pull_number": 28828,
+      "head_commit_sha1": "800e6a634af3c02b9ea2603475845457c1a06ce9",
+      "verified_file_bindings": 5,
+      "verified_bytes": 808071,
+      "files": [
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/legacy/paramspec.md",
+          "declared_git_blob_sha1": "215a3462f71eb6598067f77b989b24d5cb594609",
+          "recomputed_git_blob_sha1": "215a3462f71eb6598067f77b989b24d5cb594609",
+          "byte_length": 57234,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/pep695/functions.md",
+          "declared_git_blob_sha1": "31c83ee0f52d16dc91adbeddf2ed2ed6b0bd8c09",
+          "recomputed_git_blob_sha1": "31c83ee0f52d16dc91adbeddf2ed2ed6b0bd8c09",
+          "byte_length": 123424,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/resources/mdtest/generics/pep695/paramspec.md",
+          "declared_git_blob_sha1": "e66007898a08e3fd59d5000d26c20d3868da48ac",
+          "recomputed_git_blob_sha1": "e66007898a08e3fd59d5000d26c20d3868da48ac",
+          "byte_length": 88649,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/generics.rs",
+          "declared_git_blob_sha1": "1236f3493d148a9e31f8e63eb6d460829350bfd4",
+          "recomputed_git_blob_sha1": "1236f3493d148a9e31f8e63eb6d460829350bfd4",
+          "byte_length": 253612,
+          "verified": true
+        },
+        {
+          "path": "crates/ty_python_semantic/src/types/signatures.rs",
+          "declared_git_blob_sha1": "eb87e6de18ada18ac7e81ed357a5c545426837e2",
+          "recomputed_git_blob_sha1": "eb87e6de18ada18ac7e81ed357a5c545426837e2",
+          "byte_length": 285152,
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "not_yet_verified": {
+    "additional_evaluation_file_bindings": 40,
+    "other_source_partition_file_bindings": 32,
+    "head_tree_path_membership": true,
+    "first_parent_before_bytes": true,
+    "independent_review": true
+  },
+  "full_immutable_source_ready": false,
+  "independent_source_family_certified": false,
+  "independent_semantic_judge": false,
+  "training_or_model_inference_executed": false,
+  "review_labels_available": false,
+  "answer_task_accuracy": null,
+  "semantic_citation_precision": null,
+  "production_accepted": false
+}
