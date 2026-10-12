@@ -64,6 +64,68 @@ class AuditTests(unittest.TestCase):
         self.assertFalse(r['matrix_e2ee_verified'])
         self.assertFalse(r['production_authorized'])
 
+    def _candidate_without_known_static_advisory(self):
+        # This is a deliberately artificial lock graph used to probe a
+        # *prerequisite checker*. It is NOT a resolved Cargo dependency graph
+        # or a certificate of patched Matrix encryption.
+        self.workspace['workspace']['dependencies']['matrix-sdk']['version']='0.19.1'
+        self.workspace['patch']['crates-io']['matrix-sdk-sqlite']['path']='third_party/matrix-sdk-sqlite-0.19.1'
+        self.toolchain['toolchain']['channel']='1.96.0'
+        for package in self.lock['package']:
+            if package['name'].startswith('matrix-sdk'):
+                package['version']='0.19.1'
+            if package['name']=='matrix-sdk':
+                package['dependencies']=[
+                    dep.replace('anymap2','anymap3') for dep in package['dependencies']]
+            if package['name']=='anymap2':
+                package['name']='anymap3'
+
+    def test_static_prerequisite_never_claims_actual_advisory_remediation(self):
+        self._candidate_without_known_static_advisory()
+        r=self.result()
+        self.assertTrue(r['static_prerequisites_passed'],r['blocking_prerequisites'])
+        self.assertTrue(r['static_graph_advisory_candidates_clean'])
+        self.assertIs(r['security_advisories_resolved'], False)
+        self.assertIs(r['cargo_deny_verified'], False)
+        self.assertIs(r['matrix_e2ee_verified'], False)
+
+    def test_crypto_only_upgrade_cannot_hide_old_base_or_sqlite(self):
+        self._candidate_without_known_static_advisory()
+        for component in ('matrix-sdk-base', 'matrix-sdk-sqlite', 'matrix-sdk-crypto'):
+            changed=copy.deepcopy(self.lock)
+            for package in changed['package']:
+                if package['name']==component:
+                    package['version']='0.18.0'
+            r=audit(self.workspace,changed,self.deny,self.toolchain,self.sdk_manifest,self.matrixd_manifest)
+            self.assertIn('MATRIX_FAMILY_RELEASE_MISMATCH:'+component,r['blocking_prerequisites'])
+            self.assertFalse(r['static_prerequisites_passed'])
+            self.assertIs(r['security_advisories_resolved'],False)
+
+    def test_orphaned_or_duplicated_sdk_family_components_cannot_pass(self):
+        self._candidate_without_known_static_advisory()
+        for component in ('matrix-sdk-base','matrix-sdk-sqlite','matrix-sdk-crypto'):
+            missing=copy.deepcopy(self.lock)
+            missing['package']=[p for p in missing['package'] if p['name']!=component]
+            r=audit(self.workspace,missing,self.deny,self.toolchain,self.sdk_manifest,self.matrixd_manifest)
+            self.assertIn('MATRIX_FAMILY_COMPONENT_MISSING_OR_AMBIGUOUS:'+component,r['blocking_prerequisites'])
+            duplicated=copy.deepcopy(self.lock)
+            entry=next(p for p in duplicated['package'] if p['name']==component)
+            duplicated['package'].append(copy.deepcopy(entry))
+            r=audit(self.workspace,duplicated,self.deny,self.toolchain,self.sdk_manifest,self.matrixd_manifest)
+            self.assertIn('MATRIX_FAMILY_COMPONENT_MISSING_OR_AMBIGUOUS:'+component,r['blocking_prerequisites'])
+
+    def test_unreachable_base_sqlite_or_crypto_is_not_a_valid_sdk_upgrade(self):
+        self._candidate_without_known_static_advisory()
+        for component in ('matrix-sdk-base','matrix-sdk-sqlite','matrix-sdk-crypto'):
+            detached=copy.deepcopy(self.lock)
+            for p in detached['package']:
+                p['dependencies']=[x for x in p.get('dependencies',[])
+                                   if x != component]
+            r=audit(self.workspace,detached,self.deny,self.toolchain,self.sdk_manifest,self.matrixd_manifest)
+            self.assertIn('MATRIX_FAMILY_DEPENDENCY_PATH_MISSING:'+component,
+                          r['blocking_prerequisites'])
+            self.assertFalse(r['static_prerequisites_passed'])
+
     def test_advisory_ignore_makes_security_check_fail(self):
         self.deny['advisories']['ignore']=[{'id':ADVISORY_CRYPTO,'reason':'pretend'}]
         self.assertIn('FORBIDDEN_ADVISORY_IGNORE:'+ADVISORY_CRYPTO, self.result()['blocking_prerequisites'])
