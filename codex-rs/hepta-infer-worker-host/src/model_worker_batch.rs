@@ -266,11 +266,17 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
     ) -> Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, Error> {
         let copies = requests.clone();
         let outcomes = self.run_neuron_features_batch(now_ms, model_id, requests)?;
-        copies
+        let projected: Result<Vec<_>, Error> = copies
             .into_iter()
             .zip(outcomes)
             .map(|(request, outcome)| super::project_neuron_feature_receipt_v1(request, outcome))
-            .collect()
+            .collect();
+        if projected.is_err() {
+            // The entire physical batch has already executed. A failed
+            // inference-control receipt is not proof of safe retry.
+            self.poisoned = true;
+        }
+        projected
     }
 }
 
