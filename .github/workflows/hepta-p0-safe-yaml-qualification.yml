@@ -1,0 +1,63 @@
+name: Hepta P0 Safe YAML Dependency Migration Shadow Trial
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - '.github/workflows/hepta-p0-safe-yaml-qualification.yml'
+      - 'codex-rs/skills/**'
+      - 'codex-rs/core-plugins/**'
+      - 'codex-rs/ext/skills/**'
+      - 'codex-rs/external-agent-migration/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regenerate-and-qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install stable pinned Rust
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Re-resolve only workspace dependency requests in disposable checkout
+        run: cargo +1.95.0 update --workspace
+      - name: Verify transitive unsafe parser removed and patched typed budget
+        run: |
+          python3 - <<'PY'
+          import tomllib
+          from pathlib import Path
+          doc=tomllib.loads(Path('Cargo.lock').read_text(encoding='utf-8'))
+          packages={p['name']:p for p in doc['package']}
+          for banned in ('unsafe-libyaml', 'serde_yaml', 'serde_yml'):
+              if banned in packages:
+                  raise SystemExit(f'banned retired YAML parser remains in lock: {banned}')
+          engine=packages.get('noyalib-serde-yaml')
+          core=packages.get('noyalib')
+          if engine is None or core is None:
+              raise SystemExit('maintained YAML compatibility/core not actually locked')
+          if engine['version'] != '0.0.53' or core['version'] != '0.0.53':
+              raise SystemExit('incompatible/unpatched noyalib lock versions')
+          print('SAFE YAML LOCK GRAPH: no retired parser; exact patched core 0.0.53')
+          PY
+      - name: Compile/test actual YAML-consuming crates with locked graph
+        run: |
+          cargo +1.95.0 test --locked -p codex-skills -p codex-core-plugins -p codex-external-agent-migration -p codex-skills-extension --lib
+      - name: Strict Clippy on changed parser surface
+        run: cargo +1.95.0 clippy --locked -p codex-skills -p codex-core-plugins -p codex-external-agent-migration -p codex-skills-extension --all-targets -- -D warnings
+      - name: Preserve generated lock for independent SHA/diff review
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-p0-safe-yaml-cargo-lock
+          path: codex-rs/Cargo.lock
+          if-no-files-found: error
+          retention-days: 7
