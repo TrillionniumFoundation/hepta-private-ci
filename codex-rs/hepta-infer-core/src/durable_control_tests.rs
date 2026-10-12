@@ -476,7 +476,6 @@ fn malformed_legacy_submit_and_short_reservation_wal_fail_closed_on_replay() {
     fs::remove_file(&short).unwrap();
 }
 
-
 #[test]
 fn settlement_refuses_over_reserved_units_before_wal_append() {
     for terminal_observed in [false, true] {
@@ -518,7 +517,9 @@ fn settlement_refuses_over_reserved_units_before_wal_append() {
         );
         // The exact reserved upper bound is still allowed and survives reopen.
         observed.usage_units = 100;
-        owner.settle("request.1", 4, "7".repeat(64), observed).unwrap();
+        owner
+            .settle("request.1", 4, "7".repeat(64), observed)
+            .unwrap();
         assert_eq!(owner.get("request.1").unwrap().usage_units, 100);
         assert_eq!(
             owner.get("request.1").unwrap().state,
