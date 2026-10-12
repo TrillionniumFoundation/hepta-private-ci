@@ -651,6 +651,14 @@ fn native_observer_cohort_is_signed_complete_and_rejects_reused_tick() {
     assert_eq!(received.authority, AuthorityPosture::DENY_ALL);
     assert_eq!(received.ticks, vec![tick.clone()]);
     assert_eq!(received.observer_controller_id, id("observer-controller"));
+    let mut forged_mixed = received.clone();
+    forged_mixed.ticks.push(NeuronTrialCohortTickV1 {
+        episode_id: id("new-episode"),
+        tick_observation_digest: digest("new-unique-tick"),
+        tick_generation: Generation::new(2).unwrap(),
+    });
+    forged_mixed.diagnostic_digest = forged_mixed.computed_digest();
+    assert!(!forged_mixed.validate_integrity());
     let mut changed = received.clone();
     changed.ticks[0].tick_observation_digest = digest("different-tick");
     assert!(!changed.validate_integrity());
@@ -713,6 +721,19 @@ fn native_observer_cohort_is_signed_complete_and_rejects_reused_tick() {
         &fabricated,
         plan.objective_digest,
         &[tick.clone(), reused],
+    )
+    .is_err());
+    // A frozen no-change cohort cannot silently mix two model generations,
+    // even if the two tick digests are unique and the caller rehashes metadata.
+    let mixed_generation = NeuronTrialCohortTickV1 {
+        episode_id: second.episode_id.clone(),
+        tick_observation_digest: digest("other-generation-tick"),
+        tick_generation: Generation::new(2).unwrap(),
+    };
+    assert!(neuron_trial_observer_cohort_payload_v1(
+        &fabricated,
+        plan.objective_digest,
+        &[tick.clone(), mixed_generation],
     )
     .is_err());
     let duplicated = NeuronTrialCohortTickV1 {

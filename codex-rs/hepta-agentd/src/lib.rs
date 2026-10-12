@@ -186,6 +186,7 @@ pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use neuron_runtime::AgentdNeuronOwner;
+pub use neuron_runtime::NeuronTrialTickCohortObserverContextV1;
 pub use neuron_runtime::NeuronTrialTickObserverContextV1;
 pub use neuron_runtime::NeuronTrialTickObserverErrorV1;
 pub use neuron_selected_artifact::NeuronCandidateModelArtifactErrorV1;

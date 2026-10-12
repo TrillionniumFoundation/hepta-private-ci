@@ -67,7 +67,8 @@ and one distinct external Agentd tick-observation digest and Generation.
 The canonical mapping is sorted by Episode identity, not caller order.
 
 The native Ledger owner requires no missing/duplicate/extraneous Episodes,
-no duplicate Tick digests, no Pending or Censored outcomes, and an Observer
+no duplicate Tick digests, no mixed Neuron model generations within a
+frozen no-change cohort, no Pending or Censored outcomes, and an Observer
 signature issued after **every** matched finalization. The signer must be
 independent of **every** Decision generator. It rereads the live Ledger
 source and withdrawal frontier after verifying the signature. The output
@@ -83,3 +84,26 @@ from the real Owner. This read does not persist a historical tick journal;
 a production evaluation must still preserve independent tick evidence,
 ensure uniqueness across separate windows, and authenticate the actually
 selected CNS/Cell/model/Artifact physical runtime at every final use.
+
+## Single-use Agentd owner-issued in-process cohort (new)
+
+AgentdNeuronOwner::tick_with_observation_v1 now retains at most 256
+consecutive, actually executed and independently Witness-acknowledged ticks.
+This is a memory-only series, never reconstructed from a caller digest.
+Each subsequent observed tick must have the next exact logical sequence,
+matching previous checkpoint, and the same Scope, Objective and Generation.
+Model identity cannot change inside the exclusive NeuronRuntime instance.
+Direct ticks, failed execution or Witness uncertainty clear the trail.
+
+AgentdNeuronOwner::read_observer_linked_cohort_v1 verifies the complete series
+against the exact Observer-signed native Ledger batch, requires one unique
+owner-issued tick per Episode, rechecks the current Witness before and after,
+and consumes the entire in-process trail on any read attempt. This prevents
+the same in-process issuance from being reused for another signed batch.
+An incomplete/mixed-generation batch is rejected, not partially scored.
+
+This is NOT crash-durable historical evidence: process restart loses the
+issued series. A separate durable trusted evidence owner must still retain
+the original source observations, historical signed Tick acknowledgements,
+cross-window uniqueness, actual CNS/Artifact selected model and elapsed
+outcomes before production no-change/NDU evaluation can be authorized.

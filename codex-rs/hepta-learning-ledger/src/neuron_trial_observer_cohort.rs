@@ -84,8 +84,10 @@ impl NeuronTrialObservedCohortV1 {
             return false;
         }
         let mut tick_ids = BTreeSet::new();
+        let frozen_generation = self.ticks[0].tick_generation;
         for (index, row) in self.ticks.iter().enumerate() {
-            if row.tick_observation_digest.is_zero()
+            if row.tick_generation != frozen_generation
+                || row.tick_observation_digest.is_zero()
                 || !tick_ids.insert(*row.tick_observation_digest.as_array())
                 || (index > 0 && self.ticks[index - 1].episode_id >= row.episode_id)
             {
@@ -118,8 +120,10 @@ pub fn neuron_trial_observer_cohort_payload_v1(
     }
     let mut mapped = BTreeMap::new();
     let mut unique_ticks = BTreeSet::new();
+    let frozen_generation = ticks[0].tick_generation;
     for tick in ticks {
-        if tick.tick_observation_digest.is_zero()
+        if tick.tick_generation != frozen_generation
+            || tick.tick_observation_digest.is_zero()
             || mapped.insert(tick.episode_id.clone(), tick).is_some()
             || !unique_ticks.insert(*tick.tick_observation_digest.as_array())
         {

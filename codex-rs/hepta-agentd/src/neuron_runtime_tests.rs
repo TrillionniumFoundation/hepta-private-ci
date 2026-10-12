@@ -144,3 +144,102 @@ fn caller_rehashed_tick_cannot_impersonate_last_agentd_owned_observation() {
     malformed.diagnostic_digest = Digest32::ZERO;
     assert!(super::require_owner_issued_tick(Some(&malformed), &malformed).is_err());
 }
+
+#[test]
+fn owner_issued_cohort_requires_contiguous_distinct_ticks_and_exact_episode_mapping() {
+    use codex_hepta_learning_ledger::NeuronTrialCohortTickV1;
+    use codex_hepta_types::AuthorityPosture;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::StableId;
+    use crate::AgentdNeuronTickObservationV1;
+
+    fn digest(label: &str) -> Digest32 {
+        Digest32::of_bytes(label.as_bytes())
+    }
+    fn observed(
+        sequence: u64,
+        before: Digest32,
+        after: Digest32,
+    ) -> AgentdNeuronTickObservationV1 {
+        let mut observed = AgentdNeuronTickObservationV1 {
+            tick_id: StableId::new(format!("owner-executed-tick-{sequence}")).unwrap(),
+            input_digest: digest(&format!("raw-input-{sequence}")),
+            input_feature_digest: digest("feature-vector"),
+            scope_digest: digest("scope"),
+            objective_digest: digest("objective"),
+            ndu_snapshot_digest: digest("current-ndu"),
+            generation: Generation::new(9).unwrap(),
+            logical_sequence: sequence,
+            checkpoint_before: before,
+            checkpoint_after: after,
+            local_checkpoint_binding_digest: digest(&format!("witness-{sequence}")),
+            model_runtime_digest: digest(&format!("model-execution-{sequence}")),
+            observed_output_digest: digest(&format!("actual-result-{sequence}")),
+            execution_micros: 11,
+            queue_age_micros: 2,
+            observed_memory_bytes: 4096,
+            transient_allocation_bytes: 1024,
+            confidence_ppm: 750_000,
+            ood_ppm: 5_000,
+            abstain: false,
+            diagnostic_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        observed.diagnostic_digest = observed.computed_digest();
+        observed
+    }
+    let first = observed(1, Digest32::ZERO, digest("checkpoint-1"));
+    let second = observed(2, first.checkpoint_after, digest("checkpoint-2"));
+    let mut history = Vec::new();
+    super::retain_owner_observed_tick(&mut history, &first).unwrap();
+    super::retain_owner_observed_tick(&mut history, &second).unwrap();
+    let rows = vec![
+        NeuronTrialCohortTickV1 {
+            episode_id: StableId::new("episode-2").unwrap(),
+            tick_observation_digest: second.diagnostic_digest,
+            tick_generation: second.generation,
+        },
+        NeuronTrialCohortTickV1 {
+            episode_id: StableId::new("episode-1").unwrap(),
+            tick_observation_digest: first.diagnostic_digest,
+            tick_generation: first.generation,
+        },
+    ];
+    // The independent Ledger orders Episodes canonically, but the Agentd
+    // owner validates membership before handing over the batch.
+    super::require_owner_issued_cohort(&history, &rows).unwrap();
+    assert!(super::require_owner_issued_cohort(&history[..1], &rows).is_err());
+    let mut forged = rows.clone();
+    forged[1].tick_observation_digest = digest("attacker-self-hash");
+    assert!(super::require_owner_issued_cohort(&history, &forged).is_err());
+    let mut duplicate = rows.clone();
+    duplicate[1].tick_observation_digest = duplicate[0].tick_observation_digest;
+    assert!(super::require_owner_issued_cohort(&history, &duplicate).is_err());
+    let mut generation_drift = rows.clone();
+    generation_drift[1].tick_generation = Generation::new(10).unwrap();
+    assert!(super::require_owner_issued_cohort(&history, &generation_drift).is_err());
+    let mut repeated_episode = rows.clone();
+    repeated_episode[1].episode_id = repeated_episode[0].episode_id.clone();
+    assert!(super::require_owner_issued_cohort(&history, &repeated_episode).is_err());
+    let mut gap = observed(4, first.checkpoint_after, digest("checkpoint-4"));
+    assert!(super::retain_owner_observed_tick(&mut vec![first.clone()], &gap).is_err());
+    gap.logical_sequence = 2;
+    gap.tick_id = first.tick_id.clone();
+    gap.diagnostic_digest = gap.computed_digest();
+    assert!(super::retain_owner_observed_tick(&mut vec![first.clone()], &gap).is_err());
+    let mut altered_scope = second.clone();
+    altered_scope.scope_digest = digest("wrong-scope");
+    altered_scope.diagnostic_digest = altered_scope.computed_digest();
+    assert!(super::retain_owner_observed_tick(&mut vec![first.clone()], &altered_scope).is_err());
+    let mut altered_generation = second.clone();
+    altered_generation.generation = Generation::new(10).unwrap();
+    altered_generation.diagnostic_digest = altered_generation.computed_digest();
+    assert!(super::retain_owner_observed_tick(&mut vec![first], &altered_generation).is_err());
+}
+
+#[test]
+fn owner_issued_cohort_producer_api_is_bounded_and_non_authorizing() {
+    let _read = AgentdNeuronOwner::<StubWitness, StubInferenceControl>::read_observer_linked_cohort_v1;
+    assert_eq!(super::MAX_ISSUED_OBSERVED_TICKS, 256);
+}
