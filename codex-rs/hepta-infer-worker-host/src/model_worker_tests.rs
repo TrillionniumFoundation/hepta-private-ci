@@ -11,6 +11,7 @@ struct Driver {
     fail_load: bool,
     fail_unload: bool,
     fail_run: bool,
+    panic_run: bool,
     missing_run_output: bool,
     malformed_run_output: bool,
     run_consumed_tokens: Option<u32>,
@@ -44,6 +45,9 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        if self.panic_run {
+            panic!("physical driver panic after invocation started");
+        }
         if self.fail_run {
             return Err(Error::DriverFailure("uncertain model execution".into()));
         }
@@ -232,14 +236,8 @@ fn generic_driver_error_quarantines_worker_across_new_reservations() {
         fail_run: true,
         ..Driver::default()
     };
-    let mut worker = InferenceWorker::new(
-        100,
-        "worker.driver-unknown".into(),
-        3,
-        grant(),
-        driver,
-    )
-    .unwrap();
+    let mut worker =
+        InferenceWorker::new(100, "worker.driver-unknown".into(), 3, grant(), driver).unwrap();
     worker.load_model(100, manifest()).unwrap();
     assert!(matches!(
         worker.run(100, "model.1", request()),
@@ -255,6 +253,29 @@ fn generic_driver_error_quarantines_worker_across_new_reservations() {
     );
     assert_eq!(
         worker.unload_model(100, "model.1"),
+        Err(Error::WorkerQuarantined)
+    );
+}
+
+#[test]
+fn generic_driver_panic_cannot_reopen_a_partially_executed_worker() {
+    let driver = Driver {
+        panic_run: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.driver-panic".into(), 3, grant(), driver).unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        worker.run(100, "model.1", request())
+    }));
+    assert!(result.is_err());
+    assert!(worker.is_quarantined());
+    worker.driver.panic_run = false;
+    let mut fresh = request();
+    fresh.request_id = "request.new-after-panic".into();
+    assert_eq!(
+        worker.run(100, "model.1", fresh),
         Err(Error::WorkerQuarantined)
     );
 }
