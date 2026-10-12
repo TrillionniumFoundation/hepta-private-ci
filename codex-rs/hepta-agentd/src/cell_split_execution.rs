@@ -270,7 +270,11 @@ mod tests {
         };
         assert!(
             validate_current_control_binding(
-                &frozen, &requested, &requested, objective, &unavailable
+                &frozen,
+                &requested,
+                &requested,
+                objective,
+                &unavailable
             )
             .is_err(),
             "loss of live scope authority fails closed"
