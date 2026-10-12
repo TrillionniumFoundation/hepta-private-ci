@@ -14,6 +14,8 @@ PIN = "ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463"
 
 def fixture():
     case = SourceFixtures()
+    for row in case.originals:
+        row["sha256"] = digest(("head" + row["blob_sha"]).encode())
     context, _ = case.inspect()
     packet_fixture = BlindPacketTests()
     packet_fixture.manifest = case.manifest
