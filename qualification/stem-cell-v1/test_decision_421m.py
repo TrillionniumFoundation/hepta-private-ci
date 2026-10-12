@@ -13,6 +13,7 @@ from decision_421m import (SOURCES, PHASES, audit_dataset, build_plan,
                            evaluate, input_fingerprint, load_plan,
                            read_strict_jsonl, write_frozen)
 from model_runner import snapshot_digest
+from study import MAX_EVIDENCE_ROW_BYTES
 
 
 class FourWayDecisionTests(unittest.TestCase):
@@ -256,6 +257,17 @@ class FourWayDecisionTests(unittest.TestCase):
             list(read_strict_jsonl(duplicate))
         duplicate.write_text('["not", "a", "case"]\n')
         with self.assertRaisesRegex(ValueError, "must be objects"):
+            list(read_strict_jsonl(duplicate))
+        for raw in ('{"metric":NaN}\n', '{"metric":Infinity}\n',
+                    '{"metric":1e999}\n',
+                    '{"nested":{"label":0,"label":1}}\n'):
+            duplicate.write_text(raw, encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "invalid/duplicate"):
+                list(read_strict_jsonl(duplicate))
+        duplicate.write_text(
+            '{"text":"' + "é" * (MAX_EVIDENCE_ROW_BYTES // 2 + 1) + '"}\n',
+            encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "oversized Decision JSONL"):
             list(read_strict_jsonl(duplicate))
 
     def test_frozen_plans_reject_tamper_and_overwrite(self):
