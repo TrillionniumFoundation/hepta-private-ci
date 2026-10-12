@@ -38,14 +38,37 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     #[cfg(windows)]
     let mut command = {
         let mut command = Command::new("powershell.exe");
-        let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
+        // Start-Process joins -ArgumentList with spaces. Supplying a multi-
+        // statement script as the final -Command argument loses the quoting
+        // needed by the child PowerShell parser, so the fixture may never
+        // publish CHILD_READY_FILE. Use a real on-disk script and -File
+        // instead; the environment and process-tree semantics remain real.
+        let child_script = temp_dir.path().join("git-wrapper-child.ps1");
+        std::fs::write(
+            &child_script,
+            r#"Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready
+while (-not (Test-Path -LiteralPath $env:RELEASE_CHILD_FILE)) {
+    Start-Sleep -Milliseconds 25
+}
+Start-Sleep -Seconds 1
+Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived
+Start-Sleep -Seconds 60
+"#,
+        )
+        .expect("write actual PowerShell child script");
+        let child_script_arg = child_script.display().to_string().replace('\'', "''");
+        let spawn_child = format!(
+            "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-File', '\"{child_script_arg}\"') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id)"
+        );
         let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
+            GitWrapperLifetime::WaitForChild => {
+                format!("{spawn_child}; Wait-Process -Id $child.Id")
+            }
+            GitWrapperLifetime::ExitBeforeTimeout => {
+                format!(
+                    "{spawn_child}; while (-not (Test-Path -LiteralPath $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
+                )
+            }
         };
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
@@ -72,7 +95,17 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         }
     })
     .await
-    .expect("wait for Git wrapper child readiness");
+    .unwrap_or_else(|error| {
+        let wrapper_id = wrapper.id();
+        let wrapper_status = wrapper
+            .try_wait()
+            .map_err(|error| (error.kind(), error.raw_os_error()));
+        // Do not drain inherited pipes here: Windows pipe reads can outlive an
+        // async timeout and block runtime shutdown if a descendant retains them.
+        panic!(
+            "wait for Git wrapper child readiness: {error}; wrapper_id={wrapper_id:?}; wrapper_status={wrapper_status:?}"
+        );
+    });
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");
