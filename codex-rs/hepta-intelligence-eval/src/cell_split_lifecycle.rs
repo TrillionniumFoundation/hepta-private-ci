@@ -76,7 +76,7 @@ impl CellSplitCanaryReceiptV1 {
         Ok(())
     }
 
-    fn digest(&self) -> Digest32 {
+    pub(crate) fn digest(&self) -> Digest32 {
         let mut bytes = b"hepta.learning.cell-split.canary.v1".to_vec();
         push_id(&mut bytes, &self.split_id);
         bytes.extend_from_slice(&self.candidate_generation.get().to_be_bytes());
@@ -93,7 +93,7 @@ impl CellSplitCanaryReceiptV1 {
         Digest32::of_bytes(&bytes)
     }
 
-    fn passes(&self) -> bool {
+    pub(crate) fn passes(&self) -> bool {
         self.observed_requests > 0 && self.failed_requests == 0 && self.rollback_verified
     }
 }
