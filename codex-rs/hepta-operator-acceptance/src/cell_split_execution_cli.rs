@@ -149,11 +149,20 @@ where
                 .map_err(|error| error.to_string())?,
         ),
     };
+    // Historical cursor completion alone is not live proof: a signed
+    // original effect may have been revoked after the last advance.
+    // Transcript mode has already performed its four-owner verification;
+    // avoid a second remote pass while keeping the result fail-closed.
+    let verified_complete = if selected_action == "advance" {
+        owner.verified_complete().map_err(|error| error.to_string())?
+    } else {
+        transcript.is_some()
+    };
     Ok(CellSplitExecutionCliOutcomeV1 {
         schema: OUTCOME_SCHEMA,
         action: selected_action,
         completed_steps: owner.completed_steps(),
-        complete: owner.is_complete(),
+        complete: verified_complete,
         receipt,
         transcript,
         production_activation_authorized: false,
