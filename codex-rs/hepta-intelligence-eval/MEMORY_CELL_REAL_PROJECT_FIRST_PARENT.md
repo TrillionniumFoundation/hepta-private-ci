@@ -84,3 +84,45 @@ explanation as historical ground truth.
 `semantic_citation_precision=null`, `production_accepted=false`.
 Neither this archive nor the 16 candidate questions establish unseen
 task accuracy or source-family-independent MemoryCell superiority.
+
+## Independent SHA-addressed initial feasibility observation (Oct 12)
+
+Before the new 80-file hosted artifact completes, the immutable parent
+object IDs in the published source manifest were checked directly using
+GitHub's SHA-addressed Git endpoints. **All ten registered parent commit
+object IDs were retrievable and matched the declared SHA.** This is
+source-object availability only; it is not an independently verified
+human judgment or GitHub-hosted READY certificate.
+
+Six single-parent HEAD commits were compared with their declared parent
+commit SHAs, never a moving branch or historical PR description:
+
+| Project | PR | Frozen HEAD-file references | Paths changed from immediate parent |
+| --- | ---: | ---: | ---: |
+| rust-lang/rust | 164037 | 2 | 2 |
+| rust-lang/rust | 162467 | 8 | 7 |
+| kubernetes/kubernetes | 142136 | 2 | 2 |
+| kubernetes/kubernetes | 142932 | 20 | 2 |
+| numpy/numpy | 32910 | 3 | 1 |
+| astral-sh/ruff | 29127 | 14 | 14 |
+| **Total** | | **49** | **28** |
+
+The remaining **21 of 49 HEAD-file references** were not changed by
+their immediately preceding commit, although some may have changed in
+earlier PR commits. The Rust 162467 first-parent comparison contains
+**12** changed paths, while only **8** are in the original frozen
+source manifest: the other four must **not** be silently added to the
+preregistered 80-file/16-question evaluation cohort.
+
+Two multi-parent HEADs — NumPy 32523 (26 frozen file references) and
+Ruff 28828 (5) — remain explicitly unresolved as unique-parent
+comparisons. The rename in Rust 162467 reports a former path through
+the immutable commit comparison, but the original frozen source cut did
+not predeclare that former path; do not treat this late observation as
+the source-verified prior blob until independently rebound and audited.
+
+These endpoint-level observations are **not** a complete saved binary
+diff, CI pass, or model answer. The new hosted workflow must still
+verify original and first-parent blob bytes and independent disk re-open
+against its exact running source commit. A failed hosted gate must
+remain FAILED and retain its INCOMPLETE output.

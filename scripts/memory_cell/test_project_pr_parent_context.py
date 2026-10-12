@@ -2,7 +2,6 @@
 
 import base64
 from copy import deepcopy
-from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -11,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 from project_pr_parent_context import (
-    CATEGORIES, collect_parent, inspect, parent_tree_entry, reopen_parent,
+    CATEGORIES, collect_parent, inspect, reopen_parent,
 )
 from project_pr_source_materialize import (
     ObjectReader, blob_sha, canonical, digest,
