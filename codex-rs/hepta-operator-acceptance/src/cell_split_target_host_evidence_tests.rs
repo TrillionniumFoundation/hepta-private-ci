@@ -1094,6 +1094,23 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
 }
 
 #[cfg(unix)]
+struct IndependentlyAdmittedJournalMinimum;
+
+#[cfg(unix)]
+impl crate::CellSplitSupervisorMinimumAdmissionPortV1 for IndependentlyAdmittedJournalMinimum {
+    type Error = &'static str;
+
+    fn verify_original_minimum(
+        &mut self,
+        _subject: &crate::CellSplitSupervisorMinimumSubjectV1,
+    ) -> Result<(), Self::Error> {
+        // Source-only test witness. Real admission reads original journal,
+        // independent Selector/NDU and an external monotonic minimum.
+        Ok(())
+    }
+}
+
+#[cfg(unix)]
 #[test]
 fn production_deep_join_requires_fresh_independent_minimum_store() {
     use std::fs;
@@ -1159,7 +1176,9 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         ).is_err(), "a signed old checkpoint does not replace a current store");
     assert_eq!(current.verification_count, 0);
 
-    external.publish_once(&subject).expect("durable independent minimum");
+    external
+        .publish_once(&subject, &mut IndependentlyAdmittedJournalMinimum)
+        .expect("durable independent minimum");
     let mut current = CurrentEffectFixture::new(&transcript);
     let accepted = crate::cell_split_observer_join::
         verify_cell_split_observer_join_deep_with_minimum_port_v1(
