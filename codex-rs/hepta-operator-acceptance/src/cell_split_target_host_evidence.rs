@@ -899,6 +899,17 @@ fn validate_event_payload(
     {
         return Err(invalid("lifecycle event refers to a different child artifact"));
     }
+    // A hardware measurement is a typed, independently observable event.
+    // Attaching extra resource samples to a lifecycle acknowledgement must
+    // never inflate the hardware classes or measurement counts admitted by
+    // the host/Observer evidence verifier, even when the log is re-signed.
+    if event.event_kind != CellSplitTargetHostEventKindV1::ResourceMeasurement
+        && event.resource.is_some()
+    {
+        return Err(invalid(
+            "resource sample is not a ResourceMeasurement event",
+        ));
+    }
     match event.event_kind {
         CellSplitTargetHostEventKindV1::ArtifactLoaded => {}
         CellSplitTargetHostEventKindV1::RouteCutover => {
