@@ -561,6 +561,31 @@ fn ambiguous_execution_quarantines_run_and_neuron_feature_retries() {
 }
 
 #[test]
+fn lower_driver_memory_claim_cannot_reduce_single_request_resident_receipts() {
+    let driver = Driver {
+        reported_run_memory_bytes: Some(0),
+        reported_feature_memory_bytes: Some(0),
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.resident-floor".into(), 3, grant(), driver)
+            .expect("worker");
+    let load = worker.load_model(100, manifest()).expect("load");
+    assert_eq!(load.observed_memory_bytes, 1_024);
+
+    let generic = worker.run(100, "model.1", request()).expect("generic run");
+    assert_eq!(generic.observed_memory_bytes, 1_024);
+
+    let feature = worker
+        .run_neuron_features(100, "model.1", neuron_feature_request())
+        .expect("feature run");
+    assert_eq!(feature.observed_memory_bytes, 1_024);
+    assert_eq!(worker.driver.run_calls, 1);
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert!(!worker.poisoned);
+}
+
+#[test]
 fn multi_model_resident_memory_cannot_exceed_total_worker_grant() {
     let mut bounded = grant();
     bounded.maximum_memory_bytes = 1024;
