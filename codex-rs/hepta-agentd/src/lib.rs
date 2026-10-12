@@ -150,6 +150,8 @@ pub use config::HEPTA_AGENT_ID_ENV;
 pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
 pub use config::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
 pub use error::AgentdError;
+/// The Evidence-owned durable telemetry sink used by product-host compositions.
+pub use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 pub use evidence_frontier::EvidenceRecoveryFrontierV1;
 pub use evidence_frontier::evidence_recovery_frontier_signing_bytes;
 pub use evidence_host::kernel_evidence_claims;

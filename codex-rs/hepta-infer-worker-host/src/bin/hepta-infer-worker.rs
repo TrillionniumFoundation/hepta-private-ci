@@ -3,7 +3,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_worker_host::production_metrics::open_metrics_bound_native_control_v1;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
@@ -78,7 +78,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
     }
-    let mut control = DurableInferenceControl::open(journal, /*capacity*/ 16_384)?;
+    let mut control = open_metrics_bound_native_control_v1(&journal, /*capacity*/ 16_384)?;
     let admission = NativeAdmission {
         request_id: request_id.ok_or("--request-id is required")?,
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
@@ -140,6 +140,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     };
     signal_task.abort();
+    // A model outcome is never replayed on telemetry loss. Export only after
+    // the WAL latency evidence is durably grouped and synced.
+    if !control.flush_production_metrics() {
+        return Err("native inference metrics were not durably committed".into());
+    }
     let output = result?;
     println!("{}", serde_json::to_string(&output)?);
     if !output.terminal_observed {
