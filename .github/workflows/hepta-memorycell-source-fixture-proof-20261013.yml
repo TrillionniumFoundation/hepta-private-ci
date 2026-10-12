@@ -1,0 +1,49 @@
+name: MemoryCell exact Latin-1 source regression 20261013
+on:
+  push:
+    branches:
+      - codex/memorycell-format-source-20261013
+    paths:
+      - .github/workflows/hepta-memorycell-source-fixture-proof-20261013.yml
+permissions:
+  contents: read
+jobs:
+  exact-source-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 6ac55532cd3f65d02438cda7f642dc22afb107fe
+          persist-credentials: false
+      - name: Run all original Git-source byte invariants
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-fixture-proof
+          git rev-parse HEAD > /tmp/source-fixture-proof/exact-source.txt
+          test "$(cat /tmp/source-fixture-proof/exact-source.txt)" = "6ac55532cd3f65d02438cda7f642dc22afb107fe"
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_extension_source_bytes.py' -v 2>&1 | tee /tmp/source-fixture-proof/ten-tests.log
+          python3 - <<'PY'
+          legacy=b"// caf\xe9\n"
+          source="// café\n".encode("latin-1")
+          assert legacy==source
+          replacement=source.decode("utf-8", errors="replace").encode("utf-8")
+          assert replacement==b"// caf\xef\xbf\xbd\n"
+          assert "// café\n".encode("utf-8")==b"// caf\xc3\xa9\n"
+          print("source-byte-control: identical original and negative test bytes")
+          PY
+          python3 -m py_compile scripts/memory_cell/test_project_pr_extension_source_bytes.py
+      - name: Save exact testing receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-fixture-proof
+          (cd /tmp/source-fixture-proof && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-source-fixture-proof-20261013
+          path: /tmp/source-fixture-proof
+          if-no-files-found: error
