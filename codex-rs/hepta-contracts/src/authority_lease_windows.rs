@@ -96,16 +96,24 @@ mod tests {
         let clock: Arc<dyn AuthorityClock> = Arc::new(FixedClock);
         let owner = "windows-kernel-authority".to_string();
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
-            &state_dir, owner.clone(), initial, Arc::clone(&clock),
+            &state_dir,
+            owner.clone(),
+            initial,
+            Arc::clone(&clock),
         )
         .expect("create private Windows authority owner");
-        registry.put_lease(sample(), 0).expect("append exact signed lease identity");
+        registry
+            .put_lease(sample(), 0)
+            .expect("append exact signed lease identity");
         let next = registry.frontier().expect("durable frontier");
         assert!(next.store_revision > initial.store_revision);
         drop(registry);
 
         let reopened = AuthorityLeaseRegistry::open_state_dir_with_clock(
-            &state_dir, owner.clone(), next, Arc::clone(&clock),
+            &state_dir,
+            owner.clone(),
+            next,
+            Arc::clone(&clock),
         )
         .expect("exact reopen without recreating authority");
         assert_eq!(reopened.frontier().expect("recovered frontier"), next);
@@ -115,9 +123,12 @@ mod tests {
             .expect("lease survived reopen");
         assert_eq!(recovered.lease, sample());
         assert_eq!(recovered.store_revision, next.store_revision);
-        assert!(reopened.verifier().verify_use(
-            "win-lease-one", 1, &sample().binding,
-        ).is_ok());
+        assert!(
+            reopened
+                .verifier()
+                .verify_use("win-lease-one", 1, &sample().binding,)
+                .is_ok()
+        );
         let receipt = reopened
             .revoke("win-lease-one", 1, [9; 32])
             .expect("persist revocation and prevent lease reuse");
@@ -126,17 +137,22 @@ mod tests {
         drop(reopened);
 
         let reopened = AuthorityLeaseRegistry::open_state_dir_with_clock(
-            &state_dir, owner.clone(), revoked_head, Arc::clone(&clock),
+            &state_dir,
+            owner.clone(),
+            revoked_head,
+            Arc::clone(&clock),
         )
         .expect("reopen exact persisted revocation");
-        assert!(reopened
-            .read_revocation("win-lease-one")
-            .expect("durable revocation lookup")
-            .is_some());
+        assert!(
+            reopened
+                .read_revocation("win-lease-one")
+                .expect("durable revocation lookup")
+                .is_some()
+        );
         assert!(matches!(
-            reopened.verifier().verify_use(
-                "win-lease-one", 2, &sample().binding,
-            ),
+            reopened
+                .verifier()
+                .verify_use("win-lease-one", 2, &sample().binding,),
             Err(AuthorityLeaseError::Revoked),
         ));
         drop(reopened);
@@ -147,7 +163,10 @@ mod tests {
         false_future.store_revision += 1;
         assert!(matches!(
             AuthorityLeaseRegistry::open_state_dir_with_clock(
-                &state_dir, owner.clone(), false_future, Arc::clone(&clock),
+                &state_dir,
+                owner.clone(),
+                false_future,
+                Arc::clone(&clock),
             ),
             Err(AuthorityLeaseError::AntiRollbackViolation),
         ));
@@ -155,7 +174,10 @@ mod tests {
         // lease/revocation files or manufacture an empty authority history.
         assert!(matches!(
             AuthorityLeaseRegistry::open_state_dir_with_clock(
-                &state_dir, "other-owner".into(), revoked_head, Arc::clone(&clock),
+                &state_dir,
+                "other-owner".into(),
+                revoked_head,
+                Arc::clone(&clock),
             ),
             Err(AuthorityLeaseError::InvalidTrust),
         ));
@@ -167,7 +189,9 @@ mod tests {
         let state_dir = root.path().join("authority-lease-store");
         let initial = AuthorityLeaseFrontier::for_empty_epoch(7).expect("genesis");
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
-            &state_dir, "windows-kernel-authority".into(), initial,
+            &state_dir,
+            "windows-kernel-authority".into(),
+            initial,
             Arc::new(FixedClock),
         )
         .expect("create owner");
@@ -180,7 +204,9 @@ mod tests {
         .expect("real NTFS hardlink");
         assert!(matches!(
             AuthorityLeaseRegistry::open_state_dir_with_clock(
-                &state_dir, "windows-kernel-authority".into(), frontier,
+                &state_dir,
+                "windows-kernel-authority".into(),
+                frontier,
                 Arc::new(FixedClock),
             ),
             Err(AuthorityLeaseError::UnsafeStateDirectory),

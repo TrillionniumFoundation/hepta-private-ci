@@ -49,23 +49,27 @@ pub trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
 /// other drivers must additionally enforce their actual peak allocations.
 fn minimum_neuron_batch_tensor_bytes(requests: &[NeuronFeatureRequest]) -> Result<u64, Error> {
     let (output_bytes, peak_gated_bytes) =
-        requests.iter().try_fold((0_u64, 0_u64), |(total, peak), item| {
-            let width =
-                u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
-            let input_width = u64::try_from(item.feature_vector_q24.len())
-                .map_err(|_| Error::ArithmeticOverflow)?;
-            let outputs = width
-                .checked_mul(2)
-                .and_then(|elements| elements.checked_mul(8))
-                .ok_or(Error::ArithmeticOverflow)?;
-            let gated = input_width.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
-            Ok::<_, Error>((
-                total
-                    .checked_add(outputs)
-                    .ok_or(Error::ArithmeticOverflow)?,
-                peak.max(gated),
-            ))
-        })?;
+        requests
+            .iter()
+            .try_fold((0_u64, 0_u64), |(total, peak), item| {
+                let width = u64::try_from(item.expected_output_width)
+                    .map_err(|_| Error::ArithmeticOverflow)?;
+                let input_width = u64::try_from(item.feature_vector_q24.len())
+                    .map_err(|_| Error::ArithmeticOverflow)?;
+                let outputs = width
+                    .checked_mul(2)
+                    .and_then(|elements| elements.checked_mul(8))
+                    .ok_or(Error::ArithmeticOverflow)?;
+                let gated = input_width
+                    .checked_mul(8)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                Ok::<_, Error>((
+                    total
+                        .checked_add(outputs)
+                        .ok_or(Error::ArithmeticOverflow)?,
+                    peak.max(gated),
+                ))
+            })?;
     output_bytes
         .checked_add(peak_gated_bytes)
         .ok_or(Error::ArithmeticOverflow)
@@ -570,7 +574,10 @@ mod tests {
         // Both outputs persist (2 * 3 * 2 * 8 = 96 bytes), and the
         // reference CPU Head needs one additional width-two Q24 gated
         // vector (16 bytes). No request's pre-existing input Vec is copied.
-        assert_eq!(minimum_neuron_batch_tensor_bytes(&[a.clone(), b.clone()]), Ok(112));
+        assert_eq!(
+            minimum_neuron_batch_tensor_bytes(&[a.clone(), b.clone()]),
+            Ok(112)
+        );
         let mut worker = worker_with_memory_budget(BatchMock::default(), 1024 + 96);
         assert_eq!(
             worker.run_neuron_features_batch(100, "model.v2", vec![a, b]),
@@ -764,4 +771,5 @@ mod tests {
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
-    }}
+    }
+}

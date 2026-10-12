@@ -220,23 +220,27 @@ fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Res
 /// RSS: other drivers must independently enforce their real peak allocation.
 fn minimum_batch_tensor_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<u64, Error> {
     let (output_bytes, peak_gated_bytes) =
-        requests.iter().try_fold((0_u64, 0_u64), |(total, peak), item| {
-            let output_width =
-                u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
-            let input_width = u64::try_from(item.snapshot.features_q24.len())
-                .map_err(|_| Error::ArithmeticOverflow)?;
-            let outputs = output_width
-                .checked_mul(2)
-                .and_then(|count| count.checked_mul(8))
-                .ok_or(Error::ArithmeticOverflow)?;
-            let gated = input_width.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
-            Ok::<_, Error>((
-                total
-                    .checked_add(outputs)
-                    .ok_or(Error::ArithmeticOverflow)?,
-                peak.max(gated),
-            ))
-        })?;
+        requests
+            .iter()
+            .try_fold((0_u64, 0_u64), |(total, peak), item| {
+                let output_width = u64::try_from(item.expected_output_width)
+                    .map_err(|_| Error::ArithmeticOverflow)?;
+                let input_width = u64::try_from(item.snapshot.features_q24.len())
+                    .map_err(|_| Error::ArithmeticOverflow)?;
+                let outputs = output_width
+                    .checked_mul(2)
+                    .and_then(|count| count.checked_mul(8))
+                    .ok_or(Error::ArithmeticOverflow)?;
+                let gated = input_width
+                    .checked_mul(8)
+                    .ok_or(Error::ArithmeticOverflow)?;
+                Ok::<_, Error>((
+                    total
+                        .checked_add(outputs)
+                        .ok_or(Error::ArithmeticOverflow)?,
+                    peak.max(gated),
+                ))
+            })?;
     output_bytes
         .checked_add(peak_gated_bytes)
         .ok_or(Error::ArithmeticOverflow)
@@ -710,10 +714,7 @@ mod tests {
     }
 
     impl ModelDriver for AmbiguousPhysicalV2Driver {
-        fn load(
-            &mut self,
-            _: &super::super::ModelManifest,
-        ) -> Result<DriverModelHandle, Error> {
+        fn load(&mut self, _: &super::super::ModelManifest) -> Result<DriverModelHandle, Error> {
             Ok(DriverModelHandle {
                 opaque_id: "handle.shared-v2".into(),
                 observed_memory_bytes: 1024,
@@ -753,11 +754,7 @@ mod tests {
                             head_digest: request.head_digest.clone(),
                             drive_q24: vec![0; request.expected_output_width],
                             prediction_q24: vec![0; request.expected_output_width],
-                            observed_memory_bytes: if self.bounded_transient {
-                                2048
-                            } else {
-                                1024
-                            },
+                            observed_memory_bytes: if self.bounded_transient { 2048 } else { 1024 },
                             transient_allocation_bytes: if self.oversized_transient {
                                 u64::MAX
                             } else {
@@ -777,7 +774,9 @@ mod tests {
                 }
                 return Ok(observations);
             }
-            Err(Error::DriverFailure("physical V2 batch may have executed".into()))
+            Err(Error::DriverFailure(
+                "physical V2 batch may have executed".into(),
+            ))
         }
     }
 
@@ -820,9 +819,7 @@ mod tests {
             req("cell.b", "request.b", Arc::clone(&snapshot)),
         ];
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100, "model.shared-v2", requests.clone()
-            ),
+            worker.run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests.clone()),
             Err(Error::IndeterminateLifecycle)
         );
         assert!(worker.poisoned);
@@ -830,9 +827,7 @@ mod tests {
         assert_eq!(worker.models["model.shared-v2"].active_requests, 0);
         assert_eq!(worker.driver.batches, 1);
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100, "model.shared-v2", requests
-            ),
+            worker.run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests),
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
@@ -880,9 +875,7 @@ mod tests {
             req("cell.b", "request.b", Arc::clone(&snapshot)),
         ];
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100, "model.shared-v2", requests.clone()
-            ),
+            worker.run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests.clone()),
             Err(Error::IndeterminateLifecycle)
         );
         assert!(worker.poisoned);
@@ -890,9 +883,7 @@ mod tests {
         assert_eq!(worker.models["model.shared-v2"].active_requests, 0);
         assert_eq!(worker.driver.batches, 1);
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100, "model.shared-v2", requests
-            ),
+            worker.run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests),
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
@@ -917,8 +908,7 @@ mod tests {
             ..AmbiguousPhysicalV2Driver::default()
         };
         let mut worker =
-            InferenceWorker::new(100, "worker.memory-v2".into(), 3, grant, driver)
-                .expect("worker");
+            InferenceWorker::new(100, "worker.memory-v2".into(), 3, grant, driver).expect("worker");
         let manifest = super::super::ModelManifest {
             model_id: "model.shared-v2".into(),
             model_digest: "b".repeat(64),
@@ -933,9 +923,7 @@ mod tests {
         worker.load_model(100, manifest).expect("load");
         let requests = vec![req("cell.a", "request.a", Arc::clone(&snapshot))];
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100, "model.shared-v2", requests.clone()
-            ),
+            worker.run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests.clone()),
             Err(Error::ModelCapacity)
         );
         assert!(worker.poisoned);
@@ -943,9 +931,7 @@ mod tests {
         assert!(worker.active_requests.is_empty());
         assert_eq!(worker.models["model.shared-v2"].active_requests, 0);
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100, "model.shared-v2", requests
-            ),
+            worker.run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests),
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
@@ -969,9 +955,8 @@ mod tests {
             bounded_transient: true,
             ..AmbiguousPhysicalV2Driver::default()
         };
-        let mut worker =
-            InferenceWorker::new(100, "worker.aggregate-v2".into(), 3, grant, driver)
-                .expect("worker");
+        let mut worker = InferenceWorker::new(100, "worker.aggregate-v2".into(), 3, grant, driver)
+            .expect("worker");
         let manifest = super::super::ModelManifest {
             model_id: "model.shared-v2".into(),
             model_digest: "b".repeat(64),
@@ -989,9 +974,7 @@ mod tests {
             req("cell.b", "request.b", Arc::clone(&snapshot)),
         ];
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100, "model.shared-v2", requests.clone()
-            ),
+            worker.run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests.clone()),
             Err(Error::ModelCapacity)
         );
         assert!(worker.poisoned);
@@ -999,10 +982,9 @@ mod tests {
         assert!(worker.active_requests.is_empty());
         assert_eq!(worker.models["model.shared-v2"].active_requests, 0);
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100, "model.shared-v2", requests
-            ),
+            worker.run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests),
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
-    }}
+    }
+}

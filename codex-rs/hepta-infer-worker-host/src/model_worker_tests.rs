@@ -80,7 +80,9 @@ impl NeuronFeatureDriver for Driver {
     ) -> Result<DriverNeuronFeatureObservation, Error> {
         self.feature_calls += 1;
         if self.fail_feature_after_execution {
-            return Err(Error::DriverFailure("feature may have executed".to_string()));
+            return Err(Error::DriverFailure(
+                "feature may have executed".to_string(),
+            ));
         }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
@@ -603,7 +605,10 @@ fn generic_run_enforces_generation_wide_resident_peak_after_driver_dispatch() {
     worker.load_model(100, other).expect("second model");
 
     // 1,800 selected-model bytes + 1,024 other resident > 2,500.
-    assert_eq!(worker.run(100, "model.1", request()), Err(Error::ModelCapacity));
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelCapacity)
+    );
     assert!(worker.poisoned);
     assert!(worker.active_requests.is_empty());
     assert_eq!(worker.driver.run_calls, 1);
