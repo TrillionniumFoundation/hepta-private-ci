@@ -294,3 +294,125 @@ fn hard_sigmoid_gate_rounding_propagates_correctly_across_rows() {
     assert_eq!(prediction[0], Q24 / 8);
     assert_eq!(prediction[1], Q24 / 4 + 1);
 }
+
+
+#[test]
+fn grouped_cpu_head_kernel_matches_scalar_reference_for_32_lanes() {
+    // Real Q24 multiplication over a contiguous buffer with mixed-sign
+    // inputs and no use of the per-Cell infer() inside the batched kernel.
+    let mut compact = sample_head(false);
+    compact.gate_weights_q24.clear();
+    compact.prediction_weights_q24.clear();
+    compact.gate_bias_q24 = vec![-1, 3];
+    for head in [sample_head(false), sample_head(true), compact] {
+        let packed = (0..32)
+            .flat_map(|n| {
+                [
+                    (n as i64 - 16) * (Q24 / 64),
+                    (n as i64 - 8) * (Q24 / 128),
+                ]
+            })
+            .collect::<Vec<_>>();
+        let all = (0..32).collect::<Vec<_>>();
+        let batched = head.infer_batch(&packed, &all, 2).expect("Q24 batch");
+        assert_eq!(batched.len(), 32);
+        for (lane, (drive, prediction)) in batched.into_iter().enumerate() {
+            let expected = head
+                .infer(&packed[lane * 2..(lane + 1) * 2])
+                .expect("single Q24 reference");
+            assert_eq!((drive, prediction), expected, "lane {lane}");
+        }
+
+        let sparse_lanes = [31, 1, 17, 4, 28];
+        let sparse = head
+            .infer_batch(&packed, &sparse_lanes, 2)
+            .expect("reordered lanes");
+        for (&lane, observed) in sparse_lanes.iter().zip(sparse.iter()) {
+            assert_eq!(
+                observed,
+                &head.infer(&packed[lane * 2..(lane + 1) * 2]).expect("single"),
+                "reordered lane {lane}"
+            );
+        }
+    }
+}
+
+#[test]
+fn grouped_cpu_head_kernel_rejects_bad_lanes_and_feature_values() {
+    let head = sample_head(false);
+    let inputs = [Q24 / 2, Q24 / 4, Q24 / 4, Q24 / 2];
+    assert_eq!(
+        head.infer_batch(&inputs, &[0, 0], 2),
+        Err(Error::FeatureBatchMismatch)
+    );
+    assert_eq!(
+        head.infer_batch(&inputs, &[2], 2),
+        Err(Error::FeatureBatchMismatch)
+    );
+    assert_eq!(
+        head.infer_batch(&inputs, &[], 2),
+        Err(Error::FeatureBatchMismatch)
+    );
+    assert_eq!(
+        head.infer_batch(&inputs, &[0, 1], 3),
+        Err(Error::FeatureBatchMismatch)
+    );
+    let bad = [Q24 / 2, Q24 / 4, 9 * Q24, Q24 / 2];
+    assert_eq!(
+        head.infer_batch(&bad, &[0, 1], 2),
+        Err(Error::FeatureLimit)
+    );
+    // No silent overflow/clamping of a large Q24 accumulator.
+    let mut oversized = sample_head(false);
+    oversized.drive_weights_q24 = vec![8 * Q24; 4];
+    oversized.drive_bias_q24 = vec![8 * Q24; 2];
+    let large_inputs = [8 * Q24, 8 * Q24, 8 * Q24, 8 * Q24];
+    assert_eq!(
+        oversized.infer_batch(&large_inputs, &[0, 1], 2),
+        Err(Error::FeatureOutputMismatch)
+    );
+}
+
+#[test]
+fn grouped_multi_head_worker_batch_preserves_receipts_and_single_path() {
+    let (mut worker, heads) = local_worker();
+    let weights = worker.driver.manifest.weights_digest.clone();
+    let mut requests = (0..4)
+        .map(|i| {
+            cpu_request(
+                i + 1,
+                heads[i % 2].clone(),
+                weights.clone(),
+            )
+        })
+        .collect::<Vec<_>>();
+    for (i, request) in requests.iter_mut().enumerate() {
+        request.feature_vector_q24 = vec![
+            (i as i64 - 2) * Q24 / 4,
+            (i as i64 + 1) * Q24 / 8,
+        ];
+        let digest = canonical_neuron_feature_payload_digest(request);
+        request.authorization.payload_digest = digest.clone();
+        request.authorization.lease_payload_digest = digest;
+    }
+    let separate = requests
+        .iter()
+        .map(|request| {
+            worker
+                .run_neuron_features_receipt(100, "model.cpu-head", request.clone())
+                .expect("single request")
+        })
+        .collect::<Vec<_>>();
+    let batch = worker
+        .run_neuron_features_backend_batch(100, "model.cpu-head", requests)
+        .expect("one real grouped CPU batch");
+    assert_eq!(worker.driver.backend_batch_invocations, 1);
+    assert_eq!(batch.receipts.len(), 4);
+    for (i, (scalar, batched)) in separate.iter().zip(batch.receipts.iter()).enumerate() {
+        assert_eq!(scalar.drive_q24, batched.drive_q24, "Cell {i}");
+        assert_eq!(scalar.prediction_q24, batched.prediction_q24, "Cell {i}");
+        assert_eq!(scalar.request_digest, batched.request_digest, "Cell {i}");
+        assert!(!batched.authority.grants_any());
+    }
+    worker.unload_model(100, "model.cpu-head").expect("clean unload");
+}
