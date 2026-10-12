@@ -823,13 +823,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         Ok(receipts)
     }
 
-    /// Advances at most one durable owner effect; never drives a later stage
-    /// until the preceding owner receipt is authenticated and fsync'd.
-    pub fn advance(
+    /// Source-only fixture convenience. An unauthenticated callback must
+    /// never be a public production entry for CAS/migration/CNS/Supervisor
+    /// execution. Production callers enter through the Agentd selected-split
+    /// admission path, and every original effect owner enforces final-use.
+    #[cfg(test)]
+    pub(crate) fn advance(
         &mut self,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
-        // Low-level coordinator callers still depend on the *original*
-        // effect owner to enforce independent NDU/Selector final-use.
         self.advance_with_admission(|| Ok(()))
     }
 
