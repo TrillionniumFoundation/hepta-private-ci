@@ -466,7 +466,9 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitDurableEffectBackendV1
 
     fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
         if self.verified_effect(intent)?.is_some() {
-            return Ok(());
+            // Current state may belong to another racing writer. Do not
+            // acknowledge a fresh Execute for an already published route.
+            return Err(CellSplitCnsCutoverErrorV1::Ambiguous);
         }
         // The authoritative CNS port must use its own durable one-shot
         // final-use guard. A lost acknowledgement cannot cause a second
