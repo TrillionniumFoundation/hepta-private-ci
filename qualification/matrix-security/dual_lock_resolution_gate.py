@@ -140,8 +140,10 @@ def inspect(original_lock, resolved_lock, metadata, *, source_sha, pinned_upstre
         "removed_package_identities": sorted(str(k) for k in before.keys() - after.keys()),
         "matrix_family_minor": "0.19",
         "unmaintained_anymap2_present": False,
-        "only_disposable_lock_examined": True,
-        "original_checkout_modified": False,
+        # Path provenance and repository cleanliness are verified by the
+        # independent workflow/worktree owner, not by this data-only parser.
+        "isolated_worktree_attested": False,
+        "original_checkout_modified": None,
         "actual_source_reviewer_approved": False,
         "cargo_deny_verified": False,
         "matrix_e2ee_verified": False,
