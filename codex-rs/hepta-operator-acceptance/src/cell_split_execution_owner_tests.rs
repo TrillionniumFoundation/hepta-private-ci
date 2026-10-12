@@ -1247,6 +1247,53 @@ fn transcript_rejects_local_evidence_replacement_during_live_owner_verification(
 }
 
 #[test]
+fn transcript_rejects_unknown_frame_injected_during_live_owner_readback() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let port = FixturePort::new(state.clone());
+    let tamper = port.tamper_during_live_readback.clone();
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+    for _ in 0..4 {
+        owner.advance().expect("original effect").expect("receipt");
+    }
+    // The original frames and all four remotely signed receipts stay valid.
+    // A fifth frame appears only after the initial namespace scan.
+    *tamper.borrow_mut() = Some(root.path().join("cell-split-04-committed.json"));
+    assert!(matches!(
+        owner.verified_transcript(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "unknown cell split durable frame"
+        ))
+    ));
+    assert_eq!(state.borrow().executions, 4);
+}
+
+#[test]
+fn new_effect_is_not_acknowledged_if_unknown_frame_arrives_during_readback() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let port = FixturePort::new(state.clone());
+    let tamper = port.tamper_during_live_readback.clone();
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+    *tamper.borrow_mut() = Some(root.path().join("cell-split-04-committed.json"));
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "unknown cell split durable frame"
+        ))
+    ));
+    // The real external effect may already exist, so no retry is permitted.
+    assert_eq!(state.borrow().executions, 1);
+    assert_eq!(owner.completed_steps(), 0);
+    assert!(root.path().join("cell-split-00-prepared.json").exists());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+    assert!(owner.advance().is_err());
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn full_transcript_uses_only_four_current_owner_receipts() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
