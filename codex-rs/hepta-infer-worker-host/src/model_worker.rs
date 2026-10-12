@@ -373,23 +373,31 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
+            self.execution_indeterminate = true;
             return Err(Error::TokenLimit);
         }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.execution_indeterminate = true;
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
         } else if observed.succeeded {
-            let output = observed
-                .output_digest
-                .as_ref()
-                .ok_or(Error::MissingTerminalOutput)?;
-            validate_digest(output, "output")?;
+            let Some(output) = observed.output_digest.as_ref() else {
+                self.execution_indeterminate = true;
+                return Err(Error::MissingTerminalOutput);
+            };
+            if let Err(error) = validate_digest(output, "output") {
+                self.execution_indeterminate = true;
+                return Err(error);
+            }
             (ExecutionStatus::Succeeded, observed.output_digest, true)
         } else {
             if let Some(output) = &observed.output_digest {
-                validate_digest(output, "output")?;
+                if let Err(error) = validate_digest(output, "output") {
+                    self.execution_indeterminate = true;
+                    return Err(error);
+                }
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
@@ -665,12 +673,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             self.execution_indeterminate = true;
         }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.execution_indeterminate = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                self.execution_indeterminate = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
@@ -706,7 +718,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        project_neuron_feature_receipt(request_copy, observed)
+        match project_neuron_feature_receipt(request_copy, observed) {
+            Ok(receipt) => Ok(receipt),
+            Err(error) => {
+                self.execution_indeterminate = true;
+                Err(error)
+            }
+        }
     }
 }
 
