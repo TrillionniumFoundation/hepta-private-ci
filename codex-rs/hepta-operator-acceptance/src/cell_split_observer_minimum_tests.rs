@@ -325,3 +325,60 @@ fn partial_independent_store_rollback_cannot_reinitialize_minimum() {
         ).is_err(), "read-only recovery must also reject partial restore");
     }
 }
+
+
+/// A complete signed-directory restore is not detectable by local hashes,
+/// fsync or an advisory writer lock. This regression documents the exact
+/// threat that an independently administered monotonic source must cover.
+/// A successful local read here MUST NOT be interpreted as production
+/// anti-rollback acceptance or permission to activate the split.
+#[test]
+fn whole_root_restore_of_signed_minimum_is_not_external_anti_rollback_evidence() {
+    let root = private_root();
+    let signer = SigningKey::from_bytes(&[91; 32]);
+    let current = subject();
+    let mut admitted = VerifiedOriginalMinimum {
+        allow: true,
+        checks: 0,
+    };
+    let saved_record;
+    {
+        let mut store = CellSplitSupervisorMinimumFileStoreV1::open(
+            root.path(), signer.clone(),
+        ).expect("first minimum owner");
+        store.publish_once(&current, &mut admitted)
+            .expect("fsynced signed checkpoint");
+        saved_record = fs::read(root.path().join(STORE_FILE))
+            .expect("original signed record");
+        assert!(!saved_record.is_empty());
+    }
+    // Both continuity files are removed, as if an external snapshot provider
+    // restored the entire store root. A local lock cannot independently
+    // distinguish this from the original legitimate directory.
+    fs::remove_file(root.path().join(STORE_FILE))
+        .expect("remove current record");
+    fs::remove_file(root.path().join(crate::durable::SIDECAR_LOCK_FILE))
+        .expect("remove continuity lock");
+    fs::write(root.path().join(STORE_FILE), &saved_record)
+        .expect("restore original signed bytes");
+    // An unmatched record without the lock must still fail closed.
+    assert!(CellSplitSupervisorMinimumFileStoreV1::open_existing(
+        root.path(), signer.clone(),
+    ).is_err());
+    // Restoring both independently valid local files can defeat this
+    // *local-only* continuity indicator; that is precisely why an external
+    // rollback-resistant witness is a separate production requirement.
+    fs::write(
+        root.path().join(crate::durable::SIDECAR_LOCK_FILE),
+        b"",
+    ).expect("restore local continuity marker");
+    let mut restored = CellSplitSupervisorMinimumFileStoreV1::open_existing(
+        root.path(), signer.clone(),
+    ).expect("old signed snapshot is locally indistinguishable");
+    let proof = restored.read_current(&current, &"ab".repeat(32))
+        .expect("historical signed state");
+    verify_cell_split_supervisor_minimum_online_v1(
+        &current, &"ab".repeat(32), &proof,
+        &signer.verifying_key(),
+    ).expect("local signature alone cannot detect whole-root rollback");
+}
