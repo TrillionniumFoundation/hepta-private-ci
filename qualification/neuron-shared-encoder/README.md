@@ -67,3 +67,6 @@ Native integration still required after successful real model experiments:
 4. Train and evaluate full Laya, pooled Laya Head, ModernBERT-base, Organ Expert Bank on the same approved, grouped future-window protocol. Add independent NDU and negative-transfer evidence; only then propose promotion.
 
 _No change in this harness alters any Hepta production contracts, grants or model versions._
+### V3 local snapshot hardening
+
+Closed-world shadow hashing additionally refuses hard-linked files (not just symlinks), symlinked ancestor directories and excessive directory fan-out; it checks opened inode identity plus file size, mtime and ctime before and after reading. Both the candidate Encoder and original Laya teacher verify their complete snapshot **before** and **after** execution. The proof is still advisory-only: only a trusted immutable Artifact CAS and independent final-use authorization can rule out privileged time-of-check/time-of-use changes and authorize production loading. SHA-256 by itself is not an independent signature.
