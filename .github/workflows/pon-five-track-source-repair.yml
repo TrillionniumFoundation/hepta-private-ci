@@ -1,0 +1,129 @@
+name: Exact Hepta five-track source repair
+on:
+  push:
+    branches: [ci/pon-five-track-source-repair-20261012]
+permissions:
+  contents: read
+jobs:
+  formatter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      SOURCE: d8717cd0f5ef84b0488ac3d0c589278274e09730
+      DESTINATION: fix/pon-five-track-format-20261012
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: d8717cd0f5ef84b0488ac3d0c589278274e09730
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Apply the existing pinned formatter without changing test semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/repair"
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          test "$(git rev-parse HEAD^{tree})" = 3516caa6b35be85054c6e8061a901003c341ca53
+          test "$(git hash-object .github/scripts/test_run_bazel_failure_status.py)" = 9034d208ae1649f77b627387291870ce792c1ce3
+          python3 -m pip install --disable-pip-version-check ruff==0.11.13
+          ruff format .github/scripts/test_run_bazel_failure_status.py
+          python3 - <<'PY'
+          import ast, subprocess
+          from pathlib import Path
+          path = '.github/scripts/test_run_bazel_failure_status.py'
+          old = subprocess.check_output(['git','show','HEAD:'+path])
+          new = Path(path).read_bytes()
+          assert ast.dump(ast.parse(old)) == ast.dump(ast.parse(new))
+          assert subprocess.check_output(['git','hash-object',path],text=True).strip() == '7a0e862ff77c214444ac911ddab2afe09a87f369'
+          assert subprocess.check_output(['git','diff','--name-only'],text=True).splitlines() == [path]
+          PY
+          git diff --check
+          git diff --binary > "$RUNNER_TEMP/repair/reviewed.patch"
+          git config user.name 'OpenAI'
+          git config user.email 'noreply@openai.com'
+          git add .github/scripts/test_run_bazel_failure_status.py
+          git commit -m 'style(pon): restore pinned Ruff formatting with all Bazel failure controls retained' -m 'Continue PR1557 source. Preserve the exact Python AST, all test bodies and all original workflow/runtime bytes. Source formatting and wrapper tests are not whole-system qualification; Windows failures remain separate.'
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/repair/source.txt"
+          test "$(git show -s --format=%P HEAD)" = "$SOURCE"
+      - name: Execute original whole-Python format gate and all wrapper controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          ruff format --check scripts .github 2>&1 | tee "$RUNNER_TEMP/repair/format.log"
+          python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py' -v 2>&1 | tee "$RUNNER_TEMP/repair/wrappers.log"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/repair/source-after.txt"
+          cmp "$RUNNER_TEMP/repair/source.txt" "$RUNNER_TEMP/repair/source-after.txt"
+      - name: Publish only a new source branch
+        env:
+          WRITE_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          basic="$(printf 'x-access-token:%s' "$WRITE_TOKEN" | base64 -w0)"
+          echo "::add-mask::$basic"
+          export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.https://github.com/.extraheader GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $basic"
+          test -z "$(git ls-remote --heads origin "refs/heads/$DESTINATION")"
+          git push origin "HEAD:refs/heads/$DESTINATION"
+          git ls-remote --heads origin "refs/heads/$DESTINATION" > "$RUNNER_TEMP/repair/published.txt"
+          test "$(cut -f1 "$RUNNER_TEMP/repair/published.txt")" = "$(git rev-parse HEAD)"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-five-track-format-source
+          path: ${{ runner.temp }}/repair/
+          if-no-files-found: error
+          retention-days: 30
+  diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Retain the exact failed Windows source logs without executing that source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/windows-diagnostic"
+          mkdir "$out"
+          api=https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci
+          for job in 114519936111 114519936100; do
+            curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-time 60 --max-filesize 1048576 -H "Authorization: Bearer $GH_TOKEN" "$api/actions/jobs/$job" -o "$out/$job.json"
+            curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-time 120 --max-filesize 67108864 -H "Authorization: Bearer $GH_TOKEN" "$api/actions/jobs/$job/logs" -o "$out/$job.log"
+          done
+          OUT="$out" python3 - <<'PY'
+          import hashlib, json, os, re
+          from pathlib import Path
+          root = Path(os.environ['OUT'])
+          records=[]
+          for job in [114519936111,114519936100]:
+              meta=json.loads((root/f'{job}.json').read_text())
+              assert meta['id']==job and meta['run_id']==38153650435
+              assert meta['head_sha']=='d8717cd0f5ef84b0488ac3d0c589278274e09730' and meta['conclusion']=='failure'
+              raw=(root/f'{job}.log').read_bytes()
+              assert 0 < len(raw) <= 67108864
+              lines=raw.decode(errors='replace').splitlines()
+              selected=set()
+              for i,line in enumerate(lines):
+                  if re.search(r'error\[[^]]+\]:|error:|panicked at|FAILED|Caused by:',line):
+                      selected.update(range(max(0,i-3),min(len(lines),i+15)))
+              excerpt='\n'.join(lines[i] for i in sorted(selected))
+              (root/f'{job}.excerpt.txt').write_text(excerpt+'\n')
+              record={'job':job,'head':meta['head_sha'],'run':meta['run_id'],'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'acceptance_granted':False}
+              records.append(record)
+              print(json.dumps(record)); print(excerpt[:20000])
+          (root/'readback.json').write_text(json.dumps(records,indent=2)+'\n')
+          PY
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-exact-windows-failure-readback
+          path: ${{ runner.temp }}/windows-diagnostic/
+          if-no-files-found: error
+          retention-days: 30
