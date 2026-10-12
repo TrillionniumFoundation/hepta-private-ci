@@ -1,4 +1,4 @@
-"""Closed, loop-free decision IR -> real CPU JIT, for offline qualification.
+"""Closed, loop-free decision IR -> bounded CPU JIT, for offline qualification.
 
 No raw LLVM/machine-code input, arbitrary pointer, syscall, file, network or GUI
 operation is accepted. The result is an integer action *proposal*, never an
@@ -7,6 +7,7 @@ integration remains the existing Worker/Final-use owner, not this research class
 """
 
 from collections import OrderedDict
+from copy import deepcopy
 from dataclasses import asdict, dataclass
 import ctypes
 import hashlib
@@ -51,17 +52,21 @@ class DecisionIR:
                           sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
 
 
-def checked_inputs(program, values):
-    if type(program) is not DecisionIR:
-        raise ValueError("typed decision IR required")
-    program.validate()
-    if (type(values) is not tuple or len(values) != program.width
+def checked_values(width, values):
+    """Check every dynamic input; static IR validation belongs to admission."""
+    if (type(values) is not tuple or len(values) != width
             or any(type(v) not in (int, float) or not math.isfinite(v) or abs(v) > 1000 for v in values)):
         raise ValueError("invalid bounded numeric inputs")
 
 
-def interpret(program, values):
-    checked_inputs(program, values)
+def checked_inputs(program, values):
+    if type(program) is not DecisionIR:
+        raise ValueError("typed decision IR required")
+    program.validate()
+    checked_values(program.width, values)
+
+
+def _interpret_validated(program, values):
     for rule in program.rules:
         value = 0.0
         for weight, x in zip(rule.weights, values):
@@ -71,18 +76,73 @@ def interpret(program, values):
     return program.default_action
 
 
-class _CompiledDecision:
-    def __init__(self, program, engine, address, manifest):
-        self.program = program
-        self._engine = engine  # Keep executable allocations alive until last use.
-        self._function = ctypes.CFUNCTYPE(ctypes.c_int32, ctypes.POINTER(ctypes.c_double))(address)
+def interpret(program, values):
+    checked_inputs(program, values)
+    return _interpret_validated(program, values)
+
+
+class PreparedDecision:
+    """Strong typed control: admits static IR once, validates ALL new inputs.
+
+    This is a private-process immutable program snapshot, not an authorization
+    token or a sandbox against arbitrary Python/ctypes access in the process.
+    """
+
+    __slots__ = ("_program",)
+
+    def __init__(self, program):
+        if type(program) is not DecisionIR:
+            raise ValueError("typed decision IR required")
+        program.validate()
+        self._program = deepcopy(program)
+
+    @property
+    def program(self):
+        # A caller cannot resize the input buffer by replacing the public IR.
+        return deepcopy(self._program)
+
+    def __call__(self, values):
+        checked_values(self._program.width, values)
+        return _interpret_validated(self._program, values)
+
+    def _check_batch(self, observations):
+        if type(observations) is not tuple or not 1 <= len(observations) <= 32:
+            raise ValueError("decision batch must contain 1..32 rows")
+        for values in observations:
+            checked_values(self._program.width, values)
+
+    def run_batch(self, observations):
+        self._check_batch(observations)
+        return tuple(_interpret_validated(self._program, row) for row in observations)
+
+
+class _CompiledDecision(PreparedDecision):
+    __slots__ = ("_engine", "_function", "_batch_function", "manifest")
+
+    def __init__(self, program, engine, address, batch_address, manifest):
+        super().__init__(program)
+        self._engine = engine  # Keep allocations alive even after cache eviction.
+        f64ptr = ctypes.POINTER(ctypes.c_double)
+        self._function = ctypes.CFUNCTYPE(ctypes.c_int32, f64ptr)(address)
+        self._batch_function = ctypes.CFUNCTYPE(
+            ctypes.c_int32, f64ptr, ctypes.c_int32, ctypes.POINTER(ctypes.c_int32))(batch_address)
         self.manifest = manifest
 
     def __call__(self, values):
-        # Validation and marshalling are INCLUDED in measured hot-path latency.
-        checked_inputs(self.program, values)
-        array = (ctypes.c_double * self.program.width)(*values)
+        # New inputs are always checked, including nonfinite/type/size/range.
+        checked_values(self._program.width, values)
+        array = (ctypes.c_double * self._program.width)(*values)
         return int(self._function(array))
+
+    def run_batch(self, observations):
+        # Whole-batch preflight precedes ANY native execution, then one FFI call.
+        self._check_batch(observations)
+        array = (ctypes.c_double * (len(observations) * self._program.width))(
+            *(v for row in observations for v in row))
+        outputs = (ctypes.c_int32 * len(observations))()
+        if self._batch_function(array, len(observations), outputs) != 0:
+            raise RuntimeError("bounded native decision batch rejected")
+        return tuple(outputs)
 
 
 class NativeDecisionCache:
@@ -108,11 +168,13 @@ class NativeDecisionCache:
                         "triple": binding.get_default_triple(), "cpu": str(binding.get_host_cpu_name()),
                         "features": binding.get_host_cpu_features().flatten(),
                         "lowering_sha256": hashlib.sha256(inspect.getsource(_lower).encode()).hexdigest(),
-                        "abi": "f64-pointer-to-i32-v1", "fast_math": False}
+                        "abi": "f64-pointer-to-i32-batch32-v2", "fast_math": False}
 
     def compile(self, program):
         if type(program) is not DecisionIR:
             raise ValueError("typed decision IR required")
+        program.validate()
+        program = deepcopy(program)
         key = hashlib.sha256(program.canonical_bytes() + json.dumps(
             self.profile, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         if key in self._cache:
@@ -131,7 +193,8 @@ class NativeDecisionCache:
         engine.set_object_cache(lambda module_ref, data: objects.append(bytes(data)))
         engine.finalize_object()
         address = engine.get_function_address("hepta_decision")
-        if not address or not objects:
+        batch_address = engine.get_function_address("hepta_decision_batch")
+        if not address or not batch_address or not objects:
             raise RuntimeError("native compilation produced no callable/object receipt")
         manifest = {"cache_key": key, "ir_sha256": hashlib.sha256(program.canonical_bytes()).hexdigest(),
                     "llvm_ir_sha256": hashlib.sha256(text.encode()).hexdigest(),
@@ -140,7 +203,7 @@ class NativeDecisionCache:
                     "compile_cpu_ns": time.process_time_ns() - start_cpu,
                     "compile_wall_ns": time.perf_counter_ns() - start_wall,
                     "production_authorized": False, "effects_permitted": False}
-        compiled = _CompiledDecision(program, engine, address, manifest)
+        compiled = _CompiledDecision(program, engine, address, batch_address, manifest)
         self.compilations += 1
         self._cache[key] = compiled
         while len(self._cache) > self.capacity:
@@ -172,6 +235,30 @@ def _lower(program, triple, layout):
         builder.ret(ir.Constant(i32, rule.action))
         builder.position_at_end(following)
     builder.ret(ir.Constant(i32, program.default_action))
+    # The only loop is compiler-emitted, with a hard maximum of 32 rows.
+    batch = ir.Function(module, ir.FunctionType(i32, [f64.as_pointer(), i32, i32.as_pointer()]),
+                        name="hepta_decision_batch")
+    entry, loop, step, done, rejected = [batch.append_basic_block(name)
+                                       for name in ("entry", "loop", "step", "done", "rejected")]
+    b = ir.IRBuilder(entry)
+    allowed = b.and_(b.icmp_signed(">=", batch.args[1], ir.Constant(i32, 1)),
+                     b.icmp_signed("<=", batch.args[1], ir.Constant(i32, 32)))
+    b.cbranch(allowed, loop, rejected)
+    b.position_at_end(rejected)
+    b.ret(ir.Constant(i32, -1))
+    b.position_at_end(loop)
+    row = b.phi(i32, "row")
+    row.add_incoming(ir.Constant(i32, 0), entry)
+    offset = b.mul(row, ir.Constant(i32, program.width))
+    result = b.call(function, [b.gep(batch.args[0], [offset], inbounds=True)])
+    b.store(result, b.gep(batch.args[2], [row], inbounds=True))
+    b.branch(step)
+    b.position_at_end(step)
+    next_row = b.add(row, ir.Constant(i32, 1))
+    row.add_incoming(next_row, step)
+    b.cbranch(b.icmp_signed("<", next_row, batch.args[1]), loop, done)
+    b.position_at_end(done)
+    b.ret(ir.Constant(i32, 0))
     return str(module)
 
 
