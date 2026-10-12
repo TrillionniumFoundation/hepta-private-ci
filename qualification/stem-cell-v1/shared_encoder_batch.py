@@ -16,6 +16,7 @@ import time
 MAX_ITEMS = 32
 MAX_TEXT_BYTES = 65536
 MAX_FEATURE_WIDTH = 65536
+MAX_ENCODED_TOKENS = 8192  # Matches the admitted local HF token cap.
 NATIVE_Q24_INPUT_LIMIT = 512
 
 
@@ -72,15 +73,16 @@ class FrozenFeature:
 
     @classmethod
     def from_values(cls, values, token_count, representation):
-        if (not isinstance(token_count, int) or token_count < 1 or
+        if (type(token_count) is not int or
+                not 1 <= token_count <= MAX_ENCODED_TOKENS or
                 not 0 < len(values) <= MAX_FEATURE_WIDTH):
             raise ValueError("invalid encoded feature shape")
-        if representation not in ("mean", "landmark8"):
+        if type(representation) is not str or representation not in ("mean", "landmark8"):
             raise ValueError("invalid representation")
         normalized = []
         chunks = [b"hepta.stem.feature.f32.v1", len(values).to_bytes(8, "big")]
         for value in values:
-            if not isinstance(value, (int, float)) or not math.isfinite(value):
+            if type(value) not in (int, float) or not math.isfinite(value):
                 raise ValueError("non-finite encoded feature")
             try:
                 encoded = struct.pack(">f", float(value))
@@ -91,6 +93,21 @@ class FrozenFeature:
         chunks.append(token_count.to_bytes(8, "big"))
         chunks.append(representation.encode("ascii"))
         return cls(tuple(normalized), token_count, representation, hashlib.sha256(b"".join(chunks)).hexdigest())
+
+    def verify_integrity(self):
+        """Bind every returned backend float32 bit pattern to its declared digest.
+
+        Frozen dataclasses can be constructed directly without from_values,
+        so neither a backend response nor a cache admission is trusted simply
+        because isinstance(value, FrozenFeature) succeeds.
+        """
+        if type(self.values) is not tuple or not digest_ok(self.feature_digest):
+            raise ValueError("unverified immutable encoded feature")
+        reconstructed = self.from_values(
+            self.values, self.token_count, self.representation)
+        if (reconstructed.feature_digest != self.feature_digest or
+                reconstructed.values != self.values):
+            raise ValueError("encoded feature content/digest mismatch")
 
 
 @dataclass(frozen=True)
@@ -137,6 +154,9 @@ class ScopedFeatureCache:
     def put(self, key, value):
         from cache_accounting import estimated_python_cache_entry_bytes
 
+        if type(value) is not FrozenFeature:
+            raise ValueError("invalid shared-feature cache payload")
+        value.verify_integrity()
         size = estimated_python_cache_entry_bytes(key, value, value.values)
         if size > self.maximum_bytes:
             return
@@ -242,8 +262,9 @@ class SharedStemEngine:
                 raise ValueError("backend returned wrong batch count")
             verified = []
             for item in outcomes:
-                if not isinstance(item, FrozenFeature) or item.representation != requests[0].representation:
+                if type(item) is not FrozenFeature or item.representation != requests[0].representation:
                     raise ValueError("backend returned invalid representation")
+                item.verify_integrity()
                 verified.append(item)
             for k, out in zip(keys, verified):
                 self.cache.put(k, out)
