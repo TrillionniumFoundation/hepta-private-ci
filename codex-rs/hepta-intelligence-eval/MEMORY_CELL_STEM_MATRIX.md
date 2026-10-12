@@ -1414,3 +1414,26 @@ preserved, never masked by selected favorable rows. The independent
 research module and its tiny real-Torch test have their own hosted CI,
 and any changed native run must obtain its own exact-source terminal
 status before declaring even shadow outcomes.
+
+## Shadow source-only scoring survives Reader failures
+
+The pairwise Shadow Head is explicitly a *ranking-only* diagnostic. Its
+original frozen baseline may have produced a valid, pool-bound **top-1
+selection before the unchanged Reader failed**. The earlier score reducer
+discarded that real selector decision by conditioning on successful Reader
+generation; this biased its source-label denominator toward answered tasks.
+
+The reviewer now keeps a saved valid top-1 when the Reader's generation
+status is `failed`; such records can still be compared on original native
+**document-level weak source support** if the original candidate-pool digest
+and shadow baseline rank are identical. Reader success is never imputed.
+Cases that failed **before selection**, have a failed Shadow inference, or
+lack resolved source annotations remain separate unscored entries in the
+original complete phase/arm/stage denominator.
+
+The extra counters distinguish pre-Reader observed source pairs,
+frozen-Reader failures with already saved top-1, genuinely unobserved
+selectors and Shadow inference failures. A forged pool digest or out-of-range
+selection is rejected rather than laundered into a result. No new model
+call, Reader answer, semantic citation authority or production promotion
+is created by this retrospective correction.

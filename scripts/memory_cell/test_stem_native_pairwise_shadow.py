@@ -175,5 +175,58 @@ class NativePairwiseShadowTests(unittest.TestCase):
             )
 
 
+    def test_reader_failure_after_frozen_selection_keeps_source_scoring(self):
+        args, fits, choices = self.run_fixture()
+        pools, targets, frozen = targets_and_frozen(args[0], args[2])
+        frozen[(48, "test", "test-0")]["status"] = "failed"
+        outcome = review_pairwise_shadow(
+            args[0], fits, choices, frozen, pools, targets,
+            support_indices=support_indices,
+        )["by_checkpoint_phase_arm"]
+        for arm in ("pairwise_linear", "pairwise_gated"):
+            observed = outcome[f"48/test/{arm}"]
+            self.assertEqual(observed["attempted"], 8)
+            self.assertEqual(observed["baseline_reader_failed_with_top1"], 1)
+            self.assertEqual(observed["source_selection_pairs_observed"], 8)
+            self.assertEqual(observed["source_label_scored"], 8)
+            self.assertEqual(observed["source_label_unresolved_or_failure"], 0)
+            self.assertTrue(observed["reader_failure_never_erases_pre_read_source_selection"])
+            self.assertTrue(observed["shadow_answers_never_generated"])
+
+    def test_failed_before_selection_remains_unknown_not_source_gain(self):
+        args, fits, choices = self.run_fixture()
+        pools, targets, frozen = targets_and_frozen(args[0], args[2])
+        frozen[(48, "test", "test-0")] = dict(status="failed")
+        report = review_pairwise_shadow(
+            args[0], fits, choices, frozen, pools, targets,
+            support_indices=support_indices,
+        )["by_checkpoint_phase_arm"]
+        for arm in ("pairwise_linear", "pairwise_gated"):
+            case = report[f"48/test/{arm}"]
+            self.assertEqual(case["attempted"], 8)
+            self.assertEqual(case["source_selection_pairs_observed"], 7)
+            self.assertEqual(case["frozen_selector_unobserved_or_empty"], 1)
+            self.assertEqual(case["source_label_scored"], 7)
+            self.assertEqual(case["source_label_unresolved_or_failure"], 1)
+
+    def test_failed_reader_does_not_allow_forged_pool_or_out_of_range_top1(self):
+        for tamper in ("changed_pool", "out_of_bounds", "bool_selected"):
+            args, fits, choices = self.run_fixture()
+            pools, targets, frozen = targets_and_frozen(args[0], args[2])
+            base = frozen[(48, "test", "test-0")]
+            base["status"] = "failed"
+            if tamper == "changed_pool":
+                base["pool_digest"] = "unbound-candidates"
+            elif tamper == "out_of_bounds":
+                base["selected"] = 17
+            else:
+                base["selected"] = True
+            with self.subTest(tamper=tamper), self.assertRaises(ValueError):
+                review_pairwise_shadow(
+                    args[0], fits, choices, frozen, pools, targets,
+                    support_indices=support_indices,
+                )
+
+
 if __name__ == "__main__":
     unittest.main()

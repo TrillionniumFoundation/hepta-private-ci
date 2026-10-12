@@ -234,42 +234,74 @@ def review_pairwise_shadow(questions, fits, decisions, frozen_predictions,
                     for q in questions[phase]
                 ]
                 gains = regressions = changed = scored = uncertain = 0
+                observed_source_pairs = baseline_reader_failed_with_top1 = 0
+                shadow_failed = baseline_unselected = unsupported_gold = 0
                 for row in records:
                     qid = row["question_id"]
                     base = frozen_predictions[(stage, phase, qid)]
                     if (
-                        base["status"] != "succeeded"
-                        or not isinstance(base.get("selected"), int)
-                        or base["pool_digest"] != row["pool_digest"]
+                        base["status"] not in ("succeeded", "failed")
+                        or row["status"] not in ("succeeded", "failed")
                     ):
-                        uncertain += 1
-                        continue
-                    if row["status"] != "succeeded":
-                        uncertain += 1
-                        continue
-                    if row["original_frozen_selected"] != base["selected"]:
-                        raise ValueError("shadow original frozen ranker winner drift")
-                    changed += int(row["selected"] != base["selected"])
+                        raise ValueError("unknown baseline or shadow execution status")
                     target, pool = targets[qid], pools[qid]
+                    # Reader generation may fail after the original selector
+                    # has already committed a top-1. Never discard that
+                    # observed SOURCE decision because generation failed.
+                    selected = base.get("selected")
+                    if selected is None:
+                        baseline_unselected += 1
+                        uncertain += 1
+                        continue
+                    if type(selected) is not int or not 0 <= selected < len(pool.windows):
+                        raise ValueError("detached frozen top-1 in source-only audit")
+                    if base.get("pool_digest") != row["pool_digest"]:
+                        raise ValueError("original/shadow candidate pool drift")
+                    if row["status"] == "failed":
+                        shadow_failed += 1
+                        uncertain += 1
+                        continue
+                    shadow_selected = row.get("selected")
+                    if (
+                        type(shadow_selected) is not int
+                        or not 0 <= shadow_selected < len(pool.windows)
+                        or row["original_frozen_selected"] != selected
+                    ):
+                        raise ValueError("shadow original frozen ranker winner drift")
+                    observed_source_pairs += 1
+                    if base["status"] == "failed":
+                        baseline_reader_failed_with_top1 += 1
+                    changed += int(shadow_selected != selected)
                     if target.unanswerable or target.unresolved_evidence or not target.evidence:
+                        unsupported_gold += 1
                         uncertain += 1
                         continue
                     support = set(support_indices(pool, target))
                     scored += 1
-                    a, b = base["selected"] in support, row["selected"] in support
+                    a, b = selected in support, shadow_selected in support
                     gains += int(b and not a)
                     regressions += int(a and not b)
+                if scored + uncertain != len(records):
+                    raise ValueError("shadow post-policy scored denominator drift")
                 result[f"{stage}/{phase}/{arm}"] = dict(
-                    attempted=len(records), selection_changed=changed,
+                    attempted=len(records),
+                    source_selection_pairs_observed=observed_source_pairs,
+                    baseline_reader_failed_with_top1=baseline_reader_failed_with_top1,
+                    frozen_selector_unobserved_or_empty=baseline_unselected,
+                    shadow_selection_failed_with_baseline_top1=shadow_failed,
+                    native_support_unresolved_or_unanswerable=unsupported_gold,
+                    selection_changed=changed,
                     source_label_scored=scored,
                     source_label_unresolved_or_failure=uncertain,
                     native_weak_support_gains=gains,
                     native_weak_support_regressions=regressions,
+                    reader_failure_never_erases_pre_read_source_selection=True,
+                    shadow_answers_never_generated=True,
                     original_reader_answer_reused_as_shadow=False,
                     semantic_citation_precision=None,
                 )
     return dict(
-        schema="hepta.stem-pairwise-native-source-only-shadow.v1",
+        schema="hepta.stem-pairwise-native-source-only-shadow.v2",
         fits=fits, original_six_arm_policy_attempts_unmodified=True,
         total_label_blind_decisions=len(decisions),
         observed_reader_calls=0,
