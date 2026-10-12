@@ -6,6 +6,9 @@ on:
       - "scripts/memory_cell/system2_budget_control.py"
       - "scripts/memory_cell/system2_budget_trial.py"
       - "scripts/memory_cell/test_system2_budget_control.py"
+      - "scripts/memory_cell/system2_budget_audit.py"
+      - "scripts/memory_cell/test_system2_budget_evidence.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_BUDGET_EVIDENCE.md"
       - "scripts/memory_cell/system2_resumable_search.py"
       - "scripts/memory_cell/system2_resume_trial.py"
       - "scripts/memory_cell/test_system2_resumable_search.py"
@@ -82,7 +85,7 @@ jobs:
           set -euo pipefail
           /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/budget-returns/regression.log 2>&1 || { tail -100 /tmp/budget-returns/regression.log; exit 1; }
           tail -5 /tmp/budget-returns/regression.log
-          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_budget_control.py scripts/memory_cell/system2_budget_trial.py scripts/memory_cell/test_system2_budget_control.py scripts/memory_cell/system2_resumable_search.py scripts/memory_cell/system2_resume_trial.py scripts/memory_cell/test_system2_resumable_search.py | tee /tmp/budget-returns/lint.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_budget_control.py scripts/memory_cell/system2_budget_trial.py scripts/memory_cell/test_system2_budget_control.py scripts/memory_cell/system2_resumable_search.py scripts/memory_cell/system2_resume_trial.py scripts/memory_cell/test_system2_resumable_search.py scripts/memory_cell/system2_budget_audit.py scripts/memory_cell/test_system2_budget_evidence.py | tee /tmp/budget-returns/lint.log
       - name: Train from fixed-policy returns, freeze, evaluate different task multisets
         run: |
           set -euo pipefail
@@ -103,6 +106,8 @@ jobs:
           cp scripts/memory_cell/{system2_budget_control.py,system2_budget_trial.py,test_system2_budget_control.py,system2_verified_search.py,system2_search_budget.py} /tmp/budget-returns/source/
           cp scripts/memory_cell/{system2_resumable_search.py,system2_resume_trial.py,test_system2_resumable_search.py} /tmp/budget-returns/source/
           cp codex-rs/hepta-ndu/research/SYSTEM2_RESUME.md /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_budget_audit.py,test_system2_budget_evidence.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_BUDGET_EVIDENCE.md /tmp/budget-returns/source/
           cp codex-rs/hepta-ndu/research/SYSTEM2_BUDGET_RETURNS.md .github/workflows/hepta-system2-budget-returns.yml /tmp/budget-returns/source/
           (cd /tmp/budget-returns && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
