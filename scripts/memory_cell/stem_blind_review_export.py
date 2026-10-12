@@ -2,7 +2,9 @@
 
 No target annotations, privileged Oracle, label-dependent scores or models
 are opened. Reviewer packet and owner-only provenance are separate files.
-Requires a separately authenticated, genuinely independent review to finish.
+Original source is the completed strict-as-of 2026-10-12 run. A worklist is NOT
+blinded from a reviewer who independently possesses the repository's gold
+artifacts. Independent adjudication still requires access-isolated reviewers.
 """
 
 import argparse
@@ -13,9 +15,9 @@ from native import digest
 from stem_audit_archive import PinnedArchive, require
 from stem_blind_review_packet import make_blind_review_packet
 
-SOURCE = "cb9e98365b5f46e00fb2693f548a7215b1ed1145"
-TREE = "022c9aa8abc095c91ef744644329aaed12564859"
-ZIP_SHA = "be3393f448993451c7860e8867e28a79f5fb7f95d5773f79ed55b30d12a84776"
+SOURCE = "d0f69d7b94f65730fa1e093dee6989916f01898e"
+TREE = "87e3b17a0601c17712b9512fc01eadc123060391"
+ZIP_SHA = "07b0f15ec150cc9817db6bfc9b4bae1e2c06a5296ca2ba3c4c7895da18b99e2f"
 
 
 def _write(path, value):

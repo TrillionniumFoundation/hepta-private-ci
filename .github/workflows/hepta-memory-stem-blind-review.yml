@@ -5,6 +5,7 @@ on:
     paths:
       - "scripts/memory_cell/stem_blind_review_packet.py"
       - "scripts/memory_cell/test_stem_blind_review_packet.py"
+      - "scripts/memory_cell/test_stem_blind_review_workflow.py"
       - "scripts/memory_cell/stem_blind_review_export.py"
       - ".github/workflows/hepta-memory-stem-blind-review.yml"
 permissions:
@@ -32,54 +33,61 @@ jobs:
           mkdir -p /tmp/stem-blind-review
           git rev-parse HEAD > /tmp/stem-blind-review/exporter-commit.txt
           git rev-parse HEAD^{tree} > /tmp/stem-blind-review/exporter-tree.txt
-          python3 -m unittest -v test_stem_blind_review_packet 2>&1 | tee /tmp/stem-blind-review/tests.log
-          python3 -m compileall -q scripts/memory_cell/stem_blind_review_packet.py scripts/memory_cell/stem_blind_review_export.py scripts/memory_cell/test_stem_blind_review_packet.py
+          python3 -m unittest -v test_stem_blind_review_packet test_stem_blind_review_workflow 2>&1 | tee /tmp/stem-blind-review/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_blind_review_packet.py scripts/memory_cell/stem_blind_review_export.py scripts/memory_cell/test_stem_blind_review_packet.py scripts/memory_cell/test_stem_blind_review_workflow.py
       - name: Read exact strictly gated native Reader bytes (no gold label files)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11702192907/zip > /tmp/stem-strict-reader-cb9e983.zip
-          printf '%s  %s\n' be3393f448993451c7860e8867e28a79f5fb7f95d5773f79ed55b30d12a84776 /tmp/stem-strict-reader-cb9e983.zip | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11726530850/zip > /tmp/stem-strict-reader-d0f69d7.zip
+          printf '%s  %s\n' 07b0f15ec150cc9817db6bfc9b4bae1e2c06a5296ca2ba3c4c7895da18b99e2f /tmp/stem-strict-reader-d0f69d7.zip | sha256sum -c -
       - name: Export all 32 paired unreviewed worklist cases and withheld mapping
         run: |
           set -euo pipefail
-          python3 scripts/memory_cell/stem_blind_review_export.py --archive /tmp/stem-strict-reader-cb9e983.zip --output /tmp/stem-blind-review/owner-review
+          python3 scripts/memory_cell/stem_blind_review_export.py --archive /tmp/stem-strict-reader-d0f69d7.zip --output /tmp/stem-blind-review/owner-review
           test "$(wc -l < /tmp/stem-blind-review/owner-review/blind-question-answer-worklist.jsonl)" -eq 32
           test "$(wc -l < /tmp/stem-blind-review/owner-review/unsigned-reviewer-return-template.jsonl)" -eq 64
-      - name: Physically separate reviewer-facing text from unblinding mapping
+      - name: Keep unblinding mapping only on disposable runner; never in Actions artifacts
         run: |
           set -euo pipefail
-          mkdir -p /tmp/stem-blind-review/reviewer-visible /tmp/stem-blind-review/owner-private
+          mkdir -p /tmp/stem-blind-review/reviewer-visible /tmp/stem-blind-review/runner-only /tmp/stem-blind-review/audit-safe
           mv /tmp/stem-blind-review/owner-review/blind-question-answer-worklist.jsonl /tmp/stem-blind-review/reviewer-visible/
           mv /tmp/stem-blind-review/owner-review/unsigned-reviewer-return-template.jsonl /tmp/stem-blind-review/reviewer-visible/
-          mv /tmp/stem-blind-review/owner-review/private-owner-case-mapping.json /tmp/stem-blind-review/owner-private/
-          mv /tmp/stem-blind-review/owner-review/unreviewed-handoff-summary.json /tmp/stem-blind-review/owner-private/
+          mv /tmp/stem-blind-review/owner-review/private-owner-case-mapping.json /tmp/stem-blind-review/runner-only/
+          mv /tmp/stem-blind-review/owner-review/unreviewed-handoff-summary.json /tmp/stem-blind-review/audit-safe/
           rmdir /tmp/stem-blind-review/owner-review
+          # Keep a digest so the actual source owner can reconstruct and
+          # check the mapping offline without distributing its question IDs.
+          sha256sum /tmp/stem-blind-review/runner-only/private-owner-case-mapping.json | awk '{print $1}' > /tmp/stem-blind-review/audit-safe/withheld-map-sha256.txt
+          rm /tmp/stem-blind-review/runner-only/private-owner-case-mapping.json
+          rmdir /tmp/stem-blind-review/runner-only
           (cd /tmp/stem-blind-review/reviewer-visible && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
           test ! -e /tmp/stem-blind-review/reviewer-visible/private-owner-case-mapping.json
-      - name: Retain verified original identity, source, and failure logs for owner
+          test ! -e /tmp/stem-blind-review/audit-safe/private-owner-case-mapping.json
+      - name: Retain reproducibility metadata without owner unblinding identities
         if: always()
         run: |
           set -euo pipefail
-          mkdir -p /tmp/stem-blind-review/owner-private/source
-          cp /tmp/stem-blind-review/exporter-commit.txt /tmp/stem-blind-review/owner-private/
-          cp /tmp/stem-blind-review/exporter-tree.txt /tmp/stem-blind-review/owner-private/
-          cp /tmp/stem-blind-review/tests.log /tmp/stem-blind-review/owner-private/ 2>/dev/null || true
-          cp scripts/memory_cell/stem_blind_review_packet.py scripts/memory_cell/stem_blind_review_export.py scripts/memory_cell/test_stem_blind_review_packet.py /tmp/stem-blind-review/owner-private/source/
-          cp .github/workflows/hepta-memory-stem-blind-review.yml /tmp/stem-blind-review/owner-private/source/
-          (cd /tmp/stem-blind-review/owner-private && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          mkdir -p /tmp/stem-blind-review/audit-safe/source
+          cp /tmp/stem-blind-review/exporter-commit.txt /tmp/stem-blind-review/audit-safe/
+          cp /tmp/stem-blind-review/exporter-tree.txt /tmp/stem-blind-review/audit-safe/
+          cp /tmp/stem-blind-review/tests.log /tmp/stem-blind-review/audit-safe/ 2>/dev/null || true
+          cp scripts/memory_cell/stem_blind_review_packet.py scripts/memory_cell/stem_blind_review_export.py scripts/memory_cell/test_stem_blind_review_packet.py scripts/memory_cell/test_stem_blind_review_workflow.py /tmp/stem-blind-review/audit-safe/source/
+          cp .github/workflows/hepta-memory-stem-blind-review.yml /tmp/stem-blind-review/audit-safe/source/
+          test ! -e /tmp/stem-blind-review/audit-safe/private-owner-case-mapping.json
+          (cd /tmp/stem-blind-review/audit-safe && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: success()
         with:
-          name: private-stem-reviewer-visible-only
+          name: stem-unreviewed-strict-reader-worklist
           path: /tmp/stem-blind-review/reviewer-visible
           if-no-files-found: error
           retention-days: 7
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: private-stem-owner-only-unblinding-mapping
-          path: /tmp/stem-blind-review/owner-private
+          name: stem-blind-review-source-and-tests-only
+          path: /tmp/stem-blind-review/audit-safe
           if-no-files-found: error
           retention-days: 7
