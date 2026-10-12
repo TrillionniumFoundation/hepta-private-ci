@@ -27,7 +27,10 @@ class SmallSourceWorkflowTests(unittest.TestCase):
             trigger["push"]["branches"],
             ["codex/memory-cell-evidence-20261008"],
         )
-        self.assertIn(".github/workflows/hepta-memory-small-source-trial.yml", trigger["push"]["paths"])
+        self.assertIn(
+            ".github/workflows/hepta-memory-small-source-trial.yml",
+            trigger["push"]["paths"],
+        )
         self.assertIn("workflow_dispatch", trigger)
         self.assertEqual(self.workflow["permissions"]["contents"], "read")
         self.assertEqual(self.workflow["permissions"]["actions"], "read")
@@ -64,9 +67,15 @@ class SmallSourceWorkflowTests(unittest.TestCase):
     def test_write_is_committed_before_evaluation_questions(self):
         steps = self.jobs["small-source-write-and-read"]["steps"]
         names = [item.get("name", "") for item in steps]
-        write = next(i for i, name in enumerate(names) if name.startswith("Write source"))
-        read = next(i for i, name in enumerate(names) if name.startswith("Fresh process"))
-        replay = next(i for i, name in enumerate(names) if name.startswith("Replay original"))
+        write = next(
+            i for i, name in enumerate(names) if name.startswith("Write source")
+        )
+        read = next(
+            i for i, name in enumerate(names) if name.startswith("Fresh process")
+        )
+        replay = next(
+            i for i, name in enumerate(names) if name.startswith("Replay original")
+        )
         self.assertLess(write, read)
         self.assertLess(read, replay)
         shell = steps[write]["run"]
@@ -88,11 +97,15 @@ class SmallSourceWorkflowTests(unittest.TestCase):
         ):
             self.assertIn(item, text)
         preservation = next(
-            item for item in steps if item.get("name", "").startswith("Preserve original")
+            item
+            for item in steps
+            if item.get("name", "").startswith("Preserve original")
         )
         self.assertEqual(preservation.get("if"), "always()")
         artifact = next(
-            item for item in steps if item.get("uses", "").startswith("actions/upload-artifact@")
+            item
+            for item in steps
+            if item.get("uses", "").startswith("actions/upload-artifact@")
         )
         self.assertEqual(artifact.get("if"), "always()")
 
