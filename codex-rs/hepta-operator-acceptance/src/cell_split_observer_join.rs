@@ -608,8 +608,10 @@ fn verify_original_supervisor_checkpoint_v1(
         || checkpoint.unknown_effect_count != 0
         || checkpoint.operation_id != plan.split_id
         || checkpoint.domain_id != journal.domain_id
-        || checkpoint.source_writer.is_empty()
-        || checkpoint.target_writer.is_empty()
+        || codex_hepta_types::StableId::new(checkpoint.operation_id.clone()).is_err()
+        || codex_hepta_types::StableId::new(checkpoint.domain_id.clone()).is_err()
+        || codex_hepta_types::StableId::new(checkpoint.source_writer.clone()).is_err()
+        || codex_hepta_types::StableId::new(checkpoint.target_writer.clone()).is_err()
         || checkpoint.old_generation != plan.parent_generation
         || checkpoint.new_generation != plan.child_generation
         || checkpoint.authority_epoch != journal.authority_epoch
@@ -776,6 +778,8 @@ mod original_checkpoint_integrity_tests {
             ("invalid schema", "schemaVersion", serde_json::json!(2)),
             ("different handoff domain", "domainId",
                 serde_json::json!("other-domain")),
+            ("illegal owner identity", "sourceWriter",
+                serde_json::json!("invalid writer")),
             ("different final-use epoch", "authorityEpoch", serde_json::json!(10)),
             ("stale generation", "newGeneration", serde_json::json!(9)),
             ("nonterminal phase", "phase", serde_json::json!("route_published")),
