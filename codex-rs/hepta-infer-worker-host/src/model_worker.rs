@@ -686,7 +686,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        project_neuron_feature_receipt_v1(request_copy, observed)
+        let already_invoked = observed.status != ExecutionStatus::Cancelled;
+        let projection = project_neuron_feature_receipt_v1(request_copy, observed);
+        if already_invoked && projection.is_err() {
+            // Never permit a second physical invocation after a successful
+            // driver call whose typed inference-control receipt was rejected.
+            self.poisoned = true;
+        }
+        projection
     }
 }
 
