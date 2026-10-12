@@ -1237,6 +1237,16 @@ and model/source lineage, nonpromotion, and the explicit zero citation
 denominator. It never executes new training, chooses hyperparameters,
 consults a reviewer, or changes any production configuration.
 
+The independent label-free raw-score replay and external ZIP check additionally
+identified **exactly one real top-1 candidate change** across all learned
+checkpoint comparisons: `48/retention/locomo:conv-43/q217/lineage_lora_gated`,
+from frozen candidate index `1` to learned index `7`. Both selected
+windows **fail** the native weak-source support annotation (`0 → 0`),
+the actual Reader answer bytes do not change, and the pinned Reader
+identity/prompt/candidate pool all match. This is a genuine decision
+difference, but **not an observed correctness, new-family, or answer
+gain**. Every test/transfer frozen-matched source choice remains unchanged.
+
 An independent blinded sufficiency/semantic citation review, genuinely
 prospective source families, and verified per-arm p95/energy/dollar TCO
 are still missing. `semantic_citation_precision=null`,

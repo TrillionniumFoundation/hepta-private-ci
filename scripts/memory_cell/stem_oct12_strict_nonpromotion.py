@@ -71,10 +71,12 @@ def interpret_current(gate, exact, panel):
     require(
         all(
             row["matched"] == 96
-            and row["changed_top1"] == 0
+            and row["changed_top1"] == (
+                1 if arm == "lineage_lora_gated" else 0
+            )
             and row["changed_answer_bytes"] == 0
             and row["native_support_gains"] == row["native_support_regressions"] == 0
-            for row in changes.values()
+            for arm, row in changes.items()
         ),
         "completed native source differs from pinned no-learning observation",
     )
@@ -90,7 +92,9 @@ def interpret_current(gate, exact, panel):
         repeated_checkpoint_observations_per_arm=48,
         emitted_citation_markers=0,
         learned_arms=changes,
-        no_observed_learner_vs_frozen_decision_gain=True,
+        exactly_one_real_selection_flip_with_no_support_gain=True,
+        heldout_test_transfer_selection_flips=0,
+        no_observed_learner_vs_frozen_correct_decision_gain=True,
         success_is_operational_not_generalization=True,
         no_independent_citation_entailment_review=True,
         prospective_source_family_effect_proven=False,
@@ -99,6 +103,64 @@ def interpret_current(gate, exact, panel):
         scale_out_permitted=False,
         production_accepted=False,
     )
+
+
+def confirm_sole_real_selection_flip(plan, original, scored):
+    """Pin the ONLY genuine strict-run Head selection change to its source."""
+    if len(original) != 576 or len(scored) != 576:
+        raise ValueError("576 original and scored rows required")
+    observed = {
+        (r["stage"], r["phase"], r["question_id"], r["arm"]): r
+        for r in original
+    }
+    evaluated = {
+        (r["stage"], r["phase"], r["question_id"], r["arm"]): r
+        for r in scored
+    }
+    require(
+        len(observed) == len(evaluated) == 576
+        and set(observed) == set(evaluated),
+        "duplicate or unpaired original rank decisions",
+    )
+    flips = []
+    for (stage, phase, question_id, arm), learned in observed.items():
+        if arm == "frozen_rerank":
+            continue
+        frozen = observed[(stage, phase, question_id, "frozen_rerank")]
+        if learned["selected"] == frozen["selected"]:
+            continue
+        a = evaluated[(stage, phase, question_id, "frozen_rerank")]
+        b = evaluated[(stage, phase, question_id, arm)]
+        require(
+            frozen["pool_digest"] == learned["pool_digest"]
+            and frozen["family"] == learned["family"]
+            and frozen["cell"] == learned["cell"]
+            and frozen["receipt"]["generator_identity"]
+            == learned["receipt"]["generator_identity"]
+            and frozen["receipt"]["generator_profile"]
+            == learned["receipt"]["generator_profile"]
+            and frozen["answer"] == learned["answer"],
+            "unequal Reader/pool or changed answer behind rank difference",
+        )
+        flips.append(dict(
+            stage=stage, phase=phase, question_id=question_id, arm=arm,
+            frozen_selected=frozen["selected"],
+            learned_selected=learned["selected"],
+            frozen_weak_native_support=a["source_choice_correct"],
+            learned_weak_native_support=b["source_choice_correct"],
+            answer_bytes_changed=frozen["answer"] != learned["answer"],
+        ))
+    expected = [dict(
+        stage=48, phase="retention", question_id="locomo:conv-43/q217",
+        arm="lineage_lora_gated", frozen_selected=1, learned_selected=7,
+        frozen_weak_native_support=0, learned_weak_native_support=0,
+        answer_bytes_changed=False,
+    )]
+    require(
+        flips == expected,
+        "previously unreviewed or displaced native candidate choice",
+    )
+    return flips
 
 
 def audit_zip(path):
@@ -129,6 +191,9 @@ def audit_zip(path):
             plan, raw, scored, report, fit, ceiling, panel
         )
         verdict = interpret_current(gate, exact, panel)
+        verdict["verified_real_selection_flips"] = confirm_sole_real_selection_flip(
+            plan, raw, scored
+        )
         verdict.update(
             verified_external_zip_sha256=archive.sha256,
             verified_internal_file_digests=archive.manifest_entries,
