@@ -408,6 +408,11 @@ fn grouped_multi_head_worker_batch_preserves_receipts_and_single_path() {
         .expect("one real grouped CPU batch");
     assert_eq!(worker.driver.backend_batch_invocations, 1);
     assert_eq!(batch.receipts.len(), 4);
+    // A multi-lane kernel has one real backend duration; per-member receipt
+    // timing must never restart a new timer after the arithmetic is done.
+    assert!(batch.receipts.iter().all(|receipt| {
+        receipt.latency_micros == batch.backend_elapsed_micros
+    }));
     for (i, (scalar, batched)) in separate.iter().zip(batch.receipts.iter()).enumerate() {
         assert_eq!(scalar.drive_q24, batched.drive_q24, "Cell {i}");
         assert_eq!(scalar.prediction_q24, batched.prediction_q24, "Cell {i}");
