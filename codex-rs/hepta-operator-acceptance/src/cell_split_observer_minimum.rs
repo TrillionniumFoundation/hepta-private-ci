@@ -112,6 +112,19 @@ pub trait CellSplitSupervisorMinimumOnlinePortV1 {
     ) -> Result<CellSplitSupervisorMinimumReadbackV1, Self::Error>;
 }
 
+/// The minimum-store signer must not be allowed to mint an anchor from a
+/// caller's self-asserted checkpoint. The independent issuer checks actual
+/// journal custody, external monotonic frontier and frozen split admission.
+/// No production allow-all implementation or fallback is supplied.
+pub trait CellSplitSupervisorMinimumAdmissionPortV1 {
+    type Error: std::fmt::Display;
+
+    fn verify_original_minimum(
+        &mut self,
+        subject: &CellSplitSupervisorMinimumSubjectV1,
+    ) -> Result<(), Self::Error>;
+}
+
 #[derive(Debug, Error)]
 pub enum CellSplitSupervisorMinimumErrorV1 {
     #[error("invalid or mismatched independently retained Supervisor minimum")]
@@ -171,11 +184,15 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
     /// Host-authorized irreversible *first* minimum publication. A resumed
     /// caller may re-submit identical bytes but cannot replace that minimum.
     /// A separate observer must authenticate the journal before invoking it.
-    pub fn publish_once(
+    pub fn publish_once<A: CellSplitSupervisorMinimumAdmissionPortV1>(
         &mut self,
         subject: &CellSplitSupervisorMinimumSubjectV1,
+        admission: &mut A,
     ) -> Result<(), CellSplitSupervisorMinimumErrorV1> {
         subject.validate()?;
+        admission
+            .verify_original_minimum(subject)
+            .map_err(|_| CellSplitSupervisorMinimumErrorV1::Invalid)?;
         let record = StoredMinimumV1 {
             schema: STORED_SCHEMA.into(),
             subject: subject.clone(),
@@ -192,6 +209,11 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
             }
             Ok(_) => Ok(()),
             Err(error) if error.kind() == ErrorKind::NotFound => {
+                // Admission may change during preparation; recheck immediately
+                // before the irreversible, create-only durable publication.
+                admission
+                    .verify_original_minimum(subject)
+                    .map_err(|_| CellSplitSupervisorMinimumErrorV1::Invalid)?;
                 write_private_new(&self.root.join(STORE_FILE), &expected)?;
                 if self.read_stored_bytes()? != expected {
                     return Err(CellSplitSupervisorMinimumErrorV1::Invalid);
