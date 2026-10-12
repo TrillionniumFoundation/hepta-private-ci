@@ -18,6 +18,12 @@ on:
       - "scripts/memory_cell/stem_reader_paired_control.py"
       - "scripts/memory_cell/test_stem_reader_paired_control.py"
       - "scripts/memory_cell/stem_cell_trial.py"
+      # Fast, frozen and label-blind 9-arm fixture: catch an obsolete six-arm
+      # expectation before a 75-minute pretrained matrix is scheduled.
+      - "scripts/memory_cell/locomo_frozen_retrieval.py"
+      - "scripts/memory_cell/test_locomo_frozen_retrieval.py"
+      - "scripts/memory_cell/locomo_budget_frontier.py"
+      - "scripts/memory_cell/test_locomo_budget_frontier.py"
       - "scripts/memory_cell/stem_score_replay.py"
       - "scripts/memory_cell/test_stem_score_replay.py"
       - "scripts/memory_cell/stem_cell_shadow_scale.py"
@@ -39,8 +45,10 @@ on:
       - ".github/workflows/hepta-memory-stem-protocol-smoke.yml"
 permissions:
   contents: read
+# Keep the newest pending source test per branch without cancelling a test
+# that has already begun; the exact checkout SHA is retained in the artifact.
 concurrency:
-  group: memory-stem-protocol-${{ github.sha }}
+  group: memory-stem-protocol-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   protocol-only:
@@ -77,7 +85,9 @@ jobs:
             test_stem_effective_n \
             test_stem_null_reader_splice \
             test_stem_cell_shadow_scale \
-            test_stem_score_replay             2>&1 | tee /tmp/stem-protocol/tests.log
+            test_stem_score_replay \
+            test_locomo_frozen_retrieval \
+            test_locomo_budget_frontier             2>&1 | tee /tmp/stem-protocol/tests.log
       - name: Retain source, failure logs and manifest
         if: always()
         run: |
@@ -91,6 +101,10 @@ jobs:
           cp scripts/memory_cell/stem_cell_trial.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_score_replay.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_score_replay.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/locomo_frozen_retrieval.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_locomo_frozen_retrieval.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/locomo_budget_frontier.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_locomo_budget_frontier.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_cell_shadow_scale.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_cell_shadow_scale.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_cell_adapter_opportunity.py /tmp/stem-protocol/source/

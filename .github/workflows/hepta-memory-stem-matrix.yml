@@ -40,8 +40,11 @@ on:
 permissions:
   contents: read
   actions: read
+# Share one CPU-matrix pending slot per branch, rather than flooding runners
+# with every push SHA. Never cancel an already-running frozen experiment;
+# its tested commit/tree and result artifacts remain immutable.
 concurrency:
-  group: memory-stem-native-${{ github.sha }}
+  group: memory-stem-native-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   native-matrix:
