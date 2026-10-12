@@ -534,6 +534,33 @@ fn signer_process_cannot_resign_regressed_or_rewritten_domain_highwater() {
 }
 
 #[test]
+fn signer_process_requires_new_durable_sequence_for_changed_frontier() {
+    let root = tempfile::tempdir().expect("source-only independent registry");
+    let file = write_test_registry(root.path());
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file.clone()),
+        signer(),
+        Duration::from_secs(2),
+    )
+    .expect("pinned signer");
+    request_from_monotonic_service(&mut service, "a1").expect("original signed frontier");
+
+    // Rewriting the record to claim revision 11 without a new original
+    // source commit must not produce a higher signed Supervisor frontier.
+    write_test_frontier_revision(&file, 11, 41, "ab");
+    assert!(matches!(
+        request_from_monotonic_service(&mut service, "a2"),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+
+    // The signer is not permanently poisoned by the denied publication:
+    // an independently observed new source sequence can move forward.
+    write_test_frontier_revision(&file, 11, 42, "ac");
+    request_from_monotonic_service(&mut service, "a3")
+        .expect("committed source advance can be signed");
+}
+
+#[test]
 fn signer_process_refuses_source_sequence_and_epoch_regressions() {
     let root = tempfile::tempdir().expect("source-only registry");
     let file = write_test_registry(root.path());
