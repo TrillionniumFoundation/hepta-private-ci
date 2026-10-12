@@ -1,0 +1,161 @@
+name: MemoryCell LoCoMo fixed-reader k4 versus k8
+on:
+  push:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - scripts/memory_cell/locomo_frozen_reader_pair.py
+      - scripts/memory_cell/test_locomo_frozen_reader_pair.py
+      - .github/workflows/hepta-memory-locomo-reader-pair.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-locomo-reader-pair-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Focused and pinned retrieval checks
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_frozen_reader_pair.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_ninearm_source_replay.py' -v
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/locomo_frozen_reader_pair.py scripts/memory_cell/test_locomo_frozen_reader_pair.py
+  reader:
+    needs: checks
+    runs-on: ubuntu-22.04
+    timeout-minutes: 330
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify actual CPU BF16 support before download
+        run: |
+          mkdir -p /tmp/locomo-pair-result
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/locomo-pair-result/host.json
+      - name: Download only pinned public sources and original decisions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-pair-public
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/locomo-pair-public/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/locomo-pair-public/locomo-frozen-decisions-38206328621.zip
+          printf '%s  %s\n' \
+            51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37 /tmp/locomo-pair-public/locomo-public-38206328621.zip \
+            3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097 /tmp/locomo-pair-public/locomo-frozen-decisions-38206328621.zip | sha256sum -c -
+          python3 - <<'PY'
+          from locomo_frozen_reader_pair import source_plan
+          from pathlib import Path
+          cases, _, _ = source_plan(Path('/tmp/locomo-pair-public'))
+          assert len(cases) == 16
+          PY
+      - name: Install the original pinned Qwen/PyTorch dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/locomo-pair-environment.zip
+          python3 - <<'PY'
+          import hashlib,zipfile
+          from pathlib import Path
+          raw=Path('/tmp/locomo-pair-environment.zip').read_bytes()
+          assert len(raw)<64*1024*1024
+          assert hashlib.sha256(raw).hexdigest()=='23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/locomo-pair-environment.zip') as z:
+              data=z.read('environment.txt')
+              assert len(data)<65536
+              Path('/tmp/locomo-pair-environment.txt').write_bytes(data)
+          PY
+          python3 -m venv /tmp/locomo-pair-python
+          /tmp/locomo-pair-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/locomo-pair-python/bin/pip install -r /tmp/locomo-pair-environment.txt
+          /tmp/locomo-pair-python/bin/pip freeze > /tmp/locomo-pair-result/environment.txt
+          diff -u /tmp/locomo-pair-environment.txt /tmp/locomo-pair-result/environment.txt
+          /tmp/locomo-pair-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_locomo_frozen_reader_pair.py' -v
+      - name: Stage the publisher-pinned Qwen research reader
+        run: |
+          set -euo pipefail
+          /tmp/locomo-pair-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/locomo-pair-model
+          cp /tmp/locomo-pair-model/{publisher,inventory,stage}.json /tmp/locomo-pair-result/
+      - name: Produce all 32 original answers with NO evaluation labels
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/locomo-pair-result/resource.log /tmp/locomo-pair-python/bin/python scripts/memory_cell/locomo_frozen_reader_pair.py generate /tmp/locomo-pair-public /tmp/locomo-pair-model /tmp/locomo-pair-result/run
+      - name: Retain generation source, failures, cost and unedited raw answers
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-pair-result/source
+          cp scripts/memory_cell/locomo_frozen_reader_pair.py scripts/memory_cell/test_locomo_frozen_reader_pair.py /tmp/locomo-pair-result/source/
+          git rev-parse HEAD > /tmp/locomo-pair-result/tested-commit.txt
+          (cd /tmp/locomo-pair-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-frozen-reader-pair-raw
+          path: /tmp/locomo-pair-result
+          if-no-files-found: error
+  score:
+    needs: reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Retrieve the completed model artifact before any targets
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-pair-original
+          gh run download "$GITHUB_RUN_ID" -n locomo-frozen-reader-pair-raw -D /tmp/locomo-pair-original
+          test -s /tmp/locomo-pair-original/run/READY.json
+          test -s /tmp/locomo-pair-original/run/raw-answers.jsonl
+      - name: Open pinned evaluation answers in this separate scoring job
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-pair-public /tmp/locomo-pair-target /tmp/locomo-pair-score
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/locomo-pair-public/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/locomo-pair-public/locomo-frozen-decisions-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/locomo-pair-target/locomo-evaluation-targets-38206328621.zip
+          python3 scripts/memory_cell/locomo_frozen_reader_pair.py score /tmp/locomo-pair-public /tmp/locomo-pair-target /tmp/locomo-pair-original/run /tmp/locomo-pair-score/result
+      - name: Retain actual generator identity and scorer source
+        if: always()
+        run: |
+          cp scripts/memory_cell/locomo_frozen_reader_pair.py /tmp/locomo-pair-score/
+          git rev-parse HEAD > /tmp/locomo-pair-score/scorer-commit.txt
+          (cd /tmp/locomo-pair-score && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-frozen-reader-pair-score
+          path: /tmp/locomo-pair-score
+          if-no-files-found: error
