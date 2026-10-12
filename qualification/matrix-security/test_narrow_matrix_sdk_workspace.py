@@ -143,11 +143,33 @@ class NarrowWorkspaceTests(unittest.TestCase):
                         stage_root="/tmp/hepta-stage")
 
     def test_no_invalid_metadata_or_unbounded_source_passes(self):
-        for raw in (b"", b"{}", b"invalid", b"{" + b"x" * (32 * 1024 * 1024)):
+        for raw in (
+            b"", b"{}", b"invalid", b"{" + b"x" * (32 * 1024 * 1024),
+            b'{"packages":[],"packages":[],"workspace_members":[]}',
+            b'{"packages":NaN,"workspace_members":[]}',
+        ):
             with self.assertRaises(ValueError):
                 inspect_cargo_metadata(
                     raw, candidate_root="/tmp/stem-candidate",
                     stage_root="/tmp/hepta-stage")
+
+    def test_invalid_package_and_workspace_member_types_fail_closed(self):
+        source = metadata()
+        cases = []
+        for members in (None, [], ["hepta-sdk-id", "hepta-sdk-id"], [42]):
+            bad = json.loads(json.dumps(source))
+            bad["workspace_members"] = members
+            cases.append(bad)
+        for value in (None, 123, [], {"name": "matrix-sdk"}):
+            bad = json.loads(json.dumps(source))
+            bad["packages"][0] = value
+            cases.append(bad)
+        for bad in cases:
+            with self.subTest(kind=hashlib.sha256(enc(bad)).hexdigest()[:10]):
+                with self.assertRaises(ValueError):
+                    inspect_cargo_metadata(
+                        enc(bad), candidate_root="/tmp/stem-candidate",
+                        stage_root="/tmp/hepta-stage")
 
     def test_stage_narrows_only_detached_candidate_and_requires_pinned_receipt(self):
         with tempfile.TemporaryDirectory() as d:
