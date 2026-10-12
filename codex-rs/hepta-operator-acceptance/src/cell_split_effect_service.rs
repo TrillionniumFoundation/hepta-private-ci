@@ -244,6 +244,23 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 self.backend
                     .authorize_execute(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                // The independent authorization reader is a remote owner and
+                // may take time. A revocation during that final check must
+                // not be laundered into a newly signed Execute acknowledgement.
+                // This is a last read-only fence, not an atomic causal proof.
+                let final_sequence = self
+                    .backend
+                    .current_sequence_for_intent(&request.intent)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                let still_current = self
+                    .backend
+                    .verify_current(&request.intent, &committed)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                if final_sequence != after || !still_current {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "effect changed after final authority revalidation",
+                    ));
+                }
                 (Some(self.sign_receipt(&request.intent, &committed)?), None)
             }
             CellSplitEffectRpcActionV1::ReadBack => {
