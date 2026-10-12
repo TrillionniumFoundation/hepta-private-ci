@@ -77,6 +77,8 @@ class DualResolutionTests(unittest.TestCase):
         self.assertFalse(result["cargo_deny_verified"])
         self.assertFalse(result["matrix_e2ee_verified"])
         self.assertFalse(result["sqlite_wal_recovery_verified"])
+        self.assertFalse(result["isolated_worktree_attested"])
+        self.assertIsNone(result["original_checkout_modified"])
         self.assertEqual(
             result["upgraded_locks"]["async-trait"],
             {"old": "0.1.89", "resolved": "0.1.92"},
