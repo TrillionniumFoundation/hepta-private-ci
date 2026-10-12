@@ -159,6 +159,25 @@ def attest_snapshot(model_id, revision, task, *, store_root, snapshot_dir,
     }
 
 
+def write_census_report(output, report, *, store_root):
+    """Create-once research evidence outside the approved cache."""
+    out = Path(output).absolute()
+    protected = _dir(store_root, "approved model cache root")
+    if out.resolve(strict=False).is_relative_to(protected):
+        raise ValueError("model evidence output cannot modify the approved cache")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    raw = (json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n").encode("utf-8")
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(out, flags, 0o600)
+    try:
+        with os.fdopen(fd, "wb", closefd=False) as stream:
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+    finally:
+        os.close(fd)
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--model", choices=sorted(MODELS), required=True)
@@ -169,16 +188,12 @@ def main():
     p.add_argument("--expected-digest", help="approved full 64-hex manifest, not a branch name")
     p.add_argument("--out", type=Path, required=True)
     a = p.parse_args()
-    if a.out.exists():
-        raise ValueError("refusing to overwrite a previous local artifact census")
     report = attest_snapshot(
         a.model, a.revision, a.task,
         store_root=a.store_root, snapshot_dir=a.snapshot,
         expected_digest=a.expected_digest,
     )
-    a.out.parent.mkdir(parents=True, exist_ok=True)
-    a.out.write_text(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
-                     encoding="utf-8")
+    write_census_report(a.out, report, store_root=a.store_root)
 
 
 if __name__ == "__main__":
