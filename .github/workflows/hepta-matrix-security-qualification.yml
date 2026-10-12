@@ -354,6 +354,7 @@ jobs:
             --sqlite-arm use_upstream_sqlite \
             --output "$RUNNER_TEMP/hepta-matrix-adapter-stage.json"
           printf 'HEPTA_MATRIX_ADAPTER_STAGE=%s\n' "$STAGE" >> "$GITHUB_ENV"
+          printf 'HEPTA_MATRIX_SOURCE_SHA=%s\n' "$SOURCE_SHA" >> "$GITHUB_ENV"
       - name: Install isolated candidate Rust 1.96 without changing project toolchain
         run: rustup toolchain install 1.96.0 --profile minimal
       - name: Resolve exact candidate graph and only the proven stale lock conflict
@@ -410,7 +411,7 @@ jobs:
           status = int(os.environ["CARGO_CHECK_EXIT_CODE"])
           report = {
               "schema": "hepta.matrix-disposable-adapter-compile.v1",
-              "source_sha": os.environ["GITHUB_SHA"],
+              "source_sha": os.environ["HEPTA_MATRIX_SOURCE_SHA"],
               "rust_version": "1.96.0 (staged only)",
               "hepta_matrix_sdk_and_matrixd_all_targets_checked": status == 0,
               "cargo_exit_code": status,
