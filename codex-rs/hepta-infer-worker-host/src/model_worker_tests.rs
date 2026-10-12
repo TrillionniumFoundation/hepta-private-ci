@@ -965,3 +965,32 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
         Err(Error::FinalUseDenied),
     );
 }
+
+
+#[test]
+fn final_use_entry_evidence_digest_has_independent_python_rust_golden() {
+    // A raw digest vector, not a forged grant, observed Worker execution,
+    // authentication proof, model forward or causal NDU result. Python's
+    // shadow reference implementation pins these exact bytes.
+    let mut evidence = StemFinalUseEntryEvidenceV1 {
+        claimed_authority_epoch: 2,
+        claimed_revocation_revision: 7,
+        claimed_revocation_head_digest: Digest32::of_bytes(b"head"),
+        verified_token_witness_digest: Digest32::of_bytes(b"token"),
+        final_use_binding_digest: Digest32::of_bytes(b"binding"),
+        worker_receipt_digest: Digest32::of_bytes(b"receipt"),
+        linked_evidence_digest: Digest32::ZERO,
+    };
+    let stem_ref = Digest32::of_bytes(b"ref");
+    let scoped_input = Digest32::of_bytes(b"input");
+    let observed = stem_final_use_entry_evidence_digest_v1(&evidence, stem_ref, scoped_input);
+    assert_eq!(
+        observed.to_string(),
+        "81d287c5637935df92e354ccea9f2252f328da83ec490d58c1d3b3483698a5e8"
+    );
+    evidence.claimed_revocation_revision += 1;
+    assert_ne!(
+        stem_final_use_entry_evidence_digest_v1(&evidence, stem_ref, scoped_input),
+        observed
+    );
+}
