@@ -331,6 +331,13 @@ mod tests {
     }
 
     fn worker(driver: BatchMock) -> InferenceWorker<BatchMock> {
+        worker_with_memory_budget(driver, 4096)
+    }
+
+    fn worker_with_memory_budget(
+        driver: BatchMock,
+        maximum_memory_bytes: u64,
+    ) -> InferenceWorker<BatchMock> {
         let grant = ResourceGrant {
             grant_id: "grant.v2".into(),
             authority_epoch: 3,
@@ -339,7 +346,7 @@ mod tests {
             revoked: false,
             maximum_models: 1,
             maximum_active_requests: 4,
-            maximum_memory_bytes: 4096,
+            maximum_memory_bytes,
             semantic_digest: "1".repeat(64),
         };
         let mut worker =
@@ -464,10 +471,10 @@ mod tests {
 
     #[test]
     fn whole_batch_output_floor_rejects_before_mutating_slots_or_dispatch() {
-        let mut worker = worker(BatchMock::default());
         // Loaded model owns 1024 bytes. Two independent width-3 Q24 output
         // pairs need at least 2 * 3 * 2 * 8 more bytes, not just one pair.
-        worker.grant.maximum_memory_bytes = 1024 + (2 * 3 * 2 * 8) - 1;
+        let maximum_memory_bytes = 1024 + (2 * 3 * 2 * 8) - 1;
+        let mut worker = worker_with_memory_budget(BatchMock::default(), maximum_memory_bytes);
         assert_eq!(
             worker.run_neuron_features_batch(
                 100,
