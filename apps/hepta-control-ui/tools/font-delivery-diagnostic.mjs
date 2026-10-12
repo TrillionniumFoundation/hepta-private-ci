@@ -1,9 +1,10 @@
 // Opt-in debugger observation only. Does not replace Fetch, readers or SDK code.
-import {createHash} from 'node:crypto';
+import {createHash,randomInt} from 'node:crypto';
+import {readConsumerSnapshot,validateConsumer,assertOptionalOutcome} from './font-consumer-diagnostic.mjs';
 import {writeFile} from 'node:fs/promises';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 const LIMIT=32,MAX_BYTES=128*1024*1024;
-export function sdkProbeLocations(source){
+export function sdkProbeLocations(source,{consumer=false}={}){
  const ordered=[
   /const\s+item\s*=\s*await\s+reader\.read\(\)/g,
   /if\s*\(item\.done\)\s*\{\s*break;?\s*\}/g,
@@ -20,6 +21,7 @@ export function sdkProbeLocations(source){
   return {lineNumber:head.split('\n').length-1,columnNumber:offset-head.lastIndexOf('\n')-1};
  };
  return {
+  ...(consumer?{consumer:locate(/this\.wasm_app\s*=\s*this\.wasm_create_app\(\)/g)}:{}),
   delivery:locate(/this\.exports\.wasm_network_http_response\(/g),
   finish:locate(/(?<=network_http_finish\(entry\)\s*\{\s*)if\s*\(/g),
  };
@@ -60,6 +62,12 @@ export async function observeFontDelivery(page,manifest){
  const session=await page.context().newCDPSession(page),scripts=new Map(),points=new Map();
  const errors=[],requests=[],sink='__heptaSdkFontDiagnostic';
  let installed=false,closed=false,instrumentation,pending=Promise.resolve(),overflow=0;
+ const consumerEnabled=manifest.fixtures===false,consumerNonce=consumerEnabled?randomInt(1,0x100000000):0;
+ let consumerObjectId=null;
+ if(consumerEnabled&&manifest.threads!==false)throw new Error('Consumer observation requires non-shared single-thread WASM');
+ // The actual gateway scenario naturally draws regular Latin UI controls. Other
+ // loaded/requested faces retain individual unqualified-use status in the report.
+ const requiredUsePaths=['/makepad_widgets/resources/IBMPlexSans-Text.ttf'];
  const fail=error=>{if(errors.length<8)errors.push(String(error).slice(0,200));else overflow++;};
  const fontPins=Object.fromEntries(Object.entries(manifest.files).filter(([path])=>/\.(ttf|otf)$/.test(path)).map(([path,pin])=>['/'+path,pin]));
  if(Object.keys(fontPins).length>LIMIT)throw new Error('Font diagnostic catalog too large');
@@ -71,12 +79,26 @@ export async function observeFontDelivery(page,manifest){
    try{
     const frame=event.callFrames[0],scriptId=frame?.location.scriptId;
     const kind=event.hitBreakpoints?.map(id=>points.get(id)).find(Boolean);
-    if(kind){
+    if(kind==='consumer'){
+     if(!consumerEnabled||consumerObjectId)throw new Error('Unexpected consumer enable boundary');
+     const result=await session.send('Debugger.evaluateOnCallFrame',{
+      callFrameId:frame.callFrameId,silent:true,returnByValue:false,
+      expression:`(()=>{
+       const e=this.exports;
+       for(const name of ['enable','seal','snapshot_ptr','snapshot_len'])if(typeof e['hepta_font_consumer_'+name]!=='function')throw new Error('Consumer export missing');
+       if(e.hepta_font_consumer_enable(${consumerNonce})!==1)throw new Error('Consumer enable rejected nonce or reuse');
+       return {exports:e,memory:this.memory};
+      })()`,
+     });
+     if(result.exceptionDetails||!result.result?.objectId)throw new Error('Consumer enable failed');
+     consumerObjectId=result.result.objectId;
+    }else if(kind){
      const expression=kind==='delivery'?`(()=>{
       const s=window[${JSON.stringify(sink)}],path=new URL(entry.fetch_url).pathname;
       if(s.records.length>=${LIMIT}||response_body.length>64*1024*1024||s.bytes+response_body.length>${MAX_BYTES}){s.overflow++;return;}
       s.bytes+=response_body.length;
-      const record={path,key:entry.request_key,bytes:response_body.length,wasmBytes:body_u8.len,eof:true};
+      const request=((BigInt(entry.request_id_hi>>>0)<<32n)|BigInt(entry.request_id_lo>>>0)).toString();
+      const record={path,key:entry.request_key,request,bytes:response_body.length,wasmBytes:body_u8.len,eof:true};
       s.records.push(record);
       record.pending=crypto.subtle.digest('SHA-256',response_body).then(hash=>{
        record.sha256=Array.from(new Uint8Array(hash),v=>v.toString(16).padStart(2,'0')).join('');
@@ -91,9 +113,9 @@ export async function observeFontDelivery(page,manifest){
     }else if(!installed&&scripts.get(scriptId)?.endsWith('/makepad_platform/web.js')){
      const {scriptSource}=await session.send('Debugger.getScriptSource',{scriptId});
      if(Buffer.byteLength(scriptSource)>512*1024||sha(scriptSource)!==manifest.files['makepad_platform/web.js'].sha256)throw new Error('Served SDK source digest mismatch');
-     for(const [kind,location] of Object.entries(sdkProbeLocations(scriptSource))){
-      const result=await session.send('Debugger.setBreakpoint',{location:{scriptId,...location},condition});
-      if(result.actualLocation.lineNumber!==location.lineNumber)throw new Error('SDK diagnostic breakpoint moved');
+     for(const [kind,location] of Object.entries(sdkProbeLocations(scriptSource,{consumer:consumerEnabled}))){
+      const result=await session.send('Debugger.setBreakpoint',{location:{scriptId,...location},condition:kind==='consumer'?'true':condition});
+      if(result.actualLocation.lineNumber!==location.lineNumber||(kind==='consumer'&&result.actualLocation.columnNumber!==location.columnNumber))throw new Error('SDK diagnostic breakpoint moved');
       points.set(result.breakpointId,kind);
      }
      installed=true;
@@ -132,9 +154,21 @@ export async function observeFontDelivery(page,manifest){
  }
  return {
   async check(){const result=await collect();if(!validateDelivery(result,manifest))throw new Error('SDK font EOF/digest/finalization diagnostic failed');},
-  async close(path){
+  async close(path,{priorFailure=false}={}){
    if(closed)return;closed=true;
-   try{const result=await collect();result.passed=validateDelivery(result,manifest);await writeFile(path,JSON.stringify(result,null,2)+'\n');}
+   try{
+    const result=await collect();result.passed=validateDelivery(result,manifest);
+    if(consumerEnabled){
+     try{
+      if(!consumerObjectId)throw new Error('Rust consumer was never enabled');
+      result.consumer=await readConsumerSnapshot(session,consumerObjectId,consumerNonce);
+      result.consumerValidation=validateConsumer(result.consumer,result,{nonce:consumerNonce,requiredUsePaths,manifest});
+     }catch(error){result.consumerValidation={passed:false,diagnosticOnly:true,error:String(error).slice(0,512)};}
+     result.passed=result.passed&&result.consumerValidation.passed;
+    }
+    await writeFile(path,JSON.stringify(result,null,2)+'\n');
+    if(consumerEnabled)assertOptionalOutcome(result.passed,{priorFailure});
+   }catch(error){if(!priorFailure)throw error;}
    finally{await session.detach().catch(()=>{});}
   },
  };

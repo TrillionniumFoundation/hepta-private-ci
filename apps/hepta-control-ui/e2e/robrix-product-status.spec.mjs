@@ -261,7 +261,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
      }
     }
    }catch{console.log('strict font lifecycle diagnostics could not be serialized');}
-   finally{try{if(sdkDelivery)await sdkDelivery.close(testInfo.outputPath('sdk-font-delivery.json'));}finally{if(cdp)await cdp.detach().catch(()=>{});}}
+   finally{try{if(sdkDelivery)await sdkDelivery.close(testInfo.outputPath('sdk-font-delivery.json'),{priorFailure:diagnosticFailed});}finally{if(cdp)await cdp.detach().catch(()=>{});}}
   }
  }
 });

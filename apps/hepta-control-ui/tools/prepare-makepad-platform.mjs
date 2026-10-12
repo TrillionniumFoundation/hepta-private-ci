@@ -1,7 +1,7 @@
 // Reproducible generated build overlay; never edits the Cargo Git cache.
 import {execOwned as execFileSync} from './owned-artifact-lease.mjs';
 import {createHash} from 'node:crypto';
-import {cp,mkdir,readFile,rm,writeFile} from 'node:fs/promises';
+import {cp,mkdir,readFile,rm,writeFile,lstat} from 'node:fs/promises';
 import {join} from 'node:path';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 export async function preparePlatform(workspace,makepadRoot,revision){
@@ -54,6 +54,20 @@ export async function preparePlatform(workspace,makepadRoot,revision){
  for(const file of drawIdentity.files) if(sha(await readFile(join(draw,file.path)))!==file.beforeSha256) throw new Error('Unexpected draw patch input: '+file.path);
  execFileSync('patch',['--batch','--forward','--fuzz=0','-p1','-d',draw,'-i',drawPatch],{stdio:'inherit'});
  for(const file of drawIdentity.files) if(sha(await readFile(join(draw,file.path)))!==file.afterSha256) throw new Error('Unexpected draw patch output: '+file.path);
+ // Optional WASM-only consumer observations in the generated pinned overlay.
+ // No Cargo revision changes and no browser acceptance assertion changes.
+ const consumerIdentity=JSON.parse(await readFile(join(patchRoot,'makepad-font-consumer.json'),'utf8'));
+ const consumerPatch=join(patchRoot,'makepad-font-consumer.patch');
+ if(consumerIdentity.upstream!==revision||sha(await readFile(consumerPatch))!==consumerIdentity.patchSha256)throw new Error('Unexpected font consumer patch identity');
+ for(const file of consumerIdentity.files){
+  if(!/^(makepad-platform|makepad-draw)\/src\/[a-z_./]+\.rs$/.test(file.path)||file.path.split('/').includes('..'))throw new Error('Invalid consumer source path');
+  const target=join(generated,file.path);
+  if(file.beforeSha256===null){
+   try{await lstat(target);throw new Error('Consumer source unexpectedly exists');}catch(error){if(error.code!=='ENOENT')throw error;}
+  }else if(sha(await readFile(target))!==file.beforeSha256)throw new Error('Unexpected consumer input: '+file.path);
+ }
+ execFileSync('patch',['--batch','--forward','--fuzz=0','-p1','-d',generated,'-i',consumerPatch],{stdio:'inherit'});
+ for(const file of consumerIdentity.files)if(sha(await readFile(join(generated,file.path)))!==file.afterSha256)throw new Error('Unexpected consumer output: '+file.path);
  let drawManifest=await readFile(join(draw,'Cargo.toml'),'utf8');
  let drawSection='';
  drawManifest=drawManifest.split('\n').map(line=>{
@@ -67,5 +81,5 @@ export async function preparePlatform(workspace,makepadRoot,revision){
  await cp(join(workspace,'Cargo.lock'),join(app,'Cargo.lock'));
  const sourceManifest=await readFile(join(workspace,'Cargo.toml'),'utf8');
  await writeFile(join(app,'Cargo.toml'),sourceManifest+'\n[patch."https://github.com/kevinaboos/makepad"]\nmakepad-platform = { path = "../makepad-platform" }\nmakepad-draw = { path = "../makepad-draw" }\n');
- return {workspace:app,identity,layoutIdentity,imeIdentity,drawIdentity,platformManifestSha256:sha(manifest),drawManifestSha256:sha(drawManifest)};
+ return {workspace:app,identity,layoutIdentity,imeIdentity,drawIdentity,consumerIdentity,platformManifestSha256:sha(manifest),drawManifestSha256:sha(drawManifest)};
 }
