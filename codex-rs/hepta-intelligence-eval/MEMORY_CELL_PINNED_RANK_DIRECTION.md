@@ -69,3 +69,38 @@ If the audit reveals wrong-direction residuals or large frozen margins,
 prioritize genuinely distinct, independently support-reviewed contrastive
 training source families and candidate coverage before increasing the count
 of small Cell heads.
+
+## Forward-only score-vector receipts for independent recalculation
+
+The immutable historical ZIP contains derived rank scores, winner identities,
+margin totals, and a digest of its original three score vectors, **but not
+those complete numeric vectors themselves**. The historical rank-direction
+audit consequently verifies all source-pinned **saved counts and internal
+relations**, not the original floating-point calculations from raw logits.
+This distinction must not be omitted in any claim.
+
+The future native six-arm runner now emits one **pre-Reader**
+`selection-score-journal.jsonl` row for each actually reached source
+selection. Every row contains the original frozen Encoder, the potentially
+adapted Encoder and the saved Head's **candidate logits**, original candidate
+identity hashes and immutable pool/feature SHA-256s, plus the actual
+selection and geometry digest. It retains the separate null logit without
+using it to change the original forced-top1 decision. No evidence excerpts,
+answers, benchmark target labels, revoked contents, or secret keys are
+inserted into this score-vector journal.
+
+A separately implemented standard-library
+`stem_score_replay.py` recomputes **all winner identities, original/adapter/
+Head score gaps, numerical residuals and scale infima from the stored raw
+logits**, verifying that they match the unchanged original geometry and
+policy records. It checks every journal row against a canonical policy
+identity, and rejects fabricated score hashes, invalid adapter attribution,
+nonfinite values, duplicate rows and missing receipts. Reader failures
+cannot erase a selection already recorded: the selection and journal
+are persisted before evidence materialization and Reader generation.
+The replay is attempted even after model-run failure when usable receipts
+are available and remains explicitly nonqualifying.
+
+This is a reproducibility and attribution safeguard, **not** authority to
+amplify residual scores on held-out data, a semantic evidence review, an
+improvement in learning, or a production deployment gate.

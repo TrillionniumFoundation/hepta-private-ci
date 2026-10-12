@@ -670,14 +670,48 @@ def run(staged, ranker_dir, output):
                                     "independent_lora_gated",
                                 ),
                             )
-                            item["head_seconds"] = time.perf_counter() - stamp
-                            evidence = selected_window(
-                                q, pools[q.identity], f, selected, set()
-                            )
+                            # Seal the selection BEFORE the Reader or
+                            # evidence-materialization failure can occur.
+                            # A source window identity is a digest, NOT a
+                            # source excerpt or semantic target label.
                             item.update(
                                 selected=selected,
                                 pool_digest=pools[q.identity].seal(),
                                 feature_digest=f.seal(),
+                                head_seconds=time.perf_counter() - stamp,
+                            )
+                            append(
+                                output / "selection-score-journal.jsonl",
+                                dict(
+                                    schema="hepta.stem-selection-score-vectors.v1",
+                                    stage=stage, phase=phase, arm=arm,
+                                    cell=cell, question_id=q.identity,
+                                    source_family=item["family"],
+                                    candidate_ids=list(f.candidate_ids),
+                                    candidate_ids_sha256=digest(f.candidate_ids),
+                                    source_pool_sha256=item["pool_digest"],
+                                    original_feature_sha256=original.seal(),
+                                    checkpoint_feature_sha256=item["feature_digest"],
+                                    original_frozen_logits=original.frozen_scores.tolist(),
+                                    post_adapter_encoder_logits=f.frozen_scores.tolist(),
+                                    checkpoint_head_logits=values[:len(f.candidate_ids)],
+                                    null_logit=values[len(f.candidate_ids)],
+                                    selected_index=selected,
+                                    encoder_adapted=arm in (
+                                        "lineage_lora_gated",
+                                        "independent_lora_gated",
+                                    ),
+                                    raw_scores_sha256=item["selection_geometry"]["raw_scores_sha256"],
+                                    geometry_sha256=digest(item["selection_geometry"]),
+                                    answer_targets_read=False,
+                                    source_excerpts_recorded=False,
+                                    production_accepted=False,
+                                ),
+                            )
+                            evidence = selected_window(
+                                q, pools[q.identity], f, selected, set()
+                            )
+                            item.update(
                                 head_sha256=sha256(head.export()),
                                 encoder_identity=f.encoder_identity,
                             )
