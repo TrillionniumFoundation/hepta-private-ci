@@ -311,9 +311,7 @@ fn typed_neuron_worker_enforces_model_and_reservation_token_limits_before_driver
     valid.authorization.reservation_id = "reservation.token3".to_string();
     valid.authorization.maximum_tokens = 16;
     valid.authorization.reservation_maximum_tokens = 16;
-    let observation = worker
-        .run_neuron_features(100, "model.1", valid)
-        .unwrap();
+    let observation = worker.run_neuron_features(100, "model.1", valid).unwrap();
     assert_eq!(observation.status, ExecutionStatus::Succeeded);
     assert_eq!(worker.driver.neuron_calls, 1);
 }
