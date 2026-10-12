@@ -157,6 +157,16 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
                 with self.assertRaisesRegex(InvalidEvidence, "exact unsigned 64-bit integer"):
                     analyze(packet)
 
+    def test_peak_rss_cannot_be_fractional_or_rounded(self):
+        packet = synthetic_matrix()
+        packet["runs"][0]["rss_peak_bytes"] = 1024.5
+        with self.assertRaisesRegex(InvalidEvidence, "exact unsigned 64-bit integer"):
+            analyze(packet)
+        packet = synthetic_matrix()
+        packet["runs"][0]["rss_peak_bytes"] = (1 << 64)
+        with self.assertRaisesRegex(InvalidEvidence, "exact unsigned 64-bit integer"):
+            analyze(packet)
+
     def test_u64_counter_boundary_remains_exact(self):
         packet = synthetic_matrix()
         for row in packet["runs"]:
