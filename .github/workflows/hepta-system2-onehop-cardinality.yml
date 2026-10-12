@@ -5,7 +5,10 @@ on:
     paths:
       - "scripts/memory_cell/system2_onehop_cardinality.py"
       - "scripts/memory_cell/test_system2_onehop_cardinality.py"
+      - "scripts/memory_cell/system2_onehop_cardinality_audit.py"
+      - "scripts/memory_cell/test_system2_onehop_cardinality_audit.py"
       - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_CARDINALITY.md"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_PAIRED_AUDIT.md"
       - ".github/workflows/hepta-system2-onehop-cardinality.yml"
 permissions:
   contents: read
@@ -66,7 +69,7 @@ jobs:
             exit 1
           fi
           tail -6 /tmp/onehop-cardinality/full-regression.log
-          /tmp/onehop-cardinality-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_onehop_cardinality.py scripts/memory_cell/test_system2_onehop_cardinality.py scripts/memory_cell/system2_onehop_reader.py scripts/memory_cell/test_system2_onehop_reader.py | tee /tmp/onehop-cardinality/lint.log
+          /tmp/onehop-cardinality-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_onehop_cardinality.py scripts/memory_cell/test_system2_onehop_cardinality.py scripts/memory_cell/system2_onehop_reader.py scripts/memory_cell/test_system2_onehop_reader.py scripts/memory_cell/system2_onehop_cardinality_audit.py scripts/memory_cell/test_system2_onehop_cardinality_audit.py | tee /tmp/onehop-cardinality/lint.log
       - name: Restore exact frozen Reader from signed historical nested source
         env:
           PYTHONPATH: scripts/memory_cell
@@ -117,6 +120,16 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/onehop-cardinality/resources.txt /tmp/onehop-cardinality-python/bin/python scripts/memory_cell/system2_onehop_cardinality.py "$HEPTA_SYSTEM2_ONEHOP_PARENT" /tmp/memory-inputs/reader /tmp/onehop-cardinality/trial --development > /tmp/onehop-cardinality/execution.log 2>&1 || { tail -120 /tmp/onehop-cardinality/execution.log; exit 1; }
           tail -1 /tmp/onehop-cardinality/execution.log
+      - name: Independently audit source-bound same-question cardinality results
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f /tmp/onehop-cardinality/trial/raw-seal.json ]; then
+            PYTHONPATH=scripts/memory_cell /tmp/onehop-cardinality-python/bin/python scripts/memory_cell/system2_onehop_cardinality_audit.py "$HEPTA_SYSTEM2_ONEHOP_PARENT" /tmp/onehop-cardinality/trial /tmp/onehop-cardinality/paired-audit > /tmp/onehop-cardinality/paired-audit.log 2>&1 || { tail -100 /tmp/onehop-cardinality/paired-audit.log; exit 1; }
+            tail -1 /tmp/onehop-cardinality/paired-audit.log
+          else
+            echo 'PAIRED_AUDIT_UNAVAILABLE: original 140-call trial did not seal; no result is imputed' | tee /tmp/onehop-cardinality/paired-audit-unavailable.log
+          fi
       - name: Retain exact source and all raw outputs, failures and hashes
         if: always()
         run: |
@@ -125,7 +138,8 @@ jobs:
           git rev-parse HEAD > /tmp/onehop-cardinality/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/onehop-cardinality/tested-tree.txt
           cp scripts/memory_cell/{system2_onehop_cardinality.py,test_system2_onehop_cardinality.py,system2_onehop_reader.py,system2_multihop_evidence.py,system2_multihop_trial.py,system2_native_receipt.py} /tmp/onehop-cardinality/source/
-          cp codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_CARDINALITY.md .github/workflows/hepta-system2-onehop-cardinality.yml /tmp/onehop-cardinality/source/
+          cp scripts/memory_cell/{system2_onehop_cardinality_audit.py,test_system2_onehop_cardinality_audit.py} /tmp/onehop-cardinality/source/
+          cp codex-rs/hepta-ndu/research/{SYSTEM2_ONEHOP_CARDINALITY.md,SYSTEM2_ONEHOP_PAIRED_AUDIT.md} .github/workflows/hepta-system2-onehop-cardinality.yml /tmp/onehop-cardinality/source/
           (cd /tmp/onehop-cardinality && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
