@@ -218,7 +218,16 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(_) => {
+                // The driver has not proven that partial allocations did
+                // not occur before returning its error. A fresh Worker
+                // generation needs independent resource reconciliation.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
         if let Err(error) = validate_identity(&handle.opaque_id, "model handle") {
             if self.driver.unload(handle).is_err() {
                 self.poisoned = true;
@@ -313,27 +322,46 @@ impl<D: ModelDriver> InferenceWorker<D> {
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(_) => {
+                // Execution may already have occurred before the driver
+                // reported failure; never retry it in this generation.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
+        if !observed.terminal_observed {
+            self.poisoned = true;
+        }
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
+            self.poisoned = true;
             return Err(Error::TokenLimit);
         }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
         } else if observed.succeeded {
-            let output = observed
-                .output_digest
-                .as_ref()
-                .ok_or(Error::MissingTerminalOutput)?;
-            validate_digest(output, "output")?;
+            let Some(output) = observed.output_digest.as_ref() else {
+                self.poisoned = true;
+                return Err(Error::MissingTerminalOutput);
+            };
+            if let Err(error) = validate_digest(output, "output") {
+                self.poisoned = true;
+                return Err(error);
+            }
             (ExecutionStatus::Succeeded, observed.output_digest, true)
         } else {
             if let Some(output) = &observed.output_digest {
-                validate_digest(output, "output")?;
+                if let Err(error) = validate_digest(output, "output") {
+                    self.poisoned = true;
+                    return Err(error);
+                }
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
@@ -594,14 +622,29 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(_) => {
+                // A physical Encoder/Head invocation might have committed
+                // work despite an incomplete driver response.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
+        if !observed.terminal_observed {
+            self.poisoned = true;
+        }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                self.poisoned = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
@@ -609,6 +652,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if status != ExecutionStatus::Succeeded
             && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
         {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         Ok(NeuronFeatureExecutionObservation {
