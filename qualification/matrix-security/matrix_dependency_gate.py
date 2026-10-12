@@ -103,7 +103,8 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         errors.append("MATRIX_E2EE_CONFORMANCE_DEPENDENCY_REMOVED")
 
     versions = {name: _package_names(pkgs, name) for name in
-                ("matrix-sdk", "matrix-sdk-crypto", "matrix-sdk-sqlite", "anymap2", "anymap3")}
+                ("matrix-sdk", "matrix-sdk-base", "matrix-sdk-crypto",
+                 "matrix-sdk-sqlite", "anymap2", "anymap3")}
     if len(versions["matrix-sdk"]) != 1:
         errors.append("MATRIX_SDK_LOCK_AMBIGUOUS_OR_MISSING")
     elif version(versions["matrix-sdk"][0]) != desired_tuple:
@@ -113,6 +114,23 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         errors.append("MATRIX_CRYPTO_MISSING_WITH_E2EE_REQUIRED")
     elif any(version(v) < (0, 19, 0) for v in versions["matrix-sdk-crypto"]):
         errors.append(ADVISORY_CRYPTO)
+    # A crypto-only bump is not an SDK migration. Mixed 0.18/0.19
+    # SDK/Base/Crypto/SQLite trees retain unqualified state compatibility.
+    # Require one coherent major/minor family and reachable real dependencies;
+    # unrelated lockfile packages cannot impersonate a migrated runtime.
+    for component in ("matrix-sdk-base", "matrix-sdk-crypto", "matrix-sdk-sqlite"):
+        observed = versions[component]
+        if len(observed) != 1:
+            errors.append(f"MATRIX_FAMILY_COMPONENT_MISSING_OR_AMBIGUOUS:{component}")
+        elif desired_tuple != (0, 0, 0):
+            try:
+                if version(observed[0])[:2] != desired_tuple[:2]:
+                    errors.append(f"MATRIX_FAMILY_RELEASE_MISMATCH:{component}")
+            except ValueError:
+                errors.append(f"MATRIX_FAMILY_INVALID_VERSION:{component}")
+    for component in ("matrix-sdk-base", "matrix-sdk-sqlite", "matrix-sdk-crypto"):
+        if find_path(graph, "matrix-sdk", component) is None:
+            errors.append(f"MATRIX_FAMILY_DEPENDENCY_PATH_MISSING:{component}")
     if versions["anymap2"] or "anymap2" in graph.get("matrix-sdk", ()):
         errors.append(ADVISORY_ANYMAP)
     if versions["matrix-sdk"] and desired_tuple >= (0, 19, 0):
@@ -141,11 +159,23 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
     for advisory in (ADVISORY_CRYPTO, ADVISORY_ANYMAP):
         if advisory in ignored:
             errors.append(f"FORBIDDEN_ADVISORY_IGNORE:{advisory}")
-    # Deny's normal graph must remain full: no pruning to hide the vulnerable
-    # Matrix dependency. This guard does not attempt to reinterpret cargo-deny.
-    excluded = deny.get("graph", {}).get("exclude", [])
-    if any(any(k in str(item) for k in ("matrix-sdk", "anymap2")) for item in excluded):
+    # Deny's full dependency graph must be retained. Excluding the consumer,
+    # SQLite, SQLx or crypto would hide relevant edges despite no explicit
+    # "matrix-sdk" exclusion. Do not accept target-filtered metadata as global
+    # security evidence, either.
+    deny_graph = deny.get("graph", {})
+    excluded = deny_graph.get("exclude", [])
+    sensitive = ("matrix-sdk", "codex-hepta-matrixd", "anymap2",
+                 "anymap3", "matrix-sdk-crypto", "sqlx", "rusqlite",
+                 "libsqlite3-sys")
+    if not isinstance(excluded, list) or any(
+        any(name in str(item) for name in sensitive) for item in excluded
+    ):
         errors.append("FORBIDDEN_MATRIX_GRAPH_PRUNE")
+    if deny_graph.get("targets"):
+        errors.append("FORBIDDEN_MATRIX_TARGET_FILTER")
+    if deny_graph.get("no-default-features") is True:
+        errors.append("FORBIDDEN_MATRIX_DEFAULT_FEATURE_SUPPRESSION")
 
     for target in ("matrix-sdk", "matrix-sdk-crypto"):
         path = find_path(graph, "codex-hepta-matrixd", target)
@@ -167,7 +197,10 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         "blocking_prerequisites": sorted(set(errors)),
         "upstream_review_notes": notes,
         "static_prerequisites_passed": not errors,
-        "security_advisories_resolved": not errors and not versions["anymap2"],
+        # Only a real unchanged cargo-deny run and native E2EE/store evidence
+        # can close an advisory; no result here is signed audit evidence.
+        "static_graph_advisory_candidates_clean": not errors and not versions["anymap2"],
+        "security_advisories_resolved": False,
         "cargo_deny_verified": False,
         "matrix_e2ee_verified": False,
         "sqlite_wal_recovery_verified": False,
