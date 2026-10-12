@@ -85,7 +85,10 @@ def pinned_zip(path, role):
     out = {}
     with zipfile.ZipFile(io.BytesIO(data)) as archive:
         info = archive.infolist()
-        if not 1 <= len(info) <= 48 or sum(i.file_size for i in info) > 32 * 1024 * 1024:
+        if (
+            not 1 <= len(info) <= 48
+            or sum(i.file_size for i in info) > 32 * 1024 * 1024
+        ):
             raise ValueError("bounded original archive file census")
         for item in info:
             p = PurePosixPath(item.filename)
@@ -123,11 +126,14 @@ def verify_inputs(public, decisions, reader):
     history_manifest = read_json(public["histories-manifest.json"])
     if (
         history_manifest["population_sha256"] != digest_bytes(public["population.json"])
-        or history_manifest["histories_sha256"] != digest_bytes(public["histories.jsonl"])
+        or history_manifest["histories_sha256"]
+        != digest_bytes(public["histories.jsonl"])
         or population["model_input_contains_answers"] is not False
         or population["production_accepted"] is not False
         or population["source_sha256"]
-        != {"locomo": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"}
+        != {
+            "locomo": "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
+        }
     ):
         raise ValueError("source-only published histories changed")
     docs_rows = jsonl(public["histories.jsonl"], limit=6000)
@@ -188,7 +194,9 @@ def make_worklists(population, docs, decisions, answers, ready):
                 or type(row.get("answer")) is not str
                 or not row["answer"].strip()
             ):
-                raise ValueError("model answers differ from the committed source selection")
+                raise ValueError(
+                    "model answers differ from the committed source selection"
+                )
             count = 4 if arm == "lexical_k4" else 8
             if len(selected) != count or len(set(selected)) != count:
                 raise ValueError("unregistered source count")
@@ -215,7 +223,9 @@ def make_worklists(population, docs, decisions, answers, ready):
             ):
                 raise ValueError("original frozen reader budget/profile/cost drift")
             original_sources = []
-            for i, (sid, delivered) in enumerate(zip(selected, receipt["delivered_evidence"], strict=True), 1):
+            for i, (sid, delivered) in enumerate(
+                zip(selected, receipt["delivered_evidence"], strict=True), 1
+            ):
                 original = docs[sid]
                 raw = original["content"].encode("utf-8")
                 if (
@@ -230,7 +240,9 @@ def make_worklists(population, docs, decisions, answers, ready):
                     or delivered["source_end"] != len(raw)
                     or delivered["source_digest"] != native_digest(original["content"])
                 ):
-                    raise ValueError("original model prompt excerpt is not original source")
+                    raise ValueError(
+                        "original model prompt excerpt is not original source"
+                    )
                 source_roots.add(original["root"])
                 original_sources.append(
                     dict(
@@ -284,7 +296,10 @@ def make_worklists(population, docs, decisions, answers, ready):
 
 
 def write_once(path, value):
-    raw = (json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
+    raw = (
+        json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
+        + "\n"
+    ).encode()
     with path.open("xb") as out:
         out.write(raw)
         out.flush()
@@ -305,23 +320,29 @@ def run(public_path, decisions_path, reader_path, output):
         population, docs, decisions_lookup, raw, ready
     )
     output.mkdir()
-    source_hash = write_once(output / "sufficiency-only.json", dict(
-        schema=SCHEMA,
-        original_sources_only=True,
-        model_answers_in_this_worklist=False,
-        original_reference_targets_in_this_worklist=False,
-        reviewer_verdicts_recorded=0,
-        review_cases=sufficiency,
-        production_accepted=False,
-    ))
-    answer_hash = write_once(output / "answer-and-citation.json", dict(
-        schema=SCHEMA,
-        original_reader_answers_unchanged=True,
-        original_reference_targets_in_this_worklist=False,
-        reviewer_verdicts_recorded=0,
-        review_cases=answer_review,
-        production_accepted=False,
-    ))
+    source_hash = write_once(
+        output / "sufficiency-only.json",
+        dict(
+            schema=SCHEMA,
+            original_sources_only=True,
+            model_answers_in_this_worklist=False,
+            original_reference_targets_in_this_worklist=False,
+            reviewer_verdicts_recorded=0,
+            review_cases=sufficiency,
+            production_accepted=False,
+        ),
+    )
+    answer_hash = write_once(
+        output / "answer-and-citation.json",
+        dict(
+            schema=SCHEMA,
+            original_reader_answers_unchanged=True,
+            original_reference_targets_in_this_worklist=False,
+            reviewer_verdicts_recorded=0,
+            review_cases=answer_review,
+            production_accepted=False,
+        ),
+    )
     manifest = dict(
         schema=SCHEMA,
         original_source_artifacts_sha256=dict(PINS),
@@ -354,7 +375,11 @@ def main():
     p.add_argument("reader", type=Path)
     p.add_argument("output", type=Path)
     args = p.parse_args()
-    print(json.dumps(run(args.public, args.decisions, args.reader, args.output), sort_keys=True))
+    print(
+        json.dumps(
+            run(args.public, args.decisions, args.reader, args.output), sort_keys=True
+        )
+    )
 
 
 if __name__ == "__main__":

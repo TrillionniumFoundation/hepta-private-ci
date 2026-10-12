@@ -122,9 +122,13 @@ class WorklistTests(unittest.TestCase):
                     work.make_worklists(*args)
 
     def test_reader_weights_and_budget_are_frozen(self):
-        for key, value in (("reader_identity", "other"), ("token_limit", 4096),
-                           ("trainable_parameters", 1), ("answer_postprocessed", True),
-                           ("semantic_citation_precision", 0.99)):
+        for key, value in (
+            ("reader_identity", "other"),
+            ("token_limit", 4096),
+            ("trainable_parameters", 1),
+            ("answer_postprocessed", True),
+            ("semantic_citation_precision", 0.99),
+        ):
             with self.subTest(key=key):
                 args = list(records())
                 args[3][0]["receipt"][key] = value
@@ -141,7 +145,9 @@ class WorklistTests(unittest.TestCase):
 
     def test_changed_selection_or_extra_source_rejected(self):
         args = list(records())
-        args[2][("q00", "lexical_k8")]["selected"] = list(reversed(args[2][("q00", "lexical_k8")]["selected"]))
+        args[2][("q00", "lexical_k8")]["selected"] = list(
+            reversed(args[2][("q00", "lexical_k8")]["selected"])
+        )
         args[3][1]["selected"] = list(args[2][("q00", "lexical_k8")]["selected"])
         with self.assertRaises(ValueError):
             work.make_worklists(*args)
@@ -178,11 +184,14 @@ class WorklistTests(unittest.TestCase):
     def test_manifest_never_issues_an_unreviewed_judgement(self):
         with tempfile.TemporaryDirectory() as td:
             p = Path(td) / "doc.json"
-            h = work.write_once(p, dict(
-                sufficiency=None,
-                semantic_entailment=None,
-                production_accepted=False,
-            ))
+            h = work.write_once(
+                p,
+                dict(
+                    sufficiency=None,
+                    semantic_entailment=None,
+                    production_accepted=False,
+                ),
+            )
             self.assertEqual(work.digest_bytes(p.read_bytes()), h)
             with self.assertRaises(FileExistsError):
                 work.write_once(p, {"overwritten": True})
