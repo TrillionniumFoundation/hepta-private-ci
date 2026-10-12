@@ -126,3 +126,35 @@ diff, CI pass, or model answer. The new hosted workflow must still
 verify original and first-parent blob bytes and independent disk re-open
 against its exact running source commit. A failed hosted gate must
 remain FAILED and retain its INCOMPLETE output.
+
+## Two-parent concordance sidecar (source-only)
+
+The supplementary \`project_pr_merge_concordance.py\` compares the two
+immutable, frozen parent trees for the **31** original HEAD file references
+belonging to NumPy #32523 and Ruff #28828. The original 80-file archive and
+first-parent receipts remain unchanged; the previously unresolved 31 cases
+are **not retroactively relabelled** in the historical first-parent report.
+
+The sidecar admits a common previous version only when **both registered
+parents** resolve the **same regular Git blob and file mode at the same path**.
+If both match HEAD, no new blob is copied. If both agree but differ from HEAD,
+the exact prior Git bytes are fetched, verified against Git blob SHA-1 and
+SHA-256, and stored under a separate 24 MiB bound. A divergent parent pair,
+a missing path on either side, or a rename remains explicit unavailable
+context. This is not a unique merge-base or a complete PR-level diff.
+
+The existing read-only source-byte workflow checks six fixture regressions,
+verifies formatting, acquires original/first-parent bytes, runs the bounded
+two-parent comparison, and reopens all retained bytes in another process.
+Incomplete acquisition leaves an INCOMPLETE marker rather than READY.
+Its original code, question and review manifests remain answer-blind; the
+new record contains no user gold, no generated model answer, no human vote
+and no qualification. Zero or any number of common-parent matches cannot
+by themselves establish a new task success or independent reviewer consensus.
+
+The resulting \`merge-concordance/READY.json\`, \`concordance.json\`,
+\`common-previous/*.blob\`, original source, complete hashes and failure logs
+are research material for a **future independent sufficiency reviewer**.
+Do not use these source-only observations to update candidate weights,
+choose evaluation cases, assert >=99% entailment or ship a production Cell.
+The live CI run must finish before citing a measured resolved count.
