@@ -34,12 +34,12 @@ class StagingTests(unittest.TestCase):
 
     def test_integrated_secure_lock_is_read_only_and_never_retrofits_018(self):
         manifest = (
-            '[workspace.dependencies]\\n'
+            '[workspace.dependencies]\n'
             'matrix-sdk = { version = "=0.19.1", default-features = false, '
-            'features = ["e2e-encryption", "sqlite", "rustls-aws-lc-rs"] }\\n'
-            'libsqlite3-sys = { version = "=0.38.2", default-features = false }\\n'
-            '[patch.crates-io]\\n'
-            'matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }\\n'
+            'features = ["e2e-encryption", "sqlite", "rustls-aws-lc-rs"] }\n'
+            'libsqlite3-sys = { version = "=0.38.2", default-features = false }\n'
+            '[patch.crates-io]\n'
+            'matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }\n'
         )
         for root in (self.source, self.stage):
             (root/'codex-rs/Cargo.toml').write_text(manifest)
@@ -68,9 +68,9 @@ class StagingTests(unittest.TestCase):
             manifest.replace('=0.19.1', '=0.18.0'),
             manifest.replace('third_party/matrix-sdk-0.19.1',
                              'third_party/matrix-sdk-0.18.0'),
-            manifest.replace('[patch.crates-io]\\n'
-                             'matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }\\n',
-                             '[patch.crates-io]\\n'),
+            manifest.replace('[patch.crates-io]\n'
+                             'matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }\n',
+                             '[patch.crates-io]\n'),
         ):
             (self.stage/'codex-rs/Cargo.toml').write_text(edit)
             (self.source/'codex-rs/Cargo.toml').write_text(edit)
