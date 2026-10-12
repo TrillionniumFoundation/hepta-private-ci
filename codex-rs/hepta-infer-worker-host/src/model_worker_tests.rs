@@ -1378,3 +1378,35 @@ fn reservation_token_bound_is_shared_by_generic_single_batch_and_cancelled_neuro
     );
     assert_eq!(worker.driver.inner.feature_run_calls, 1);
 }
+
+#[test]
+fn native_backend_batch_preflight_respects_other_models_generation_budget() {
+    let mut worker = batch_worker(BatchFault::None);
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    worker
+        .load_model(100, second)
+        .expect("both models independently fit generation budget");
+
+    // The selected batch requires 3 KiB tracked numeric memory, while another
+    // loaded handle retains 1 KiB. Global grant 4,095 B must reject BEFORE
+    // dispatch, even though the individual batch would fit that grant.
+    worker.grant.maximum_memory_bytes = 4_095;
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(
+            100,
+            "model.1",
+            two_batch_requests(),
+        ),
+        Err(Error::ModelCapacity),
+    );
+    assert_eq!(worker.driver.backend_calls, 0);
+    assert!(!worker.requires_external_recovery());
+
+    worker.grant.maximum_memory_bytes = 4_096;
+    let receipts = worker
+        .run_neuron_features_backend_batch(100, "model.1", two_batch_requests())
+        .expect("exact inclusive whole-generation budget");
+    assert_eq!(receipts.receipts.len(), 2);
+    assert_eq!(worker.driver.backend_calls, 1);
+}
