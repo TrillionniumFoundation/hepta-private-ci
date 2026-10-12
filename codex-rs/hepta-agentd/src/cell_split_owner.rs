@@ -351,6 +351,10 @@ pub struct CellSplitExecutionOwnerV1 {
     // Never report completion before the independent observer has durably
     // acknowledged the exact last ledger head in this process.
     witnessed_sequence: Option<u64>,
+    // A witness proves a historical ledger head, not the current state of
+    // live CAS/Checkpoint/Selector/Fence/CNS owners. An unsuccessful replay or
+    // observation must never leave a previous "completed" status latched.
+    terminal_revalidated: bool,
     poisoned: bool,
 }
 
@@ -375,6 +379,7 @@ impl CellSplitExecutionOwnerV1 {
             heads: vec![Digest32::of_bytes(&header)],
             durable_bytes: HEADER_SIZE as u64,
             witnessed_sequence: None,
+            terminal_revalidated: false,
             poisoned: false,
         })
     }
@@ -427,6 +432,7 @@ impl CellSplitExecutionOwnerV1 {
             heads: vec![Digest32::of_bytes(&bytes[..HEADER_SIZE])],
             durable_bytes: HEADER_SIZE as u64,
             witnessed_sequence: None,
+            terminal_revalidated: false,
             poisoned: false,
         };
         let mut offset = HEADER_SIZE;
@@ -482,7 +488,8 @@ impl CellSplitExecutionOwnerV1 {
     pub fn progress(&self) -> CellSplitProgressV1 {
         CellSplitProgressV1 {
             completed: self.accepted.len() == STEPS.len()
-                && self.witnessed_sequence == Some(self.anchor().sequence),
+                && self.witnessed_sequence == Some(self.anchor().sequence)
+                && self.terminal_revalidated,
             accepted_steps: self.accepted.len(),
             anchor: self.anchor(),
         }
@@ -495,6 +502,9 @@ impl CellSplitExecutionOwnerV1 {
         &mut self,
         ports: &mut P,
     ) -> Result<CellSplitProgressV1, CellSplitErrorV1> {
+        // A prior successful replay does not attest to an external owner that
+        // may have changed, been revoked, or become unreachable since then.
+        self.terminal_revalidated = false;
         if self.poisoned {
             return Err(CellSplitErrorV1::Poisoned);
         }
@@ -585,6 +595,7 @@ impl CellSplitExecutionOwnerV1 {
         // complete re-observation of every accepted external effect allows
         // witness advancement over an unauthenticated-but-valid journal tail.
         self.retain_anchor(ports)?;
+        self.terminal_revalidated = true;
         Ok(self.progress())
     }
 
