@@ -8,6 +8,7 @@ codex_rust_crate(
     # include! body, not a binary root, and cannot own an inner crate attr.
     binary_crate_root_overrides = {
         "codex": "src/codex.rs",
+        "codex-cli": "src/codex.rs",
         "hepta": "src/hepta.rs",
     },
     crate_name = "codex_cli",

@@ -70,6 +70,7 @@ impl MatrixSdkPaths {
             (&state, "matrix-sdk-state.sqlite3"),
             (&state, "matrix-sdk-crypto.sqlite3"),
             (&cache, "matrix-sdk-event-cache.sqlite3"),
+            (&cache, "matrix-sdk-media.sqlite3"),
         ] {
             for suffix in ["", "-wal", "-shm", "-journal"] {
                 validate_store_file(&directory.join(format!("{database}{suffix}")))?;
