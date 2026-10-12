@@ -172,7 +172,9 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         for row in packet["runs"]:
             row["communication_bytes"] = (1 << 64) - 1
         result = analyze(packet)
-        self.assertEqual(result["comparisons"][0]["no_split"]["communication_bytes"], (1 << 64) - 1)
+        self.assertEqual(
+            result["comparisons"][0]["no_split"]["communication_bytes"], (1 << 64) - 1
+        )
         self.assertFalse(result["production_evidence_verified"])
 
     def test_reject_nonfinite_and_inconsistent_measurements(self):
