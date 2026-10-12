@@ -212,19 +212,29 @@ fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Res
     Ok(())
 }
 
-/// The minimum memory needed for independent Q24 output buffers across the
-/// entire batch. Immutable input features are not re-materialized per Cell.
-/// This is a conservative admission floor, NOT measured backend RSS/scratch.
-fn minimum_batch_output_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<u64, Error> {
-    requests.iter().try_fold(0_u64, |total, item| {
-        let width =
-            u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
-        let bytes = width
-            .checked_mul(2)
-            .and_then(|elements| elements.checked_mul(8))
-            .ok_or(Error::ArithmeticOverflow)?;
-        total.checked_add(bytes).ok_or(Error::ArithmeticOverflow)
-    })
+/// Admission floor for independent Q24 drive/prediction output buffers
+/// plus the largest temporary gated Q24 vector in the reference CPU Head.
+/// Earlier rows retain their output vectors while each subsequent row runs,
+/// but only one gated intermediate is live at a time. Shared input Arc
+/// features are never re-materialized per Cell. This is not measured backend
+/// RSS: other drivers must independently enforce their real peak allocation.
+fn minimum_batch_tensor_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<u64, Error> {
+    let (output_bytes, peak_gated_bytes) =
+        requests.iter().try_fold((0_u64, 0_u64), |(total, peak), item| {
+            let output_width =
+                u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
+            let input_width = u64::try_from(item.snapshot.features_q24.len())
+                .map_err(|_| Error::ArithmeticOverflow)?;
+            let outputs = output_width
+                .checked_mul(2)
+                .and_then(|count| count.checked_mul(8))
+                .ok_or(Error::ArithmeticOverflow)?;
+            let gated = input_width.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
+            Ok::<_, Error>((total.checked_add(outputs).ok_or(Error::ArithmeticOverflow)?, peak.max(gated)))
+        })?;
+    output_bytes
+        .checked_add(peak_gated_bytes)
+        .ok_or(Error::ArithmeticOverflow)
 }
 
 impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
@@ -301,7 +311,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             })
             .ok_or(Error::ArithmeticOverflow)?;
         let minimum_bytes = resident_bytes
-            .checked_add(minimum_batch_output_bytes_v2(&requests)?)
+            .checked_add(minimum_batch_tensor_bytes_v2(&requests)?)
             .ok_or(Error::ArithmeticOverflow)?;
         if minimum_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
@@ -492,14 +502,16 @@ mod tests {
     }
 
     #[test]
-    fn batch_output_memory_floor_counts_each_cell_without_cloning_shared_input() {
+    fn batch_tensor_floor_counts_outputs_and_peak_gate_without_cloning_input() {
         let shared = frame(2);
         let a = req("cell.a", "request.a", Arc::clone(&shared));
         let b = req("cell.b", "request.b", Arc::clone(&shared));
         assert!(Arc::ptr_eq(&a.snapshot, &b.snapshot));
-        // Two Q24 output vectors, width two, for each of two Cells.
-        assert_eq!(minimum_batch_output_bytes_v2(&[a, b]), Ok(64));
-        assert_eq!(minimum_batch_output_bytes_v2(&[]), Ok(0));
+        // Two width-two outputs per Cell persist (64 bytes). The CPU
+        // reference kernel additionally holds one width-two gated temporary
+        // at a time (16 bytes), never another input vector per Cell.
+        assert_eq!(minimum_batch_tensor_bytes_v2(&[a, b]), Ok(80));
+        assert_eq!(minimum_batch_tensor_bytes_v2(&[]), Ok(0));
     }
 
     #[test]
