@@ -27,7 +27,8 @@ jobs:
       - name: Source formatting
         run: cargo +1.95.0 fmt --all -- --check
       - name: Real Unix process-tree cleanup regression tests
-        run: cargo +1.95.0 test --locked -p codex-git-utils --lib git_process::tests:: -- --nocapture
+        run: |
+          cargo +1.95.0 test --locked -p codex-git-utils --lib 'git_process::tests::' -- --nocapture
       - name: Strict git-utils clippy
         run: cargo +1.95.0 clippy --locked -p codex-git-utils --all-targets -- -D warnings
 
@@ -46,4 +47,5 @@ jobs:
         run: rustup toolchain install 1.95.0 --profile minimal
       - name: Real Windows JobObject child cleanup regression tests
         shell: pwsh
-        run: cargo +1.95.0 test --locked -p codex-git-utils --lib git_process::tests:: -- --nocapture
+        run: |
+          cargo +1.95.0 test --locked -p codex-git-utils --lib 'git_process::tests::' -- --nocapture
