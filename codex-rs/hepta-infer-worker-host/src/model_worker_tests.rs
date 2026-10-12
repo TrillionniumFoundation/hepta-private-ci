@@ -7,12 +7,20 @@ struct Driver {
     corrupt_neuron_head: bool,
     invalid_handle: bool,
     fail_unload: bool,
+    fail_load_after_allocation: bool,
+    fail_run_after_execution: bool,
+    fail_feature_after_execution: bool,
     loaded: usize,
+    run_calls: usize,
+    feature_calls: usize,
 }
 
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        if self.fail_load_after_allocation {
+            return Err(Error::DriverFailure("load may have allocated".to_string()));
+        }
         Ok(DriverModelHandle {
             opaque_id: if self.invalid_handle {
                 "invalid handle".to_string()
@@ -28,6 +36,10 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        self.run_calls += 1;
+        if self.fail_run_after_execution {
+            return Err(Error::DriverFailure("run may have executed".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
@@ -61,6 +73,10 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.feature_calls += 1;
+        if self.fail_feature_after_execution {
+            return Err(Error::DriverFailure("feature may have executed".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -264,6 +280,15 @@ fn lost_driver_terminality_is_indeterminate() {
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
     assert_eq!(observed.output_digest, None);
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::IndeterminateLifecycle)
+    );
 }
 
 fn neuron_feature_request() -> NeuronFeatureRequest {
@@ -374,6 +399,90 @@ fn neuron_feature_never_exposes_failed_driver_logits() {
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
+}
+
+#[test]
+fn ambiguous_driver_load_quarantines_all_handles_until_fresh_generation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.ambiguous-load".to_string(),
+        3,
+        grant(),
+        Driver {
+            fail_load_after_allocation: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(worker.driver.loaded, 1, "driver might still own memory");
+    assert!(worker.models.is_empty());
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.loaded, 1, "must not retry unknown load");
+}
+
+#[test]
+fn ambiguous_execution_quarantines_run_and_neuron_feature_retries() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.ambiguous-run".to_string(),
+        3,
+        grant(),
+        Driver {
+            fail_run_after_execution: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+    assert!(worker.active_requests.is_empty());
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::IndeterminateLifecycle)
+    );
+
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.ambiguous-feature".to_string(),
+        3,
+        grant(),
+        Driver {
+            fail_feature_after_execution: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert!(worker.poisoned);
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.feature_calls, 1);
 }
 
 #[test]
