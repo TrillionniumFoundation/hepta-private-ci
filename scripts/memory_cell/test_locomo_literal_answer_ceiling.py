@@ -74,6 +74,7 @@ class LiteralAccessibleTests(unittest.TestCase):
         self.assertTrue(literal_occurs("Tokyo", "From Tokyo, with love"))
         self.assertTrue(literal_occurs("CAFÉ", "The café is open"))
         self.assertTrue(literal_occurs("Tokyo", "a" * 20000 + " Tokyo."))
+        self.assertFalse(literal_occurs("Tokyo", "  \n  "))
         with self.assertRaises(ValueError):
             literal_occurs("Tokyo", "a" * 1048577)
 

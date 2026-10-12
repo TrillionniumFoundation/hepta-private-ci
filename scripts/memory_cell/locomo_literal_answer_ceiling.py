@@ -30,7 +30,11 @@ def literal_occurs(answer, content):
     """Literal boundary-aware match, NOT a proof of question entailment."""
     if not isinstance(content, str) or len(content.encode("utf-8")) > 1048576:
         raise ValueError("unbounded source document for literal-only diagnostic")
-    needle, haystack = normalized_literal(answer), normalized_literal(content, byte_limit=1048576)
+    if not content.strip():
+        return False
+    needle, haystack = normalized_literal(answer), normalized_literal(
+        content, byte_limit=1048576
+    )
     return re.search(r"(?<!\w)" + re.escape(needle) + r"(?!\w)", haystack) is not None
 
 
@@ -195,6 +199,8 @@ def audit_locked_literal_capacity(lock, documents, targets):
         literal_match_is_only_lower_bound_on_answer_surface_availability=True,
         answer_literal_missing_does_not_prove_semantic_absence=True,
         literal_presence_not_evidence_entailment=True,
+        selected_original_source_bytes_not_verified_reader_prompt_tokens=True,
+        actual_reader_prompt_delivery_not_measured_here=True,
         independent_source_family_qualification=False,
         reader_executions=0,
         learned_parameter_updates=0,
