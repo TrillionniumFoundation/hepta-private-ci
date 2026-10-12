@@ -633,3 +633,26 @@ retain the boxed vector and that a `16`-byte raw Q24 budget cannot retain a
 boxed projected feature. Mock 4096-Cell reuse remains L1-only, not throughput
 or production RAM evidence.
 
+
+
+### Shared local HF batch checkpoint and cache integrity
+
+The shadow `FrozenLocalHfBackend` no longer treats a pinned directory
+digest plus `use_safetensors=True` as proof that the frozen Encoder actually
+restored the pretrained weights. It requests the Transformers complete-load
+report, rejects missing/unexpected/mismatched keys or loader errors, and
+independently compares every `state_dict` tensor (name, shape and value)
+against the already frozen local safetensors inventory before any feature
+batch can execute. Intentional architecture-specific missing/extra keys
+require a separately reviewed canonical safetensors artifact; they are not
+silently ignored. The local `verified_loading` and
+`verified_materialization` fields are **unsigned technical diagnostics**.
+
+Each backend-provided immutable `FrozenFeature` is also recomputed from its
+canonical finite float32 tuple, representation and 1..8192 token count before
+cache admission. Even when one of several backend results is corrupt, no
+member of that backend response is published into the shared cache.
+This makes false feature-digest claims and partially initialized local
+weights explicit errors, without manufacturing model-learning gains or
+production authority. Offline tests use intentionally synthetic file bytes
+and mock model weights, **not** a true Laya/ModernBERT/Jina benchmark.
