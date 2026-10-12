@@ -761,15 +761,17 @@ fn validate_neuron_feature_output(
     Ok(())
 }
 
+// Keep experimental physical batch dispatch private until signed Final-use
+// authorization and an independently owned model artifact loader are wired.
 #[path = "model_worker_batch.rs"]
 mod batch;
-pub use batch::NeuronFeatureBatchDriver;
-pub use batch::NeuronFeatureBatchItemObservationV2;
+pub(crate) use batch::NeuronFeatureBatchDriver;
+pub(crate) use batch::NeuronFeatureBatchItemObservationV2;
 
 #[path = "model_worker_gated.rs"]
 mod gated_cpu;
-pub use gated_cpu::GatedHeadCandidateV2;
-pub use gated_cpu::GatedHeadCpuDriverV2;
+pub(crate) use gated_cpu::GatedHeadCandidateV2;
+pub(crate) use gated_cpu::GatedHeadCpuDriverV2;
 
 #[path = "model_worker_shared_v2.rs"]
 mod shared_v2;

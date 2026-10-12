@@ -54,6 +54,8 @@ struct GatedHeadArtifactV2 {
 }
 
 /// Qualification-only CPU driver; no signed artifact load/worker CAS.
+/// Its module and re-export remain crate-private; exposing this reference
+/// backend as a public execution port would bypass signed Final-use review.
 ///
 /// The `observed_memory_bytes` field in this reference adapter counts owned
 /// parameter tensors rather than full OS RSS, so it is not a production

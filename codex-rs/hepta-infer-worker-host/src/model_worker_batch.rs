@@ -1,4 +1,6 @@
-//! True batch-admission seam for the existing loaded Neuron model.
+//! Research-only batch-admission seam for the existing loaded Neuron model.
+//! External crates cannot invoke this new batch path until an independent,
+//! exact-binding signed Final-use owner is part of the execution API.
 //!
 //! This module NEVER fakes backend batching by repeatedly calling the V1
 //! single-request driver. A backend must implement one batch invocation; absent
@@ -32,9 +34,11 @@ pub struct NeuronFeatureBatchItemObservationV2 {
     pub feature: DriverNeuronFeatureObservation,
 }
 
+/// A research-only, crate-private backend seam. It is intentionally not
+/// a public execution capability until an independently signed final-use
+/// admission API is present. Never implement by looping over V1 requests.
 /// A physical backend implements one batch forward over compatible requests.
-/// Do not implement this trait by looping over `run_neuron_features`.
-pub trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
+pub(crate) trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
     fn run_neuron_features_batch(
         &mut self,
         handle: &DriverModelHandle,
@@ -60,7 +64,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
     /// Admit the entire batch before dispatch and reject partial/aliased results.
     /// Every item binds an independently admitted request, lease and reservation;
     /// requests share the loaded model, encoder and tensor shapes, not authority.
-    pub fn run_neuron_features_batch(
+    pub(crate) fn run_neuron_features_batch(
         &mut self,
         now_ms: u64,
         model_id: &str,
@@ -225,7 +229,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
     /// receipt verifier used by the single-request production boundary.
     /// V1 owns a Vec per request; this compatibility bridge intentionally
     /// still clones those vectors. A true zero-copy V2 transport is separate.
-    pub fn run_neuron_features_batch_receipts(
+    pub(crate) fn run_neuron_features_batch_receipts(
         &mut self,
         now_ms: u64,
         model_id: &str,
