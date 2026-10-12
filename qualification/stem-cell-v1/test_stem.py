@@ -248,7 +248,13 @@ class ScaleTraceTests(unittest.TestCase):
             with patch.object(sys, "argv", analysis):
                 scale_main()
                 first = report_path.read_bytes()
-                self.assertFalse(json.loads(first)["production_authorized"])
+                report = json.loads(first)
+                self.assertFalse(report["production_authorized"])
+                self.assertFalse(report["source_file_bytes_authenticated"])
+                self.assertEqual(report["source_workload_file_sha256"],
+                                 hashlib.sha256(workload_path.read_bytes()).hexdigest())
+                self.assertEqual(report["source_native_trace_file_sha256"],
+                                 hashlib.sha256(trace_path.read_bytes()).hexdigest())
                 with self.assertRaises(FileExistsError):
                     scale_main()
                 self.assertEqual(report_path.read_bytes(), first)
