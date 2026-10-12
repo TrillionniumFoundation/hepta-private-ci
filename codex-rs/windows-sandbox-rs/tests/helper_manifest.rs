@@ -89,11 +89,10 @@ fn manifest_only_runfiles_resolve_the_exact_helper_with_spaces_in_physical_path(
     std::fs::write(
         &manifest,
         format!(
-            "_main/codex-rs/windows-sandbox-rs/other-setup.exe {}\\n{logical} {}\\n",
+            "_main/codex-rs/windows-sandbox-rs/other-setup.exe {}\n{logical} {}\n",
             physical.display(),
             physical.display(),
-        )
-        .replace("\\n", "\n"),
+        ),
     )?;
     assert_eq!(
         find_exact_manifest_runfile(&manifest, std::path::Path::new(logical))?,
