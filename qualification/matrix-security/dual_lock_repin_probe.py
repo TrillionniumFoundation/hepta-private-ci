@@ -57,7 +57,7 @@ def inspect_pair(async_log, bytes_log, manifest_bytes, lock_bytes):
         }:
             reasons.append("unregistered Matrix source or lost E2EE/SQLite")
     except (KeyError, TypeError, ValueError, UnicodeError, tomllib.TOMLDecodeError):
-        reasons.append("unparseable or unpinned disposable manifest")
+        reasons.append("unparsable or unpinned disposable manifest")
     try:
         document = tomllib.loads(lock_bytes.decode("utf-8"))
         packages = document.get("package", [])
