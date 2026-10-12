@@ -85,7 +85,11 @@ impl NeuronFeatureDriver for Driver {
                 terminal_observed: false,
                 succeeded: false,
                 encoder_digest: request.encoder_digest.clone(),
-                head_digest: request.head_digest.clone(),
+                head_digest: if self.corrupt_neuron_head {
+                    "f".repeat(64)
+                } else {
+                    request.head_digest.clone()
+                },
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
                 observed_memory_bytes: 1_024,
@@ -394,6 +398,34 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
+}
+
+#[test]
+fn indeterminate_feature_with_wrong_head_poison_generation_without_publishing() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.indeterminate-head".to_string(),
+        3,
+        grant(),
+        Driver {
+            indeterminate: true,
+            corrupt_neuron_head: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::FeatureOutputMismatch)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.feature_calls, 1);
 }
 
 #[test]
