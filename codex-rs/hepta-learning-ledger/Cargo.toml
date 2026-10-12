@@ -16,7 +16,7 @@ workspace = true
 [features]
 default = []
 qualification-legacy-write = []
-qualification-ack-only-recovery = []
+qualification-ack-only-recovery = ["dep:rustix"]
 
 [dependencies]
 codex-hepta-intuition = { path = "../hepta-intuition" }
@@ -24,6 +24,7 @@ codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
 codex-hepta-types = { path = "../hepta-types" }
 
 ed25519-dalek = { workspace = true }
+rustix = { workspace = true, optional = true, features = ["fs", "process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 
