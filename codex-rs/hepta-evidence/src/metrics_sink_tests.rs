@@ -46,3 +46,17 @@ fn refuses_missing_identity_and_stale_writer_lock() {
     let reopened = DurablePhaseMetricSinkV1::open(&path, 2, 2, 25).unwrap();
     assert!(reopened.healthy());
 }
+
+#[test]
+fn durable_sink_records_wal_and_reopens_without_corrupting_journal() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("wal-metrics.log");
+    {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 64, 2, 1000).unwrap();
+        sink.record(sample(PhaseMetricKindV1::Wal)).unwrap();
+        sink.record(sample(PhaseMetricKindV1::Wal)).unwrap();
+        sink.flush().unwrap();
+        assert_eq!(sink.status().persisted_rows, 2);
+    }
+    assert!(MetricsGroupCommitV1::open(&path).is_ok());
+}

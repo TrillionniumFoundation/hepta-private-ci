@@ -12,6 +12,15 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Instant;
+
+use codex_hepta_types::Digest32;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 
 #[path = "native_control.rs"]
 pub mod native;
@@ -176,6 +185,8 @@ pub struct DurableInferenceControl {
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
+    metrics: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: AtomicU64,
 }
 
 impl DurableInferenceControl {
@@ -256,7 +267,32 @@ impl DurableInferenceControl {
             capacity,
             journal_bytes,
             poisoned: false,
+            metrics: None,
+            failed_metrics: AtomicU64::new(0),
         })
+    }
+
+    /// Evidence owns WAL telemetry persistence; attaching a sink grants no authority.
+    pub fn with_metrics_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metrics = Some(sink);
+        self
+    }
+
+    /// Strict qualification requires a healthy, non-lossy sink and a durable flush.
+    pub fn production_metrics_ready(&self) -> bool {
+        self.metrics.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metrics else {
+            return false;
+        };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
     }
 
     pub fn submit(
@@ -470,11 +506,29 @@ impl DurableInferenceControl {
         if encoded.len() > MAX_JOURNAL_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
             return Err(Error::CapacityExceeded);
         }
+        let started = Instant::now();
         let persisted = self
             .file
             .write_all(encoded.as_bytes())
             .and_then(|()| self.file.flush())
             .and_then(|()| self.file.sync_all());
+        // WAL telemetry is observational only. An Evidence outage never masks a
+        // successfully fsynced event or makes the control owner retry its effect.
+        if let Some(sink) = &self.metrics {
+            if sink
+                .record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(self.path.to_string_lossy().as_bytes()),
+                    operation_digest: Digest32::of_bytes(encoded.as_bytes()),
+                    phase: PhaseMetricKindV1::Wal,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded: persisted.is_ok(),
+                })
+                .is_err()
+            {
+                self.failed_metrics.fetch_add(1, Ordering::Release);
+            }
+        }
         if let Err(error) = persisted {
             // A partial write or failed sync has an unknown durable outcome.
             // Keep this owner fenced until explicit inspection and reopen.

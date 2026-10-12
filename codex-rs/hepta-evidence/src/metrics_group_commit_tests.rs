@@ -60,3 +60,16 @@ fn tampered_group_is_rejected_and_phase_times_failures() {
         Err(MetricsJournalErrorV1::Corrupt)
     ));
 }
+
+#[test]
+fn wal_metric_phase_survives_group_commit_and_reopen() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("wal-metrics");
+    {
+        let mut writer = MetricsGroupCommitV1::open(&path).unwrap();
+        writer.stage(sample(MetricPhaseV1::Wal)).unwrap();
+        assert_eq!(writer.flush().unwrap().unwrap().rows, 1);
+    }
+    let reopened = MetricsGroupCommitV1::open(&path).unwrap();
+    assert_eq!(reopened.pending(), 0);
+}

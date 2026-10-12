@@ -10,6 +10,7 @@ pub enum PhaseMetricKindV1 {
     Signature,
     Cns,
     NeuronFeature,
+    Wal,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
