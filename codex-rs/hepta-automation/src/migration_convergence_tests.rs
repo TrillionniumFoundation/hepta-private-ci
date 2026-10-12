@@ -20,7 +20,10 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
             .fetch_one(&pool)
             .await
             .expect("reference SQLite main database");
-    assert!(main_file.is_empty(), "historical migration oracle must be in-memory");
+    assert!(
+        main_file.is_empty(),
+        "historical migration oracle must be in-memory"
+    );
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
