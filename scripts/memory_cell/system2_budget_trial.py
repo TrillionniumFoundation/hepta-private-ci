@@ -13,7 +13,6 @@ import os
 from pathlib import Path
 import re
 
-import torch
 from safetensors.torch import load_file, save_file
 
 from system2_ablation import model_digest
