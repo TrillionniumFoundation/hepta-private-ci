@@ -152,26 +152,51 @@ class ScopedFeatureCache:
         return self._entries[key][0]
 
     def put(self, key, value):
+        self.put_many(((key, value),))
+
+    def put_many(self, entries):
+        """Validate all cache writes before publishing any member of a batch.
+
+        A backend may return multiple valid vectors while a concurrent owner
+        has already populated one of their scoped keys with a different value.
+        Partial publication before noticing the conflict would make the failed
+        invocation visible to future Cell requests.
+        """
         from cache_accounting import estimated_python_cache_entry_bytes
 
-        if type(value) is not FrozenFeature:
-            raise ValueError("invalid shared-feature cache payload")
-        value.verify_integrity()
-        existing = self._entries.get(key)
-        if existing is not None and existing[0].feature_digest != value.feature_digest:
-            raise ValueError("different feature content for identical scoped cache key")
-        size = estimated_python_cache_entry_bytes(key, value, value.values)
-        if size > self.maximum_bytes:
-            return
-        if key in self._entries:
-            _, old_size = self._entries.pop(key)
-            self.size_bytes -= old_size
-        while self.size_bytes + size > self.maximum_bytes:
-            _, (_, old_size) = self._entries.popitem(last=False)
-            self.size_bytes -= old_size
-            self.evictions += 1
-        self._entries[key] = (value, size)
-        self.size_bytes += size
+        prepared = []
+        proposed = {}
+        for key, value in entries:
+            if len(prepared) >= MAX_ITEMS:
+                raise ValueError("too many scoped cache writes in one batch")
+            if type(value) is not FrozenFeature:
+                raise ValueError("invalid shared-feature cache payload")
+            value.verify_integrity()
+            previous = proposed.get(key)
+            if previous is not None and previous != value.feature_digest:
+                raise ValueError("conflicting vectors for one proposed scoped key")
+            proposed[key] = value.feature_digest
+            existing = self._entries.get(key)
+            if existing is not None and existing[0].feature_digest != value.feature_digest:
+                raise ValueError("different feature content for identical scoped cache key")
+            charged = estimated_python_cache_entry_bytes(key, value, value.values)
+            prepared.append((key, value, charged))
+        # All uncertain computations, identity checks and capacity accounting
+        # precede any LRU eviction/insertion. These bounded mutations do not
+        # execute arbitrary backend code and cannot partially publish on a
+        # rejected member. This is NOT concurrent production cache authority.
+        for key, value, size in prepared:
+            if size > self.maximum_bytes:
+                continue
+            if key in self._entries:
+                _, old_size = self._entries.pop(key)
+                self.size_bytes -= old_size
+            while self.size_bytes + size > self.maximum_bytes:
+                _, (_, old_size) = self._entries.popitem(last=False)
+                self.size_bytes -= old_size
+                self.evictions += 1
+            self._entries[key] = (value, size)
+            self.size_bytes += size
 
     def invalidate_scope(self, scope_digest):
         for key in list(self._entries):
@@ -288,8 +313,9 @@ class SharedStemEngine:
                     raise ValueError("backend returned invalid representation")
                 item.verify_integrity()
                 verified.append(item)
-            for k, out in zip(keys, verified):
-                self.cache.put(k, out)
+            # Cache publication is one prevalidated logical batch. A conflict
+            # in the final member cannot strand the first member in the LRU.
+            self.cache.put_many(zip(keys, verified))
             # When cache is disabled/too small, use invocation-local results.
             local_results = dict(zip(keys, verified))
         else:
