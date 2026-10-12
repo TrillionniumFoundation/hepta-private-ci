@@ -1,0 +1,124 @@
+name: MemoryCell real-project exact-source Ruff repair
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - .github/workflows/hepta-memory-real-project-format-repair.yml
+permissions:
+  contents: write
+concurrency:
+  group: memorycell-real-project-exact-ruff-repair
+  cancel-in-progress: false
+jobs:
+  repair:
+    if: github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Ruff-format only the twelve CI-blocking source files; require AST parity and tests
+        env:
+          TARGET_BRANCH: codex/memory-cell-evidence-20261008
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-project-ruff-repair
+          python3 -m pip install --user uv==0.8.22
+          export PATH="$HOME/.local/bin:$PATH"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          paths=(
+            scripts/memory_cell/project_pr_source_materialize.py
+            scripts/memory_cell/test_project_pr_source_materialize.py
+            scripts/memory_cell/project_pr_review_packet.py
+            scripts/memory_cell/test_project_pr_review_packet.py
+            scripts/memory_cell/project_pr_parent_context.py
+            scripts/memory_cell/test_project_pr_parent_context.py
+            scripts/memory_cell/project_pr_parent_review_packet.py
+            scripts/memory_cell/test_project_pr_parent_review_packet.py
+            scripts/memory_cell/project_pr_merge_concordance.py
+            scripts/memory_cell/test_project_pr_merge_concordance.py
+            scripts/memory_cell/project_pr_commit_ancestry.py
+            scripts/memory_cell/test_project_pr_commit_ancestry.py
+          )
+          for attempt in 1 2 3; do
+            git fetch --no-tags origin "refs/heads/$TARGET_BRANCH"
+            source_sha="$(git rev-parse FETCH_HEAD)"
+            git checkout --detach "$source_sha"
+            git reset --hard "$source_sha"
+            printf '%s\n' "$source_sha" > /tmp/hepta-project-ruff-repair/source-sha.txt
+            python3 - <<'PY'
+          import ast
+          import json
+          from pathlib import Path
+          import subprocess
+          names = [
+              "project_pr_source_materialize.py",
+              "test_project_pr_source_materialize.py",
+              "project_pr_review_packet.py",
+              "test_project_pr_review_packet.py",
+              "project_pr_parent_context.py",
+              "test_project_pr_parent_context.py",
+              "project_pr_parent_review_packet.py",
+              "test_project_pr_parent_review_packet.py",
+              "project_pr_merge_concordance.py",
+              "test_project_pr_merge_concordance.py",
+              "project_pr_commit_ancestry.py",
+              "test_project_pr_commit_ancestry.py",
+          ]
+          files = [Path("scripts/memory_cell") / x for x in names]
+          before = {}
+          for p in files:
+              if p.is_symlink() or not p.is_file() or not 0 < p.stat().st_size <= 256000:
+                  raise ValueError("missing or unbounded exact source: " + str(p))
+              before[str(p)] = ast.dump(ast.parse(p.read_text(encoding="utf-8")))
+          subprocess.run(["uv", "run", "--frozen", "--project", "scripts",
+                          "ruff", "format", *map(str, files)], check=True)
+          subprocess.run(["uv", "run", "--frozen", "--project", "scripts",
+                          "ruff", "format", "--check", *map(str, files)], check=True)
+          for p in files:
+              if before[str(p)] != ast.dump(ast.parse(p.read_text(encoding="utf-8"))):
+                  raise ValueError("Ruff changed Python AST: " + str(p))
+          changes = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
+          if set(changes) - set(before):
+              raise ValueError("modified unregistered source: " + repr(changes))
+          Path("/tmp/hepta-project-ruff-repair/changes.json").write_text(
+              json.dumps(sorted(changes), indent=2) + "\n", encoding="utf-8")
+          PY
+            git diff --check
+            PYTHONPATH=scripts/memory_cell python3 -m unittest discover \
+              -s scripts/memory_cell -p 'test_project_pr_*.py' -v \
+              2>&1 | tee /tmp/hepta-project-ruff-repair/tests.log
+            git diff --binary -- ${paths[@]} > /tmp/hepta-project-ruff-repair/patch.diff
+            git add -- ${paths[@]}
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'No format changes required at exact branch HEAD' | tee /tmp/hepta-project-ruff-repair/status.txt
+              exit 0
+            fi
+            git commit -m 'style(memory-cell): Ruff-only project-history source and test cleanup'
+            if git push origin "HEAD:refs/heads/$TARGET_BRANCH"; then
+              git rev-parse HEAD > /tmp/hepta-project-ruff-repair/commit.txt
+              echo 'Published AST-equivalent, test-passing format change' | tee /tmp/hepta-project-ruff-repair/status.txt
+              exit 0
+            fi
+            echo 'Branch advanced; retry from the newest HEAD without force' >&2
+          done
+          echo 'Could not safely fast-forward; retain patch and fail' >&2
+          exit 1
+      - name: Seal research-only formatting diagnostics
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-project-ruff-repair
+          git rev-parse HEAD > /tmp/hepta-project-ruff-repair/checked-commit.txt
+          (cd /tmp/hepta-project-ruff-repair && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-project-pr-ast-only-ruff-repair
+          path: /tmp/hepta-project-ruff-repair
+          if-no-files-found: error
