@@ -143,6 +143,10 @@ pub enum Error {
     FeatureContract,
     NeuronReservationReplay,
     NeuronReservationCapacity,
+    /// A prior model-load/unload outcome is unknown; retire this Worker
+    /// generation rather than reusing potentially leaked physical resources.
+    WorkerQuarantined,
+    ModelHandleConflict,
 }
 
 impl fmt::Display for Error {
@@ -182,6 +186,9 @@ pub struct InferenceWorker<D: ModelDriver> {
     // Worker instance, even if a fresh ModelPort is constructed around it.
     used_neuron_requests: BTreeSet<Digest32>,
     used_neuron_reservations: BTreeSet<Digest32>,
+    /// Unknown model-loader/unloader outcome poisons all future work in this
+    /// instance, including attempts with freshly issued reservations.
+    quarantined: bool,
 }
 
 impl<D: ModelDriver> InferenceWorker<D> {
@@ -206,6 +213,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             active_requests: BTreeMap::new(),
             used_neuron_requests: BTreeSet::new(),
             used_neuron_reservations: BTreeSet::new(),
+            quarantined: false,
         })
     }
 
@@ -217,6 +225,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
     /// restart changes this; it is not an independent signed deployment fence.
     pub fn worker_generation(&self) -> u64 {
         self.generation
+    }
+
+    /// An ambiguous physical model-load or unload outcome requires external
+    /// retirement/restart; changing the grant cannot clear this fence.
+    #[must_use]
+    pub fn is_quarantined(&self) -> bool {
+        self.quarantined
     }
 
     /// Read only the actual in-memory loaded model and require a current
@@ -247,11 +262,38 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
+        // Bound the SUM of model resident allocations, not each individual
+        // handle in isolation. With MAX_MODELS <= 8, this bounded reduction
+        // cannot introduce a global lock or a per-cell O(n) hot-path scan.
+        let already_loaded = self.models.values().try_fold(0_u64, |sum, entry| {
+            sum.checked_add(entry.handle.observed_memory_bytes)
+        }).ok_or(Error::ArithmeticOverflow)?;
+        // ModelDriver::load may allocate before returning an error. Fence the
+        // entire Worker before calling it: only a fully checked live handle or
+        // independently completed cleanup can release this fence.
+        self.quarantined = true;
         let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
-            return Err(Error::ModelCapacity);
+        if validate_identity(&handle.opaque_id, "model handle").is_err() {
+            return self.dispose_failed_load(handle, Error::InvalidIdentity("model handle"));
+        }
+        if self
+            .models
+            .values()
+            .any(|entry| entry.handle.opaque_id == handle.opaque_id)
+        {
+            // A reused opaque handle may alias a *currently live* model. Do
+            // NOT call unload on it: that could destroy the first model.
+            // The real loader violated identity isolation; quarantine forever.
+            return Err(Error::ModelHandleConflict);
+        }
+        let total_resident = already_loaded
+            .checked_add(handle.observed_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow);
+        if handle.observed_memory_bytes == 0
+            || total_resident.is_err()
+            || total_resident.ok().is_none_or(|value| value > self.grant.maximum_memory_bytes)
+        {
+            return self.dispose_failed_load(handle, Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
@@ -268,7 +310,21 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 active_requests: 0,
             },
         );
+        self.quarantined = false;
         Ok(observation)
+    }
+
+    /// Cleanup of an unadmitted physical model is itself a fallible, possibly
+    /// indeterminate driver operation. A failed cleanup cannot release the
+    /// Worker quarantine, even if the next model has different identifiers.
+    fn dispose_failed_load(
+        &mut self,
+        handle: DriverModelHandle,
+        rejection: Error,
+    ) -> Result<ModelLoadObservation, Error> {
+        self.driver.unload(handle)?;
+        self.quarantined = false;
+        Err(rejection)
     }
 
     pub fn run(
@@ -374,8 +430,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        // Retain the tracked handle until the driver confirms success. On an
+        // error the physical unload is unknown, so the entire Worker remains
+        // quarantined rather than pretending the released budget is reusable.
+        let handle = loaded.handle.clone();
+        self.quarantined = true;
+        self.driver.unload(handle)?;
+        self.models.remove(model_id);
+        self.quarantined = false;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -443,6 +505,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.quarantined {
+            return Err(Error::WorkerQuarantined);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }

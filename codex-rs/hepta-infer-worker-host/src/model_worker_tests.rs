@@ -6,14 +6,29 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     loaded: usize,
+    unload_attempts: usize,
+    fail_load: bool,
+    fail_unload: bool,
+    invalid_handle: bool,
+    shared_handle: bool,
+    memory_bytes: Option<u64>,
 }
 
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        if self.fail_load {
+            return Err(Error::DriverFailure("ambiguous physical load".into()));
+        }
         self.loaded += 1;
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
-            observed_memory_bytes: 1_024,
+            opaque_id: if self.invalid_handle {
+                "invalid handle".to_owned()
+            } else if self.shared_handle {
+                "shared.handle".to_owned()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
+            observed_memory_bytes: self.memory_bytes.unwrap_or(1_024),
         })
     }
 
@@ -41,6 +56,10 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        self.unload_attempts += 1;
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unknown physical unload".into()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -323,5 +342,141 @@ fn neuron_attempt_capacity_fails_closed_without_eviction() {
     assert_eq!(
         worker.consume_neuron_attempt(&authorization),
         Err(Error::NeuronReservationReplay)
+    );
+}
+
+#[test]
+fn model_load_enforces_aggregate_resident_budget_and_reclaims_rejected_handle() {
+    let mut budget = grant();
+    budget.maximum_memory_bytes = 2_000;
+    let mut worker =
+        InferenceWorker::new(100, "worker.total-rss".into(), 3, budget, Driver::default())
+            .unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let mut second = manifest();
+    second.model_id = "model.2".into();
+    assert_eq!(worker.load_model(100, second), Err(Error::ModelCapacity));
+    assert!(!worker.is_quarantined());
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(worker.driver.unload_attempts, 1);
+    assert_eq!(worker.models.len(), 1);
+    assert!(worker.run(100, "model.1", request()).is_ok());
+}
+
+#[test]
+fn invalid_or_zero_resource_model_handle_is_unloaded_before_returning_error() {
+    let driver = Driver {
+        invalid_handle: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.bad-handle".into(), 3, grant(), driver).unwrap();
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::InvalidIdentity("model handle"))
+    );
+    assert_eq!(worker.driver.loaded, 0);
+    assert_eq!(worker.driver.unload_attempts, 1);
+    assert!(!worker.is_quarantined());
+    worker.driver.invalid_handle = false;
+    worker.driver.memory_bytes = Some(0);
+    assert_eq!(worker.load_model(100, manifest()), Err(Error::ModelCapacity));
+    assert_eq!(worker.driver.loaded, 0);
+    assert_eq!(worker.driver.unload_attempts, 2);
+    assert!(!worker.is_quarantined());
+    worker.driver.memory_bytes = None;
+    worker.load_model(100, manifest()).unwrap();
+}
+
+#[test]
+fn unknown_load_or_cleanup_failure_quarantines_worker_for_entire_generation() {
+    let driver = Driver {
+        fail_load: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.load-fail".into(), 3, grant(), driver).unwrap();
+    assert!(matches!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure(_))
+    ));
+    worker.driver.fail_load = false;
+    assert!(worker.is_quarantined());
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::WorkerQuarantined)
+    );
+
+    let driver = Driver {
+        fail_unload: true,
+        memory_bytes: Some(10_000),
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.cleanup-fail".into(), 3, grant(), driver).unwrap();
+    assert!(matches!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure(_))
+    ));
+    assert!(worker.is_quarantined());
+    assert_eq!(worker.driver.loaded, 1);
+    worker.driver.fail_unload = false;
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::WorkerQuarantined)
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::WorkerQuarantined)
+    );
+}
+
+#[test]
+fn failed_unload_preserves_occupied_handle_and_never_reuses_budget() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.unknown-unload".into(), 3, grant(), Driver::default())
+            .unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    worker.driver.fail_unload = true;
+    assert!(matches!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::DriverFailure(_))
+    ));
+    assert!(worker.is_quarantined());
+    assert_eq!(worker.models.len(), 1);
+    assert_eq!(worker.driver.loaded, 1);
+    worker.driver.fail_unload = false;
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::WorkerQuarantined)
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::WorkerQuarantined)
+    );
+}
+
+#[test]
+fn driver_reused_opaque_handle_quarantines_instead_of_unloading_live_model() {
+    let driver = Driver {
+        shared_handle: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.alias-handle".into(), 3, grant(), driver).unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let mut second = manifest();
+    second.model_id = "model.2".into();
+    assert_eq!(
+        worker.load_model(100, second),
+        Err(Error::ModelHandleConflict)
+    );
+    assert!(worker.is_quarantined());
+    // Unloading an alias might release the *already live* first model.
+    assert_eq!(worker.driver.unload_attempts, 0);
+    assert_eq!(worker.models.len(), 1);
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::WorkerQuarantined)
     );
 }
