@@ -53,6 +53,11 @@ elif os.environ.get('BAZEL_PROBE_SERVER_CRASH_ONCE'):
         marker.write_text('synthetic Bazel JVM socket crash', encoding='utf-8')
         print("Server terminated abruptly (error code: 14, error message: 'Socket closed')")
         sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_AND_COMPILER_FAIL') == '1':
+    print('ERROR: dependency archive download failed')
+    print('Error in download_and_extract: GET returned 504 Gateway Time-out')
+    print('error[E0599]: missing method in source')
+    sys.exit(37)
 elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_AND_TEST_FAIL') == '1':
     print('ERROR: dependency archive download failed')
     print('Error in download_and_extract: GET returned 504 Gateway Time-out')
@@ -481,6 +486,14 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
         self.assertEqual(len(calls), 1, "real failed test overrides transient fetch retry")
         self.assertNotIn("retrying the identical complete Bazel target set", result.stdout)
+
+    def test_rustc_diagnostic_during_504_never_gets_a_network_retry(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BAZEL_PROBE_DOWNLOAD_504_AND_COMPILER_FAIL"] = "1"
+        result, calls = self.run_wrapper("--", "build", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1, "a rustc source error must not be retried away")
+        self.assertIn("error[E0599]", result.stdout)
 
     def test_failure_preserves_status_linker_diagnostics_and_test_log_configuration(
         self,
