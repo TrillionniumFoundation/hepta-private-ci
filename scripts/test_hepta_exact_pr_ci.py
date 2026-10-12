@@ -41,6 +41,7 @@ def run(name, *, sha=HEAD, base=BASE, conclusion="success", event="pull_request"
         "event": event,
         "head_sha": sha,
         "status": "completed",
+        "created_at": "2026-10-11T02:59:18Z",
         "conclusion": conclusion,
         "run_number": 123,
         "run_attempt": 1,
@@ -122,7 +123,10 @@ class ExactPrCiTests(unittest.TestCase):
                             "ref": "refs/pull/1468/merge",
                             "object": {"sha": merge},
                         },
-                        {"parents": [{"sha": sha} for sha in parents]},
+                        {
+                            "parents": [{"sha": sha} for sha in parents],
+                            "committer": {"date": "2026-10-11T02:59:17Z"},
+                        },
                     ],
                 ) as fetch:
                     result = GATE.prospective_merge_identity(
@@ -171,6 +175,72 @@ class ExactPrCiTests(unittest.TestCase):
         self.assertEqual(
             set(result["required_pull_request_runs"].values()), {"success"}
         )
+
+    def test_replayed_green_run_cannot_qualify_new_base_merge(self):
+        merge = "d" * 40
+        jobs = [run(name) for name in GATE.REQUIRED]
+        merge_ref = {
+            "ref": "refs/pull/1468/merge",
+            "object": {"sha": merge},
+        }
+        current_merge = {
+            "parents": [{"sha": BASE}, {"sha": HEAD}],
+            "committer": {"date": "2026-10-11T03:00:01Z"},
+        }
+        # GitHub pull_requests[] metadata can point to the *current* PR
+        # even when the workflow itself started before the base advanced.
+        with mock.patch.object(
+            GATE, "gh_json",
+            side_effect=[
+                pr(), {"workflow_runs": jobs}, merge_ref, current_merge,
+            ],
+        ):
+            _, verdict = GATE.current(REPO, 1468, HEAD)
+        self.assertFalse(verdict["qualified"])
+        self.assertEqual(verdict["prospective_merge_ref"]["status"], "exact")
+        self.assertEqual(
+            set(verdict["required_pull_request_runs"].values()),
+            {"missing_exact_pull_request_run"},
+        )
+
+        refreshed = [
+            dict(item, created_at="2026-10-11T03:00:05Z") for item in jobs
+        ]
+        with mock.patch.object(
+            GATE, "gh_json",
+            side_effect=[
+                pr(), {"workflow_runs": refreshed}, merge_ref, current_merge,
+            ],
+        ):
+            _, verdict = GATE.current(REPO, 1468, HEAD)
+        self.assertTrue(verdict["qualified"])
+
+    def test_missing_merge_timestamp_and_missing_run_start_are_denied(self):
+        with mock.patch.object(
+            GATE, "gh_json",
+            side_effect=[
+                {
+                    "ref": "refs/pull/1468/merge",
+                    "object": {"sha": "d" * 40},
+                },
+                {"parents": [{"sha": BASE}, {"sha": HEAD}]},
+            ],
+        ):
+            record = GATE.prospective_merge_identity(REPO, 1468, HEAD, BASE)
+        self.assertFalse(record["qualified"])
+        self.assertEqual(
+            record["status"], "missing_or_unreadable_merge_ref",
+        )
+        self.assertFalse(GATE.run_started_after_merge(
+            {}, "2026-10-11T03:00:01Z",
+        ))
+        self.assertFalse(GATE.run_started_after_merge(
+            {"created_at": "not-a-timestamp"}, "2026-10-11T03:00:01Z",
+        ))
+        self.assertFalse(GATE.run_started_after_merge(
+            {"created_at": "2026-10-11T02:00:01Z"},
+            "2026-10-11T03:00:01Z",
+        ))
 
     def test_dispatch_only_invokes_existing_manual_workflows(self):
         with mock.patch.object(
