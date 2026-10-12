@@ -17,6 +17,68 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 #[derive(Debug)]
+struct FixtureRouteGuardV1;
+
+#[derive(Debug)]
+struct FixtureCurrentScopeRoutesV1;
+
+impl CurrentScopeRoutePortV1 for FixtureCurrentScopeRoutesV1 {
+    fn enter_exact_route(
+        &self,
+        _key: &MicrobatchKeyV1,
+    ) -> Result<Box<dyn ScopedRouteEffectGuardV1>, BatchWorkerErrorV1> {
+        // Qualification mock only: production must use the actual CNS owner
+        // and atomically hold its route cutover fence until this drops.
+        Ok(Box::new(FixtureRouteGuardV1))
+    }
+}
+
+#[derive(Debug)]
+struct SingleStaleScopeRoutesV1 {
+    stale_scope: StableId,
+}
+
+impl CurrentScopeRoutePortV1 for SingleStaleScopeRoutesV1 {
+    fn enter_exact_route(
+        &self,
+        key: &MicrobatchKeyV1,
+    ) -> Result<Box<dyn ScopedRouteEffectGuardV1>, BatchWorkerErrorV1> {
+        if key.scope_id == self.stale_scope {
+            return Err(BatchWorkerErrorV1::StaleRoute);
+        }
+        Ok(Box::new(FixtureRouteGuardV1))
+    }
+}
+
+#[derive(Debug)]
+struct CountingRouteGuardV1 {
+    active: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl Drop for CountingRouteGuardV1 {
+    fn drop(&mut self) {
+        self.active.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+
+#[derive(Debug)]
+struct CountingCurrentScopeRoutesV1 {
+    active: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl CurrentScopeRoutePortV1 for CountingCurrentScopeRoutesV1 {
+    fn enter_exact_route(
+        &self,
+        _key: &MicrobatchKeyV1,
+    ) -> Result<Box<dyn ScopedRouteEffectGuardV1>, BatchWorkerErrorV1> {
+        self.active.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        Ok(Box::new(CountingRouteGuardV1 {
+            active: std::sync::Arc::clone(&self.active),
+        }))
+    }
+}
+
+#[derive(Debug)]
 struct FixtureMetricSink {
     reject_records: bool,
 }
@@ -44,6 +106,7 @@ impl codex_hepta_types::PhaseMetricSinkV1 for FixtureMetricSink {
 
 struct Driver {
     batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+    route_guard_probe: Option<(std::sync::Arc<std::sync::atomic::AtomicUsize>, usize)>,
 }
 
 impl ModelDriver for Driver {
@@ -165,6 +228,24 @@ fn runner_with_counter(
     batch_size: usize,
     batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    runner_with_guard_probe(
+        signing_key,
+        directory,
+        model,
+        batch_size,
+        batch_calls,
+        None,
+    )
+}
+
+fn runner_with_guard_probe(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+    batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+    route_guard_probe: Option<(std::sync::Arc<std::sync::atomic::AtomicUsize>, usize)>,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
@@ -189,7 +270,17 @@ fn runner_with_counter(
         semantic_digest: digest(b"resource-grant").to_string(),
     };
     let mut worker =
-        InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver { batch_calls }).unwrap();
+        InferenceWorker::new(
+            100,
+            "worker-one".into(),
+            3,
+            grant,
+            Driver {
+                batch_calls,
+                route_guard_probe,
+            },
+        )
+        .unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
@@ -205,6 +296,7 @@ fn runner_with_counter(
     .with_metric_sink(std::sync::Arc::new(FixtureMetricSink {
         reject_records: false,
     }))
+    .with_current_scope_routes(std::sync::Arc::new(FixtureCurrentScopeRoutesV1))
 }
 
 fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseGrant {
@@ -369,6 +461,11 @@ impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
         requests: &[NeuronFeatureRequest],
     ) -> Result<crate::model_worker::PhysicalBatchRunObservationV1, Error> {
         // Conformance fixture only; physical forward evidence requires hardware.
+        if let Some((active, expected)) = &self.route_guard_probe {
+            if active.load(std::sync::atomic::Ordering::SeqCst) != *expected {
+                return Err(Error::FeatureContract);
+            }
+        }
         self.batch_calls
             .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         let items = requests
@@ -624,4 +721,120 @@ fn legacy_group_commit_failure_denies_remaining_intents_without_claiming_them() 
         owner.poll_and_execute(102),
         Err(BatchWorkerErrorV1::TelemetryUnavailable)
     ));
+}
+
+
+#[test]
+fn physical_batch_without_current_cns_route_owner_denies_before_nonce_claim() {
+    let directory = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[57; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut owner = runner(&signer, directory.path(), model);
+    owner.scope_routes = None;
+    owner
+        .enqueue(100, "model".to_owned(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert!(matches!(
+        owner.poll_and_execute_physical(101),
+        Err(BatchWorkerErrorV1::RouteUnavailable)
+    ));
+    assert_eq!(owner.pending(), 1);
+    assert_eq!(owner.authority.capacity().unwrap().used_nonces, 0);
+}
+
+#[test]
+fn stale_scope_cutover_denies_entire_cross_scope_batch_without_any_nonce_claim() {
+    let directory = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[59; 32]);
+    let (model, fixture, key) = fixture_request();
+    let stale_scope = StableId::new("scope-cutover").unwrap();
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = runner_with_counter(&signer, directory.path(), model, 2, calls.clone())
+        .with_current_scope_routes(std::sync::Arc::new(SingleStaleScopeRoutesV1 {
+            stale_scope: stale_scope.clone(),
+        }));
+    for index in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("cutover-request-{index}");
+        request.authorization.reservation_id = format!("cutover-reservation-{index}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let mut scoped = key.clone();
+        scoped.scope_id = if index == 0 {
+            StableId::new("scope-live").unwrap()
+        } else {
+            stale_scope.clone()
+        };
+        scoped.route_fence = u64::from(index) + 10;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &scoped, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("cutover-grant-{index}");
+        grant.grant.nonce = [index + 101; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        owner
+            .enqueue(100, "model".to_owned(), request, scoped, grant)
+            .unwrap();
+    }
+    let result = owner.poll_and_execute_physical(106).unwrap();
+    assert_eq!(result.outcomes.len(), 2);
+    assert_eq!(result.pending, 0);
+    assert!(result.outcomes.iter().all(|item| {
+        item.result.as_ref().err() == Some(&BatchWorkerErrorV1::StaleRoute)
+    }));
+    assert_eq!(owner.authority.capacity().unwrap().used_nonces, 0);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
+
+
+#[test]
+fn two_exact_route_guards_stay_held_until_physical_backend_completes() {
+    let directory = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[61; 32]);
+    let (model, fixture, base) = fixture_request();
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let active_guards = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = runner_with_guard_probe(
+        &signer,
+        directory.path(),
+        model,
+        2,
+        calls.clone(),
+        Some((active_guards.clone(), 2)),
+    )
+    .with_current_scope_routes(std::sync::Arc::new(CountingCurrentScopeRoutesV1 {
+        active: active_guards.clone(),
+    }));
+    for index in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("held-route-{index}");
+        request.authorization.reservation_id = format!("held-reservation-{index}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let mut key = base.clone();
+        key.scope_id = StableId::new(format!("held-scope-{index}")).unwrap();
+        key.route_fence = 15 + u64::from(index);
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("held-grant-{index}");
+        grant.grant.nonce = [index + 111; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        owner
+            .enqueue(100, "model".to_owned(), request, key, grant)
+            .unwrap();
+    }
+    let completed = owner.poll_and_execute_physical(106).unwrap();
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(completed.outcomes.iter().all(|result| result.result.is_ok()));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    // This is a mock guard-lifetime proof, not a CNS production deployment.
+    assert_eq!(active_guards.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
