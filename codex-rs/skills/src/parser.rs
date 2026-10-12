@@ -40,7 +40,7 @@ pub enum SkillParseError {
     InvalidField { field: &'static str, reason: String },
 }
 
-/// Parses and validates the metadata frontmatter from `SKILL.md` contents.
+/// Enforce strict tags and duplicate identity rejection on untrusted YAML.
 fn safe_yaml_options() -> serde_yaml::Options {
     // Untrusted Skill frontmatter cannot inject custom constructor tags.
     serde_yaml::options! {
@@ -48,6 +48,7 @@ fn safe_yaml_options() -> serde_yaml::Options {
     }
 }
 
+/// Parses and validates the metadata frontmatter from `SKILL.md` contents.
 pub fn parse_skill_frontmatter_metadata(
     contents: &str,
     default_name: impl FnOnce() -> String,
