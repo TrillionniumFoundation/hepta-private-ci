@@ -216,6 +216,14 @@ class SharedStemEngine:
         start_ns, cpu_start = time.perf_counter_ns(), time.process_time_ns()
         if not isinstance(requests, (list, tuple)) or not 1 <= len(requests) <= MAX_ITEMS:
             raise ValueError("batch size must be within 1..32")
+        # Freeze the local execution tuple for this invocation. Without an
+        # owner-supplied fence this is still shadow-only, but a mutable backend
+        # must not poison the old cache namespace after a hot reload.
+        selected = (
+            self.backend.encoder_digest,
+            self.backend.preprocessor_digest,
+            self.backend.runtime_digest,
+        )
         ids = set()
         for r in requests:
             if not isinstance(r, FeatureRequest):
@@ -224,9 +232,7 @@ class SharedStemEngine:
             if r.request_id in ids:
                 raise ValueError("duplicate request_id")
             ids.add(r.request_id)
-            if (r.encoder_digest != self.backend.encoder_digest
-                    or r.preprocessor_digest != self.backend.preprocessor_digest
-                    or r.runtime_digest != self.backend.runtime_digest):
+            if (r.encoder_digest, r.preprocessor_digest, r.runtime_digest) != selected:
                 raise ValueError("unselected or changed model/preprocessor")
         # A single batch may never combine different tenants, generations,
         # revocation frontiers, or representation schemas.
@@ -266,6 +272,12 @@ class SharedStemEngine:
             # Requests that coalesce within this batch share one model result.
             keys, texts = list(missing), list(missing.values())
             outcomes = self.backend.encode_many(texts, requests[0].representation)
+            if (
+                self.backend.encoder_digest,
+                self.backend.preprocessor_digest,
+                self.backend.runtime_digest,
+            ) != selected:
+                raise ValueError("backend identity changed during encoding")
             calls = 1
             batch_widths.append(len(texts))
             if len(outcomes) != len(texts):
@@ -282,6 +294,13 @@ class SharedStemEngine:
             local_results = dict(zip(keys, verified))
         else:
             local_results = {}
+        # Cache-only responses also need a post-preflight identity check.
+        if (
+            self.backend.encoder_digest,
+            self.backend.preprocessor_digest,
+            self.backend.runtime_digest,
+        ) != selected:
+            raise ValueError("backend identity changed during encoding")
         receipts = []
         ephemeral_features = []
         for r in requests:
