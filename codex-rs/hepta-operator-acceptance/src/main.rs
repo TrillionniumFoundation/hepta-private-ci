@@ -14,7 +14,7 @@ use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_v1;
 use codex_hepta_operator_acceptance::verify_and_seal;
 use codex_hepta_operator_acceptance::verify_receipt;
 
-const USAGE: &str = "usage:\n  hepta-operator-acceptance prepare        <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256>\n  hepta-operator-acceptance verify         <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256> <detached-signature>\n  hepta-operator-acceptance verify-receipt <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256>\n  hepta-operator-acceptance cell-split-execution transcript <private-config-json> <externally-pinned-config-sha256>\n  hepta-operator-acceptance target-host-evidence verify <evidence-json|-> <trust-policy-json>\n  hepta-operator-acceptance target-host-evidence ingest <evidence-json|-> <trust-policy-json>\n  hepta-operator-acceptance target-host-evidence store <evidence-json|-> <trust-policy-json> <evidence-store-path>";
+const USAGE: &str = "usage:\n  hepta-operator-acceptance prepare        <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256>\n  hepta-operator-acceptance verify         <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256> <detached-signature>\n  hepta-operator-acceptance verify-receipt <qualification-root> <product-audit-root> <sidecar-root> <allowed-signers> <trust-policy> <externally-pinned-trust-policy-sha256>\n  hepta-operator-acceptance cell-split-execution transcript <private-config-json> <externally-pinned-config-sha256>\n  hepta-operator-acceptance target-host-evidence verify <evidence-json|-> <trust-policy-json> <externally-pinned-policy-sha256>\n  hepta-operator-acceptance target-host-evidence ingest <evidence-json|-> <trust-policy-json> <externally-pinned-policy-sha256>\n  hepta-operator-acceptance target-host-evidence store <evidence-json|-> <trust-policy-json> <externally-pinned-policy-sha256> <evidence-store-path>";
 
 fn main() {
     if let Err(error) = run(std::env::args_os().collect()) {
@@ -144,11 +144,15 @@ fn run_target_host_evidence(arguments: &[OsString]) -> Result<(), String> {
         .and_then(|value| value.to_str())
         .ok_or_else(|| USAGE.to_string())?;
     match command {
-        "verify" | "ingest" if arguments.len() == 5 => {
+        "verify" | "ingest" if arguments.len() == 6 => {
             let evidence = read_evidence_input(&arguments[3])?;
-            let policy = CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file(PathBuf::from(
-                &arguments[4],
-            ))
+            let externally_pinned_policy_sha256 = arguments[5]
+                .to_str()
+                .ok_or_else(|| "target-host trust-policy pin must be UTF-8".to_string())?;
+            let policy = CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(
+                PathBuf::from(&arguments[4]),
+                externally_pinned_policy_sha256,
+            )
             .map_err(|error| error.to_string())?;
             let receipt = CellSplitTargetHostEvidenceStoreV1::verify_bytes(&evidence, &policy)
                 .map_err(|error| error.to_string())?;
@@ -158,16 +162,20 @@ fn run_target_host_evidence(arguments: &[OsString]) -> Result<(), String> {
             );
             Ok(())
         }
-        "store" if arguments.len() == 6 => {
+        "store" if arguments.len() == 7 => {
             let evidence = read_evidence_input(&arguments[3])?;
-            let policy = CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file(PathBuf::from(
-                &arguments[4],
-            ))
+            let externally_pinned_policy_sha256 = arguments[5]
+                .to_str()
+                .ok_or_else(|| "target-host trust-policy pin must be UTF-8".to_string())?;
+            let policy = CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(
+                PathBuf::from(&arguments[4]),
+                externally_pinned_policy_sha256,
+            )
             .map_err(|error| error.to_string())?;
             let envelope = serde_json::from_slice(&evidence)
                 .map_err(|error| format!("target-host evidence JSON decode failed: {error}"))?;
             let receipt = CellSplitTargetHostEvidenceStoreV1::persist(
-                PathBuf::from(&arguments[5]),
+                PathBuf::from(&arguments[6]),
                 &envelope,
                 &policy,
             )
