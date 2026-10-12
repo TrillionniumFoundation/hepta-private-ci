@@ -64,11 +64,11 @@ class WorkflowContextContractTests(unittest.TestCase):
                 self.assertEqual(attrs["repository"], "matrix-org/matrix-rust-sdk")
                 self.assertRegex(attrs.get("ref", ""), r"^[0-9a-f]{40}$")
                 self.assertIn(attrs.get("path"), ("upstream", "upstream-release", "upstream-anymap-commit"))
-        self.assertEqual((own, upstream), (6, 5))
+        self.assertEqual((own, upstream), (7, 7))
         # The original four non-pinned checkouts were also merely printing
         # git rev-parse instead of refusing a wrong SHA.
         self.assertEqual(
-            self.source.count('test "$(git rev-parse HEAD)" = "$HEPTA_SOURCE_SHA"'), 4
+            self.source.count('test "$(git rev-parse HEAD)" = "$HEPTA_SOURCE_SHA"'), 5
         )
 
     def test_missing_exact_head_checkout_is_detected_by_contract(self):
@@ -79,7 +79,7 @@ class WorkflowContextContractTests(unittest.TestCase):
             r" {8}with:\n((?: {10}[a-z-]+:.*\n)+)"
         )
         correct = checkout_pattern.findall(self.source)
-        self.assertEqual(len(correct), 11)
+        self.assertEqual(len(correct), 14)
         tampered = self.source.replace(
             "          ref: ${{ github.event.pull_request.head.sha || github.sha }}\n",
             "",
@@ -179,6 +179,30 @@ class WorkflowContextContractTests(unittest.TestCase):
         self.assertIn("git diff --exit-code", candidate)
         self.assertNotIn("continue-on-error: true", candidate)
         self.assertNotIn('cargo update --manifest-path codex-rs/Cargo.toml', candidate)
+
+    def test_minimal_reviewed_hepta_matrix_compiler_is_non_promoting(self):
+        # Different from the older 278-commit upstream-tip experiment: this
+        # compiles Hepta callers against the exact 0.19.1 source + narrow,
+        # source-reviewed AnyMap3 patch. Original real Cargo/Bazel locks stay.
+        begin = self.source.index("  minimal-hepta-matrix-adapter-compile:")
+        end = self.source.index("  disposable-hepta-matrix-adapter-compile:", begin)
+        candidate = self.source[begin:end]
+        self.assertIn("needs: minimal-anymap-backport-source-probe", candidate)
+        self.assertIn("minimal_hepta_source_stage.py", candidate)
+        self.assertIn("minimal_hepta_graph_gate.py", candidate)
+        self.assertIn("rustup toolchain install 1.96.0", candidate)
+        self.assertIn("cargo +1.96.0 metadata", candidate)
+        self.assertIn("cargo +1.96.0 check --locked", candidate)
+        self.assertIn("-p codex-hepta-matrix-sdk -p codex-hepta-matrixd", candidate)
+        self.assertIn("e2ee_interoperability_verified", candidate)
+        self.assertIn("sqlite_wal_crash_recovery_verified", candidate)
+        self.assertIn('"cargo_deny_verified": False', candidate)
+        self.assertIn('"production_authorized": False', candidate)
+        self.assertIn('git worktree remove --force "$HEPTA_MINIMAL_STAGE"', candidate)
+        self.assertIn("git diff --exit-code", candidate)
+        self.assertNotIn("continue-on-error: true", candidate)
+        self.assertNotIn("cargo update --manifest-path codex-rs/Cargo.toml", candidate)
+        self.assertNotIn("git checkout -b", candidate)
 
     def test_source_root_lockfile_remains_outside_repin_command(self):
         start = self.source.index("  disposable-cargo-resolution-probe:")
