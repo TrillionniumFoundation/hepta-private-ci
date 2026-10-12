@@ -159,7 +159,7 @@ def probe(bank, features, fids, cids, *, repeats=3):
                 "encoder_calls_this_run": 0, "rss_measured": False, "production_authorized": False}
 
 
-def execute(archive, output, *, synthetic_scaling=False, bounded_serving=False):
+def execute(archive, output, *, synthetic_scaling=False, bounded_serving=False, planned_serving=False):
     """Fixed four-Cell protocol; saved parameters/predictions precede scoring."""
     total_cpu, total_wall = time.process_time_ns(), time.perf_counter_ns()
     output = Path(output); output.mkdir(parents=True, exist_ok=False)
@@ -177,7 +177,7 @@ def execute(archive, output, *, synthetic_scaling=False, bounded_serving=False):
         "torch": torch.__version__, "torch_threads": torch.get_num_threads(), "cells": 4, "classes": 4, "rank": 8, "seed": 7347,
         "base_steps": 200, "steps_each_cell": 200, "synthetic_scaling": synthetic_scaling,
         "source_file_sha256": source_hashes, "fresh_encoder_execution": False,
-        "bounded_serving": bounded_serving})
+        "bounded_serving": bounded_serving, "planned_serving": planned_serving})
     try:
         inventory, ids, raw, reference, _ = load_reference(archive)
         rows, raw, config = derive_study(inventory, ids, raw)
@@ -231,6 +231,17 @@ def execute(archive, output, *, synthetic_scaling=False, bounded_serving=False):
             from bounded_multicell_probe import probe_bounded
             with torch.no_grad():
                 write_once(output/"bounded-trained-serving.json", probe_bounded(learned, x, fids, cids))
+        if planned_serving:
+            from cell_execution_plan_study import study_plan
+            cal_ids = [i for i, r in enumerate(rows) if r["split"] == "calibration"][:32]
+            size = min(len(cal_ids), len(x), 32)
+            if size < 1:
+                raise ValueError("calibration inputs required for cost planning")
+            with torch.no_grad():
+                plan_study = study_plan(learned, features[cal_ids[:size]], x[:size],
+                    torch.arange(size).repeat_interleave(4), torch.arange(4).repeat(size),
+                    output/"finite-plan")
+            write_once(output/"finite-plan-summary.json", plan_study)
         if synthetic_scaling:
             for size in (64, 256, 1024, 4096):
                 bank = BasisCellHeads(learned.width, 4, 8, tuple(f"fixture-{i}" for i in range(size)), seed=7347)
@@ -343,6 +354,8 @@ if __name__ == "__main__":
     parser.add_argument("--synthetic-scaling", action="store_true")
     parser.add_argument("--bounded-serving", action="store_true",
                         help="also run common-validation and 1 MiB tiled inference comparison")
+    parser.add_argument("--planned-serving", action="store_true",
+                        help="precommit cost plans using calibration features before measuring test features")
     parser.add_argument("--review-run", type=Path)
     args = parser.parse_args()
     torch.set_num_threads(2)
@@ -351,4 +364,4 @@ if __name__ == "__main__":
         review(args.archive, args.review_run, args.output)
     else:
         execute(args.archive, args.output, synthetic_scaling=args.synthetic_scaling,
-                bounded_serving=args.bounded_serving)
+                bounded_serving=args.bounded_serving, planned_serving=args.planned_serving)
