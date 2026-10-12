@@ -31,6 +31,7 @@ use crate::durable::SIDECAR_LOCK_FILE;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
+use crate::durable::reject_recreated_sidecar_for_owner_history;
 use crate::durable::secure_canonical_file_path;
 use crate::durable::secure_hash;
 use crate::durable::secure_read;
@@ -125,7 +126,19 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
             Err(error) if error.kind() == ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),
         };
+        reject_recreated_sidecar_for_owner_history(
+            &root,
+            initialized_before,
+            &["cas-frontier.json"],
+            &["cas-", "sha256-"],
+        )?;
         let lock = lock_sidecar(&root)?;
+        reject_recreated_sidecar_for_owner_history(
+            &root,
+            initialized_before,
+            &["cas-frontier.json"],
+            &["cas-", "sha256-"],
+        )?;
         let parent = secure_canonical_file_path(parent, "parent artifact")?;
         let child_source = secure_canonical_file_path(child_source, "child source artifact")?;
         if parent == child_source
