@@ -87,14 +87,22 @@ def load_previous(path):
     for key, row in index.items():
         case = cmap[key[0]]
         selected = choose_onehop(case, key[1])
+        bundle, _, _ = evidence(case, selected, key[1])
         reader = row["reader"]
         if (row["status"] != "succeeded" or not isinstance(row["answer"], str)
                 or not row["answer"].strip()
                 or row["selected"] != [d.identity for d in selected]
+                or row["bundle_digest"] != bundle.seal()
+                or reader["bundle_digest"] != bundle.seal()
+                or reader["query_digest"] != digest(asdict(case.question))
+                or reader["delivered_evidence"] != bundle.delivered()
                 or reader["reader_identity"] != READER_IDENTITY
                 or reader["answer_postprocessed"] is not False
                 or reader["trainable_parameters"] != 0
                 or reader["generated_tokens"] not in range(1, 65)
+                or reader["token_limit"] != TOKEN_LIMIT
+                or len(reader["input_ids_digest"]) != 64
+                or len(reader["generated_ids_digest"]) != 64
                 or [d["original_id"] for d in reader["delivered_evidence"]]
                    != row["selected"]):
             raise ValueError("parent Reader/source identity failed")
@@ -222,6 +230,12 @@ def score(rows, registered):
             correct_refusals=sum(s["prescribed_refusal"] for s in ok),
             unsupported_token_outputs=sum(s["unsupported_token_output"] for s in ok),
             conditional_success=sum(s["success"] for s in ok),
+            input_tokens=sum(r.get("reader",{}).get("input_tokens",0) for r in rows
+                             if r["arm"]==arm and r["presentation"]==presentation
+                             and r["status"]=="succeeded"),
+            output_tokens=sum(r.get("reader",{}).get("generated_tokens",0) for r in rows
+                              if r["arm"]==arm and r["presentation"]==presentation
+                              and r["status"]=="succeeded"),
             failed_attempts_unknown=True))
     return scores,groups
 
@@ -238,7 +252,7 @@ def run(output, shared, parent, *, source_commit, count=20):
     output.mkdir(parents=True,exist_ok=False)
     jobs=[(c,a,p) for c in registered for a,p in ALL_ARMS]
     jobs.sort(key=lambda z:(z[0].question.identity,
-        (SOURCE_ARMS.index(z[1])*2 + PRESENTATIONS.index(z[2])+
+        (ALL_ARMS.index((z[1],z[2])) +
          int(digest(z[0].question.identity)[:8],16))%len(ALL_ARMS)))
     plan=dict(schema="hepta.system2.onehop-answer-only-label-ablation.v1",
        source_commit=source_commit, parent_commit=PARENT_COMMIT,
