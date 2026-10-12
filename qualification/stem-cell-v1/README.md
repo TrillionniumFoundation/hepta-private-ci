@@ -151,6 +151,20 @@ single-request fallback. Signed Q24 uses ties-to-even and rejects results
 outside [-8,8]. A constant gate or zero prediction matrix can be encoded as
 a canonical **empty tensor** to avoid counting or allocating dummy weights.
 
+The native CPU backend now groups batched inputs by immutable Head digest and
+traverses each Head's Q24 coefficients across all matching Cell lanes, instead
+of repeatedly calling the single-Cell `Head.infer()` kernel. This is **real
+bounded CPU arithmetic**, not SIMD/GPU acceleration, a fused text Encoder
+forward, or evidence of a production throughput gain. Up to 32 grouped lanes
+are compared against the independent per-Cell numeric reference, including
+compact gate/prediction tensors, mixed Heads, nonsequential lanes, and
+fail-closed malformed inputs. The backend includes the bounded Q48 accumulator
+workspace in its **tracked numeric memory** estimate, not process RSS. Every
+member's receipt carries the same **measured whole-batch wall-clock duration**:
+dividing it by the number of Cells or starting a fresh timer after computing
+would fabricate a latency gain. CI must verify the Rust checks on the exact
+combination SHA before this change can be considered L1 validated.
+
 The 512-feature Neuron V1 limit is a real admission constraint. Native
 profiles do **not** truncate the 768/1152-dimensional outputs produced by
 some Encoder/representation combinations: these require a separately
