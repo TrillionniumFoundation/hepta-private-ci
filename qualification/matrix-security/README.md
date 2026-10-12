@@ -105,13 +105,20 @@ That commit changes only `Cargo.lock`,
 `crates/matrix-sdk/src/event_handler/mod.rs`. Its source-only hunk set
 is much narrower than blindly upgrading to upstream's moving Git tip.
 
-`minimal_backport_probe.py` verifies exact release and change commit SHAs,
-checks that upstream changed *only those three files*, extracts only the
-two source hunks, then runs `git apply --check` against the **unaltered**
-published-release checkout. It does not cherry-pick, execute external
-code, change any Cargo dependency, or declare the patched tree trustworthy.
-The job fails if the patch cannot apply, and publishes the source patch SHA-256
-as research evidence; the independent hard security gate remains red.
+`minimal_backport_probe.py` verifies exact release and change commit SHAs
+and checks that upstream changed *only those three files*. The upstream raw
+manifest hunk has later dependency context that the signed 0.19.1 release
+does not have (including `assert_matches2`); the raw hunk is therefore
+evaluated **separately** and its failure cannot justify importing 189 or 278
+unrelated upstream commits. The probe extracts exactly **three AnyMap
+substitution blocks** from the two source files, rejects any additional source
+mutation, translates only those substitutions onto exact release bytes, and
+runs `git apply --check` against the **unaltered** release. Its report binds
+both original and release-specific patch SHA-256 values and both check results.
+It does not cherry-pick, execute external code, change any Cargo dependency,
+or declare the patched tree trustworthy. The job fails if the minimal
+release-specific patch cannot apply; the independent hard security gate
+remains red.
 
 ```sh
 python3 qualification/matrix-security/minimal_backport_probe.py \
