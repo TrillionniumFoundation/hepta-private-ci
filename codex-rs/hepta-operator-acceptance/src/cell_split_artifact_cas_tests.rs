@@ -172,9 +172,10 @@ fn create_only_cas_has_real_bytes_and_fails_closed_when_final_use_denied() {
         b"real child artifact bytes"
     );
     assert_eq!(owner.current_sequence().expect("durable frontier"), 1);
-    owner
-        .commit_once(&request)
-        .expect("exact idempotent replay");
+    assert!(matches!(
+        owner.commit_once(&request),
+        Err(CellSplitArtifactCasErrorV1::Ambiguous)
+    ));
     assert_eq!(
         owner.read_committed(&request).unwrap(),
         Some(receipt.clone())
