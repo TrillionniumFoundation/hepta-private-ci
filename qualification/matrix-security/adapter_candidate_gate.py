@@ -84,10 +84,10 @@ def audit(metadata, original_manifest, staged_manifest):
     try:
         original_text = original_manifest.decode("utf-8")
         expected = original_text.replace(SOURCE_SPEC, CANDIDATE_SPEC, 1)
-        expected = expected.replace(SQLITE_PATCH_SPEC + "\\n", "", 1)
+        expected = expected.replace(SQLITE_PATCH_SPEC + "\n", "", 1)
         if (
             original_text.count(SOURCE_SPEC) != 1
-            or original_text.count(SQLITE_PATCH_SPEC + "\\n") != 1
+            or original_text.count(SQLITE_PATCH_SPEC + "\n") != 1
             or expected.encode("utf-8") != staged_manifest
         ):
             errors.append("DISPOSABLE_WORKSPACE_MANIFEST_UNAUTHORIZED_DRIFT")
