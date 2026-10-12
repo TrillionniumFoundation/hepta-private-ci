@@ -118,6 +118,24 @@ pub fn cell_split_observer_join_payload_v1(
     let route_event = target.events.iter().find(|event| {
         event.event_kind == CellSplitTargetHostEventKindV1::RouteCutover
     }).ok_or(CellSplitObserverJoinErrorV1::Invalid("missing cutover event"))?;
+
+    // A shared split ID and a correctly signed pair are insufficient: both
+    // host lifecycle events must identify the exact independently signed
+    // operations that the four-effect coordinator actually committed. Without
+    // these equalities two unrelated, individually valid histories could be
+    // jointly notarized and incorrectly treated as one execution.
+    let original_artifact = &transcript.receipts[0];
+    let original_cns = &transcript.receipts[2];
+    if artifact_event.operation_id != original_artifact.intent.idempotency_key
+        || artifact_event.receipt_digest != original_artifact.receipt_digest
+        || route_event.operation_id != original_cns.intent.idempotency_key
+        || route_event.receipt_digest != original_cns.receipt_digest
+        || artifact_event.sequence >= route_event.sequence
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "host lifecycle is not bound to original Artifact CAS and CNS owner receipts",
+        ));
+    }
     Ok(CellSplitObserverJoinPayloadV1 {
         schema: CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1.into(),
         split_id: plan.split_id.clone(),
