@@ -14,6 +14,7 @@ from pathlib import Path
 import sys
 import tomllib
 
+from staged_resolution_probe import CANDIDATE_SPEC, SOURCE_SPEC, SQLITE_PATCH_SPEC
 from upstream_source_probe import UPSTREAM_GIT_SHA
 
 GIT_REMOTE = "https://github.com/matrix-org/matrix-rust-sdk"
@@ -75,6 +76,23 @@ def audit(metadata, original_manifest, staged_manifest):
             errors.append("MATRIX_SDK_NOT_STAGED")
     except (KeyError, TypeError, ValueError, UnicodeError, tomllib.TOMLDecodeError):
         errors.append("INVALID_OR_UNFROZEN_CARGO_MANIFEST")
+
+    # The candidate may change ONLY the pinned SDK entry and the obsolete
+    # SQLite override in a detached worktree. Reject any extra dependency,
+    # feature, patch, toolchain, registry or workspace modification even if the
+    # final metadata happens to appear advisory-free.
+    try:
+        original_text = original_manifest.decode("utf-8")
+        expected = original_text.replace(SOURCE_SPEC, CANDIDATE_SPEC, 1)
+        expected = expected.replace(SQLITE_PATCH_SPEC + "\\n", "", 1)
+        if (
+            original_text.count(SOURCE_SPEC) != 1
+            or original_text.count(SQLITE_PATCH_SPEC + "\\n") != 1
+            or expected.encode("utf-8") != staged_manifest
+        ):
+            errors.append("DISPOSABLE_WORKSPACE_MANIFEST_UNAUTHORIZED_DRIFT")
+    except UnicodeError:
+        errors.append("DISPOSABLE_WORKSPACE_MANIFEST_UNAUTHORIZED_DRIFT")
 
     packages = metadata.get("packages", []) if isinstance(metadata, dict) else []
     resolved = metadata.get("resolve") if isinstance(metadata, dict) else None
