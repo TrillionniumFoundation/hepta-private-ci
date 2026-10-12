@@ -49,6 +49,10 @@ class StagingTests(unittest.TestCase):
         self.assertEqual(result['sqlite_arm'],'audit_integrated_secure_lock')
         self.assertEqual(result['affected_workspace_files'],[])
         self.assertTrue(result['integrated_lock_read_only'])
+        self.assertIsNone(result['candidate_git_sha'])
+        self.assertEqual(result['integrated_local_sdk_source_path'],
+                         'third_party/matrix-sdk-0.19.1')
+        self.assertEqual(len(result['unchanged_lock_sha256']),64)
         self.assertFalse(result['cargo_graph_resolution_passed'])
         self.assertFalse(result['cargo_deny_passed'])
         self.assertFalse(result['production_authorized'])
