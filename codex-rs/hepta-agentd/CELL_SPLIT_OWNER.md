@@ -8,10 +8,16 @@ implementation of product effects. It cannot perform a real split until a
 separately reviewed product composer supplies ALL live adapters below.
 
 A CellSplitPlanV1 is immutable and binds split/scope/cell ids, the exact parent
-and successor generations, the two artifacts, migration, independently selected
-evaluation, and an exact Final-use binding. The distinct
+and successor generations, the two immutable artifact IDs and their content
+digests, migration, independently selected evaluation, and an exact Final-use
+binding. The artifact IDs are NOT Cell IDs or candidate IDs. The distinct
 `selected_candidate_id` is bound to the plan and its operation keys; a new
 child Cell ID must never be inferred to be the evaluator's candidate ID.
+`verify_current_child_artifact` consumes the real learning-artifacts
+`RevalidatingCandidate` and an owner-issued `VerifiedCurrentRegistryViewV1`;
+it checks the separately pinned child artifact ID, parent artifact lineage,
+generation and actual loaded content digest against an authenticated current
+registry. The function grants neither CAS write nor promotion authority.
 `verify_selected_candidate` checks the existing opaque
 `VerifiedSelfEvolutionSelectionV1` (signed evaluator, observer, selector and
 future-window validation) against BOTH identities, generations, artifacts and
