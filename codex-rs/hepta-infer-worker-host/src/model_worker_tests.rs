@@ -92,6 +92,9 @@ impl NeuronFeatureDriver for Driver {
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
         self.neuron_calls += 1;
+        if self.panic_run {
+            panic!("physical Neuron driver panicked after invocation began");
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -812,5 +815,38 @@ fn malformed_post_driver_terminal_receipt_quarantines_worker_generation() {
         worker.run_neuron_features_receipt(100, "model.1", next),
         Err(Error::WorkerQuarantined)
     ));
+    assert_eq!(worker.driver.neuron_calls, 1);
+}
+
+#[test]
+fn typed_neuron_driver_panic_quarantines_even_when_host_catches_unwind() {
+    use std::panic::AssertUnwindSafe;
+    use std::panic::catch_unwind;
+
+    let driver = Driver {
+        panic_run: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.typed-panic".to_owned(), 3, grant(), driver).unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let initial = neuron_feature_request();
+    let panicked = catch_unwind(AssertUnwindSafe(|| {
+        let _ = worker.run_neuron_features(100, "model.1", initial);
+    }));
+    assert!(panicked.is_err(), "fixture must simulate physical driver panic");
+    assert_eq!(worker.driver.neuron_calls, 1);
+    assert!(worker.is_quarantined(), "caught panic must not reopen the backend");
+
+    // A separately issued, syntactically valid reservation must not reach
+    // the same possibly-mutated model/device state after this panic.
+    let mut fresh = neuron_feature_request();
+    fresh.authorization.request_id = "request.typed-after-panic".to_owned();
+    fresh.authorization.reservation_id = "reservation.typed-after-panic".to_owned();
+    worker.driver.panic_run = false;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", fresh),
+        Err(Error::WorkerQuarantined)
+    );
     assert_eq!(worker.driver.neuron_calls, 1);
 }

@@ -815,6 +815,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
+        // A typed physical driver can panic or abort after mutating device
+        // state. Fence the entire Worker BEFORE invoking it, just like the
+        // generic run path; no caught unwind may admit a second reservation.
+        self.quarantined = true;
         let observed = self.driver.run_neuron_features(&loaded.handle, &request);
         self.active_requests
             .remove(&request.authorization.request_id);
@@ -854,6 +858,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         } else {
             ExecutionStatus::Failed
         };
+        // Only explicitly observed and structurally checked terminal results
+        // may release the pre-driver quarantine. Uncertain outcomes and any
+        // post-driver error above leave the Worker quarantined for this generation.
+        if observed.terminal_observed {
+            self.quarantined = false;
+        }
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,
