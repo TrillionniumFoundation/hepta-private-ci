@@ -670,3 +670,45 @@ This makes false feature-digest claims and partially initialized local
 weights explicit errors, without manufacturing model-learning gains or
 production authority. Offline tests use intentionally synthetic file bytes
 and mock model weights, **not** a true Laya/ModernBERT/Jina benchmark.
+
+
+## Paired no-change vs candidate native-trace diagnostics (shadow only)
+
+`scale_pair.py` is an **unsigned, read-only** paired analysis layer over
+`scale.py trace_report` V2. It does **not** run an Encoder or authenticate
+host timing, independent outcome/utility, revocation, WAL fsync, or a worker.
+Provide one **frozen** workload, actual trace and host run manifest **per arm**
+(`no_change` and `candidate`). The workload may differ only in
+`model_digest`; request IDs, Cell/task/scope/generation, arrival plan and
+activity/repetition scenario must be exact matches. The run manifests must
+pin the same hardware, executable, dataset and execution profile, with
+separate run IDs, and declare `capture_kind=native_owner_trace_unattested`.
+
+```sh
+python3 qualification/stem-cell-v1/scale_pair.py \\
+  --no-change-workload /approved/no-change-workload.jsonl \\
+  --no-change-trace /approved/no-change-native-trace.jsonl \\
+  --no-change-manifest /approved/no-change-run.json \\
+  --candidate-workload /approved/candidate-workload.jsonl \\
+  --candidate-trace /approved/candidate-native-trace.jsonl \\
+  --candidate-manifest /approved/candidate-run.json \\
+  --output /scratch/stem-scale-paired-diagnostic.json
+```
+
+The comparison recomputes strict V2 trace consistency for both arms, rejects
+any failed/rejected/missing request instead of hiding an apparent throughput
+gain, reports full e2e p50/p95/p99, request-attributed CPU, reported peak RSS,
+WAL/recovery diagnostics and self-declared throughput. The 2,000-replicate
+paired bootstrap clusters by **exact scope/generation/task-family/input key**;
+repeated inputs cannot masquerade as independent learning or performance
+observations. Fewer than 30 groups produce no confidence interval.
+
+The tool's `hardware_observer_authenticated`, `native_execution_verified`
+(equivalently `independently_verified_native_execution`),
+`wal_and_crash_recovery_independently_verified`, `production_authorized`
+and `shadow_eligible` are **always false**. Never interpret a positive
+p99 difference or bootstrap LCB as permission to promote a Cell. Repeat the
+full 64/256/1024/4096 Cell factorial on permitted target hardware with
+independent signed model/host execution, proper restart evidence, frozen
+no-change semantics and separate future-window NDU evaluation before considering
+production admission.
