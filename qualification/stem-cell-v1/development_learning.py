@@ -66,13 +66,16 @@ def validate_rows(rows, training_labels, *, classes):
 
 
 def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, seed=19,
-                        parameter_budget=16384, head_batch_size=1):
+                        parameter_budget=16384, head_batch_size=1,
+                        head_kind="linear", head_hidden_size=8):
     """Actual shared forwards and per-Cell SGD; no heldout gold enters this API."""
     cells = validate_rows(rows, training_labels, classes=classes)
     if (not isinstance(engine, SharedStemEngine) or type(steps) is not int or not 1 <= steps <= 1000
             or type(seed) is not int or not 0 <= seed < 2**31
             or type(parameter_budget) is not int or not 1 <= parameter_budget <= 262144
-            or type(head_batch_size) is not int or not 1 <= head_batch_size <= 32):
+            or type(head_batch_size) is not int or not 1 <= head_batch_size <= 32
+            or type(head_kind) is not str or head_kind not in ("linear", "swiglu")
+            or type(head_hidden_size) is not int or not 1 <= head_hidden_size <= 256):
         raise ValueError("invalid trial envelope")
     # Preflight against the selected backend before any work, including later batches.
     for row in rows:
@@ -91,7 +94,13 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
         observations.append(obs)
         features.extend(batch)
     widths = {len(f.values) for f in features}
-    if len(widths) != 1 or (next(iter(widths)) + 1) * classes > parameter_budget:
+    if len(widths) != 1:
+        raise ValueError("heterogeneous feature widths")
+    width = next(iter(widths))
+    count_per_head = ((width + 1) * classes if head_kind == "linear" else
+                      2 * (width + 1) * head_hidden_size + (head_hidden_size + 1) * classes)
+    if (count_per_head > parameter_budget or (head_kind == "swiglu" and width > 512)
+            or (head_batch_size > 1 and count_per_head * len(cells) > 4_194_304)):
         raise ValueError("feature width or physical Head budget mismatch")
     # Materialize repeated in-scope input features only once in the grouped path.
     # Raw feature objects remain held above and are NOT counted as tensor bytes.
@@ -115,7 +124,11 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
     for index, cell in enumerate(cells):
         with torch.random.fork_rng(devices=[]):
             torch.manual_seed(seed + index)
-            initials.append(nn.Linear(x.shape[1], classes))
+            if head_kind == "linear":
+                initials.append(nn.Linear(x.shape[1], classes))
+            else:
+                from development_head_training import SwiGLUCellHead
+                initials.append(SwiGLUCellHead(x.shape[1], head_hidden_size, classes))
         train = [i for i, r in enumerate(rows) if r.request.cell_id == cell and r.split == 'train']
         heldout_indices.append([i for i, r in enumerate(rows)
                                 if r.request.cell_id == cell and r.split == 'heldout'])
@@ -124,8 +137,9 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
                                          dtype=torch.long))
     grouped_training = None
     if head_batch_size > 1:
-        from development_head_training import fit_linear_cells
-        candidates, grouped_training = fit_linear_cells(
+        from development_head_training import fit_gated_cells, fit_linear_cells
+        fitter = fit_linear_cells if head_kind == "linear" else fit_gated_cells
+        candidates, grouped_training = fitter(
             tuple(initials), x, tuple(training_indices), tuple(training_gold),
             seeds=tuple(seed+i for i in range(len(cells))), steps=steps, group_size=head_batch_size)
     for index, cell in enumerate(cells):
@@ -158,6 +172,7 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
             "encoder_calls": sum(o.backend_calls for o in observations),
             "encoder_batch_widths": [w for o in observations for w in o.backend_batch_widths],
             "head_batch_size": head_batch_size, "grouped_training": grouped_training,
+            "head_kind": head_kind, "head_hidden_size": head_hidden_size if head_kind == "swiglu" else None,
             "logical_feature_rows": len(rows), "materialized_feature_rows": len(x),
             "materialized_feature_tensor_bytes": x.numel() * x.element_size(),
             "simulated_encoder": any(o.simulated for o in observations),
@@ -203,7 +218,11 @@ def run_local(args):
             or type(args.parameter_budget) is not int or not 1 <= args.parameter_budget <= 262144
             or type(args.max_tokens) is not int or not 1 <= args.max_tokens <= 8192
             or type(getattr(args, 'head_batch_size', 1)) is not int
-            or not 1 <= getattr(args, 'head_batch_size', 1) <= 32):
+            or not 1 <= getattr(args, 'head_batch_size', 1) <= 32
+            or type(getattr(args, 'head_kind', 'linear')) is not str
+            or getattr(args, 'head_kind', 'linear') not in ('linear', 'swiglu')
+            or type(getattr(args, 'head_hidden_size', 8)) is not int
+            or not 1 <= getattr(args, 'head_hidden_size', 8) <= 256):
         raise ValueError("invalid pre-load resource envelope")
     r = rows[0].request
     if r.encoder_digest != args.snapshot_sha256:
@@ -220,7 +239,9 @@ def run_local(args):
     load = load_clock.finish()
     report = run_shared_learning(SharedStemEngine(backend), rows, labels, classes=args.classes,
                                  steps=args.steps, parameter_budget=args.parameter_budget,
-                                 head_batch_size=getattr(args, 'head_batch_size', 1))
+                                 head_batch_size=getattr(args, 'head_batch_size', 1),
+                                 head_kind=getattr(args, 'head_kind', 'linear'),
+                                 head_hidden_size=getattr(args, 'head_hidden_size', 8))
     # Persistent source changes must be detected before publishing predictions.
     read_pinned_json(args.rows, args.rows_sha256)
     read_pinned_json(args.labels, args.labels_sha256)
@@ -248,4 +269,6 @@ if __name__ == '__main__':
     parser.add_argument('--parameter-budget', type=int, default=16384)
     parser.add_argument('--max-tokens', type=int, default=512)
     parser.add_argument('--head-batch-size', type=int, default=1)
+    parser.add_argument('--head-kind', choices=('linear', 'swiglu'), default='linear')
+    parser.add_argument('--head-hidden-size', type=int, default=8)
     run_local(parser.parse_args())
