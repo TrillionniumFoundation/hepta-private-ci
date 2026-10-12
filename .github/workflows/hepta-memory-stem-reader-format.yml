@@ -1,0 +1,109 @@
+name: MemoryCell strict Stem Reader user-format control
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_reader_format_ablation.py"
+      - "scripts/memory_cell/stem_reader_format_ablation_runner.py"
+      - "scripts/memory_cell/test_stem_reader_format_ablation.py"
+      - ".github/workflows/hepta-memory-stem-reader-format.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-reader-format-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  matched-frozen-reader-layout:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fixed, no-model protocol regressions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-flat-control
+          git rev-parse HEAD > /tmp/stem-flat-control/auditor-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-flat-control/auditor-tree.txt
+          python3 -m unittest -v test_stem_reader_format_ablation 2>&1 | tee /tmp/stem-flat-control/tests.log
+          python3 -m compileall -q scripts/memory_cell/stem_reader_format_ablation.py scripts/memory_cell/stem_reader_format_ablation_runner.py
+      - name: Pin archived STRICT native source and all internal manifest bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11741082077/zip > /tmp/stem-strict-1578121.zip
+          printf '%s  %s\n' 65fe5e99c90a10dba916598dc2a83f164ef6275d7cb6c783aa6edbe3722d2563 /tmp/stem-strict-1578121.zip | sha256sum -c -
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-native-staged-inputs
+          run-id: 37862780268
+          github-token: ${{ github.token }}
+          path: /tmp
+      - name: Restore pinned existing Reader and datasets without scripts or symlinks
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import tarfile
+          from pathlib import PurePosixPath
+          with tarfile.open('/tmp/memory-inputs.tar.gz', 'r:gz') as archive:
+              members = archive.getmembers()
+              if len(members) > 10000 or sum(m.size for m in members) > 2*1024**3:
+                  raise ValueError('unbounded staged model/data inputs')
+              for item in members:
+                  path = PurePosixPath(item.name)
+                  if (path.is_absolute() or '..' in path.parts or not path.parts
+                      or path.parts[0] != 'memory-inputs'
+                      or not (item.isfile() or item.isdir())):
+                      raise ValueError('noncanonical staged model or native data')
+              archive.extractall('/tmp', members=members, filter='data')
+          PY
+      - name: Fixed CPU Reader environment
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/stem-flat-python
+          /tmp/stem-flat-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/stem-flat-python/bin/pip install -r scripts/memory_cell/requirements.txt ruff==0.15.8
+          /tmp/stem-flat-python/bin/pip freeze > /tmp/stem-flat-control/pip-freeze.txt
+          /tmp/stem-flat-python/bin/ruff check --select F,E9 scripts/memory_cell/stem_reader_format_ablation.py scripts/memory_cell/stem_reader_format_ablation_runner.py scripts/memory_cell/test_stem_reader_format_ablation.py
+      - name: Run identical frozen Reader with FLAT user evidence on 32 pinned questions
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/stem-flat-control/resources.txt \
+            /tmp/stem-flat-python/bin/python scripts/memory_cell/stem_reader_format_ablation_runner.py \
+              /tmp/memory-inputs \
+              /tmp/stem-strict-1578121.zip \
+              /tmp/stem-flat-control/experiment \
+            2>&1 | tee /tmp/stem-flat-control/execution.log
+      - name: Preserve original source, every failure, and exact output checksums
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-flat-control/source
+          cp scripts/memory_cell/stem_reader_format_ablation.py /tmp/stem-flat-control/source/
+          cp scripts/memory_cell/stem_reader_format_ablation_runner.py /tmp/stem-flat-control/source/
+          cp scripts/memory_cell/test_stem_reader_format_ablation.py /tmp/stem-flat-control/source/
+          cp scripts/memory_cell/selector_answering.py /tmp/stem-flat-control/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-flat-control/source/
+          cp .github/workflows/hepta-memory-stem-reader-format.yml /tmp/stem-flat-control/source/
+          (cd /tmp/stem-flat-control && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-reader-format-32
+          path: /tmp/stem-flat-control
+          if-no-files-found: error

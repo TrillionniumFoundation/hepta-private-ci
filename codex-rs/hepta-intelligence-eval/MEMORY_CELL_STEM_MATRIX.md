@@ -1340,3 +1340,45 @@ input byte receipts, machine-readable gate verdict, logs, and SHA256SUMS
 in an all-failure-preserving artifact. A green workflow means only that
 the pinned historical evidence was reconciled, **not** that the product
 was scientifically or production qualified.
+
+## Frozen Reader user-format experiment — strict, independently metered (Oct 12)
+
+The completed strict-as-of native Stem source commit
+`1578121eb24cbb3d50fbe0ae27f2d48f870bb364` (Git tree
+`b40ee7f016d7830d59c45261a0dcf642800c2ec0`), run `38228733068`,
+produced **576/576 successful policy executions** and **1,233 successful
+Python regressions**, but **no demonstrated learned-vs-frozen task or
+citation advantage**. Its pinned ZIP `11741082077` has external SHA-256
+`65fe5e99c90a10dba916598dc2a83f164ef6275d7cb6c783aa6edbe3722d2563`.
+The fixed Reader emitted **no structural [E1] citations** on its original
+final-checkpoint frozen answers. Independent review of the raw 32 frozen
+answers found **13** outputs resembling the serialized `{"question": ...}`
+input rather than a concise response; **8/32** no-evidence outputs also
+look serialized. This diagnostic is *not* a model-supported claim that
+JSON formatting alone caused the low QA F1.
+
+`stem_reader_format_ablation.py`, its CPU runner, fixtures and the
+standalone `hepta-memory-stem-reader-format.yml` workflow now register
+one **new**, bounded experiment: take precisely those **32 original final
+frozen-rerank questions and byte-identical delivered source windows**,
+and compare the original pinned JSON user message to one predetermined
+natural-language flat user layout. Only the user text layout changes.
+The system instruction, Reader model/tokenizer/inventory, greedy decode
+and `max_new_tokens=96` are externally bound to the old execution.
+No Head, Encoder, retrieval setting, original six-arm answer, model
+parameter or original cached evidence is changed. A new Reader instance
+and all 32 new model generations are charged to this format-only
+diagnostic, not to the learned arms.
+
+Every input binding, status and failure is retained before benchmark
+gold answers are opened. Post-generation review reports matched
+diagnostic token-F1, prompt-like JSON echo counts and emitted structural
+citation markers **with the original 8-question phase denominators and
+worst-case failure bounds**. An answer can echo fewer JSON delimiters
+without becoming correct or faithfully supported. The reference model
+still needs independent sufficiency and entailment review; no prompt
+variant is automatically promoted or selected based on held-out labels.
+The experiment is explicitly marked
+`format_change_not_a_memory_learning_gain=true`,
+`semantic_citation_precision=null`, and
+`production_accepted=false`.
