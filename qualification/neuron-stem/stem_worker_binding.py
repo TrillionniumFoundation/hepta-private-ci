@@ -87,6 +87,57 @@ def scoped_worker_input_digest_v1(source):
     ).hexdigest()
 
 
+DOMAIN_SIGNED_WORKER_V2 = b"hepta.infer-worker.stem-final-use-request.v2"
+
+
+def signed_worker_request_digest_v2(worker_id, authorization, grant, ref_digest):
+    """Exact research mirror of the Rust V2 signed request SHA-256 preimage.
+
+    This is NOT an Ed25519 verifier, issuer, local authority, CAS receipt,
+    or permission to enter the production Worker. Rust FinalUseAuthority and
+    the independently protected issuer retain all actual signing authority.
+    """
+    if not isinstance(authorization, dict) or not isinstance(grant, dict):
+        raise ValueError("signed Worker binding requires explicit fields")
+    raw = bytearray(DOMAIN_SIGNED_WORKER_V2)
+    fields = (
+        _stable_id(worker_id),
+        _stable_id(authorization["request_id"]),
+        _stable_id(authorization["reservation_id"]),
+        authorization["model_digest"].encode("ascii"),
+        authorization["payload_digest"].encode("ascii"),
+        authorization["lease_payload_digest"].encode("ascii"),
+        authorization["reservation_model_digest"].encode("ascii"),
+        _stable_id(grant["grant_id"]),
+        grant["semantic_digest"].encode("ascii"),
+    )
+    for value in (
+        authorization["model_digest"], authorization["payload_digest"],
+        authorization["lease_payload_digest"], authorization["reservation_model_digest"],
+        grant["semantic_digest"],
+    ):
+        _digest(value)
+    for value in fields:
+        if len(value) > (1 << 32) - 1:
+            raise ValueError("oversized signed request field")
+        raw.extend(len(value).to_bytes(4, "big"))
+        raw.extend(value)
+    for name in ("maximum_tokens", "reservation_maximum_tokens"):
+        value = authorization[name]
+        if type(value) is not int or not 0 <= value < (1 << 32):
+            raise ValueError("invalid Rust u32 token ceiling")
+        raw.extend(value.to_bytes(4, "big"))
+    raw.extend(_u64(authorization["deadline_ms"]))
+    raw.extend(_u64(grant["authority_epoch"], positive=True))
+    raw.extend(_u64(grant["generation"], positive=True))
+    raw.extend(_u64(grant["expires_at_ms"]))
+    if type(authorization["cancelled"]) is not bool:
+        raise ValueError("cancelled must be an explicit bool")
+    raw.append(int(authorization["cancelled"]))
+    raw.extend(_digest(ref_digest))
+    return hashlib.sha256(raw).hexdigest()
+
+
 def qualification_only_receipt(source):
     """Produce no approval: copyable bytes remain untrusted evidence claims."""
     return {
