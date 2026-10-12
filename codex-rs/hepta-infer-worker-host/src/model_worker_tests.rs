@@ -573,3 +573,32 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
 }
+
+#[test]
+fn oversized_physical_single_feature_transient_quarantines_generation() {
+    let mut constrained_grant = grant();
+    // The loaded model retains 1024 bytes and its physical feature
+    // invocation reports another 2048 bytes of transient allocation.
+    constrained_grant.maximum_memory_bytes = 3_071;
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.feature-peak".to_string(),
+        3,
+        constrained_grant,
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCapacity)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.feature_calls, 1);
+}

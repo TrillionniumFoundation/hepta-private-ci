@@ -562,6 +562,21 @@ pub trait NeuronFeatureDriver: ModelDriver {
     ) -> Result<DriverNeuronFeatureObservation, Error>;
 }
 
+/// Fail closed when driver-reported transient tensors exceed the worker grant.
+/// This is an observation guard, not a measured OS RSS or independent
+/// physical-resource authority.
+fn validate_neuron_memory_budget(
+    resident_bytes: u64,
+    maximum_memory_bytes: u64,
+    observed: &DriverNeuronFeatureObservation,
+) -> Result<(), Error> {
+    let baseline = resident_bytes.max(observed.observed_memory_bytes);
+    match baseline.checked_add(observed.transient_allocation_bytes) {
+        Some(peak) if peak <= maximum_memory_bytes => Ok(()),
+        _ => Err(Error::ModelCapacity),
+    }
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     pub fn run_neuron_features(
         &mut self,
@@ -583,6 +598,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        let resident_bytes = self
+            .models
+            .values()
+            .try_fold(0_u64, |total, loaded| {
+                total.checked_add(loaded.handle.observed_memory_bytes)
+            })
+            .ok_or(Error::ArithmeticOverflow)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
@@ -646,9 +668,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if !observed.terminal_observed {
             self.poisoned = true;
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        if let Err(error) = validate_neuron_memory_budget(
+            resident_bytes,
+            self.grant.maximum_memory_bytes,
+            &observed,
+        ) {
             self.poisoned = true;
-            return Err(Error::ModelCapacity);
+            return Err(error);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate

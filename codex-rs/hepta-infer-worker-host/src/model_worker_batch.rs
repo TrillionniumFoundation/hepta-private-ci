@@ -205,8 +205,15 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 return Err(Error::PayloadMismatch);
             }
             let observed = batch_item.feature;
-            if observed.observed_memory_bytes > self.grant.maximum_memory_bytes
-                || observed.encoder_digest != request.encoder_digest
+            if let Err(error) = super::validate_neuron_memory_budget(
+                resident_bytes,
+                self.grant.maximum_memory_bytes,
+                &observed,
+            ) {
+                self.poisoned = true;
+                return Err(error);
+            }
+            if observed.encoder_digest != request.encoder_digest
                 || observed.head_digest != request.head_digest
             {
                 self.poisoned = true;
@@ -671,4 +678,26 @@ mod tests {
         );
         assert_eq!(worker.driver.batches, 1);
     }
+
+    #[test]
+    fn oversized_physical_batch_transient_quarantines_generation() {
+        // Preflight reference tensors fit, but the driver reports a larger
+        // resident-plus-transient peak after physical execution.
+        let mut worker = worker_with_memory_budget(BatchMock::default(), 2048 + 128 - 1);
+        let requests = vec![feature("request.1", 'b'), feature("request.2", 'c')];
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", requests.clone()),
+            Err(Error::ModelCapacity)
+        );
+        assert!(worker.poisoned);
+        assert_eq!(worker.driver.batches, 1);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.v2"].active_requests, 0);
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", requests),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(worker.driver.batches, 1);
+    }
+
 }
