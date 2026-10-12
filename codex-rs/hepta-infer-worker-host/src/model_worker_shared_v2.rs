@@ -230,7 +230,12 @@ fn minimum_batch_tensor_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> R
                 .and_then(|count| count.checked_mul(8))
                 .ok_or(Error::ArithmeticOverflow)?;
             let gated = input_width.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
-            Ok::<_, Error>((total.checked_add(outputs).ok_or(Error::ArithmeticOverflow)?, peak.max(gated)))
+            Ok::<_, Error>((
+                total
+                    .checked_add(outputs)
+                    .ok_or(Error::ArithmeticOverflow)?,
+                peak.max(gated),
+            ))
         })?;
     output_bytes
         .checked_add(peak_gated_bytes)
