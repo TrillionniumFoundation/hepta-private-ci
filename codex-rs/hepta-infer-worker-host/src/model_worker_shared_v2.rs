@@ -143,13 +143,7 @@ fn validate_item(
     authority_epoch: u64,
     manifest: &super::ModelManifest,
 ) -> Result<(), Error> {
-    validate_item_without_content_hash(
-        req,
-        now_ms,
-        worker_generation,
-        authority_epoch,
-        manifest,
-    )?;
+    validate_item_without_content_hash(req, now_ms, worker_generation, authority_epoch, manifest)?;
     if req.snapshot.content_digest != feature_content_digest_v2(&req.snapshot.features_q24) {
         return Err(Error::FeatureContract);
     }
