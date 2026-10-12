@@ -97,7 +97,10 @@ def inspect(original_lock, resolved_lock, metadata, *, source_sha, pinned_upstre
         if version3(original["version"]) != OLD[name]:
             raise ValueError(f"unexpected original {name} pin")
         new = version3(selected["version"])
-        if new < REQUIRED[name] or new[:2] != REQUIRED[name][:2]:
+        # async-trait 0.x only accepts the 0.1 family; bytes 1.x accepts
+        # later compatible minor releases, never a new major version.
+        compatible = new[:2] == (0, 1) if name == "async-trait" else new[0] == 1
+        if new < REQUIRED[name] or not compatible:
             raise ValueError(f"required {name} version unresolved")
         if selected.get("source") != "registry+https://github.com/rust-lang/crates.io-index":
             raise ValueError(f"untrusted {name} source")
