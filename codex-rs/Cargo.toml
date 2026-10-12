@@ -490,7 +490,11 @@ serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
 serde_with = "3.17"
-serde_yaml = "0.9"
+# The legacy serde_yaml package brings RUSTSEC-2024-0449 (unsafe-libyaml).
+# Preserve the import name only for a bounded API migration, but switch its
+# actual crate to a Rust-only parser. This MUST be tested against the frozen
+# YAML frontmatter corpus and reflected in Cargo.lock before qualification.
+serde_yaml = { package = "serde-saphyr", version = "=1.3.0" }
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
