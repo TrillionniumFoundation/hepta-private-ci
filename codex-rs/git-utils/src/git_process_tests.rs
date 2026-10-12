@@ -95,7 +95,17 @@ Start-Sleep -Seconds 60
         }
     })
     .await
-    .expect("wait for Git wrapper child readiness");
+    .unwrap_or_else(|error| {
+        let wrapper_id = wrapper.id();
+        let wrapper_status = wrapper
+            .try_wait()
+            .map_err(|error| (error.kind(), error.raw_os_error()));
+        // Do not drain inherited pipes here: Windows pipe reads can outlive an
+        // async timeout and block runtime shutdown if a descendant retains them.
+        panic!(
+            "wait for Git wrapper child readiness: {error}; wrapper_id={wrapper_id:?}; wrapper_status={wrapper_status:?}"
+        );
+    });
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");
