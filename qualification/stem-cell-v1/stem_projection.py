@@ -212,36 +212,47 @@ def project_ref(request, frozen_feature, projection):
 
 
 class ScopedProjectionCache:
-    """Immutable LRU scoped by owner identity, source feature, and projection version."""
+    """Bounded immutable Q24 cache using conservative Python object costs.
+
+    The byte ceiling accounts for boxed integers and binding metadata, rather
+    than assuming vectors have the compact Rust 8-byte-per-element layout.
+    It is a shadow-only estimate, not independently measured RSS.
+    """
+
     def __init__(self, maximum_bytes):
         if type(maximum_bytes) is not int or maximum_bytes < 0:
             raise ValueError("invalid cache capacity")
         self.maximum_bytes = maximum_bytes
+        # key -> (ProjectedFeatureRef, charged resident estimate)
         self._data = OrderedDict()
         self.bytes_used = 0
 
     def get(self, key):
         if key in self._data:
             self._data.move_to_end(key)
-            return self._data[key]
+            return self._data[key][0]
         return None
 
     def put(self, key, ref):
-        size = len(ref.vector_q24) * 8
+        from cache_accounting import estimated_python_cache_entry_bytes
+
+        size = estimated_python_cache_entry_bytes(key, ref, ref.vector_q24)
         if size > self.maximum_bytes:
             return
         if key in self._data:
-            self.bytes_used -= len(self._data.pop(key).vector_q24) * 8
+            _, old_size = self._data.pop(key)
+            self.bytes_used -= old_size
         while self.bytes_used + size > self.maximum_bytes:
-            _, old = self._data.popitem(last=False)
-            self.bytes_used -= len(old.vector_q24) * 8
-        self._data[key] = ref
+            _, (_, old_size) = self._data.popitem(last=False)
+            self.bytes_used -= old_size
+        self._data[key] = (ref, size)
         self.bytes_used += size
 
     def invalidate_scope(self, scope_digest):
         for key in list(self._data):
             if key[0] == scope_digest:
-                self.bytes_used -= len(self._data.pop(key).vector_q24) * 8
+                _, size = self._data.pop(key)
+                self.bytes_used -= size
 
 
 class ProjectedBatch:
