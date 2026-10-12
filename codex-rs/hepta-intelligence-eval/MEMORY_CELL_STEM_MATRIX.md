@@ -1253,3 +1253,48 @@ are still missing. `semantic_citation_precision=null`,
 `production_accepted=false` and `scale_out_permitted=false` remain the
 scientifically supported gate values. Historic earlier staging executions
 with different Reader admission are not interchangeable with this run.
+
+## October 12 evidence reconciliation: complete native execution is not a Cell gain
+
+This addendum pins two distinct observations; it is an audit note, **not**
+a change in Head weights or a production go/no-go waiver.
+
+1. **Exact real native matrix succeeded**: GitHub Actions
+   [38212686661](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38212686661),
+   source `aaa499074...`, completed its full Python regression, static
+   check, original pinned-model/data staging, native source chronology,
+   six-arm original Reader evaluation, independent pre-Reader rank replay
+   and immutable artifact upload. The read-only rank replay reconciled
+   **576 pre-Reader source decisions**. Model execution and CI success
+   count as *operational repeatability*, not independently measured
+   memory transfer or citation entailment. The nonpromotion verdict
+   remains `production_accepted=false`.
+
+2. **Different, later source failed before the real model run**:
+   [38214317557](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38214317557)
+   on `69b541e62...` completed **1,184 Python tests**, with **one
+   synthetic fixture failure** in
+   `test_locomo_frozen_retrieval.FrozenLoCoMoTests.test_all_eighty_questions_and_six_frozen_conditions`
+   (`AssertionError: 9 != 6`). This reflected the nine-arm
+   LoCoMo source-only control (lexical/recent/fusion at k=2/4/8)
+   changing faster than its old test expectation. Current
+   `test_locomo_frozen_retrieval.py` asserts **nine** and the complete
+   `80 × 9 = 720` decision census. The historical run must remain
+   **failure**; it does not disprove the older successful six-arm
+   Stem runtime, and the corrected current test still needs its
+   own exact-SHA CI result.
+
+3. Current fast protocol and several independent read-only runs have
+   succeeded, including the strict-run Reader evidence triage
+   [38214530103](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38214530103).
+   This isolates evidence-admission and execution defects, but is
+   **not** blinded adjudication of semantic support.
+
+The original registered six-arm decision program remains distinct
+from the **nine retrieval-only LoCoMo controls**. Never conflate
+their denominators (`576` six-arm Stem attempts vs `720`
+source-only LoCoMo retrieval decisions), infer learned-vs-frozen
+task gain from execution count, or interpret `semantic_citation_precision=null`
+as measured precision. The next useful resource allocation must be based
+on *native correct-support improvements on independent families* and
+Reader answer/citation review, not increased Head/Adapter step count.
