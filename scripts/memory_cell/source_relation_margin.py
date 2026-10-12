@@ -55,24 +55,32 @@ def source_negatives(documents, examples, prepared, tokenizer):
         ):
             raise ValueError("original source-only masked completion drift")
         entity, attribute, value = next(iter(triples))
-        rows.append((qid, scope, entity, attribute, value, ids[:cutoff], len(ids) - cutoff))
+        rows.append(
+            (qid, scope, entity, attribute, value, ids[:cutoff], len(ids) - cutoff)
+        )
     negatives, counts = [], Counter()
     for qid, scope, entity, attribute, value, prefix, length in rows:
         pool = []
         for other, other_scope, other_entity, other_attr, other_value, _, _ in rows:
             if other == qid or other_value == value:
                 continue
-            if other_scope == scope and other_attr == attribute and other_entity != entity:
+            if (
+                other_scope == scope
+                and other_attr == attribute
+                and other_entity != entity
+            ):
                 priority = 0
-            elif other_scope == scope and other_entity == entity and other_attr != attribute:
+            elif (
+                other_scope == scope
+                and other_entity == entity
+                and other_attr != attribute
+            ):
                 priority = 1
             elif other_scope != scope and other_attr == attribute:
                 priority = 2
             else:
                 continue
-            ids, labels = completion_ids(
-                tokenizer, prefix, other_value, maximum=2112
-            )
+            ids, labels = completion_ids(tokenizer, prefix, other_value, maximum=2112)
             if len(ids) - len(prefix) == length:
                 pool.append((priority, other, ids, labels))
         if not pool:
@@ -112,14 +120,10 @@ def relation_loss(model, positive, negative):
             or pos_labels[cutoff:] == neg_labels[cutoff:]
         ):
             raise ValueError("unpaired source inputs or unequal target lengths")
-    pos, p = completion_loss(
-        model, pos_ids, pos_labels, backend="supervised_positions"
-    )
+    pos, p = completion_loss(model, pos_ids, pos_labels, backend="supervised_positions")
     if negative is None:
         return pos, dict(input_tokens=len(pos_ids), pair_used=False)
-    neg, n = completion_loss(
-        model, neg_ids, neg_labels, backend="supervised_positions"
-    )
+    neg, n = completion_loss(model, neg_ids, neg_labels, backend="supervised_positions")
     if p["supervised_tokens"] != n["supervised_tokens"]:
         raise ValueError("unequal supervised completion lengths")
     loss = pos + 0.5 * F.softplus(0.5 + pos - neg)

@@ -35,8 +35,12 @@ def fact(identity, entity, attribute, value, scope="alpha"):
         supersedes=[],
     )
     return Document(
-        identity, "root_" + identity, scope, scope,
-        "2026-10-10T00:00:00+00:00", json.dumps(obj),
+        identity,
+        "root_" + identity,
+        scope,
+        scope,
+        "2026-10-10T00:00:00+00:00",
+        json.dumps(obj),
     )
 
 
@@ -56,9 +60,7 @@ def prepared(rows):
         allowed_roots={r.root for r in rows},
         revoked=set(),
     )
-    tasks, plan = prepare(
-        Tokens(), examples, maximum_steps=12, token_ceiling=65536
-    )
+    tasks, plan = prepare(Tokens(), examples, maximum_steps=12, token_ceiling=65536)
     negatives, review = source_negatives(rows, examples, tasks, Tokens())
     return examples, tasks, plan, negatives, review
 
@@ -80,7 +82,8 @@ class RelationLossTests(unittest.TestCase):
         charged = schedule_cost(pos, schedule, negative)
         self.assertEqual(
             charged["all_model_forward_input_tokens"],
-            charged["additional_distractor_input_tokens"] + schedule["planned_input_tokens"],
+            charged["additional_distractor_input_tokens"]
+            + schedule["planned_input_tokens"],
         )
         self.assertFalse(review["downstream_question_or_answer_inputs_used"])
 
@@ -144,9 +147,7 @@ class RelationLossTests(unittest.TestCase):
     def test_optimizer_budget_cannot_hide_negative_forward(self):
         _, tasks, plan, negative, _ = prepared(sample())
         with self.assertRaisesRegex(ValueError, "forward token ceiling"):
-            schedule_cost(
-                tasks, plan, negative, ceiling=plan["planned_input_tokens"]
-            )
+            schedule_cost(tasks, plan, negative, ceiling=plan["planned_input_tokens"])
         with self.assertRaises(ValueError):
             schedule_cost(tasks, dict(plan, planned_input_tokens=0), negative)
 
