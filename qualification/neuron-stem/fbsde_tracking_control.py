@@ -81,6 +81,14 @@ class BeliefProblem:
         require(all(self.laws[i][j] > 0 for i,j in known), 'observation outside declared model support')
         return tuple(sorted(known))
 
+    def outcome_law(self, event, known=()):
+        """Conditional-law port; V1 is independent, other profiles need not be."""
+        require(type(event) is int and 0 <= event < len(self.laws), 'observation event index')
+        history = dict(self.history(known))
+        if event in history:
+            return tuple(float(j == history[event]) for j in range(len(self.pairs)))
+        return self.laws[event]
+
     def marginal(self, known=()):
         """Backward holder distribution, not an argmax state with lost uncertainty."""
         known = dict(self.history(known))
@@ -109,7 +117,7 @@ class PlanningBudgetError(ValueError):
 
 
 def plan(problem, known=(), *, horizon=2, cost=.02, max_nodes=20000):
-    """Exact bounded risk-neutral recursion IN this factorized learned model.
+    """Exact bounded risk-neutral recursion using the declared conditional-law port.
 
     U=max(0, max_j 2p_j-1, max_i E[U_child]-cost). For each action,
     f=-cost, Z_j=U_child_j-E[U_child], so U_child=U-f+Z and E[Z]=0.
@@ -141,7 +149,7 @@ def plan(problem, known=(), *, horizon=2, cost=.02, max_nodes=20000):
         if not bounded:
             for i in available:
                 children = [(p, visit(tuple(sorted(history+((i, j),))), depth-1)[0])
-                            for j, p in enumerate(problem.laws[i]) if p > 0]
+                            for j, p in enumerate(problem.outcome_law(i, history)) if p > 0]
                 mean = math.fsum(p*v for p, v in children)
                 value = mean-cost
                 residual = max(abs(v-value-cost-(v-mean)) for _, v in children)
