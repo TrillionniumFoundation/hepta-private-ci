@@ -37,24 +37,36 @@ def reject_nonstandard_evidence_number(value):
     raise ValueError(f"nonfinite/nonstandard JSON evidence number: {value}")
 
 
+def parse_finite_evidence_float(source):
+    value = float(source)
+    if not math.isfinite(value):
+        raise ValueError("nonfinite JSON evidence numeric exponent")
+    return value
+
+
 def load_jsonl(path):
-    """Read bounded, unambiguous JSONL; never silently drop physical rows."""
-    with Path(path).open(encoding="utf-8") as handle:
+    """Read byte-bounded, unambiguous JSONL; never silently drop physical rows."""
+    # Binary readline enforces the physical *byte* envelope, including UTF-8
+    # input. Text-mode readline bounds characters and lets multi-byte records
+    # exceed the audited allocation budget before any JSON validation.
+    with Path(path).open("rb") as handle:
         line_no = 0
-        while line := handle.readline(MAX_EVIDENCE_ROW_BYTES + 1):
+        while raw := handle.readline(MAX_EVIDENCE_ROW_BYTES + 1):
             line_no += 1
-            if len(line) > MAX_EVIDENCE_ROW_BYTES:
+            if len(raw) > MAX_EVIDENCE_ROW_BYTES:
                 raise ValueError(f"{path}:{line_no}: oversized evidence JSONL row")
-            if not line.strip():
+            if not raw.strip():
                 raise ValueError(f"{path}:{line_no}: blank evidence JSONL row")
             try:
                 row = json.loads(
-                    line, object_pairs_hook=reject_duplicate_evidence_fields,
-                    parse_constant=reject_nonstandard_evidence_number)
+                    raw.decode("utf-8"),
+                    object_pairs_hook=reject_duplicate_evidence_fields,
+                    parse_constant=reject_nonstandard_evidence_number,
+                    parse_float=parse_finite_evidence_float)
                 if type(row) is not dict:
                     raise ValueError("evidence row must be a JSON object")
                 yield row
-            except (ValueError, TypeError) as exc:
+            except (UnicodeError, ValueError, TypeError) as exc:
                 raise ValueError(f"{path}:{line_no}: {exc}") from exc
 
 
