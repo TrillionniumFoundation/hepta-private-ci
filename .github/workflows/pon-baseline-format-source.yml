@@ -1,0 +1,51 @@
+name: PoN baseline formatter source
+on:
+  push:
+    branches: [ci/pon-baseline-format-source-20261012]
+permissions:
+  contents: read
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - name: Generate exact locked formatter output without changing product branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          git diff --exit-code
+          mkdir -p "$RUNNER_TEMP/pon-format-source"
+          uv run --frozen --project scripts ruff --version | tee "$RUNNER_TEMP/pon-format-source/version.txt"
+          uv run --frozen --project scripts ruff format scripts/hepta_ci_exec.py scripts/test_hepta_ci_exec_identity.py
+          uv run --frozen --project scripts ruff format --check scripts .github
+          python3 - <<'PY'
+          import ast, pathlib, subprocess
+          files = ['scripts/hepta_ci_exec.py', 'scripts/test_hepta_ci_exec_identity.py']
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          assert sorted(changed) == sorted(files), changed
+          for name in files:
+              before = subprocess.check_output(['git', 'show', 'HEAD:' + name], text=True)
+              after = pathlib.Path(name).read_text()
+              assert ast.dump(ast.parse(before)) == ast.dump(ast.parse(after)), name
+          PY
+          git diff --binary --full-index > "$RUNNER_TEMP/pon-format-source/format.patch"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-format-source/source.txt"
+          cp scripts/.venv/bin/ruff "$RUNNER_TEMP/pon-format-source/ruff"
+          cp scripts/uv.lock "$RUNNER_TEMP/pon-format-source/uv.lock"
+          sha256sum "$RUNNER_TEMP/pon-format-source/"* > "$RUNNER_TEMP/pon-format-source/checksums.txt"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: pon-baseline-formatter-106400a5
+          path: ${{ runner.temp }}/pon-format-source
+          if-no-files-found: error
+          retention-days: 14
