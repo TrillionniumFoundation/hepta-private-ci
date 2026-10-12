@@ -103,7 +103,11 @@ struct QueuedIntent {
 pub struct BoundedMicrobatchSchedulerV1 {
     limits: MicrobatchLimitsV1,
     lanes: BTreeMap<MicrobatchKeyV1, VecDeque<QueuedIntent>>,
-    round_robin: VecDeque<MicrobatchKeyV1>,
+    /// Ticket order makes a single lane removal independent of other scopes.
+    round_robin: BTreeSet<(u128, MicrobatchKeyV1)>,
+    lane_order: BTreeMap<MicrobatchKeyV1, u128>,
+    scope_lanes: BTreeMap<StableId, BTreeSet<MicrobatchKeyV1>>,
+    next_order: u128,
     queued_ids: BTreeSet<StableId>,
     last_now_ms: Option<u64>,
 }
@@ -113,7 +117,10 @@ impl BoundedMicrobatchSchedulerV1 {
         Ok(Self {
             limits: limits.validate()?,
             lanes: BTreeMap::new(),
-            round_robin: VecDeque::new(),
+            round_robin: BTreeSet::new(),
+            lane_order: BTreeMap::new(),
+            scope_lanes: BTreeMap::new(),
+            next_order: 0,
             queued_ids: BTreeSet::new(),
             last_now_ms: None,
         })
@@ -125,6 +132,38 @@ impl BoundedMicrobatchSchedulerV1 {
 
     pub fn active_lanes(&self) -> usize {
         self.lanes.len()
+    }
+
+    /// Each active lane has exactly one ticket. The extremely rare u128
+    /// rollover renumbers only live lanes, in original fairness order.
+    fn next_lane_order(&mut self) -> u128 {
+        if self.next_order == u128::MAX {
+            let ordered = self
+                .round_robin
+                .iter()
+                .map(|(_, key)| key.clone())
+                .collect::<Vec<_>>();
+            self.round_robin.clear();
+            self.lane_order.clear();
+            self.next_order = 0;
+            for key in ordered {
+                self.next_order += 1;
+                self.round_robin.insert((self.next_order, key.clone()));
+                self.lane_order.insert(key, self.next_order);
+            }
+        }
+        self.next_order += 1;
+        self.next_order
+    }
+
+    fn remove_scope_key(&mut self, key: &MicrobatchKeyV1) {
+        let empty = self.scope_lanes.get_mut(&key.scope_id).is_some_and(|keys| {
+            keys.remove(key);
+            keys.is_empty()
+        });
+        if empty {
+            self.scope_lanes.remove(&key.scope_id);
+        }
     }
 
     fn clock(&mut self, now_ms: u64) -> Result<(), SchedulerErrorV1> {
@@ -173,7 +212,13 @@ impl BoundedMicrobatchSchedulerV1 {
         let key = intent.key.clone();
         let id = intent.request_id.clone();
         if !self.lanes.contains_key(&key) {
-            self.round_robin.push_back(key.clone());
+            let order = self.next_lane_order();
+            self.round_robin.insert((order, key.clone()));
+            self.lane_order.insert(key.clone(), order);
+            self.scope_lanes
+                .entry(key.scope_id.clone())
+                .or_default()
+                .insert(key.clone());
         }
         self.lanes.entry(key).or_default().push_back(QueuedIntent {
             intent,
@@ -193,11 +238,13 @@ impl BoundedMicrobatchSchedulerV1 {
         let scans = self.round_robin.len().min(self.limits.max_lanes_per_poll);
         let mut scanned = 0;
         for _ in 0..scans {
-            let Some(key) = self.round_robin.pop_front() else {
+            let Some((_, key)) = self.round_robin.pop_first() else {
                 break;
             };
             scanned += 1;
+            self.lane_order.remove(&key);
             let Some(mut lane) = self.lanes.remove(&key) else {
+                self.remove_scope_key(&key);
                 continue;
             };
             // A lane cannot exceed one batch: expiry is bounded without a
@@ -212,6 +259,7 @@ impl BoundedMicrobatchSchedulerV1 {
                 }
             });
             if lane.is_empty() {
+                self.remove_scope_key(&key);
                 continue;
             }
             let oldest = lane.front().map_or(now_ms, |entry| entry.enqueued_at_ms);
@@ -227,6 +275,7 @@ impl BoundedMicrobatchSchedulerV1 {
                     self.queued_ids.remove(&entry.intent.request_id);
                     requests.push(entry.intent);
                 }
+                self.remove_scope_key(&key);
                 selected = Some(MicrobatchPlanV1 {
                     key,
                     requests,
@@ -235,7 +284,9 @@ impl BoundedMicrobatchSchedulerV1 {
                 });
                 break;
             }
-            self.round_robin.push_back(key.clone());
+            let order = self.next_lane_order();
+            self.round_robin.insert((order, key.clone()));
+            self.lane_order.insert(key.clone(), order);
             self.lanes.insert(key, lane);
         }
         Ok(MicrobatchPollV1 {
@@ -246,8 +297,8 @@ impl BoundedMicrobatchSchedulerV1 {
         })
     }
 
-    /// Explicit fence cutover: drop queued work for a scope whose binding no
-    /// longer matches the independently admitted generation/fence/epoch.
+    /// Explicit fence cutover: visit only indexed lanes belonging to this
+    /// scope, never scan other scopes or the global scheduling queue.
     /// Call outside global control locks. No stale work is requeued.
     pub fn retain_scope_binding(
         &mut self,
@@ -257,22 +308,30 @@ impl BoundedMicrobatchSchedulerV1 {
         authority_epoch: u64,
     ) -> Vec<StableId> {
         let mut dropped = Vec::new();
-        self.lanes.retain(|key, lane| {
-            if &key.scope_id == scope
-                && (key.generation != generation
-                    || key.route_fence != route_fence
-                    || key.authority_epoch != authority_epoch)
+        let keys = self
+            .scope_lanes
+            .get(scope)
+            .into_iter()
+            .flat_map(|keys| keys.iter().cloned())
+            .collect::<Vec<_>>();
+        for key in keys {
+            if key.generation == generation
+                && key.route_fence == route_fence
+                && key.authority_epoch == authority_epoch
             {
+                continue;
+            }
+            if let Some(lane) = self.lanes.remove(&key) {
                 for entry in lane {
                     self.queued_ids.remove(&entry.intent.request_id);
-                    dropped.push(entry.intent.request_id.clone());
+                    dropped.push(entry.intent.request_id);
                 }
-                false
-            } else {
-                true
             }
-        });
-        self.round_robin.retain(|key| self.lanes.contains_key(key));
+            if let Some(order) = self.lane_order.remove(&key) {
+                self.round_robin.remove(&(order, key.clone()));
+            }
+            self.remove_scope_key(&key);
+        }
         dropped
     }
 }

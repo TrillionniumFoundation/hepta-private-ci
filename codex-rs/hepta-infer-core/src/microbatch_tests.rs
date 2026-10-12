@@ -113,6 +113,73 @@ fn cutover_drops_only_stale_scope() {
     assert_eq!(q.active_lanes(), 2);
 }
 
+#[test]
+fn cutover_of_one_scope_does_not_scan_or_tombstone_other_lanes() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    for index in 0..4096 {
+        q.enqueue(
+            1,
+            intent(
+                &format!("request-{index}"),
+                &format!("scope-{index}"),
+                1,
+                1,
+                100,
+            ),
+        )
+        .unwrap();
+    }
+    assert_eq!(q.active_lanes(), 4096);
+    assert_eq!(q.round_robin.len(), 4096);
+    assert_eq!(q.scope_lanes.len(), 4096);
+
+    // Repeated fence flips for one scope must never leave stale fairness
+    // tickets or increase queue metadata with unrelated Cell populations.
+    let scope = id("scope-0");
+    let mut previous = id("request-0");
+    for generation in 2..=80 {
+        let removed =
+            q.retain_scope_binding(&scope, Generation::new(generation).unwrap(), generation, 1);
+        assert_eq!(removed, vec![previous]);
+        let name = format!("cutover-{generation}");
+        q.enqueue(1, intent(&name, "scope-0", generation, generation, 100))
+            .unwrap();
+        previous = id(&name);
+        assert_eq!(q.pending(), 4096);
+        assert_eq!(q.active_lanes(), 4096);
+        assert_eq!(q.round_robin.len(), 4096);
+        assert_eq!(q.lane_order.len(), 4096);
+        assert_eq!(q.scope_lanes.len(), 4096);
+    }
+
+    let mut observed = BTreeSet::new();
+    while q.pending() != 0 {
+        let polled = q.poll(11).unwrap();
+        assert!(polled.scanned_lanes <= 64);
+        let batch = polled.batch.expect("all surviving lanes are ready");
+        observed.insert(batch.requests[0].request_id.clone());
+    }
+    assert_eq!(observed.len(), 4096);
+    assert!(observed.contains(&previous));
+    assert_eq!(q.round_robin.len(), 0);
+    assert_eq!(q.lane_order.len(), 0);
+    assert_eq!(q.scope_lanes.len(), 0);
+}
+
+#[test]
+fn scheduling_ticket_rollover_preserves_admission_and_fairness() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(1, intent("first", "scope-A", 1, 1, 100)).unwrap();
+    q.next_order = u128::MAX;
+    q.enqueue(1, intent("second", "scope-B", 1, 1, 100)).unwrap();
+    assert_eq!(q.round_robin.len(), 2);
+    let first = q.poll(11).unwrap().batch.unwrap();
+    assert_eq!(first.requests[0].request_id, id("first"));
+    let second = q.poll(11).unwrap().batch.unwrap();
+    assert_eq!(second.requests[0].request_id, id("second"));
+    assert_eq!(q.pending(), 0);
+}
+
 // Opt-in source benchmark: not hardware acceptance, report raw durations.
 #[test]
 #[ignore = "run with --ignored --nocapture on deployment hardware"]
