@@ -23,6 +23,7 @@ from hepta_cell_split_perf_gate import (
     TRACE_FIELD,
     InvalidEvidence,
     analyze,
+    validate_run_numbers,
 )
 
 SCHEMA = "hepta.cell-split.execution-matrix.v1"
@@ -112,6 +113,10 @@ def validate_measurement(
         raise InvalidEvidence(
             f"{scope}/{mode}: canonical attempted request trace is required"
         )
+    # Fail immediately on a malformed host counter or inconsistent terminal
+    # record instead of executing fifteen more expensive target-host workloads.
+    # Shared with the final 16-way comparator to prevent validation drift.
+    validate_run_numbers(observed, scope, mode)
     return {
         "scopes": scope,
         "mode": mode,
