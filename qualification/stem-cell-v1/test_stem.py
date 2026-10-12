@@ -215,6 +215,44 @@ class ScaleTraceTests(unittest.TestCase):
         self.assertEqual(len(self.jobs), 7)
         self.assertEqual(len({r["request_id"] for r in self.jobs}), 7)
 
+    def test_workload_and_unattested_trace_reports_are_create_only(self):
+        from unittest.mock import patch
+        import sys
+        from scale import main as scale_main
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            workload_path = root / "frozen-workload.jsonl"
+            generation = [
+                "scale.py", "generate", "--logical-cells", "64",
+                "--active-fraction", "0.1", "--input-repeat", "0.5",
+                "--task-similarity", "mixed_family",
+                "--model-digest", DIGEST_A, "--output", str(workload_path),
+            ]
+            with patch.object(sys, "argv", generation):
+                scale_main()
+                frozen = workload_path.read_bytes()
+                with self.assertRaises(FileExistsError):
+                    scale_main()
+                self.assertEqual(workload_path.read_bytes(), frozen)
+            self.assertEqual(len(list(load_jsonl(workload_path))), len(self.jobs))
+            trace_path = root / "unattested-events.jsonl"
+            trace_path.write_text("".join(
+                json.dumps(event, sort_keys=True) + "\n" for event in self.events),
+                encoding="utf-8")
+            report_path = root / "offline-diagnostic.json"
+            analysis = [
+                "scale.py", "analyze", "--workload", str(workload_path),
+                "--trace", str(trace_path), "--output", str(report_path),
+            ]
+            with patch.object(sys, "argv", analysis):
+                scale_main()
+                first = report_path.read_bytes()
+                self.assertFalse(json.loads(first)["production_authorized"])
+                with self.assertRaises(FileExistsError):
+                    scale_main()
+                self.assertEqual(report_path.read_bytes(), first)
+
     def test_real_trace_is_still_unverified(self):
         result = trace_report(self.jobs, self.events)
         self.assertEqual(result["backend_batches"], 1)
