@@ -42,7 +42,7 @@ def load_lock(payload):
     try:
         data = tomllib.loads(payload.decode("utf-8"))
     except (UnicodeError, tomllib.TOMLDecodeError) as error:
-        raise ValueError("unparseable Cargo.lock") from error
+        raise ValueError("unparsable Cargo.lock") from error
     if data.get("version") != 4 or type(data.get("package")) is not list:
         raise ValueError("unexpected Cargo.lock schema")
     result = {}
