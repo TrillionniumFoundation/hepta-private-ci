@@ -1131,10 +1131,13 @@ fn recovery_rejects_local_identity_and_history_drift_during_live_readbacks() {
         }
         let port = FixturePort::new(state.clone());
         *port.tamper_during_live_readback.borrow_mut() = Some(root.path().join(filename));
-        assert!(matches!(
-            CellSplitExecutionOwnerV1::open_existing(root.path(), plan(), trust(), port),
-            Err(CellSplitExecutionErrorV1::Invalid(reason)) if reason == expected_error
-        ), "recovery accepted changed {filename}");
+        assert!(
+            matches!(
+                CellSplitExecutionOwnerV1::open_existing(root.path(), plan(), trust(), port),
+                Err(CellSplitExecutionErrorV1::Invalid(reason)) if reason == expected_error
+            ),
+            "recovery accepted changed {filename}"
+        );
         assert_eq!(state.borrow().executions, 4, "no replay on recovery");
     }
 }
@@ -1161,8 +1164,8 @@ fn replacing_lock_inode_fences_live_execution_and_verified_transcripts() {
         // the original owner rechecks the actual directory identity.
         fs::remove_file(root.path().join(crate::durable::SIDECAR_LOCK_FILE))
             .expect("unlink original lock inode");
-        let _replacement = crate::durable::lock_sidecar(root.path())
-            .expect("second lock on a different inode");
+        let _replacement =
+            crate::durable::lock_sidecar(root.path()).expect("second lock on a different inode");
 
         assert!(matches!(
             owner.advance(),
@@ -1232,10 +1235,13 @@ fn transcript_rejects_local_evidence_replacement_during_live_owner_verification(
             owner.advance().expect("committed original effect");
         }
         *tamper.borrow_mut() = Some(root.path().join(filename));
-        assert!(matches!(
-            owner.verified_transcript(),
-            Err(CellSplitExecutionErrorV1::Invalid(reason)) if reason == expected_error
-        ), "unexpected transcript outcome for {filename}");
+        assert!(
+            matches!(
+                owner.verified_transcript(),
+                Err(CellSplitExecutionErrorV1::Invalid(reason)) if reason == expected_error
+            ),
+            "unexpected transcript outcome for {filename}"
+        );
         assert_eq!(state.borrow().executions, 4);
     }
 }
