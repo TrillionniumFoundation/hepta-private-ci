@@ -55,6 +55,7 @@ impl NeuronFeatureDriver for FixtureDriver {
         Ok(DriverNeuronFeatureObservation {
             terminal_observed: true,
             succeeded: true,
+            consumed_tokens: 4,
             encoder_digest: request.encoder_digest.clone(),
             head_digest: request.head_digest.clone(),
             drive_q24: vec![1 << 24; request.expected_output_width],

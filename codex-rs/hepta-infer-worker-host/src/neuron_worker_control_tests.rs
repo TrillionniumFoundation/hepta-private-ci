@@ -62,6 +62,7 @@ impl NeuronFeatureDriver for FixtureDriver {
         Ok(DriverNeuronFeatureObservation {
             terminal_observed: successful,
             succeeded: successful,
+            consumed_tokens: 4,
             encoder_digest: request.encoder_digest.clone(),
             head_digest: if self.bad_head {
                 "f".repeat(64)
