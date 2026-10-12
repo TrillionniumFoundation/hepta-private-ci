@@ -621,7 +621,7 @@ Final-use permission or learned Cell promotion is issued.
 
 ### Model-byte preflight before running any real Jina experiment
 
-Use `hf download jinaai/jina-embeddings-v5-text-nano --revision FULL40SHA`
+Use `hf download jinaai/jina-embeddings-v5-text-nano --revision FULL40SHA --cache-dir /approved/hf`
 only in a separately approved staging step. Model execution does **not**
 perform downloads. Review the exact remote Python files and each task Adapter.
 Do not substitute `main`, a branch, a Git LFS pointer, a directory symlink or
@@ -646,6 +646,12 @@ by the same untrusted execution. Pass that separately frozen
 `--expected-snapshot-digest` (or per-model Text/Omni equivalents). This
 recomputes every file hash both before and after model load and fails closed
 on any mismatch.
+
+For the real Jina trial process, explicitly set both
+`HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1` before executing its CLI,
+and enforce **OS-level outbound network denial** for reviewed custom model
+code. The HF offline switches alone do not sandbox Python network access.
+Offline fake-model tests intentionally remain independent of those switches.
 
 The census requires actual `model.safetensors`, `tokenizer.json`,
 `modules.json`, `config.json`, and the task-specific
