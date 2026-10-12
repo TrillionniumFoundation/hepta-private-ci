@@ -114,6 +114,44 @@ class CellSplitMatrixCaptureTests(unittest.TestCase):
         with self.assertRaises(InvalidEvidence):
             validate_measurement(sample, packet, 64, "no_split")
 
+    def test_invalid_first_host_row_aborts_before_remaining_fifteen_runs(self):
+        packet = manifest()
+        script = """
+import json
+import os
+from pathlib import Path
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+row["mode"] = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
+"""
+        for run in packet["runs"]:
+            run["argv"] = [sys.executable, "-c", script]
+        bad = observed(packet)
+        bad["attempted"] = (1 << 53) + 1
+        bad["completed"] = (1 << 53)
+        bad["failed_requests"] = 0
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "matrix"
+            with (
+                patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                patch.dict(os.environ, {"HEPTA_TEST_MEASUREMENT": json.dumps(bad)}),
+                self.assertRaisesRegex(InvalidEvidence, "inconsistent terminal request"),
+            ):
+                execute_matrix(packet, ROOT, output, 30)
+            self.assertTrue((output / "64-no_split.stdout.log").exists())
+            self.assertFalse((output / "64-logical_split.stdout.log").exists())
+            self.assertFalse((output / "measured-matrix.json").exists())
+
+    def test_single_host_row_requires_integral_rss_and_fsync(self):
+        packet = manifest()
+        for field, invalid in (("rss_peak_bytes", 100.5), ("fsync_count", 1 << 64)):
+            sample = observed(packet)
+            sample[field] = invalid
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(InvalidEvidence, "exact unsigned 64-bit"):
+                    validate_measurement(sample, packet, 64, "no_split")
+
     def test_executes_all_16_commands_but_cannot_attest_itself(self):
         packet = manifest()
         fixture_script = """
