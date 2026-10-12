@@ -699,6 +699,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             self.poisoned = true;
             return Err(error);
         }
+        // Source/model identity must match even for a failed or indeterminate
+        // physical invocation. Those outcomes have no logits to validate,
+        // but accepting a different Encoder or Head would misattribute the
+        // observation to the admitted request.
+        if observed.encoder_digest != request.encoder_digest
+            || observed.head_digest != request.head_digest
+        {
+            self.poisoned = true;
+            return Err(Error::FeatureOutputMismatch);
+        }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
