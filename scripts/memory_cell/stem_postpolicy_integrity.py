@@ -8,7 +8,6 @@ entailment, prospective generalization or production authorization.
 
 from collections import Counter
 from dataclasses import asdict
-import math
 import re
 
 from native import digest
