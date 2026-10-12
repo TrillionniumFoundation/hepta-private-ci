@@ -37,20 +37,37 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p /tmp/locomo-literal-inputs
-          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/locomo-literal-inputs/locomo-public-38206328621.zip
-          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/locomo-literal-inputs/locomo-frozen-decisions-38206328621.zip
-          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/locomo-literal-inputs/locomo-evaluation-targets-38206328621.zip
+          mkdir -p /tmp/locomo-literal-inputs/public /tmp/locomo-literal-inputs/evaluation
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/locomo-literal-inputs/public/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/locomo-literal-inputs/public/locomo-frozen-decisions-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/locomo-literal-inputs/evaluation/locomo-evaluation-targets-38206328621.zip
           printf '%s  %s\n' \
-            51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37 /tmp/locomo-literal-inputs/locomo-public-38206328621.zip \
-            3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097 /tmp/locomo-literal-inputs/locomo-frozen-decisions-38206328621.zip \
-            d09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978 /tmp/locomo-literal-inputs/locomo-evaluation-targets-38206328621.zip | sha256sum -c -
+            51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37 /tmp/locomo-literal-inputs/public/locomo-public-38206328621.zip \
+            3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097 /tmp/locomo-literal-inputs/public/locomo-frozen-decisions-38206328621.zip \
+            d09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978 /tmp/locomo-literal-inputs/evaluation/locomo-evaluation-targets-38206328621.zip | sha256sum -c -
       - name: Seal 32 original frozen source choices BEFORE opening held-out answer labels
         run: |
           set -euo pipefail
+          # Verify the published role-by-directory isolation using filenames
+          # only; do not open evaluation targets until source choices are sealed.
+          python3 - <<'PY'
+          from pathlib import Path
+          from locomo_ninearm_source_replay import check_roles, ZIPS
+          public = Path("/tmp/locomo-literal-inputs/public")
+          evaluation = Path("/tmp/locomo-literal-inputs/evaluation")
+          check_roles(public)
+          if (
+              evaluation.is_symlink()
+              or not evaluation.is_dir()
+              or evaluation.resolve() == public.resolve()
+              or {x.name for x in evaluation.iterdir()} != {ZIPS["evaluation"][0]}
+              or (evaluation / ZIPS["evaluation"][0]).is_symlink()
+          ):
+              raise ValueError("evaluation labels not physically isolated from prelabel role")
+          PY
           python3 scripts/memory_cell/locomo_literal_answer_ceiling.py \
-            --public-zips /tmp/locomo-literal-inputs \
-            --evaluation-zips /tmp/locomo-literal-inputs \
+            --public-zips /tmp/locomo-literal-inputs/public \
+            --evaluation-zips /tmp/locomo-literal-inputs/evaluation \
             --output /tmp/locomo-literal-audit/locked-result \
             2>&1 | tee /tmp/locomo-literal-audit/accounting.log
           python3 - <<'PY'
