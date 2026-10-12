@@ -394,11 +394,16 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
             }
-            let identity_digest = request
-                .snapshot
-                .identity
-                .digest()
-                .map_err(|_| Error::FeatureContract)?;
+            let identity_digest = match request.snapshot.identity.digest() {
+                Ok(digest) => digest,
+                Err(_) => {
+                    // Validation normally caught this before dispatch; if
+                    // state changed nonetheless, quarantine the completed
+                    // physical batch rather than allowing a second attempt.
+                    self.poisoned = true;
+                    return Err(Error::FeatureContract);
+                }
+            };
             let observation_digest =
                 observation_digest_v2(request, &features, status, self.generation, identity_digest);
             outputs.push(SharedNeuronFeatureResultV2 {
