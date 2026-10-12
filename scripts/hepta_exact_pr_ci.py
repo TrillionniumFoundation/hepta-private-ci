@@ -11,6 +11,7 @@ import json
 import re
 import subprocess
 from collections.abc import Sequence
+from datetime import datetime
 
 REQUIRED = ("Hepta architecture convergence", "blocking-ci", "v8-canary")
 MANUAL = ("hepta-architecture-convergence.yml", "v8-canary.yml")
@@ -61,6 +62,16 @@ def exact_pr_run(run: dict, repo: str, number: int, head: str, base: str) -> boo
     return False
 
 
+def parse_utc_timestamp(value: object) -> datetime | None:
+    if not isinstance(value, str) or not value.endswith("Z"):
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.utcoffset().total_seconds() == 0 else None
+
+
 def prospective_merge_identity(repo: str, number: int, head: str, base: str) -> dict:
     """Check the actual GitHub-generated merge commit, not an old PR URL.
 
@@ -78,10 +89,19 @@ def prospective_merge_identity(repo: str, number: int, head: str, base: str) -> 
         commit = gh_json(f"repos/{repo}/git/commits/{merge_sha}")
         parents = [item.get("sha") for item in commit.get("parents", [])]
         valid = parents == [base, head]
+        created_at = commit.get("committer", {}).get("date", "")
+        # Pull request run parent metadata can be a mutable PR snapshot.
+        # Use the immutable merge commit's creation time to prevent an old
+        # successful run on the same HEAD from qualifying a newer base.
+        if valid:
+            timestamp = parse_utc_timestamp(created_at)
+            if timestamp is None:
+                raise ValueError("missing immutable merge commit timestamp")
         return {
             "status": "exact" if valid else "stale_merge_parents",
             "merge_sha": merge_sha,
             "parent_shas": parents,
+            "merge_created_at": created_at,
             "qualified": valid,
         }
     except (OSError, subprocess.CalledProcessError, ValueError, KeyError, TypeError):
@@ -91,14 +111,30 @@ def prospective_merge_identity(repo: str, number: int, head: str, base: str) -> 
         }
 
 
-def evaluate(pr: dict, runs: Sequence[dict], repo: str, number: int, sha: str) -> dict:
+def evaluate(
+    pr: dict, runs: Sequence[dict], repo: str, number: int, sha: str,
+    *, merge_created_at: str | None = None,
+) -> dict:
     _, base = validate_pr(pr, repo, number, sha)
+    minimum_run_time = (
+        parse_utc_timestamp(merge_created_at)
+        if merge_created_at is not None else None
+    )
     statuses = {}
     for workflow in REQUIRED:
         candidates = [
             run for run in runs
             if run.get("name") == workflow
             and exact_pr_run(run, repo, number, sha, base)
+            and (
+                merge_created_at is None
+                or (
+                    minimum_run_time is not None
+                    and (run_time := parse_utc_timestamp(run.get("created_at")))
+                    is not None
+                    and run_time >= minimum_run_time
+                )
+            )
         ]
         # A later failed rerun may not be superseded by an older green run.
         candidates.sort(
@@ -133,9 +169,12 @@ def current(repo: str, number: int, sha: str) -> tuple[dict, dict]:
     runs = response.get("workflow_runs")
     if not isinstance(runs, list):
         raise ValueError("GitHub Actions did not return the exact-head run list")
-    report = evaluate(pr, runs, repo, number, sha)
     merge = prospective_merge_identity(
         repo, number, sha, pr["base"]["sha"]
+    )
+    report = evaluate(
+        pr, runs, repo, number, sha,
+        merge_created_at=merge.get("merge_created_at"),
     )
     report["prospective_merge_ref"] = merge
     report["qualified"] = report["qualified"] and merge["qualified"]
