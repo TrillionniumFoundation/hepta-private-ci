@@ -260,16 +260,27 @@ impl BoundedMicrobatchSchedulerV1 {
         self.clock(now_ms)?;
         let mut expired = Vec::new();
         let mut selected = None;
-        let scans = self.round_robin.len().min(self.limits.max_lanes_per_poll);
+        // A physical batch can retire a lane without removing its queued
+        // round-robin slot. Give stale slots their own bounded skip allowance:
+        // they must not use the active-lane fairness budget or block ready
+        // requests immediately behind them. Never scan the full scope table.
+        let visits = self.round_robin.len().min(
+            self.limits
+                .max_lanes_per_poll
+                .saturating_add(self.limits.max_batch_size),
+        );
         let mut scanned = 0;
-        for _ in 0..scans {
+        for _ in 0..visits {
+            if scanned >= self.limits.max_lanes_per_poll {
+                break;
+            }
             let Some(key) = self.round_robin.pop_front() else {
                 break;
             };
             self.round_robin_members.remove(&key);
             let Some(mut lane) = self.lanes.remove(&key) else {
-                // Coalescing may leave a retired round-robin slot. It must not
-                // consume the active-lane scan budget of the next poll.
+                // Stale affinity slots are accounted for by the separate
+                // max_batch_size skip allowance, not scanned_lanes.
                 continue;
             };
             scanned += 1;
