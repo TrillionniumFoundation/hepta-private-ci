@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - "qualification/neuron-stem/fbsde_tracking_feedback*.py"
+      - "qualification/neuron-stem/fbsde_depth*.py"
+      - "qualification/neuron-stem/test_fbsde_depth.py"
       - "qualification/neuron-stem/test_fbsde_tracking_feedback.py"
       - "qualification/neuron-stem/fbsde_study.py"
       - ".github/workflows/hepta-neuron-feedback-learning.yml"
@@ -48,6 +50,14 @@ jobs:
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile input_tied_challenge_v1 --output base-study 2>&1 | tee base-study.log
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile verified_feedback_learning_v1 --evidence-dir base-study --output feedback-study 2>&1 | tee feedback-study.log
           git diff --exit-code
+      - name: Learn computation depth without reusing test scores
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python -m unittest fbsde_depth_tensor_checks -v 2>&1 | tee depth-tensor-tests.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile learned_depth_allocation_v1 --evidence-dir base-study --output depth-study 2>&1 | tee depth-study.log
+          git diff --exit-code
       - name: Preserve original outputs and failures, never grant promotion
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -64,5 +74,8 @@ jobs:
             base-study/
             feedback-study/
             feedback-test-evidence/
+            depth-tensor-tests.log
+            depth-study.log
+            depth-study/
           if-no-files-found: error
           retention-days: 30
