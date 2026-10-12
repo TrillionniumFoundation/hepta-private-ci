@@ -561,6 +561,15 @@ pub trait NeuronFeatureDriver: ModelDriver {
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error>;
 
+    /// Pure, conservative capability preflight for a previously loaded model.
+    /// This is NOT authorization and cannot replace final-use validation.
+    /// Backend implementations that really batch must opt in explicitly.
+    /// A false result guarantees no batch dispatch will be attempted and
+    /// therefore cannot consume any one-shot authorization nonce.
+    fn supports_neuron_feature_batch(&self, _handle: &DriverModelHandle) -> bool {
+        false
+    }
+
     /// A genuine single backend invocation for an ordered batch. The default
     /// rejects batching instead of disguising N sequential driver calls as a
     /// performance improvement. Implementations must return exactly one result
@@ -575,6 +584,15 @@ pub trait NeuronFeatureDriver: ModelDriver {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    /// Fail before a signed one-shot nonce claim if the selected loaded model
+    /// has no native batch backend. Actual execution revalidates every grant,
+    /// current model and resource fence independently of this advisory flag.
+    pub(crate) fn can_run_neuron_feature_batch(&self, model_id: &str) -> bool {
+        self.models
+            .get(model_id)
+            .is_some_and(|loaded| self.driver.supports_neuron_feature_batch(&loaded.handle))
+    }
+
     pub(crate) fn run_neuron_features(
         &mut self,
         now_ms: u64,
