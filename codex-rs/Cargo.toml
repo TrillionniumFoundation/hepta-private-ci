@@ -490,7 +490,12 @@ serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
 serde_with = "3.17"
-serde_yaml = "0.9"
+# Shadow-only security migration: pure-Rust serde_yaml-compatible parser.
+# The original serde_yaml 0.9 pulls RUSTSEC-2024-0449 unsafe-libyaml.
+# Pin the maintained compatibility package to a release whose noyalib core
+# has RUSTSEC-2026-0333 typed-deserializer budget enforcement (>=0.0.53).
+# Retain all existing YAML contract tests and exact Cargo/Bazel lockfiles.
+serde_yaml = { package = "noyalib-serde-yaml", version = "=0.0.53" }
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
