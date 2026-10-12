@@ -6,6 +6,10 @@ on:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-agentd/src/test_support.rs"
+      - "codex-rs/cli/Cargo.toml"
+      - "codex-rs/cli/src/codex.rs"
+      - "codex-rs/cli/src/main.rs"
+      - "codex-rs/cli/src/hepta.rs"
       - ".github/workflows/hepta-neuron-v2-focused.yml"
   workflow_dispatch:
 
@@ -57,6 +61,42 @@ jobs:
           set -euo pipefail
           cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets
 
+      - name: Prove actual CLI crate roots own the recursion bound
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          metadata = json.loads(subprocess.check_output([
+              "cargo", "metadata", "--locked", "--no-deps",
+              "--format-version", "1", "--manifest-path", "codex-rs/Cargo.toml",
+          ]))
+          packages = [pkg for pkg in metadata["packages"] if pkg["name"] == "codex-cli"]
+          if len(packages) != 1:
+              raise SystemExit("expected a single codex-cli package")
+          binaries = {
+              target["name"]: Path(target["src_path"]).name
+              for target in packages[0]["targets"] if "bin" in target["kind"]
+          }
+          expected = {
+              "codex": "codex.rs", "codex-cli": "codex.rs",
+              "hepta": "hepta.rs", "logs_client": "logs_client.rs",
+          }
+          if binaries != expected:
+              raise SystemExit(f"unexpected CLI binary roots: {binaries!r}")
+          source_dir = Path("codex-rs/cli/src")
+          common = (source_dir / "main.rs").read_text(encoding="utf-8")
+          if any(line.lstrip().startswith("#![") for line in common.splitlines()):
+              raise SystemExit("included main.rs must not carry crate-level inner attributes")
+          for name in ("codex", "hepta"):
+              root = (source_dir / f"{name}.rs").read_text(encoding="utf-8")
+              if not root.startswith('#![recursion_limit = "256"]') or 'include!("main.rs");' not in root:
+                  raise SystemExit(f"{name}: missing crate-root recursion bound")
+          print("verified exact CLI crate roots and recursion bounds")
+          PY
       - name: Build real Codex executable for Agentd E2E
         shell: bash
         run: |
