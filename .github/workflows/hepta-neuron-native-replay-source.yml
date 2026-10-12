@@ -44,6 +44,8 @@ jobs:
         run: cargo fmt --package codex-hepta-agentd -- --check
       - name: Check real Agentd integration crate
         run: cargo check --locked -p codex-hepta-agentd --lib --tests
+      - name: Test owner-issued Neuron Tick identity and impersonation rejection
+        run: cargo test --locked -p codex-hepta-agentd --lib neuron_runtime::tests
       - name: Run durable owner, SQLite Memory and Ledger integration
         run: cargo test --locked -p codex-hepta-agentd --test terminal_cell_owner clean_agent_recall_replay_training_load_and_source_withdrawal -- --exact
       - name: Verify canonical selected-model descriptor codec and owner binding
