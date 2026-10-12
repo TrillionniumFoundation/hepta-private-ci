@@ -475,33 +475,152 @@ fn verify_original_runtime_receipts_v1(
         "independent original Supervisor journal signature is invalid",
     )?;
 
-    // The detached journal signature must cover an actual terminal handoff
-    // for this split, not arbitrary bytes signed by the Supervisor identity.
-    let checkpoint: serde_json::Value =
-        serde_json::from_slice(&journal.original_checkpoint_bytes)?;
-    if checkpoint.get("phase").and_then(|v| v.as_str()) != Some("retired")
-        || checkpoint.get("operationId").and_then(|v| v.as_str())
-            != Some(plan.split_id.as_str())
-        || checkpoint.get("domainId").and_then(|v| v.as_str())
-            != Some(journal.domain_id.as_str())
-        || checkpoint.get("oldGeneration").and_then(|v| v.as_u64())
-            != Some(plan.parent_generation)
-        || checkpoint.get("newGeneration").and_then(|v| v.as_u64())
-            != Some(plan.child_generation)
-        || checkpoint.get("authorityEpoch").and_then(|v| v.as_u64())
-            != Some(journal.authority_epoch)
-        || checkpoint.get("revision").and_then(|v| v.as_u64())
-            != Some(journal.committed_revision)
-        || checkpoint.get("unknownEffectCount").and_then(|v| v.as_u64()) != Some(0)
-    {
-        return Err(CellSplitObserverJoinErrorV1::Invalid(
-            "signed original Supervisor checkpoint is not a terminal handoff",
-        ));
-    }
+    verify_original_supervisor_checkpoint_v1(
+        &journal.original_checkpoint_bytes,
+        &journal,
+        plan,
+    )?;
     Ok((
         sha256(&original_cns.original_runtime_receipt_bytes),
         sha256(&journal.original_checkpoint_bytes),
     ))
+}
+
+/// An independently signed original must still be the canonical durable
+/// WriterHandoffCheckpointV1 record, not a plausible JSON object signed by
+/// an otherwise trusted key. This mirrors the original on-disk V1 schema and
+/// content digest without linking to the Supervisor crate (which depends on
+/// operator-acceptance).
+#[cfg(unix)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub(crate) struct OriginalSupervisorCheckpointV1 {
+    schema_version: u16,
+    operation_id: String,
+    domain_id: String,
+    source_writer: String,
+    target_writer: String,
+    old_generation: u64,
+    new_generation: u64,
+    authority_epoch: u64,
+    migration_plan_digest: String,
+    schema_digest: String,
+    rollback_predecessor_digest: String,
+    revision: u64,
+    phase: String,
+    outbox_watermark: Option<u64>,
+    unknown_effect_count: u32,
+    evidence_digest: String,
+    previous_receipt_digest: String,
+    receipt_digest: String,
+}
+
+#[cfg(unix)]
+impl OriginalSupervisorCheckpointV1 {
+    /// Domain and exact byte sequence from writer_handoff::checkpoint_digest.
+    /// The owner stores ten ordered checkpoints, retiring at revision ten.
+    pub(crate) fn content_digest_v1(&self) -> Result<String, CellSplitObserverJoinErrorV1> {
+        let malformed = || CellSplitObserverJoinErrorV1::Invalid(
+            "original Supervisor checkpoint has invalid digest encoding",
+        );
+        let mut bytes = b"hepta.writer-handoff.checkpoint.v1".to_vec();
+        for identity in [
+            &self.operation_id,
+            &self.domain_id,
+            &self.source_writer,
+            &self.target_writer,
+        ] {
+            let size = u32::try_from(identity.len()).map_err(|_| malformed())?;
+            bytes.extend_from_slice(&size.to_be_bytes());
+            bytes.extend_from_slice(identity.as_bytes());
+        }
+        for number in [
+            self.old_generation,
+            self.new_generation,
+            self.authority_epoch,
+        ] {
+            bytes.extend_from_slice(&number.to_be_bytes());
+        }
+        for digest in [
+            &self.migration_plan_digest,
+            &self.schema_digest,
+            &self.rollback_predecessor_digest,
+        ] {
+            bytes.extend_from_slice(&decode_supervisor_digest_v1(digest)?);
+        }
+        bytes.extend_from_slice(&self.revision.to_be_bytes());
+        bytes.push(9); // WriterHandoffPhaseV1::Retired
+        match self.outbox_watermark {
+            Some(watermark) => {
+                bytes.push(1);
+                bytes.extend_from_slice(&watermark.to_be_bytes());
+            }
+            None => bytes.push(0),
+        }
+        bytes.extend_from_slice(&self.unknown_effect_count.to_be_bytes());
+        bytes.extend_from_slice(&decode_supervisor_digest_v1(&self.evidence_digest)?);
+        bytes.extend_from_slice(&decode_supervisor_digest_v1(&self.previous_receipt_digest)?);
+        Ok(sha256(&bytes))
+    }
+}
+
+#[cfg(unix)]
+fn decode_supervisor_digest_v1(
+    value: &str,
+) -> Result<[u8; 32], CellSplitObserverJoinErrorV1> {
+    if value.len() != 64
+        || !value.bytes().all(|c| c.is_ascii_hexdigit() && !c.is_ascii_uppercase())
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original Supervisor checkpoint has invalid digest encoding",
+        ));
+    }
+    let mut bytes = [0_u8; 32];
+    for (index, byte) in bytes.iter_mut().enumerate() {
+        *byte = u8::from_str_radix(&value[index * 2..index * 2 + 2], 16)
+            .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
+                "original Supervisor checkpoint has invalid digest encoding",
+            ))?;
+    }
+    if bytes == [0_u8; 32] {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original Supervisor checkpoint contains an empty digest",
+        ));
+    }
+    Ok(bytes)
+}
+
+#[cfg(unix)]
+fn verify_original_supervisor_checkpoint_v1(
+    bytes: &[u8],
+    journal: &CellSplitSupervisorCommitV1,
+    plan: &crate::CellSplitExecutionPlanV1,
+) -> Result<(), CellSplitObserverJoinErrorV1> {
+    let checkpoint: OriginalSupervisorCheckpointV1 = serde_json::from_slice(bytes)?;
+    // The Supervisor's canonical_receipt_bytes_v1 uses serde_json::to_vec
+    // over a fixed ordered struct. Do not use durable::canonical_json here:
+    // it sorts JSON map keys and is a different representation.
+    if serde_json::to_vec(&checkpoint)? != bytes
+        || checkpoint.schema_version != 1
+        || checkpoint.phase != "retired"
+        || checkpoint.revision != 10
+        || checkpoint.outbox_watermark.is_none()
+        || checkpoint.unknown_effect_count != 0
+        || checkpoint.operation_id != plan.split_id
+        || checkpoint.domain_id != journal.domain_id
+        || checkpoint.source_writer.is_empty()
+        || checkpoint.target_writer.is_empty()
+        || checkpoint.old_generation != plan.parent_generation
+        || checkpoint.new_generation != plan.child_generation
+        || checkpoint.authority_epoch != journal.authority_epoch
+        || checkpoint.revision != journal.committed_revision
+        || checkpoint.receipt_digest != checkpoint.content_digest_v1()?
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "signed original Supervisor checkpoint is not a canonical terminal journal record",
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(unix)]
