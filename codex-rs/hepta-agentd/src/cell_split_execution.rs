@@ -176,7 +176,7 @@ fn ensure_control_frontier_unchanged(
     after: CellSplitCurrentControlSnapshotV1,
 ) -> Result<(), String> {
     if before != after {
-        return Err("current Control revision or binding changed during NDU/Selector admission".into());
+        return Err("Control revision changed during CellSplit admission".into());
     }
     Ok(())
 }
