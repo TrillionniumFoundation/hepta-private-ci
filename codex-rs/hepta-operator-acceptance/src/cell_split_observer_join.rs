@@ -434,15 +434,18 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_port_v1<P: CellSplitExec
         evidence_policy,
         live_owners,
     )?;
+    let minimum_digest = original_runtime_trust
+        .supervisor_minimum_checkpoint_digest
+        .to_owned();
+    let minimum_witness_digest = sha256(&canonical_json(
+        original_runtime_trust.supervisor_minimum_observer_signature,
+    )?);
     Ok(CellSplitObserverDeepReceiptV1 {
         join: join_receipt,
         original_cns_runtime_digest: originals.0,
         original_supervisor_journal_digest: originals.1,
-        supervisor_minimum_checkpoint_digest:
-            original_runtime_trust.supervisor_minimum_checkpoint_digest.to_owned(),
-        supervisor_minimum_observer_witness_digest: sha256(&canonical_json(
-            original_runtime_trust.supervisor_minimum_observer_signature,
-        )?),
+        supervisor_minimum_checkpoint_digest: minimum_digest,
+        supervisor_minimum_observer_witness_digest: minimum_witness_digest,
         independently_signed_original_runtime_and_journal: true,
         production_activation_authorized: false,
     })
