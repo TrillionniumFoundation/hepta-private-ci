@@ -12,6 +12,7 @@ struct Driver {
     missing_run_output_digest: bool,
     overrun_run_tokens: bool,
     overrun_run_memory: bool,
+    feature_transient_bytes: u64,
     run_calls: usize,
     feature_run_calls: usize,
     invalid_handle: bool,
@@ -104,7 +105,11 @@ impl NeuronFeatureDriver for Driver {
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
                 observed_memory_bytes: 1_024,
-                transient_allocation_bytes: 2_048,
+                transient_allocation_bytes: if self.feature_transient_bytes == 0 {
+                2_048
+            } else {
+                self.feature_transient_bytes
+            },
                 queue_age_micros: 11,
                 latency_micros: 17,
             });
@@ -121,7 +126,11 @@ impl NeuronFeatureDriver for Driver {
             drive_q24: vec![1 << 24; request.expected_output_width],
             prediction_q24: vec![0; request.expected_output_width],
             observed_memory_bytes: 1_024,
-            transient_allocation_bytes: 2_048,
+            transient_allocation_bytes: if self.feature_transient_bytes == 0 {
+                2_048
+            } else {
+                self.feature_transient_bytes
+            },
             queue_age_micros: 11,
             latency_micros: 17,
         })
@@ -785,7 +794,10 @@ impl NeuronBackendBatchDriver for MockBatchDriver {
             observed_peak_memory_bytes: if matches!(self.fault, BatchFault::WrongMemory) {
                 8_192
             } else {
-                1_024
+                // The mock sequentially materializes one request at a time;
+                // the peak includes its 1 KiB handle and 2 KiB scratch.
+                // This is NOT a fused tensor backend performance observation.
+                3_072
             },
             backend_elapsed_micros: 120,
         })
@@ -1018,4 +1030,85 @@ fn failed_release_blocks_native_backend_batch_without_dispatch() {
     assert_eq!(worker.driver.backend_calls, 0);
     assert_eq!(worker.driver.inner.unload_calls, 1);
     assert_eq!(worker.models.len(), 1);
+}
+
+
+#[test]
+fn feature_transient_exceeding_generation_memory_budget_seals_single_request() {
+    for transient in [4_096, u64::MAX] {
+        let driver = Driver {
+            feature_transient_bytes: transient,
+            ..Driver::default()
+        };
+        let mut worker = InferenceWorker::new(
+            100, "worker.transient".to_string(), 3, grant(), driver,
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::ModelCapacity),
+        );
+        assert!(worker.requires_external_recovery());
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::ExecutionIndeterminate),
+        );
+        assert_eq!(worker.driver.feature_run_calls, 1);
+    }
+}
+
+#[test]
+fn feature_transient_plus_other_loaded_model_cannot_exceed_global_grant() {
+    let mut resource_grant = grant();
+    resource_grant.maximum_memory_bytes = 3_600;
+    let mut worker = InferenceWorker::new(
+        100, "worker.shared-budget".to_string(), 3, resource_grant, Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first model");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    worker.load_model(100, second).expect("second model");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCapacity),
+    );
+    assert_eq!(worker.driver.feature_run_calls, 1);
+    assert!(worker.requires_external_recovery());
+}
+
+#[test]
+fn batch_rejects_member_transient_peak_mismatch_and_blocks_retry() {
+    for transient in [4_096, u64::MAX] {
+        let mut worker = batch_worker(BatchFault::None);
+        worker.driver.inner.feature_transient_bytes = transient;
+        assert_eq!(
+            worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+            Err(Error::FeatureBatchMismatch),
+        );
+        assert!(worker.requires_external_recovery());
+        assert_eq!(worker.driver.backend_calls, 1);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(
+            worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+            Err(Error::ExecutionIndeterminate),
+        );
+        assert_eq!(worker.driver.backend_calls, 1);
+    }
+}
+
+#[test]
+fn batch_peak_includes_other_models_loaded_in_worker_generation() {
+    let mut worker = batch_worker(BatchFault::None);
+    worker.grant.maximum_memory_bytes = 4_095;
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    worker.load_model(100, second).expect("second model load");
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+        Err(Error::FeatureBatchMismatch),
+    );
+    assert!(worker.requires_external_recovery());
+    assert_eq!(worker.driver.backend_calls, 1);
 }
