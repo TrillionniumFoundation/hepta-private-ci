@@ -40,16 +40,20 @@ def cleanup_git_fixture_with_retry(cleanup, *, attempts=5, sleep=time.sleep):
 class GitFixtureCleanupTests(unittest.TestCase):
     def test_retry_only_transient_directory_not_empty(self):
         calls = []
+
         def cleanup():
             calls.append(1)
             if len(calls) < 3:
-                raise OSError(errno.ENOTEMPTY, "transient Git loose-object race", ".git")
+                raise OSError(
+                    errno.ENOTEMPTY, "transient Git loose-object race", ".git"
+                )
 
         cleanup_git_fixture_with_retry(cleanup, attempts=4, sleep=lambda _: None)
         self.assertEqual(len(calls), 3)
 
     def test_persistent_directory_not_empty_stays_failure(self):
         calls = []
+
         def cleanup():
             calls.append(1)
             raise OSError(errno.ENOTEMPTY, "persistent Git fixture", ".git")
@@ -60,6 +64,7 @@ class GitFixtureCleanupTests(unittest.TestCase):
 
     def test_permission_errors_are_never_retried_or_suppressed(self):
         calls = []
+
         def cleanup():
             calls.append(1)
             raise OSError(errno.EACCES, "permissions", ".git")

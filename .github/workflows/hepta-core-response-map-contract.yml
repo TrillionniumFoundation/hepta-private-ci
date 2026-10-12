@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'codex-rs/core/src/client.rs'
-      - 'codex-rs/core/src/client_tests.rs'
-      - '.github/workflows/hepta-core-response-map-contract.yml'
+      - "codex-rs/core/src/client.rs"
+      - "codex-rs/core/src/client_tests.rs"
+      - ".github/workflows/hepta-core-response-map-contract.yml"
 
 permissions:
   contents: read
