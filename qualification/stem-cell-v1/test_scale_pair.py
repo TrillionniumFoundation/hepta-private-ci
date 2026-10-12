@@ -153,6 +153,19 @@ class PairTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate"):
                 pair._read_json(path)
 
+    def test_host_manifest_has_bounded_utf8_and_no_nan(self):
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "in.json"
+            path.write_bytes(b"{" + b" " * (64 * 1024) + b"}")
+            with self.assertRaisesRegex(ValueError, "oversized"):
+                pair._read_json(path)
+            path.write_bytes(b"\xff\xfe")
+            with self.assertRaisesRegex(ValueError, "UTF-8"):
+                pair._read_json(path)
+            path.write_text('{"x":NaN}', encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "nonfinite"):
+                pair._read_json(path)
+
     def test_insufficient_independent_input_groups_never_has_ci(self):
         args = list(self.setup())
         for workload in (args[0], args[1]):
