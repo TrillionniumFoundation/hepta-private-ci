@@ -136,6 +136,7 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
         if migration.phase() != CellStateMigrationPhaseV1::Prepared
             || migration.operation_id().as_str() != plan.split_id
             || migration.parent_anchor().sequence == 0
+            || migration.parent_anchor().sequence == u64::MAX
             || migration.parent_anchor().checkpoint_digest.is_zero()
             || migration.split_digest().is_zero()
             || migration.fence_digest().is_zero()
@@ -470,7 +471,7 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
             return Err(CellSplitChildStateCasErrorV1::Invalid);
         }
         Ok(Some(CellSplitOwnedEffectV1 {
-            owner_sequence: self.migration.parent_anchor().sequence,
+            owner_sequence: self.migration.parent_anchor().sequence.checked_add(1).ok_or(CellSplitChildStateCasErrorV1::Invalid)?,
             owner_receipt_bytes: bytes,
         }))
     }
@@ -490,7 +491,7 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
             return Ok(false);
         };
         Ok(
-            effect.owner_sequence == self.migration.parent_anchor().sequence
+            effect.owner_sequence == self.current_sequence_for_intent(intent)?
                 && effect.owner_receipt_bytes == bytes
                 && self.verify_manifest(intent, &bytes)?,
         )
@@ -498,6 +499,23 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
         Ok(self.migration.parent_anchor().sequence)
+    }
+
+    fn current_sequence_for_intent(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<u64, Self::Error> {
+        let predecessor = self.migration.parent_anchor().sequence;
+        // A durable all-child commit marker advances this split's revision,
+        // not the immutable parent Neuron checkpoint. Orphaned child payloads
+        // must never advance the frontier or be adopted by a fresh Execute.
+        match self.read_manifest(intent)? {
+            Some(bytes) if self.verify_manifest(intent, &bytes)? => {
+                predecessor.checked_add(1).ok_or(CellSplitChildStateCasErrorV1::Invalid)
+            }
+            Some(_) => Err(CellSplitChildStateCasErrorV1::Invalid),
+            None => Ok(predecessor),
+        }
     }
 }
 
