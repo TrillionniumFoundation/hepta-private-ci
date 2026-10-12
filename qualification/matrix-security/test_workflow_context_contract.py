@@ -70,5 +70,31 @@ class WorkflowContextContractTests(unittest.TestCase):
         self.assertIn("b3c07ea6ba6e8e46e30811c0500b04505c4be9f9", self.source)
 
 
+    def test_async_trait_repin_is_isolated_read_only_diagnostic(self):
+        # A stale Cargo.lock may be repinned only inside the detached stage;
+        # a generated lock is never copied into production or used to waive
+        # the independently failing cargo-deny/Matrix crypto security gate.
+        start = self.source.index("  disposable-cargo-resolution-probe:")
+        diagnostic = self.source[start:]
+        self.assertIn("isolated_lock_repin_probe.py", diagnostic)
+        self.assertIn('--manifest "$STAGE/codex-rs/Cargo.toml"', diagnostic)
+        self.assertIn('--lock "$STAGE/codex-rs/Cargo.lock"', diagnostic)
+        self.assertIn("-p async-trait --precise 0.1.92", diagnostic)
+        self.assertIn("CARGO_INITIAL_STATUS=", diagnostic)
+        self.assertIn("disposable_async_trait_update_status", diagnostic)
+        self.assertIn("git worktree remove --force", diagnostic)
+        self.assertNotIn("continue-on-error: true", diagnostic)
+
+    def test_source_root_lockfile_remains_outside_repin_command(self):
+        start = self.source.index("  disposable-cargo-resolution-probe:")
+        diagnostic = self.source[start:]
+        self.assertNotIn("cargo update -p async-trait", diagnostic)
+        self.assertIn('cargo +1.96.0 update \\', diagnostic)
+        self.assertIn('timeout 180 cargo +1.96.0 update', diagnostic)
+        self.assertIn('--manifest-path "$STAGE/codex-rs/Cargo.toml"', diagnostic)
+        self.assertIn("production_authorized':False", diagnostic)
+
+
+
 if __name__ == "__main__":
     unittest.main()
