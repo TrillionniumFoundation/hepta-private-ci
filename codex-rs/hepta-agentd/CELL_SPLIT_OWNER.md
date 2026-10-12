@@ -18,6 +18,10 @@ child Cell ID must never be inferred to be the evaluator's candidate ID.
 it checks the separately pinned child artifact ID, parent artifact lineage,
 generation and actual loaded content digest against an authenticated current
 registry. The function grants neither CAS write nor promotion authority.
+The plan also freezes the exact Objective digest, no-change baseline ID/digest,
+held-out dataset digest, and minimum future-window duration. It refuses a
+selection receipt from another objective/baseline/dataset or with an inadequate
+future observation window, even if its candidate and parent IDs happen to match.
 `verify_selected_candidate` checks the existing opaque
 `VerifiedSelfEvolutionSelectionV1` (signed evaluator, observer, selector and
 future-window validation) against BOTH identities, generations, artifacts and
