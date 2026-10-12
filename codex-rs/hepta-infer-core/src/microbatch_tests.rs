@@ -279,8 +279,9 @@ fn stale_coalesced_slots_cannot_hide_an_urgent_request() {
         )
         .unwrap();
     }
-    q.enqueue(1, intent("waiting", "b-waiting", 1, 1, 1_000))
-        .unwrap();
+    let mut waiting = intent("waiting", "b-waiting", 1, 1, 1_000);
+    waiting.key.model_digest = digest("unrelated-model");
+    q.enqueue(1, waiting).unwrap();
     q.enqueue(1, intent("urgent", "c-urgent", 1, 1, 2)).unwrap();
 
     let first = q.poll_physically_compatible(1).unwrap();
@@ -290,7 +291,7 @@ fn stale_coalesced_slots_cannot_hide_an_urgent_request() {
 
     // Three stale slots do not use up the four-live-lane scan budget.
     // The not-yet-ready scope must not hide an urgent later scope.
-    let second = q.poll(1).unwrap();
+    let second = q.poll_physically_compatible(1).unwrap();
     assert_eq!(second.scanned_lanes, 2);
     let ready = second.batch.expect("urgent request must be observed");
     assert_eq!(ready.requests[0].request_id, id("urgent"));
