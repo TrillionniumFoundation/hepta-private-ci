@@ -20,7 +20,7 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: true
-      - name: Ruff-format only the twelve CI-blocking source files; require AST parity and tests
+      - name: Ruff-format only the sixteen CI-blocking source files; require AST parity and tests
         env:
           TARGET_BRANCH: codex/memory-cell-evidence-20261008
         run: |
@@ -43,6 +43,10 @@ jobs:
             scripts/memory_cell/test_project_pr_merge_concordance.py
             scripts/memory_cell/project_pr_commit_ancestry.py
             scripts/memory_cell/test_project_pr_commit_ancestry.py
+            scripts/memory_cell/project_pr_family_extension.py
+            scripts/memory_cell/test_project_pr_family_extension.py
+            scripts/memory_cell/project_pr_family_bytes.py
+            scripts/memory_cell/test_project_pr_family_bytes.py
           )
           for attempt in 1 2 3; do
             git fetch --no-tags origin "refs/heads/$TARGET_BRANCH"
@@ -68,6 +72,10 @@ jobs:
               "test_project_pr_merge_concordance.py",
               "project_pr_commit_ancestry.py",
               "test_project_pr_commit_ancestry.py",
+              "project_pr_family_extension.py",
+              "test_project_pr_family_extension.py",
+              "project_pr_family_bytes.py",
+              "test_project_pr_family_bytes.py",
           ]
           files = [Path("scripts/memory_cell") / x for x in names]
           before = {}
@@ -99,7 +107,7 @@ jobs:
               echo 'No format changes required at exact branch HEAD' | tee /tmp/hepta-project-ruff-repair/status.txt
               exit 0
             fi
-            git commit -m 'style(memory-cell): Ruff-only project-history source and test cleanup'
+            git commit -m 'style(memory-cell): AST-equal Ruff cleanup for frozen public project source'
             if git push origin "HEAD:refs/heads/$TARGET_BRANCH"; then
               git rev-parse HEAD > /tmp/hepta-project-ruff-repair/commit.txt
               echo 'Published AST-equivalent, test-passing format change' | tee /tmp/hepta-project-ruff-repair/status.txt
