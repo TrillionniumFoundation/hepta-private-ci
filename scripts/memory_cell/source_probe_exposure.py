@@ -49,12 +49,6 @@ def verified_visits(documents, tokenizer, training):
     else:
         examples, dispositions = source_examples(documents, **args)
         curriculum_receipt = None
-    if (
-        digest(examples) != digest(training.get("source_supervision"))
-        or training.get("dispositions") != dispositions
-        or training.get("curriculum_receipt") != curriculum_receipt
-    ):
-        raise ValueError("source-only target or curriculum changed after writing")
     existing = training.get("write_schedule")
     if not isinstance(existing, dict):
         raise ValueError("source training schedule is missing")
@@ -66,13 +60,75 @@ def verified_visits(documents, tokenizer, training):
         or not 1 <= ceiling <= TOKEN_CEILING
     ):
         raise ValueError("source exposure exceeds the registered write bounds")
+
+    # Source-margin writing trains a predeclared matching SUBSET with two real
+    # forwards per step. Reconstruct the full, pre-subset plan and negative
+    # provenance, not just the saved active rows. Absent questions stay zero
+    # exposure; a hard negative is NOT a supervised positive question.
+    original_examples = examples
+    objective = training.get("binding_objective", "completion_ce")
+    factor = 1
+    expected_binding = None
+    if objective == "source_margin":
+        from source_binding_margin import source_hard_negatives
+
+        if (
+            training["curriculum"] != "single_hop"
+            or training.get("loss_backend") != "full"
+            or ceiling != TOKEN_CEILING // 2
+        ):
+            raise ValueError("unsupported source-margin writer profile")
+        pairs, unmatched = source_hard_negatives(
+            original_examples,
+            documents,
+            tokenizer,
+            allowed_roots={doc.root for doc in documents},
+            revoked=set(),
+        )
+        if not pairs:
+            raise ValueError("source-margin write lacks admitted hard negatives")
+        chosen = sorted(pairs)
+        before, initial = prepare(
+            tokenizer,
+            original_examples,
+            maximum_steps=maximum,
+            token_ceiling=TOKEN_CEILING,
+        )
+        del before
+        examples = tuple(original_examples[index] for index in chosen)
+        expected_binding = dict(
+            source_only=True,
+            training_pairs=[pairs[index] for index in chosen],
+            unmatched_source_question_ids=list(unmatched),
+            original_schedule_digest=digest(initial),
+            forward_token_charge_factor=2,
+            known_task_answers_consumed=False,
+            independent_review=False,
+            production_accepted=False,
+        )
+        factor = 2
+    elif objective != "completion_ce":
+        raise ValueError("unregistered source-writing objective")
+    if (
+        training.get("binding_receipt") != expected_binding
+        or digest(examples) != digest(training.get("source_supervision"))
+        or training.get("dispositions") != dispositions
+        or training.get("curriculum_receipt") != curriculum_receipt
+    ):
+        raise ValueError("source-only target, binding or curriculum changed")
+
     prepared, expected = prepare(
         tokenizer, examples, maximum_steps=maximum, token_ceiling=ceiling
     )
     if (
         existing != expected
         or training.get("scopes") != expected["scopes"]
-        or training.get("training_digest") != digest((examples, prepared))
+        or training.get("training_digest")
+        != (
+            digest((examples, prepared, expected_binding))
+            if expected_binding is not None
+            else digest((examples, prepared))
+        )
     ):
         raise ValueError("writer schedule or exact token exposure changed")
     coverage = audit_coverage(
@@ -82,8 +138,14 @@ def verified_visits(documents, tokenizer, training):
         training.get("write_curriculum_coverage") != coverage
         or type(training.get("steps")) is not int
         or training["steps"] != existing["planned_steps"]
-        or training.get("input_tokens") != existing["planned_input_tokens"]
-        or training.get("supervised_tokens") != existing["planned_supervised_tokens"]
+        or training.get("input_tokens") != factor * existing["planned_input_tokens"]
+        or training.get("supervised_tokens")
+        != factor * existing["planned_supervised_tokens"]
+        or (
+            objective == "source_margin"
+            and training.get("actual_projection_positions")
+            != training.get("input_tokens")
+        )
         or not isinstance(training.get("losses"), list)
         or len(training["losses"]) != training["steps"]
         or any(
@@ -92,9 +154,10 @@ def verified_visits(documents, tokenizer, training):
         )
     ):
         raise ValueError("completed training does not match the claimed source visits")
-    identities = [item["query"]["identity"] for item in examples]
+    identities = [item["query"]["identity"] for item in original_examples]
+    active = [item["query"]["identity"] for item in examples]
     if len(set(identities)) != len(identities):
         raise ValueError("duplicate source-only supervision identity")
-    return dict(zip(identities, existing["visits_per_example"], strict=True)), digest(
-        existing
-    )
+    visits = dict.fromkeys(identities, 0)
+    visits.update(zip(active, existing["visits_per_example"], strict=True))
+    return visits, digest(existing)
