@@ -69,16 +69,16 @@ class StemStudyTests(unittest.TestCase):
     def test_jsonl_has_single_meaning_and_bounded_physical_lines(self):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp, "evidence.jsonl")
-            path.write_text('{"case_id":"one"}\\n{"case_id":"two"}\\n')
+            path.write_text('{"case_id":"one"}\n{"case_id":"two"}\n')
             self.assertEqual(len(list(load_jsonl(path))), 2)
             for payload, error in (
-                ('{"case_id":"safe","case_id":"forged"}\\n', "duplicate JSON evidence field"),
-                ('{"nested":{"label":0,"label":1}}\\n', "duplicate JSON evidence field"),
-                ('{"metric":NaN}\\n', "nonfinite/nonstandard"),
-                ('{"metric":Infinity}\\n', "nonfinite/nonstandard"),
-                ('{"case_id":"one"}\\n\\n', "blank evidence JSONL row"),
-                ('[1, 2]\\n', "JSON object"),
-                ('{"text":"' + "x" * MAX_EVIDENCE_ROW_BYTES + '"}\\n',
+                ('{"case_id":"safe","case_id":"forged"}\n', "duplicate JSON evidence field"),
+                ('{"nested":{"label":0,"label":1}}\n', "duplicate JSON evidence field"),
+                ('{"metric":NaN}\n', "nonfinite/nonstandard"),
+                ('{"metric":Infinity}\n', "nonfinite/nonstandard"),
+                ('{"case_id":"one"}\n\n', "blank evidence JSONL row"),
+                ('[1, 2]\n', "JSON object"),
+                ('{"text":"' + "x" * MAX_EVIDENCE_ROW_BYTES + '"}\n',
                  "oversized evidence JSONL row"),
             ):
                 with self.subTest(reason=error):
