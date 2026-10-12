@@ -96,6 +96,10 @@ pub struct CellSplitObserverOriginalRuntimeTrustV1<'a> {
     /// An independently retained minimum terminal journal checkpoint digest.
     /// The signer key alone cannot prevent restoration of an older valid file.
     pub supervisor_minimum_checkpoint_digest: &'a str,
+    /// Signed independently by a policy-pinned Observer after checking its
+    /// own durable minimum checkpoint source. A caller-provided digest alone
+    /// cannot certify anti-rollback. This signature is NOT a production grant.
+    pub supervisor_minimum_observer_signature: &'a CellSplitTargetHostSignatureV1,
 }
 
 /// Additional read-only proof that the original CNS runtime and Supervisor
@@ -199,6 +203,54 @@ pub fn cell_split_observer_join_signing_payload_v1(
     let mut bytes = b"hepta.learning.cell-split.observer-effect-join.v1\0".to_vec();
     bytes.extend_from_slice(&canonical_json(payload)?);
     Ok(bytes)
+}
+
+/// Domain-separated data for the independent Observer's *retained minimum*
+/// checkpoint attestation. It binds the exact signed host execution, frozen
+/// split plan, original Supervisor revision/authority epoch and checkpoint
+/// digest. Creating these bytes does not authorize the caller to sign them:
+/// the real Observer must first consult its separate monotonic witness store.
+#[cfg(unix)]
+pub fn cell_split_supervisor_minimum_signing_payload_v1(
+    plan: &crate::CellSplitExecutionPlanV1,
+    evidence: &CellSplitSignedTargetHostEvidenceV1,
+    journal: &CellSplitSupervisorCommitV1,
+    minimum_checkpoint_digest: &str,
+) -> Result<Vec<u8>, CellSplitObserverJoinErrorV1> {
+    let _ = decode_supervisor_digest_v1(minimum_checkpoint_digest)?;
+    if evidence.payload.split_id != plan.split_id
+        || evidence.payload.parent_generation != plan.parent_generation
+        || evidence.payload.child_generation != plan.child_generation
+        || journal.old_generation != plan.parent_generation
+        || journal.new_generation != plan.child_generation
+        || journal.idempotency_key.is_empty()
+        || journal.domain_id.is_empty()
+        || journal.authority_epoch == 0
+        || journal.committed_revision == 0
+        || evidence.payload.target_host_nonce.is_empty()
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "minimum checkpoint witness is not bound to the frozen host execution",
+        ));
+    }
+    let plan_digest = plan.digest().map_err(|_| {
+        CellSplitObserverJoinErrorV1::Invalid("invalid minimum checkpoint plan")
+    })?;
+    let mut payload = b"hepta.learning.cell-split.supervisor-minimum-observer.v1\0".to_vec();
+    payload.extend_from_slice(&canonical_json(&(
+        plan_digest,
+        &evidence.payload.target_host_id,
+        &evidence.payload.target_host_nonce,
+        &evidence.payload.target_host_attestation_digest,
+        &evidence.payload.evidence_digest,
+        &journal.domain_id,
+        &journal.idempotency_key,
+        journal.authority_epoch,
+        journal.committed_revision,
+        sha256(&journal.original_checkpoint_bytes),
+        minimum_checkpoint_digest,
+    ))?);
+    Ok(payload)
 }
 
 fn verify_join_signature(
@@ -490,6 +542,38 @@ fn verify_original_runtime_receipts_v1(
             "original Supervisor journal is below independently retained checkpoint",
         ));
     }
+    // A matching string is not independent evidence: it could have been
+    // copied directly from the untrusted original checkpoint. Require the
+    // externally pinned Observer's signature over the *full* run-specific
+    // checkpoint minimum. The deployment remains responsible for ensuring
+    // that this Observer reads a genuinely monotonic store before signing.
+    let witness = runtime_trust.supervisor_minimum_observer_signature;
+    let observer_key = evidence_policy
+        .observer_keys
+        .get(&witness.signer_id)
+        .ok_or(CellSplitObserverJoinErrorV1::Invalid(
+            "Supervisor minimum witness signer is not an independent Observer",
+        ))?;
+    if witness.signer_id == evidence.host_signature.signer_id
+        || !evidence.observer_signatures.iter().any(|signature| {
+            signature.signer_id == witness.signer_id
+        })
+        || owner_trust.contains_owner_key(observer_key)
+        || observer_key == cns_key
+        || observer_key == supervisor_key
+        || evidence_policy.host_keys.values().any(|key| key == observer_key)
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "Supervisor minimum witness does not come from an independent Observer",
+        ));
+    }
+    let message = cell_split_supervisor_minimum_signing_payload_v1(
+        plan,
+        evidence,
+        &journal,
+        runtime_trust.supervisor_minimum_checkpoint_digest,
+    )?;
+    verify_join_signature(witness, observer_key, &message)?;
     Ok((
         sha256(&original_cns.original_runtime_receipt_bytes),
         sha256(&journal.original_checkpoint_bytes),
