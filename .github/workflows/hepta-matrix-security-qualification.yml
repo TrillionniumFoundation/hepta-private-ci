@@ -622,6 +622,9 @@ jobs:
             --scratch-lock "$RUNNER_TEMP/hepta-matrix-dual-unlocked.lock"
           # Make Cargo itself calculate the new checksums and resolve the entire
           # graph. Scratch lock bytes are NOT a production or verified lockfile.
+          # Keep the exact original bytes for post-Cargo identity/checksum
+          # comparison. Never treat a scratch lock as production remediation.
+          cp "$lock" "$RUNNER_TEMP/hepta-matrix-dual-original.lock"
           cp "$RUNNER_TEMP/hepta-matrix-dual-unlocked.lock" "$lock"
           set +e
           timeout 600 cargo +1.96.0 metadata --manifest-path "$manifest" \
@@ -661,6 +664,18 @@ jobs:
           )
           print(json.dumps(result, sort_keys=True))
           PY
+          # Only genuine Cargo metadata completion can justify a candidate
+          # diagnostic. Check the exact newly resolved Cargo.lock against its
+          # package identity, registry checksums and secure Matrix family.
+          # The global cargo-deny, E2EE, WAL and runtime owner gates stay open.
+          if [ "$status" -eq 0 ]; then
+            python3 qualification/matrix-security/dual_lock_resolution_gate.py \
+              --original-lock "$RUNNER_TEMP/hepta-matrix-dual-original.lock" \
+              --resolved-lock "$lock" \
+              --metadata "$RUNNER_TEMP/hepta-matrix-dual-metadata.json" \
+              --hepta-sha "$HEPTA_MATRIX_SOURCE_SHA" \
+              --output "$RUNNER_TEMP/hepta-matrix-dual-verification.json"
+          fi
           if [ "$status" -ne 0 ]; then
             echo "Joint disposable resolver remains BLOCKED; this does not waive the original failure."
             tail -n 90 "$RUNNER_TEMP/hepta-matrix-dual-metadata.stderr"
@@ -681,6 +696,7 @@ jobs:
             ${{ runner.temp }}/hepta-matrix-adapter-compile.json
             ${{ runner.temp }}/hepta-matrix-dual-lock-plan.json
             ${{ runner.temp }}/hepta-matrix-dual-resolution.json
+            ${{ runner.temp }}/hepta-matrix-dual-verification.json
             ${{ runner.temp }}/hepta-matrix-dual-metadata.stderr
           if-no-files-found: warn
           retention-days: 14
