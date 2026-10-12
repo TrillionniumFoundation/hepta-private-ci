@@ -1,7 +1,7 @@
 use crate::RewriteProfile;
 use crate::invalid_data_error;
 use crate::scope::is_redirected_destination;
-use serde_yaml::Value as YamlValue;
+use serde_json::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
@@ -168,7 +168,7 @@ fn parse_frontmatter(
         Ok(parsed) => parsed,
         Err(err) => return (BTreeMap::new(), Some(err.to_string())),
     };
-    let Some(mapping) = parsed.as_mapping() else {
+    let Some(mapping) = parsed.as_object() else {
         return (
             BTreeMap::new(),
             Some("frontmatter is not a YAML mapping".to_string()),
@@ -177,9 +177,10 @@ fn parse_frontmatter(
 
     let mut frontmatter = BTreeMap::new();
     for (key, value) in mapping {
-        let Some(key) = key.as_str().map(str::trim).filter(|key| !key.is_empty()) else {
+        let key = key.trim();
+        if key.is_empty() {
             continue;
-        };
+        }
         frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
     }
 
@@ -191,7 +192,7 @@ fn frontmatter_value_from_yaml(value: &YamlValue) -> FrontmatterValue {
         YamlValue::String(value) => FrontmatterValue::Scalar(value.trim().to_string()),
         YamlValue::Bool(value) => FrontmatterValue::Scalar(value.to_string()),
         YamlValue::Number(value) => FrontmatterValue::Scalar(value.to_string()),
-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
+        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => {
             FrontmatterValue::Other
         }
     }
@@ -307,5 +308,30 @@ impl FrontmatterValue {
             Self::Scalar(value) => Some(value),
             Self::Other => None,
         }
+    }
+}
+
+#[cfg(test)]
+mod safe_yaml_parser_migration_tests {
+    use super::*;
+
+    #[test]
+    fn yaml_frontmatter_preserves_scalars_and_denies_ambiguous_metadata() {
+        let (metadata, error) = parse_frontmatter(
+            "name: verified\ndescription: A bounded helper\nenabled: true\nsteps: [a, b]\n",
+        );
+        assert!(error.is_none(), "valid YAML frontmatter must remain parseable");
+        assert_eq!(metadata.get("name").and_then(FrontmatterValue::as_scalar), Some("verified"));
+        assert_eq!(
+            metadata.get("description").and_then(FrontmatterValue::as_scalar),
+            Some("A bounded helper")
+        );
+        assert_eq!(metadata.get("enabled").and_then(FrontmatterValue::as_scalar), Some("true"));
+        assert!(metadata.get("steps").is_some_and(|entry| entry.as_scalar().is_none()));
+
+        let (_, duplicate) = parse_frontmatter("name: original\nname: forged\n");
+        assert!(duplicate.is_some(), "duplicated identity must fail closed");
+        let (_, malformed) = parse_frontmatter("name: [unterminated\n");
+        assert!(malformed.is_some(), "malformed YAML must fail closed");
     }
 }

@@ -4,7 +4,7 @@ mod render;
 use render::rewrite_terms;
 use render::slugify_name;
 use render::yaml_string;
-use serde_yaml::Value as YamlValue;
+use serde_json::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
@@ -315,9 +315,9 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
     let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
-    let mapping = parsed.as_mapping()?;
+    let mapping = parsed.as_object()?;
     mapping.iter().find_map(|(key, value)| {
-        if key.as_str()?.trim() == "description" {
+        if key.trim() == "description" {
             yaml_scalar(value)
         } else {
             None
@@ -330,7 +330,7 @@ fn yaml_scalar(value: &YamlValue) -> Option<String> {
         YamlValue::String(value) => Some(value.trim().to_string()),
         YamlValue::Bool(value) => Some(value.to_string()),
         YamlValue::Number(value) => Some(value.to_string()),
-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
+        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => {
             None
         }
     }
@@ -436,3 +436,33 @@ fn contains_numbered_argument_placeholder(template: &str) -> bool {
 #[cfg(test)]
 #[path = "command_migration_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod safe_yaml_parser_migration_tests {
+    use super::*;
+
+    #[test]
+    fn command_frontmatter_accepts_one_scalar_description_only() {
+        assert_eq!(
+            parse_command_description("description: bounded helper\n"),
+            Some("bounded helper".to_string())
+        );
+        assert_eq!(
+            parse_command_description("description: [unsafe, shape]\n"),
+            None
+        );
+        assert_eq!(
+            parse_command_description("description:\n  nested: mapping\n"),
+            None
+        );
+        assert_eq!(
+            parse_command_description("description: original\ndescription: forged\n"),
+            None,
+            "duplicate command description cannot be resolved by taking the last field"
+        );
+        assert_eq!(
+            parse_command_description("description: [unterminated\n"),
+            None
+        );
+    }
+}

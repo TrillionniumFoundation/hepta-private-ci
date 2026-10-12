@@ -1,0 +1,86 @@
+name: Hepta Safe YAML Parser Migration (research-only, no waiver)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/skills/**"
+      - "codex-rs/ext/skills/**"
+      - "codex-rs/core-plugins/**"
+      - "codex-rs/external-agent-migration/**"
+      - ".github/workflows/hepta-safe-yaml-migration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-safe-yaml-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-head-parser-regression:
+    name: Safe-Rust YAML API and locked dependency qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact PR head without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Check SHA, pinned Rust version and repository source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+          cargo +1.95.0 --version
+      - name: Resolve Rust-only parser and retain generated lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/safe-yaml"
+          cargo +1.95.0 metadata --manifest-path codex-rs/Cargo.toml --format-version 1 \
+            > "$RUNNER_TEMP/safe-yaml/cargo-metadata.json"
+          cp codex-rs/Cargo.lock "$RUNNER_TEMP/safe-yaml/Cargo.lock"
+          git diff --binary -- codex-rs/Cargo.lock > "$RUNNER_TEMP/safe-yaml/Cargo.lock.patch"
+      - name: Upload exact Cargo.lock candidate and diagnostic diff
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: safe-yaml-cargo-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/safe-yaml/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Require reviewed lockfile and zero unmaintained YAML parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git diff --name-only)"
+          if grep -Fq 'name = "unsafe-libyaml"' codex-rs/Cargo.lock; then
+            echo "::error::unsafe-libyaml remains in the exact locked graph"
+            exit 1
+          fi
+          if grep -Fq 'name = "serde_yaml"' codex-rs/Cargo.lock; then
+            echo "::error::legacy serde_yaml package remains in the exact graph"
+            exit 1
+          fi
+      - name: Real parser, plugin and migration regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml \
+            -p codex-skills -p codex-skills-extension -p codex-core-plugins \
+            -p codex-external-agent-migration --lib
+      - name: Verify formatter and exact-source cleanliness
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-external-agent-migration --package codex-core-plugins -- --check
+          git diff --check
+          git diff --exit-code
