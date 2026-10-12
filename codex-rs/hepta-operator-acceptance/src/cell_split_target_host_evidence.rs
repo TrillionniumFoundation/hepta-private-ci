@@ -659,7 +659,11 @@ pub fn verify_cell_split_target_host_evidence(
     let mut hardware = BTreeSet::new();
     let mut resource_sample_count = 0;
     for event in &payload.events {
-        if let Some(sample) = &event.resource {
+        if event.event_kind == CellSplitTargetHostEventKindV1::ResourceMeasurement {
+            let sample = event
+                .resource
+                .as_ref()
+                .ok_or_else(|| invalid("resource event has no sample"))?;
             resource_sample_count += 1;
             validate_resource(sample)?;
             hardware.insert(sample.hardware);
