@@ -1538,3 +1538,28 @@ The separate pinned archive audit enforces the historical exact
 19/5/2 counts while retaining the verified original 576 policy rows,
 HEAD and source-tree hashes, and all actual Head artifacts. This does
 not tune a new ranking policy or justify Cell scale-out.
+
+## Immutable identical-Reader-request invariance
+
+A direct SHA-256 recheck of the original `e9c8f9c9...` development ZIP
+(95/95 internal members) found 396 succeeded attempts over **66 unique
+canonical Reader requests**, or **330 redundant successful repeats**.
+Within each identical request, the raw answer, input-token hash,
+generated-token hash and post-policy diagnostic F1 were identical.
+
+`stem_train_heldout_bridge.py` now requires *both* Reader receipts to
+authenticate their original `canonical_request_digest` from the pinned
+Reader identity/profile, original question and exact delivered evidence,
+also confirming the original question digest and bounded token hashes.
+If two frozen-Reader answers have an identical canonical request but a
+different decoded answer, token digest or post-policy score, the comparator
+**rejects the purported learning gain** rather than counting an unstable
+Reader/cached score as an Encoder/Head effect. Any truly changed evidence
+request remains separately eligible for the existing fixed-question
+comparison. Reused Reader responses are not treated as independent
+model executions or new task subjects.
+
+This is receipt consistency, **not** independently validated source
+sufficiency, correct answer semantics, citation entailment, or
+prospective family gain. Original successful historical outputs meet this
+invariant; current modified source must still pass its own exact-source CI.

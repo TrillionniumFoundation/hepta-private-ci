@@ -201,6 +201,54 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                             raise ValueError(
                                 "unchanged top-1 cannot change actual delivered Reader evidence"
                             )
+                        # The exact cache key includes the pinned model, prompt,
+                        # original question and delivered source bytes. Neither
+                        # a forged cache receipt nor a changed answer to the SAME
+                        # immutable request may be counted as model-learning gain.
+                        for receipt, evidence in (
+                            (b_receipt, original_evidence),
+                            (l_receipt, learned_evidence),
+                        ):
+                            expected_request = digest((
+                                receipt["generator_identity"],
+                                receipt["generator_profile"],
+                                receipt["observable_query"],
+                                evidence,
+                            ))
+                            if (
+                                receipt.get("canonical_request_digest")
+                                != expected_request
+                                or receipt.get("question_digest")
+                                != digest(receipt["observable_query"])
+                                or any(
+                                    not isinstance(receipt.get(key), str)
+                                    or len(receipt[key]) != 64
+                                    or any(ch not in "0123456789abcdef"
+                                           for ch in receipt[key])
+                                    for key in ("input_ids_digest",
+                                                "generated_ids_digest")
+                                )
+                            ):
+                                raise ValueError(
+                                    "noncanonical Reader request or token receipt"
+                                )
+                        identical_request = (
+                            b_receipt["canonical_request_digest"]
+                            == l_receipt["canonical_request_digest"]
+                        )
+                        if identical_request and (
+                            baseline.get("answer") != learned.get("answer")
+                            or b_receipt["input_ids_digest"]
+                            != l_receipt["input_ids_digest"]
+                            or b_receipt["generated_ids_digest"]
+                            != l_receipt["generated_ids_digest"]
+                            or baseline.get("diagnostic_answer_f1")
+                            != learned.get("diagnostic_answer_f1")
+                        ):
+                            raise ValueError(
+                                "identical Reader request yielded inconsistent "
+                                "answer, tokens or post-policy score"
+                            )
                         orig_f1 = baseline.get("diagnostic_answer_f1")
                         new_f1 = learned.get("diagnostic_answer_f1")
                         if orig_f1 is not None and new_f1 is not None:
@@ -212,6 +260,8 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                             ):
                                 raise ValueError("invalid paired Reader token F1")
                             f1_delta = new_f1 - orig_f1
+                    if not good_pair:
+                        identical_request = None
                     paired_pool_digest = (
                         baseline["pool_digest"] if b_selection and l_selection else None
                     )
@@ -234,6 +284,7 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                         both_source_choices_observed=b_selection and l_selection,
                         matched_original_pool_digest=paired_pool_digest,
                         matched_reader_request_identity=frozen_request_identity,
+                        identical_canonical_reader_request=identical_request,
                         native_source_label_category=category,
                         native_answerable_source_support=weak_native_source_support,
                         weak_native_source_labels_scored=native_scored,
@@ -310,6 +361,18 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                         ),
                         both_readers_succeeded=sum(
                             r["both_original_reader_calls_succeeded"] for r in rows
+                        ),
+                        identical_request_pairs=sum(
+                            r["identical_canonical_reader_request"] is True
+                            for r in rows
+                        ),
+                        changed_request_pairs=sum(
+                            r["identical_canonical_reader_request"] is False
+                            for r in rows
+                        ),
+                        request_identity_unknown_due_to_failure=sum(
+                            r["identical_canonical_reader_request"] is None
+                            for r in rows
                         ),
                         reader_f1_scored=len(f1),
                         reader_f1_unscored=n - len(f1),
@@ -451,7 +514,7 @@ def train_to_heldout_gap(plan, learning, scored, targets):
             independent_source_family_sampling_not_established=True,
         )
     return dict(
-        schema="hepta.stem-train-heldout-diagnostic-gap.v4",
+        schema="hepta.stem-train-heldout-diagnostic-gap.v5",
         planned_source_policy_rows=len(scored),
         planned_stages=STAGES,
         learned_arms=ARMS[1:],
@@ -460,6 +523,7 @@ def train_to_heldout_gap(plan, learning, scored, targets):
         actual_training_predictions_unmodified=True,
         metrics_not_for_hyperparameter_search=True,
         matched_reader_weights_prompt_and_question_required=True,
+        canonical_request_and_deterministic_answer_receipt_verified=True,
         train_fit_not_proof_of_generalization=True,
         independent_semantic_evidence_review=False,
         by_checkpoint_cell_arm=reports,
