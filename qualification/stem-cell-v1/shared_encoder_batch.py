@@ -17,6 +17,7 @@ MAX_ITEMS = 32
 MAX_TEXT_BYTES = 65536
 MAX_FEATURE_WIDTH = 65536
 MAX_ENCODED_TOKENS = 8192  # Matches the admitted local HF token cap.
+MAX_PADDED_BATCH_TOKENS = 32_768  # Bounded padded [batch, seq] activation shape.
 NATIVE_Q24_INPUT_LIMIT = 512
 
 
@@ -404,6 +405,11 @@ class FrozenLocalHfBackend:
         # the immutable, already SHA-pinned local safetensors inventory.
         self.verified_materialization = verify_loaded_safetensors(
             torch, model, snapshot)
+        # Verify again AFTER actual model loading and tensor materialization.
+        # A replaced on-disk checkpoint must not retain the old cache key.
+        # This is a local research TOCTOU check, NOT signed file authority.
+        if snapshot_digest(snapshot) != expected_snapshot_digest:
+            raise ValueError("model snapshot changed during pretrained loading")
         self.model = model
         for p in self.model.parameters():
             p.requires_grad_(False)
@@ -415,9 +421,16 @@ class FrozenLocalHfBackend:
         t = self.torch
         tokenized = self.tokenizer(texts, return_tensors="pt", padding=True, truncation=False)
         masks = tokenized["attention_mask"]
+        ids = tokenized["input_ids"]
+        if (masks.ndim != 2 or ids.ndim != 2 or
+                tuple(masks.shape) != tuple(ids.shape) or
+                masks.shape[0] != len(texts)):
+            raise ValueError("invalid padded Encoder input geometry")
         lengths = [int(x) for x in masks.sum(dim=1).tolist()]
         if any(x > self.max_tokens or x < 1 for x in lengths):
             raise ValueError("input exceeds frozen token capacity; no silent truncation")
+        if masks.numel() > MAX_PADDED_BATCH_TOKENS:
+            raise ValueError("physical Encoder batch exceeds padded token resource envelope")
         args = {k: v.to(self.device) for k, v in tokenized.items()}
         if self.device.startswith("cuda"):
             t.cuda.synchronize()
