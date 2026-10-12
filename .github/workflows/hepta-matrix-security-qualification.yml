@@ -365,6 +365,137 @@ jobs:
   # Compile the real Hepta Matrix callers, not merely upstream matrix-sdk.
   # This is an isolated compatibility experiment; no production dependency,
   # lock, trust anchor or security policy is changed.
+  minimal-hepta-matrix-adapter-compile:
+    name: Compile Hepta Matrix with minimal 0.19.1 AnyMap3 source (diagnostic only)
+    needs: minimal-anymap-backport-source-probe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      HEPTA_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Read exact 0.19.1 release (source evidence only)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Read exact upstream AnyMap3 change (source evidence only)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify candidate belongs to exact immutable PR source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEPTA_SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree}
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_minimal_hepta_*.py'
+      - name: Prepare minimal reviewed source and detached Hepta manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          STAGE="$RUNNER_TEMP/hepta-minimal-$GITHUB_RUN_ID"
+          SDK="$RUNNER_TEMP/sdk-minimal-$GITHUB_RUN_ID"
+          git worktree add --detach "$STAGE" "$HEPTA_SOURCE_SHA"
+          python3 qualification/matrix-security/minimal_hepta_source_stage.py \
+            --stage "$STAGE" \
+            --release upstream-release \
+            --migration upstream-anymap-commit \
+            --candidate-dir "$SDK" \
+            --source-sha "$HEPTA_SOURCE_SHA" \
+            --output "$RUNNER_TEMP/hepta-minimal-stage.json"
+          printf 'HEPTA_MINIMAL_STAGE=%s\n' "$STAGE" >> "$GITHUB_ENV"
+          printf 'HEPTA_MINIMAL_SDK=%s\n' "$SDK" >> "$GITHUB_ENV"
+      - name: Install explicit Rust 1.96 only for disposable candidate
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve pinned minimal release with real Cargo metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 900 cargo +1.96.0 metadata \
+            --manifest-path "$HEPTA_MINIMAL_STAGE/codex-rs/Cargo.toml" \
+            --format-version 1 \
+            > "$RUNNER_TEMP/hepta-minimal-metadata.json" \
+            2> "$RUNNER_TEMP/hepta-minimal-metadata.stderr" || {
+              tail -n 100 "$RUNNER_TEMP/hepta-minimal-metadata.stderr"
+              exit 1
+            }
+          python3 qualification/matrix-security/minimal_hepta_graph_gate.py \
+            --metadata "$RUNNER_TEMP/hepta-minimal-metadata.json" \
+            --sdk-root "$HEPTA_MINIMAL_SDK" \
+            --hepta-root "$HEPTA_MINIMAL_STAGE" \
+            --output "$RUNNER_TEMP/hepta-minimal-graph.json"
+      - name: Compile both real Hepta Matrix consumers with exact source candidate
+        shell: bash
+        run: |
+          set -uo pipefail
+          status=0
+          timeout 2100 cargo +1.96.0 check --locked \
+            --manifest-path "$HEPTA_MINIMAL_STAGE/codex-rs/Cargo.toml" \
+            -p codex-hepta-matrix-sdk -p codex-hepta-matrixd \
+            --all-targets \
+            > "$RUNNER_TEMP/hepta-minimal-cargo.stdout" \
+            2> "$RUNNER_TEMP/hepta-minimal-cargo.stderr" || status=$?
+          STATUS="$status" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          code = int(os.environ["STATUS"])
+          (root / "hepta-minimal-compile.json").write_text(
+              json.dumps({
+                  "schema": "hepta.matrix-minimal-hepta-compile.v1",
+                  "hepta_matrix_compiler_exit_code": code,
+                  "hepta_matrix_compiled": code == 0,
+                  "source": "matrix-sdk-0.19.1-with-minimal-pinned-upstream-anymap3",
+                  "hepta_source_sha": os.environ["HEPTA_SOURCE_SHA"],
+                  "e2ee_interoperability_verified": False,
+                  "sqlite_wal_crash_recovery_verified": False,
+                  "production_lock_updated": False,
+                  "cargo_deny_verified": False,
+                  "production_authorized": False,
+              }, sort_keys=True, indent=2) + "\n")
+          PY
+          if [ "$status" -ne 0 ]; then
+            tail -n 150 "$RUNNER_TEMP/hepta-minimal-cargo.stderr"
+          fi
+          exit "$status"
+      - name: Preserve source, Cargo graph and real compiler receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-minimal-integration-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-minimal-stage.json
+            ${{ runner.temp }}/hepta-minimal-graph.json
+            ${{ runner.temp }}/hepta-minimal-compile.json
+            ${{ runner.temp }}/hepta-minimal-metadata.stderr
+            ${{ runner.temp }}/hepta-minimal-cargo.stdout
+            ${{ runner.temp }}/hepta-minimal-cargo.stderr
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Discard only detached candidate and leave tracked source pristine
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${HEPTA_MINIMAL_STAGE:-}" ] && [ -d "$HEPTA_MINIMAL_STAGE" ]; then
+            git worktree remove --force "$HEPTA_MINIMAL_STAGE"
+          fi
+          git diff --check
+          git diff --exit-code
+
   disposable-hepta-matrix-adapter-compile:
     name: Compile Hepta Matrix adapters against pinned secure candidate (diagnostic only)
     runs-on: ubuntu-24.04
