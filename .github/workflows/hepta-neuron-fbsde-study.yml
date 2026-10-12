@@ -37,6 +37,8 @@ jobs:
             --output exact-study 2>&1 | tee exact-study.log
           PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
             --profile coupled_nonlinear_v1 --output nonlinear-study 2>&1 | tee nonlinear-study.log
+          PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
+            --profile riccati_solver_v1 --output riccati-study 2>&1 | tee riccati-study.log
           git diff --exit-code
       - name: Retain original source, measurements and failures
         if: always()
@@ -51,6 +53,8 @@ jobs:
             exact-study/
             nonlinear-study.log
             nonlinear-study/
+            riccati-study.log
+            riccati-study/
           if-no-files-found: error
           retention-days: 30
 
