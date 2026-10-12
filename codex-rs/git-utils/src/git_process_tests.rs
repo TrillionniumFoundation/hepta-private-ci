@@ -50,9 +50,9 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         );
         let launch_child = "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', $encoded) -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); ";
         let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "{encoded_child}{launch_child}Wait-Process -Id $child.Id"
-            ),
+            GitWrapperLifetime::WaitForChild => {
+                format!("{encoded_child}{launch_child}Wait-Process -Id $child.Id")
+            }
             GitWrapperLifetime::ExitBeforeTimeout => format!(
                 "{encoded_child}{launch_child}while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
             ),
