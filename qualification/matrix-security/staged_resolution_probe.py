@@ -43,13 +43,17 @@ def stage_manifest(source, stage, exact_source_sha, *, sqlite_arm='retain_legacy
     original = target.read_text(encoding='utf-8')
     if original.count(SOURCE_SPEC) != 1:
         raise ValueError('workspace SDK dependency no longer matches frozen baseline')
+    # The retention arm must really retain an audited 0.18 SQLite patch;
+    # otherwise two diagnostically distinct arms could silently be identical.
+    original_patch = tomllib.loads(original).get('patch', {}).get('crates-io', {}).get('matrix-sdk-sqlite')
+    if (original.count(SQLITE_PATCH_SPEC) != 1
+            or original_patch != {'path': 'third_party/matrix-sdk-sqlite-0.18.0'}):
+        raise ValueError('the legacy SQLite patch is not the exact pinned source')
     replaced = original.replace(SOURCE_SPEC, CANDIDATE_SPEC)
     # A pinned SDK 0.19 cannot safely inherit the 0.18 SQLite source patch.
     # Only an isolated resolver arm may test its removal; this does not change
     # the actual workspace or waive any dependency-security rule.
     if sqlite_arm == 'use_upstream_sqlite':
-        if original.count(SQLITE_PATCH_SPEC) != 1:
-            raise ValueError('the legacy SQLite patch is not the exact pinned source')
         replaced = replaced.replace(SQLITE_PATCH_SPEC + '\n', '', 1)
         if SQLITE_PATCH_SPEC in replaced:
             raise ValueError('SQLite patch removal incomplete')
@@ -59,9 +63,11 @@ def stage_manifest(source, stage, exact_source_sha, *, sqlite_arm='retain_legacy
             or candidate.get('default-features') is not False
             or set(candidate['features']) != {'e2e-encryption','sqlite'}):
         raise ValueError('unregistered or weakened Matrix dependency candidate')
-    if sqlite_arm == 'use_upstream_sqlite':
-        if tomllib.loads(replaced).get('patch',{}).get('crates-io',{}).get('matrix-sdk-sqlite') is not None:
-            raise ValueError('old SQLite patch remains in disposable source')
+    staged_patch = tomllib.loads(replaced).get('patch',{}).get('crates-io',{}).get('matrix-sdk-sqlite')
+    if sqlite_arm == 'use_upstream_sqlite' and staged_patch is not None:
+        raise ValueError('old SQLite patch remains in disposable source')
+    if sqlite_arm == 'retain_legacy_sqlite_patch' and staged_patch != original_patch:
+        raise ValueError('retained SQLite patch changed in disposable source')
     target.write_text(replaced,encoding='utf-8')
     return {
         'schema':'hepta.matrix-sdk-cargo-resolution-probe.v2',
