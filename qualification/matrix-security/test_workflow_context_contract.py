@@ -106,6 +106,26 @@ class WorkflowContextContractTests(unittest.TestCase):
         self.assertNotIn("cargo update --manifest-path codex-rs/Cargo.toml", candidate)
         self.assertNotIn('"production_authorized": True', candidate)
 
+    def test_disposable_hepta_adapter_compiler_is_exact_sha_and_non_authorizing(self):
+        begin = self.source.index("  disposable-hepta-matrix-adapter-compile:")
+        end = self.source.index("  disposable-cargo-resolution-probe:", begin)
+        candidate = self.source[begin:end]
+        self.assertIn('git worktree add --detach "$STAGE" "$SOURCE_SHA"', candidate)
+        self.assertIn("--sqlite-arm use_upstream_sqlite", candidate)
+        self.assertIn("isolated_lock_repin_probe.py", candidate)
+        self.assertIn("adapter_candidate_gate.py", candidate)
+        self.assertIn("--source-manifest codex-rs/Cargo.toml", candidate)
+        self.assertIn("HEPTA_MATRIX_SOURCE_SHA", candidate)
+        self.assertIn('cargo +1.96.0 check --locked', candidate)
+        self.assertIn("-p codex-hepta-matrix-sdk -p codex-hepta-matrixd", candidate)
+        self.assertIn("--all-targets", candidate)
+        self.assertIn('"cargo_deny_verified": False', candidate)
+        self.assertIn('"production_authorized": False', candidate)
+        self.assertIn('git worktree remove --force "$HEPTA_MATRIX_ADAPTER_STAGE"', candidate)
+        self.assertIn("git diff --exit-code", candidate)
+        self.assertNotIn("continue-on-error: true", candidate)
+        self.assertNotIn('cargo update --manifest-path codex-rs/Cargo.toml', candidate)
+
     def test_source_root_lockfile_remains_outside_repin_command(self):
         start = self.source.index("  disposable-cargo-resolution-probe:")
         diagnostic = self.source[start:]
