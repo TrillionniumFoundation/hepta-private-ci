@@ -693,3 +693,117 @@ mod authority_epoch_tests {
         assert!(verify_original_handoff_epoch_v1(&missing_epoch, &journal).is_err());
     }
 }
+
+
+#[cfg(all(test, unix))]
+mod original_checkpoint_integrity_tests {
+    use super::*;
+
+    fn fixture() -> (crate::CellSplitExecutionPlanV1, CellSplitSupervisorCommitV1) {
+        let plan = crate::CellSplitExecutionPlanV1 {
+            split_id: "split.observer".into(),
+            scope_digest: "11".repeat(32),
+            parent_generation: 7,
+            child_generation: 8,
+            parent_artifact_digest: "22".repeat(32),
+            child_artifact_digest: "33".repeat(32),
+            ndu_snapshot_digest: "44".repeat(32),
+            route_fence_digest: "55".repeat(32),
+            owner_ids: [
+                "artifact".into(), "migration".into(),
+                "cns".into(), "supervisor".into(),
+            ],
+        };
+        let json = serde_json::json!({
+            "schemaVersion": 1,
+            "operationId": "split.observer",
+            "domainId": "domain.observer",
+            "sourceWriter": "cell.parent",
+            "targetWriter": "cell.child",
+            "oldGeneration": 7,
+            "newGeneration": 8,
+            "authorityEpoch": 9,
+            "migrationPlanDigest": "61".repeat(32),
+            "schemaDigest": "62".repeat(32),
+            "rollbackPredecessorDigest": "63".repeat(32),
+            "revision": 10,
+            "phase": "retired",
+            "outboxWatermark": 42,
+            "unknownEffectCount": 0,
+            "evidenceDigest": "64".repeat(32),
+            "previousReceiptDigest": "65".repeat(32),
+            "receiptDigest": "00".repeat(32),
+        });
+        let mut checkpoint: OriginalSupervisorCheckpointV1 =
+            serde_json::from_value(json).expect("typed canonical handoff");
+        checkpoint.receipt_digest = checkpoint.content_digest_v1().expect("checkpoint hash");
+        let bytes = serde_json::to_vec(&checkpoint).expect("native order");
+        let journal = CellSplitSupervisorCommitV1 {
+            idempotency_key: "aa".repeat(32),
+            domain_id: "domain.observer".into(),
+            handoff_plan_digest: "66".repeat(32),
+            old_generation: 7,
+            new_generation: 8,
+            authority_epoch: 9,
+            committed_revision: 10,
+            original_checkpoint_bytes: bytes,
+            original_checkpoint_signature_bytes: vec![0; 64],
+        };
+        (plan, journal)
+    }
+
+    #[test]
+    fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() {
+        let (plan, journal) = fixture();
+        assert!(verify_original_supervisor_checkpoint_v1(
+            &journal.original_checkpoint_bytes, &journal, &plan,
+        ).is_ok());
+
+        let original: OriginalSupervisorCheckpointV1 =
+            serde_json::from_slice(&journal.original_checkpoint_bytes)
+                .expect("original typed checkpoint");
+        for (name, key, value) in [
+            ("false terminal revision", "revision", serde_json::json!(11)),
+            ("missing drain watermark", "outboxWatermark", serde_json::Value::Null),
+            ("forged prior digest", "previousReceiptDigest",
+                serde_json::json!("ff".repeat(32))),
+            ("invalid schema", "schemaVersion", serde_json::json!(2)),
+            ("different handoff domain", "domainId",
+                serde_json::json!("other-domain")),
+            ("different final-use epoch", "authorityEpoch", serde_json::json!(10)),
+            ("stale generation", "newGeneration", serde_json::json!(9)),
+            ("nonterminal phase", "phase", serde_json::json!("route_published")),
+            ("unknown effect remains", "unknownEffectCount", serde_json::json!(1)),
+        ] {
+            let mut altered = serde_json::to_value(&original).expect("json value");
+            altered[key] = value;
+            let changed: OriginalSupervisorCheckpointV1 =
+                serde_json::from_value(altered).expect("well-formed field type");
+            let bytes = serde_json::to_vec(&changed).expect("typed encoding");
+            assert!(
+                verify_original_supervisor_checkpoint_v1(&bytes, &journal, &plan).is_err(),
+                "{name}: a signed but altered checkpoint cannot qualify",
+            );
+        }
+
+        let sorted_json = canonical_json(&original).expect("sorted JSON object");
+        assert_ne!(sorted_json, journal.original_checkpoint_bytes);
+        assert!(verify_original_supervisor_checkpoint_v1(
+            &sorted_json, &journal, &plan,
+        ).is_err(), "native WriterHandoff serialisation cannot be replaced");
+
+        let mut dropped = serde_json::to_value(&original).expect("value");
+        dropped.as_object_mut().expect("checkpoint object").remove("sourceWriter");
+        let bytes = serde_json::to_vec(&dropped).expect("incomplete JSON");
+        assert!(verify_original_supervisor_checkpoint_v1(
+            &bytes, &journal, &plan,
+        ).is_err(), "all durable writer-handoff fields are mandatory");
+
+        let mut extra = serde_json::to_value(&original).expect("value");
+        extra["pretendAuthorized"] = serde_json::json!(true);
+        let bytes = serde_json::to_vec(&extra).expect("extra JSON");
+        assert!(verify_original_supervisor_checkpoint_v1(
+            &bytes, &journal, &plan,
+        ).is_err(), "unrecognized checkpoint claims must be rejected");
+    }
+}
