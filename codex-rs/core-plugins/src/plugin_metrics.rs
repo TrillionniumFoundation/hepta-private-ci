@@ -77,7 +77,8 @@ pub(crate) fn load_plugin_metrics_operations(
     let manifest: AnalyticsManifest = serde_yaml::from_slice_with_options(
         &contents,
         serde_yaml::options! { reject_unsupported_tags: true },
-    ).ok()?;
+    )
+    .ok()?;
     validate_manifest(manifest, plugin_root)
 }
 
