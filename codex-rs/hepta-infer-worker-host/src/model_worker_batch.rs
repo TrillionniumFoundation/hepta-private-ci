@@ -47,7 +47,7 @@ pub(crate) trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
 }
 
 /// Admission floor for independent Q24 drive/prediction output buffers.
-/// Precomputed V1 input vectors already exist; this is not measured RSS.
+/// This is a pre-dispatch lower bound, not measured backend RSS.
 fn minimum_neuron_batch_output_bytes(requests: &[NeuronFeatureRequest]) -> Result<u64, Error> {
     requests.iter().try_fold(0_u64, |total, item| {
         let width =
@@ -56,6 +56,17 @@ fn minimum_neuron_batch_output_bytes(requests: &[NeuronFeatureRequest]) -> Resul
             .checked_mul(2)
             .and_then(|elements| elements.checked_mul(8))
             .ok_or(Error::ArithmeticOverflow)?;
+        total.checked_add(bytes).ok_or(Error::ArithmeticOverflow)
+    })
+}
+
+/// Independent V1 Q24 input Vec allocations are not shared Arc buffers.
+/// Charge every request once; do not deduplicate by equal bytes or digest.
+fn minimum_neuron_batch_input_bytes(requests: &[NeuronFeatureRequest]) -> Result<u64, Error> {
+    requests.iter().try_fold(0_u64, |total, item| {
+        let length =
+            u64::try_from(item.feature_vector_q24.len()).map_err(|_| Error::ArithmeticOverflow)?;
+        let bytes = length.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
         total.checked_add(bytes).ok_or(Error::ArithmeticOverflow)
     })
 }
@@ -144,8 +155,10 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 total.checked_add(loaded.handle.observed_memory_bytes)
             })
             .ok_or(Error::ArithmeticOverflow)?;
+        let input_bytes = minimum_neuron_batch_input_bytes(&requests)?;
         let minimum_bytes = resident_bytes
             .checked_add(minimum_neuron_batch_output_bytes(&requests)?)
+            .and_then(|total| total.checked_add(input_bytes))
             .ok_or(Error::ArithmeticOverflow)?;
         if minimum_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
@@ -172,8 +185,18 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         }
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
 
-        let observations = driver_result?;
+        // Once physical dispatch was attempted, a missing/invalid receipt
+        // cannot prove that no Cell execution occurred. The worker stays
+        // fenced until the owner reconciles or starts a new generation.
+        let observations = match driver_result {
+            Ok(observations) => observations,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
         if observations.len() != requests.len() {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         let mut result = Vec::with_capacity(requests.len());
@@ -181,6 +204,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             if batch_item.request_id != request.authorization.request_id
                 || batch_item.payload_digest != request.authorization.payload_digest
             {
+                self.poisoned = true;
                 return Err(Error::PayloadMismatch);
             }
             let observed = batch_item.feature;
@@ -188,12 +212,16 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 || observed.encoder_digest != request.encoder_digest
                 || observed.head_digest != request.head_digest
             {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
             }
             let status = if !observed.terminal_observed {
                 ExecutionStatus::Indeterminate
             } else if observed.succeeded {
-                validate_neuron_feature_output(request, &observed)?;
+                if let Err(error) = validate_neuron_feature_output(request, &observed) {
+                    self.poisoned = true;
+                    return Err(error);
+                }
                 ExecutionStatus::Succeeded
             } else {
                 ExecutionStatus::Failed
@@ -202,7 +230,11 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             if status != ExecutionStatus::Succeeded
                 && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
             {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
+            }
+            if status == ExecutionStatus::Indeterminate {
+                self.poisoned = true;
             }
             result.push(NeuronFeatureExecutionObservation {
                 request_id: request.authorization.request_id.clone(),
@@ -237,11 +269,15 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
     ) -> Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, Error> {
         let copies = requests.clone();
         let outcomes = self.run_neuron_features_batch(now_ms, model_id, requests)?;
-        copies
+        let receipts = copies
             .into_iter()
             .zip(outcomes)
             .map(|(request, outcome)| super::project_neuron_feature_receipt_v1(request, outcome))
-            .collect()
+            .collect();
+        if receipts.is_err() {
+            self.poisoned = true;
+        }
+        receipts
     }
 }
 
@@ -261,6 +297,7 @@ mod tests {
         corrupt_head: bool,
         indeterminate_with_output: bool,
         swap_items: bool,
+        fail_batch: bool,
     }
 
     impl ModelDriver for BatchMock {
@@ -301,6 +338,9 @@ mod tests {
             requests: &[NeuronFeatureRequest],
         ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
             self.batches += 1;
+            if self.fail_batch {
+                return Err(Error::DriverFailure("batch terminality unknown".to_string()));
+            }
             let mut outputs: Vec<_> = requests
                 .iter()
                 .map(|req| NeuronFeatureBatchItemObservationV2 {
@@ -477,7 +517,8 @@ mod tests {
     fn whole_batch_output_floor_rejects_before_mutating_slots_or_dispatch() {
         // Loaded model owns 1024 bytes. Two independent width-3 Q24 output
         // pairs need at least 2 * 3 * 2 * 8 more bytes, not just one pair.
-        let maximum_memory_bytes = 1024 + (2 * 3 * 2 * 8) - 1;
+        // Outputs fit at this limit; the additional V1 Vec inputs do not.
+        let maximum_memory_bytes = 1024 + (2 * 3 * 2 * 8) + (2 * 2 * 8) - 1;
         let mut worker = worker_with_memory_budget(BatchMock::default(), maximum_memory_bytes);
         assert_eq!(
             worker.run_neuron_features_batch(
@@ -491,6 +532,14 @@ mod tests {
         assert_eq!(worker.driver.single_calls, 0);
         assert!(worker.active_requests.is_empty());
         assert_eq!(worker.models["model.v2"].active_requests, 0);
+        assert!(!worker.poisoned);
+        assert_eq!(
+            minimum_neuron_batch_input_bytes(&[
+                feature("request.1", 'b'),
+                feature("request.2", 'c'),
+            ]),
+            Ok(32)
+        );
     }
 
     #[test]
@@ -551,6 +600,11 @@ mod tests {
         assert_eq!(err, Err(Error::PayloadMismatch));
         assert!(worker.active_requests.is_empty());
         assert_eq!(worker.models["model.v2"].active_requests, 0);
+        assert!(worker.poisoned);
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", vec![feature("request.3", 'b')]),
+            Err(Error::IndeterminateLifecycle)
+        );
     }
 
     #[test]
@@ -578,6 +632,28 @@ mod tests {
             assert_eq!(err, Err(Error::FeatureOutputMismatch));
             assert!(worker.active_requests.is_empty());
             assert_eq!(worker.models["model.v2"].active_requests, 0);
+            assert!(worker.poisoned);
         }
+    }
+
+    #[test]
+    fn driver_error_after_batch_dispatch_fences_worker_and_releases_slots() {
+        let mut worker = worker(BatchMock {
+            fail_batch: true,
+            ..BatchMock::default()
+        });
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", vec![feature("request.1", 'b')]),
+            Err(Error::DriverFailure("batch terminality unknown".to_string()))
+        );
+        assert_eq!(worker.driver.batches, 1);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.v2"].active_requests, 0);
+        assert!(worker.poisoned);
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", vec![feature("request.2", 'b')]),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(worker.driver.batches, 1);
     }
 }
