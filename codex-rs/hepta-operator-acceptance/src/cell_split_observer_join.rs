@@ -16,8 +16,11 @@ use ed25519_dalek::VerifyingKey;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+#[cfg(unix)]
 use crate::CellSplitCnsRuntimeAttestationV1;
+#[cfg(unix)]
 use crate::CellSplitCnsRuntimeCommitV1;
+#[cfg(unix)]
 use crate::CellSplitSupervisorCommitV1;
 use crate::CellSplitExecutionPortV1;
 #[cfg(unix)]
@@ -86,6 +89,7 @@ pub struct CellSplitObserverJoinReceiptV1 {
 
 /// Independently provisioned original runtime keys. These MUST differ from
 /// all outer four-owner keys, host signers, and Observer signers.
+#[cfg(unix)]
 pub struct CellSplitObserverOriginalRuntimeTrustV1<'a> {
     pub cns_original_runtime_key: &'a VerifyingKey,
     pub supervisor_original_journal_key: &'a VerifyingKey,
@@ -94,6 +98,7 @@ pub struct CellSplitObserverOriginalRuntimeTrustV1<'a> {
 /// Additional read-only proof that the original CNS runtime and Supervisor
 /// journal records are independently signed and agree with the host events.
 /// Neither this record nor the ordinary Observer join is a final-use grant.
+#[cfg(unix)]
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CellSplitObserverDeepReceiptV1 {
@@ -344,6 +349,7 @@ pub fn verify_cell_split_observer_join_deep_v1(
 
 /// Testable pure checker around injected read-only ports. Only the pinned
 /// Unix-socket wrapper above is production-facing.
+#[cfg(unix)]
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn verify_cell_split_observer_join_deep_with_port_v1<P: CellSplitExecutionPortV1>(
     join: &CellSplitSignedObserverJoinV1,
@@ -378,6 +384,7 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_port_v1<P: CellSplitExec
     })
 }
 
+#[cfg(unix)]
 fn verify_original_runtime_receipts_v1(
     transcript: &CellSplitExecutionTranscriptV1,
     owner_trust: &CellSplitOwnerTrustV1,
@@ -492,6 +499,7 @@ fn verify_original_runtime_receipts_v1(
     ))
 }
 
+#[cfg(unix)]
 fn verify_pinned_signature(
     key: &VerifyingKey,
     message: &[u8],
