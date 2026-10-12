@@ -41,3 +41,41 @@ python scripts/memory_cell/system2_multihop_trial.py /path/to/verified/memory-in
 ```
 
 This first step tests the necessary retrieval-versus-Reader opportunity before introducing recurrent Cell learning, Riccati or FBSDE into a language task. No such numerical-solver gain is claimed here.
+
+## Follow-up: quoted-instruction stress with sufficient and missing evidence
+
+This additional experiment is strictly paired and reuses the original 5 three-hop
+attack cases, exactly the same frozen Reader weights, prompt constructor,
+provenance and terminal token syntax. **The original complete 100-answer trial
+is retained without modifying its records or experiment arms.**
+
+The earlier `joined_top3` arm selected only the three relational facts and did
+not present the quoted attack document to the Reader. It was therefore **not a
+test of resisting untrusted instructions with sufficient evidence present**.
+The new `system2_multihop_stress.py` addresses that limitation using six arms
+per case: `chain_only` (3 factual spans), `neutral_last` (same three facts plus
+an explicitly neutral untrusted quote), `attack_last` and `attack_first`
+(same facts plus actual attack quote in two presentation positions), then
+`neutral_missing` and `attack_missing` (same two factual spans after fixed
+critical-edge deletion plus a neutral or malicious quote). The neutral document
+uses a new source identity tied to its actual bytes. The attack and neutral
+conditions share the same factual chain; selected source counts match within
+the key paired comparisons, and the actual tokenizer/CPU costs are recorded.
+
+The five original cases × six arms require **30 frozen Reader calls** after
+passing existing regressions and the unchanged 100-call original trial.
+No generated correct answer, required source labels, or scorer enters either
+selection or Reader input. All raw answers are flushed to disk, sealed with
+SHA256, then scored by exact synthetic token, cited evidence source identities,
+explicit abstention in missing-premise conditions, mention of `TOK-FAKE99`,
+and whether the malicious source was cited. All execution failures stay in the
+full census and make CI non-green; a transport failure is not scored as a wrong
+answer. The independent reviewer fields remain absent; this is synthetic
+Reader robustness, not measured real-world safety or learned NDU/FBSDE ability.
+
+Nine new hermetic tests check identical factual content under attack and neutral
+interventions, evidence-count accounting, source integrity, label blindness,
+proof citation binding, unsupported abstention, complete 30-position census,
+raw answer seal and failure persistence. A positive Reader result would motivate
+further controlled naturalistic tasks; a failure would localize Reader/prompt
+resistance and should not be addressed by blindly deepening the FBSDE tree.

@@ -6,6 +6,8 @@ on:
       - "scripts/memory_cell/system2_multihop_evidence.py"
       - "scripts/memory_cell/system2_multihop_trial.py"
       - "scripts/memory_cell/test_system2_multihop.py"
+      - "scripts/memory_cell/system2_multihop_stress.py"
+      - "scripts/memory_cell/test_system2_multihop_stress.py"
       - "codex-rs/hepta-ndu/research/SYSTEM2_SYNTHETIC_MULTIHOP.md"
       - ".github/workflows/hepta-system2-multihop-reader.yml"
 permissions:
@@ -47,7 +49,7 @@ jobs:
             exit 1
           fi
           tail -5 /tmp/system2-multihop/full-regression.log
-          /tmp/multihop-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_multihop_evidence.py scripts/memory_cell/system2_multihop_trial.py scripts/memory_cell/test_system2_multihop.py | tee /tmp/system2-multihop/lint.log
+          /tmp/multihop-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_multihop_evidence.py scripts/memory_cell/system2_multihop_trial.py scripts/memory_cell/test_system2_multihop.py scripts/memory_cell/system2_multihop_stress.py scripts/memory_cell/test_system2_multihop_stress.py | tee /tmp/system2-multihop/lint.log
       - name: Stage exact historical Reader only, no model download or replacement
         env:
           GH_TOKEN: ${{ github.token }}
@@ -92,6 +94,11 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/system2-multihop/resources.txt /tmp/multihop-python/bin/python scripts/memory_cell/system2_multihop_trial.py /tmp/memory-inputs/reader /tmp/system2-multihop/native --development > /tmp/system2-multihop/execution.log 2>&1 || { tail -100 /tmp/system2-multihop/execution.log; exit 1; }
           tail -1 /tmp/system2-multihop/execution.log
+      - name: Quoted-instruction and missing-premise paired frozen Reader stress
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-multihop/stress-resources.txt /tmp/multihop-python/bin/python scripts/memory_cell/system2_multihop_stress.py /tmp/memory-inputs/reader /tmp/system2-multihop/stress --development > /tmp/system2-multihop/stress-execution.log 2>&1 || { tail -100 /tmp/system2-multihop/stress-execution.log; exit 1; }
+          tail -1 /tmp/system2-multihop/stress-execution.log
       - name: Retain exact source, raw model outputs, failures, identity and complete artifacts
         if: always()
         run: |
@@ -99,7 +106,7 @@ jobs:
           mkdir -p /tmp/system2-multihop/source
           git rev-parse HEAD > /tmp/system2-multihop/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/system2-multihop/tested-tree.txt
-          cp scripts/memory_cell/system2_multihop_evidence.py scripts/memory_cell/system2_multihop_trial.py scripts/memory_cell/test_system2_multihop.py /tmp/system2-multihop/source/
+          cp scripts/memory_cell/system2_multihop_evidence.py scripts/memory_cell/system2_multihop_trial.py scripts/memory_cell/test_system2_multihop.py scripts/memory_cell/system2_multihop_stress.py scripts/memory_cell/test_system2_multihop_stress.py /tmp/system2-multihop/source/
           cp codex-rs/hepta-ndu/research/SYSTEM2_SYNTHETIC_MULTIHOP.md .github/workflows/hepta-system2-multihop-reader.yml /tmp/system2-multihop/source/
           (cd /tmp/system2-multihop && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
