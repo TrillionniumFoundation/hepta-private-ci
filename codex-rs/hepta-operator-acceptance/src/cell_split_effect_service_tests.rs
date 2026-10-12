@@ -979,3 +979,42 @@ fn partial_owner_rpc_payload_times_out_before_any_authority_check() {
     assert_eq!(service.backend().commits, 0);
     assert!(!root.path().join("committed").exists());
 }
+
+
+#[test]
+fn trickled_owner_request_cannot_extend_total_frame_deadline() {
+    use std::io::Write as _;
+
+    let root = tempfile::tempdir().expect("private owner root");
+    let mut service = CellSplitEffectServiceV1::new_with_io_timeout(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
+        Duration::from_millis(45),
+    )
+    .expect("bounded signed service");
+    let (mut sender, mut receiver) = UnixStream::pair().expect("socket pair");
+    let peer = thread::spawn(move || {
+        // Eight bytes arrive slowly, with every individual gap smaller than
+        // the configured timeout. A per-read timeout would accept the frame
+        // and produce a JSON parse error instead of enforcing 45 ms overall.
+        for byte in [0_u8, 0, 0, 4, b'n', b'u', b'l', b'l'] {
+            if sender.write_all(&[byte]).is_err() {
+                break;
+            }
+            thread::sleep(Duration::from_millis(10));
+        }
+    });
+    let outcome = service.serve_connection(&mut receiver);
+    assert!(matches!(
+        outcome,
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "RPC frame deadline exceeded"
+        )) | Err(CellSplitEffectRpcErrorV1::Io(_))
+    ));
+    peer.join().expect("slow peer finished");
+    assert_eq!(service.backend().commits, 0);
+    assert!(!root.path().join("committed").exists());
+}
