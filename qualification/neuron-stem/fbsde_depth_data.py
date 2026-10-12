@@ -30,3 +30,4 @@ def construct(row, model, calibration, scope='depth-research'):
     from fbsde_tracking_tied import InputTiedBelief
     binding = {'source':digest(row),'model':model,'calibration':calibration,'scope':scope,'generation':3}
     return InputTiedBelief(3,row['query'],row['components'],row['weights'],row['keys'],binding)
+
