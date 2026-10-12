@@ -1,0 +1,132 @@
+name: MemoryCell LoCoMo ten-family source-only pilot
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/external_locomo_pilot.py"
+      - "scripts/memory_cell/test_external_locomo_pilot.py"
+      - ".github/workflows/hepta-memory-external-locomo-pilot.yml"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_FAMILY_PILOT.md"
+permissions:
+  contents: read
+concurrency:
+  group: memorycell-locomo-source-pilot-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  precommit-native-family-cut:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Reject target access before the source-family partition
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/memory_cell/external_locomo_pilot.py \
+            scripts/memory_cell/test_external_locomo_pilot.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_external_locomo_pilot.py' -v
+          # This does not waive the original dual-corpus admission gate.
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_external_family_population.py' -v
+      - name: Retrieve exact published LoCoMo conversation bytes, no model weights
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memorycell-locomo-source
+          python3 - <<'PY'
+          from hashlib import sha256
+          from pathlib import Path
+          from urllib.request import urlopen
+          from external_family_population import SOURCE_PINS
+          revision = '3eb6f2c585f5e1699204e3c3bdf7adc5c28cb376'
+          url = f'https://raw.githubusercontent.com/snap-research/locomo/{revision}/data/locomo10.json'
+          with urlopen(url, timeout=90) as stream:
+              original = stream.read(32 * 1024 * 1024 + 1)
+          if len(original) > 32 * 1024 * 1024:
+              raise ValueError('LoCoMo native source byte bound')
+          if sha256(original).hexdigest() != SOURCE_PINS['locomo']:
+              raise ValueError('published LoCoMo data bytes drifted')
+          Path('/tmp/memorycell-locomo-source/locomo.json').write_bytes(original)
+          PY
+      - name: Commit independent-source proxy cut before reading original gold
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/external_locomo_pilot.py \
+            /tmp/memorycell-locomo-source/locomo.json \
+            /tmp/memorycell-locomo-pilot \
+            --source-commit "$TESTED_COMMIT"
+          python3 - <<'PY'
+          from hashlib import sha256
+          import json
+          from pathlib import Path
+          root = Path('/tmp/memorycell-locomo-pilot')
+          published = (root / 'public/population.json').read_bytes()
+          targets = (root / 'targets/targets.json').read_bytes()
+          capacity = (root.with_name(root.name + '-capacity.json')).read_bytes()
+          public = json.loads(published)
+          seal = json.loads((root / 'sealed-manifest.json').read_bytes())
+          census = json.loads(capacity)
+          assert public['source_capacity_sha256'] == sha256(capacity).hexdigest()
+          assert seal['public_population_sha256'] == sha256(published).hexdigest()
+          assert seal['private_target_sha256'] == sha256(targets).hexdigest()
+          assert census['actual_published_family_proxy_groups'] == 10
+          assert census['split_family_proxy_capacity'] == {
+              'train': 6, 'selection': 2, 'evaluation': 2,
+          }
+          assert all(x['dataset'] == 'locomo'
+              for rows in public['splits'].values() for x in rows)
+          assert all(public[k] is False for k in (
+              'model_input_contains_answers',
+              'published_benchmarks_are_future_observations',
+              'independent_source_authenticity_verified',
+              'independent_semantic_judgement',
+              'production_accepted',
+          ))
+          assert seal['production_accepted'] is False
+          assert seal['generated_answers'] == 0
+          assert seal['independent_future_family_count'] == 0
+          assert census['quarantined_dataset'] == 'longmemeval'
+          assert census['quarantined_data_admitted'] is False
+          PY
+      - name: Seal exact generating source and source-only capacity receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memorycell-locomo-source-receipt
+          printf '%s\n' "$TESTED_COMMIT" > /tmp/memorycell-locomo-source-receipt/tested-commit.txt
+          if [ -f /tmp/memorycell-locomo-pilot-capacity.json ]; then
+            cp /tmp/memorycell-locomo-pilot-capacity.json \
+              /tmp/memorycell-locomo-source-receipt/capacity.json
+          fi
+          if [ -f /tmp/memorycell-locomo-pilot/sealed-manifest.json ]; then
+            cp /tmp/memorycell-locomo-pilot/sealed-manifest.json \
+              /tmp/memorycell-locomo-source-receipt/sealed-manifest.json
+          fi
+          (cd /tmp/memorycell-locomo-source-receipt && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memorycell-locomo-source-capacity-${{ github.sha }}
+          path: /tmp/memorycell-locomo-source-receipt
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memorycell-locomo-public-only-${{ github.sha }}
+          path: /tmp/memorycell-locomo-pilot/public/
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memorycell-locomo-private-targets-${{ github.sha }}
+          path: /tmp/memorycell-locomo-pilot/targets/
+          if-no-files-found: error
