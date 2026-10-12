@@ -233,8 +233,7 @@ fn coalesced_scope_reuses_its_stale_round_robin_slot_on_readmission() {
     config.max_lanes_per_poll = 2;
     let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
 
-    q.enqueue(1, intent("first", "scope-a", 1, 1, 100))
-        .unwrap();
+    q.enqueue(1, intent("first", "scope-a", 1, 1, 100)).unwrap();
     q.enqueue(1, intent("coalesced", "scope-b", 1, 2, 100))
         .unwrap();
     let first = q.poll_physically_compatible(11).unwrap().batch.unwrap();
@@ -282,8 +281,7 @@ fn stale_coalesced_slots_cannot_hide_an_urgent_request() {
     }
     q.enqueue(1, intent("waiting", "b-waiting", 1, 1, 1_000))
         .unwrap();
-    q.enqueue(1, intent("urgent", "c-urgent", 1, 1, 2))
-        .unwrap();
+    q.enqueue(1, intent("urgent", "c-urgent", 1, 1, 2)).unwrap();
 
     let first = q.poll_physically_compatible(1).unwrap();
     assert_eq!(first.scanned_lanes, 4);
