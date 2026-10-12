@@ -215,3 +215,21 @@ former child route is no longer current. A new historical-owner read port
 and independent anti-rollback witness are required before an end-to-end
 post-rollback target-host acceptance can be granted. Do NOT relax the
 current-owner check or substitute the locally reconstructed transcript.
+
+
+### Signed target-host evidence is write-once, not a replaceable cache
+
+`CellSplitTargetHostEvidenceStoreV1::persist` now creates the original
+host/Observer-signed evidence file with create-new + file/directory fsync.
+An exact-byte replay is idempotent; a second independently valid signed
+report with different bytes is **rejected** at the same witness path rather
+than replacing the original. A path symlink, corrupt existing evidence, or
+modified historical report cannot authorize an overwrite. The regression
+test keeps the original verifiable after a rejected replacement.
+
+This protects the local evidence write boundary only. Restoring an older
+whole directory, replaying an old signed report at another path, or asserting
+the current CNS/Supervisor state still requires a separately held monotonic
+anti-rollback witness and live owner attestation. The historical
+`productionGatePassed` receipt is **not** a production-activation grant,
+and this source change is not target-host qualification.
