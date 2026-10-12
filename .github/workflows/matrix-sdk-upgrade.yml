@@ -1,0 +1,238 @@
+name: Matrix SDK compatibility
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-matrix*/**"
+      - "codex-rs/third_party/**"
+      - "codex-rs/hepta-fleet/src/**"
+      - "codex-rs/Cargo.*"
+      - "codex-rs/rust-toolchain.toml"
+      - "qualification/matrix-sdk-019/**"
+      - ".github/workflows/matrix-sdk-upgrade.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bazel-source-format:
+    name: Matrix exact-head Bazel/Starlark format (read-only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact security migration SHA
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned DotSlash launcher
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Require canonical Matrix CLI/Bazel source formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          # Print the exact buildifier diff on failure, without ever mutating
+          # tracked files or relaxing global CI's canonical formatting gate.
+          if ! dotslash ./tools/buildifier -mode=check -lint=off codex-rs/cli/BUILD.bazel defs.bzl; then
+            dotslash ./tools/buildifier -mode=diff -lint=off codex-rs/cli/BUILD.bazel defs.bzl || true
+            exit 1
+          fi
+          git diff --check
+          git diff --exit-code
+
+  dependency-advisory-audit:
+    name: Matrix exact-head cargo-deny (no advisory waivers)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout exact Matrix source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify locked source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          test -s codex-rs/Cargo.lock
+          git diff --check
+      - uses: ./.github/actions/setup-ci-build
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - name: Check live advisories and exact locked dependency graph
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.96.0
+          manifest-path: ./codex-rs/Cargo.toml
+      - name: Verify cargo-deny did not alter tracked sources
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+
+  sdk-protocol:
+    name: Matrix SDK (${{ matrix.qualification }})
+    strategy:
+      fail-fast: false
+      matrix:
+        qualification: [crypto-migration, synapse-protocol]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      HEPTA_SDK_ARTIFACTS: ${{ github.workspace }}/sdk-qualification-artifacts
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          components: clippy
+      - name: Install pinned official test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Real SDK 0.18 data-bearing crypto migration
+        if: matrix.qualification == 'crypto-migration'
+        run: qualification/matrix-sdk-019/run-crypto-migration.sh
+      - name: Real isolated encrypted send, sync and store reopen
+        if: matrix.qualification == 'synapse-protocol'
+        run: codex-rs/hepta-matrix-sdk/tests/support/run-synapse-sdk.sh
+      - name: Strict final-source Matrix lint
+        if: matrix.qualification == 'synapse-protocol'
+        working-directory: codex-rs
+        run: just clippy -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrix-protocol --features crypto-migration-qualification,synapse-sdk-qualification --no-deps -- -D warnings
+      - name: Preserve protocol evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-sdk-${{ matrix.qualification }}-evidence
+          path: sdk-qualification-artifacts
+
+  fleet-test-portability:
+    name: Fleet strict no-panic-helper qualification (Matrix SDK migration)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Checkout exact security migration head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          components: clippy,rustfmt
+      - name: Format, compile and exercise Fleet strict regression
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          cargo fmt --package codex-hepta-fleet -- --check
+          cargo check --locked -p codex-hepta-fleet --all-targets
+          cargo test --locked -p codex-hepta-fleet --lib
+          cargo clippy --locked -p codex-hepta-fleet --all-targets -- -D clippy::unwrap_used -D clippy::expect_used -D clippy::correctness
+          git diff --check
+          git diff --exit-code
+
+  current-main:
+    name: Matrix exact-current-main merge regression
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - name: Checkout exact source with complete history
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Authenticate GitHub prospective merge tree and current main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SOURCE_SHA" && test -n "$PR_NUMBER"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          # Event base SHA is a historical snapshot. GitHub's live main,
+          # not an old webhook value, is the base we must actually qualify.
+          current_main="$(gh api "repos/$REPO/branches/main" --jq '.commit.sha')"
+          [[ "$current_main" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$BASE_SHA" != "$current_main" ]]; then
+            echo "::notice::PR event base SHA is stale; require a newly verified current-main merge"
+          fi
+          BASE_SHA="$current_main"
+          git cat-file -e "$BASE_SHA^{commit}"
+          gh_ref="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
+          merge_sha="$(jq -er '.object.sha' <<<"$gh_ref")"
+          merge_commit="$(gh api "repos/$REPO/git/commits/$merge_sha")"
+          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$merge_commit")
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          test "$expected_tree" = "$(jq -er '.tree.sha' <<<"$merge_commit")"
+          # Carry forward the *proved current* parent, never the stale event
+          # SHA, into the synthetic merge action and post-test verification.
+          printf 'BASE_SHA=%s\n' "$BASE_SHA" >> "$GITHUB_ENV"
+          printf 'EXPECTED_MERGE_TREE=%s\n' "$expected_tree" >> "$GITHUB_ENV"
+      - name: Construct locally verified exact prospective merge
+        id: candidate
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Matrix CI
+          author-email: hepta-matrix-ci@users.noreply.github.com
+          message: Matrix prospective merge
+      - name: Bind regression test to exact two-parent merge
+        env:
+          TESTED_SHA: ${{ steps.candidate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_MERGE_TREE"
+          test "$(git rev-list --parents -n 1 HEAD)" = "$TESTED_SHA $BASE_SHA $SOURCE_SHA"
+          git diff --check
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run real locked Matrix regressions on exact main merge
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
+      - name: Verify tested source tree remains unchanged
+        env:
+          TESTED_SHA: ${{ steps.candidate.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_MERGE_TREE"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
