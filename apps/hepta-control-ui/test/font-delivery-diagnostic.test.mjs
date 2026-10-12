@@ -1,4 +1,5 @@
 import {test} from 'node:test';
+import './font-diagnostic-browser-identity.test.mjs';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {sdkProbeLocations,validateDelivery} from '../tools/font-delivery-diagnostic.mjs';
