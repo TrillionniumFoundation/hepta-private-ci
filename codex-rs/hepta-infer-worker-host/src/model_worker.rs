@@ -638,7 +638,8 @@ fn project_neuron_receipt(
     request: NeuronFeatureRequest,
     observed: NeuronFeatureExecutionObservation,
 ) -> Result<NeuronFeatureReceiptV1, Error> {
-    let generation = Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
+    let generation =
+        Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
     let control_request = NeuronFeatureRequestV1 {
         request_id: StableId::new(request.authorization.request_id)
             .map_err(|_| Error::FeatureContract)?,

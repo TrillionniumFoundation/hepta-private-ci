@@ -61,10 +61,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending.request.feature_vector_q24 = pending.feature.as_slice().to_vec();
             admitted.push((id, pending));
         }
-        if admitted
-            .first()
-            .is_some_and(|(_, first)| admitted.iter().any(|(_, item)| item.model_id != first.model_id))
-        {
+        if admitted.first().is_some_and(|(_, first)| {
+            admitted
+                .iter()
+                .any(|(_, item)| item.model_id != first.model_id)
+        }) {
             rejected = true;
         }
         if rejected {
