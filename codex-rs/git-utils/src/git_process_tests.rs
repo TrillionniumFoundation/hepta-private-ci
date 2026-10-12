@@ -38,6 +38,14 @@ fn encoded_powershell_command(script: &str) -> String {
 }
 use tokio::process::Command;
 
+#[cfg(windows)]
+#[test]
+fn powershell_child_command_uses_utf16le_base64_for_non_ascii_scripts() {
+    assert_eq!(encoded_powershell_command("A"), "QQA=");
+    assert_eq!(encoded_powershell_command("AB"), "QQBCAA==");
+    assert_eq!(encoded_powershell_command("😀"), "PdgA3g==");
+}
+
 #[derive(Clone, Copy)]
 enum GitWrapperLifetime {
     WaitForChild,
