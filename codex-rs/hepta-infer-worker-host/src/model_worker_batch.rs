@@ -269,7 +269,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
     ) -> Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, Error> {
         let copies = requests.clone();
         let outcomes = self.run_neuron_features_batch(now_ms, model_id, requests)?;
-        let receipts = copies
+        let receipts: Result<Vec<codex_hepta_infer_core::NeuronFeatureReceiptV1>, Error> = copies
             .into_iter()
             .zip(outcomes)
             .map(|(request, outcome)| super::project_neuron_feature_receipt_v1(request, outcome))
