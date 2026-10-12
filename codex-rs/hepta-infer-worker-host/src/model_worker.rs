@@ -639,6 +639,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        // Mirror the generic and native-batch Worker paths. A valid grant and
+        // reservation cannot widen the immutable loaded model's token ceiling,
+        // including for cancelled feature requests.
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
