@@ -48,7 +48,8 @@ jobs:
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
               test_shared_encoder_eviction development_tensor_checks development_repository_checks \
               development_study_checks public_structural_checks \
-              selection_replay_checks serving_probe_checks public_corpus_checks historical_feature_checks
+              selection_replay_checks serving_probe_checks public_corpus_checks historical_feature_checks \
+              shared_cell_execution_checks multicell_execution_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Preserve exact-source result including failures
         if: always()
@@ -204,6 +205,11 @@ jobs:
             --run "$OUT/study" --dataset "$OUT/study/dataset.jsonl" --output "$OUT/replay.json"
           "$PY" qualification/stem-cell-v1/development_study_review.py \
             --run "$OUT/study" --dataset "$OUT/study/dataset.jsonl" --output "$OUT/scores.json"
+          "$PY" qualification/stem-cell-v1/multicell_learning_study.py \
+            --archive "$RUNNER_TEMP/stem-cached-reference.zip" --output "$OUT/multicell" --synthetic-scaling
+          "$PY" qualification/stem-cell-v1/multicell_learning_study.py \
+            --archive "$RUNNER_TEMP/stem-cached-reference.zip" --review-run "$OUT/multicell" \
+            --output "$OUT/multicell-scores.json"
           git diff --check
           git diff --exit-code
       - name: Retain results and failures, not fresh-inference claims

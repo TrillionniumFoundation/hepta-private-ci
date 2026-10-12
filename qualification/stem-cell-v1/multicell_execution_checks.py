@@ -96,6 +96,13 @@ class PopulationStudyTests(unittest.TestCase):
             result=review("fixture",root,Path(tmp)/"scores.json")
             self.assertEqual(result["prediction_rows"],64)
             self.assertEqual(result["unique_test_inputs"],16)
+            original_run = json.loads((root/"result.json").read_text())
+            missing = deepcopy(original_run)
+            del missing["all_files_sha256"]["learned.safetensors"]
+            (root/"result.json").write_text(json.dumps(missing))
+            with self.assertRaisesRegex(ValueError,"not bound"):
+                review("fixture",root,Path(tmp)/"missing-scores.json")
+            (root/"result.json").write_text(json.dumps(original_run))
             predictions=json.loads((root/"predictions.json").read_text())
             predictions[0]["logits"][0] += 1
             raw=json.dumps(predictions).encode(); (root/"predictions.json").write_bytes(raw)

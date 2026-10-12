@@ -265,6 +265,10 @@ def review(archive, folder, output):
     run, _ = record(folder/"result.json", 1_000_000)
     if run.get("schema") != "hepta.stem.multicell-run.v1" or run.get("physical_encoder_calls_this_run") != 0:
         raise ValueError("wrong historical population profile")
+    required = {"plan.json", "training.json", "learned.safetensors", "inherited.safetensors",
+                "normalizer.safetensors", "predictions.json", "trained-serving.json"}
+    if not isinstance(run.get("all_files_sha256"), dict) or not required <= set(run["all_files_sha256"]):
+        raise ValueError("required population files are not bound")
     for name, sha in run["all_files_sha256"].items():
         if Path(name).name != name or hashlib.sha256(read_bytes(folder/name, 8_388_608)).hexdigest() != sha:
             raise ValueError("sealed population files changed")
@@ -284,7 +288,10 @@ def review(archive, folder, output):
     metrics, max_error = {}, 0.0
     for name, field in (("learned","logits"),("inherited","frozen_logits")):
         bank = BasisCellHeads(raw.shape[1],4,8,cells,seed=7347).requires_grad_(False)
-        bank.load_state_dict(load(read_bytes(folder/(name+".safetensors"),8_388_608)),strict=True)
+        tensors = load(read_bytes(folder/(name+".safetensors"),8_388_608))
+        if any(v.dtype != torch.float32 or not torch.isfinite(v).all() for v in tensors.values()):
+            raise ValueError("invalid saved Cell parameter dtype or value")
+        bank.load_state_dict(tensors,strict=True)
         folded = folded_parameters(bank)
         target = torch.tensor([r["label"] for r in evaluated])
         for c, cell in enumerate(cells):
@@ -292,6 +299,8 @@ def review(archive, folder, output):
             if any(p.get("sample_id") != r["sample_id"] or p.get("cell_id") != cell for p,r in zip(original,evaluated)):
                 raise ValueError("prediction identity/order mismatch")
             logits = torch.tensor([p[field] for p in original])
+            if logits.shape != (len(evaluated),4):
+                raise ValueError("invalid saved Cell logit shape")
             actual = folded_forward(bank,folded,x,torch.arange(len(x)),torch.full((len(x),),c))
             error = float((actual-logits).abs().max())
             if not torch.isfinite(logits).all() or not torch.isfinite(actual).all() or error > MAX_ERROR or not torch.equal(actual.argmax(1),logits.argmax(1)):
