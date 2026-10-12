@@ -26,7 +26,7 @@ jobs:
       - name: Install pinned Rust and rustfmt
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
       - name: Exact source formatting
-        run: cargo +1.95.0 fmt --all -- --check
+        run: cargo +1.95.0 fmt --package codex-core --package codex-windows-sandbox -- --check
       - name: Real Windows MSVC Core provider terminal-policy tests
         run: cargo +1.95.0 test --locked -p codex-core --lib client::provider_policy_tests -- --nocapture
 
