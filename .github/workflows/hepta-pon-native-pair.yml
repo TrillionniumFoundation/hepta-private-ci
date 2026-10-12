@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 64e25442fb4f7fb4151ebbea9f8293b702c3d06e
+      CHAIN_SOURCE_SHA: 945895ecb8a3f7872cf2229824eb9b08726556a8
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '64e25442fb4f7fb4151ebbea9f8293b702c3d06e' || 'c3a08fa33c61a4644f44307c489cc189ed77fc48' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '945895ecb8a3f7872cf2229824eb9b08726556a8' || '37589e02ddf7b685487e7bb0eba0895202b2fb61' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -99,6 +99,7 @@ jobs:
       - name: Require complete bounded native input and original pipe controls
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-bounded-process.json" --minimum-tests 26 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process.py -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-owned-group-cleanup.json" --minimum-tests 12 -- python3 ../chain/formal/pon-nakamoto-v1/test_bounded_process_cleanup.py -v
       - name: Require complete bounded W1 collector and cross-architecture report controls
         run: |
           set -euo pipefail
