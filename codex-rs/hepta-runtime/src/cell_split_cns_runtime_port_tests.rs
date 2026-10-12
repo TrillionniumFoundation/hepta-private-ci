@@ -240,3 +240,50 @@ fn preflight_pass_without_signed_successor_cannot_mutate_real_runtime() {
     );
     assert!(port.read_original_commit(&intent.idempotency_key).unwrap().is_none());
 }
+
+#[test]
+fn typed_cell_split_cutover_rejects_generic_non_split_mutations() {
+    use codex_hepta_plasticity::{
+        TopologyCandidateKindV2, TopologyCandidateV2, TopologyChangeV2, TopologyOperationV2,
+    };
+    use codex_hepta_types::{Digest32, StableId};
+
+    let evidence = Digest32::of_bytes(b"typed-cell-split-evidence");
+    let split_change = TopologyChangeV2 {
+        module_id: StableId::new("organ.cell.split").expect("organ"),
+        operation: TopologyOperationV2::Split,
+        predecessor_digest: Some(evidence),
+        candidate_digest: Some(evidence),
+        capability_typing_digest: evidence,
+        compatibility_plan_digest: evidence,
+        lesion_ablation_digest: evidence,
+        resource_review_digest: evidence,
+        security_review_digest: evidence,
+        migration_digest: evidence,
+        rollback_digest: evidence,
+        writer_handoff_digest: evidence,
+        evidence_digest: evidence,
+    };
+    let typed = TopologyCandidateV2 {
+        candidate_id: StableId::new("candidate.split").expect("candidate"),
+        kind: TopologyCandidateKindV2::Update,
+        changes: vec![split_change.clone()],
+    };
+    assert!(is_typed_cell_split_candidate_v1(&typed));
+
+    let mut replacement = typed.clone();
+    replacement.changes[0].operation = TopologyOperationV2::Replace;
+    assert!(!is_typed_cell_split_candidate_v1(&replacement));
+
+    let mut rewire = typed.clone();
+    rewire.changes[0].operation = TopologyOperationV2::Rewire;
+    assert!(!is_typed_cell_split_candidate_v1(&rewire));
+
+    let mut no_change = typed.clone();
+    no_change.kind = TopologyCandidateKindV2::NoChange;
+    assert!(!is_typed_cell_split_candidate_v1(&no_change));
+
+    let mut multiple = typed;
+    multiple.changes.push(split_change);
+    assert!(!is_typed_cell_split_candidate_v1(&multiple));
+}
