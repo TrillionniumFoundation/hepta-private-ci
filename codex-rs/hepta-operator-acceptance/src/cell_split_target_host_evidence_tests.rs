@@ -1231,12 +1231,21 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
     forged_join.host_signature.signature_base64 = "forged".into();
     let mut forbidden_store = RejectAllMinimumReads;
     let mut unread_effects = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &forged_join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut forbidden_store, &mut unread_effects,
-        ).is_err(), "forged join must not reach the minimum or effect owners");
+    let result = crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+        &forged_join,
+        &transcript,
+        &owner_trust,
+        &envelope,
+        &policy(&host, &observer),
+        &runtime_trust,
+        &minimum_store_key,
+        &mut forbidden_store,
+        &mut unread_effects,
+    );
+    assert!(
+        result.is_err(),
+        "forged join must not reach the minimum or effect owners"
+    );
     assert_eq!(unread_effects.verification_count, 0);
 
     let root = tempfile::tempdir().expect("external minimum root");
