@@ -10,8 +10,11 @@ import torch
 from selector_evaluation import support_indices
 from selector_head import Supervision
 from stem_native_matched_objectives import (
-    KINDS, OBJECTIVES, STAGES,
-    matched_objective_shadow, review_objectives,
+    KINDS,
+    OBJECTIVES,
+    STAGES,
+    matched_objective_shadow,
+    review_objectives,
 )
 from test_stem_cell import features
 from test_stem_native_pairwise_shadow import fixture, targets_and_frozen
@@ -26,7 +29,12 @@ class ObjectiveMatchedNativeTests(unittest.TestCase):
         questions, supervised, encoded, cut, routes = fixture()
         with tempfile.TemporaryDirectory() as directory:
             fitted, decisions = matched_objective_shadow(
-                questions, supervised, encoded, cut, routes, Path(directory),
+                questions,
+                supervised,
+                encoded,
+                cut,
+                routes,
+                Path(directory),
             )
         return questions, supervised, encoded, cut, routes, fitted, decisions
 
@@ -40,24 +48,45 @@ class ObjectiveMatchedNativeTests(unittest.TestCase):
         for kind in KINDS:
             for stage in STAGES:
                 for cell in ("general", "temporal"):
-                    pair = [f for f in fitted if f["kind"] == kind
-                            and f["stage"] == stage and f["cell"] == cell]
+                    pair = [
+                        f
+                        for f in fitted
+                        if f["kind"] == kind
+                        and f["stage"] == stage
+                        and f["cell"] == cell
+                    ]
                     self.assertEqual({x["objective"] for x in pair}, set(OBJECTIVES))
-                    self.assertEqual(len({x["shared_initial_head_sha256"] for x in pair}), 1)
-                    self.assertEqual(len({x["train_question_ids_sha256"] for x in pair}), 1)
                     self.assertEqual(
-                        len({x["admitted_same_positive_negative_questions"]
-                             for x in pair}), 1
+                        len({x["shared_initial_head_sha256"] for x in pair}), 1
+                    )
+                    self.assertEqual(
+                        len({x["train_question_ids_sha256"] for x in pair}), 1
+                    )
+                    self.assertEqual(
+                        len(
+                            {
+                                x["admitted_same_positive_negative_questions"]
+                                for x in pair
+                            }
+                        ),
+                        1,
                     )
         self.assertTrue(all(c["incremental_reader_calls"] == 0 for c in decisions))
-        self.assertTrue(all(c["heldout_annotations_read_before_choices"] is False
-                            for c in decisions))
+        self.assertTrue(
+            all(
+                c["heldout_annotations_read_before_choices"] is False for c in decisions
+            )
+        )
 
     def test_postpolicy_review_has_all_192_matched_pairs_without_reader(self):
         questions, _, encoded, _, _, fitted, decisions = self.execute()
         pools, targets, _ = targets_and_frozen(questions, encoded)
         review = review_objectives(
-            questions, fitted, decisions, pools, targets,
+            questions,
+            fitted,
+            decisions,
+            pools,
+            targets,
             support_indices=support_indices,
         )
         self.assertEqual(review["fitted_objective_checkpoints"], 24)
@@ -91,7 +120,11 @@ class ObjectiveMatchedNativeTests(unittest.TestCase):
             changed[0][field] = corrupted
             with self.subTest(field=field), self.assertRaises(ValueError):
                 review_objectives(
-                    questions, fitted, changed, pools, targets,
+                    questions,
+                    fitted,
+                    changed,
+                    pools,
+                    targets,
                     support_indices=support_indices,
                 )
 
@@ -103,7 +136,11 @@ class ObjectiveMatchedNativeTests(unittest.TestCase):
         tampered[0]["original_frozen_selected"] = 0
         with self.assertRaisesRegex(ValueError, "original frozen winner drift"):
             review_objectives(
-                questions, fitted, tampered, pools, targets,
+                questions,
+                fitted,
+                tampered,
+                pools,
+                targets,
                 support_indices=support_indices,
             )
 
@@ -113,19 +150,26 @@ class ObjectiveMatchedNativeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaisesRegex(ValueError, "held-out|reencoded"):
                 matched_objective_shadow(
-                    questions, supervised + (extra,), encoded, cut, routes,
+                    questions,
+                    supervised + (extra,),
+                    encoded,
+                    cut,
+                    routes,
                     Path(directory),
                 )
 
     def test_noncontrastive_training_cannot_be_counted_as_source_learning(self):
         questions, supervised, encoded, cut, routes = fixture()
-        abstain = tuple(
-            Supervision(r.features, ()) for r in supervised
-        )
+        abstain = tuple(Supervision(r.features, ()) for r in supervised)
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaisesRegex(ValueError, "positive/negative"):
                 matched_objective_shadow(
-                    questions, abstain, encoded, cut, routes, Path(directory),
+                    questions,
+                    abstain,
+                    encoded,
+                    cut,
+                    routes,
+                    Path(directory),
                 )
 
     def test_a_missing_shadow_answer_must_still_count_in_original_denominator(self):
@@ -136,11 +180,19 @@ class ObjectiveMatchedNativeTests(unittest.TestCase):
         changed[0].pop("selected")
         changed[0].pop("matched_head_sha256")
         summary = review_objectives(
-            questions, fitted, changed, pools, targets,
+            questions,
+            fitted,
+            changed,
+            pools,
+            targets,
             support_indices=support_indices,
         )
-        self.assertEqual(summary["by_stage_phase_kind"]["16/select/linear"]["attempted"], 8)
-        self.assertEqual(summary["by_stage_phase_kind"]["16/select/linear"]["unscored_or_failed"], 1)
+        self.assertEqual(
+            summary["by_stage_phase_kind"]["16/select/linear"]["attempted"], 8
+        )
+        self.assertEqual(
+            summary["by_stage_phase_kind"]["16/select/linear"]["unscored_or_failed"], 1
+        )
 
 
 if __name__ == "__main__":

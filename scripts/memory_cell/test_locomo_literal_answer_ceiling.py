@@ -4,7 +4,9 @@ from copy import deepcopy
 import unittest
 
 from locomo_literal_answer_ceiling import (
-    audit_locked_literal_capacity, literal_occurs, sealed_candidates,
+    audit_locked_literal_capacity,
+    literal_occurs,
+    sealed_candidates,
 )
 
 
@@ -25,7 +27,9 @@ def fixture():
                 answer_text = "The exact destination was Tokyo."
             docs[sid] = dict(identity=sid, scope=scope, content=answer_text)
         case = dict(
-            question_id=qid, scope=scope, family_proxy_digest=family,
+            question_id=qid,
+            scope=scope,
+            family_proxy_digest=family,
             source_census_sha256="sealed-" + qid,
             source_ids=identities,
         )
@@ -33,7 +37,9 @@ def fixture():
         for arm, k in (("lexical_k4", 4), ("lexical_k8", 8)):
             selected = identities[:k]
             decisions[(qid, arm)] = dict(
-                question_id=qid, arm=arm, selected=selected,
+                question_id=qid,
+                arm=arm,
+                selected=selected,
                 source_census_sha256=case["source_census_sha256"],
                 family_proxy_digest=family,
                 selected_source_bytes=sum(
@@ -54,9 +60,7 @@ class LiteralAccessibleTests(unittest.TestCase):
         cases, docs, decisions, targets = fixture()
         lock = sealed_candidates(cases, docs, decisions)
         receipt = audit_locked_literal_capacity(lock, docs, targets)
-        four, eight = (
-            receipt["per_arm"][arm] for arm in ("lexical_k4", "lexical_k8")
-        )
+        four, eight = (receipt["per_arm"][arm] for arm in ("lexical_k4", "lexical_k8"))
         self.assertEqual(four["planned"], 16)
         self.assertEqual(eight["planned"], 16)
         self.assertEqual(four["weak_document_support_evaluable"], 14)
@@ -133,8 +137,7 @@ class LiteralAccessibleTests(unittest.TestCase):
         receipt = audit_locked_literal_capacity(
             sealed_candidates(cases, docs, decisions), docs, targets
         )
-        by_question = {(row["question_id"], row["arm"]): row
-                       for row in receipt["rows"]}
+        by_question = {(row["question_id"], row["arm"]): row for row in receipt["rows"]}
         for qid in ("q-1", "q-5"):
             self.assertFalse(
                 by_question[(qid, "lexical_k8")]["literal_answer_comparable"]

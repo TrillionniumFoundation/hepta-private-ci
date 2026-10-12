@@ -96,9 +96,7 @@ class PairedMarginQwenTests(unittest.TestCase):
                                 if p.requires_grad
                             }
                         )
-                    torch.testing.assert_close(
-                        losses[0], losses[1], rtol=0, atol=atol
-                    )
+                    torch.testing.assert_close(losses[0], losses[1], rtol=0, atol=atol)
                     self.assertEqual(
                         receipts[0]["actual_input_tokens"],
                         receipts[1]["actual_input_tokens"],
@@ -111,15 +109,9 @@ class PairedMarginQwenTests(unittest.TestCase):
                         receipts[0]["actual_model_forwards"],
                         receipts[1]["actual_model_forwards"],
                     )
-                    self.assertEqual(
-                        receipts[0]["actual_model_forwards"], 2
-                    )
-                    self.assertEqual(
-                        receipts[0]["actual_projection_positions"], 16
-                    )
-                    self.assertEqual(
-                        receipts[1]["actual_projection_positions"], 4
-                    )
+                    self.assertEqual(receipts[0]["actual_model_forwards"], 2)
+                    self.assertEqual(receipts[0]["actual_projection_positions"], 16)
+                    self.assertEqual(receipts[1]["actual_projection_positions"], 4)
                     for name in gradients[0]:
                         torch.testing.assert_close(
                             gradients[0][name],
@@ -140,9 +132,7 @@ class PairedMarginQwenTests(unittest.TestCase):
                         strict=True,
                     ):
                         if a.requires_grad:
-                            torch.testing.assert_close(
-                                a, b, rtol=0.02, atol=atol
-                            )
+                            torch.testing.assert_close(a, b, rtol=0.02, atol=atol)
                         else:
                             self.assertTrue(torch.equal(a, initial[name]))
                             self.assertTrue(torch.equal(b, initial[name]))
@@ -167,12 +157,20 @@ class PairedMarginQwenTests(unittest.TestCase):
         model = Qwen2ForCausalLM(config)
         with self.assertRaises(ValueError):
             binding_margin_loss(
-                model, LiteralTokenizer(), [2, 3], "A", "A",
+                model,
+                LiteralTokenizer(),
+                [2, 3],
+                "A",
+                "A",
                 backend="supervised_positions",
             )
         with self.assertRaises(ValueError):
             binding_margin_loss(
-                model, LiteralTokenizer(), [2, 3], "A", "B",
+                model,
+                LiteralTokenizer(),
+                [2, 3],
+                "A",
+                "B",
                 backend="unknown_backend",
             )
 

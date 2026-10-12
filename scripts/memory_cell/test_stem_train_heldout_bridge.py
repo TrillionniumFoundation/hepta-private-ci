@@ -104,10 +104,14 @@ def fixture():
     for row in scored:
         receipt = row["receipt"]
         query = receipt["observable_query"]
-        request = digest((
-            receipt["generator_identity"], receipt["generator_profile"],
-            query, receipt["delivered_evidence"],
-        ))
+        request = digest(
+            (
+                receipt["generator_identity"],
+                receipt["generator_profile"],
+                query,
+                receipt["delivered_evidence"],
+            )
+        )
         receipt.update(
             question_digest=digest(query),
             canonical_request_digest=request,
@@ -120,10 +124,14 @@ def fixture():
 def change_source_and_bind_request(row):
     receipt = row["receipt"]
     receipt["delivered_evidence"][0]["original_id"] = "changed-native-source"
-    request = digest((
-        receipt["generator_identity"], receipt["generator_profile"],
-        receipt["observable_query"], receipt["delivered_evidence"],
-    ))
+    request = digest(
+        (
+            receipt["generator_identity"],
+            receipt["generator_profile"],
+            receipt["observable_query"],
+            receipt["delivered_evidence"],
+        )
+    )
     receipt["canonical_request_digest"] = request
     receipt["input_ids_digest"] = digest(("input", request))
     receipt["generated_ids_digest"] = digest(("generated", request))
@@ -397,35 +405,61 @@ class GeneralizationBridgeTests(unittest.TestCase):
         self.assertFalse(result["production_accepted"])
 
     def test_same_canonical_request_cannot_fake_reader_answer_or_score_gain(self):
-        for field in ("answer", "diagnostic_answer_f1",
-                      "input_ids_digest", "generated_ids_digest"):
+        for field in (
+            "answer",
+            "diagnostic_answer_f1",
+            "input_ids_digest",
+            "generated_ids_digest",
+        ):
             plan, learning, scored, targets = fixture()
-            learned = next(row for row in scored if (
-                row["stage"] == 48 and row["phase"] == "test"
-                and row["question_id"] == "test-0" and row["arm"] == "gated"
-            ))
+            learned = next(
+                row
+                for row in scored
+                if (
+                    row["stage"] == 48
+                    and row["phase"] == "test"
+                    and row["question_id"] == "test-0"
+                    and row["arm"] == "gated"
+                )
+            )
             if field == "answer":
                 learned[field] = "A different answer from an identical prompt."
             elif field == "diagnostic_answer_f1":
                 learned[field] = 0.75
             else:
                 learned["receipt"][field] = "f" * 64
-            with self.subTest(field=field), self.assertRaisesRegex(
-                ValueError, "identical Reader request yielded inconsistent"
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(
+                    ValueError, "identical Reader request yielded inconsistent"
+                ),
             ):
                 train_to_heldout_gap(plan, learning, scored, targets)
 
     def test_canonical_request_or_original_query_digest_cannot_be_forged(self):
-        for field in ("canonical_request_digest", "question_digest",
-                      "input_ids_digest", "generated_ids_digest"):
+        for field in (
+            "canonical_request_digest",
+            "question_digest",
+            "input_ids_digest",
+            "generated_ids_digest",
+        ):
             plan, learning, scored, targets = fixture()
-            learned = next(row for row in scored if (
-                row["stage"] == 48 and row["phase"] == "test"
-                and row["question_id"] == "test-0" and row["arm"] == "gated"
-            ))
+            learned = next(
+                row
+                for row in scored
+                if (
+                    row["stage"] == 48
+                    and row["phase"] == "test"
+                    and row["question_id"] == "test-0"
+                    and row["arm"] == "gated"
+                )
+            )
             learned["receipt"][field] = "invalid-unsigned-field"
-            with self.subTest(field=field), self.assertRaisesRegex(
-                ValueError, "noncanonical Reader request or token receipt"
+            with (
+                self.subTest(field=field),
+                self.assertRaisesRegex(
+                    ValueError, "noncanonical Reader request or token receipt"
+                ),
             ):
                 train_to_heldout_gap(plan, learning, scored, targets)
 
@@ -437,7 +471,9 @@ class GeneralizationBridgeTests(unittest.TestCase):
         self.assertEqual(part["identical_request_pairs"], 4)
         self.assertEqual(part["changed_request_pairs"], 0)
         self.assertEqual(part["request_identity_unknown_due_to_failure"], 0)
-        self.assertTrue(result["canonical_request_and_deterministic_answer_receipt_verified"])
+        self.assertTrue(
+            result["canonical_request_and_deterministic_answer_receipt_verified"]
+        )
 
     def test_head_sha_or_hidden_heldout_annotation_claim_is_rejected(self):
         for corruption in ("sha", "label"):

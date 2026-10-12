@@ -10,21 +10,45 @@ from stem_reader_echo_repeatability import ARMS, PHASES, STAGES, compare_reader_
 
 
 def _receipt(qid, *, no_evidence=False):
-    source = [] if no_evidence else [dict(
-        id="original-source", root="root", scope="scope-" + qid,
-        label="E1", observed_at="2024-01-01", excerpt="Original source.",
-    )]
-    query = dict(identity=qid, family="family", scope="scope-" + qid,
-                 content="What happened?", observed_at="2024-01-02")
+    source = (
+        []
+        if no_evidence
+        else [
+            dict(
+                id="original-source",
+                root="root",
+                scope="scope-" + qid,
+                label="E1",
+                observed_at="2024-01-01",
+                excerpt="Original source.",
+            )
+        ]
+    )
+    query = dict(
+        identity=qid,
+        family="family",
+        scope="scope-" + qid,
+        content="What happened?",
+        observed_at="2024-01-02",
+    )
     identity, profile = "reader-pin", "prompt-pin"
-    canonical = hashlib.sha256(json.dumps((identity, profile, query, source),
-                         sort_keys=True, ensure_ascii=False,
-                         separators=(",", ":")).encode()).hexdigest()
+    canonical = hashlib.sha256(
+        json.dumps(
+            (identity, profile, query, source),
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
     return dict(
-        observable_query=query, delivered_evidence=source,
-        generator_identity=identity, generator_profile=profile,
-        canonical_request_digest=canonical, input_ids_digest="a" * 64,
-        generated_ids_digest="b" * 64, generated_tokens=4,
+        observable_query=query,
+        delivered_evidence=source,
+        generator_identity=identity,
+        generator_profile=profile,
+        canonical_request_digest=canonical,
+        input_ids_digest="a" * 64,
+        generated_ids_digest="b" * 64,
+        generated_tokens=4,
         reached_token_ceiling=False,
     )
 
@@ -33,13 +57,17 @@ def fixture():
     questions = {"train": ["train-" + str(i) for i in range(48)]}
     questions.update({p: [p + "-" + str(i) for i in range(8)] for p in PHASES})
     plan = dict(
-        questions=questions, arms=list(ARMS),
+        questions=questions,
+        arms=list(ARMS),
         curriculum_attempted_examples=list(STAGES),
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
         generator_config=dict(max_new_tokens=96, do_sample=False),
-        generator_template_digest="prompt-pin", reader_inventory="reader-pin",
-        dataset_sha256="source-pin", retriever_inventory="retriever-pin",
-        ranker_inventory="ranker-pin", window_budget=dict(candidates=32),
+        generator_template_digest="prompt-pin",
+        reader_inventory="reader-pin",
+        dataset_sha256="source-pin",
+        retriever_inventory="retriever-pin",
+        ranker_inventory="ranker-pin",
+        window_budget=dict(candidates=32),
         primary_policy="forced-top1",
     )
     raw = []
@@ -48,18 +76,31 @@ def fixture():
         for qid in questions[phase]:
             for stage in STAGES:
                 for arm in ARMS:
-                    raw.append(dict(
-                        stage=stage, phase=phase, question_id=qid, arm=arm,
-                        status="succeeded", answer="Fixture answer.",
-                        receipt=_receipt(qid),
-                    ))
-            no_evidence.append(dict(
-                phase=phase, question_id=qid, status="succeeded",
-                answer="Fixture answer.", receipt=_receipt(qid, no_evidence=True),
-            ))
+                    raw.append(
+                        dict(
+                            stage=stage,
+                            phase=phase,
+                            question_id=qid,
+                            arm=arm,
+                            status="succeeded",
+                            answer="Fixture answer.",
+                            receipt=_receipt(qid),
+                        )
+                    )
+            no_evidence.append(
+                dict(
+                    phase=phase,
+                    question_id=qid,
+                    status="succeeded",
+                    answer="Fixture answer.",
+                    receipt=_receipt(qid, no_evidence=True),
+                )
+            )
     report = dict(
-        census=dict(complete=True), logical_policy_attempts=576,
-        production_accepted=False, semantic_citation_precision=None,
+        census=dict(complete=True),
+        logical_policy_attempts=576,
+        production_accepted=False,
+        semantic_citation_precision=None,
     )
     return dict(plan=plan, raw=raw, empty=no_evidence, report=report)
 
@@ -70,21 +111,33 @@ class RepeatabilityTests(unittest.TestCase):
         result = compare_reader_outputs(a, deepcopy(a))
         self.assertEqual(result["independent_question_ids"], 32)
         self.assertTrue(result["two_run_repeats_are_not_independent_examples"])
-        self.assertEqual(result["controls"]["original_evidence"]["unique_questions"], 32)
-        self.assertEqual(result["controls"]["zero_evidence"]["emitted_structural_citation_markers"], 0)
+        self.assertEqual(
+            result["controls"]["original_evidence"]["unique_questions"], 32
+        )
+        self.assertEqual(
+            result["controls"]["zero_evidence"]["emitted_structural_citation_markers"],
+            0,
+        )
         self.assertFalse(result["scale_out_permitted"])
         self.assertFalse(result["production_accepted"])
 
     def test_json_echo_is_reported_not_promoted_as_answer_quality(self):
         a = fixture()
-        frozen = next(row for row in a["raw"] if (
-            row["stage"], row["phase"], row["arm"]
-        ) == (48, "test", "frozen_rerank"))
-        frozen["answer"] = json.dumps(dict(
-            question="What happened?", question_time="2024-01-02",
-            evidence=[dict(label="E1", observed_at="2024-01-01",
-                           text="Original source.")],
-        ), ensure_ascii=False)[:60]
+        frozen = next(
+            row
+            for row in a["raw"]
+            if (row["stage"], row["phase"], row["arm"]) == (48, "test", "frozen_rerank")
+        )
+        frozen["answer"] = json.dumps(
+            dict(
+                question="What happened?",
+                question_time="2024-01-02",
+                evidence=[
+                    dict(label="E1", observed_at="2024-01-01", text="Original source.")
+                ],
+            ),
+            ensure_ascii=False,
+        )[:60]
         result = compare_reader_outputs(a, deepcopy(a))
         out = result["controls"]["original_evidence"]
         self.assertEqual(out["generated_json_question_prefix"], 1)
@@ -97,18 +150,29 @@ class RepeatabilityTests(unittest.TestCase):
         for key in ("answer", "generated_ids_digest"):
             a = fixture()
             b = deepcopy(a)
-            row = next(x for x in b["raw"] if x["stage"] == 48 and x["arm"] == "frozen_rerank")
+            row = next(
+                x for x in b["raw"] if x["stage"] == 48 and x["arm"] == "frozen_rerank"
+            )
             if key == "answer":
                 row[key] = "Changed result"
             else:
                 row["receipt"][key] = "c" * 64
-            with self.subTest(key=key), self.assertRaisesRegex(AuditError, "changed across runs"):
+            with (
+                self.subTest(key=key),
+                self.assertRaisesRegex(AuditError, "changed across runs"),
+            ):
                 compare_reader_outputs(a, b)
 
     def test_misaligned_model_or_question_receipts_reject(self):
-        for field in ("generator_identity", "generator_profile", "canonical_request_digest"):
+        for field in (
+            "generator_identity",
+            "generator_profile",
+            "canonical_request_digest",
+        ):
             a = fixture()
-            row = next(x for x in a["raw"] if x["stage"] == 48 and x["arm"] == "frozen_rerank")
+            row = next(
+                x for x in a["raw"] if x["stage"] == 48 and x["arm"] == "frozen_rerank"
+            )
             row["receipt"][field] = "forged"
             with self.subTest(field=field), self.assertRaises(AuditError):
                 compare_reader_outputs(a, deepcopy(a))
@@ -121,7 +185,10 @@ class RepeatabilityTests(unittest.TestCase):
                     a[target].pop()
                 else:
                     a[target].append(deepcopy(a[target][0]))
-                with self.subTest(target=target, action=action), self.assertRaises(AuditError):
+                with (
+                    self.subTest(target=target, action=action),
+                    self.assertRaises(AuditError),
+                ):
                     compare_reader_outputs(a, deepcopy(a))
 
     def test_noncanonical_token_ceiling_and_source_evidence_reject(self):

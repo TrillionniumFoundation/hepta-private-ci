@@ -50,13 +50,16 @@ def strict_json(raw):
 
 
 def canonical(value):
-    return json.dumps(
-        value,
-        sort_keys=True,
-        ensure_ascii=False,
-        separators=(",", ":"),
-        allow_nan=False,
-    ).encode("utf-8") + b"\n"
+    return (
+        json.dumps(
+            value,
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        + b"\n"
+    )
 
 
 def digest(raw):
@@ -383,9 +386,8 @@ def reopen(manifest, output, *, manifest_sha):
         or inventory.get("source_family_proxies") != 6
         or inventory.get("original_file_bindings") != 32
         or inventory.get("original_commit_objects") != 14
-        or inventory.get("registered_parent_edges") != sum(
-            len(case["commits"]) - 1 for case in manifest["cases"]
-        )
+        or inventory.get("registered_parent_edges")
+        != sum(len(case["commits"]) - 1 for case in manifest["cases"])
         or inventory.get("no_answer_targets_opened") is not True
         or inventory.get("model_calls") != 0
         or inventory.get("production_accepted") is not False
@@ -395,25 +397,33 @@ def reopen(manifest, output, *, manifest_sha):
         raise ValueError("original source inventory lineage or authority changed")
     expected = [
         (
-            c["repo"], c["partition"], c["pull_number"], c["head_sha"],
-            c["tree_sha"], f["path"], f["blob_sha"],
+            c["repo"],
+            c["partition"],
+            c["pull_number"],
+            c["head_sha"],
+            c["tree_sha"],
+            f["path"],
+            f["blob_sha"],
         )
         for c in manifest["cases"]
         for f in c["files"]
     ]
     recorded = [
         (
-            r["repo"], r["partition"], r["pull_number"], r["head_sha"],
-            r["tree_sha"], r["path"], r["blob_sha"],
+            r["repo"],
+            r["partition"],
+            r["pull_number"],
+            r["head_sha"],
+            r["tree_sha"],
+            r["path"],
+            r["blob_sha"],
         )
         for r in inventory.get("files", [])
     ]
     if recorded != expected or len(set(recorded)) != 32:
         raise ValueError("original source path and partition census changed")
     expected_commits = [
-        (c["repo"], row["sha"])
-        for c in manifest["cases"]
-        for row in c["commits"]
+        (c["repo"], row["sha"]) for c in manifest["cases"] for row in c["commits"]
     ]
     got_commits = [(c["repo"], c["sha"]) for c in inventory.get("commits", [])]
     if got_commits != expected_commits:

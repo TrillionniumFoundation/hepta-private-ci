@@ -28,27 +28,36 @@ MARGIN = 1.0
 def _top1(values, names):
     if len(values) != len(names):
         raise ValueError("matched-objective Head candidate dimensions changed")
-    return min(range(len(names)), key=lambda i: (-values[i], names[i])) if names else None
+    return (
+        min(range(len(names)), key=lambda i: (-values[i], names[i])) if names else None
+    )
 
 
 def matched_objective_shadow(
-    questions, training_rows, features, cut, routes, output,
+    questions,
+    training_rows,
+    features,
+    cut,
+    routes,
+    output,
 ):
     """Fit 24 persistent Heads and seal 384 label-blind candidate selections."""
     train = tuple(q.identity for q in questions["train"])
-    test = {
-        p: tuple(q.identity for q in questions[p]) for p in PHASES
-    }
+    test = {p: tuple(q.identity for q in questions[p]) for p in PHASES}
     ids = train + tuple(q for phase in PHASES for q in test[phase])
     if (
         set(questions) != {"train", *PHASES}
-        or len(train) != 48 or len(set(train)) != 48
+        or len(train) != 48
+        or len(set(train)) != 48
         or any(len(test[p]) != 8 for p in PHASES)
-        or len(ids) != len(set(ids)) or len(ids) != 80
-        or set(routes) != set(features) or set(routes) != set(ids)
+        or len(ids) != len(set(ids))
+        or len(ids) != 80
+        or set(routes) != set(features)
+        or set(routes) != set(ids)
         or any(routes[q] not in CELLS for q in ids)
         or set(cut.question_ids) != set(train)
-        or not isinstance(output, Path) or not output.is_dir()
+        or not isinstance(output, Path)
+        or not output.is_dir()
     ):
         raise ValueError("unregistered source-only matched-objective cohort")
     dimensions = {features[q].paired.shape[1] for q in ids}
@@ -66,7 +75,8 @@ def matched_objective_shadow(
         f = row.features
         n = len(f.candidate_ids)
         if (
-            f.question_id not in train or f.question_id in admissible
+            f.question_id not in train
+            or f.question_id in admissible
             or f.seal() != features[f.question_id].seal()
             or f.family not in cut.families
         ):
@@ -84,9 +94,11 @@ def matched_objective_shadow(
             source_sha = sha256(seed)
             for objective in OBJECTIVES:
                 copy = StemHead.restore(
-                    seed, expected_sha256=source_sha,
+                    seed,
+                    expected_sha256=source_sha,
                     encoder_identity=encoder_id,
-                    allowed_roots=set(cut.allowed_roots), revoked=set(),
+                    allowed_roots=set(cut.allowed_roots),
+                    revoked=set(),
                 )
                 if copy.export() != seed:
                     raise ValueError("matched-objective initial Head bytes differ")
@@ -98,15 +110,19 @@ def matched_objective_shadow(
         for kind in KINDS:
             for cell in CELLS:
                 eligible = tuple(
-                    admissible[q] for q in train[:stage]
+                    admissible[q]
+                    for q in train[:stage]
                     if q in admissible and routes[q] == cell
                 )
                 train_ids = tuple(x.features.question_id for x in eligible)
                 for objective in OBJECTIVES:
                     head = heads[kind, objective, cell]
                     row = dict(
-                        stage=stage, kind=kind, objective=objective,
-                        cell=cell, status="failed",
+                        stage=stage,
+                        kind=kind,
+                        objective=objective,
+                        cell=cell,
+                        status="failed",
                         shared_initial_head_sha256=seeds[kind, cell],
                         previous_head_sha256=sha256(head.export()),
                         admitted_same_positive_negative_questions=len(eligible),
@@ -117,12 +133,21 @@ def matched_objective_shadow(
                     try:
                         if objective == "multi_positive_ce":
                             receipt = head.fit(
-                                eligible, cut, revoked=set(), steps=STEPS, lr=LR,
+                                eligible,
+                                cut,
+                                revoked=set(),
+                                steps=STEPS,
+                                lr=LR,
                             )
                         else:
                             receipt = fit_pairwise_shadow(
-                                head, eligible, cut, revoked=set(),
-                                steps=STEPS, lr=LR, margin=MARGIN,
+                                head,
+                                eligible,
+                                cut,
+                                revoked=set(),
+                                steps=STEPS,
+                                lr=LR,
+                                margin=MARGIN,
                             )
                         if receipt["consumed_steps"] != STEPS:
                             raise ValueError("objective used fewer than matched steps")
@@ -133,9 +158,11 @@ def matched_objective_shadow(
                         with path.open("xb") as stream:
                             stream.write(payload)
                         restored = StemHead.restore(
-                            payload, expected_sha256=sha256(payload),
+                            payload,
+                            expected_sha256=sha256(payload),
                             encoder_identity=encoder_id,
-                            allowed_roots=set(cut.allowed_roots), revoked=set(),
+                            allowed_roots=set(cut.allowed_roots),
+                            revoked=set(),
                         )
                         if restored.export() != payload:
                             raise ValueError("objective Head reload parity failed")
@@ -151,13 +178,15 @@ def matched_objective_shadow(
                         )
                     except Exception as exc:
                         row.update(
-                            error_type=type(exc).__name__, error=str(exc)[:1024],
+                            error_type=type(exc).__name__,
+                            error=str(exc)[:1024],
                         )
                     row["inclusive_fit_seconds"] = time.perf_counter() - started
                     fitted.append(row)
         failures = {
             (f["kind"], f["objective"], f["cell"]): f["error_type"]
-            for f in fitted if f["stage"] == stage and f["status"] == "failed"
+            for f in fitted
+            if f["stage"] == stage and f["status"] == "failed"
         }
         for phase in PHASES:
             for qid in test[phase]:
@@ -165,8 +194,12 @@ def matched_objective_shadow(
                 for kind in KINDS:
                     for objective in OBJECTIVES:
                         row = dict(
-                            stage=stage, phase=phase, question_id=qid,
-                            kind=kind, objective=objective, cell=cell,
+                            stage=stage,
+                            phase=phase,
+                            question_id=qid,
+                            kind=kind,
+                            objective=objective,
+                            cell=cell,
                             family=f.family,
                             status="failed",
                             pool_sha256=f.pool_digest,
@@ -208,20 +241,26 @@ def matched_objective_shadow(
     return fitted, choices
 
 
-def review_objectives(questions, fitted, choices, pools, targets, *,
-                      support_indices):
+def review_objectives(questions, fitted, choices, pools, targets, *, support_indices):
     """Review weak native document support after the choices are frozen."""
     index = {}
     for row in choices:
-        key = (row["stage"], row["phase"], row["question_id"],
-               row["kind"], row["objective"])
+        key = (
+            row["stage"],
+            row["phase"],
+            row["question_id"],
+            row["kind"],
+            row["objective"],
+        )
         if key in index:
             raise ValueError("duplicate pairwise-vs-CE decision")
         index[key] = row
     expected = {
         (stage, phase, q.identity, kind, objective)
-        for stage in STAGES for phase in PHASES
-        for q in questions[phase] for kind in KINDS
+        for stage in STAGES
+        for phase in PHASES
+        for q in questions[phase]
+        for kind in KINDS
         for objective in OBJECTIVES
     }
     if set(index) != expected or len(index) != len(choices) != 384:
@@ -231,8 +270,10 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
     for row in fitted:
         key = (row["stage"], row["kind"], row["objective"], row["cell"])
         if (
-            key in by_fit or row["stage"] not in STAGES
-            or row["kind"] not in KINDS or row["objective"] not in OBJECTIVES
+            key in by_fit
+            or row["stage"] not in STAGES
+            or row["kind"] not in KINDS
+            or row["objective"] not in OBJECTIVES
             or row["cell"] not in CELLS
             or row["status"] not in ("succeeded", "failed")
             or row["role"] != "separate-nonqualifying-no-Reader-objective-ablation"
@@ -250,15 +291,21 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
             or row["reload_parity"] is not True
             or row["no_original_head_or_reader_mutation"] is not True
             or row["receipt"]["production_accepted"] is not False
-            or (row["objective"] == "positive_vs_weak_negative"
-                and row["receipt"]["null_weights_unchanged"] is not True)
+            or (
+                row["objective"] == "positive_vs_weak_negative"
+                and row["receipt"]["null_weights_unchanged"] is not True
+            )
         ):
-            raise ValueError("fit objectives did not use matched budget/unchanged Reader")
+            raise ValueError(
+                "fit objectives did not use matched budget/unchanged Reader"
+            )
         by_fit[key] = row
     expected_fit = {
         (stage, kind, obj, cell)
-        for stage in STAGES for kind in KINDS
-        for obj in OBJECTIVES for cell in CELLS
+        for stage in STAGES
+        for kind in KINDS
+        for obj in OBJECTIVES
+        for cell in CELLS
     }
     if set(by_fit) != expected_fit or len(fitted) != 24:
         raise ValueError("incomplete 24 fit/checkpoint objective census")
@@ -270,13 +317,14 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
                     by_fit[stage, kind, OBJECTIVES[1], cell],
                 )
                 if (
-                    a["shared_initial_head_sha256"]
-                    != b["shared_initial_head_sha256"]
+                    a["shared_initial_head_sha256"] != b["shared_initial_head_sha256"]
                     or a["train_question_ids_sha256"] != b["train_question_ids_sha256"]
                     or a["admitted_same_positive_negative_questions"]
                     != b["admitted_same_positive_negative_questions"]
                 ):
-                    raise ValueError("objective training data or initialization differs")
+                    raise ValueError(
+                        "objective training data or initialization differs"
+                    )
     results = {}
     for stage in STAGES:
         for phase in PHASES:
@@ -298,18 +346,17 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
                         or ce["family"] != pair["family"]
                         or ce["cell"] != pair["cell"]
                     ):
-                        raise ValueError("objective matched initialization or sources drift")
+                        raise ValueError(
+                            "objective matched initialization or sources drift"
+                        )
                     for row in (ce, pair):
                         if row["status"] == "succeeded":
                             fit = by_fit[
-                                row["stage"], row["kind"],
-                                row["objective"], row["cell"]
+                                row["stage"], row["kind"], row["objective"], row["cell"]
                             ]
-                            if (
-                                fit["status"] != "succeeded"
-                                or row.get("matched_head_sha256")
-                                != fit.get("post_head_sha256")
-                            ):
+                            if fit["status"] != "succeeded" or row.get(
+                                "matched_head_sha256"
+                            ) != fit.get("post_head_sha256"):
                                 raise ValueError(
                                     "shadow score not from persisted matched Head"
                                 )
@@ -322,14 +369,16 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
                         or not isinstance(frozen, int)
                         or not 0 <= frozen < ce["candidate_count"]
                     ):
-                        raise ValueError(
-                            "CE or pairwise original frozen winner drift"
-                        )
+                        raise ValueError("CE or pairwise original frozen winner drift")
                     changed += ce["selected"] != pair["selected"]
                     ce_frozen_flips += ce["selected"] != frozen
                     pw_frozen_flips += pair["selected"] != frozen
                     target = targets[qid]
-                    if target.unanswerable or target.unresolved_evidence or not target.evidence:
+                    if (
+                        target.unanswerable
+                        or target.unresolved_evidence
+                        or not target.evidence
+                    ):
                         uncertain += 1
                         continue
                     pool = pools.get(qid)

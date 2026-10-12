@@ -18,7 +18,8 @@ SCHEMA = "hepta.memorycell.locomo-reader-matched-cost.v1"
 def _success_cost(row):
     receipt = row["receipt"]
     if (
-        not isinstance(row.get("answer"), str) or not row["answer"].strip()
+        not isinstance(row.get("answer"), str)
+        or not row["answer"].strip()
         or not isinstance(receipt, dict)
         or type(receipt.get("input_tokens")) is not int
         or not 0 < receipt["input_tokens"] <= 2048
@@ -74,7 +75,8 @@ def audit_matched_costs(cases, rows):
             or b.get("family_proxy_digest") != case["family_proxy_digest"]
             or a.get("source_census_sha256") != case["source_census_sha256"]
             or b.get("source_census_sha256") != case["source_census_sha256"]
-            or len(a["selected"]) != 4 or len(b["selected"]) != 8
+            or len(a["selected"]) != 4
+            or len(b["selected"]) != 8
             or a["selected"] != b["selected"][:4]
         ):
             raise ValueError("source-family or registered nested retrieval drift")
@@ -104,14 +106,18 @@ def audit_matched_costs(cases, rows):
             only4 += 1
         else:
             if (
-                a["receipt"].get("reader_identity") != b["receipt"].get("reader_identity")
-                or a["receipt"].get("reader_profile") != b["receipt"].get("reader_profile")
+                a["receipt"].get("reader_identity")
+                != b["receipt"].get("reader_identity")
+                or a["receipt"].get("reader_profile")
+                != b["receipt"].get("reader_profile")
                 or not a["receipt"].get("reader_identity")
                 or not a["receipt"].get("reader_profile")
                 or cost8["source_utf8_bytes"] < cost4["source_utf8_bytes"]
                 or cost8["input_tokens"] < cost4["input_tokens"]
             ):
-                raise ValueError("model identity, source bytes or token monotonicity drift")
+                raise ValueError(
+                    "model identity, source bytes or token monotonicity drift"
+                )
             row = dict(
                 question_id=case["question_id"],
                 family_proxy_digest=case["family_proxy_digest"],
@@ -133,17 +139,21 @@ def audit_matched_costs(cases, rows):
             complete_paired_question_count=len(batch),
             mean_extra_source_utf8_bytes=(
                 math.fsum(x["extra_source_utf8_bytes"] for x in batch) / len(batch)
-                if batch else None
+                if batch
+                else None
             ),
             mean_extra_prompt_tokens=(
                 math.fsum(x["extra_prompt_tokens"] for x in batch) / len(batch)
-                if batch else None
+                if batch
+                else None
             ),
             mean_extra_generation_seconds=(
                 math.fsum(x["extra_generation_seconds"] for x in batch) / len(batch)
-                if batch else None
+                if batch
+                else None
             ),
         )
+
     family_results = {k: stats(per_family[k]) for k in sorted(set(families))}
     return dict(
         schema=SCHEMA,
@@ -171,18 +181,25 @@ def audit_matched_costs(cases, rows):
 
 
 def verify_immutable_generation_record(
-    manifest, raw_bytes, rows, *, expected_commit,
-    public_zip_sha256, decisions_zip_sha256,
+    manifest,
+    raw_bytes,
+    rows,
+    *,
+    expected_commit,
+    public_zip_sha256,
+    decisions_zip_sha256,
 ):
     """Validate source-bound run totals BEFORE a scorer opens any QA labels.
 
     The trusted expected Git commit and both immutable original ZIP hashes are
     supplied independently, not learned from the artifact under review.
     """
+
     def pin(value, size):
-        return isinstance(value, str) and re.fullmatch(
-            r"[a-f0-9]{" + str(size) + r"}", value
-        ) is not None
+        return (
+            isinstance(value, str)
+            and re.fullmatch(r"[a-f0-9]{" + str(size) + r"}", value) is not None
+        )
 
     if (
         not isinstance(manifest, dict)
@@ -191,8 +208,7 @@ def verify_immutable_generation_record(
         or not pin(expected_commit, 40)
         or not pin(public_zip_sha256, 64)
         or not pin(decisions_zip_sha256, 64)
-        or manifest.get("schema") !=
-        "hepta.memorycell.locomo-frozen-reader-pair.v1"
+        or manifest.get("schema") != "hepta.memorycell.locomo-frozen-reader-pair.v1"
         or manifest.get("generating_commit") != expected_commit
         or manifest.get("original_source_sha256") != public_zip_sha256
         or manifest.get("original_six_decisions_sha256") != decisions_zip_sha256
