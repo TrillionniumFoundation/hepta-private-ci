@@ -12,6 +12,7 @@ struct Driver {
     missing_run_output_digest: bool,
     overrun_run_tokens: bool,
     overrun_run_memory: bool,
+    reported_run_memory_bytes: u64,
     feature_transient_bytes: u64,
     run_calls: usize,
     feature_run_calls: usize,
@@ -70,6 +71,8 @@ impl ModelDriver for Driver {
             consumed_tokens: if self.overrun_run_tokens { 65 } else { 16 },
             observed_memory_bytes: if self.overrun_run_memory {
                 8_192
+            } else if self.reported_run_memory_bytes != 0 {
+                self.reported_run_memory_bytes
             } else {
                 1_024
             },
@@ -456,6 +459,65 @@ fn loading_two_models_cannot_double_spend_total_worker_memory() {
         "3 KiB + 1 KiB meets the grant's exact global 4 KiB limit"
     );
     assert_eq!(worker.models.len(), 2);
+}
+
+#[test]
+fn generic_run_accounts_for_other_loaded_models_before_accepting_driver_observation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.generic-aggregate-memory".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("1 KiB model");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    worker.driver.reported_memory_bytes = 3_072;
+    worker.load_model(100, second).expect("3 KiB model");
+    assert_eq!(worker.models.len(), 2);
+
+    // The selected model reports only 2 KiB, individually below 4 KiB.
+    // Together with the other loaded model it exceeds the generation grant.
+    worker.driver.reported_run_memory_bytes = 2_048;
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+    assert!(worker.requires_external_recovery());
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ExecutionIndeterminate),
+        "post-driver memory violation cannot be replayed in this generation"
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+}
+
+#[test]
+fn generic_run_conservatively_retains_loaded_handle_memory_at_grant_boundary() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.generic-resident-floor".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("1 KiB model");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    worker.driver.reported_memory_bytes = 3_072;
+    worker.load_model(100, second).expect("3 KiB model");
+    worker.driver.reported_run_memory_bytes = 1;
+    assert_eq!(
+        worker.run(100, "model.1", request())
+            .expect("1 KiB + 3 KiB still fits conservatively")
+            .status,
+        ExecutionStatus::Succeeded
+    );
+    assert!(!worker.requires_external_recovery());
 }
 
 #[test]
@@ -1039,7 +1101,6 @@ fn failed_release_blocks_native_backend_batch_without_dispatch() {
     assert_eq!(worker.driver.inner.unload_calls, 1);
     assert_eq!(worker.models.len(), 1);
 }
-
 
 #[test]
 fn feature_transient_exceeding_generation_memory_budget_seals_single_request() {
