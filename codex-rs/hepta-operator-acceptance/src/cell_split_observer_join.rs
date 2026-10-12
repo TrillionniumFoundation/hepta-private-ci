@@ -762,6 +762,12 @@ mod original_checkpoint_integrity_tests {
         let original: OriginalSupervisorCheckpointV1 =
             serde_json::from_slice(&journal.original_checkpoint_bytes)
                 .expect("original typed checkpoint");
+        // Stable vector computed independently from the Supervisor's domain,
+        // big-endian identity lengths, phase tag, and Q24-free digest fields.
+        assert_eq!(
+            original.receipt_digest,
+            "3d33ace2a9bc2afeea989ffbf81b7cd785f703c9a5dff9411832a8f9a5edac51",
+        );
         for (name, key, value) in [
             ("false terminal revision", "revision", serde_json::json!(11)),
             ("missing drain watermark", "outboxWatermark", serde_json::Value::Null),
@@ -777,8 +783,15 @@ mod original_checkpoint_integrity_tests {
         ] {
             let mut altered = serde_json::to_value(&original).expect("json value");
             altered[key] = value;
-            let changed: OriginalSupervisorCheckpointV1 =
+            let mut changed: OriginalSupervisorCheckpointV1 =
                 serde_json::from_value(altered).expect("well-formed field type");
+            // Except for the explicit hash-tamper case, repair the receipt
+            // digest so the test exercises semantic validation independently
+            // of the self-hash check.
+            if name != "forged prior digest" {
+                changed.receipt_digest = changed.content_digest_v1()
+                    .expect("rehash well-formed tampering");
+            }
             let bytes = serde_json::to_vec(&changed).expect("typed encoding");
             assert!(
                 verify_original_supervisor_checkpoint_v1(&bytes, &journal, &plan).is_err(),
