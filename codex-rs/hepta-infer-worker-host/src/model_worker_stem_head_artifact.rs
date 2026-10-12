@@ -53,6 +53,27 @@ fn require_same_selection_time(
     Ok(())
 }
 
+/// Both independently signed artifacts are registered under ONE artifact
+/// registry and must be consumed from the SAME verified CURRENT snapshot.
+/// Equal caller-supplied time alone does not prevent mixing a stale projection
+/// view with a newer Head view in the presence of revocation.
+///
+/// Exact receipt, independently pinned trust and witness bindings are required.
+/// This does NOT independently prove live CURRENT freshness: the product owner
+/// still must serialize discovery and use with its generation/revocation fence.
+fn require_same_current_registry_view(
+    projection: &VerifiedCurrentRegistryViewV1,
+    head: &VerifiedCurrentRegistryViewV1,
+) -> Result<(), StemHeadArtifactError> {
+    if projection.receipt() != head.receipt()
+        || projection.witness_digest() != head.witness_digest()
+        || projection.trust_digest() != head.trust_digest()
+    {
+        return Err(StemHeadArtifactError::InvalidBinding);
+    }
+    Ok(())
+}
+
 #[derive(Debug)]
 pub enum StemHeadArtifactError {
     InvalidPayload,
@@ -306,6 +327,7 @@ impl SelectedStemHeadBankReaderV1 {
         StemHeadArtifactError,
     > {
         require_same_selection_time(use_request.selection_now, selection_now)?;
+        require_same_current_registry_view(&use_request.current, &head_current)?;
         let request = &use_request.request;
         let binding = use_request.binding;
         if binding.scope_digest != self.fence.scope_digest.to_string()
@@ -409,6 +431,7 @@ impl SelectedStemHeadBankReaderV1 {
         StemHeadArtifactError,
     > {
         require_same_selection_time(use_request.selection_now, selection_now)?;
+        require_same_current_registry_view(&use_request.current, &head_current)?;
         if !(2..=32).contains(&use_request.items.len()) {
             return Err(StemHeadArtifactError::InvalidBinding);
         }
