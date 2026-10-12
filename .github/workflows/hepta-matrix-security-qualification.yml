@@ -94,3 +94,80 @@ jobs:
         run: |
           git diff --check
           git diff --exit-code
+
+  disposable-cargo-resolution-probe:
+    name: Disposable pinned SDK Cargo resolver (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      STAGE: ${{ runner.temp }}/hepta-matrix-stage
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Stage exact source in disposable detached worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git worktree add --detach "$STAGE" "$SOURCE_SHA"
+          python3 qualification/matrix-security/staged_resolution_probe.py --source . --stage "$STAGE" --sha "$SOURCE_SHA" --output "$RUNNER_TEMP/hepta-matrix-resolution-stage.json"
+      - name: Install candidate upstream minimum Rust compiler
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve pinned matrix-sdk Git graph without compiling external source
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          timeout 480 cargo +1.96.0 metadata --manifest-path "$STAGE/codex-rs/Cargo.toml" --format-version=1 > "$RUNNER_TEMP/hepta-matrix-metadata.json" 2> "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
+          result=$?
+          set -e
+          CARGO_RESOLUTION_STATUS="$result" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          status=int(os.environ['CARGO_RESOLUTION_STATUS'])
+          data={}
+          if status==0:
+              data=json.loads((root/'hepta-matrix-metadata.json').read_text())
+          pkgs=data.get('packages',[])
+          names=('matrix-sdk','matrix-sdk-base','matrix-sdk-crypto','matrix-sdk-sqlite','anymap2','anymap3','libsqlite3-sys')
+          versions={name:sorted(x['version'] for x in pkgs if x['name']==name) for name in names}
+          out={'schema':'hepta.matrix-sdk-resolution-result.v1',
+               'status_code':status,'cargo_resolution_completed':status==0,
+               'exact_upstream_sha':'b3c07ea6ba6e8e46e30811c0500b04505c4be9f9',
+               'versions':versions,
+               'no_anymap2':status==0 and not versions['anymap2'],
+               'fixed_crypto_observed':status==0 and bool(versions['matrix-sdk-crypto']) and all(tuple(map(int,v.split('.'))) >= (0,19,0) for v in versions['matrix-sdk-crypto']),
+               'production_authorized':False,'cargo_deny_verified':False,
+               'hepta_e2ee_wal_recovery_verified':False}
+          (root/'hepta-matrix-resolution-result.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(out,indent=2,sort_keys=True))
+          PY
+          if [ "$result" != 0 ]; then
+            echo "Pinned candidate resolver failed (not waived): exit $result"
+            tail -n 90 "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
+          fi
+          # Diagnostic only. This job never relaxes the separate hard gate.
+      - name: Upload immutable research diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-cargo-resolution-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-matrix-resolution-stage.json
+            ${{ runner.temp }}/hepta-matrix-resolution-result.json
+            ${{ runner.temp }}/hepta-matrix-metadata-stderr.log
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Restore isolation and assert source clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -e "$STAGE"; then git worktree remove --force "$STAGE"; fi
+          git diff --check
+          git diff --exit-code
