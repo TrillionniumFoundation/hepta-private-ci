@@ -12,6 +12,7 @@ struct Driver {
     missing_run_output_digest: bool,
     overrun_run_tokens: bool,
     overrun_run_memory: bool,
+    reported_run_memory_bytes: u64,
     feature_transient_bytes: u64,
     run_calls: usize,
     feature_run_calls: usize,
@@ -70,6 +71,8 @@ impl ModelDriver for Driver {
             consumed_tokens: if self.overrun_run_tokens { 65 } else { 16 },
             observed_memory_bytes: if self.overrun_run_memory {
                 8_192
+            } else if self.reported_run_memory_bytes != 0 {
+                self.reported_run_memory_bytes
             } else {
                 1_024
             },
@@ -456,6 +459,65 @@ fn loading_two_models_cannot_double_spend_total_worker_memory() {
         "3 KiB + 1 KiB meets the grant's exact global 4 KiB limit"
     );
     assert_eq!(worker.models.len(), 2);
+}
+
+#[test]
+fn generic_run_accounts_for_other_loaded_models_before_accepting_driver_observation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.generic-aggregate-memory".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("1 KiB model");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    worker.driver.reported_memory_bytes = 3_072;
+    worker.load_model(100, second).expect("3 KiB model");
+    assert_eq!(worker.models.len(), 2);
+
+    // The selected model reports only 2 KiB, individually below 4 KiB.
+    // Together with the other loaded model it exceeds the generation grant.
+    worker.driver.reported_run_memory_bytes = 2_048;
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+    assert!(worker.requires_external_recovery());
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ExecutionIndeterminate),
+        "post-driver memory violation cannot be replayed in this generation"
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+}
+
+#[test]
+fn generic_run_conservatively_retains_loaded_handle_memory_at_grant_boundary() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.generic-resident-floor".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("1 KiB model");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    worker.driver.reported_memory_bytes = 3_072;
+    worker.load_model(100, second).expect("3 KiB model");
+    worker.driver.reported_run_memory_bytes = 1;
+    assert_eq!(
+        worker.run(100, "model.1", request())
+            .expect("1 KiB + 3 KiB still fits conservatively")
+            .status,
+        ExecutionStatus::Succeeded
+    );
+    assert!(!worker.requires_external_recovery());
 }
 
 #[test]
@@ -1040,7 +1102,6 @@ fn failed_release_blocks_native_backend_batch_without_dispatch() {
     assert_eq!(worker.models.len(), 1);
 }
 
-
 #[test]
 fn feature_transient_exceeding_generation_memory_budget_seals_single_request() {
     for transient in [4_096, u64::MAX] {
@@ -1064,6 +1125,37 @@ fn feature_transient_exceeding_generation_memory_budget_seals_single_request() {
         );
         assert_eq!(worker.driver.feature_run_calls, 1);
     }
+}
+
+#[test]
+fn single_feature_never_uses_driver_underreported_residency_to_hide_scratch_peak() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.feature-resident-floor".to_string(),
+        3,
+        grant(),
+        Driver {
+            reported_memory_bytes: 3_072,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("3 KiB loaded model");
+
+    // The driver's feature observation claims only 1 KiB resident but also
+    // allocates 2 KiB scratch. The loader already observed 3 KiB resident,
+    // so 3 + 2 KiB exceeds the generation's 4 KiB grant.
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(worker.driver.feature_run_calls, 1);
+    assert!(worker.requires_external_recovery());
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert_eq!(worker.driver.feature_run_calls, 1);
 }
 
 #[test]
@@ -1119,4 +1211,126 @@ fn batch_peak_includes_other_models_loaded_in_worker_generation() {
     );
     assert!(worker.requires_external_recovery());
     assert_eq!(worker.driver.backend_calls, 1);
+}
+
+#[test]
+fn neuron_single_feature_respects_loaded_model_token_limit_without_driver_dispatch() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.token-single".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    let mut pinned_manifest = manifest();
+    pinned_manifest.maximum_tokens = 32;
+    worker.load_model(100, pinned_manifest).expect("model");
+
+    // The lease and reservation themselves are consistent and unexpired.
+    // A wider request must still be refused by the selected model manifest.
+    let oversized = neuron_feature_request();
+    assert_eq!(oversized.authorization.maximum_tokens, 64);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", oversized),
+        Err(Error::TokenLimit)
+    );
+    assert!(!worker.requires_external_recovery(), "preflight rejection never dispatched");
+
+    let mut bounded = neuron_feature_request();
+    bounded.authorization.maximum_tokens = 32;
+    let observed = worker
+        .run_neuron_features(100, "model.1", bounded)
+        .expect("within immutable model token limit");
+    assert_eq!(observed.status, ExecutionStatus::Succeeded);
+    worker.unload_model(100, "model.1").expect("releasable");
+}
+
+#[test]
+fn neuron_batch_and_single_share_manifest_token_ceiling_on_cancelled_inputs() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.token-batch".to_string(),
+        3,
+        grant(),
+        MockBatchDriver::default(),
+    )
+    .expect("worker");
+    let mut pinned_manifest = manifest();
+    pinned_manifest.maximum_tokens = 32;
+    worker.load_model(100, pinned_manifest).expect("model");
+
+    let mut cancelled = neuron_feature_request();
+    cancelled.authorization.cancelled = true;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", cancelled),
+        Err(Error::TokenLimit),
+        "cancellation cannot silently bypass immutable model admission"
+    );
+
+    let oversized = two_batch_requests();
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", oversized),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.backend_calls, 0);
+    assert!(!worker.requires_external_recovery());
+
+    let mut bounded = two_batch_requests();
+    for request in &mut bounded {
+        request.authorization.maximum_tokens = 32;
+    }
+    let receipts = worker
+        .run_neuron_features_backend_batch(100, "model.1", bounded)
+        .expect("bounded batch");
+    assert_eq!(receipts.receipts.len(), 2);
+    assert_eq!(worker.driver.backend_calls, 1);
+    worker.unload_model(100, "model.1").expect("releasable");
+}
+
+#[test]
+fn reservation_token_bound_is_shared_by_generic_single_batch_and_cancelled_neuron_paths() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.reservation-bound".to_string(),
+        3,
+        grant(),
+        MockBatchDriver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+
+    let mut generic = request();
+    generic.reservation_maximum_tokens = 32;
+    assert_eq!(worker.run(100, "model.1", generic), Err(Error::TokenLimit));
+    assert_eq!(worker.driver.inner.run_calls, 0);
+
+    let mut single = neuron_feature_request();
+    single.authorization.reservation_maximum_tokens = 32;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", single),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.inner.feature_run_calls, 0);
+
+    let mut cancelled = neuron_feature_request();
+    cancelled.authorization.cancelled = true;
+    cancelled.authorization.reservation_maximum_tokens = 32;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", cancelled),
+        Err(Error::TokenLimit),
+        "cancellation cannot bypass a narrower reservation"
+    );
+
+    let mut members = two_batch_requests();
+    members[1].authorization.reservation_maximum_tokens = 32;
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", members),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.backend_calls, 0);
+    assert!(!worker.requires_external_recovery(), "all rejected before backend");
+
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request())
+            .expect("legitimate reserved request")
+            .status,
+        ExecutionStatus::Succeeded
+    );
+    assert_eq!(worker.driver.inner.feature_run_calls, 1);
 }

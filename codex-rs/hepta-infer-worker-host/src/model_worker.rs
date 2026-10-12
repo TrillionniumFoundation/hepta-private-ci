@@ -316,6 +316,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        // The Worker generation's memory grant covers every resident handle,
+        // not only the model selected by the generic inference invocation.
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.unload_indeterminate {
             return Err(Error::ModelUnloadIndeterminate);
@@ -376,7 +379,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
             self.execution_indeterminate = true;
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // A transient observation cannot reduce the independently observed
+        // loaded-handle footprint; use the larger of the two resident claims.
+        // Overflow or aggregate grant exhaustion after dispatch quarantines
+        // this generation until an independent recovery owner reconciles it.
+        let selected_resident_bytes = observed
+            .observed_memory_bytes
+            .max(loaded.handle.observed_memory_bytes);
+        let claimed_peak = selected_resident_bytes.checked_add(other_model_resident_bytes);
+        if claimed_peak.is_none_or(|bytes| bytes > self.grant.maximum_memory_bytes) {
             self.execution_indeterminate = true;
             return Err(Error::ModelCapacity);
         }
@@ -516,7 +527,11 @@ fn validate_request(now_ms: u64, value: &WorkerRequest) -> Result<(), Error> {
         || value.maximum_tokens > MAX_TOKENS
         || value.reservation_maximum_tokens == 0
         || value.reservation_maximum_tokens > MAX_TOKENS
+        || value.maximum_tokens > value.reservation_maximum_tokens
     {
+        // A valid numeric reservation cannot be oversubscribed by a feature
+        // request, whether single, backend-batched, or cancelled. Keep this
+        // invariant in the common validator used by every Worker entrypoint.
         return Err(Error::TokenLimit);
     }
     if now_ms >= value.deadline_ms {
@@ -639,6 +654,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        // Mirror the generic and native-batch Worker paths. A valid grant and
+        // reservation cannot widen the immutable loaded model's token ceiling,
+        // including for cancelled feature requests.
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
@@ -690,8 +711,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         // Fail closed on a claimed resident+transient peak exceeding the
         // generation-wide grant. Checked arithmetic matters: an overflowing
         // driver counter is no more trustworthy than an over-budget value.
-        let claimed_peak = observed
+        let selected_resident_bytes = observed
             .observed_memory_bytes
+            .max(loaded.handle.observed_memory_bytes);
+        let claimed_peak = selected_resident_bytes
             .checked_add(observed.transient_allocation_bytes)
             .and_then(|bytes| bytes.checked_add(other_model_resident_bytes));
         if claimed_peak.is_none_or(|bytes| bytes > self.grant.maximum_memory_bytes) {

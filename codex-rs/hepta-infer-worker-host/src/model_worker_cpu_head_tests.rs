@@ -301,7 +301,6 @@ fn hard_sigmoid_gate_rounding_propagates_correctly_across_rows() {
     assert_eq!(prediction[1], Q24 / 4 + 1);
 }
 
-
 #[test]
 fn grouped_cpu_head_kernel_matches_scalar_reference_for_32_lanes() {
     // Real Q24 multiplication over a contiguous buffer with mixed-sign
@@ -312,12 +311,7 @@ fn grouped_cpu_head_kernel_matches_scalar_reference_for_32_lanes() {
     compact.gate_bias_q24 = vec![-1, 3];
     for head in [sample_head(false), sample_head(true), compact] {
         let packed = (0..32)
-            .flat_map(|n| {
-                [
-                    (n as i64 - 16) * (Q24 / 64),
-                    (n as i64 - 8) * (Q24 / 128),
-                ]
-            })
+            .flat_map(|n| [(n as i64 - 16) * (Q24 / 64), (n as i64 - 8) * (Q24 / 128)])
             .collect::<Vec<_>>();
         let all = (0..32).collect::<Vec<_>>();
         let batched = head.infer_batch(&packed, &all, 2).expect("Q24 batch");
@@ -336,7 +330,9 @@ fn grouped_cpu_head_kernel_matches_scalar_reference_for_32_lanes() {
         for (&lane, observed) in sparse_lanes.iter().zip(sparse.iter()) {
             assert_eq!(
                 observed,
-                &head.infer(&packed[lane * 2..(lane + 1) * 2]).expect("single"),
+                &head
+                    .infer(&packed[lane * 2..(lane + 1) * 2])
+                    .expect("single"),
                 "reordered lane {lane}"
             );
         }
@@ -364,10 +360,7 @@ fn grouped_cpu_head_kernel_rejects_bad_lanes_and_feature_values() {
         Err(Error::FeatureBatchMismatch)
     );
     let bad = [Q24 / 2, Q24 / 4, 9 * Q24, Q24 / 2];
-    assert_eq!(
-        head.infer_batch(&bad, &[0, 1], 2),
-        Err(Error::FeatureLimit)
-    );
+    assert_eq!(head.infer_batch(&bad, &[0, 1], 2), Err(Error::FeatureLimit));
     // No silent overflow/clamping of a large Q24 accumulator.
     let mut oversized = sample_head(false);
     oversized.drive_weights_q24 = vec![8 * Q24; 4];
@@ -384,19 +377,10 @@ fn grouped_multi_head_worker_batch_preserves_receipts_and_single_path() {
     let (mut worker, heads) = local_worker();
     let weights = worker.driver.manifest.weights_digest.clone();
     let mut requests = (0..4)
-        .map(|i| {
-            cpu_request(
-                i + 1,
-                heads[i % 2].clone(),
-                weights.clone(),
-            )
-        })
+        .map(|i| cpu_request(i + 1, heads[i % 2].clone(), weights.clone()))
         .collect::<Vec<_>>();
     for (i, request) in requests.iter_mut().enumerate() {
-        request.feature_vector_q24 = vec![
-            (i as i64 - 2) * Q24 / 4,
-            (i as i64 + 1) * Q24 / 8,
-        ];
+        request.feature_vector_q24 = vec![(i as i64 - 2) * Q24 / 4, (i as i64 + 1) * Q24 / 8];
         let digest = canonical_neuron_feature_payload_digest(request);
         request.authorization.payload_digest = digest.clone();
         request.authorization.lease_payload_digest = digest;
@@ -416,18 +400,22 @@ fn grouped_multi_head_worker_batch_preserves_receipts_and_single_path() {
     assert_eq!(batch.receipts.len(), 4);
     // A multi-lane kernel has one real backend duration; per-member receipt
     // timing must never restart a new timer after the arithmetic is done.
-    assert!(batch.receipts.iter().all(|receipt| {
-        receipt.latency_micros == batch.backend_elapsed_micros
-    }));
+    assert!(
+        batch
+            .receipts
+            .iter()
+            .all(|receipt| { receipt.latency_micros == batch.backend_elapsed_micros })
+    );
     for (i, (scalar, batched)) in separate.iter().zip(batch.receipts.iter()).enumerate() {
         assert_eq!(scalar.drive_q24, batched.drive_q24, "Cell {i}");
         assert_eq!(scalar.prediction_q24, batched.prediction_q24, "Cell {i}");
         assert_eq!(scalar.request_digest, batched.request_digest, "Cell {i}");
         assert!(!batched.authority.grants_any());
     }
-    worker.unload_model(100, "model.cpu-head").expect("clean unload");
+    worker
+        .unload_model(100, "model.cpu-head")
+        .expect("clean unload");
 }
-
 
 #[test]
 fn actual_q24_cpu_head_fails_closed_when_scratch_exceeds_generation_budget() {
