@@ -5,6 +5,7 @@ on:
     paths:
       - "codex-rs/git-utils/src/git_process_tests.rs"
       - "codex-rs/v8-poc/src/lib.rs"
+      - "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
       - ".github/workflows/windows-process-v8-focused.yml"
   workflow_dispatch:
 
@@ -60,6 +61,14 @@ jobs:
         run: |
           set -euo pipefail
           ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel -- test --platforms=//:windows_x86_64_msvc --test_filter=sandbox_feature_requires_a_sandbox_enabled_linked_v8 --test_output=errors -- //codex-rs/v8-poc:v8-poc-unit-tests
+
+      - name: Reopen copied authority schema on Windows after durable flush
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel -- test --platforms=//:windows_x86_64_msvc --test_filter=authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen --test_output=errors -- //codex-rs/hepta-authbus:hepta-authbus-unit-tests
 
       - name: Verify exact source unchanged
         if: always()
