@@ -28,7 +28,7 @@ jobs:
       - name: Exact source formatting
         run: cargo +1.95.0 fmt --all -- --check
       - name: Real Windows MSVC Core provider terminal-policy tests
-        run: cargo +1.95.0 test --locked -p codex-core --lib client::client_provider_policy_tests -- --nocapture
+        run: cargo +1.95.0 test --locked -p codex-core --lib client::provider_policy_tests -- --nocapture
 
   windows-helper-manifest:
     runs-on: windows-latest
