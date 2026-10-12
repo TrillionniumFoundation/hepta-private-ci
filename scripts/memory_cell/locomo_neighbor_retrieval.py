@@ -280,9 +280,24 @@ def select(public_root, label_root, directory):
     return policy
 
 
+def check_evaluation_role(public_root, select_root, eval_root):
+    """Allow only the exact evaluation-target ZIP, never prior policy artifacts."""
+    from locomo_ninearm_source_replay import ZIPS
+
+    public_root, select_root, eval_root = map(Path, (public_root, select_root, eval_root))
+    if (
+        not eval_root.is_dir() or eval_root.is_symlink()
+        or eval_root.resolve() in (public_root.resolve(), select_root.resolve())
+        or {p.name for p in eval_root.iterdir()} != {ZIPS["evaluation"][0]}
+        or any(p.is_symlink() for p in eval_root.iterdir())
+    ):
+        raise ValueError("evaluation labels must occupy a distinct exact-role folder")
+
+
 def evaluate(public_root, select_root, eval_root, directory):
     from locomo_ninearm_source_replay import check_roles, read_zip, strict_json
-    check_roles(public_root, select_root, eval_root)
+    check_roles(public_root, select_root)
+    check_evaluation_role(public_root, select_root, eval_root)
     pop, rows = load_and_verify(public_root, directory)
     selraw = (directory / "selection-policy.json").read_bytes()
     policy = strict_json(selraw)

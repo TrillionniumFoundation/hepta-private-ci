@@ -1,9 +1,13 @@
 """Deterministic rank/cost/label-bound checks; no learned or judged quality."""
 
 import copy
+from pathlib import Path
+import tempfile
 import unittest
 
-from locomo_neighbor_retrieval import neighbor_rank, pack, score_terms, scoring
+from locomo_neighbor_retrieval import (
+    check_evaluation_role, neighbor_rank, pack, score_terms, scoring,
+)
 
 
 def doc(identity, content):
@@ -68,6 +72,21 @@ class NeighborTests(unittest.TestCase):
         self.assertIsNone(out["independent_semantic_citation_precision"])
         with self.assertRaises(ValueError):
             scoring(pub, rows, "selection", {"q": label["q"], "extra": label["q"]})
+
+    def test_evaluation_isolation_requires_only_its_pinned_archive(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            public, select, evaluation = [root / x for x in ("public", "selection", "eval")]
+            for p in (public, select, evaluation):
+                p.mkdir()
+            filename = "locomo-evaluation-targets-38206328621.zip"
+            (evaluation / filename).write_bytes(b"fake archive; checked later by read_zip")
+            check_evaluation_role(public, select, evaluation)
+            with self.assertRaises(ValueError):
+                check_evaluation_role(public, select, public)
+            (evaluation / "old-policy-leak.zip").write_bytes(b"unexpected")
+            with self.assertRaises(ValueError):
+                check_evaluation_role(public, select, evaluation)
 
     def test_query_stopwords_never_inject_gold_or_empty_scoring(self):
         scored = score_terms("WHAT does the person like?", [doc("x", "person likes games"), doc("y", "games")])
