@@ -51,7 +51,7 @@ class UpstreamTests(unittest.TestCase):
                   'matrix-sdk={path="third_party/matrix-sdk-0.19.1"}')
         file.write_text(secured)
         (self.root/'codex-rs/rust-toolchain.toml').write_text(
-            '[toolchain]\\nchannel="1.96.0"\\n')
+            '[toolchain]\nchannel="1.96.0"\n')
         upstream=inspect_upstream(self.root,UPSTREAM_GIT_SHA,source_head=UPSTREAM_GIT_SHA)
         report=compare_local(upstream,self.root)
         self.assertEqual(report['migration_blockers'],[])
