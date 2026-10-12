@@ -291,8 +291,7 @@ fn generic_post_driver_resource_overruns_quarantine_worker() {
             run_memory_bytes: memory,
             ..Driver::default()
         };
-        let mut worker =
-            InferenceWorker::new(100, worker_id.into(), 3, grant(), driver).unwrap();
+        let mut worker = InferenceWorker::new(100, worker_id.into(), 3, grant(), driver).unwrap();
         worker.load_model(100, manifest()).unwrap();
         assert!(worker.run(100, "model.1", request()).is_err());
         assert!(worker.is_quarantined());
@@ -316,8 +315,7 @@ fn generic_post_driver_corrupt_output_quarantines_worker() {
             malformed_run_output: malformed,
             ..Driver::default()
         };
-        let mut worker =
-            InferenceWorker::new(100, worker_id.into(), 3, grant(), driver).unwrap();
+        let mut worker = InferenceWorker::new(100, worker_id.into(), 3, grant(), driver).unwrap();
         worker.load_model(100, manifest()).unwrap();
         assert!(worker.run(100, "model.1", request()).is_err());
         assert!(worker.is_quarantined());
