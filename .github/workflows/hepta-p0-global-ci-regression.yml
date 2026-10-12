@@ -51,6 +51,7 @@ jobs:
       - name: Compile actual codex-core lib tests, including both former eight-argument callers
         run: cargo +1.95.0 test --locked -p codex-core --lib --no-run
       - name: Exercise provider lifecycle policy tests
-        run: cargo +1.95.0 test --locked -p codex-core --lib client_provider_policy_tests:: -- --nocapture
+        run: |
+          cargo +1.95.0 test --locked -p codex-core --lib 'client_provider_policy_tests::' -- --nocapture
       - name: Run Strict Clippy for the core tests
         run: cargo +1.95.0 clippy --locked -p codex-core --tests -- -D warnings
