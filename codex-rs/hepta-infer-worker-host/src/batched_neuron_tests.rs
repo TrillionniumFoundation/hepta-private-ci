@@ -397,3 +397,51 @@ fn worker_metrics_failures_latch_not_ready_without_retrying_authorized_effect() 
     assert_eq!(execution.pending(), 0);
     assert!(!execution.production_metrics_ready());
 }
+
+#[test]
+fn terminal_replay_capacity_is_independent_of_active_microbatch_capacity() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[29; 32]);
+    let (model, fixture, key) = fixture_request();
+    // The test worker allows only ten simultaneous pending requests. Twelve
+    // successive terminal requests must not exhaust the pending budget.
+    let mut execution = runner(&signer, dir.path(), model);
+    for i in 0_u8..12 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("req-{i}");
+        request.authorization.reservation_id = format!("reservation-{i}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("one-shot-{i}");
+        grant.grant.nonce = [i + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        execution
+            .enqueue(100 + u64::from(i), "model".to_string(), request, key.clone(), grant)
+            .unwrap();
+        let completed = execution.poll_and_execute(101 + u64::from(i)).unwrap();
+        assert_eq!(completed.outcomes.len(), 1);
+        assert!(matches!(
+            &completed.outcomes[0].result,
+            Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        ));
+        assert_eq!(execution.pending(), 0);
+    }
+    assert_eq!(execution.retired.len(), 12);
+    let mut replay = fixture;
+    replay.authorization.request_id = "req-0".to_string();
+    replay.authorization.reservation_id = "reservation-0".to_string();
+    let payload = canonical_neuron_feature_payload_digest(&replay);
+    replay.authorization.payload_digest = payload.clone();
+    replay.authorization.lease_payload_digest = payload;
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &replay).unwrap();
+    assert_eq!(
+        execution.enqueue(120, "model".to_string(), replay, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::Duplicate)
+    );
+}

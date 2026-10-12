@@ -38,6 +38,18 @@ use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+const MAX_TERMINAL_REQUEST_IDS: usize = 1_048_576;
+
+/// Fixed-size local replay fingerprint: never evict IDs while an owner lives.
+/// A new owner generation must reconcile durable control state before serving;
+/// the independent Final-use nonce ledger remains the cross-restart fence.
+fn terminal_request_fingerprint(id: &StableId) -> Digest32 {
+    Digest32::of_parts(&[
+        b"hepta.infer-worker.terminal-request-id.v1\0",
+        id.as_str().as_bytes(),
+    ])
+}
+
 pub enum BatchWorkerErrorV1 {
     InvalidRequest,
     InvalidBinding,
@@ -79,10 +91,10 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     worker: InferenceWorker<D>,
     authority: FinalUseAuthority,
     pending: BTreeMap<StableId, PendingV1>,
-    retired: BTreeSet<StableId>,
+    retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     failed_metrics: AtomicU64,
-    maximum_ids: usize,
+    maximum_pending: usize,
 }
 
 pub fn neuron_batch_final_use_binding_v1(
@@ -144,7 +156,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             retired: BTreeSet::new(),
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
-            maximum_ids: limits.max_pending,
+            maximum_pending: limits.max_pending,
         })
     }
 
@@ -238,10 +250,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         signed: SignedFinalUseGrant,
         id: StableId,
     ) -> Result<(), BatchWorkerErrorV1> {
-        if self.retired.contains(&id) || self.pending.contains_key(&id) {
+        if self.retired.contains(&terminal_request_fingerprint(&id))
+            || self.pending.contains_key(&id)
+        {
             return Err(BatchWorkerErrorV1::Duplicate);
         }
-        if self.retired.len() + self.pending.len() >= self.maximum_ids {
+        if self.pending.len() >= self.maximum_pending
+            || self.retired.len() + self.pending.len() >= MAX_TERMINAL_REQUEST_IDS
+        {
             return Err(BatchWorkerErrorV1::Capacity);
         }
         if key.generation.get() != self.worker.worker_generation()
@@ -308,14 +324,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         for id in &poll.expired_request_ids {
             self.pending.remove(id);
-            self.retired.insert(id.clone());
+            self.retired.insert(terminal_request_fingerprint(&id));
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
             for intent in batch.requests {
                 let id = intent.request_id;
                 let started = Instant::now();
-                self.retired.insert(id.clone());
+                self.retired.insert(terminal_request_fingerprint(&id));
                 let outcome = match self.pending.remove(&id) {
                     None => Err(BatchWorkerErrorV1::NoAdmission),
                     Some(mut pending) => {
@@ -390,7 +406,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 .retain_scope_binding(scope, generation, fence, authority_epoch);
         for id in &removed {
             self.pending.remove(id);
-            self.retired.insert(id.clone());
+            self.retired.insert(terminal_request_fingerprint(&id));
         }
         removed
     }
