@@ -149,19 +149,45 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
         grouped.setdefault((row["stage"], row["phase"], row["arm"]), []).append(row)
     require(len(choice) == len(choices) == len(expected_choices) == 192,
             "incomplete exactly-192 source-only shadow denominator")
-    by_source = posthoc["by_checkpoint_phase_arm"]
+    # The immutable generating artifact predates the v2 enriched counters.
+    # Verify its *actual* v1 contract instead of manufacturing absent v2
+    # fields or changing the original report to claim a new execution.
+    version = posthoc.get("schema")
+    legacy = version == "hepta.stem-pairwise-native-source-only-shadow.v1"
+    modern = version == "hepta.stem-pairwise-native-source-only-shadow.v2"
+    require(legacy or modern, "unknown original source-only shadow schema")
     require(
-        posthoc["schema"] == "hepta.stem-pairwise-native-source-only-shadow.v2"
-        and posthoc["total_label_blind_decisions"] == 192
+        posthoc["total_label_blind_decisions"] == 192
         and posthoc["observed_reader_calls"] == 0
         and posthoc["original_six_arm_policy_attempts_unmodified"] is True
-        and posthoc["no_reader_calls_or_evaluation_labels_in_shadow_decision_verified"]
-        is True
         and posthoc["production_accepted"] is False
-        and posthoc["independently_established_generalization"] is False
-        and posthoc["semantic_citation_precision"] is None,
+        and posthoc["independently_established_generalization"] is False,
         "post-policy source-only result falsely promoted",
     )
+    if legacy:
+        # v1 recorded the fits and weak-label status but never a verified
+        # no-gold flag or citation verdict. Every original decision was checked
+        # above for zero Reader calls and no benchmark labels; those properties
+        # must not be reissued as a v2 reviewer certification.
+        require(
+            set(posthoc) == {
+                "schema", "fits", "original_six_arm_policy_attempts_unmodified",
+                "total_label_blind_decisions", "observed_reader_calls",
+                "weak_negative_documents_not_independent_entailment",
+                "by_checkpoint_phase_arm", "production_accepted",
+                "independently_established_generalization",
+            }
+            and posthoc["fits"] == fits
+            and posthoc["weak_negative_documents_not_independent_entailment"] is True,
+            "legacy postpolicy fields or original fit census drift",
+        )
+    else:
+        require(
+            posthoc["no_reader_calls_or_evaluation_labels_in_shadow_decision_verified"]
+            is True and posthoc["semantic_citation_precision"] is None,
+            "modern postpolicy source-only certification drift",
+        )
+    by_source = posthoc["by_checkpoint_phase_arm"]
     results, total = {}, Counter()
     for stage in STAGES:
         for phase in PHASES:
@@ -188,18 +214,39 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
                 regressions = row["native_weak_support_regressions"]
                 require(
                     len(group) == row["attempted"] == 8
-                    and row["source_selection_pairs_observed"] == seen
                     and row["selection_changed"] == flips
-                    and row["baseline_reader_failed_with_top1"] == reader_failed
-                    and row["frozen_selector_unobserved_or_empty"] == frozen_absent
-                    and row["shadow_selection_failed_with_baseline_top1"]
-                    == shadow_failed
+                    and type(scored) is int and type(uncertain) is int
+                    and type(gains) is int and type(regressions) is int
+                    and 0 <= scored <= 8 and 0 <= uncertain <= 8
                     and scored + uncertain == 8
                     and 0 <= gains <= scored
                     and 0 <= regressions <= scored
                     and gains + regressions <= flips,
                     "post-hoc weak source gains differ from original sealed choices",
                 )
+                if legacy:
+                    require(
+                        set(row) == {
+                            "attempted", "selection_changed", "source_label_scored",
+                            "source_label_unresolved_or_failure",
+                            "native_weak_support_gains",
+                            "native_weak_support_regressions",
+                            "original_reader_answer_reused_as_shadow",
+                            "semantic_citation_precision",
+                        }
+                        and row["original_reader_answer_reused_as_shadow"] is False
+                        and row["semantic_citation_precision"] is None,
+                        "legacy weak-label result claimed reused Reader or citation verdict",
+                    )
+                else:
+                    require(
+                        row["source_selection_pairs_observed"] == seen
+                        and row["baseline_reader_failed_with_top1"] == reader_failed
+                        and row["frozen_selector_unobserved_or_empty"] == frozen_absent
+                        and row["shadow_selection_failed_with_baseline_top1"]
+                        == shadow_failed,
+                        "modern source selection counters differ from original decisions",
+                    )
                 results[key] = dict(
                     original_questions=8, observed_source_pairs=seen,
                     frozen_reader_failures_retained=reader_failed,
@@ -245,6 +292,9 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
         original_policy_attempts=576,
         original_policy_execution_failures=original_reader_failures,
         shadow_source_decisions=len(choices),
+        original_shadow_schema=version,
+        legacy_v1_missing_enriched_counters=legacy,
+        original_v1_not_relabelled_as_v2=True,
         shadow_reader_model_calls=0,
         observed_weak_document_source_counts=dict(total),
         by_stage_phase_arm=results,

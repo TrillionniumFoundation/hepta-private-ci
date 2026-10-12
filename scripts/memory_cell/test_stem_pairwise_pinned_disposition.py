@@ -122,6 +122,48 @@ def fixture():
 
 
 class PairwiseActualArtifactAuditTests(unittest.TestCase):
+    def test_exact_legacy_v1_source_only_without_forged_v2_fields(self):
+        plan, original, fits, choices, posthoc, report, blobs = fixture()
+        old = deepcopy(posthoc)
+        old["schema"] = "hepta.stem-pairwise-native-source-only-shadow.v1"
+        old["fits"] = deepcopy(fits)
+        old["weak_negative_documents_not_independent_entailment"] = True
+        old.pop("no_reader_calls_or_evaluation_labels_in_shadow_decision_verified")
+        old.pop("semantic_citation_precision")
+        for row in old["by_checkpoint_phase_arm"].values():
+            for key in (
+                "source_selection_pairs_observed", "baseline_reader_failed_with_top1",
+                "frozen_selector_unobserved_or_empty",
+                "shadow_selection_failed_with_baseline_top1",
+            ):
+                row.pop(key)
+            row["original_reader_answer_reused_as_shadow"] = False
+            row["semantic_citation_precision"] = None
+        report["native_pairwise_shadow_source_only"] = deepcopy(old)
+        result = audit_native_pairwise_receipts(
+            plan, original, fits, choices, old, report, blobs
+        )
+        self.assertTrue(result["legacy_v1_missing_enriched_counters"])
+        self.assertEqual(result["shadow_source_decisions"], 192)
+        self.assertIsNone(result["independent_semantic_citation_precision"])
+        self.assertFalse(result["production_accepted"])
+        for mutator in (
+            lambda x: x.update(semantic_citation_precision=1.0),
+            lambda x: x.update(
+                no_reader_calls_or_evaluation_labels_in_shadow_decision_verified=True
+            ),
+            lambda x: x["by_checkpoint_phase_arm"]["16/select/pairwise_linear"].update(
+                original_reader_answer_reused_as_shadow=True
+            ),
+        ):
+            tampered = deepcopy(old)
+            mutator(tampered)
+            report["native_pairwise_shadow_source_only"] = deepcopy(tampered)
+            with self.subTest(kind=str(mutator)), self.assertRaises(AuditError):
+                audit_native_pairwise_receipts(
+                    plan, original, fits, choices, tampered, report, blobs
+                )
+
     def test_all_576_and_192_counts_are_deterministic_and_nonqualifying(self):
         receipt = audit_native_pairwise_receipts(*fixture())
         self.assertEqual(receipt["shadow_training_fit_attempts"], 12)
