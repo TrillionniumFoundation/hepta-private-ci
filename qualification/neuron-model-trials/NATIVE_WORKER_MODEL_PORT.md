@@ -466,3 +466,29 @@ the one fsynced accepted dispatch, Worker ModelPort execution and WAL reopen.
 Only synthetic fixture inputs are used, never actual Laya weights or
 production evidence.
 
+
+## Exact in-process Worker instance fence on file-load receipts
+
+The file-bound ModelLoad diagnostic previously bound the public Worker ID,
+generation, model, driver handle and monotonically increasing load ordinal.
+A reconstructed Worker could reuse *all* those names and start its ordinal at
+one. Consequently, an old in-memory load ticket was not distinguishable from
+the next instance's own ticket when passed to file-bound dispatch.
+
+Each \`InferenceWorker\` now owns a private, nonserializable allocation-backed
+instance identity. \`NeuronFileBoundModelLoadV1\` retains a clone of that
+identity, and the original Worker's exact pointer identity must match before
+any fsynced \`claim_neuron_file_bound_durable_dispatch_v1\` is allowed.
+The receipt's Rust equality uses the same pointer semantics. This has no
+cryptographic signature or false claim of cross-process durability: the
+portable diagnostic hash intentionally excludes the private instance token.
+It is solely a stricter SAME-PROCESS load-ticket validation; the external
+process incarnation, authoritative model routing, signed load, and final-use
+remain mandatory. Existing durable inference.control claim replay prevention
+is unchanged.
+
+Two tests reconstruct a Worker with identical public generation, model and
+driver-handle labels plus load ordinal, then reject its predecessor ticket.
+The dispatch test also checks the durable Assigned revision remains unchanged
+before a fresh, same-instance receipt can claim and execute exactly once.
+Fixture weights and drivers, not Laya production models, are used.

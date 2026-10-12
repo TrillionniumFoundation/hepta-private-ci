@@ -792,3 +792,55 @@ fn file_bound_claim_checks_worker_resource_expiry_before_fsync() {
     ));
     assert_eq!(owner.get("tick.1").unwrap().state, RequestState::Assigned);
 }
+
+#[test]
+fn file_bound_dispatch_refuses_old_worker_instance_before_durable_claim() {
+    let directory = tempfile::tempdir().unwrap();
+    let bytes = vec![0x59_u8; 2_048];
+    let mut request = typed_request();
+    request.weights_digest = Digest32::of_bytes(&bytes);
+    let mut owner = control(&directory, &request);
+    let calls = Arc::new(AtomicUsize::new(0));
+
+    let mut original_worker = worker_with_calls(Arc::clone(&calls));
+    original_worker.unload_model(100, "model.1").unwrap();
+    let original = load_test_file_bound_model(&mut original_worker, &bytes);
+    drop(original_worker);
+
+    // A process restart may reuse the external Worker/model/handle identity
+    // and the same load ordinal. Only the new instance's own ticket can
+    // spend the existing fsynced Assigned reservation.
+    let mut restarted = worker_with_calls(Arc::clone(&calls));
+    restarted.unload_model(100, "model.1").unwrap();
+    let fresh = load_test_file_bound_model(&mut restarted, &bytes);
+    assert_eq!(original.load_revision(), fresh.load_revision());
+    assert_eq!(original.model_load(), fresh.model_load());
+    assert!(matches!(
+        claim_neuron_file_bound_durable_dispatch_v1(
+            &mut owner,
+            &mut restarted,
+            &request,
+            &original,
+            100,
+        ),
+        Err(NeuronFileBoundDispatchErrorV1::Load(
+            NeuronWeightFileDiagnosticErrorV1::StaleLoad
+        ))
+    ));
+    assert_eq!(owner.get("tick.1").unwrap().revision, 3);
+    assert_eq!(owner.get("tick.1").unwrap().state, RequestState::Assigned);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+
+    let (committed, mut port) = claim_neuron_file_bound_durable_dispatch_v1(
+        &mut owner,
+        &mut restarted,
+        &request,
+        &fresh,
+        100,
+    )
+    .unwrap();
+    assert_eq!(committed.state, RequestState::Dispatching);
+    assert_eq!(port.execute_feature(&request).unwrap().status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}

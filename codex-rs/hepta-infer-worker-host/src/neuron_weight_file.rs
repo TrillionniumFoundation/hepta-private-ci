@@ -20,6 +20,7 @@ use super::InferenceWorker;
 use super::ModelDriver;
 use super::ModelLoadObservation;
 use super::ModelManifest;
+use super::WorkerInstanceIdentity;
 use super::validate_manifest;
 
 const DOMAIN: &[u8] = b"hepta.inference.worker.neuron-weight-file.diagnostic.v1\0";
@@ -227,6 +228,9 @@ pub struct NeuronFileBoundModelLoadV1 {
     model_load: ModelLoadObservation,
     worker_id: String,
     load_revision: u64,
+    // In-memory identity only. Never included in the portable diagnostic
+    // checksum and never treated as a signed deployment incarnation.
+    instance_identity: WorkerInstanceIdentity,
     manifest_model_digest: Digest32,
     preloaded_file_digest: Digest32,
     file_bytes: u64,
@@ -314,6 +318,7 @@ impl<D: NeuronPreopenedWeightModelDriver> InferenceWorker<D> {
         self.validate_current_grant(now_ms)?;
         if !receipt.validate_integrity()
             || receipt.worker_id != self.worker_id
+            || !receipt.instance_identity.matches(&self.instance_identity)
             || receipt.model_load.worker_generation != self.generation
         {
             return Err(NeuronWeightFileDiagnosticErrorV1::StaleLoad);
@@ -430,6 +435,7 @@ impl<D: NeuronPreopenedWeightModelDriver> InferenceWorker<D> {
             model_load,
             worker_id: self.worker_id.clone(),
             load_revision,
+            instance_identity: self.instance_identity.clone(),
             manifest_model_digest: model_digest,
             preloaded_file_digest: measured,
             file_bytes: before.len(),
@@ -892,5 +898,68 @@ mod tests {
             worker.revalidate_file_bound_model_load_v1(104, &second),
             Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::GrantRevoked))
         );
+    }
+
+    #[test]
+    fn file_bound_receipt_cannot_replay_across_same_named_worker_instances() {
+        let bytes = vec![0x49_u8; 4_096];
+        let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let mut first_worker = InferenceWorker::new(
+            100,
+            "worker.1".into(),
+            3,
+            grant(),
+            FileDriver {
+                seen: seen.clone(),
+                fail_fd: false,
+            },
+        )
+        .unwrap();
+        let mut first_file = tempfile::tempfile().unwrap();
+        first_file.write_all(&bytes).unwrap();
+        let first = first_worker
+            .load_model_from_preopened_weight_file_v1(
+                101,
+                manifest(&bytes),
+                first_file,
+            )
+            .unwrap();
+        assert!(first.validate_integrity());
+        drop(first_worker);
+
+        // Reconstructed Worker, same public ID, process generation, model
+        // digest, driver opaque handle and first load ordinal. An old ticket
+        // is still NOT a ticket issued by this new Worker instance.
+        let mut restarted = InferenceWorker::new(
+            100,
+            "worker.1".into(),
+            3,
+            grant(),
+            FileDriver {
+                seen,
+                fail_fd: false,
+            },
+        )
+        .unwrap();
+        let mut next_file = tempfile::tempfile().unwrap();
+        next_file.write_all(&bytes).unwrap();
+        let current = restarted
+            .load_model_from_preopened_weight_file_v1(
+                101,
+                manifest(&bytes),
+                next_file,
+            )
+            .unwrap();
+        assert_eq!(first.load_revision(), current.load_revision());
+        assert_eq!(first.model_load(), current.model_load());
+        assert_eq!(first.computed_digest(), current.computed_digest());
+        assert_ne!(first, current, "owner-issued in-process fence differs");
+        assert_eq!(
+            restarted.revalidate_file_bound_model_load_v1(102, &first),
+            Err(NeuronWeightFileDiagnosticErrorV1::StaleLoad)
+        );
+        restarted
+            .revalidate_file_bound_model_load_v1(102, &current)
+            .unwrap();
     }
 }

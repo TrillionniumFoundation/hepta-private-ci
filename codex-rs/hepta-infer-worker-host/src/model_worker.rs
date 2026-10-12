@@ -5,6 +5,7 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
+use std::sync::Arc;
 
 use codex_hepta_infer_core::NeuronFeatureObservationV1;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
@@ -167,6 +168,30 @@ pub trait ModelDriver {
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
 }
 
+/// An opaque, allocation-backed identity for one actual in-process Worker.
+/// A restart must NEVER inherit a former Worker's file-load tickets merely
+/// because its public worker ID, generation, handle and load ordinal repeat.
+#[derive(Clone, Debug)]
+pub(super) struct WorkerInstanceIdentity(Arc<()>);
+
+impl WorkerInstanceIdentity {
+    fn new() -> Self {
+        Self(Arc::new(()))
+    }
+
+    pub(super) fn matches(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+impl PartialEq for WorkerInstanceIdentity {
+    fn eq(&self, other: &Self) -> bool {
+        self.matches(other)
+    }
+}
+
+impl Eq for WorkerInstanceIdentity {}
+
 #[derive(Debug)]
 struct LoadedModel {
     manifest: ModelManifest,
@@ -187,6 +212,9 @@ pub struct InferenceWorker<D: ModelDriver> {
     // Never recycle a load identity inside one live Worker generation.
     // This is not an independently durable process-incarnation fence.
     next_load_revision: u64,
+    // Arc identity is unique per live constructor, including when a restarted
+    // process reuses every externally visible label. Never serialize it.
+    instance_identity: WorkerInstanceIdentity,
     active_requests: BTreeMap<String, String>,
     // Exact request and reservation identity cannot run twice within one
     // Worker instance, even if a fresh ModelPort is constructed around it.
@@ -217,6 +245,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             driver,
             models: BTreeMap::new(),
             next_load_revision: 0,
+            instance_identity: WorkerInstanceIdentity::new(),
             active_requests: BTreeMap::new(),
             used_neuron_requests: BTreeSet::new(),
             used_neuron_reservations: BTreeSet::new(),
