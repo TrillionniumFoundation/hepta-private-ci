@@ -7,6 +7,8 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "qualification-ack-only-recovery")]
+mod ack_only_recovery;
 mod causal_v2;
 mod checkpoint;
 mod dataset_receipt_v3;
@@ -28,6 +30,12 @@ mod signed_evidence;
 mod trust_distribution;
 mod witness;
 
+#[cfg(feature = "qualification-ack-only-recovery")]
+pub use ack_only_recovery::{
+    AckOnlyCurrentRevocationCutV1, AckOnlyRecoveryError, AckOnlyRecoveryGrantV1,
+    AckOnlyRecoveryProofV1, AckOnlyRootDelegationV1, AckOnlyRootPinV1, AckOnlySourceEscrowV1,
+    AckOnlyTestReceiptV1, reconcile_one_existing_ack_qualification,
+};
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
 pub use causal_v2::CandidateSetCompletenessReceiptV1;
