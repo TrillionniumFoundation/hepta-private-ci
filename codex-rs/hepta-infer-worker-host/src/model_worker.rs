@@ -172,6 +172,9 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    // Strictly increasing within this Worker instance, even if the driver
+    // reuses an opaque handle or an identical manifest after unload.
+    load_revision: u64,
 }
 
 #[derive(Debug)]
@@ -181,6 +184,9 @@ pub struct InferenceWorker<D: ModelDriver> {
     grant: ResourceGrant,
     driver: D,
     models: BTreeMap<String, LoadedModel>,
+    // Never recycle a load identity inside one live Worker generation.
+    // This is not an independently durable process-incarnation fence.
+    next_load_revision: u64,
     active_requests: BTreeMap<String, String>,
     // Exact request and reservation identity cannot run twice within one
     // Worker instance, even if a fresh ModelPort is constructed around it.
@@ -210,6 +216,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             grant,
             driver,
             models: BTreeMap::new(),
+            next_load_revision: 0,
             active_requests: BTreeMap::new(),
             used_neuron_requests: BTreeSet::new(),
             used_neuron_reservations: BTreeSet::new(),
@@ -283,6 +290,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 sum.checked_add(entry.handle.observed_memory_bytes)
             })
             .ok_or(Error::ArithmeticOverflow)?;
+        // Reserve this exact in-process load identity BEFORE invoking an
+        // effectful driver. Unknown failures must never reuse its ordinal.
+        let load_revision = self
+            .next_load_revision
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
+        self.next_load_revision = load_revision;
         // ModelDriver::load may allocate before returning an error. Fence the
         // entire Worker before calling it: only a fully checked live handle or
         // independently completed cleanup can release this fence.
@@ -325,6 +339,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                load_revision,
             },
         );
         self.quarantined = false;

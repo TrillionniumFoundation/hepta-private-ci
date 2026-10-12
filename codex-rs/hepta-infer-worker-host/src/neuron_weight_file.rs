@@ -112,6 +112,9 @@ pub enum NeuronWeightFileDiagnosticErrorV1 {
     ManifestDigest,
     ChangedDuringRead,
     DigestMismatch,
+    /// A physically loaded handle was retired, replaced, or rebound to
+    /// another Worker/load ordinal. Never use the cached receipt as authority.
+    StaleLoad,
 }
 
 impl From<Error> for NeuronWeightFileDiagnosticErrorV1 {
@@ -219,20 +222,50 @@ const LOAD_DOMAIN: &[u8] = b"hepta.inference.worker.neuron-file-bound-load.diagn
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronFileBoundModelLoadV1 {
-    pub model_load: ModelLoadObservation,
-    pub manifest_model_digest: Digest32,
-    pub preloaded_file_digest: Digest32,
-    pub file_bytes: u64,
-    pub diagnostic_digest: Digest32,
-    pub authority: AuthorityPosture,
+    // All fields are private: a caller cannot construct a new purported
+    // physical-load receipt by rehashing self-authored ModelLoadObservation.
+    model_load: ModelLoadObservation,
+    worker_id: String,
+    load_revision: u64,
+    manifest_model_digest: Digest32,
+    preloaded_file_digest: Digest32,
+    file_bytes: u64,
+    diagnostic_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl NeuronFileBoundModelLoadV1 {
+    #[must_use]
+    pub fn model_load(&self) -> &ModelLoadObservation {
+        &self.model_load
+    }
+
+    #[must_use]
+    pub fn loaded_weights_digest(&self) -> Digest32 {
+        self.preloaded_file_digest
+    }
+
+    #[must_use]
+    pub fn file_bytes(&self) -> u64 {
+        self.file_bytes
+    }
+
+    #[must_use]
+    pub fn load_revision(&self) -> u64 {
+        self.load_revision
+    }
+
+    #[must_use]
+    pub fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
     /// Self-consistency only; not a signed ArtifactLoadReceipt or CNS selection.
     #[must_use]
     pub fn computed_digest(&self) -> Digest32 {
         let mut bytes = LOAD_DOMAIN.to_vec();
         for id in [
+            self.worker_id.as_str(),
             self.model_load.model_id.as_str(),
             self.model_load.handle_id.as_str(),
         ] {
@@ -241,6 +274,7 @@ impl NeuronFileBoundModelLoadV1 {
             bytes.extend_from_slice(raw);
         }
         bytes.extend_from_slice(&self.model_load.worker_generation.to_be_bytes());
+        bytes.extend_from_slice(&self.load_revision.to_be_bytes());
         bytes.extend_from_slice(&self.model_load.observed_memory_bytes.to_be_bytes());
         bytes.push(u8::from(self.model_load.terminal_observed));
         bytes.extend_from_slice(self.manifest_model_digest.as_array());
@@ -252,6 +286,8 @@ impl NeuronFileBoundModelLoadV1 {
     #[must_use]
     pub fn validate_integrity(&self) -> bool {
         self.authority == AuthorityPosture::DENY_ALL
+            && !self.worker_id.is_empty()
+            && self.load_revision > 0
             && self.model_load.terminal_observed
             && self.model_load.worker_generation > 0
             && self.model_load.observed_memory_bytes > 0
@@ -266,6 +302,37 @@ impl NeuronFileBoundModelLoadV1 {
 }
 
 impl<D: NeuronPreopenedWeightModelDriver> InferenceWorker<D> {
+    /// Reopen THIS Worker's active model state and current resource grant.
+    /// A previous file-load receipt cannot survive unload/reload within the
+    /// same process, even if the driver reuses the model ID and handle ID.
+    /// This is read-only and not process-restart/route/final-use authority.
+    pub fn revalidate_file_bound_model_load_v1(
+        &self,
+        now_ms: u64,
+        receipt: &NeuronFileBoundModelLoadV1,
+    ) -> Result<(), NeuronWeightFileDiagnosticErrorV1> {
+        self.validate_current_grant(now_ms)?;
+        if !receipt.validate_integrity()
+            || receipt.worker_id != self.worker_id
+            || receipt.model_load.worker_generation != self.generation
+        {
+            return Err(NeuronWeightFileDiagnosticErrorV1::StaleLoad);
+        }
+        let loaded = self
+            .models
+            .get(&receipt.model_load.model_id)
+            .ok_or(NeuronWeightFileDiagnosticErrorV1::StaleLoad)?;
+        if loaded.load_revision != receipt.load_revision
+            || loaded.handle.opaque_id != receipt.model_load.handle_id
+            || loaded.handle.observed_memory_bytes != receipt.model_load.observed_memory_bytes
+            || loaded.manifest.model_digest != receipt.manifest_model_digest.to_string()
+            || loaded.manifest.weights_digest != receipt.preloaded_file_digest.to_string()
+        {
+            return Err(NeuronWeightFileDiagnosticErrorV1::StaleLoad);
+        }
+        Ok(())
+    }
+
     /// Strict opt-in physical-load path: stream-verify the entire host-opened
     /// weight file against the manifest, rewind it, and MOVE the same File to
     /// the driver for its load operation. Never call legacy path-based load.
@@ -354,8 +421,15 @@ impl<D: NeuronPreopenedWeightModelDriver> InferenceWorker<D> {
             self.quarantined = true;
             return Err(error);
         }
+        let load_revision = self
+            .models
+            .get(&model_load.model_id)
+            .ok_or(NeuronWeightFileDiagnosticErrorV1::StaleLoad)?
+            .load_revision;
         let mut receipt = NeuronFileBoundModelLoadV1 {
             model_load,
+            worker_id: self.worker_id.clone(),
+            load_revision,
             manifest_model_digest: model_digest,
             preloaded_file_digest: measured,
             file_bytes: before.len(),
@@ -363,6 +437,7 @@ impl<D: NeuronPreopenedWeightModelDriver> InferenceWorker<D> {
             authority: AuthorityPosture::DENY_ALL,
         };
         receipt.diagnostic_digest = receipt.computed_digest();
+        self.revalidate_file_bound_model_load_v1(now_ms, &receipt)?;
         Ok(receipt)
     }
 }
@@ -750,6 +825,72 @@ mod tests {
             Err(NeuronWeightFileDiagnosticErrorV1::Worker(
                 Error::WorkerQuarantined
             ))
+        );
+    }
+
+    #[test]
+    fn file_bound_receipt_is_current_only_for_exact_load_ordinal() {
+        let bytes = vec![0x36_u8; 4_096];
+        let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.1".into(),
+            3,
+            grant(),
+            FileDriver {
+                seen,
+                fail_fd: false,
+            },
+        )
+        .unwrap();
+        let mut first_file = tempfile::tempfile().unwrap();
+        first_file.write_all(&bytes).unwrap();
+        let first = worker
+            .load_model_from_preopened_weight_file_v1(101, manifest(&bytes), first_file)
+            .unwrap();
+        assert!(first.validate_integrity());
+        assert_eq!(first.load_revision(), 1);
+        assert_eq!(first.authority(), AuthorityPosture::DENY_ALL);
+        assert_eq!(first.loaded_weights_digest(), Digest32::of_bytes(&bytes));
+        assert_eq!(first.file_bytes(), bytes.len() as u64);
+        worker.revalidate_file_bound_model_load_v1(101, &first).unwrap();
+
+        // An identical second physical load after a real unload MUST NOT
+        // revive the old receipt if the driver reuses the opaque handle ID.
+        worker.unload_model(102, "model.1").unwrap();
+        assert_eq!(
+            worker.revalidate_file_bound_model_load_v1(102, &first),
+            Err(NeuronWeightFileDiagnosticErrorV1::StaleLoad)
+        );
+        let mut second_file = tempfile::tempfile().unwrap();
+        second_file.write_all(&bytes).unwrap();
+        let second = worker
+            .load_model_from_preopened_weight_file_v1(103, manifest(&bytes), second_file)
+            .unwrap();
+        assert_eq!(first.model_load().handle_id, second.model_load().handle_id);
+        assert_eq!(first.model_load().model_id, second.model_load().model_id);
+        assert_eq!(second.load_revision(), 2);
+        assert_eq!(
+            worker.revalidate_file_bound_model_load_v1(103, &first),
+            Err(NeuronWeightFileDiagnosticErrorV1::StaleLoad)
+        );
+        worker.revalidate_file_bound_model_load_v1(103, &second).unwrap();
+
+        // Neither a new checksum nor a cloned receipt can create a new
+        // owner-issued load sequence.
+        let mut tampered = second.clone();
+        tampered.load_revision += 1;
+        assert!(!tampered.validate_integrity());
+        tampered.diagnostic_digest = tampered.computed_digest();
+        assert!(tampered.validate_integrity());
+        assert_eq!(
+            worker.revalidate_file_bound_model_load_v1(103, &tampered),
+            Err(NeuronWeightFileDiagnosticErrorV1::StaleLoad)
+        );
+        worker.grant.revoked = true;
+        assert_eq!(
+            worker.revalidate_file_bound_model_load_v1(104, &second),
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::GrantRevoked))
         );
     }
 }

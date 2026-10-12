@@ -412,3 +412,27 @@ must guarantee immutable CAS file provenance, actual loader behavior,
 current signed Final-use, generation fences and an independently verified
 physical ArtifactLoadReceipt. This is not evidence of serving CNS selection,
 Neuron learning gains, or authority to promote a production model.
+
+## Worker-issued file-load receipt freshness (in-process only)
+
+The physical preopened-file loader now returns a diagnostic with **private
+fields**; ordinary external Rust callers cannot assemble a fake successful
+\`NeuronFileBoundModelLoadV1\` from self-reported model-load values. The actual
+Worker assigns a checked monotonic \`load_revision\` before each driver
+invocation, and stores that same revision on the admitted loaded handle.
+
+\`InferenceWorker::revalidate_file_bound_model_load_v1\` reads the live Worker
+grant and model map. It rejects unloading, quarantine, manifest drift, handle
+replacement, incorrect Worker identity/generation, or reuse of an old receipt
+after unload/reload of the same Model ID, weights and opaque handle. The
+single-process load ordinal does **not** survive a Worker process restart;
+the independent Supervisor's process-incarnation and generation-fence
+evidence are still mandatory before any serving use. Successful validation
+does not attest that an opaque loader consumed the bytes, authorize CNS
+selection or issue final-use permission.
+
+The regression physically writes and loads a file twice through the
+preopened-FD trait, reuses the same handle identity, proves the old ticket
+fails, and refuses a caller-rehashed load ordinal and a revoked grant. The
+strict Worker CI still executes all previous file rehash, full-Cargo and
+durable inference-control checks.
