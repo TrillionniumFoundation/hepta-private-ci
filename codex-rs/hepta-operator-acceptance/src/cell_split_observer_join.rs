@@ -93,6 +93,9 @@ pub struct CellSplitObserverJoinReceiptV1 {
 pub struct CellSplitObserverOriginalRuntimeTrustV1<'a> {
     pub cns_original_runtime_key: &'a VerifyingKey,
     pub supervisor_original_journal_key: &'a VerifyingKey,
+    /// An independently retained minimum terminal journal checkpoint digest.
+    /// The signer key alone cannot prevent restoration of an older valid file.
+    pub supervisor_minimum_checkpoint_digest: &'a str,
 }
 
 /// Additional read-only proof that the original CNS runtime and Supervisor
@@ -480,6 +483,13 @@ fn verify_original_runtime_receipts_v1(
         &journal,
         plan,
     )?;
+    let original: OriginalSupervisorCheckpointV1 =
+        serde_json::from_slice(&journal.original_checkpoint_bytes)?;
+    if original.receipt_digest != runtime_trust.supervisor_minimum_checkpoint_digest {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original Supervisor journal is below independently retained checkpoint",
+        ));
+    }
     Ok((
         sha256(&original_cns.original_runtime_receipt_bytes),
         sha256(&journal.original_checkpoint_bytes),
