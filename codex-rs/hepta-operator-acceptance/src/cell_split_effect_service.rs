@@ -6,6 +6,7 @@
 //! every query and revalidate NDU/frozen authority immediately before mutation.
 
 use std::os::unix::net::UnixStream;
+use std::time::Duration;
 
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
@@ -68,6 +69,7 @@ pub struct CellSplitEffectServiceV1<B: CellSplitDurableEffectBackendV1> {
     plan_digest: String,
     signing_key: SigningKey,
     backend: B,
+    io_timeout: Duration,
 }
 
 impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
@@ -78,9 +80,36 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
         signing_key: SigningKey,
         backend: B,
     ) -> Result<Self, CellSplitEffectRpcErrorV1> {
+        Self::new_with_io_timeout(
+            step,
+            owner_id,
+            plan_digest,
+            signing_key,
+            backend,
+            Duration::from_secs(5),
+        )
+    }
+
+    /// Bound a peer's time to complete each socket read/write. A malicious
+    /// client sending only a frame header must not block the sole signing
+    /// owner indefinitely. This limits transport stalls, not backend
+    /// execution time or externally managed listener/concurrency policies.
+    pub fn new_with_io_timeout(
+        step: CellSplitExecutionStepV1,
+        owner_id: String,
+        plan_digest: String,
+        signing_key: SigningKey,
+        backend: B,
+        io_timeout: Duration,
+    ) -> Result<Self, CellSplitEffectRpcErrorV1> {
         if owner_id.is_empty() || owner_id.len() > 256 || !digest_shape(&plan_digest) {
             return Err(CellSplitEffectRpcErrorV1::Invalid(
                 "effect service trust binding",
+            ));
+        }
+        if io_timeout.is_zero() || io_timeout > Duration::from_secs(30) {
+            return Err(CellSplitEffectRpcErrorV1::Invalid(
+                "effect service transport timeout",
             ));
         }
         Ok(Self {
@@ -89,6 +118,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
             plan_digest,
             signing_key,
             backend,
+            io_timeout,
         })
     }
 
@@ -103,6 +133,8 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
         &mut self,
         stream: &mut UnixStream,
     ) -> Result<(), CellSplitEffectRpcErrorV1> {
+        stream.set_read_timeout(Some(self.io_timeout))?;
+        stream.set_write_timeout(Some(self.io_timeout))?;
         let request: CellSplitEffectRpcRequestV1 = receive_frame(stream)?;
         self.validate(&request)?;
         let action = request.action;
