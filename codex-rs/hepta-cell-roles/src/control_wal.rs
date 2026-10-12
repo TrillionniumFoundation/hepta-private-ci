@@ -795,6 +795,7 @@ mod tests {
         fs::remove_dir_all(directory).expect("cleanup");
     }
 
+    #[cfg(unix)]
     #[test]
     fn scope_wal_refuses_out_of_band_tail_growth_while_writer_is_live() {
         let directory = root();
