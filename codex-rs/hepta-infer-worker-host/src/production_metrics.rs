@@ -45,7 +45,7 @@ pub fn open_metrics_bound_native_control_v1(
     capacity: usize,
 ) -> Result<DurableInferenceControl, Box<dyn Error + Send + Sync>> {
     let metrics_path = production_metrics_journal_path_v1(journal)?;
-    let control = DurableInferenceControl::open(journal, capacity)?;
+    let control = DurableInferenceControl::open_production(journal, capacity)?;
     let metrics = Arc::new(DurablePhaseMetricSinkV1::open(
         &metrics_path,
         /* capacity */ METRICS_QUEUE_CAPACITY,

@@ -190,6 +190,77 @@ pub struct DurableInferenceControl {
 }
 
 impl DurableInferenceControl {
+    /// Production serving entrance: the WAL must reside in a pre-provisioned,
+    /// non-world-writable directory, with an owner-private, unaliased file.
+    ///
+    /// This is stricter than `open`, which remains available for migration,
+    /// repair and qualification. The read-only checks cannot authorize a
+    /// dispatch: the existing single-writer lock and effect owner still apply.
+    pub fn open_production(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
+        let path = path.as_ref();
+        Self::check_production_path(path)?;
+        let opened = Self::open(path, capacity)?;
+        // Recheck after open: deny a symlink swap or a different path inode.
+        Self::check_production_path(path)?;
+        let actual = opened.file.metadata()?;
+        let on_path = fs::symlink_metadata(path)?;
+        if !actual.is_file() || !on_path.file_type().is_file() {
+            return Err(Error::InvalidIdentity("unsafe production WAL file"));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            use std::os::unix::fs::PermissionsExt;
+            if actual.permissions().mode() & 0o077 != 0
+                || on_path.permissions().mode() & 0o077 != 0
+                || actual.nlink() != 1
+                || actual.dev() != on_path.dev()
+                || actual.ino() != on_path.ino()
+            {
+                return Err(Error::InvalidIdentity("unsafe production WAL inode"));
+            }
+        }
+        Ok(opened)
+    }
+
+    fn check_production_path(path: &Path) -> Result<(), Error> {
+        if !path.is_absolute() || path.file_name().is_none() {
+            return Err(Error::InvalidIdentity("production WAL path must be absolute"));
+        }
+        let directory = path
+            .parent()
+            .ok_or(Error::InvalidIdentity("production WAL parent missing"))?;
+        let parent = fs::symlink_metadata(directory)?;
+        if !parent.is_dir() || parent.file_type().is_symlink() {
+            return Err(Error::InvalidIdentity("unsafe production WAL directory"));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if parent.permissions().mode() & 0o022 != 0 {
+                return Err(Error::InvalidIdentity("production WAL directory is writable by others"));
+            }
+        }
+        match fs::symlink_metadata(path) {
+            Ok(metadata) => {
+                if !metadata.file_type().is_file() {
+                    return Err(Error::InvalidIdentity("unsafe production WAL path"));
+                }
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::MetadataExt;
+                    use std::os::unix::fs::PermissionsExt;
+                    if metadata.permissions().mode() & 0o077 != 0 || metadata.nlink() != 1 {
+                        return Err(Error::InvalidIdentity("production WAL file must be private"));
+                    }
+                }
+            }
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(Error::from(error)),
+        }
+        Ok(())
+    }
+
     pub fn open(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         if capacity == 0 || capacity > MAX_RECORDS {
             return Err(Error::CapacityExceeded);

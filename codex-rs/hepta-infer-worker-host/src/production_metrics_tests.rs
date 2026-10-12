@@ -65,3 +65,49 @@ fn damaged_evidence_journal_denies_serving_without_mutating_control_wal() {
 fn relative_native_journals_cannot_satisfy_production_readiness() {
     assert!(production_metrics_journal_path_v1(Path::new("control.wal")).is_err());
 }
+
+#[cfg(unix)]
+#[test]
+fn native_production_wal_refuses_unsafe_files_directories_and_aliases() {
+    use std::os::unix::fs::PermissionsExt;
+    use std::os::unix::fs::symlink;
+
+    let dir = tempfile::tempdir().expect("private root");
+    let journal = dir.path().join("control.wal");
+    {
+        let control = open_metrics_bound_native_control_v1(&journal, 32).expect("private bootstrap");
+        assert!(control.production_metrics_ready());
+    }
+    let before = std::fs::read(&journal).expect("WAL bytes");
+
+    std::fs::set_permissions(&journal, std::fs::Permissions::from_mode(0o644))
+        .expect("relax WAL mode");
+    assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
+    std::fs::set_permissions(&journal, std::fs::Permissions::from_mode(0o600))
+        .expect("restore WAL mode");
+
+    let alias = dir.path().join("alias.wal");
+    symlink(&journal, &alias).expect("alias WAL");
+    assert!(open_metrics_bound_native_control_v1(&alias, 32).is_err());
+
+    let exposed = dir.path().join("writable-by-others");
+    std::fs::create_dir(&exposed).expect("make exposed directory");
+    std::fs::set_permissions(&exposed, std::fs::Permissions::from_mode(0o777))
+        .expect("expose directory");
+    assert!(open_metrics_bound_native_control_v1(&exposed.join("control.wal"), 32).is_err());
+    assert_eq!(std::fs::read(&journal).expect("unmodified WAL"), before);
+}
+
+#[cfg(unix)]
+#[test]
+fn native_production_wal_rejects_hardlink_alias() {
+    let dir = tempfile::tempdir().expect("private root");
+    let journal = dir.path().join("control.wal");
+    {
+        let control = open_metrics_bound_native_control_v1(&journal, 32).expect("initial writer");
+        assert!(control.production_metrics_ready());
+    }
+    std::fs::hard_link(&journal, dir.path().join("second-name.wal"))
+        .expect("make hardlink");
+    assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
+}
