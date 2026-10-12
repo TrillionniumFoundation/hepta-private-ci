@@ -149,11 +149,19 @@ where
                 .map_err(|error| error.to_string())?,
         ),
     };
+    // Transcript mode already performed one full current-owner verification
+    // pass. Advance mode must perform a fresh four-owner readback before it
+    // can report terminal readiness; historical ledger state alone is stale.
+    let verified_complete = if selected_action == "advance" {
+        owner.verified_complete().map_err(|error| error.to_string())?
+    } else {
+        transcript.is_some()
+    };
     Ok(CellSplitExecutionCliOutcomeV1 {
         schema: OUTCOME_SCHEMA,
         action: selected_action,
         completed_steps: owner.completed_steps(),
-        complete: owner.is_complete(),
+        complete: verified_complete,
         receipt,
         transcript,
         production_activation_authorized: false,
