@@ -3,7 +3,7 @@
 
 The published SDK 0.19.1 still contains anymap2. Its upstream replacement is
 an independently identifiable three-file commit. This probe checks whether the
-TWO source hunks from that commit apply to the pinned release WITHOUT running
+FOUR source replacement blocks from that commit apply to the pinned release WITHOUT running
 foreign code, amending source, resolving dependencies, or granting authority.
 
 A clean patch is only a candidate for full security review and Rust/SQLite/E2EE
@@ -88,8 +88,9 @@ def _source_change_blocks(source_diff):
         else:
             flush()
     flush()
-    if sum(map(len, changes.values())) != 3 or any(not block for block in changes.values()):
-        raise ValueError("upstream AnyMap source change count is not exactly three")
+    if (len(changes[SOURCE_FILES[0]]) != 1 or
+            len(changes[SOURCE_FILES[1]]) != 3):
+        raise ValueError("upstream AnyMap source blocks differ from pinned 1+3 profile")
     return changes
 
 
@@ -156,7 +157,7 @@ def probe(release, migration, *, release_sha=RELEASE_SHA, migration_sha=MIGRATIO
         raise ValueError("upstream source patch does not change the advertised AnyMap dependency")
     raw_check = git(release, "apply", "--check", "-", input_bytes=patch.stdout)
     # A context mismatch in upstream's later manifest is *not* permission to
-    # import hundreds of unrelated mainline commits. Translate ONLY the three
+    # import hundreds of unrelated mainline commits. Translate ONLY the four
     # exact upstream AnyMap substitutions onto the immutable release contents.
     release_patch = _release_specific_source_patch(release, patch.stdout)
     check = git(release, "apply", "--check", "-", input_bytes=release_patch)
@@ -171,7 +172,7 @@ def probe(release, migration, *, release_sha=RELEASE_SHA, migration_sha=MIGRATIO
         "upstream_source_patch_sha256": hashlib.sha256(patch.stdout).hexdigest(),
         "upstream_raw_patch_applies_clean": raw_check.returncode == 0,
         "upstream_raw_patch_exit_code": raw_check.returncode,
-        "source_patch_translation_count": 3,
+        "source_patch_translation_count": 4,
         "source_patch_sha256": hashlib.sha256(release_patch).hexdigest(),
         "source_patch_bytes": len(release_patch),
         "source_patch_applies_clean": check.returncode == 0,
