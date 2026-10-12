@@ -3,6 +3,8 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::time::Instant;
 
+#[cfg(test)]
+use std::collections::HashMap;
 #[cfg(unix)]
 use std::fs::File;
 #[cfg(unix)]
@@ -12,9 +14,9 @@ use std::io::Read;
 #[cfg(unix)]
 use std::io::Write;
 #[cfg(test)]
-use std::sync::atomic::AtomicU8;
+use std::sync::Mutex as StdMutex;
 #[cfg(test)]
-use std::sync::atomic::Ordering;
+use std::sync::OnceLock;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -53,22 +55,55 @@ const MAX_CHECKPOINT_BYTES: u64 = 4096;
 const RECOVERY_BATCH: u32 = 256;
 
 #[cfg(test)]
-static CHECKPOINT_FAILPOINT: AtomicU8 = AtomicU8::new(0);
+static CHECKPOINT_FAILPOINTS: OnceLock<StdMutex<HashMap<PathBuf, u8>>> = OnceLock::new();
 
 #[cfg(test)]
-pub(crate) fn set_checkpoint_failpoint(stage: u8) {
-    CHECKPOINT_FAILPOINT.store(stage, Ordering::SeqCst);
+pub(crate) struct CheckpointFaultGuard {
+    path: PathBuf,
 }
 
-fn checkpoint_failpoint(stage: u8) -> Result<(), AuthBusAuthorityError> {
+#[cfg(test)]
+impl Drop for CheckpointFaultGuard {
+    fn drop(&mut self) {
+        if let Ok(mut points) = CHECKPOINT_FAILPOINTS
+            .get_or_init(|| StdMutex::new(HashMap::new()))
+            .lock()
+        {
+            points.remove(&self.path);
+        }
+    }
+}
+
+#[cfg(test)]
+pub(crate) fn set_checkpoint_failpoint(path: &Path, stage: u8) -> CheckpointFaultGuard {
+    CHECKPOINT_FAILPOINTS
+        .get_or_init(|| StdMutex::new(HashMap::new()))
+        .lock()
+        .expect("checkpoint failpoint registry")
+        .insert(path.to_path_buf(), stage);
+    CheckpointFaultGuard {
+        path: path.to_path_buf(),
+    }
+}
+
+fn checkpoint_failpoint(path: &Path, stage: u8) -> Result<(), AuthBusAuthorityError> {
     #[cfg(test)]
-    if CHECKPOINT_FAILPOINT.load(Ordering::SeqCst) == stage {
+    if CHECKPOINT_FAILPOINTS
+        .get_or_init(|| StdMutex::new(HashMap::new()))
+        .lock()
+        .map_err(|_| {
+            AuthBusAuthorityError::Storage("checkpoint failpoint registry poisoned".into())
+        })?
+        .get(path)
+        .copied()
+        == Some(stage)
+    {
         return Err(AuthBusAuthorityError::Storage(format!(
             "injected checkpoint I/O failure at stage {stage}"
         )));
     }
     #[cfg(not(test))]
-    let _ = stage;
+    let _ = (path, stage);
     Ok(())
 }
 
@@ -77,13 +112,16 @@ fn checkpoint_failpoint(stage: u8) -> Result<(), AuthBusAuthorityError> {
 /// All mutating operations, recovery maintenance and safety-relevant reads pass
 /// through `mutation_gate`. The gate is held from checkpoint preflight through
 /// SQLite commit and external checkpoint publication, so no caller can observe
-/// or extend a dirty frontier concurrently.
+/// or extend a dirty frontier concurrently. Checkpoint file I/O stays in the
+/// current poll so caller cancellation cannot detach a publication from this gate
+/// or its owner fences. SQLite commit cancellation still requires reconciliation.
 pub struct AuthBusAuthorityHost {
     pub(crate) store: AuthBusAuthorityStore,
     checkpoint: AuthorityCheckpointFile,
     mutation_gate: Mutex<()>,
     pub(crate) metrics: AuthBusRuntimeMetrics,
     _owner_fence: OwnerFence,
+    _checkpoint_owner_fence: OwnerFence,
 }
 
 impl AuthBusAuthorityHost {
@@ -127,19 +165,18 @@ impl AuthBusAuthorityHost {
                 return Err(error);
             }
         };
+        // Distinct databases must not select the same live external witness.
+        let checkpoint_owner_fence = match OwnerFence::acquire(&checkpoint_path, owner_id).await {
+            Ok(fence) => fence,
+            Err(error) => {
+                record_owner_acquisition_failure(&error);
+                return Err(error);
+            }
+        };
         let store = AuthBusAuthorityStore::open(database_path).await?;
-        let checkpoint_database_path = database_path.to_path_buf();
-        let checkpoint_owner_id = owner_id.to_owned();
+        // Keep startup file I/O inside the lifetime of both local owner fences.
         let (checkpoint, external) = if checkpoint_exists {
-            tokio::task::spawn_blocking(move || {
-                AuthorityCheckpointFile::open(
-                    checkpoint_path,
-                    &checkpoint_database_path,
-                    &checkpoint_owner_id,
-                )
-            })
-            .await
-            .map_err(checkpoint_task_error)??
+            AuthorityCheckpointFile::open(checkpoint_path, database_path, owner_id)?
         } else {
             if !allow_bootstrap || store.authority_checkpoint().await?.is_some() {
                 return Err(AuthBusAuthorityError::RollbackDetected);
@@ -148,22 +185,18 @@ impl AuthBusAuthorityHost {
                 generation: 1,
                 digest: store.authority_frontier_digest().await?,
             };
-            tokio::task::spawn_blocking(move || {
-                AuthorityCheckpointFile::create(
-                    checkpoint_path,
-                    &checkpoint_database_path,
-                    &checkpoint_owner_id,
-                    initial,
-                )
-            })
-            .await
-            .map_err(checkpoint_task_error)??
+            AuthorityCheckpointFile::create(checkpoint_path, database_path, owner_id, initial)?
         };
         match store.authority_checkpoint().await? {
             None => store.initialize_authority_checkpoint(external).await?,
-            Some(_) => {
+            Some(current) => {
+                if current != external {
+                    // A visible successor may follow a rename whose directory
+                    // sync failed. Establish durability before local promotion.
+                    sync_checkpoint_parent(&checkpoint.path)?;
+                }
                 if let Some(next) = store.reconcile_authority_checkpoint(external).await? {
-                    checkpoint.replace_async(external, next).await?;
+                    checkpoint.replace(external, next)?;
                     store
                         .advance_authority_checkpoint(external.generation, next)
                         .await?;
@@ -185,6 +218,7 @@ impl AuthBusAuthorityHost {
             mutation_gate: Mutex::new(()),
             metrics: AuthBusRuntimeMetrics::default(),
             _owner_fence: owner_fence,
+            _checkpoint_owner_fence: checkpoint_owner_fence,
         };
         host.sync_checkpoint().await?;
         Ok(host)
@@ -194,7 +228,7 @@ impl AuthBusAuthorityHost {
     /// mutation and safety-relevant read from the authority frontier.
     #[expect(
         clippy::await_holding_invalid_type,
-        reason = "checkpoint reconciliation must exclude concurrent authority mutations and reads through SQLite and external checkpoint awaits"
+        reason = "checkpoint reconciliation must exclude concurrent authority mutations and reads through SQLite awaits and synchronous external checkpoint publication"
     )]
     pub(crate) async fn sync_checkpoint(&self) -> Result<(), AuthBusAuthorityError> {
         let _serialization_guard = self.mutation_gate.lock().await;
@@ -203,9 +237,14 @@ impl AuthBusAuthorityHost {
 
     async fn sync_checkpoint_locked(&self) -> Result<(), AuthBusAuthorityError> {
         let result = async {
-            let external = self.checkpoint.read_async().await?;
+            let external = self.checkpoint.read()?;
+            if self.store.authority_checkpoint().await? != Some(external) {
+                // Do not let reconciliation clear dirty for a merely visible
+                // successor while its parent-directory sync is still failing.
+                sync_checkpoint_parent(&self.checkpoint.path)?;
+            }
             if let Some(next) = self.store.reconcile_authority_checkpoint(external).await? {
-                self.checkpoint.replace_async(external, next).await?;
+                self.checkpoint.replace(external, next)?;
                 self.store
                     .advance_authority_checkpoint(external.generation, next)
                     .await?;
@@ -575,10 +614,6 @@ impl AuthBusAuthorityHost {
     }
 }
 
-fn checkpoint_task_error(error: tokio::task::JoinError) -> AuthBusAuthorityError {
-    AuthBusAuthorityError::Storage(format!("checkpoint I/O task failed: {error}"))
-}
-
 fn normalize_mutation_error(error: AuthBusAuthorityError) -> AuthBusAuthorityError {
     match error {
         AuthBusAuthorityError::Storage(detail) => {
@@ -597,7 +632,6 @@ struct CheckpointDocument {
     digest: String,
 }
 
-#[derive(Clone)]
 struct AuthorityCheckpointFile {
     path: PathBuf,
     owner_id: String,
@@ -632,24 +666,6 @@ impl AuthorityCheckpointFile {
         }
         create_private_checkpoint(&path, owner_id, initial)?;
         Self::open(path, database_path, owner_id)
-    }
-
-    async fn read_async(&self) -> Result<AuthorityCheckpoint, AuthBusAuthorityError> {
-        let checkpoint = self.clone();
-        tokio::task::spawn_blocking(move || checkpoint.read())
-            .await
-            .map_err(checkpoint_task_error)?
-    }
-
-    async fn replace_async(
-        &self,
-        expected: AuthorityCheckpoint,
-        next: AuthorityCheckpoint,
-    ) -> Result<(), AuthBusAuthorityError> {
-        let checkpoint = self.clone();
-        tokio::task::spawn_blocking(move || checkpoint.replace(expected, next))
-            .await
-            .map_err(checkpoint_task_error)?
     }
 
     fn read(&self) -> Result<AuthorityCheckpoint, AuthBusAuthorityError> {
@@ -888,6 +904,22 @@ fn checkpoint_payload(
 }
 
 #[cfg(unix)]
+fn sync_checkpoint_parent(path: &Path) -> Result<(), AuthBusAuthorityError> {
+    let parent = path
+        .parent()
+        .ok_or(AuthBusAuthorityError::UnsafeCheckpoint)?;
+    checkpoint_failpoint(path, 4)?;
+    File::open(parent)
+        .and_then(|directory| directory.sync_all())
+        .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))
+}
+
+#[cfg(not(unix))]
+fn sync_checkpoint_parent(_path: &Path) -> Result<(), AuthBusAuthorityError> {
+    Err(AuthBusAuthorityError::UnsafeCheckpoint)
+}
+
+#[cfg(unix)]
 fn write_private_atomic(
     path: &Path,
     owner_id: &str,
@@ -916,19 +948,16 @@ fn write_private_atomic(
         .open(&temporary)
         .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
     let result = (|| -> Result<(), AuthBusAuthorityError> {
-        checkpoint_failpoint(1)?;
+        checkpoint_failpoint(path, 1)?;
         file.write_all(&payload)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
-        checkpoint_failpoint(2)?;
+        checkpoint_failpoint(path, 2)?;
         file.sync_all()
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
-        checkpoint_failpoint(3)?;
+        checkpoint_failpoint(path, 3)?;
         std::fs::rename(&temporary, path)
             .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
-        checkpoint_failpoint(4)?;
-        File::open(parent)
-            .and_then(|directory| directory.sync_all())
-            .map_err(|error| AuthBusAuthorityError::Storage(error.to_string()))?;
+        sync_checkpoint_parent(path)?;
         Ok(())
     })();
     if result.is_err() {
