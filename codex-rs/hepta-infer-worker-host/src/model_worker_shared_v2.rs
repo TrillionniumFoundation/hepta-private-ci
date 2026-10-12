@@ -944,12 +944,47 @@ mod tests {
             req("cell.a", "request.a", Arc::clone(&snapshot)),
             req("cell.b", "request.b", Arc::clone(&snapshot)),
         ];
+        let digest_request = requests[0].clone();
         let results = worker
             .run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests)
             .expect("physical rows");
         assert_eq!(results.len(), 2);
         assert!(results.iter().all(|row| row.observed_memory_bytes == 1024));
         assert!(results.iter().all(|row| row.authority == NonAuthorizingPosture::DENY_ALL));
+
+        let first = &results[0];
+        let accounted = DriverNeuronFeatureObservation {
+            terminal_observed: true,
+            succeeded: true,
+            encoder_digest: digest_request.snapshot.identity.encoder_digest.to_string(),
+            head_digest: first.head_digest.clone(),
+            drive_q24: first.drive_q24.clone(),
+            prediction_q24: first.prediction_q24.clone(),
+            observed_memory_bytes: first.observed_memory_bytes,
+            transient_allocation_bytes: first.transient_allocation_bytes,
+            queue_age_micros: first.queue_age_micros,
+            latency_micros: first.latency_micros,
+        };
+        let expected_digest = observation_digest_v2(
+            &digest_request,
+            &accounted,
+            ExecutionStatus::Succeeded,
+            first.worker_generation,
+            first.feature_identity_digest,
+        );
+        assert_eq!(first.observation_digest, expected_digest);
+        let mut raw_driver_claim = accounted;
+        raw_driver_claim.observed_memory_bytes = 0;
+        assert_ne!(
+            first.observation_digest,
+            observation_digest_v2(
+                &digest_request,
+                &raw_driver_claim,
+                ExecutionStatus::Succeeded,
+                first.worker_generation,
+                first.feature_identity_digest,
+            )
+        );
         assert_eq!(worker.driver.batches, 1);
         assert!(!worker.poisoned);
     }
