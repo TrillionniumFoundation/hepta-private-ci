@@ -11,7 +11,10 @@ import fbsde_tree
 
 
 def run(output, profile="exact_v1", **options):
-    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1", "input_tied_challenge_v1", "novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1"), "study profile")
+    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1", "input_tied_challenge_v1", "novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1", "outcome_depth_routing_v1"), "study profile")
+    if profile == "outcome_depth_routing_v1":
+        from fbsde_outcome_study import run as run_outcome
+        return run_outcome(output, **options)
     if profile == "learned_depth_allocation_v1":
         from fbsde_depth_study import run as run_depth
         return run_depth(output, **options)
@@ -81,7 +84,7 @@ if __name__=='__main__':
     parser.add_argument('--tracking-feature-profile', choices=('ordinal_sensitive_v1','local_participant_v2'), default='ordinal_sensitive_v1')
     parser.add_argument('--tracking-source', choices=('generated', 'bbh'), default='generated')
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1", "input_tied_challenge_v1", "novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1"), default="exact_v1")
+    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1", "input_tied_challenge_v1", "novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1", "outcome_depth_routing_v1"), default="exact_v1")
     parser.add_argument("--cohort", choices=("banking_v1", "travel_guard_v1"), default="banking_v1")
     parser.add_argument("--backend", choices=("hashing_reference_v1", "mmbert"), default="hashing_reference_v1")
     parser.add_argument("--kernel-profile", choices=("uniform_joint_v1", "joint_backoff_cv_v2"), default="uniform_joint_v1")
@@ -92,7 +95,7 @@ if __name__=='__main__':
     parser.add_argument("--clock-diagnostics", action="store_true")
     args = parser.parse_args()
     options = dict(backend=args.backend, publisher_root=args.publisher_root, model_dir=args.model_dir, kernel_profile=args.kernel_profile, cohort=args.cohort, clock_diagnostics=args.clock_diagnostics) if args.profile == "semantic_acquisition_v1" else {}
-    if args.profile in ("novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1"):
+    if args.profile in ("novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1", "outcome_depth_routing_v1"):
         require(args.evidence_dir is not None and args.backend == "hashing_reference_v1", "explicit frozen lexical Head source required")
         options = dict(evidence_dir=args.evidence_dir)
     if args.profile == 'learned_depth_allocation_v1':

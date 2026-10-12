@@ -6,6 +6,8 @@ on:
     paths:
       - "qualification/neuron-stem/fbsde_tracking_feedback*.py"
       - "qualification/neuron-stem/fbsde_depth*.py"
+      - "qualification/neuron-stem/fbsde_outcome*.py"
+      - "qualification/neuron-stem/test_fbsde_outcome.py"
       - "qualification/neuron-stem/fbsde_planning_workspace.py"
       - "qualification/neuron-stem/test_fbsde_planning_workspace.py"
       - "qualification/neuron-stem/fbsde_tracking_control.py"
@@ -70,6 +72,15 @@ jobs:
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile learned_depth_allocation_v1 --depth-planning-engine shared_continuation_v2 --evidence-dir base-study --output depth-reuse-study 2>&1 | tee depth-reuse-study.log
           /tmp/feedback-venv/bin/python -c "from fbsde_depth_reuse_audit import compare_runs; from four_gate_common import write_once; from pathlib import Path; write_once(Path('depth-engine-comparison.json'), compare_runs('depth-study','depth-reuse-study'))"
           git diff --exit-code
+      - name: Contrast internal gain with verified source outcomes on new frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python -m unittest fbsde_outcome_tensor_checks -v 2>&1 | tee outcome-tensor-tests.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile outcome_depth_routing_v1 --evidence-dir depth-reuse-study --output outcome-study 2>&1 | tee outcome-study.log
+          /tmp/feedback-venv/bin/python -m unittest fbsde_outcome_artifact_checks -v 2>&1 | tee outcome-artifact-tests.log
+          git diff --exit-code
       - name: Preserve original outputs and failures, never grant promotion
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -92,5 +103,9 @@ jobs:
             depth-reuse-study.log
             depth-reuse-study/
             depth-engine-comparison.json
+            outcome-tensor-tests.log
+            outcome-artifact-tests.log
+            outcome-study.log
+            outcome-study/
           if-no-files-found: error
           retention-days: 30
