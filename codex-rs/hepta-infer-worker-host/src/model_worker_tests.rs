@@ -6,6 +6,7 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     invalid_handle: bool,
+    reuse_loaded_handle: bool,
     fail_unload: bool,
     fail_load_after_allocation: bool,
     fail_run_after_execution: bool,
@@ -24,6 +25,8 @@ impl ModelDriver for Driver {
         Ok(DriverModelHandle {
             opaque_id: if self.invalid_handle {
                 "invalid handle".to_string()
+            } else if self.reuse_loaded_handle {
+                "handle.shared-alias".to_string()
             } else {
                 format!("handle.{}", manifest.model_id)
             },
@@ -173,6 +176,44 @@ fn invalid_loaded_handle_is_cleaned_up_without_leaking_model_owner() {
     assert_eq!(worker.driver.loaded, 0);
     assert!(worker.models.is_empty());
     assert!(!worker.poisoned);
+}
+
+#[test]
+fn duplicate_physical_handle_quarantines_generation_without_unloading_original() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.alias-handle".into(),
+        3,
+        grant(),
+        Driver {
+            reuse_loaded_handle: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first load");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    second.model_digest = "a".repeat(64);
+    assert_eq!(
+        worker.load_model(100, second),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(worker.models.len(), 1);
+    assert!(worker.models.contains_key("model.1"));
+    // The driver might own two allocations, or one aliased allocation.
+    // Unloading either opaque ID could silently invalidate the original.
+    assert_eq!(worker.driver.loaded, 2);
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.loaded, 2);
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::IndeterminateLifecycle)
+    );
 }
 
 #[test]
