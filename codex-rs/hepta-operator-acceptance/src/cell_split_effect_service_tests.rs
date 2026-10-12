@@ -898,3 +898,52 @@ fn execute_does_not_sign_after_independent_final_use_revocation() {
     assert!(root.path().join("committed").exists());
     assert!(root.path().join("live-owner-state").exists());
 }
+
+
+#[test]
+fn partial_owner_rpc_frame_times_out_without_signing_or_mutation() {
+    use std::io::Write as _;
+
+    let root = tempfile::tempdir().expect("private fixture");
+    let backend = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
+    let mut service = CellSplitEffectServiceV1::new_with_io_timeout(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+        Duration::from_millis(20),
+    )
+    .expect("bounded serving owner");
+    let (mut sender, mut receiver) = UnixStream::pair().expect("socket pair");
+    // A peer sends only half a length header and remains connected. Without
+    // an owner-enforced deadline the only service thread would block forever.
+    sender.write_all(&[0, 0]).expect("truncated length prefix");
+    assert!(matches!(
+        service.serve_connection(&mut receiver),
+        Err(CellSplitEffectRpcErrorV1::Io(error))
+            if matches!(error.kind(), io::ErrorKind::TimedOut | io::ErrorKind::WouldBlock)
+    ));
+    assert_eq!(service.backend().commits, 0);
+    assert!(!root.path().join("committed").exists());
+    assert!(!root.path().join("live-owner-state").exists());
+}
+
+#[test]
+fn owner_rpc_timeout_must_be_bounded_and_nonzero() {
+    for timeout in [Duration::ZERO, Duration::from_secs(31)] {
+        assert!(matches!(
+            CellSplitEffectServiceV1::new_with_io_timeout(
+                CellSplitExecutionStepV1::ArtifactCas,
+                "cas-owner".into(),
+                intent().plan_digest,
+                SigningKey::from_bytes(&[1; 32]),
+                DiskEffect::new(PathBuf::from("/tmp"), "cas-owner"),
+                timeout,
+            ),
+            Err(CellSplitEffectRpcErrorV1::Invalid(
+                "effect service transport timeout"
+            ))
+        ));
+    }
+}
