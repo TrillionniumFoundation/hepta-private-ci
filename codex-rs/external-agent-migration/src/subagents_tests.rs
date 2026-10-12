@@ -18,7 +18,10 @@ fn safe_yaml_string_keys_keep_trim_and_scalar_semantics() -> io::Result<()> {
     assert_eq!(parsed["description"].as_str(), Some("42"));
     assert_eq!(parsed["sandbox_mode"].as_str(), Some("read-only"));
     assert_eq!(parsed["model_reasoning_effort"].as_str(), Some("xhigh"));
-    assert_eq!(parsed["developer_instructions"].as_str(), Some("Do the task."));
+    assert_eq!(
+        parsed["developer_instructions"].as_str(),
+        Some("Do the task.")
+    );
     Ok(())
 }
 

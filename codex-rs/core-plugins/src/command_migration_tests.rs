@@ -190,7 +190,11 @@ fn safe_yaml_normalized_description_collisions_are_errors() {
         "description: valid\n' description ': []",
         "description: valid\n'description\u{00a0}': other",
     ] {
-        assert_eq!(parse_command_description(raw), Err(InvalidCommandFrontmatter), "{raw}");
+        assert_eq!(
+            parse_command_description(raw),
+            Err(InvalidCommandFrontmatter),
+            "{raw}"
+        );
     }
 }
 
@@ -201,8 +205,14 @@ fn safe_yaml_absent_and_rejected_descriptions_stay_distinct() {
         parse_command_description("' description ': 42"),
         Ok(Some("42".to_string())),
     );
-    assert_eq!(parse_command_description("description: null"), Err(InvalidCommandFrontmatter));
-    assert_eq!(parse_command_description("[not, a, mapping]"), Err(InvalidCommandFrontmatter));
+    assert_eq!(
+        parse_command_description("description: null"),
+        Err(InvalidCommandFrontmatter)
+    );
+    assert_eq!(
+        parse_command_description("[not, a, mapping]"),
+        Err(InvalidCommandFrontmatter)
+    );
 }
 
 #[test]
@@ -228,7 +238,10 @@ fn safe_yaml_fallback_cannot_import_rejected_frontmatter() -> io::Result<()> {
             format!("---\n{raw}\n---\nUnaccepted command body.\n"),
         )?;
     }
-    fs::write(source.join("valid.md"), "Ordinary command without frontmatter.\n")?;
+    fs::write(
+        source.join("valid.md"),
+        "Ordinary command without frontmatter.\n",
+    )?;
     let profile = CommandMigrationProfile::new(
         TEST_REWRITE_PROFILE,
         CommandDescriptionMode::UseSourceNameFallback,
@@ -250,7 +263,10 @@ fn safe_yaml_fallback_cannot_import_rejected_frontmatter() -> io::Result<()> {
 
 #[test]
 fn safe_yaml_valid_missing_description_retains_original_fallback() {
-    for source in ["A body without a header.", "---\nother: value\n---\nA body."] {
+    for source in [
+        "A body without a header.",
+        "---\nother: value\n---\nA body.",
+    ] {
         let document = parse_command_content(source);
         assert!(document.description.is_ok());
         assert_eq!(
@@ -295,12 +311,13 @@ fn safe_yaml_import_rechecks_rejection_after_source_discovery() -> io::Result<()
     fs::create_dir_all(&target)?;
     let path = source.join("changed.md");
     fs::write(&path, "Ordinary body.\n")?;
-    let sources = unique_supported_command_sources(
-        &source,
-        CommandDescriptionMode::UseSourceNameFallback,
-    )?;
+    let sources =
+        unique_supported_command_sources(&source, CommandDescriptionMode::UseSourceNameFallback)?;
     assert_eq!(sources.len(), 1);
-    fs::write(&path, "---\ndescription: !unreviewed changed\n---\nNew body.\n")?;
+    fs::write(
+        &path,
+        "---\ndescription: !unreviewed changed\n---\nNew body.\n",
+    )?;
     let profile = CommandMigrationProfile::new(
         TEST_REWRITE_PROFILE,
         CommandDescriptionMode::UseSourceNameFallback,

@@ -325,7 +325,9 @@ fn parse_command_description(
     )
     .map_err(|_| InvalidCommandFrontmatter)?;
     let mapping = parsed.as_object().ok_or(InvalidCommandFrontmatter)?;
-    let mut descriptions = mapping.iter().filter(|(key, _)| key.trim() == "description");
+    let mut descriptions = mapping
+        .iter()
+        .filter(|(key, _)| key.trim() == "description");
     let Some((_, value)) = descriptions.next() else {
         return Ok(None);
     };
@@ -333,7 +335,9 @@ fn parse_command_description(
     if descriptions.next().is_some() {
         return Err(InvalidCommandFrontmatter);
     }
-    yaml_scalar(value).map(Some).ok_or(InvalidCommandFrontmatter)
+    yaml_scalar(value)
+        .map(Some)
+        .ok_or(InvalidCommandFrontmatter)
 }
 
 fn yaml_scalar(value: &YamlValue) -> Option<String> {
