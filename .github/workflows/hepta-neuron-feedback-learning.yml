@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - "qualification/neuron-stem/fbsde_transfer*.py"
+      - "qualification/neuron-stem/test_fbsde_transfer.py"
+      - "qualification/neuron-stem/test_fbsde_selection_roundoff.py"
       - "qualification/neuron-stem/fbsde_tracking_feedback*.py"
       - "qualification/neuron-stem/fbsde_depth*.py"
       - "qualification/neuron-stem/fbsde_role*.py"
@@ -175,5 +178,43 @@ jobs:
             prepared-gate-study/
             prepared-gate-study.log
             prepared-gate-artifact-tests.log
+          if-no-files-found: error
+          retention-days: 30
+
+  cross-state-transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Execute source-bound finite transfer independently of neural jobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > transfer-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > transfer-source.tar.gz
+          export PYTHONPATH=qualification/neuron-stem
+          python3 -m unittest test_fbsde_selection_roundoff test_fbsde_transfer -v 2>&1 | tee transfer-tests.log
+          python3 qualification/neuron-stem/fbsde_study.py --profile counterfactual_rule_transfer_v1 --output transfer-study 2>&1 | tee transfer-study.log
+          python3 qualification/neuron-stem/fbsde_transfer_artifact_checks.py -v transfer-study 2>&1 | tee transfer-artifact-tests.log
+          git diff --exit-code
+      - name: Preserve source, completed and failed experiments
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cross-state-transfer-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            transfer-source.txt
+            transfer-source.tar.gz
+            transfer-tests.log
+            transfer-study.log
+            transfer-artifact-tests.log
+            transfer-study/
           if-no-files-found: error
           retention-days: 30
