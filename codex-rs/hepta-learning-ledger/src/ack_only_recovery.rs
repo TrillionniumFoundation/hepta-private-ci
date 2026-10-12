@@ -147,9 +147,10 @@ pub struct AckOnlyTestReceiptV1 {
     pub witness_synced: bool,
     pub ledger_record_count_unchanged: bool,
     pub qualification_only_no_product_authority: bool,
-    /// Claim was fsynced under an existing owner-pinned nonce directory
-    /// BEFORE the independent Witness was allowed to advance.
-    pub reserved_grant_nonce_receipt: Digest32,
+    /// Digest of BOTH fsynced original event-target and grant-nonce
+    /// reservations under one owner-pinned directory, completed BEFORE
+    /// the independent Witness was allowed to advance.
+    pub reserved_event_target_and_nonce_receipt: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -168,6 +169,7 @@ pub enum AckOnlyRecoveryError {
     Durable(DurableLedgerError),
     NonceStoreUnavailable,
     NonceAlreadyReservedOrIndeterminate,
+    EventAlreadyReservedOrIndeterminate,
 }
 
 impl fmt::Display for AckOnlyRecoveryError {
@@ -577,7 +579,7 @@ pub fn reconcile_one_existing_ack_qualification(
         witness_synced: true,
         ledger_record_count_unchanged: true,
         qualification_only_no_product_authority: true,
-        reserved_grant_nonce_receipt: nonce_receipt,
+        reserved_event_target_and_nonce_receipt: nonce_receipt,
     })
 }
 
