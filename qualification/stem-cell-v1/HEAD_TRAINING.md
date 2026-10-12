@@ -69,3 +69,71 @@ PYTHONPATH=qualification/stem-cell-v1 python \
 # Existing real-weight CLI: add --head-batch-size 32 to development_learning.py.
 # Supply approved local safetensors and frozen public rows/TRAIN labels as before.
 ```
+
+## Input-dependent gated Heads on the same grouped fitter
+
+Parent: `4ae44223437d307962b5306bcf541b1a42db328b`. The preceding Linear
+results remain historical. `SwiGLUCellHead` now supplies a private gate, value
+projection and readout per Cell: `readout(silu(gate(x)) * value(x))`. Shared
+features are detached; all six weight/bias tensors learn independently. This
+is ordinary Torch, not machine-code generation or the unpublished Q24 patch.
+The internal grouped SGD implementation is reused for Linear and SwiGLU;
+existing Linear defaults and tests are retained. New opt-in real consumer
+arguments are `--head-kind swiglu --head-hidden-size 8 --head-batch-size 32`.
+The safe offline Encoder loader, sealed training-label API and 64-Cell/4096-row
+consumer envelope are unchanged. This nonlinear Head is not an affine Q24 export.
+
+Per-Cell mean cross-entropy is summed across the group. Gradient clipping
+includes that Cell's gate, value and readout, not another Cell's parameters.
+Ragged minibatches, distinct RNG streams, source immutability, padded work and
+whole-call resource limits retain the original semantics. The constructor and
+fitter reject mixed dimensions, frozen/missing/extra projections, invalid data
+and aggregate over-budget parameters before any optimizer. Failures never
+select a fallback model or change live Cell state.
+
+Three predeclared fresh-process seeds 1414/2525/3636 execute identical scalar and
+grouped fits. Both arms see the same initial Heads, shared feature table, labels,
+per-Cell minibatches and updates; complete fitting calls are timed, not merely
+matrix multiplication. All predictions are saved before heldout scoring. No
+threshold or winner is chosen from heldout scores.
+
+| Heads / input / hidden / classes / updates | Scalar/grouped wall ratio |
+| --- | --- |
+| 1 / 16 / 8 / 2 / 20 | 0.746..1.060; no consistent advantage |
+| 64 / 384 / 8 / 4 / 12 | 3.787..3.809 |
+| 256 / 384 / 8 / 4 / 6 | 2.655..3.246 |
+| 4096 / 64 / 4 / 2 / 3 | 2.464..3.381 |
+
+The 4096-Head profile uses 64-wide supplied features, NOT truncated 384-wide
+Encoder outputs. Each arm performs 393,216 useful example updates; optimizer
+calls reduce from 12,288 to 384 while each Cell still has three updates. The
+candidate tensors occupy 8,683,520 raw bytes; this is not full process RSS.
+Across 848,064 correlated Cell predictions, classification disagreements are
+zero; maximum parameter error is 2.981e-8 and maximum logit error 2.981e-7.
+Unlike some Linear fixtures, gated parameters are NOT bitwise identical.
+Predeclared numerical tolerances are absolute 2e-6 / relative 2e-5, not a proof
+of equality for all inputs, longer training or other hardware.
+
+Features and four task families are synthetic. Each profile has only 64
+independent heldout inputs; repeated Cell tasks do not increase that number.
+Few-step training is an implementation benchmark, not training to convergence:
+seed 2525's 4096-Head trained score is lower than its frozen score and is retained.
+No general learning superiority, pretrained outcome, p95/p99, statistical speed
+guarantee, energy/RSS or production acceptance is asserted. Initial studies
+used Python 3.13.5 / Torch 2.10.0+cpu, one CPU thread.
+
+```sh
+PYTHONPATH=qualification/stem-cell-v1 python -m unittest -v development_gated_training_checks
+PYTHONPATH=qualification/stem-cell-v1 python \
+  qualification/stem-cell-v1/development_gated_training_study.py --synthetic \
+  --seed 1414 --output /new/gated-head-study
+```
+
+The existing source-head and prospective-merge CPU workflow retains all earlier
+checks and adds the gated tests/study. 134 local sparse-source tests pass (114
+retained plus 20 new), not the full repository suite. The parent development
+workflow 38299074028 passed both lanes, while parent Stem/global CI remained
+failed. Separately identified CI-generated Worker Rustfmt and Bazel-fixture Ruff
+patches are imported by exact matching source blobs, without changing assertions
+or runtime behavior. New exact-head hosted checks remain required; unresolved
+dependency security, cross-platform tests and other format findings are not waived.
