@@ -25,6 +25,21 @@ class AuditTests(unittest.TestCase):
         self.sdk_manifest={'dependencies': {'matrix-sdk': {'workspace':True}}}
         self.matrixd_manifest={'dev-dependencies': {'matrix-sdk': {'workspace': True}}}
 
+    def _safe_static_candidate(self):
+        # Synthetic structural fixture, never real Matrix/E2EE/cargo-deny proof.
+        self.workspace['workspace']['dependencies']['matrix-sdk']['version'] = '=0.19.1'
+        self.workspace['patch']['crates-io'].clear()
+        self.toolchain['toolchain']['channel'] = '1.96.0'
+        for package in self.lock['package']:
+            if package['name'].startswith('matrix-sdk'):
+                package['version'] = '0.19.1'
+            if package['name'] == 'matrix-sdk':
+                package['dependencies'] = [
+                    x.replace('anymap2', 'anymap3') for x in package['dependencies']]
+            if package['name'] == 'anymap2':
+                package['name'] = 'anymap3'
+                package['version'] = '1.1.0'
+
     def result(self):
         return audit(self.workspace, self.lock, self.deny, self.toolchain, self.sdk_manifest, self.matrixd_manifest)
 
@@ -166,6 +181,74 @@ class AuditTests(unittest.TestCase):
         document=json.loads(json.dumps(result))
         self.assertFalse(document['production_authorized'])
         self.assertIs(document['cargo_deny_verified'], False)
+
+
+    def test_clean_static_matrix_graph_cannot_self_attest_security(self):
+        self._safe_static_candidate()
+        result = self.result()
+        self.assertTrue(result['static_prerequisites_passed'], result['blocking_prerequisites'])
+        self.assertTrue(result['static_graph_advisory_candidates_clean'])
+        self.assertIs(result['security_advisories_resolved'], False)
+        self.assertIs(result['cargo_deny_verified'], False)
+        self.assertIs(result['matrix_e2ee_verified'], False)
+        self.assertIs(result['sqlite_wal_recovery_verified'], False)
+
+    def test_crypto_only_upgrade_rejects_mixed_matrix_family(self):
+        self._safe_static_candidate()
+        for component in ('matrix-sdk-base', 'matrix-sdk-sqlite', 'matrix-sdk-crypto'):
+            lock = copy.deepcopy(self.lock)
+            for package in lock['package']:
+                if package['name'] == component:
+                    package['version'] = '0.18.0'
+            result = audit(self.workspace, lock, self.deny, self.toolchain,
+                           self.sdk_manifest, self.matrixd_manifest)
+            self.assertIn('MATRIX_FAMILY_RELEASE_MISMATCH:' + component,
+                          result['blocking_prerequisites'])
+            self.assertFalse(result['static_prerequisites_passed'])
+
+    def test_missing_duplicate_and_detached_matrix_components_fail_closed(self):
+        self._safe_static_candidate()
+        for component in ('matrix-sdk-base', 'matrix-sdk-sqlite', 'matrix-sdk-crypto'):
+            missing = copy.deepcopy(self.lock)
+            missing['package'] = [p for p in missing['package'] if p['name'] != component]
+            result = audit(self.workspace, missing, self.deny, self.toolchain,
+                           self.sdk_manifest, self.matrixd_manifest)
+            self.assertIn('MATRIX_FAMILY_COMPONENT_MISSING_OR_AMBIGUOUS:' + component,
+                          result['blocking_prerequisites'])
+            duplicated = copy.deepcopy(self.lock)
+            entry = next(p for p in duplicated['package'] if p['name'] == component)
+            duplicated['package'].append(copy.deepcopy(entry))
+            result = audit(self.workspace, duplicated, self.deny, self.toolchain,
+                           self.sdk_manifest, self.matrixd_manifest)
+            self.assertIn('MATRIX_FAMILY_COMPONENT_MISSING_OR_AMBIGUOUS:' + component,
+                          result['blocking_prerequisites'])
+            detached = copy.deepcopy(self.lock)
+            for p in detached['package']:
+                p['dependencies'] = [x for x in p.get('dependencies', [])
+                                     if x != component]
+            result = audit(self.workspace, detached, self.deny, self.toolchain,
+                           self.sdk_manifest, self.matrixd_manifest)
+            self.assertIn('MATRIX_FAMILY_DEPENDENCY_PATH_MISSING:' + component,
+                          result['blocking_prerequisites'])
+
+    def test_deny_cannot_hide_consumer_sqlite_or_crypto_through_graph_scope(self):
+        self._safe_static_candidate()
+        for candidate in ('codex-hepta-matrixd', 'anymap3', 'matrix-sdk-crypto',
+                          'sqlx', 'rusqlite', 'libsqlite3-sys'):
+            self.deny['graph']['exclude'] = [candidate]
+            self.assertIn('FORBIDDEN_MATRIX_GRAPH_PRUNE',
+                          self.result()['blocking_prerequisites'])
+        self.deny['graph']['exclude'] = 'not-a-list'
+        self.assertIn('FORBIDDEN_MATRIX_GRAPH_PRUNE',
+                      self.result()['blocking_prerequisites'])
+        self.deny['graph']['exclude'] = []
+        self.deny['graph']['targets'] = ['wasm32-unknown-unknown']
+        self.assertIn('FORBIDDEN_MATRIX_TARGET_FILTER',
+                      self.result()['blocking_prerequisites'])
+        del self.deny['graph']['targets']
+        self.deny['graph']['no-default-features'] = True
+        self.assertIn('FORBIDDEN_MATRIX_DEFAULT_FEATURE_SUPPRESSION',
+                      self.result()['blocking_prerequisites'])
 
 
 if __name__ == '__main__':
