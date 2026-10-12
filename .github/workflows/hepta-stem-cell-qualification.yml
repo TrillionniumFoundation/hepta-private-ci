@@ -83,6 +83,8 @@ jobs:
           path: upstream-anymap-commit
           fetch-depth: 2
           persist-credentials: false
+      - name: Validate narrow backport parser before upstream qualification
+        run: python3 -m unittest discover -v -s qualification/matrix-security -p 'test_minimal_backport_probe.py'
       - name: Require exact release/source patch compatibility
         run: |
           python3 qualification/matrix-security/minimal_backport_probe.py \
