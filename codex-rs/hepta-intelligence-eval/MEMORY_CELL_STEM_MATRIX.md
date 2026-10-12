@@ -1602,3 +1602,12 @@ a new Reader execution, an independent semantic entailment judge or an
 untouched prospective data cohort. No benchmark source label is read before
 the original answers are saved, and no training, routing, decoding or
 production decision is changed by this report.
+
+The post-policy score integrity audit also requires one unchanged frozen
+Reader model and prompt identity across every successful policy arm; exact
+question, input-token and generated-token digests; and consistent
+`actual_reader_execution`/`reused_from` receipts. If two policy records
+have the same SHA-bound canonical Reader request, they must have exactly
+the same raw answer and token hashes. This detects answer rewriting or
+cache-laundering without making any new Reader call. These checks
+still cannot independently judge factual entailment.

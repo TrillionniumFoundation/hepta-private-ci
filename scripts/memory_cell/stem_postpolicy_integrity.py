@@ -108,6 +108,8 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
         raise ValueError("missing or unexpected policy identifiers")
 
     census = Counter()
+    reader_pin = None
+    canonical_output_pins = {}
     for key in sorted(expected):
         original, reviewed = indexed[key], annotated[key]
         if (
@@ -165,6 +167,44 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
                 asdict(q), receipt["delivered_evidence"]
             )):
                 raise ValueError("original Reader request pin invalid")
+            identity = (
+                receipt.get("generator_identity"),
+                receipt.get("generator_profile"),
+            )
+            if (
+                not all(isinstance(x, str) and bool(x) for x in identity)
+                or (reader_pin is not None and identity != reader_pin)
+                or receipt.get("question_digest") != digest(asdict(q))
+                or any(
+                    not isinstance(receipt.get(field), str)
+                    or re.fullmatch(r"[0-9a-f]{64}", receipt[field]) is None
+                    for field in ("input_ids_digest", "generated_ids_digest")
+                )
+                or type(receipt.get("actual_reader_execution")) is not bool
+                or not (
+                    (receipt.get("reused_from") is None
+                     and receipt["actual_reader_execution"] is True)
+                    or (isinstance(receipt.get("reused_from"), str)
+                        and bool(receipt["reused_from"])
+                        and receipt["actual_reader_execution"] is False)
+                )
+            ):
+                raise ValueError("Reader prompt, model, token or reuse identity drift")
+            reader_pin = identity
+            request_digest = receipt["canonical_request_digest"]
+            canonical_output = (
+                original["answer"],
+                receipt["input_ids_digest"],
+                receipt["generated_ids_digest"],
+            )
+            if (
+                request_digest in canonical_output_pins
+                and canonical_output_pins[request_digest] != canonical_output
+            ):
+                raise ValueError(
+                    "identical frozen Reader request has inconsistent raw answer or tokens"
+                )
+            canonical_output_pins[request_digest] = canonical_output
             expected_f1 = _diagnostic_f1(original["answer"], target)
             if reviewed["diagnostic_answer_f1"] != expected_f1:
                 raise ValueError("diagnostic answer F1 did not match raw answer")
@@ -208,6 +248,10 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
         census=dict(census),
         same_original_source_candidate_pools=True,
         original_reader_requests_revalidated=True,
+        unique_successful_canonical_reader_requests=len(canonical_output_pins),
+        identical_reader_requests_yield_identical_answer_and_token_ids=True,
+        same_frozen_reader_model_and_prompt_across_successful_arms=True,
+        exact_question_token_and_cache_reuse_receipts_validated=True,
         future_source_window_admission_rechecked=True,
         postpolicy_only_native_target_observation=True,
         weak_document_support_not_semantic_entailment=True,

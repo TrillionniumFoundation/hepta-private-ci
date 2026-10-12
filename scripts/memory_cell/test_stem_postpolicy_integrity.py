@@ -67,6 +67,11 @@ def fixture():
                         "frozen-reader-v1", "frozen-prompt-v1",
                         asdict(query), evidence,
                     )),
+                    question_digest=digest(asdict(query)),
+                    input_ids_digest="a" * 64,
+                    generated_ids_digest="b" * 64,
+                    actual_reader_execution=True,
+                    reused_from=None,
                 )
                 for arm in ARMS:
                     raw.append(dict(
@@ -198,6 +203,80 @@ class PolicyIntegrityTests(unittest.TestCase):
             )})
             with self.subTest(key=key), self.assertRaises(ValueError):
                 audit_policy_scoring(a, b, c, d, e, f)
+
+
+    def test_forged_reader_identity_and_prompt_cannot_evade_by_rehashing(self):
+        for field in ("generator_identity", "generator_profile"):
+            a, b, c, d, e, f = fixture()
+            x = b[0]["receipt"]
+            x[field] = "alternate-reader"
+            x["canonical_request_digest"] = digest((
+                x["generator_identity"], x["generator_profile"],
+                x["observable_query"], x["delivered_evidence"],
+            ))
+            c[0] = dict(b[0], **{
+                k: c[0][k] for k in (
+                    "source_choice_correct", "diagnostic_answer_f1",
+                    "citation_structure",
+                )
+            })
+            with self.subTest(field=field), self.assertRaisesRegex(
+                ValueError, "Reader prompt, model"
+            ):
+                audit_policy_scoring(a, b, c, d, e, f)
+
+    def test_bad_token_or_question_digest_or_cache_reuse_rejected(self):
+        for field, bad in (
+            ("input_ids_digest", "fake"),
+            ("generated_ids_digest", "fake"),
+            ("question_digest", "0" * 64),
+            ("actual_reader_execution", False),
+            ("reused_from", "previous-execution"),
+        ):
+            a, b, c, d, e, f = fixture()
+            b[0]["receipt"][field] = bad
+            c[0] = dict(b[0], **{
+                k: c[0][k] for k in (
+                    "source_choice_correct", "diagnostic_answer_f1",
+                    "citation_structure",
+                )
+            })
+            with self.subTest(field=field), self.assertRaisesRegex(
+                ValueError, "Reader prompt, model"
+            ):
+                audit_policy_scoring(a, b, c, d, e, f)
+
+    def test_identical_request_cannot_change_answer_or_decoded_token_digest(self):
+        a, b, c, d, e, f = fixture()
+        other = b[1]
+        self.assertEqual(
+            b[0]["receipt"]["canonical_request_digest"],
+            other["receipt"]["canonical_request_digest"],
+        )
+        other["answer"] = "Red. [E1]"
+        other["receipt"]["generated_ids_digest"] = "c" * 64
+        c[1] = dict(other, **{
+            "source_choice_correct": 1,
+            "diagnostic_answer_f1": _diagnostic_f1(other["answer"], f[other["question_id"]]),
+            "citation_structure": c[1]["citation_structure"],
+        })
+        with self.assertRaisesRegex(ValueError, "inconsistent raw answer"):
+            audit_policy_scoring(a, b, c, d, e, f)
+
+    def test_original_cache_reuse_is_valid_if_receipt_and_answer_match(self):
+        a, b, c, d, e, f = fixture()
+        b[1]["receipt"]["actual_reader_execution"] = False
+        b[1]["receipt"]["reused_from"] = "16/select/q/frozen_rerank"
+        c[1] = dict(b[1], **{
+            k: c[1][k] for k in (
+                "source_choice_correct", "diagnostic_answer_f1",
+                "citation_structure",
+            )
+        })
+        receipt = audit_policy_scoring(a, b, c, d, e, f)
+        self.assertTrue(
+            receipt["identical_reader_requests_yield_identical_answer_and_token_ids"]
+        )
 
 
 if __name__ == "__main__":
