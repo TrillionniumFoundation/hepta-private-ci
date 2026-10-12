@@ -39,6 +39,17 @@ jobs:
           cat /tmp/source-decode-validation/scoped-format.patch
           uv run --frozen --project scripts ruff format --check scripts/memory_cell/source_decode_factorial.py scripts/memory_cell/test_source_decode_factorial.py 2>&1 | tee /tmp/source-decode-validation/scoped-format.log
           git fetch --no-tags --depth=1 origin "$BASE"
+          # Preserve the exact repository-pinned Ruff patch for the six
+          # unrelated concurrent files still blocking just fmt --check.
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/memory_cell/source_value_binding_audit.py \
+            scripts/memory_cell/stem_native_nonpromotion.py \
+            scripts/memory_cell/strong_rag_fourrun_audit.py \
+            scripts/memory_cell/test_source_value_binding_audit.py \
+            scripts/memory_cell/test_stem_native_nonpromotion.py \
+            scripts/memory_cell/test_strong_rag_fourrun_audit.py \
+            > /tmp/source-decode-validation/repository-python.patch 2>&1 || true
+          cat /tmp/source-decode-validation/repository-python.patch
           just fmt --check --base "$BASE" 2>&1 | tee /tmp/source-decode-validation/repository-format.log
       - name: Keep exact tested source and failure diagnostics
         if: always()
