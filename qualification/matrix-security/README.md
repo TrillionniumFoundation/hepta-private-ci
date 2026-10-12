@@ -74,3 +74,18 @@ A read-only review of the **Git source** at commit
 - Do not patch Cargo.lock to point to this Git source without separate
   source-review, reproducible dependency resolution, SQLite `links` alignment,
   native compile, E2EE conformance and actual WAL recovery evidence.
+
+## Disposable Cargo resolver experiment (not a safe migration)
+
+The optional diagnostics build a **detached temporary Git worktree** at the
+exact PR source SHA; `staged_resolution_probe.py` changes only the temporary
+`codex-rs/Cargo.toml` dependency from published `matrix-sdk 0.18.0` to the
+exact pinned upstream Git revision. It then runs **Rust 1.96 Cargo metadata
+resolution only** (no unreviewed upstream build scripts, compiler invocation,
+login or live Matrix network integration) and records an artifact containing
+resolved crate versions or the genuine resolver error. The Git worktree is
+removed afterward, and the original tracked repository is checked unchanged.
+
+A successful graph resolution still does **not** prove crypto safety, E2EE
+correctness, SQLx SQLite single-`links` compatibility or WAL crash recovery.
+Neither diagnostic job may clear the separate fail-closed security gate.
