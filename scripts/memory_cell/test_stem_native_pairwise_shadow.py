@@ -242,9 +242,13 @@ class NativePairwiseShadowTests(unittest.TestCase):
     def test_failed_before_selection_does_not_consult_missing_source_pool(self):
         args, fits, choices = self.run_fixture()
         pools, targets, frozen = targets_and_frozen(args[0], args[2])
-        frozen[(48, "test", "test-0")] = dict(
-            status="failed", cell="general", family="family"
-        )
+        # This fixture shares one physical pool across all checkpoints.
+        # If the pool vanishes, every checkpoint must explicitly lack an
+        # observed selection. Earlier stages cannot silently lose evidence.
+        for stage in (16, 32, 48):
+            frozen[(stage, "test", "test-0")] = dict(
+                status="failed", cell="general", family="family"
+            )
         pools.pop("test-0")
         report = review_pairwise_shadow(
             args[0], fits, choices, frozen, pools, targets,
@@ -254,6 +258,19 @@ class NativePairwiseShadowTests(unittest.TestCase):
         self.assertEqual(report["frozen_selector_unobserved_or_empty"], 1)
         self.assertEqual(report["source_label_scored"], 7)
         self.assertEqual(report["source_label_unresolved_or_failure"], 1)
+
+    def test_observed_source_choice_must_reject_missing_original_pool(self):
+        args, fits, choices = self.run_fixture()
+        pools, targets, frozen = targets_and_frozen(args[0], args[2])
+        # A Reader failure is not a selector failure. The selected source
+        # still needs its sealed original candidate pool to be audited.
+        frozen[(48, "test", "test-0")]["status"] = "failed"
+        pools.pop("test-0")
+        with self.assertRaisesRegex(ValueError, "sealed original candidate pool"):
+            review_pairwise_shadow(
+                args[0], fits, choices, frozen, pools, targets,
+                support_indices=support_indices,
+            )
 
     def test_saved_shadow_head_sha_must_match_actual_checkpoint(self):
         args, fits, choices = self.run_fixture()
