@@ -412,6 +412,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 requests.push(request);
             }
             let model_id = model_id.ok_or(BatchWorkerErrorV1::NoAdmission)?.to_owned();
+            // Unsupported native batching is a known no-effect condition.
+            // Reject before consuming signed one-shot nonces; never replace
+            // an unavailable batch backend with N separate model calls.
+            if !self.worker.can_run_neuron_feature_batch(&model_id) {
+                return Err(BatchWorkerErrorV1::BatchUnsupported);
+            }
             // Prevalidate all members before one durable nonce-group claim.
             // A denied member never causes a partially dispatched model batch.
             let entries = items
