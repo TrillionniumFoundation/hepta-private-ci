@@ -440,7 +440,8 @@ class RealTorchBatchPathTests(unittest.TestCase):
 
         clean = {"missing_keys": [], "unexpected_keys": [],
                  "mismatched_keys": [], "error_msgs": []}
-        state = {"model_weight": 0.5, "report": clean, "give_report": True}
+        state = {"model_weight": 0.5, "report": clean, "give_report": True,
+                 "tamper_during_load": False}
 
         def local_model(*_args, **kwargs):
             self.assertTrue(kwargs["local_files_only"])
@@ -448,6 +449,8 @@ class RealTorchBatchPathTests(unittest.TestCase):
             self.assertTrue(kwargs["use_safetensors"])
             self.assertTrue(kwargs["output_loading_info"])
             obj = FakeEncoder(state["model_weight"])
+            if state["tamper_during_load"]:
+                (folder / "config.json").write_text('{"changed_during_load": true}')
             if state["give_report"]:
                 return obj, state["report"]
             return obj
@@ -491,6 +494,10 @@ class RealTorchBatchPathTests(unittest.TestCase):
                 state["model_weight"] = 0.5
                 state["give_report"] = False
                 with self.assertRaisesRegex(ValueError, "complete HF loading report"):
+                    FrozenLocalHfBackend(folder, **params)
+                state["give_report"] = True
+                state["tamper_during_load"] = True
+                with self.assertRaisesRegex(ValueError, "snapshot changed during"):
                     FrozenLocalHfBackend(folder, **params)
             finally:
                 for key, value in old.items():
@@ -541,6 +548,21 @@ class RealTorchBatchPathTests(unittest.TestCase):
         # No snapshot exists here: injected weights are synthetic test fixtures.
         fake.simulated = True
         return fake
+
+    def test_padded_32_request_resource_ceiling_refuses_before_forward(self):
+        # 32 separate cases each meet the 8192-token per-item ceiling,
+        # but their 32*1025 padded activation footprint is deliberately
+        # larger than the bounded research batch budget.
+        backend = self.make_backend()
+        backend.max_tokens = 8192
+        requests = [
+            req(i, "1 " * 1024 + str(i))
+            for i in range(1, 33)
+        ]
+        with self.assertRaisesRegex(ValueError, "padded token resource envelope"):
+            SharedStemEngine(backend, max_cache_bytes=0).run(requests)
+        self.assertEqual(backend.invocations, 0)
+        self.assertEqual(backend.model.calls, 0)
 
     def test_torch_forward_is_one_actual_batched_tensor_operation(self):
         model = self.make_backend()
