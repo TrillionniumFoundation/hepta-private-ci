@@ -445,6 +445,11 @@ fn verify_original_runtime_receipts_v1(
     let supervisor = &transcript.receipts[3];
     let journal: CellSplitSupervisorCommitV1 =
         serde_json::from_slice(&supervisor.owner_receipt_bytes)?;
+    // Independently valid CNS and Supervisor signatures cannot be combined
+    // across two different authority epochs. A successful finalization is
+    // part of the SAME original routing handoff, not merely the same model
+    // generations or split identifier.
+    verify_original_handoff_epoch_v1(&original_cns, &journal)?;
     if journal.idempotency_key != supervisor.intent.idempotency_key
         || journal.committed_revision != supervisor.owner_sequence
         || journal.old_generation != plan.parent_generation
@@ -497,6 +502,19 @@ fn verify_original_runtime_receipts_v1(
         sha256(&original_cns.original_runtime_receipt_bytes),
         sha256(&journal.original_checkpoint_bytes),
     ))
+}
+
+#[cfg(unix)]
+fn verify_original_handoff_epoch_v1(
+    cns: &CellSplitCnsRuntimeCommitV1,
+    supervisor: &CellSplitSupervisorCommitV1,
+) -> Result<(), CellSplitObserverJoinErrorV1> {
+    if cns.authority_epoch == 0 || cns.authority_epoch != supervisor.authority_epoch {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original CNS and Supervisor authority epochs differ",
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(unix)]
