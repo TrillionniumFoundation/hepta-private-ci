@@ -121,6 +121,16 @@ class FrozenReaderShadowControlTests(unittest.TestCase):
         )
         return questions, choices, frozen, raw
 
+    def test_different_source_choice_has_distinct_reader_visible_tokens(self):
+        questions, _, _ = fixture()
+        q = questions["test"][0]
+        original, alternative = get_evidence(q, 0), get_evidence(q, 1)
+        self.assertNotEqual(original[0]["excerpt"], alternative[0]["excerpt"])
+        self.assertNotEqual(
+            reader_receipt(q, original, "BASE")["input_ids_digest"],
+            reader_receipt(q, alternative, "GOOD")["input_ids_digest"],
+        )
+
     def test_full_predeclared_32_control_rows_with_exact_reader_identity(self):
         q, shadows, frozen, records = self.prepare()
         self.assertEqual(len(shadows), 192)

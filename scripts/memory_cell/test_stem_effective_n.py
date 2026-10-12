@@ -18,6 +18,13 @@ def realistic_fixture():
 
 
 class UniqueHeldoutUnitsTests(unittest.TestCase):
+    def test_previous_bridge_schema_cannot_sneak_into_v5_analysis(self):
+        plan, bridge = realistic_fixture()
+        self.assertEqual(bridge["schema"], "hepta.stem-train-heldout-diagnostic-gap.v5")
+        bridge["schema"] = "hepta.stem-train-heldout-diagnostic-gap.v4"
+        with self.assertRaisesRegex(ValueError, "unbound native held-out"):
+            effective_heldout_subjects(plan, bridge)
+
     def test_three_checkpoints_do_not_triple_unique_test_subjects(self):
         plan, paired = realistic_fixture()
         result = effective_heldout_subjects(plan, paired)
