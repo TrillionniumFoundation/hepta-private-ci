@@ -872,6 +872,35 @@ fn observer_join_rejects_independently_signed_disconnected_operations() {
     }
 }
 
+
+/// Source fixture for an independent Observer's retained checkpoint witness.
+/// Production must read an authenticated monotonic store before signing.
+#[cfg(unix)]
+fn signed_supervisor_minimum_witness(
+    evidence: &CellSplitSignedTargetHostEvidenceV1,
+    transcript: &crate::CellSplitExecutionTranscriptV1,
+    signer: &SigningKey,
+    minimum_digest: &str,
+) -> CellSplitTargetHostSignatureV1 {
+    use ed25519_dalek::Signer as _;
+
+    let journal: crate::CellSplitSupervisorCommitV1 =
+        serde_json::from_slice(&transcript.receipts[3].owner_receipt_bytes)
+            .expect("original Supervisor receipt");
+    let message = crate::cell_split_supervisor_minimum_signing_payload_v1(
+        &transcript.plan,
+        evidence,
+        &journal,
+        minimum_digest,
+    )
+    .expect("minimum witness signing payload");
+    CellSplitTargetHostSignatureV1 {
+        signer_id: "observer-signer".into(),
+        verifying_key_base64: BASE64.encode(signer.verifying_key().to_bytes()),
+        signature_base64: BASE64.encode(signer.sign(&message).to_bytes()),
+    }
+}
+
 #[cfg(unix)]
 #[test]
 fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
@@ -893,10 +922,17 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
                 .expect("checkpoint");
         checkpoint["receiptDigest"].as_str().expect("checkpoint digest").to_owned()
     };
+    let minimum_signature = signed_supervisor_minimum_witness(
+        &envelope,
+        &transcript,
+        &observer,
+        &pinned_checkpoint_digest,
+    );
     let trust = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &external_cns,
         supervisor_original_journal_key: &external_supervisor,
         supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
+        supervisor_minimum_observer_signature: &minimum_signature,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
     let accepted = crate::cell_split_observer_join::
@@ -916,6 +952,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         cns_original_runtime_key: &external_cns,
         supervisor_original_journal_key: &external_supervisor,
         supervisor_minimum_checkpoint_digest: &independently_stale,
+        supervisor_minimum_observer_signature: &minimum_signature,
     };
     let mut rejected = CurrentEffectFixture::new(&transcript);
     assert!(crate::cell_split_observer_join::
@@ -942,6 +979,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         cns_original_runtime_key: &incorrect_cns,
         supervisor_original_journal_key: &external_supervisor,
         supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
+        supervisor_minimum_observer_signature: &minimum_signature,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
     assert!(crate::cell_split_observer_join::
@@ -961,6 +999,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         cns_original_runtime_key: &external_cns,
         supervisor_original_journal_key: &incorrect_supervisor,
         supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
+        supervisor_minimum_observer_signature: &minimum_signature,
     };
     assert!(crate::cell_split_observer_join::
         verify_cell_split_observer_join_deep_with_port_v1(
@@ -982,6 +1021,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         cns_original_runtime_key: &reused_host,
         supervisor_original_journal_key: &reused_owner,
         supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
+        supervisor_minimum_observer_signature: &minimum_signature,
     };
     assert!(crate::cell_split_observer_join::
         verify_cell_split_observer_join_deep_with_port_v1(
@@ -1055,10 +1095,17 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
                 .expect("checkpoint");
         checkpoint["receiptDigest"].as_str().expect("checkpoint digest").to_owned()
     };
+    let minimum_signature = signed_supervisor_minimum_witness(
+        &envelope,
+        &transcript,
+        &observer,
+        &pinned_checkpoint_digest,
+    );
     let runtime = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &cns,
         supervisor_original_journal_key: &supervisor,
         supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
+        supervisor_minimum_observer_signature: &minimum_signature,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
     assert!(matches!(
