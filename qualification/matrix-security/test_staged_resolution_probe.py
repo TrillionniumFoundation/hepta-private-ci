@@ -5,6 +5,9 @@ import unittest
 
 from staged_resolution_probe import stage_manifest, CANDIDATE_SPEC, SOURCE_SPEC, SQLITE_PATCH_SPEC
 
+BASELINE_MANIFEST = ('[workspace.dependencies]\n' + SOURCE_SPEC +
+                     '\n\n[patch.crates-io]\n' + SQLITE_PATCH_SPEC + '\n')
+
 
 class StagingTests(unittest.TestCase):
     def setUp(self):
@@ -15,7 +18,7 @@ class StagingTests(unittest.TestCase):
         self.stage=base/'stage'
         for p in (self.source,self.stage):
             (p/'codex-rs').mkdir(parents=True)
-            (p/'codex-rs/Cargo.toml').write_text('[workspace.dependencies]\n'+SOURCE_SPEC+'\n')
+            (p/'codex-rs/Cargo.toml').write_text(BASELINE_MANIFEST)
         subprocess.run(['git','init','-q',str(self.stage)],check=True)
         subprocess.run(['git','-C',str(self.stage),'add','.'],check=True)
         subprocess.run(['git','-C',str(self.stage),'-c','user.name=Test','-c','user.email=ci@example.invalid','commit','-qm','fixture'],check=True)
@@ -23,7 +26,7 @@ class StagingTests(unittest.TestCase):
 
     def test_candidate_modifies_only_isolated_stage(self):
         r=stage_manifest(self.source,self.stage,self.sha)
-        self.assertEqual((self.source/'codex-rs/Cargo.toml').read_text(),'[workspace.dependencies]\n'+SOURCE_SPEC+'\n')
+        self.assertEqual((self.source/'codex-rs/Cargo.toml').read_text(),BASELINE_MANIFEST)
         self.assertIn(CANDIDATE_SPEC,(self.stage/'codex-rs/Cargo.toml').read_text())
         self.assertTrue(r['preserved_e2ee_and_sqlite'])
         self.assertFalse(r['production_authorized'])
@@ -45,11 +48,8 @@ class StagingTests(unittest.TestCase):
 
 
     def test_isolated_upstream_sqlite_arm_removes_only_the_obsolete_patch(self):
-        patch = '[patch.crates-io]\n' + SQLITE_PATCH_SPEC + '\n'
         source = self.source/'codex-rs/Cargo.toml'
         stage = self.stage/'codex-rs/Cargo.toml'
-        source.write_text(source.read_text() + patch)
-        stage.write_text(stage.read_text() + patch)
         result = stage_manifest(
             self.source, self.stage, self.sha,
             sqlite_arm='use_upstream_sqlite',
@@ -63,9 +63,7 @@ class StagingTests(unittest.TestCase):
         self.assertFalse(result['production_authorized'])
 
     def test_retained_sqlite_arm_keeps_exact_source_patch(self):
-        patch = '[patch.crates-io]\n' + SQLITE_PATCH_SPEC + '\n'
         stage = self.stage/'codex-rs/Cargo.toml'
-        stage.write_text(stage.read_text()+patch)
         result = stage_manifest(self.source,self.stage,self.sha)
         self.assertTrue(result['legacy_sqlite_patch_preserved'])
         self.assertIn(SQLITE_PATCH_SPEC,stage.read_text())
@@ -73,17 +71,18 @@ class StagingTests(unittest.TestCase):
     def test_unregistered_or_missing_sqlite_patch_is_rejected(self):
         with self.assertRaisesRegex(ValueError,'unregistered'):
             stage_manifest(self.source,self.stage,self.sha,sqlite_arm='disable_e2ee')
+        stage = self.stage/'codex-rs/Cargo.toml'
+        stage.write_text(BASELINE_MANIFEST.replace(SQLITE_PATCH_SPEC + '\n',''))
         with self.assertRaisesRegex(ValueError,'not the exact pinned source'):
             stage_manifest(self.source,self.stage,self.sha,sqlite_arm='use_upstream_sqlite')
-        stage = self.stage/'codex-rs/Cargo.toml'
-        stage.write_text(stage.read_text()+'[patch.crates-io]\n'+
-                         SQLITE_PATCH_SPEC.replace('0.18.0','0.18.1')+'\n')
+        with self.assertRaisesRegex(ValueError,'not the exact pinned source'):
+            stage_manifest(self.source,self.stage,self.sha,sqlite_arm='retain_legacy_sqlite_patch')
+        stage.write_text(BASELINE_MANIFEST.replace(SQLITE_PATCH_SPEC,
+                         SQLITE_PATCH_SPEC.replace('0.18.0','0.18.1')))
         with self.assertRaisesRegex(ValueError,'not the exact pinned source'):
             stage_manifest(self.source,self.stage,self.sha,sqlite_arm='use_upstream_sqlite')
 
     def test_sqlite_arm_never_weakens_e2ee_or_touches_source_lock(self):
-        stage=self.stage/'codex-rs/Cargo.toml'
-        stage.write_text(stage.read_text()+'[patch.crates-io]\n'+SQLITE_PATCH_SPEC+'\n')
         lock=self.source/'codex-rs/Cargo.lock'
         lock.write_text('immutable original lock\n')
         result=stage_manifest(self.source,self.stage,self.sha,
