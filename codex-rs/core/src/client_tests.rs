@@ -871,15 +871,17 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
     let api_stream = futures::stream::iter([Ok(ResponseEvent::OutputItemDone(item))])
         .chain(futures::stream::pending());
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
-    );
+        super::ResponseEventMapContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
+    )
 
     let observed = stream
         .next()
@@ -924,15 +926,17 @@ async fn response_stream_records_last_model_feedback_ids() {
         }),
     ]);
     let (mut stream, _) = super::map_response_events(
-        Some("req-123".to_string()),
         api_stream,
-        test_session_telemetry(),
-        InferenceTraceAttempt::disabled(),
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
-    );
+        super::ResponseEventMapContext {
+            upstream_request_id: Some("req-123".to_string()),
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
+    )
 
     while stream.next().await.is_some() {}
 
@@ -1060,15 +1064,17 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
         message: SENTINEL.to_string(),
     })]);
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        provider,
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ true,
-        /*encoded_request_observer*/ None,
-    );
+        super::ResponseEventMapContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider: provider,
+            provider_attempt: None,
+            redact_provider_errors: true,
+            encoded_request_observer: None,
+        },
+    )
     let error = stream
         .next()
         .await
@@ -1244,15 +1250,17 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
     };
 
     let (stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
-    );
+        super::ResponseEventMapContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
+    )
 
     // Fill the mapper channel with non-terminal events, then yield one output
     // item. The mapper has observed that item and is blocked trying to send it
