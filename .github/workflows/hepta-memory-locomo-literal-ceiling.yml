@@ -1,0 +1,90 @@
+name: MemoryCell pinned LoCoMo answer-literal accessibility
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/locomo_literal_answer_ceiling.py"
+      - "scripts/memory_cell/test_locomo_literal_answer_ceiling.py"
+      - ".github/workflows/hepta-memory-locomo-literal-ceiling.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-locomo-literal-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  label-blind-original-source-contrast:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test fail-closed locked-source and literal-only contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-literal-audit
+          git rev-parse HEAD > /tmp/locomo-literal-audit/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/locomo-literal-audit/tested-tree.txt
+          python3 -m compileall -q scripts/memory_cell/locomo_literal_answer_ceiling.py scripts/memory_cell/test_locomo_literal_answer_ceiling.py
+          python3 -m unittest -v test_locomo_literal_answer_ceiling 2>&1 | tee /tmp/locomo-literal-audit/tests.log
+      - name: Fetch byte-pinned original source decisions and separately retained evaluation labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-literal-inputs
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/locomo-literal-inputs/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/locomo-literal-inputs/locomo-frozen-decisions-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/locomo-literal-inputs/locomo-evaluation-targets-38206328621.zip
+          printf '%s  %s\n' \
+            51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37 /tmp/locomo-literal-inputs/locomo-public-38206328621.zip \
+            3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097 /tmp/locomo-literal-inputs/locomo-frozen-decisions-38206328621.zip \
+            d09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978 /tmp/locomo-literal-inputs/locomo-evaluation-targets-38206328621.zip | sha256sum -c -
+      - name: Seal 32 original frozen source choices BEFORE opening held-out answer labels
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/locomo_literal_answer_ceiling.py \
+            --public-zips /tmp/locomo-literal-inputs \
+            --evaluation-zips /tmp/locomo-literal-inputs \
+            --output /tmp/locomo-literal-audit/locked-result \
+            2>&1 | tee /tmp/locomo-literal-audit/accounting.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          f = Path("/tmp/locomo-literal-audit/locked-result")
+          source = json.loads((f / "prelabel-source-plan.json").read_bytes())
+          result = json.loads((f / "report.json").read_bytes())
+          assert source["label_bytes_read_before_seal"] is False
+          assert result["original_source_plan_sha256"] == source["source_selection_sha256"]
+          assert len(result["rows"]) == 32 and result["reader_executions"] == 0
+          a = result["per_arm"]
+          assert a["lexical_k4"]["planned"] == a["lexical_k8"]["planned"] == 16
+          assert a["lexical_k4"]["weak_document_support_evaluable"] == 13
+          assert a["lexical_k8"]["weak_document_support_evaluable"] == 13
+          assert a["lexical_k4"]["full_weak_source_covered"] == 8
+          assert a["lexical_k8"]["full_weak_source_covered"] == 9
+          assert result["production_accepted"] is False
+          PY
+      - name: Preserve exact source and complete failure receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-literal-audit/source
+          cp scripts/memory_cell/locomo_literal_answer_ceiling.py \
+            scripts/memory_cell/test_locomo_literal_answer_ceiling.py \
+            scripts/memory_cell/locomo_ninearm_source_replay.py \
+            scripts/memory_cell/locomo_frozen_reader_pair.py \
+            .github/workflows/hepta-memory-locomo-literal-ceiling.yml \
+            /tmp/locomo-literal-audit/source/
+          (cd /tmp/locomo-literal-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-source-literal-accessibility
+          path: /tmp/locomo-literal-audit
+          if-no-files-found: error

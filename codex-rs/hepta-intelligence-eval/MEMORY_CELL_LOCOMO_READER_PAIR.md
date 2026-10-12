@@ -97,3 +97,34 @@ The actual historical Reader result can be evaluated only after its
 scored artifact exists and its SHA-256 is independently pinned. Missing
 actual results are neither projected as zero cost nor called success.
 `scale_out_permitted=false` and `production_accepted=false` throughout.
+
+## Byte-locked literal answer accessibility before committing more Reader compute
+
+Native document-ID support coverage is not sufficient evidence for a frozen
+Reader: the exact answer string may be outside the delivered source text, may
+require inference or paraphrase, or may be incorrectly annotated. The new
+*source-only* `locomo_literal_answer_ceiling.py` diagnoses this boundary on
+the identical 16 evaluation questions and the two original frozen lexical
+choices (`k4` and `k8`), **without another model call**.
+
+The auditor must first recover the two original, externally SHA256-pinned
+public-history and frozen-decision ZIPs, reproduce the registered source order,
+and persist a separately hash-bound 32-condition original selection plan.
+Only **after that file is on disk** may it open the third, separately pinned
+evaluation-target ZIP. It then reports source-ID support retrieval separately
+from **literal occurrence of the published answer in any originally eligible
+source**, any *selected* source and any *selected annotated support* source.
+
+These are lower-bound **surface text accessibility** observations: an exact
+literal match is not semantic relevance or entailment, and an absent literal
+does not mean the source is insufficient (paraphrase, reasoning and multi-hop
+questions may be answerable). Missing, unresolved or unanswerable targets have
+their own denominators and are never counted as successful literals. No answer
+string or original source bytes are exported in the final report; source-only
+selection IDs and cryptographic pins remain available for provenance review.
+
+This inexpensive control helps decide whether scarce BF16 model time should
+be spent on retrieval/source-window improvement versus Reader capability.
+It does not replace the original matched frozen Reader `k4`/`k8` run,
+choose a serving policy, validate citation semantics, or authorize a
+production rollout. `production_accepted=false` throughout.
