@@ -231,15 +231,21 @@ def main():
             raise ValueError("snapshot changed during execution")
         inputs, training = prepare_views(rows)
         sealed = fit_and_seal(inputs, training, torch.tensor([f.values for f in features]), config, args.output)
+        from development_serving_probe import probe_trained_head
+        held_out_requests = tuple(r for r, row in zip(requests, rows)
+                                  if row["split"] == "held_out")
+        serving_probe = probe_trained_head(args.output, sealed, held_out_requests, backend, config)
+        serving_probe_sha = write_once(args.output / "serving-probe.json", serving_probe)
         verify_loaded_safetensors(torch, backend.model, args.snapshot)
         if snapshot_digest(args.snapshot) != args.snapshot_sha256:
-            raise ValueError("snapshot changed during Head training")
+            raise ValueError("snapshot changed during Head training or serving probe")
         if hashlib.sha256(args.dataset.read_bytes()).hexdigest() != args.dataset_sha256:
             raise ValueError("dataset changed during experiment")
         import resource
-        report = {"schema": "hepta.stem.structural-run.v2", "source_sha": source,
+        report = {"schema": "hepta.stem.structural-run.v3", "source_sha": source,
             "dataset_sha256": args.dataset_sha256, "snapshot_sha256": args.snapshot_sha256,
-            "sealed": sealed, "benchmark": benchmark, "load_cpu_ns": load_cpu, "load_wall_ns": load_wall,
+            "sealed": sealed, "benchmark": benchmark,
+            "serving_probe_sha256": serving_probe_sha, "load_cpu_ns": load_cpu, "load_wall_ns": load_wall,
             "training_feature_backend_calls": sum(o.backend_calls for o in observations),
             "encoder_parameters": sum(p.numel() for p in backend.model.parameters()),
             "versions": versions, "cpu_ns": time.process_time_ns() - start_cpu,
