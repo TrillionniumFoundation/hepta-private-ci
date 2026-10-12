@@ -164,16 +164,17 @@ def main():
         invalid_history="quarantine-question",
     )
     corpus = PublicCorpus.from_native(benchmark)
+
     # The supplier is not evaluated until publish_and_seal has fsynced the
     # label-blind population. The reader job must receive ONLY /public.
     def original_targets():
         public = json.loads((args.output / "public/population.json").read_text())
         selected = {
-            row["question_id"]
-            for rows in public["splits"].values()
-            for row in rows
+            row["question_id"] for rows in public["splits"].values() for row in rows
         }
-        return {qid: value for qid, value in benchmark.targets.items() if qid in selected}
+        return {
+            qid: value for qid, value in benchmark.targets.items() if qid in selected
+        }
 
     receipt = seal_source_only_pilot(
         corpus,

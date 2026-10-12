@@ -68,14 +68,18 @@ class LoCoMoNativeFamilyPilotTests(unittest.TestCase):
         corpus, _ = synthetic_locomo()
         public, capacity = pilot.precommit_locomo(corpus, source_commit="a" * 40)
         self.assertEqual(capacity["actual_published_family_proxy_groups"], 10)
-        self.assertEqual(capacity["split_family_proxy_capacity"],
-                         {"train": 6, "selection": 2, "evaluation": 2})
+        self.assertEqual(
+            capacity["split_family_proxy_capacity"],
+            {"train": 6, "selection": 2, "evaluation": 2},
+        )
         self.assertEqual(len(public["splits"]["evaluation"]), 4)
         seen = {}
         for split, rows in public["splits"].items():
             for row in rows:
                 self.assertEqual(row["dataset"], "locomo")
-                self.assertEqual(seen.setdefault(row["family_proxy_digest"], split), split)
+                self.assertEqual(
+                    seen.setdefault(row["family_proxy_digest"], split), split
+                )
         self.assertEqual(len(seen), 10)
         self.assertEqual(public["source_sha256"], {"locomo": SOURCE_PINS["locomo"]})
         self.assertFalse(public["production_accepted"])
@@ -93,13 +97,16 @@ class LoCoMoNativeFamilyPilotTests(unittest.TestCase):
                 self.assertNotIn("VERY_PRIVATE", json.dumps(public))
                 selected = {
                     row["question_id"]
-                    for rows in public["splits"].values() for row in rows
+                    for rows in public["splits"].values()
+                    for row in rows
                 }
                 return {qid: labels[qid] for qid in selected}
 
             receipt = pilot.seal_source_only_pilot(
-                corpus, source_commit="c" * 40,
-                output=output, target_supplier=supplier,
+                corpus,
+                source_commit="c" * 40,
+                output=output,
+                target_supplier=supplier,
             )
             self.assertEqual(len(opened), 1)
             self.assertEqual(receipt["question_count"], 20)
@@ -109,8 +116,10 @@ class LoCoMoNativeFamilyPilotTests(unittest.TestCase):
             self.assertTrue((Path(tmp) / "pilot-capacity.json").exists())
             with self.assertRaises(FileExistsError):
                 pilot.seal_source_only_pilot(
-                    corpus, source_commit="c" * 40,
-                    output=output, target_supplier=supplier,
+                    corpus,
+                    source_commit="c" * 40,
+                    output=output,
+                    target_supplier=supplier,
                 )
 
     def test_shortfall_refused_without_opening_targets(self):
@@ -119,9 +128,12 @@ class LoCoMoNativeFamilyPilotTests(unittest.TestCase):
             output = Path(tmp) / "pilot"
             with self.assertRaises(ValueError):
                 pilot.seal_source_only_pilot(
-                    corpus, source_commit="c" * 40,
+                    corpus,
+                    source_commit="c" * 40,
                     output=output,
-                    target_supplier=lambda: self.fail("gold opened before source admission"),
+                    target_supplier=lambda: self.fail(
+                        "gold opened before source admission"
+                    ),
                 )
             self.assertFalse(output.exists())
 
@@ -133,8 +145,9 @@ class LoCoMoNativeFamilyPilotTests(unittest.TestCase):
     def test_source_order_and_labels_cannot_change_public_cut(self):
         corpus, _ = synthetic_locomo()
         public, _ = pilot.precommit_locomo(corpus, source_commit="e" * 40)
-        other = replace(corpus, documents=corpus.documents[::-1],
-                        questions=corpus.questions[::-1])
+        other = replace(
+            corpus, documents=corpus.documents[::-1], questions=corpus.questions[::-1]
+        )
         again, _ = pilot.precommit_locomo(other, source_commit="e" * 40)
         self.assertEqual(pilot.canonical(public), pilot.canonical(again))
 
@@ -153,9 +166,11 @@ class LoCoMoNativeFamilyPilotTests(unittest.TestCase):
 
     def test_unregistered_budget_or_duplicate_questions_rejected(self):
         corpus, _ = synthetic_locomo()
-        for limits in (dict(train=0, selection=64, evaluation=64),
-                       dict(train=True, selection=64, evaluation=64),
-                       dict(train=128, selection=64)):
+        for limits in (
+            dict(train=0, selection=64, evaluation=64),
+            dict(train=True, selection=64, evaluation=64),
+            dict(train=128, selection=64),
+        ):
             with self.assertRaises(ValueError):
                 pilot.precommit_locomo(corpus, source_commit="f" * 40, limits=limits)
         duplicate = replace(corpus, questions=corpus.questions + corpus.questions[:1])
@@ -165,10 +180,13 @@ class LoCoMoNativeFamilyPilotTests(unittest.TestCase):
     def test_auditor_cannot_relabel_pilot_as_future_or_production(self):
         corpus, _ = synthetic_locomo()
         public, capacity = pilot.precommit_locomo(corpus, source_commit="1" * 40)
-        for label in ("model_input_contains_answers", "production_accepted",
-                      "published_benchmarks_are_future_observations",
-                      "independent_source_authenticity_verified",
-                      "independent_semantic_judgement"):
+        for label in (
+            "model_input_contains_answers",
+            "production_accepted",
+            "published_benchmarks_are_future_observations",
+            "independent_source_authenticity_verified",
+            "independent_semantic_judgement",
+        ):
             self.assertIs(public[label], False)
         self.assertTrue(capacity["original_two_corpus_gate_not_overridden"])
         self.assertFalse(capacity["quarantined_data_admitted"])

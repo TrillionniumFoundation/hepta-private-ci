@@ -26,8 +26,13 @@ class PairwiseShadowTests(unittest.TestCase):
         null_weight = original.null.weight.detach().clone()
         null_bias = original.null.bias.detach().clone()
         receipt = fit_pairwise_shadow(
-            original, (self.row,), self.cut, revoked=set(),
-            steps=128, lr=0.03, margin=1.0,
+            original,
+            (self.row,),
+            self.cut,
+            revoked=set(),
+            steps=128,
+            lr=0.03,
+            margin=1.0,
         )
         self.assertGreater(receipt["tensor_delta_squared_norm"], 0)
         self.assertLess(receipt["last_loss"], receipt["first_loss"])
@@ -45,7 +50,11 @@ class PairwiseShadowTests(unittest.TestCase):
         with torch.no_grad():
             self.assertFalse(torch.is_grad_enabled())
             receipt = fit_pairwise_shadow(
-                head, (self.row,), self.cut, revoked=set(), steps=64,
+                head,
+                (self.row,),
+                self.cut,
+                revoked=set(),
+                steps=64,
             )
             self.assertFalse(torch.is_grad_enabled())
         self.assertGreater(receipt["tensor_delta_squared_norm"], 0)
@@ -57,7 +66,11 @@ class PairwiseShadowTests(unittest.TestCase):
         with torch.inference_mode():
             with self.assertRaisesRegex(ValueError, "pairwise shadow"):
                 fit_pairwise_shadow(
-                    head, (self.row,), self.cut, revoked=set(), steps=16,
+                    head,
+                    (self.row,),
+                    self.cut,
+                    revoked=set(),
+                    steps=16,
                 )
         self.assertEqual(head.export(), before)
         self.assertFalse(head.quarantined)
@@ -66,12 +79,15 @@ class PairwiseShadowTests(unittest.TestCase):
         for positives in ((), (0, 1)):
             head = self.head()
             before = head.export()
-            with self.subTest(positives=positives), self.assertRaisesRegex(
-                ValueError, "no contrastive TRAIN pair"
+            with (
+                self.subTest(positives=positives),
+                self.assertRaisesRegex(ValueError, "no contrastive TRAIN pair"),
             ):
                 fit_pairwise_shadow(
-                    head, (Supervision(features(), positives),),
-                    self.cut, revoked=set(),
+                    head,
+                    (Supervision(features(), positives),),
+                    self.cut,
+                    revoked=set(),
                 )
             self.assertEqual(head.export(), before)
             self.assertFalse(head.quarantined)
@@ -80,13 +96,19 @@ class PairwiseShadowTests(unittest.TestCase):
         head = self.head()
         second = Supervision(features("second"), ())
         receipt = fit_pairwise_shadow(
-            head, (self.row, second), self.cut, revoked=set(), steps=24,
+            head,
+            (self.row, second),
+            self.cut,
+            revoked=set(),
+            steps=24,
         )
         self.assertEqual(receipt["admitted_training_rows"], 2)
         self.assertEqual(receipt["distinct_eligible_contrastive_questions"], 1)
         self.assertEqual(receipt["pair_ineligible_weak_label_questions"], 1)
         self.assertEqual(receipt["pair_ineligible_question_ids"], ["second"])
-        self.assertFalse(receipt["weak_distractors_not_verified_hard_negatives"] is False)
+        self.assertFalse(
+            receipt["weak_distractors_not_verified_hard_negatives"] is False
+        )
 
     def test_heldout_duplication_invalid_label_or_revoked_root_preflight(self):
         for mode in ("heldout", "duplicate", "positive", "revoked", "encoder"):
@@ -105,7 +127,11 @@ class PairwiseShadowTests(unittest.TestCase):
                 rows = (Supervision(features(identity="different"), (0,)),)
             with self.subTest(mode=mode), self.assertRaises(ValueError):
                 fit_pairwise_shadow(
-                    head, rows, self.cut, revoked=revoked, steps=8,
+                    head,
+                    rows,
+                    self.cut,
+                    revoked=revoked,
+                    steps=8,
                 )
             self.assertEqual(head.export(), before)
             self.assertFalse(head.quarantined)
@@ -113,14 +139,21 @@ class PairwiseShadowTests(unittest.TestCase):
     def test_continual_head_artifact_reload_preserves_nonmomentum_counters(self):
         head = self.head()
         initial = fit_pairwise_shadow(
-            head, (self.row,), self.cut, revoked=set(), steps=16,
+            head,
+            (self.row,),
+            self.cut,
+            revoked=set(),
+            steps=16,
         )
         saved = head.export()
         restored = restore(head)
         self.assertEqual(restored.export(), saved)
         next_receipt = fit_pairwise_shadow(
-            restored, (self.row, Supervision(features("second"), (0,))),
-            self.cut, revoked=set(), steps=16,
+            restored,
+            (self.row, Supervision(features("second"), (0,))),
+            self.cut,
+            revoked=set(),
+            steps=16,
         )
         self.assertEqual(next_receipt["prior_cumulative_steps"], 16)
         self.assertEqual(next_receipt["cumulative_steps"], 32)
@@ -133,28 +166,43 @@ class PairwiseShadowTests(unittest.TestCase):
         shadow = self.head()
         baseline = control.export()
         fit_pairwise_shadow(
-            shadow, (self.row,), self.cut, revoked=set(), steps=24,
+            shadow,
+            (self.row,),
+            self.cut,
+            revoked=set(),
+            steps=24,
         )
         self.assertEqual(control.export(), baseline)
         self.assertNotEqual(shadow.export(), baseline)
 
     def test_invalid_hyperparameters_and_prototype_reject(self):
         for kwargs in (
-            {"steps": 0}, {"steps": 2049}, {"margin": -1},
-            {"margin": 9}, {"lr": 0}, {"lr": float("nan")},
+            {"steps": 0},
+            {"steps": 2049},
+            {"margin": -1},
+            {"margin": 9},
+            {"lr": 0},
+            {"lr": float("nan")},
             {"pair_ceiling": 0},
         ):
             head = self.head()
             before = head.export()
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
                 fit_pairwise_shadow(
-                    head, (self.row,), self.cut, revoked=set(), **kwargs,
+                    head,
+                    (self.row,),
+                    self.cut,
+                    revoked=set(),
+                    **kwargs,
                 )
             self.assertEqual(head.export(), before)
         prototype = self.head("prototype")
         with self.assertRaises(ValueError):
             fit_pairwise_shadow(
-                prototype, (self.row,), self.cut, revoked=set(),
+                prototype,
+                (self.row,),
+                self.cut,
+                revoked=set(),
             )
 
 

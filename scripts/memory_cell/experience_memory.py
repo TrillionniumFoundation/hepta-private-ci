@@ -232,7 +232,9 @@ class ExperienceReader(ReferenceReader):
                 revoked=revoked,
             )
             if not pairs:
-                raise ValueError("source binding cannot train without true hard negatives")
+                raise ValueError(
+                    "source binding cannot train without true hard negatives"
+                )
             selected = sorted(pairs)
             active_examples = tuple(examples[i] for i in selected)
             binding_pairs = [pairs[i] for i in selected]

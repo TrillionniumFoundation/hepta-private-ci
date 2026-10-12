@@ -31,14 +31,27 @@ class BindingWriterTests(unittest.TestCase):
         self.assertEqual(receipt["steps"], 4)
         self.assertEqual(receipt["binding_receipt"]["forward_token_charge_factor"], 2)
         self.assertEqual(len(receipt["binding_receipt"]["training_pairs"]), 2)
-        self.assertEqual(receipt["input_tokens"], 2 * receipt["write_schedule"]["planned_input_tokens"])
-        self.assertEqual(receipt["supervised_tokens"], 2 * receipt["write_schedule"]["planned_supervised_tokens"])
-        self.assertEqual(receipt["actual_projection_positions"], receipt["input_tokens"])
+        self.assertEqual(
+            receipt["input_tokens"],
+            2 * receipt["write_schedule"]["planned_input_tokens"],
+        )
+        self.assertEqual(
+            receipt["supervised_tokens"],
+            2 * receipt["write_schedule"]["planned_supervised_tokens"],
+        )
+        self.assertEqual(
+            receipt["actual_projection_positions"], receipt["input_tokens"]
+        )
         self.assertLessEqual(receipt["input_tokens"], receipt["token_ceiling"])
         self.assertTrue(receipt["base_unchanged"])
         self.assertEqual(frozen_digest(writer.model), writer.base_digest)
         self.assertEqual(writer.roots, {d.root for d in docs})
-        self.assertTrue(all(not p.requires_grad and p.grad is None for p in writer.model.parameters()))
+        self.assertTrue(
+            all(
+                not p.requires_grad and p.grad is None
+                for p in writer.model.parameters()
+            )
+        )
 
     def test_zero_admitted_negative_fails_without_a_fake_null(self):
         writer = reader()

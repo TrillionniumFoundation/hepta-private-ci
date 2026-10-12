@@ -53,10 +53,13 @@ def fixture():
                             receipt=dict(
                                 generator_identity="pinned-reader",
                                 generator_profile="pinned-reader-prompt",
-                            delivered_evidence=[dict(
-                                original_id="source-"+qid,
-                                label="E1", excerpt="fixture source"
-                            )],
+                                delivered_evidence=[
+                                    dict(
+                                        original_id="source-" + qid,
+                                        label="E1",
+                                        excerpt="fixture source",
+                                    )
+                                ],
                                 observable_query=dict(
                                     identity=qid,
                                     content="Fixture question.",
@@ -335,9 +338,12 @@ class GeneralizationBridgeTests(unittest.TestCase):
     def test_identical_top1_requires_identical_delivered_evidence(self):
         plan, learning, scored, targets = fixture()
         learned = next(
-            row for row in scored
-            if row["stage"] == 48 and row["phase"] == "test"
-            and row["question_id"] == "test-0" and row["arm"] == "gated"
+            row
+            for row in scored
+            if row["stage"] == 48
+            and row["phase"] == "test"
+            and row["question_id"] == "test-0"
+            and row["arm"] == "gated"
         )
         learned["receipt"]["delivered_evidence"][0]["excerpt"] = "different source"
         with self.assertRaisesRegex(ValueError, "unchanged top-1"):
@@ -346,9 +352,12 @@ class GeneralizationBridgeTests(unittest.TestCase):
     def test_changed_selection_allows_distinct_bound_reader_sources(self):
         plan, learning, scored, targets = fixture()
         learned = next(
-            row for row in scored
-            if row["stage"] == 48 and row["phase"] == "test"
-            and row["question_id"] == "test-0" and row["arm"] == "gated"
+            row
+            for row in scored
+            if row["stage"] == 48
+            and row["phase"] == "test"
+            and row["question_id"] == "test-0"
+            and row["arm"] == "gated"
         )
         learned["selected"] = 1
         learned["receipt"]["delivered_evidence"][0]["original_id"] = "other-source"
