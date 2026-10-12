@@ -302,7 +302,7 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitArtifactCasOwnerV1<A> {
             || record.intent != *intent
             || record.parent_digest != self.plan.parent_artifact_digest
             || record.child_digest != self.plan.child_artifact_digest
-            || record.sequence != 1
+            || record.sequence != 2
             || record.object_bytes == 0
             || canonical_json(&record)? != bytes
         {
@@ -371,7 +371,7 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1
             parent_digest: self.plan.parent_artifact_digest.clone(),
             child_digest: self.plan.child_artifact_digest.clone(),
             object_bytes: size,
-            sequence: self.frontier()?,
+            sequence: self.frontier()?.checked_add(1).ok_or(CellSplitArtifactCasErrorV1::Invalid)?,
         };
         write_private_new(&self.commit_path(intent), &canonical_json(&record)?)?;
         Ok(())
@@ -403,13 +403,27 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1
         self.authority
             .verify_current_authority(&self.plan, intent)
             .map_err(|e| CellSplitArtifactCasErrorV1::Denied(e.to_string()))?;
-        Ok(effect.owner_sequence == self.frontier()?
+        Ok(effect.owner_sequence == self.current_sequence_for_intent(intent)?
             && record.object_bytes == self.object_size()?
             && effect.owner_receipt_bytes == bytes)
     }
 
     fn current_sequence(&mut self) -> Result<u64, Self::Error> {
         self.frontier()
+    }
+
+    fn current_sequence_for_intent(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<u64, Self::Error> {
+        let predecessor = self.frontier()?;
+        // Only the verified, intent-bound create-only commit marker advances
+        // the CAS frontier. A copied or orphaned object is not a commit.
+        if self.committed_record(intent)?.is_some() {
+            predecessor.checked_add(1).ok_or(CellSplitArtifactCasErrorV1::Invalid)
+        } else {
+            Ok(predecessor)
+        }
     }
 }
 
