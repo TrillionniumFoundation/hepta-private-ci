@@ -398,3 +398,88 @@ fn whole_root_restore_of_signed_minimum_is_not_external_anti_rollback_evidence()
         &signer.verifying_key(),
     ).expect("local signature alone cannot detect whole-root rollback");
 }
+
+
+#[test]
+fn monotonic_frontier_rejects_validly_signed_old_checkpoint_and_replayed_challenge() {
+    use ed25519_dalek::Signer as _;
+
+    let expected = subject();
+    let signer = SigningKey::from_bytes(&[95; 32]);
+    let store_record_digest = "cc".repeat(32);
+    let nonce = "ee".repeat(32);
+    let mut proof = CellSplitSupervisorMonotonicFrontierV1 {
+        schema: CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1.into(),
+        journal_domain_id: expected.journal_domain_id.clone(),
+        journal_authority_epoch: expected.journal_authority_epoch,
+        journal_revision: expected.journal_revision,
+        minimum_checkpoint_digest: expected.minimum_checkpoint_digest.clone(),
+        original_store_record_digest: store_record_digest.clone(),
+        challenge_nonce: nonce.clone(),
+        signature_bytes: Vec::new(),
+    };
+    let seal = |proof: &mut CellSplitSupervisorMonotonicFrontierV1| {
+        proof.signature_bytes = signer
+            .sign(
+                &cell_split_supervisor_monotonic_frontier_signing_payload_v1(proof)
+                    .expect("monotonic payload"),
+            )
+            .to_bytes()
+            .to_vec();
+    };
+    seal(&mut proof);
+    verify_cell_split_supervisor_monotonic_frontier_v1(
+        &expected,
+        &store_record_digest,
+        &nonce,
+        &proof,
+        &signer.verifying_key(),
+    )
+    .expect("fresh independent frontier matches durable minimum");
+
+    let mut rolled_back = proof.clone();
+    rolled_back.journal_revision += 1;
+    seal(&mut rolled_back);
+    assert!(
+        verify_cell_split_supervisor_monotonic_frontier_v1(
+            &expected,
+            &store_record_digest,
+            &nonce,
+            &rolled_back,
+            &signer.verifying_key(),
+        )
+        .is_err(),
+        "a current high-water at revision 11 rejects a restored revision 10 minimum"
+    );
+
+    let mut unrelated = proof.clone();
+    unrelated.original_store_record_digest = "dd".repeat(32);
+    seal(&mut unrelated);
+    assert!(
+        verify_cell_split_supervisor_monotonic_frontier_v1(
+            &expected,
+            &store_record_digest,
+            &nonce,
+            &unrelated,
+            &signer.verifying_key(),
+        )
+        .is_err(),
+        "a separately valid signature for another minimum record cannot be adopted"
+    );
+
+    assert!(verify_cell_split_supervisor_monotonic_frontier_v1(
+        &expected,
+        &store_record_digest,
+        &"ff".repeat(32),
+        &proof,
+        &signer.verifying_key(),
+    ).is_err(), "a signed old nonce cannot be replayed");
+
+    assert!(verify_cell_split_supervisor_monotonic_frontier_v1(
+        &expected,
+        &store_record_digest,
+        &nonce,
+        &proof,
+        &SigningKey::from_bytes(&[96; 32]).verifying_key(),
+    ).is_err(), "the minimum writer may not self-select the monotonic key");
+}
