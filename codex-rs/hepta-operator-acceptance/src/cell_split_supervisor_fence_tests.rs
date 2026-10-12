@@ -320,6 +320,25 @@ fn owner(root: &Path, allowed: Arc<AtomicBool>) -> CellSplitSupervisorFenceOwner
     .expect("verified frozen Supervisor")
 }
 
+#[cfg(unix)]
+#[test]
+fn missing_original_supervisor_writer_lock_never_creates_second_writer() {
+    let fixture = root();
+    let allowed = Arc::new(AtomicBool::new(true));
+    let _original = owner(fixture.path(), allowed.clone());
+    let lock = fixture.path().join(crate::durable::SIDECAR_LOCK_FILE);
+    fs::remove_file(&lock).expect("unlink original writer lock");
+    let reopened = CellSplitSupervisorFenceOwnerV1::open(
+        fixture.path(),
+        plan(),
+        binding(),
+        DiskSupervisor::new(fixture.path().to_path_buf(), allowed),
+    );
+    assert!(matches!(reopened, Err(CellSplitSupervisorFenceErrorV1::Durable(_))));
+    assert!(!lock.exists(), "must not mint a replacement writer lock");
+    assert!(fixture.path().join(FROZEN).exists());
+}
+
 #[test]
 fn requires_closed_old_writer_and_current_route_before_finalizing() {
     let root = root();
