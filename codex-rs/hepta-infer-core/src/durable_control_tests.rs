@@ -476,12 +476,73 @@ fn malformed_legacy_submit_and_short_reservation_wal_fail_closed_on_replay() {
     fs::remove_file(&short).unwrap();
 }
 
+
+#[test]
+fn settlement_refuses_over_reserved_units_before_wal_append() {
+    for terminal_observed in [false, true] {
+        let path = path(if terminal_observed {
+            "over-unit-terminal"
+        } else {
+            "over-unit-indeterminate"
+        });
+        let mut owner = DurableInferenceControl::open(&path, 32).unwrap();
+        owner.submit(100, request()).unwrap();
+        owner.reserve(100, "request.1", 1, reservation()).unwrap();
+        owner.assign("request.1", 2, assignment()).unwrap();
+        owner
+            .claim_dispatch(100, "request.1", 3, "reservation.1", &assignment())
+            .unwrap();
+        let mut observed = TerminalObservation {
+            request_id: "request.1".to_string(),
+            reservation_id: "reservation.1".to_string(),
+            worker_id: "worker.1".to_string(),
+            worker_generation: 2,
+            model_digest: "1".repeat(64),
+            payload_digest: "2".repeat(64),
+            terminal_observed,
+            terminal_status: terminal_observed.then_some(RequestState::Completed),
+            output_digest: terminal_observed.then(|| "5".repeat(64)),
+            consumed_tokens: 1,
+            usage_units: 101,
+        };
+        let bytes_before = fs::metadata(&path).unwrap().len();
+        assert_eq!(
+            owner.settle("request.1", 4, "6".repeat(64), observed.clone()),
+            Err(Error::UsageExceeded)
+        );
+        assert_eq!(fs::metadata(&path).unwrap().len(), bytes_before);
+        assert_eq!(owner.get("request.1").unwrap().revision, 4);
+        assert_eq!(
+            owner.get("request.1").unwrap().state,
+            RequestState::Dispatching
+        );
+        // The exact reserved upper bound is still allowed and survives reopen.
+        observed.usage_units = 100;
+        owner.settle("request.1", 4, "7".repeat(64), observed).unwrap();
+        assert_eq!(owner.get("request.1").unwrap().usage_units, 100);
+        assert_eq!(
+            owner.get("request.1").unwrap().state,
+            if terminal_observed {
+                RequestState::Completed
+            } else {
+                RequestState::Indeterminate
+            }
+        );
+        drop(owner);
+        let recovered = DurableInferenceControl::open(&path, 32).unwrap();
+        assert_eq!(recovered.get("request.1").unwrap().usage_units, 100);
+        drop(recovered);
+        fs::remove_file(path).unwrap();
+    }
+}
+
 #[test]
 fn forged_legacy_terminal_wal_cannot_relabel_or_overcharge_on_recovery() {
-    for (case, observed_request, tokens, terminal, status, output) in [
+    for (case, observed_request, tokens, units, terminal, status, output) in [
         (
             "wrong-request",
             "request.2",
+            1,
             1,
             "1",
             "completed",
@@ -491,13 +552,33 @@ fn forged_legacy_terminal_wal_cannot_relabel_or_overcharge_on_recovery() {
             "over-quota",
             "request.1",
             129,
+            1,
             "1",
             "completed",
             "5".repeat(64),
         ),
         (
+            "over-billed-units",
+            "request.1",
+            1,
+            101,
+            "1",
+            "completed",
+            "5".repeat(64),
+        ),
+        (
+            "over-billed-unknown",
+            "request.1",
+            1,
+            101,
+            "0",
+            "none",
+            "none".to_string(),
+        ),
+        (
             "invalid-terminal",
             "request.1",
+            1,
             1,
             "0",
             "completed",
@@ -506,6 +587,7 @@ fn forged_legacy_terminal_wal_cannot_relabel_or_overcharge_on_recovery() {
         (
             "missing-output",
             "request.1",
+            1,
             1,
             "1",
             "completed",
@@ -520,7 +602,7 @@ fn forged_legacy_terminal_wal_cannot_relabel_or_overcharge_on_recovery() {
         drop(owner);
 
         let line = format!(
-            "settle|request.1|3|{}|reservation.1|worker.1|2|{}|{}|{terminal}|{status}|{output}|{tokens}|1|{observed_request}\n",
+            "settle|request.1|3|{}|reservation.1|worker.1|2|{}|{}|{terminal}|{status}|{output}|{tokens}|{units}|{observed_request}\n",
             "6".repeat(64),
             "1".repeat(64),
             "2".repeat(64)

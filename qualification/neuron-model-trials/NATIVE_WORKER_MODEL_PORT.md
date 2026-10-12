@@ -156,6 +156,21 @@ that a committed claim proves the Worker actually ran. Tests use a fixture
 NeuronFeatureDriver, real Worker/ModelPort, and the real on-disk control WAL;
 there are no real Laya weights or selected production Cells.
 
+
+## Independent reservation resource-unit accounting
+
+The native legacy inference.control journal now rejects a terminal outcome
+whose observed usage_units exceeds the durable Reservation.quota_units, in
+addition to checking consumed_tokens against maximum_tokens. The same helper
+checks live settlements **before fsync** and all recovered historical WAL
+events. A terminal outcome marked unknown/Indeterminate is not exempt.
+Rejected settlement does not modify the WAL or advance its revision.
+
+Tests exercise full-fsynced Dispatching records with over-budget terminal
+and unknown observations, legal exact-budget settlements and clean reopen,
+and externally appended WAL records with forged over-budget resource units.
+This is a quota-consistency gate, not an independent physical metering proof.
+
 ## Global durable reservation uniqueness (legacy inference.control)
 
 The same durable inference.control owner now keeps a bounded index mapping each

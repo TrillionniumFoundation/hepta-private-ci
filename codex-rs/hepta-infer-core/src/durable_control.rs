@@ -824,7 +824,11 @@ fn validate_terminal_for_record(
     {
         return Err(Error::AssignmentMismatch);
     }
-    if observation.consumed_tokens > reservation.maximum_tokens {
+    // The token and resource-unit reservations are separate ceilings.
+    // This is shared by live settlement and crash-recovered WAL replay.
+    if observation.consumed_tokens > reservation.maximum_tokens
+        || observation.usage_units > reservation.quota_units
+    {
         return Err(Error::UsageExceeded);
     }
     if observation.terminal_observed {
