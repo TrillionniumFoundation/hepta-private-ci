@@ -84,6 +84,28 @@ class WorkflowContextContractTests(unittest.TestCase):
         self.assertIn("git worktree remove --force", diagnostic)
         self.assertNotIn("continue-on-error: true", diagnostic)
 
+    def test_isolated_sdk_compile_does_not_bypass_security_or_touch_hepta_lock(self):
+        # Compiling a patched *upstream source candidate* is the next strict
+        # prerequisite, not evidence of a safe Hepta 0.18 -> 0.19 migration.
+        start = self.source.index("  minimal-backport-native-compile:")
+        end = self.source.index("  disposable-cargo-resolution-probe:", start)
+        candidate = self.source[start:end]
+        self.assertIn("needs: minimal-anymap-backport-source-probe", candidate)
+        self.assertIn("disposable_backport_probe.py", candidate)
+        self.assertIn("rustup toolchain install 1.96.0", candidate)
+        self.assertIn("cargo +1.96.0 metadata", candidate)
+        self.assertIn("assert not select(\"anymap2\")", candidate)
+        self.assertIn("cargo +1.96.0 check --locked", candidate)
+        self.assertIn("--features e2e-encryption,sqlite", candidate)
+        self.assertIn('"hepta_source_modified": False', candidate)
+        self.assertIn('"hepta_cargo_lock_updated": False', candidate)
+        self.assertIn('"cargo_deny_verified": False', candidate)
+        self.assertIn('"production_authorized": False', candidate)
+        self.assertIn("git diff --exit-code", candidate)
+        self.assertNotIn("continue-on-error: true", candidate)
+        self.assertNotIn("cargo update --manifest-path codex-rs/Cargo.toml", candidate)
+        self.assertNotIn('"production_authorized": True', candidate)
+
     def test_source_root_lockfile_remains_outside_repin_command(self):
         start = self.source.index("  disposable-cargo-resolution-probe:")
         diagnostic = self.source[start:]
