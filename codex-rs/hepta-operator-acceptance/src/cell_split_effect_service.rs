@@ -146,6 +146,14 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                         "effect changed before signed execute acknowledgement",
                     ));
                 }
+                // Final-use may be revoked while the effect owner performs
+                // durable IO. A grant checked before commit is not authority
+                // to acknowledge success after its independent frontier moves.
+                // Do not undo an ambiguous committed effect here: withhold
+                // the signature and require read-only reconciliation.
+                self.backend
+                    .authorize_execute(&request.intent)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 (Some(self.sign_receipt(&request.intent, &committed)?), None)
             }
             CellSplitEffectRpcActionV1::ReadBack => {
