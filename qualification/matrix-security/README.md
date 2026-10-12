@@ -1,10 +1,46 @@
 # Matrix SDK P0 security migration: fail-closed prerequisites
 
-This is **not a remediation** of the open Cargo advisory failures; it is a
-read-only guard against false remediation. It does not grant production access,
-ignore advisories, reduce `cargo-deny` coverage, disable end-to-end encryption,
-remove Matrix support, or change a trust root. The existing global `cargo-deny`
-remains a separate mandatory failure until the actual dependency graph is safe.
+This audit began as a **read-only prerequisite guard**, and the historical
+research branch still contains unsafe Matrix 0.18 dependencies. The separate
+integration Draft PR now contains a **staged Matrix security candidate**, not
+production authorization. No check here ignores advisories, reduces cargo-deny
+coverage, disables end-to-end encryption, drops Matrix, or changes a trust root.
+Static acceptance must NEVER substitute for an actual exact-SHA cargo-deny pass,
+real E2EE/WAL conformance and the complete blocking CI.
+
+## Current integration candidate (separate from research PR #1495)
+
+This document is shared by the security and Stem qualification tracks; the
+following observations describe the actual **integration** Git branch
+`integration/stem-matrix-security-20261012`, not `main` or PR #1495.
+
+- `Cargo.toml` explicitly pins `matrix-sdk =0.19.1` with both
+  `e2e-encryption` and `sqlite`. The checked-in reviewed source candidate is
+  `third_party/matrix-sdk-0.19.1`, based on upstream 0.19.1 with an AnyMap3
+  migration; it is NOT the unmodified crates.io release.
+- This branch's actual Cargo.lock resolves SDK/Base/Crypto/SQLite **0.19.1**,
+  `anymap3 1.1.0`, `async-trait 0.1.92`, `rusqlite 0.40.2` and
+  `libsqlite3-sys 0.38.2`. It contains **no `anymap2` package**. The
+  Rust toolchain is pinned to **1.96.0**.
+- The separate integrated Matrix prerequisite hard gate and Stem L1 passed
+  on exact SHA `a57b378747b33ac849233c3a54530cd80eb7c6f4`.
+  Those are source/qualification contracts, NOT authenticated E2EE or a
+  substitute for exact-SHA `cargo-deny`.
+- The static security audit intentionally emits
+  `static_graph_advisory_candidates_clean` only as a preliminary finding and
+  `security_advisories_resolved=false`,
+  `cargo_deny_verified=false`, `matrix_e2ee_verified=false`,
+  `sqlite_wal_recovery_verified=false` and
+  `production_authorized=false`, including when the static graph passes.
+- Mandatory remaining gates: unchanged `cargo deny check --locked`, actual
+  crypto/to-device and missing-cross-signing-key tests, SQLite WAL crash
+  restart/recovery, full Rust/Bazel/multi-platform CI, and a complete
+  review of the integration PR's very large combined diff. No model or
+  production promotion follows from structural readiness.
+
+The evidence below is retained as a **historical audit of the older research
+branch**, which still pins 0.18. Do not read it as describing this integrated
+candidate's current lockfile.
 
 ## Confirmed evidence on the 2026-10-12 research HEAD
 
@@ -51,7 +87,9 @@ python3 qualification/matrix-security/matrix_dependency_gate.py --root . --requi
 python3 -m unittest discover -v -s qualification/matrix-security -p 'test_*.py'
 ```
 
-`--require-safe` deliberately exits nonzero on the current lockfile. Even when
+`--require-safe` exits nonzero on the older research lockfile; the staged
+integration candidate can pass this static prerequisite without certifying
+security advisories, production runtime correctness or cargo-deny. Even when
 static prerequisites eventually pass, the resulting report will continue to set
 `cargo_deny_verified=false`, `matrix_e2ee_verified=false`,
 `sqlite_wal_recovery_verified=false`, and `production_authorized=false`;
