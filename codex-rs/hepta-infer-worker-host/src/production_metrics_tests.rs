@@ -161,3 +161,31 @@ fn native_production_bootstrap_denies_hardlinked_metrics_without_touching_wal() 
     assert!(reopened.native_record("request.1").is_some());
     assert!(reopened.production_metrics_ready());
 }
+
+#[cfg(unix)]
+#[test]
+fn native_startup_denies_directory_sync_failure_before_admitting_effects() {
+    let dir = tempfile::tempdir().expect("private journal directory");
+    let journal = dir.path().join("native-control.wal");
+    let metrics = production_metrics_journal_path_v1(&journal).expect("metrics path");
+    let mut barrier_called = false;
+    let error = open_native_control_with_directory_barrier_v1(&journal, 32, |path| {
+        barrier_called = true;
+        assert_eq!(path, journal.as_path());
+        assert!(path.exists(), "control WAL must be created before directory fsync");
+        assert!(
+            metrics.exists(),
+            "Evidence journal must be created before directory fsync"
+        );
+        Err(io::Error::other("injected parent fsync failure"))
+    });
+    assert!(error.is_err(), "startup must fail closed on sync failure");
+    assert!(barrier_called);
+    // A failed bootstrap releases both exclusive locks without forging a
+    // successful journal record or discarding either journal.
+    assert_eq!(std::fs::metadata(&journal).expect("control WAL").len(), 0);
+    let reopened = open_metrics_bound_native_control_v1(&journal, 32)
+        .expect("locks released after failed directory fsync");
+    assert!(reopened.production_metrics_ready());
+    assert_eq!(std::fs::metadata(&metrics).expect("metrics").len(), 0);
+}
