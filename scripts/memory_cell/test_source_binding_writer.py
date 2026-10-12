@@ -67,12 +67,64 @@ class BindingWriterTests(unittest.TestCase):
             )
         self.assertEqual(writer.roots, set())
 
+    def test_sparse_and_full_paired_writer_update_match_with_equal_charges(self):
+        from peft import get_peft_model_state_dict
+
+        writer_full, writer_sparse = reader(), reader()
+        docs = (
+            event("location", "service", "location", "site_a", scope="s"),
+            event("version", "service", "version", "site_b", scope="s"),
+        )
+        actual = []
+        for backend, writer in (
+            ("full", writer_full),
+            ("supervised_positions", writer_sparse),
+        ):
+            with redirect_stdout(io.StringIO()), patch("experience_memory.STEPS", 4):
+                receipt = writer.fit_sources(
+                    docs,
+                    revision=2,
+                    allowed_roots={d.root for d in docs},
+                    revoked=set(),
+                    binding_objective="source_margin",
+                    loss_backend=backend,
+                )
+            self.assertEqual(receipt["steps"], 4)
+            self.assertEqual(receipt["input_tokens"], 2 * receipt["write_schedule"]["planned_input_tokens"])
+            self.assertEqual(receipt["supervised_tokens"], 2 * receipt["write_schedule"]["planned_supervised_tokens"])
+            self.assertEqual(receipt["loss_backend"], backend)
+            self.assertTrue(receipt["base_unchanged"])
+            self.assertFalse(receipt["production_accepted"])
+            actual.append(receipt)
+        self.assertEqual(actual[0]["input_tokens"], actual[1]["input_tokens"])
+        self.assertEqual(actual[0]["write_schedule"], actual[1]["write_schedule"])
+        self.assertEqual(actual[0]["full_projection_positions"], actual[1]["full_projection_positions"])
+        self.assertLess(
+            actual[1]["actual_projection_positions"],
+            actual[0]["actual_projection_positions"],
+        )
+        import torch
+
+        torch.testing.assert_close(
+            torch.tensor(actual[0]["losses"]),
+            torch.tensor(actual[1]["losses"]),
+            rtol=1e-5,
+            atol=1e-5,
+        )
+        states = [
+            get_peft_model_state_dict(writer.model)
+            for writer in (writer_full, writer_sparse)
+        ]
+        self.assertEqual(set(states[0]), set(states[1]))
+        for name in states[0]:
+            torch.testing.assert_close(states[0][name], states[1][name], rtol=1e-5, atol=1e-5)
+
     def test_unsupported_loss_or_two_hop_pairing_rejected_before_update(self):
         writer = reader()
         docs = (event("single", "service", "location", "site_a", scope="s"),)
         for backend, curriculum in (
-            ("supervised_positions", "single_hop"),
-            ("full", "source_two_hop"),
+            ("not_registered", "single_hop"),
+            ("supervised_positions", "source_two_hop"),
         ):
             with self.subTest(backend=backend, curriculum=curriculum):
                 with self.assertRaises(ValueError):
