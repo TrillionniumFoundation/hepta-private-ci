@@ -215,6 +215,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
         &self.worker_id
     }
 
+    /// Read-only signal for the product Supervisor. An ambiguous load or
+    /// unload must be persisted and reconciled outside this volatile Worker
+    /// before it can be restarted under a new generation. This function does
+    /// not issue a recovery receipt or authorize a restart.
+    #[must_use]
+    pub fn requires_external_recovery(&self) -> bool {
+        self.load_indeterminate || self.models.values().any(|model| model.unload_indeterminate)
+    }
+
     pub fn load_model(
         &mut self,
         now_ms: u64,
