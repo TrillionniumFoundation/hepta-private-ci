@@ -37,3 +37,32 @@ Exact ZIP IDs and outer SHA pins are declared in the source; original published 
 ### Scientific disposition
 
 **NO-GO for promoting fixed RRF, complex MemoryCell organization or a parameter head on this result alone.** The completed four-run 40+72 Qwen controlled-event study showed no incremental organizer task or complete citation-chain gain against simple full-path filtering. The current LoCoMo retrieval study exposes a useful *source-only* lexical k4-versus-k8 cost frontier. The genuine next experiment is a frozen **same-reader**, same-token-budget answer/citation comparison on the label-separated LoCoMo cohort, with independently assembled sufficient-evidence review and failure bounds; until then no production or parametric-memory acceptance is established.
+
+## Post-policy UTF-8 source-byte frontier (no Reader claims)
+
+A separate, stdlib-only `locomo_budget_frontier.py` audit reads the
+**existing immutable aggregate** from the independent original-source
+nine-arm replay. It verifies all nine 16-question selection and 16-question
+evaluation denominators, both source-family-proxy subtotals, unknown or
+unanswerable questions, per-arm delivered UTF-8 bytes and all-planned
+support bounds before describing the held-out **post-hoc** budget frontier.
+
+The original **selection-only** policy stays `lexical_k8`; no held-out score
+is used to choose a new arm. The already preregistered `lexical_k4`
+comparison carries **8/13** annotated held-out source-set coverage using
+**8,636** selected source bytes. The selection-frozen `lexical_k8` covers
+**9/13** and uses **17,085** bytes. The aggregate net difference is **one
+extra source-set match for 8,449 extra selected bytes** over 16 planned
+evaluation questions, with three outcomes remaining unknown/unanswerable.
+These are **not** the final Reader input tokens, p95 latency, source-span
+entailment or citation accuracy.
+
+The descriptive, held-out-derived Pareto set includes one degenerate
+zero-coverage smallest-byte control (fusion k=2); it must **not** be
+interpreted as a recommendation. Neither that post-hoc set nor this
+aggregate comparison constitutes an independent selection or a production
+budget optimization. The next valid experiment must run the *same frozen
+Reader* on both pre-existing lexical k4/k8 conditions with an identical
+prompt/generation budget and an independently reviewed sufficient-evidence
+control, preserving failure and citation denominators. Its absence is
+explicit; `production_accepted=false`.
