@@ -5,6 +5,8 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    invalid_handle: bool,
+    fail_unload: bool,
     loaded: usize,
 }
 
@@ -12,7 +14,11 @@ impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
+            opaque_id: if self.invalid_handle {
+                "invalid handle".to_string()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
             observed_memory_bytes: 1_024,
         })
     }
@@ -41,6 +47,9 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unload indeterminate".to_string()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -126,6 +135,82 @@ fn request() -> WorkerRequest {
         reservation_maximum_tokens: 64,
         cancelled: false,
     }
+}
+
+#[test]
+fn invalid_loaded_handle_is_cleaned_up_without_leaking_model_owner() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.invalid-handle".into(),
+        3,
+        grant(),
+        Driver {
+            invalid_handle: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::InvalidIdentity("model handle"))
+    );
+    assert_eq!(worker.driver.loaded, 0);
+    assert!(worker.models.is_empty());
+    assert!(!worker.poisoned);
+}
+
+#[test]
+fn failed_unload_poison_worker_until_owner_reconciliation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.unload-failure".into(),
+        3,
+        grant(),
+        Driver {
+            fail_unload: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+}
+
+#[test]
+fn failed_post_load_cleanup_poison_worker_instead_of_leaking_authority() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.cleanup-failure".into(),
+        3,
+        grant(),
+        Driver {
+            invalid_handle: true,
+            fail_unload: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
 }
 
 #[test]
@@ -243,6 +328,73 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
+}
+
+#[test]
+fn neuron_feature_rejects_token_budget_without_backend_dispatch() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.tokens".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut oversized = neuron_feature_request();
+    oversized.authorization.maximum_tokens = 129;
+    oversized.authorization.reservation_maximum_tokens = 129;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", oversized),
+        Err(Error::TokenLimit)
+    );
+    let mut over_reservation = neuron_feature_request();
+    over_reservation.authorization.maximum_tokens = 65;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", over_reservation),
+        Err(Error::TokenLimit)
+    );
+}
+
+#[test]
+fn neuron_feature_never_exposes_failed_driver_logits() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.failure".to_string(),
+        3,
+        grant(),
+        Driver {
+            fail_terminal: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::FeatureOutputMismatch)
+    );
+}
+
+#[test]
+fn multi_model_resident_memory_cannot_exceed_total_worker_grant() {
+    let mut bounded = grant();
+    bounded.maximum_memory_bytes = 1024;
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.memory".to_string(),
+        3,
+        bounded,
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first load");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    second.model_digest = "9".repeat(64);
+    assert_eq!(worker.load_model(100, second), Err(Error::ModelCapacity));
+    assert_eq!(worker.models.len(), 1);
+    assert_eq!(worker.driver.loaded, 1);
 }
 
 #[test]
