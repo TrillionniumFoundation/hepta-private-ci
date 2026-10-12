@@ -1,0 +1,68 @@
+name: Hepta System2 pinned frozen Reader behavior audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_behavior_audit.py"
+      - "scripts/memory_cell/test_system2_reader_behavior_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_BEHAVIOR_AUDIT.md"
+      - ".github/workflows/hepta-system2-reader-behavior-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-reader-behavior-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  frozen-reader-behavior:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_SYSTEM2_NEW_ARCHIVE: /tmp/hepta-system2-previous-real-reader.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download and verify completed historical Reader output
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-reader-behavior
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11721757214/zip > "$HEPTA_SYSTEM2_NEW_ARCHIVE"
+          printf '%s  %s\n' 53dff155f79d4b333ba30060022cc38d351807993f09812ee94e0d8f5f24aee3 "$HEPTA_SYSTEM2_NEW_ARCHIVE" | sha256sum -c -
+      - name: Historical model evidence audit and focused regression, no inference
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_system2_reader_behavior_audit.py' -v > /tmp/system2-reader-behavior/tests.log 2>&1 || { tail -90 /tmp/system2-reader-behavior/tests.log; exit 1; }
+          tail -6 /tmp/system2-reader-behavior/tests.log
+          python3 -m compileall -q scripts/memory_cell/system2_reader_behavior_audit.py scripts/memory_cell/test_system2_reader_behavior_audit.py
+          python3 scripts/memory_cell/system2_reader_behavior_audit.py "$HEPTA_SYSTEM2_NEW_ARCHIVE" /tmp/system2-reader-behavior/audit > /tmp/system2-reader-behavior/execution.log 2>&1
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/system2-reader-behavior/audit/historical-reader-behavior.json')
+          x=json.loads(p.read_text())
+          print('REAL_FROZEN_READER_384',x['totals'])
+          if x['totals']['completed']!=384 or x['new_neural_calls']!=0:
+              raise ValueError('incomplete original Reader model census')
+          PY
+      - name: Retain source, manifests and partial failure details
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-reader-behavior/source
+          git rev-parse HEAD > /tmp/system2-reader-behavior/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-reader-behavior/tested-tree.txt
+          cp scripts/memory_cell/{system2_reader_behavior_audit.py,test_system2_reader_behavior_audit.py} /tmp/system2-reader-behavior/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_BEHAVIOR_AUDIT.md .github/workflows/hepta-system2-reader-behavior-audit.yml /tmp/system2-reader-behavior/source/
+          (cd /tmp/system2-reader-behavior && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-pinned-reader-behavior
+          path: /tmp/system2-reader-behavior
+          if-no-files-found: error
