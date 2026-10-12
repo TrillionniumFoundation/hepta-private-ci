@@ -529,3 +529,48 @@ fn verify_pinned_signature(
     key.verify_strict(message, &parsed)
         .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(reason))
 }
+
+#[cfg(all(test, unix))]
+mod authority_epoch_tests {
+    use super::*;
+
+    #[test]
+    fn independently_signed_cns_and_supervisor_must_share_authority_epoch() {
+        let cns = CellSplitCnsRuntimeCommitV1 {
+            idempotency_key: "11".repeat(32),
+            cns_id: "cns.main".into(),
+            predecessor_route_digest: "22".repeat(32),
+            successor_route_digest: "33".repeat(32),
+            predecessor_generation: 7,
+            successor_generation: 8,
+            authority_epoch: 9,
+            committed_sequence: 2,
+            original_runtime_receipt_bytes: vec![1],
+            original_runtime_signature_bytes: vec![0; 64],
+        };
+        let mut journal = CellSplitSupervisorCommitV1 {
+            idempotency_key: "44".repeat(32),
+            domain_id: "scope.main".into(),
+            handoff_plan_digest: "55".repeat(32),
+            old_generation: 7,
+            new_generation: 8,
+            authority_epoch: 9,
+            committed_revision: 3,
+            original_checkpoint_bytes: vec![1],
+            original_checkpoint_signature_bytes: vec![0; 64],
+        };
+        assert!(verify_original_handoff_epoch_v1(&cns, &journal).is_ok());
+
+        journal.authority_epoch = 10;
+        assert!(matches!(
+            verify_original_handoff_epoch_v1(&cns, &journal),
+            Err(CellSplitObserverJoinErrorV1::Invalid(
+                "original CNS and Supervisor authority epochs differ"
+            ))
+        ));
+        journal.authority_epoch = 9;
+        let mut missing_epoch = cns;
+        missing_epoch.authority_epoch = 0;
+        assert!(verify_original_handoff_epoch_v1(&missing_epoch, &journal).is_err());
+    }
+}
