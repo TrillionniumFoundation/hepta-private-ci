@@ -351,7 +351,10 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1
                 owner_receipt_bytes: bytes,
             };
             if self.verify_current(intent, &existing)? {
-                return Ok(());
+                // New Execute must never adopt a prior effect after a
+                // negative preflight. Lost acknowledgements are reconciled
+                // through the original read-only receipt instead.
+                return Err(CellSplitArtifactCasErrorV1::Ambiguous);
             }
             return Err(CellSplitArtifactCasErrorV1::Invalid);
         }
