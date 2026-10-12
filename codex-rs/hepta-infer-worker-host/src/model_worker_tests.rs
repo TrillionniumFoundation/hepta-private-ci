@@ -932,3 +932,109 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
         Err(Error::FinalUseDenied),
     );
 }
+
+#[cfg(unix)]
+fn reopen_signed_stem_test_authority(
+    directory: &tempfile::TempDir,
+    signer_id: String,
+    revision: u64,
+) -> codex_hepta_contracts::FinalUseAuthority {
+    use ed25519_dalek::SigningKey;
+
+    codex_hepta_contracts::FinalUseAuthority::open_state_dir(
+        directory.path(),
+        signer_id,
+        SigningKey::from_bytes(&[47; 32]).verifying_key().to_bytes(),
+        codex_hepta_contracts::FinalUseRevocations {
+            authority_epoch: 2,
+            revision,
+            revoked_grant_ids: std::collections::BTreeSet::new(),
+        },
+    )
+    .expect("independent verifier reopens protected local claim ledger")
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_stem_nonce_cannot_replay_after_authority_reopen() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.signed-reopen".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let binding = worker
+        .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
+        .expect("fully scoped Worker binding");
+
+    let (authority, signed, directory) = signed_stem_final_use_fixture(binding.clone());
+    let token = authority
+        .claim(&signed, &binding)
+        .expect("real signed, single-use test claim");
+    let outcome = worker
+        .run_verified_stem_feature_receipt_v1(
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: auth,
+            },
+        )
+        .expect("signed Worker entry");
+    assert_eq!(
+        outcome.worker_receipt.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded,
+    );
+    assert!(outcome.final_use_binding_digest.is_some());
+    assert!(!outcome.authority.grants_any());
+    drop(authority);
+
+    let signer_id = signed.grant.signer_id.clone();
+    let reopened = reopen_signed_stem_test_authority(&directory, signer_id, 1);
+    assert_eq!(
+        reopened.claim(&signed, &binding).unwrap_err(),
+        codex_hepta_contracts::FinalUseError::AlreadyClaimed,
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn claimed_nonce_remains_consumed_when_worker_never_entered() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.abandoned-claim".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    // A test grant is constructed only after the actual Head is loaded.
+    worker.load_model(100, manifest()).expect("loaded");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let binding = worker
+        .expected_stem_final_use_binding_v1(100, &source, &access, head, &features, &auth)
+        .expect("frozen complete signed request");
+
+    let (authority, signed, directory) = signed_stem_final_use_fixture(binding.clone());
+    let claim = authority
+        .claim(&signed, &binding)
+        .expect("durably claimed before any Worker effect");
+    // Simulates the consumer abandoning the valid one-use token before
+    // dispatch. It is a clean owner reopen, NOT a power-loss recovery test.
+    drop(claim);
+    drop(authority);
+    let signer_id = signed.grant.signer_id.clone();
+    let reopened = reopen_signed_stem_test_authority(&directory, signer_id, 1);
+    assert_eq!(
+        reopened.claim(&signed, &binding).unwrap_err(),
+        codex_hepta_contracts::FinalUseError::AlreadyClaimed,
+    );
+}
