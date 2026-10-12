@@ -140,6 +140,8 @@ pub use cell_split_observer_join::CellSplitObserverDeepReceiptV1;
 #[cfg(unix)]
 pub use cell_split_observer_join::CellSplitObserverOriginalRuntimeTrustV1;
 #[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumAdmissionPortV1;
+#[cfg(unix)]
 pub use cell_split_observer_minimum::CellSplitSupervisorMinimumErrorV1;
 #[cfg(unix)]
 pub use cell_split_observer_minimum::CellSplitSupervisorMinimumFileStoreV1;
