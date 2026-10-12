@@ -346,7 +346,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .map_err(BatchWorkerErrorV1::Scheduler)?;
         if let Some(batch) = &poll.batch {
             if let Some(first) = batch.requests.first() {
-                // Records planning latency, not physical encoder batch execution.
+                // Planning latency does not represent physical backend latency.
                 self.emit_metric(
                     &batch.key.scope_id,
                     &first.request_id,
@@ -360,103 +360,124 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             self.pending.remove(id);
             self.retired.insert(terminal_request_fingerprint(id));
         }
-        let mut outcomes = Vec::new();
-        if let Some(batch) = poll.batch {
-            if self.scope_frontier.current(&batch.key.scope_id).ok().as_ref()
-                != Some(&batch.key)
+        let outcomes = match poll.batch {
+            None => Vec::new(),
+            Some(batch)
+                if self.scope_frontier.current(&batch.key.scope_id).ok().as_ref()
+                    != Some(&batch.key) =>
             {
-                for intent in batch.requests {
-                        let id = intent.request_id;
-                        self.retired.insert(terminal_request_fingerprint(&id));
-                        self.pending.remove(&id);
-                        self.emit_metric(
-                            &batch.key.scope_id,
-                            &id,
-                            PhaseMetricKindV1::NeuronFeature,
-                            Duration::ZERO,
-                            false,
-                        );
-                        outcomes.push(BatchWorkerItemOutcomeV1 {
-                            request_id: id,
-                            result: Err(BatchWorkerErrorV1::InvalidBinding),
-                        });
-                    }
-                } else if batch.requests.len() > 1 && self.worker.supports_physical_neuron_batch() {
-                    outcomes = self.execute_native_batch(now_ms, batch);
-                } else {
-                    for intent in batch.requests {
-                    let id = intent.request_id;
-                    let started = Instant::now();
-                    self.retired.insert(terminal_request_fingerprint(&id));
-                    let outcome = match self.pending.remove(&id) {
-                        None => Err(BatchWorkerErrorV1::NoAdmission),
-                        Some(mut pending) => {
-                            if pending.feature.digest() != intent.feature_digest
-                                || pending.signed.grant.authority_epoch != batch.key.authority_epoch
-                            {
-                                Err(BatchWorkerErrorV1::InvalidBinding)
-                            } else {
-                                pending.request.feature_vector_q24 =
-                                    pending.feature.as_slice().to_vec();
-                                let result = FinalUseAuthority::claim(
-                                    &self.authority,
-                                    &pending.signed,
-                                    &pending.binding,
-                                )
-                                .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|token| {
-                                    FinalUseAuthority::with_verified_effect(
-                                        &self.authority,
-                                        token,
-                                        &pending.binding,
-                                        || {
-                                            if self
-                                                .scope_frontier
-                                                .current(&batch.key.scope_id)
-                                                .ok()
-                                                .as_ref()
-                                                != Some(&batch.key)
-                                            {
-                                                return Err(crate::model_worker::Error::FeatureContract);
-                                            }
-                                            self.worker.run_neuron_features_receipt(
-                                                now_ms,
-                                                &pending.model_id,
-                                                pending.request,
-                                            )
-                                        },
-                                    )
-                                    .map_err(|_| BatchWorkerErrorV1::Authority)
-                                    .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
-                                });
-                                result
-                            }
-                        }
-                    };
-                    let succeeded = matches!(
-                        &outcome,
-                        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
-                    );
-                    self.emit_metric(
-                        &batch.key.scope_id,
-                        &id,
-                        PhaseMetricKindV1::NeuronFeature,
-                        started.elapsed(),
-                        succeeded,
-                    );
-                    outcomes.push(BatchWorkerItemOutcomeV1 {
-                        request_id: id,
-                        result: outcome,
-                    });
-                }
+                self.deny_stale_batch(batch)
             }
-        }
+            Some(batch)
+                if batch.requests.len() > 1 && self.worker.supports_physical_neuron_batch() =>
+            {
+                self.execute_native_batch(now_ms, batch)
+            }
+            Some(batch) => self.execute_scalar_batch(now_ms, batch),
+        };
         Ok(BatchWorkerPollV1 {
             expired: poll.expired_request_ids,
             outcomes,
             scanned_lanes: poll.scanned_lanes,
             pending: self.pending.len(),
         })
+    }
+
+    fn deny_stale_batch(&mut self, batch: MicrobatchPlanV1) -> Vec<BatchWorkerItemOutcomeV1> {
+        let started = Instant::now();
+        batch
+            .requests
+            .into_iter()
+            .map(|intent| {
+                let id = intent.request_id;
+                self.pending.remove(&id);
+                self.retired.insert(terminal_request_fingerprint(&id));
+                self.emit_metric(
+                    &batch.key.scope_id,
+                    &id,
+                    PhaseMetricKindV1::NeuronFeature,
+                    started.elapsed(),
+                    false,
+                );
+                BatchWorkerItemOutcomeV1 {
+                    request_id: id,
+                    result: Err(BatchWorkerErrorV1::InvalidBinding),
+                }
+            })
+            .collect()
+    }
+
+    fn execute_scalar_batch(
+        &mut self,
+        now_ms: u64,
+        batch: MicrobatchPlanV1,
+    ) -> Vec<BatchWorkerItemOutcomeV1> {
+        let mut outcomes = Vec::with_capacity(batch.requests.len());
+        for intent in batch.requests {
+            let id = intent.request_id;
+            let started = Instant::now();
+            self.retired.insert(terminal_request_fingerprint(&id));
+            let outcome = match self.pending.remove(&id) {
+                None => Err(BatchWorkerErrorV1::NoAdmission),
+                Some(mut pending) => {
+                    if pending.feature.digest() != intent.feature_digest
+                        || pending.signed.grant.authority_epoch != batch.key.authority_epoch
+                    {
+                        Err(BatchWorkerErrorV1::InvalidBinding)
+                    } else {
+                        pending.request.feature_vector_q24 =
+                            pending.feature.as_slice().to_vec();
+                        FinalUseAuthority::claim(
+                            &self.authority,
+                            &pending.signed,
+                            &pending.binding,
+                        )
+                        .map_err(|_| BatchWorkerErrorV1::Authority)
+                        .and_then(|token| {
+                            FinalUseAuthority::with_verified_effect(
+                                &self.authority,
+                                token,
+                                &pending.binding,
+                                || {
+                                    if self
+                                        .scope_frontier
+                                        .current(&batch.key.scope_id)
+                                        .ok()
+                                        .as_ref()
+                                        != Some(&batch.key)
+                                    {
+                                        return Err(crate::model_worker::Error::FeatureContract);
+                                    }
+                                    self.worker.run_neuron_features_receipt(
+                                        now_ms,
+                                        &pending.model_id,
+                                        pending.request,
+                                    )
+                                },
+                            )
+                            .map_err(|_| BatchWorkerErrorV1::Authority)
+                            .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
+                        })
+                    }
+                }
+            };
+            let succeeded = matches!(
+                &outcome,
+                Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+            );
+            self.emit_metric(
+                &batch.key.scope_id,
+                &id,
+                PhaseMetricKindV1::NeuronFeature,
+                started.elapsed(),
+                succeeded,
+            );
+            outcomes.push(BatchWorkerItemOutcomeV1 {
+                request_id: id,
+                result: outcome,
+            });
+        }
+        outcomes
     }
 
     /// Only called when the loaded driver explicitly advertises physical
