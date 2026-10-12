@@ -210,6 +210,124 @@ jobs:
           git diff --check
           git diff --exit-code
 
+  # Next non-promoting P0 proof: actually compile the smallest reviewed source
+  # candidate.  This is separate from the real Hepta lock/crypto/WAL/E2EE gate.
+  minimal-backport-native-compile:
+    name: Compile isolated Matrix anymap3/E2EE/SQLite candidate (NOT acceptance)
+    needs: minimal-anymap-backport-source-probe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Read exact signed-release source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Read exact AnyMap3 upstream change
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Stage minimum source delta outside tested checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree}
+          python3 qualification/matrix-security/disposable_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --destination "$RUNNER_TEMP/matrix-backport-compile" \
+            --output "$RUNNER_TEMP/matrix-backport-source.json"
+      - name: Install pinned upstream minimum Rust
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve actual staged cargo graph and reject vulnerable dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 900 cargo +1.96.0 metadata \
+            --manifest-path "$RUNNER_TEMP/matrix-backport-compile/Cargo.toml" \
+            --format-version 1 > "$RUNNER_TEMP/matrix-backport-metadata.json" \
+            2> "$RUNNER_TEMP/matrix-backport-metadata.stderr"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          packages = json.loads((root / "matrix-backport-metadata.json").read_text())["packages"]
+          select = lambda name: [p["version"] for p in packages if p["name"] == name]
+          crypto = select("matrix-sdk-crypto")
+          assert select("matrix-sdk") == ["0.19.1"], "wrong Matrix SDK package"
+          assert not select("anymap2"), "legacy anymap2 remains resolved"
+          assert select("anymap3"), "maintained AnyMap replacement missing"
+          assert crypto and all(tuple(map(int, v.split(".")[:2])) >= (0, 19) for v in crypto), (
+              "unpatched Matrix crypto remains resolved"
+          )
+          print(json.dumps({
+              "schema": "hepta.matrix-isolated-backport-compilation-prerequisite.v1",
+              "matrix_sdk": select("matrix-sdk"),
+              "crypto": crypto, "anymap2": select("anymap2"), "anymap3": select("anymap3"),
+              "real_hepta_lock_updated": False, "e2ee_runtime_tested": False,
+              "sqlite_wal_recovery_tested": False, "cargo_deny_verified": False,
+              "production_authorized": False,
+          }, sort_keys=True))
+          PY
+      - name: Compile pinned native SDK with required E2EE and SQLite features
+        shell: bash
+        run: |
+          set -uo pipefail
+          status=0
+          timeout 1800 cargo +1.96.0 check --locked \
+            --manifest-path "$RUNNER_TEMP/matrix-backport-compile/Cargo.toml" \
+            -p matrix-sdk --lib --no-default-features \
+            --features e2e-encryption,sqlite \
+            > "$RUNNER_TEMP/matrix-backport-cargo.stdout" \
+            2> "$RUNNER_TEMP/matrix-backport-cargo.stderr" || status=$?
+          STATUS="$status" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          code = int(os.environ["STATUS"])
+          (root / "matrix-backport-compilation.json").write_text(json.dumps({
+              "schema": "hepta.matrix-isolated-source-compile.v1",
+              "source": "signed-release-0.19.1-plus-exact-upstream-anymap3-backport",
+              "cargo_exit_code": code, "cargo_check_passed": code == 0,
+              "features": ["e2e-encryption", "sqlite"], "rust_version": "1.96.0",
+              "hepta_source_modified": False, "hepta_cargo_lock_updated": False,
+              "hepta_matrix_api_compat_verified": False, "hepta_e2ee_verified": False,
+              "hepta_wal_recovery_verified": False, "cargo_deny_verified": False,
+              "production_authorized": False,
+          }, indent=2, sort_keys=True) + "\n")
+          PY
+          if [ "$status" -ne 0 ]; then
+            tail -n 100 "$RUNNER_TEMP/matrix-backport-cargo.stderr"
+          fi
+          exit "$status"
+      - name: Preserve non-authorizing compiler and source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-isolated-anymap3-compile-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/matrix-backport-source.json
+            ${{ runner.temp }}/matrix-backport-compilation.json
+            ${{ runner.temp }}/matrix-backport-cargo.stdout
+            ${{ runner.temp }}/matrix-backport-cargo.stderr
+            ${{ runner.temp }}/matrix-backport-metadata.stderr
+          if-no-files-found: warn
+          retention-days: 14
+      - name: No original repository changes
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
   disposable-cargo-resolution-probe:
     name: Disposable pinned SDK Cargo resolver (${{ matrix.sqlite_arm }}, diagnostic only)
     runs-on: ubuntu-24.04
