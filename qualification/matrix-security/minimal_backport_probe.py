@@ -117,7 +117,9 @@ def main(argv=None):
     report = probe(args.release, args.migration)
     args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2, sort_keys=True))
-    return 0
+    # A patch that does not apply to the pinned release is a failed source
+    # qualification, not a diagnostic success or an advisory waiver.
+    return 0 if report["source_patch_applies_clean"] else 1
 
 
 if __name__ == "__main__":
