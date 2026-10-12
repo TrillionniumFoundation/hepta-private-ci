@@ -32,6 +32,12 @@ changes. The old `v1` hashing function is deleted (not accepted as an alias).
 The existing signed grant schema, payload hash, Scope hash, artifact format,
 typed Neuron receipt, and `DENY_ALL` output all remain unchanged.
 
+The Python and Rust SHA-256 fixtures also pin the V2 request digest for
+`worker.identity-A`, fixture grant and `bound-feature-ref` to
+`1edca4a4866ed8e285c1126c3073fc3fdbbc3a087d5c55cd37066700d3e71d1c`.
+This is a deterministic content hash, **not** a verified signature, signed
+loaded-model receipt or model performance result.
+
 The negative test constructs **two distinct real native Worker objects**
 with the exact same ResourceGrant, model and weights, Principal, Scope,
 Generation, feature bytes and existing WorkerRequest; verifies that only
