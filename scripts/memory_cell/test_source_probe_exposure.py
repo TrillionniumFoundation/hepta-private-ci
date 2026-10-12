@@ -73,7 +73,10 @@ class SourceExposureReplayTests(unittest.TestCase):
             if field == "binding_receipt":
                 forged[field]["training_pairs"][0]["negative_value"] = "forged"
             elif field == "source_supervision":
-                forged[field].append(self.entries[-1])
+                # The persisted training cohort is an immutable tuple. Forge
+                # an extra source-derived question without mutating it.
+                # The production verifier, not fixture setup, must reject it.
+                forged[field] = tuple(forged[field]) + (deepcopy(self.entries[-1]),)
             elif field == "input_tokens":
                 forged[field] += 1
             else:
