@@ -137,3 +137,42 @@ jobs:
             tracking-study/
           if-no-files-found: error
           retention-days: 30
+
+  input-tied-challenge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin source and CPU test runtime
+        run: |
+          git rev-parse HEAD > tied-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > tied-source.tar.gz
+          python3 -m venv /tmp/tied-venv
+          /tmp/tied-venv/bin/pip install numpy==2.2.6 psutil==7.0.0
+          /tmp/tied-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/tied-venv/bin/pip freeze > tied-environment.txt
+      - name: Independent-input mechanism and held-out syntax stress
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/tied-venv/bin/python -m unittest test_fbsde_tracking_tied fbsde_tracking_tied_tensor_checks -v 2>&1 | tee tied-tests.log
+          /tmp/tied-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile input_tied_challenge_v1 --output tied-study 2>&1 | tee tied-study.log
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: input-tied-challenge-${{ github.run_id }}
+          path: |
+            tied-source.txt
+            tied-source.tar.gz
+            tied-environment.txt
+            tied-tests.log
+            tied-study.log
+            tied-study/
+          if-no-files-found: error
+          retention-days: 30
