@@ -227,6 +227,43 @@ fn physical_affinity_index_cleans_up_after_expiry_and_cutover() {
 }
 
 #[test]
+fn stale_coalesced_slots_do_not_defer_a_ready_scope_behind_a_cold_scope() {
+    let mut config = limits();
+    config.max_batch_size = 4;
+    config.max_lanes_per_poll = 4;
+    let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
+
+    // One native batch consumes four compatible scopes but leaves three
+    // round-robin slots. The next poll must skip those without charging its
+    // active-lane scan budget or skipping a later deadline-due request.
+    for (request, scope) in [
+        ("first", "scope-a"),
+        ("coalesced-b", "scope-b"),
+        ("coalesced-c", "scope-c"),
+        ("coalesced-d", "scope-d"),
+    ] {
+        q.enqueue(1, intent(request, scope, 1, 1, 100)).unwrap();
+    }
+    let first = q.poll_physically_compatible(11).unwrap();
+    assert_eq!(first.batch.unwrap().requests.len(), 4);
+    assert_eq!(q.pending(), 0);
+    assert_eq!(q.round_robin.len(), 3);
+
+    // The first live scope is not ready; the second is deadline-due.
+    q.enqueue(12, intent("not-due", "scope-e", 1, 1, 500))
+        .unwrap();
+    q.enqueue(12, intent("due", "scope-f", 1, 1, 20))
+        .unwrap();
+    let next = q.poll(13).unwrap();
+    assert_eq!(next.scanned_lanes, 2);
+    let batch = next.batch.expect("ready scope behind stale slots");
+    assert_eq!(batch.requests.len(), 1);
+    assert_eq!(batch.requests[0].request_id, id("due"));
+    assert_eq!(next.pending, 1);
+    assert_eq!(q.pending(), 1);
+}
+
+#[test]
 fn coalesced_scope_reuses_its_stale_round_robin_slot_on_readmission() {
     let mut config = limits();
     config.max_batch_size = 2;
