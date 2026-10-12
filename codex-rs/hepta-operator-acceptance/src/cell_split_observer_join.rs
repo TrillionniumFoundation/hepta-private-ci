@@ -321,14 +321,15 @@ pub fn verify_cell_split_observer_join_v1(
 
 /// Crate-only generic verification permits deterministic failure injection in
 /// tests but cannot mint a production-facing readback via a fake port.
-pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecutionPortV1>(
+/// Reject forged host/observer joins before contacting any online minimum
+/// store or original effect owner. Static verification cannot attest liveness.
+fn verify_cell_split_observer_join_static_v1(
     join: &CellSplitSignedObserverJoinV1,
     transcript: &CellSplitExecutionTranscriptV1,
     owner_trust: &CellSplitOwnerTrustV1,
     evidence: &CellSplitSignedTargetHostEvidenceV1,
     evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
-    live_owners: &mut P,
-) -> Result<CellSplitObserverJoinReceiptV1, CellSplitObserverJoinErrorV1> {
+) -> Result<(), CellSplitObserverJoinErrorV1> {
     verify_cell_split_execution_transcript_signatures_v1(transcript, owner_trust)
         .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
             "four original owner signatures or predecessor chain failed",
@@ -367,6 +368,20 @@ pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecution
     let message = cell_split_observer_join_signing_payload_v1(&join.payload)?;
     verify_join_signature(&join.host_signature, host_key, &message)?;
     verify_join_signature(&join.observer_signature, observer_key, &message)?;
+    Ok(())
+}
+
+pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecutionPortV1>(
+    join: &CellSplitSignedObserverJoinV1,
+    transcript: &CellSplitExecutionTranscriptV1,
+    owner_trust: &CellSplitOwnerTrustV1,
+    evidence: &CellSplitSignedTargetHostEvidenceV1,
+    evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
+    live_owners: &mut P,
+) -> Result<CellSplitObserverJoinReceiptV1, CellSplitObserverJoinErrorV1> {
+    verify_cell_split_observer_join_static_v1(
+        join, transcript, owner_trust, evidence, evidence_policy,
+    )?;
     // Never accept a signed join to a former owner state. A real production
     // caller supplies the pinned Unix RPC owner port, not a mock.
     for receipt in &transcript.receipts {
@@ -450,6 +465,12 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
         evidence,
         evidence_policy,
         original_runtime_trust,
+    )?;
+    // A forged or cross-bound join must not cause remote minimum-store work.
+    // The cold-path signature check runs before both online challenges;
+    // original owner readbacks remain independent later in this function.
+    verify_cell_split_observer_join_static_v1(
+        join, transcript, owner_trust, evidence, evidence_policy,
     )?;
     let cns_key = original_runtime_trust.cns_original_runtime_key;
     let supervisor_key = original_runtime_trust.supervisor_original_journal_key;
