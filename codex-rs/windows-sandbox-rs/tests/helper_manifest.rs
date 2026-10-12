@@ -39,7 +39,10 @@ fn resolve_helper_executable(candidate: PathBuf) -> Result<PathBuf> {
         return Ok(candidate);
     }
     if candidate.is_absolute() {
-        anyhow::bail!("configured absolute setup helper is absent: {}", candidate.display());
+        anyhow::bail!(
+            "configured absolute setup helper is absent: {}",
+            candidate.display()
+        );
     }
     let runfiles_manifest = std::env::var_os("RUNFILES_MANIFEST_FILE")
         .context("relative Bazel helper requires RUNFILES_MANIFEST_FILE")?;
@@ -147,7 +150,10 @@ fn exact_windows_runfile_resolution_preserves_paths_with_spaces_and_rejects_near
         None
     );
     assert_eq!(
-        find_runfile_entry(fixture, "_main/codex-rs/windows-sandbox-rs/other.exe.backup"),
+        find_runfile_entry(
+            fixture,
+            "_main/codex-rs/windows-sandbox-rs/other.exe.backup"
+        ),
         None
     );
 }
