@@ -24,6 +24,8 @@ on:
       - "scripts/memory_cell/test_locomo_frozen_retrieval.py"
       - "scripts/memory_cell/locomo_budget_frontier.py"
       - "scripts/memory_cell/test_locomo_budget_frontier.py"
+      - "scripts/memory_cell/locomo_frozen_reader_pair.py"
+      - "scripts/memory_cell/test_locomo_frozen_reader_pair.py"
       - "scripts/memory_cell/stem_score_replay.py"
       - "scripts/memory_cell/test_stem_score_replay.py"
       - "scripts/memory_cell/stem_cell_shadow_scale.py"
@@ -87,7 +89,8 @@ jobs:
             test_stem_cell_shadow_scale \
             test_stem_score_replay \
             test_locomo_frozen_retrieval \
-            test_locomo_budget_frontier             2>&1 | tee /tmp/stem-protocol/tests.log
+            test_locomo_budget_frontier \
+            test_locomo_frozen_reader_pair             2>&1 | tee /tmp/stem-protocol/tests.log
       - name: Retain source, failure logs and manifest
         if: always()
         run: |
@@ -105,6 +108,8 @@ jobs:
           cp scripts/memory_cell/test_locomo_frozen_retrieval.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/locomo_budget_frontier.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_locomo_budget_frontier.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/locomo_frozen_reader_pair.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/test_locomo_frozen_reader_pair.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_cell_shadow_scale.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_cell_shadow_scale.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_cell_adapter_opportunity.py /tmp/stem-protocol/source/
