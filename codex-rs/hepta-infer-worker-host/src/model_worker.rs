@@ -932,6 +932,12 @@ fn validate_neuron_feature_output(
     Ok(())
 }
 
+#[path = "neuron_weight_file.rs"]
+mod neuron_weight_file;
+pub use neuron_weight_file::NeuronWeightFileDiagnosticErrorV1;
+pub use neuron_weight_file::NeuronWeightFileDiagnosticV1;
+pub use neuron_weight_file::inspect_loaded_neuron_weight_file_v1;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;

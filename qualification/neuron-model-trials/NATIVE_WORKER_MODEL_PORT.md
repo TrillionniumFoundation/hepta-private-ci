@@ -344,3 +344,34 @@ Worker and reopening the WAL. A changed model generation under the original
 fsynced request remains invalid before invoking the driver. These are fixture
 identities and **not** real production keys, CNS routing, or a physical Laya
 load; all authority and NDU promotion remain disabled.
+
+## Physical model weight-file SHA-256 versus the actual loaded Worker manifest
+
+`model_worker::inspect_loaded_neuron_weight_file_v1` now accepts a host-opened
+**regular File** and the actual `InferenceWorker` instance (not a caller-authored
+model tuple). It first checks that this Worker has an unquarantined, currently
+authorized ResourceGrant and that the model identity is actually loaded, then
+streams the full file through the native `Digest32::of_reader` SHA-256
+implementation using fixed 32 KiB scratch space. The maximum is 2 GiB (not
+the 64 MiB Artifact Registry payload cap), sufficient for the frozen Laya
+644–843 MB single safetensors files. It requires the **full file hash** to
+equal the weights digest already retained by the loaded ModelManifest.
+
+Regular-file type, nonzero byte size, maximum bound and before/after file
+metadata are checked. The caller's file cursor is restored. The diagnostic
+binds current Worker ID/process generation, observed loaded handle identity
+and memory bytes, manifest/model/weight digests and exact file length.
+Invalid/nonregular/oversized/changed files, hash mismatch, expired/revoked
+grant, absent loaded model or Worker quarantine fail closed. Tests actually
+write/read/tamper regular files, test sparse size rejection without reading
+2 GiB, and test grant expiry and revocation.
+
+**Scope restriction:** this is a physical **source-file hash observation**,
+NOT proof that an opaque ModelDriver handle was created by loading this same
+file, nor evidence of a signed CAS or selected CNS/Cell route. The input File
+must originate from the independently approved immutable model-storage owner;
+its path/open provenance is not authenticated by this method. In-place writes
+after verification or a driver loading different bytes remain possible until
+the real host pins the same immutable handle through load and final-use.
+This never dispatches a model, changes a route, or grants production use.
+All returned receipts are `DENY_ALL` and cannot satisfy NDU/promotion.
