@@ -46,3 +46,37 @@ fn canary_rejects_failed_count_above_observed() {
         Err(CellSplitLifecycleErrorV1::InvalidEvidence)
     );
 }
+
+#[test]
+fn zero_observation_canary_cannot_qualify_retention() {
+    assert_eq!(
+        CellSplitCanaryReceiptV1::new(
+            id("split.zero"),
+            codex_hepta_types::Generation::new(8).expect("generation"),
+            digest(1),
+            digest(2),
+            digest(3),
+            0,
+            0,
+            true,
+        ),
+        Err(CellSplitLifecycleErrorV1::InvalidEvidence)
+    );
+
+    // Defense in depth: a pre-existing, digest-consistent legacy record
+    // with zero observed requests cannot silently pass retention.
+    let mut legacy = CellSplitCanaryReceiptV1::new(
+        id("split.legacy"),
+        codex_hepta_types::Generation::new(8).expect("generation"),
+        digest(1),
+        digest(2),
+        digest(3),
+        1,
+        0,
+        true,
+    )
+    .expect("valid starting receipt");
+    legacy.observed_requests = 0;
+    legacy.receipt_digest = legacy.digest();
+    assert!(!legacy.passes());
+}
