@@ -34,7 +34,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/stem-development-venv"
           "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install \
             --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 safetensors==0.7.0
       - name: Execute actual arithmetic and existing repository entrypoints
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -46,7 +46,8 @@ jobs:
             git rev-parse HEAD^{tree}
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip freeze
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
-              test_shared_encoder_eviction development_tensor_checks development_repository_checks
+              test_shared_encoder_eviction development_tensor_checks development_repository_checks \
+              development_study_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Preserve exact-source result including failures
         if: always()
