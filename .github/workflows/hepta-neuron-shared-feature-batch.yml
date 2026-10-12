@@ -238,7 +238,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-contracts -- --check
       - name: Verify no test checkout mutation
         if: always()
         shell: bash
