@@ -57,3 +57,49 @@ This is strong **local source-compatible software replay evidence**; it is **not
 ## No-go and next experimental budget
 
 Do **not** promote a parametric MemoryCell on these data. Prefer new independently collected source families and matched-reader task/citation evaluations comparing tuned RAG vs single-hop vs full-path vs correction-aware organization. No real-world retention/revocation/recovery lifecycle costs, independent citation entailment ≥99%, parametric memory gain, or production cutover evidence have been established.
+
+## Independent standard-library replay without model dependencies
+
+An additional **separately implemented Python standard-library verifier**
+was executed on the original GitHub artifacts (not generated answers, not
+the repository's original verifier, and no model/Transformers/PEFT loaded).
+The check consumes the two original ZIP archives and reproduces the fixed
+source-to-answer/evaluation evidence without inventing source labels:
+
+- Real reader ZIP: `11743043427`, whole ZIP SHA-256
+  `7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8`.
+- Original source ZIP: `11669174727`, whole ZIP SHA-256
+  `23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b`.
+- Full two-ZIP inner manifests: **43 + 35 = 78 source/receipt entries**
+  verified; all 40 calibration and 72 evaluation original raw/scored rows
+  matched without permitted alteration of the reader's original answers.
+- Each delivered evidence excerpt, byte offset, source ID/root/scope,
+  deterministic event projection and unsigned citation-source root mapping
+  was checked against the 108 exact original event documents.
+- The pinned original bounded `event_probe.py` was independently invoked
+  **28 times** to compare each scored procedure request, exact stdout,
+  stderr and exit status. The success-first/token-second calibration
+  reselected **k=1**, and 39 same-source-prompt pairs matched byte/token
+  generation identities. New scorer replay agrees with all nine accuracy,
+  input-token, reader-seconds and program-declared citation-chain aggregates.
+- Six tests passed, including forged scored outcome, malformed answer
+  grammar, duplicate/nonfinite JSON and changed archive checksum rejection.
+
+The standalone local replay program SHA-256 was
+`2fa03157f7dd230585d16959f424cc2e01a69791a06e59ac6448ed3aee1cd20a`;
+its six-test file SHA-256 was
+`686cc2317eaa7b146e2e2817c328d844659027d3695ec8f2fe5797aa508dd966`,
+and the emitted exact JSON receipt SHA-256 was
+`ee1be50023f9b8f7d2cef8f98cd05ef15d0dc2b1433029b24345b14547e84db4`.
+These local supplemental files are separate conversation deliverables; the
+original repository-native verifier, replay job and pinned ZIP artifacts
+remain authoritative for the hosted research workflow.
+
+This **does not** attest that the independent hosted `independent-replay`
+job for #38224780900 has completed; that job was still queued at this
+recheck. It is neither human semantic entailment adjudication nor
+independently sampled prospective task validation. The prior four-run
+replication report documents 13/112 cross-host prompt-output differences;
+repeat executions of these eight authored questions cannot substantiate
+generalization, 99% semantic citation precision, parametric-memory gains,
+or production acceptance.
