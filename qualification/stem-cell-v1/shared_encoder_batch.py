@@ -325,14 +325,28 @@ class FrozenLocalHfBackend:
             raise ValueError("invalid token cap")
         import torch
         from transformers import AutoModel, AutoTokenizer
+        from hf_joint_decision_runner import (
+            validate_encoder_loading_info, verify_loaded_safetensors,
+        )
         self.torch = torch
         self.device = device
         self.max_tokens = max_tokens
         self.tokenizer = AutoTokenizer.from_pretrained(
             str(snapshot), local_files_only=True, trust_remote_code=False)
-        self.model = AutoModel.from_pretrained(
+        loaded = AutoModel.from_pretrained(
             str(snapshot), local_files_only=True, trust_remote_code=False,
-            use_safetensors=True).to(device).eval()
+            use_safetensors=True, output_loading_info=True)
+        if type(loaded) is not tuple or len(loaded) != 2:
+            raise ValueError("shared Encoder requires audited complete HF loading report")
+        model, loading_info = loaded
+        self.verified_loading = validate_encoder_loading_info(loading_info)
+        model = model.to(device).eval()
+        # A loading-info summary alone cannot detect a backend that silently
+        # leaves a tensor randomized. Compare every actual model tensor against
+        # the immutable, already SHA-pinned local safetensors inventory.
+        self.verified_materialization = verify_loaded_safetensors(
+            torch, model, snapshot)
+        self.model = model
         for p in self.model.parameters():
             p.requires_grad_(False)
         self.invocations = 0
