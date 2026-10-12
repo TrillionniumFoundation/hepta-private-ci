@@ -152,20 +152,26 @@ def train_critic(tasks,*,shuffled=False,steps=200):
 
 
 @torch.no_grad()
-def search(numbers,goal,arm,budget,critic=None):
-    """Search never calls ExactLabels. Terminal verification is a legal runtime tool.
+def search(numbers,goal,arm,budget,critic=None,*,terminal_policy='deferred',successor_limit=None):
+    """No reachability oracle. Eager mode verifies exact terminals upon generation.
 
-    Shared ceiling is popped states, NOT equal FLOPs. Children, critic examples,
-    verifier calls and wall time are recorded separately. No correct leaf means
-    no proof found, not a certified claim that the task is impossible.
+    Default deferred behavior preserves the original experiment. An optional
+    common successor ceiling counts every yielded child, including duplicates;
+    it is not a FLOP budget. Successor generation may compute several rational
+    options before yielding: that overhead and exact verification are timed.
+    Eager mode never calls the critic on a terminal state. Failed leaves are
+    discarded; a proof is accepted only by the independent runtime verifier.
     """
     validate_task(numbers,goal)
-    if arm not in ARMS or type(budget) is not int or not 1<=budget<=8192:
+    if (arm not in ARMS or type(budget) is not int or not 1<=budget<=8192
+            or terminal_policy not in ('deferred','eager')
+            or (successor_limit is not None and (type(successor_limit) is not int or not 1<=successor_limit<=65536))):
         raise ValueError('unregistered search or budget')
     if arm in ('value_search','ndu_value','shuffled_value') and critic is None:
         raise ValueError('frozen critic required')
     started=time.perf_counter()
     counters=dict(popped_states=0,generated_successors=0,critic_examples=0,verifier_calls=0)
+    generation_exhausted=False
     root=tuple((Fraction(n),('n'+str(i),)) for i,n in enumerate(numbers))
     queue=[(0.,0,root)];seen={state_key(root)};serial=1
     while queue and counters['popped_states']<budget:
@@ -178,11 +184,22 @@ def search(numbers,goal,arm,budget,critic=None):
                     costs=counters,seconds=time.perf_counter()-started)
             continue
         children=[]
-        for child in successors(terms):
+        remaining=None if successor_limit is None else max(0,successor_limit-counters['generated_successors'])
+        stream=successors(terms) if remaining is None else itertools.islice(successors(terms),remaining)
+        for child in stream:
             counters['generated_successors']+=1
             key=state_key(child)
             if key in seen: continue
-            seen.add(key);children.append(child)
+            seen.add(key)
+            if terminal_policy=='eager' and len(child)==1:
+                counters['verifier_calls']+=1
+                if verify(numbers,goal,child[0][1]):
+                    return dict(found=True,proof=child[0][1],budget_exhausted=False,
+                        costs=counters,seconds=time.perf_counter()-started)
+                continue
+            children.append(child)
+        if successor_limit is not None and counters['generated_successors']>=successor_limit:
+            generation_exhausted=True
         if not children: continue
         depth=4-len(children[0])
         if arm in ('value_search','ndu_value','shuffled_value'):
@@ -205,7 +222,7 @@ def search(numbers,goal,arm,budget,critic=None):
             children,values=[children[best]],[values[best]]
         for child,value in zip(children,values,strict=True):
             heapq.heappush(queue,(-value,serial,child));serial+=1
-    return dict(found=False,proof=None,budget_exhausted=bool(queue),costs=counters,
+    return dict(found=False,proof=None,budget_exhausted=bool(queue) or generation_exhausted,costs=counters,
         seconds=time.perf_counter()-started)
 
 
@@ -244,7 +261,6 @@ def run(output):
     (output/'prediction-seal.json').write_text(json.dumps(dict(sha256=answer_sha,scoring_started=False))+'\n')
     if seals!={k:model_digest(m) for k,m in models.items()}:
         raise ValueError('evaluation mutated frozen critic')
-    # Evaluation oracle runs AFTER the complete proof journal and never changes policy.
     labeler=ExactLabels()
     possible={digest(n):labeler.solve(tuple(Fraction(v) for v in n),24) for n in evaluation}
     for row in records:
