@@ -602,17 +602,14 @@ fn production_microbatch_returns_effect_outcome_only_after_metrics_flush() {
         .enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();
     let result = worker.poll_and_execute(101).unwrap();
-    assert!(result.metrics_durable);
+    assert!(result.metrics_flush_acknowledged);
     assert!(matches!(
         &result.poll.outcomes[0].result,
         Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
     ));
     assert!(worker.production_metrics_ready());
     assert_eq!(worker.pending(), 0);
-    assert_eq!(
-        sink.0.lock().unwrap().len(),
-        3,
-    );
+    assert_eq!(sink.0.lock().unwrap().len(), 3);
 }
 
 #[test]
@@ -680,7 +677,7 @@ fn failed_flush_does_not_erase_completed_final_use_outcome_or_trigger_retry() {
         .enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();
     let result = worker.poll_and_execute(101).unwrap();
-    assert!(!result.metrics_durable);
+    assert!(!result.metrics_flush_acknowledged);
     assert!(matches!(
         &result.poll.outcomes[0].result,
         Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
