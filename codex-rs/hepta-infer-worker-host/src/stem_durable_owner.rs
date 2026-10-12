@@ -124,12 +124,25 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 },
             )
             .map_err(|_| StemDurableErrorV1::JournalOutcomeUnknown)?;
-        let executed = self.run_verified_stem_feature_receipt_v1(
-            trusted_authority,
-            verified_use,
-            now_ms,
-            proposed,
-        );
+        let executed = self
+            .run_verified_stem_feature_receipt_v1(
+                trusted_authority,
+                verified_use,
+                now_ms,
+                proposed,
+            )
+            .and_then(|receipt| {
+                // Do not durably claim success if the signed binding or
+                // no-authority Worker boundary ever diverges. A mismatch is
+                // conservatively an unknown post-assignment outcome.
+                if receipt.final_use_binding_digest != Some(binding_digest)
+                    || receipt.authority.grants_any()
+                    || receipt.worker_receipt.authority.grants_any()
+                {
+                    return Err(crate::model_worker::Error::FinalUseDenied);
+                }
+                Ok(receipt)
+            });
         let (terminal_status, output_digest, observed_digest) = match &executed {
             Ok(result) => {
                 let status = match result.worker_receipt.status {
