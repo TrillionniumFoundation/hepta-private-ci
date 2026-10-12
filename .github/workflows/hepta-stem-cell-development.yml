@@ -34,7 +34,8 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/stem-development-venv"
           "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install \
             --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 safetensors==0.7.0
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 safetensors==0.7.0 packaging==25.0
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -c 'import torch; from safetensors.torch import load, save; x = torch.arange(4); assert torch.equal(load(save({"x": x}))["x"], x)'
       - name: Execute actual arithmetic and existing repository entrypoints
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -44,6 +45,7 @@ jobs:
           {
             git rev-parse HEAD
             git rev-parse HEAD^{tree}
+            git archive --format=tar.gz HEAD qualification/stem-cell-v1 > "$RUNNER_TEMP/stem-development-source.tar.gz"
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip freeze
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
               test_shared_encoder_eviction development_tensor_checks development_repository_checks \
@@ -56,7 +58,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: stem-development-${{ matrix.source }}-${{ github.run_id }}
-          path: ${{ runner.temp }}/stem-development-tests.txt
+          path: |
+            ${{ runner.temp }}/stem-development-tests.txt
+            ${{ runner.temp }}/stem-development-source.tar.gz
           if-no-files-found: warn
           retention-days: 14
       - name: Check source unchanged
@@ -93,7 +97,8 @@ jobs:
           git archive --format=tar.gz HEAD qualification/stem-cell-v1 > "$RUNNER_TEMP/stem-public-evidence/source.tar.gz"
           python3 -m venv "$RUNNER_TEMP/stem-public-venv"
           "$RUNNER_TEMP/stem-public-venv/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
-          "$RUNNER_TEMP/stem-public-venv/bin/pip" install numpy==2.2.6 safetensors==0.7.0 transformers==4.57.3 huggingface-hub==0.36.0
+          "$RUNNER_TEMP/stem-public-venv/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0 transformers==4.57.3 huggingface-hub==0.36.0
+          "$RUNNER_TEMP/stem-public-venv/bin/python" -c 'import torch; from safetensors.torch import load, save; x = torch.arange(4); assert torch.equal(load(save({"x": x}))["x"], x)'
           "$RUNNER_TEMP/stem-public-venv/bin/pip" freeze > "$RUNNER_TEMP/stem-public-evidence/environment.txt"
       - name: Provision only pinned public bytes, keeping any failed attempt
         run: |
@@ -180,7 +185,8 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/stem-cached-evidence/source-sha.txt"
           python3 -m venv "$RUNNER_TEMP/stem-cached-venv"
           "$RUNNER_TEMP/stem-cached-venv/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
-          "$RUNNER_TEMP/stem-cached-venv/bin/pip" install numpy==2.2.6 safetensors==0.7.0
+          "$RUNNER_TEMP/stem-cached-venv/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0
+          "$RUNNER_TEMP/stem-cached-venv/bin/python" -c 'import torch; from safetensors.torch import load, save; x = torch.arange(4); assert torch.equal(load(save({"x": x}))["x"], x)'
           "$RUNNER_TEMP/stem-cached-venv/bin/pip" freeze > "$RUNNER_TEMP/stem-cached-evidence/environment.txt"
       - name: Acquire one existing artifact without downloading model weights
         env:
