@@ -33,6 +33,7 @@ struct FixturePort {
     tamper_frozen_during_preflight: Option<std::path::PathBuf>,
     tamper_during_live_readback: Rc<RefCell<Option<std::path::PathBuf>>>,
     revoke_previous_during_preflight: bool,
+    revoke_selection_during_preflight: Option<Rc<RefCell<bool>>>,
 }
 
 impl FixturePort {
@@ -44,6 +45,7 @@ impl FixturePort {
             tamper_frozen_during_preflight: None,
             tamper_during_live_readback: Rc::new(RefCell::new(None)),
             revoke_previous_during_preflight: false,
+            revoke_selection_during_preflight: None,
         }
     }
 
@@ -86,6 +88,9 @@ impl CellSplitExecutionPortV1 for FixturePort {
         }
         if self.revoke_previous_during_preflight {
             self.observed.borrow_mut().commits.clear();
+        }
+        if let Some(selected) = &self.revoke_selection_during_preflight {
+            *selected.borrow_mut() = false;
         }
         Ok(())
     }
@@ -654,6 +659,37 @@ fn completed_history_must_be_verified_against_current_original_owners() {
         Err(CellSplitExecutionErrorV1::External(_))
     ));
     assert_eq!(state.borrow().executions, 4, "no effect replay");
+}
+
+#[test]
+fn current_selector_revocation_during_preflight_never_prepares_a_new_intent() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let selected = Rc::new(RefCell::new(true));
+    let mut port = FixturePort::new(state.clone());
+    port.revoke_selection_during_preflight = Some(selected.clone());
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+
+    let mut admission_reads = 0_usize;
+    let result = owner.advance_with_admission(|| {
+        admission_reads += 1;
+        if *selected.borrow() {
+            Ok(())
+        } else {
+            Err("independent Selector revoked after original-owner preflight".to_string())
+        }
+    });
+
+    assert!(matches!(
+        result,
+        Err(CellSplitExecutionErrorV1::External(message))
+            if message.contains("Selector revoked")
+    ));
+    assert_eq!(admission_reads, 1, "post-preflight admission was exercised");
+    assert_eq!(owner.completed_steps(), 0);
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+    assert_eq!(state.borrow().executions, 0, "no original owner effect");
 }
 
 #[test]
