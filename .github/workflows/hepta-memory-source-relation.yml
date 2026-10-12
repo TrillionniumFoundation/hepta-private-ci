@@ -36,7 +36,8 @@ jobs:
       - name: Keep Python formatting fail closed
         run: |
           set -euo pipefail
-          /tmp/relation-python/bin/ruff format --diff scripts/memory_cell/source_relation_margin.py scripts/memory_cell/test_source_relation_margin.py
+          /tmp/relation-python/bin/ruff format --diff scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/stem_frozen_retrieval_grid.py scripts/memory_cell/test_stem_frozen_retrieval_grid.py
+          /tmp/relation-python/bin/ruff format --check scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py scripts/memory_cell/stem_frozen_retrieval_grid.py scripts/memory_cell/test_stem_frozen_retrieval_grid.py
           /tmp/relation-python/bin/ruff format --check scripts/memory_cell/source_relation_margin.py scripts/memory_cell/test_source_relation_margin.py
       - name: Preserve source and tested commit, even on failure
         if: always()
