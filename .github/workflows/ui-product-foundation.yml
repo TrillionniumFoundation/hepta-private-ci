@@ -137,6 +137,8 @@ jobs:
           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
           node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
+          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_font_diagnostic_browser.py -v
+          node --test apps/hepta-control-ui/test/font-delivery-diagnostic.test.mjs
           node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
       - id: default_build
@@ -310,4 +312,48 @@ jobs:
           name: product-robrix-${{ matrix.lane }}-summary-${{ env.SOURCE_SHA }}
           path: apps/hepta-control-ui/test-results/evidence-groups/summary/
           include-hidden-files: true
+          if-no-files-found: warn
+      # All ordinary acceptance checks and evidence uploads precede optional work.
+      # Opt-in evidence only: no required acceptance step is waived or replaced.
+      - id: font_diagnostic_browser
+        name: Install hash-pinned diagnostic browser (not acceptance)
+        if: always() && steps.product_gateway_build.outcome == 'success' && contains(github.event.pull_request.labels.*.name, 'ui-font-diagnostic')
+        continue-on-error: true
+        timeout-minutes: 3
+        run: |
+          python3 apps/hepta-control-ui/tools/install-font-diagnostic-browser.py "$RUNNER_TEMP/font-diagnostic-browser"
+          echo "HEPTA_FONT_DIAGNOSTIC_BROWSER=$RUNNER_TEMP/font-diagnostic-browser/chrome-headless-shell-linux64/chrome-headless-shell" >> "$GITHUB_ENV"
+      - name: Compare unchanged product assertions and SDK transport (not acceptance)
+        if: always() && steps.font_diagnostic_browser.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 12
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_GATEWAY_EXAMPLE: ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview
+        run: xvfb-run -a npx playwright test --config=playwright.font-diagnostic.config.mjs
+      - name: Compare Rust fixture font use and pixels (not acceptance)
+        if: always() && steps.fixture_build.outcome == 'success' && steps.font_diagnostic_browser.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 8
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_ROBRIX_FIXTURES: "1"
+          HEPTA_FONT_DIAGNOSTIC_SUITE: fixture
+        run: xvfb-run -a npx playwright test --config=playwright.font-diagnostic.config.mjs
+      - name: Require every diagnostic fixture semantic pixel check (not acceptance)
+        if: always() && steps.fixture_build.outcome == 'success' && steps.font_diagnostic_browser.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 6
+        env:
+          SOURCE_SHA: ${{ env.SOURCE_SHA }}
+        run: node apps/hepta-control-ui/tools/verify-font-diagnostic-evidence.mjs apps/hepta-control-ui/test-results/font-diagnostic-fixture
+      - name: Preserve failed and successful font diagnostic arms without changing acceptance
+        if: always() && contains(github.event.pull_request.labels.*.name, 'ui-font-diagnostic')
+        timeout-minutes: 2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: font-diagnostic-only-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            apps/hepta-control-ui/test-results/font-diagnostic-*/
+            apps/hepta-control-ui/test-results/font-diagnostic-*-results.json
           if-no-files-found: warn

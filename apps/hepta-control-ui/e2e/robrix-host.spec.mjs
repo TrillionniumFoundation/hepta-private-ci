@@ -1,5 +1,7 @@
 // Real canvas evidence. OCR is a necessary glyph regression, not full visual/a11y acceptance.
 import {test,expect} from '@playwright/test';
+import {observeFontDelivery} from '../tools/font-delivery-diagnostic.mjs';
+import {recordDiagnosticBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
 import {sharedFontFamilyReady} from '../tools/robrix-font-readiness.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
@@ -7,7 +9,9 @@ import {execFileSync} from 'node:child_process';
 import {captureSchedule} from '../tools/robrix-pixel-plan.mjs';
 import {screenshotWordCenter,screenshotConversationTabs} from '../tools/verify-robrix-pixels.mjs';
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
- test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName},testInfo)=>{
+ test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName,browser},testInfo)=>{
+  await recordDiagnosticBrowser(browser,testInfo);
+  let sdkDelivery;
   let phase='application';
   const themeControlPoints=new Map();
   const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
@@ -128,6 +132,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   }
   try {
+   if(testInfo.project.metadata.fontDeliveryObserver)sdkDelivery=await observeFontDelivery(page,JSON.parse(await readFile(fixtures?'dist-robrix-fixtures/build-manifest.json':'dist/build-manifest.json','utf8')));
    await page.setViewportSize(viewport);await page.goto('/');
    await expect(page.locator('canvas')).toBeVisible();
    await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
@@ -201,15 +206,18 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     captured=await capture('robrix-jump-to-latest');
    }
    await assertApplicationHealth();
+   if(sdkDelivery)await sdkDelivery.check();
 
   } finally {
+   try {
    for(const capture of pixelCaptures)capture.observedThemePoint=themeControlPoints.get(capture.viewport.width)??null;
-   await writeFile(testInfo.outputPath('pixel-plan.json'),JSON.stringify({sourceSha,browser:browserName,initialWidth:viewport.width,fixtures,captures:pixelCaptures,captureTimings,controlTimings},null,2));
+   await writeFile(testInfo.outputPath('pixel-plan.json'),JSON.stringify({sourceSha,browser:browserName,initialWidth:viewport.width,fixtures,captures:pixelCaptures,captureTimings,controlTimings,...(testInfo.project.metadata.diagnosticOnly?{diagnosticOnly:true,project:testInfo.project.name}:{})},null,2));
    const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize}))})).catch(()=>({}));
    const diagnostics=testInfo.outputPath('host-diagnostics.json');
    await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,scrollObservations,jumpObservations,geometryObservations,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
    if(testInfo.status!==testInfo.expectedStatus) console.log(JSON.stringify({scope:'fixture scroll diagnostics; not acceptance',browserName,viewport,scrollObservations,jumpObservations}));
    await testInfo.attach('host-diagnostics',{path:diagnostics,contentType:'application/json'});
+   } finally {if(sdkDelivery)await sdkDelivery.close(testInfo.outputPath('sdk-font-delivery.json'));}
   }
  });
 }

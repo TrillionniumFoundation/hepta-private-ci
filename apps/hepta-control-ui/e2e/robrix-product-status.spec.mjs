@@ -1,5 +1,7 @@
 // Real Rust UI + real gateway NotAttached path. This does not create a production host.
 import {test,expect} from '@playwright/test';
+import {observeFontDelivery} from '../tools/font-delivery-diagnostic.mjs';
+import {recordDiagnosticBrowser} from '../tools/font-diagnostic-browser-identity.mjs';
 import {readFile,writeFile} from 'node:fs/promises';
 import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
 import {createHash} from 'node:crypto';
@@ -7,7 +9,9 @@ import {readProductStatusPixels} from '../tools/product-status-pixels.mjs';
 import {auditProductConsole} from '../tools/product-console-audit.mjs';
 import {execFileSync} from 'node:child_process';
 import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
-for(const width of [1280,640])for(const scenario of ['timeout','navigation','background'])test(`actual missing-owner status ${width} ${scenario}`,async({page,baseURL},testInfo)=>{
+for(const width of [1280,640])for(const scenario of ['timeout','navigation','background'])test(`actual missing-owner status ${width} ${scenario}`,async({page,baseURL,browser},testInfo)=>{
+ await recordDiagnosticBrowser(browser,testInfo);
+ let sdkDelivery;
  const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
  expect(execFileSync('git',['status','--porcelain','--untracked-files=normal'],{encoding:'utf8'}).trim()).toBe('');
  const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -18,7 +22,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  expect(gateway.sourceCommit).toBe(sourceSha);
  expect(gateway.sourceTree).toBe(execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim());
  expect(hash(await readFile(binary))).toBe(gateway.binarySha256);
- const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway};
+ const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway,...(testInfo.project.metadata.diagnosticOnly?{diagnosticOnly:true,project:testInfo.project.name}:{})};
  await writeFile(testInfo.outputPath('binding.json'),JSON.stringify(binding,null,2)+'\n');
  await writeFile(testInfo.outputPath('ui-build-manifest.json'),manifestBytes);
  const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[],finishedResponses=[];const pendingFonts=new Set();
@@ -108,7 +112,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  page.on('requestfinished',request=>{pendingFonts.delete(request);if(font(request))fontEvent(request,'requestfinished');});
  page.on('requestfailed',request=>{pendingFonts.delete(request);if(font(request)){fontEvent(request,'requestfailed',{error:diagnosticError(request.failure()?.errorText)});faults.push({kind:'font request failed',url:request.url(),error:request.failure()?.errorText});}if(new URL(request.url()).pathname.startsWith('/api/hepta/'))networkFailures.push({...requestRecord(request),error:request.failure()?.errorText});});
  page.on('pageerror',error=>faults.push(error.message));
- page.on('console',message=>{const text=message.text(),location=message.location();const kind=/webgl.*context.*lost|context.*lost/i.test(text)?'context-lost':/webgl.*context.*restor|context.*restor/i.test(text)?'context-restored':/\[makepad\]\[http\]\[err\]/.test(text)?'sdk-http-error':/\[makepad\]\[http\]\[fail\]/.test(text)?'sdk-http-status-failure':'other';appendDiagnostic('consoleEvents',consoleEvents,{type:message.type(),kind,path:diagnosticPath(location.url),lineNumber:location.lineNumber,columnNumber:location.columnNumber,characters:text.length,phase,ms:diagnosticMs()});if(message.type()==='error')errors.push({text:message.text(),url:message.location().url,phase});});
+ page.on('console',message=>{const text=message.text(),location=message.location();const kind=/webgl.*context.*lost|context.*lost/i.test(text)?'context-lost':/context.*(?:restore|restoring|restoration)/i.test(text)?'context-restored':/\[makepad\]\[http\]\[err\]/.test(text)?'sdk-http-error':/\[makepad\]\[http\]\[fail\]/.test(text)?'sdk-http-status-failure':'other';appendDiagnostic('consoleEvents',consoleEvents,{type:message.type(),kind,path:diagnosticPath(location.url),lineNumber:location.lineNumber,columnNumber:location.columnNumber,characters:text.length,phase,ms:diagnosticMs()});if(message.type()==='error')errors.push({text:message.text(),url:message.location().url,phase});});
  page.on('response',response=>{
   const request=response.request();if(!font(request)||diagnosticComplete)return;
   if(fontResponseFinished.length>=512){diagnosticOverflow.fontEvents++;return;}
@@ -127,6 +131,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
   finishedResponses.push(response.finished().then(error=>{record.finished=error===null;record.finishError=error?String(error):null;},error=>{record.finishError=String(error);}));
  }});
  try {
+ if(testInfo.project.metadata.fontDeliveryObserver)sdkDelivery=await observeFontDelivery(page,manifest);
  await observeFontInitiators();
  await page.setViewportSize({width,height:800});await page.goto('/');
  await expect(page.locator('canvas')).toBeVisible();await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
@@ -155,6 +160,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  ]);
  await legacyReply.finished();await initialSdk503;
  proofs.initial={ownerState:'notAttached',ownerVerified:observation.passed,transportVerified:/runtime unavailable\s*\(Transport\)/i.test(text)};
+ if(sdkDelivery)await sdkDelivery.check();
  await audit('initial-read-audit');
  phase=scenario;
 
@@ -255,7 +261,7 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
      }
     }
    }catch{console.log('strict font lifecycle diagnostics could not be serialized');}
-   finally{if(cdp)await cdp.detach().catch(()=>{});}
+   finally{try{if(sdkDelivery)await sdkDelivery.close(testInfo.outputPath('sdk-font-delivery.json'));}finally{if(cdp)await cdp.detach().catch(()=>{});}}
   }
  }
 });
