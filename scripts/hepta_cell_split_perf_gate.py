@@ -20,16 +20,18 @@ TRACE_FIELD = "attempted_request_trace_sha256"
 # Hardware counters and request cardinalities are exact u64 quantities. Never
 # coerce them through float: 2**53 + 1 would round to 2**53 and could turn
 # inconsistent terminal accounting into an apparently matching measurement.
-COUNT_FIELDS = frozenset({
-    "attempted",
-    "completed",
-    "communication_bytes",
-    "rss_peak_bytes",
-    "native_backend_calls",
-    "native_batch_requests",
-    "fsync_count",
-    "failed_requests",
-})
+COUNT_FIELDS = frozenset(
+    {
+        "attempted",
+        "completed",
+        "communication_bytes",
+        "rss_peak_bytes",
+        "native_backend_calls",
+        "native_batch_requests",
+        "fsync_count",
+        "failed_requests",
+    }
+)
 MAX_U64 = (1 << 64) - 1
 
 FIELDS = (
@@ -66,8 +68,15 @@ def positive_number(value: Any, field: str, *, allow_zero: bool = True) -> float
 
 
 def exact_count(value: Any, field: str, *, allow_zero: bool = True) -> int:
-    if type(value) is not int or value < 0 or value > MAX_U64 or (not allow_zero and value == 0):
-        raise InvalidEvidence(f"{field}: expected exact unsigned 64-bit integer measurement")
+    if (
+        type(value) is not int
+        or value < 0
+        or value > MAX_U64
+        or (not allow_zero and value == 0)
+    ):
+        raise InvalidEvidence(
+            f"{field}: expected exact unsigned 64-bit integer measurement"
+        )
     return value
 
 
