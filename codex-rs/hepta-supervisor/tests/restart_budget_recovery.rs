@@ -297,19 +297,34 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     drop(supervisor);
 
     // A fourth crash after yet another supervisord recovery is budget
-    // exhaustion, not a fresh attempt 1.
+    // exhaustion, not a fresh attempt 1. Exhaustion is an explicit fault
+    // reported by the tick boundary; it must NEVER be reported as a
+    // successful empty TickReport or silently reset by recovery.
     let (mut supervisor, recovered) =
         Supervisor::recover(registry, control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    let exhausted = supervisor.tick(now);
+    assert_eq!(exhausted.faults.len(), 1);
+    assert_eq!(exhausted.faults[0].agent_id, agent_id);
+    assert_eq!(
+        exhausted.faults[0].message,
+        SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string()
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
         &event.kind,
         SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
     )));
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    // Exhaustion is terminal for this automatic restart window; a later
+    // supervisor tick cannot spend an extra attempt or fabricate a spawn.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(1)),
+        TickReport::default()
+    );
     assert_eq!(control.spawn_count(&agent_id), 4);
     Ok(())
 }

@@ -1,0 +1,75 @@
+name: Hepta P0 Cross-platform Regression Repairs
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - 'codex-rs/git-utils/src/git_process_tests.rs'
+      - 'codex-rs/hepta-supervisor/src/tick.rs'
+      - 'codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs'
+      - 'scripts/tests/test_hepta_ci_dependencies.py'
+      - '.github/workflows/hepta-p0-crossplatform-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-selector:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Exact dependency impact selector regressions
+        run: python3 -m unittest -v scripts.tests.test_hepta_ci_dependencies
+
+  rust-core-provider:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Pin original repo Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Rust formatting gate
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Provider terminal typed context tests
+        run: cargo +1.95.0 test --locked -p codex-core --lib client_provider_policy_tests -- --nocapture
+      - name: Strict provider client Clippy
+        run: cargo +1.95.0 clippy --locked -p codex-core --lib -- -D warnings
+
+  windows-git-process-tree:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Pin exact Windows Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Verify Windows wrapper process tree lifecycle
+        run: cargo +1.95.0 test --locked -p codex-git-utils --lib git_process::tests -- --nocapture
+
+  windows-supervisor-recovery:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact Windows toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Persist and replay automatic restarts on Windows
+        run: cargo +1.95.0 test --locked -p codex-hepta-supervisor --test restart_budget_recovery -- --nocapture
