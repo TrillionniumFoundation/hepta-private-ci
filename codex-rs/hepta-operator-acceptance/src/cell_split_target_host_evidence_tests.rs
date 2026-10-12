@@ -1093,6 +1093,53 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     assert_eq!(current.verification_count, 0);
 }
 
+/// An uncooperative process can delete the separately retained minimum
+/// while the Observer is fetching the four original owner signatures.
+#[cfg(unix)]
+struct RevokeMinimumDuringEffectRead {
+    inner: CurrentEffectFixture,
+    minimum_path: std::path::PathBuf,
+}
+
+#[cfg(unix)]
+impl crate::CellSplitExecutionPortV1 for RevokeMinimumDuringEffectRead {
+    type Error = &'static str;
+
+    fn preflight_uncommitted(
+        &mut self,
+        _intent: &crate::CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        Err("read-only Observer cannot prepare a minimum")
+    }
+
+    fn execute(
+        &mut self,
+        _intent: &crate::CellSplitExecutionIntentV1,
+    ) -> Result<crate::CellSplitExecutionReceiptV1, Self::Error> {
+        Err("read-only Observer cannot execute a split")
+    }
+
+    fn reconcile(
+        &mut self,
+        _intent: &crate::CellSplitExecutionIntentV1,
+    ) -> Result<Option<crate::CellSplitExecutionReceiptV1>, Self::Error> {
+        Err("read-only Observer cannot reconcile a split")
+    }
+
+    fn verify_committed(
+        &mut self,
+        intent: &crate::CellSplitExecutionIntentV1,
+        receipt: &crate::CellSplitExecutionReceiptV1,
+    ) -> Result<(), Self::Error> {
+        self.inner.verify_committed(intent, receipt)?;
+        if self.inner.verification_count == 2 {
+            std::fs::remove_file(&self.minimum_path)
+                .map_err(|_| "independent minimum revocation failed")?;
+        }
+        Ok(())
+    }
+}
+
 #[cfg(unix)]
 struct IndependentlyAdmittedJournalMinimum;
 
@@ -1207,6 +1254,21 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
             &minimum_store_key, &mut external, &mut denied,
         ).is_err(), "fresh minimum cannot conceal revoked owner receipts");
     assert_eq!(denied.verification_count, 1);
+
+    // The signed minimum must also remain live *after* the four individual
+    // effect readbacks. A revoked file between the first and final challenges
+    // must not be laundered into a successful deep Observer receipt.
+    let mut interrupted = RevokeMinimumDuringEffectRead {
+        inner: CurrentEffectFixture::new(&transcript),
+        minimum_path: root.path().join("independent-supervisor-minimum.json"),
+    };
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &minimum_store_key, &mut external, &mut interrupted,
+        ).is_err());
+    assert_eq!(interrupted.inner.verification_count, 4);
 }
 
 #[cfg(unix)]
