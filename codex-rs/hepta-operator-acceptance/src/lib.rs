@@ -178,6 +178,12 @@ pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcResponseV1;
 #[cfg(unix)]
 pub use cell_split_monotonic_rpc::CellSplitSupervisorMonotonicUnixPortV1;
 #[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicAuthoritativeRegistryV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicDurableFrontierV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcServiceV1;
+#[cfg(unix)]
 pub use cell_split_observer_join::verify_cell_split_observer_join_deep_v1;
 pub use cell_split_observer_join::CellSplitSignedObserverJoinV1;
 pub use cell_split_observer_join::cell_split_observer_join_payload_v1;

@@ -17,6 +17,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 use ed25519_dalek::Signature;
+use ed25519_dalek::Signer as _;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
@@ -189,6 +190,148 @@ fn canonical_digest(value: &str) -> bool {
             .bytes()
             .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
         && value.bytes().any(|byte| byte != b'0')
+}
+
+
+/// A typed high-water observation from the independently administered domain
+/// registry. Unlike a proposed revision, this is an observation fetched by
+/// domain alone from the registry's durable state. The source sequence is
+/// retained for independent consistency checks, not copied from the client.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitMonotonicDurableFrontierV1 {
+    pub journal_domain_id: String,
+    pub journal_authority_epoch: u64,
+    pub journal_revision: u64,
+    pub minimum_checkpoint_digest: String,
+    pub original_store_record_digest: String,
+    pub durable_source_sequence: u64,
+}
+
+/// The external owner MUST read its own authoritative monotonic domain
+/// registry and independently verify the committed record on every query.
+/// This interface has no allow-all fallback and no mutation method. A local
+/// reconstructed Supervisor checkpoint is not an acceptable implementation.
+pub trait CellSplitMonotonicAuthoritativeRegistryV1 {
+    type Error: std::fmt::Display;
+
+    fn read_committed_domain(
+        &mut self,
+        domain: &str,
+    ) -> Result<CellSplitMonotonicDurableFrontierV1, Self::Error>;
+
+    fn verify_still_current(
+        &mut self,
+        committed: &CellSplitMonotonicDurableFrontierV1,
+    ) -> Result<bool, Self::Error>;
+}
+
+/// One read-only signing server. It cannot let a client supply a revision,
+/// epoch or expected digest: only the domain and fresh nonce cross this RPC.
+/// Production must serve it as a separate process with independent signer,
+/// peer ACLs and rollback-resistant registry custody.
+pub struct CellSplitMonotonicRpcServiceV1<R: CellSplitMonotonicAuthoritativeRegistryV1> {
+    source: R,
+    signer: ed25519_dalek::SigningKey,
+    timeout: Duration,
+}
+
+impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV1<R> {
+    pub fn new(
+        source: R,
+        signer: ed25519_dalek::SigningKey,
+        timeout: Duration,
+    ) -> Result<Self, CellSplitMonotonicRpcErrorV1> {
+        if signer.verifying_key().is_weak()
+            || timeout < Duration::from_millis(1)
+            || timeout > Duration::from_secs(30)
+        {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
+        Ok(Self { source, signer, timeout })
+    }
+
+    /// Authenticate one request against a *currently durable* remote-domain
+    /// registry entry. Sign only after repeated source reads, then recheck
+    /// once more before sending: a revoked or advancing frontier never gets
+    /// a positive response from this owner. This is not a cross-owner atomic
+    /// snapshot; separate monotonic custody is still required.
+    pub fn serve_connection(
+        &mut self,
+        stream: &mut UnixStream,
+    ) -> Result<(), CellSplitMonotonicRpcErrorV1> {
+        let request: CellSplitMonotonicRpcRequestV1 =
+            receive_frame_with_deadline(stream, self.timeout)?;
+        if request.schema != CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1
+            || request.method != READ_METHOD
+            || request.journal_domain_id.is_empty()
+            || request.journal_domain_id.len() > 256
+            || codex_hepta_types::StableId::new(request.journal_domain_id.clone()).is_err()
+            || !canonical_digest(&request.challenge_nonce)
+        {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
+
+        let first = self.read_verified_domain(&request.journal_domain_id)?;
+        let second = self.read_verified_domain(&request.journal_domain_id)?;
+        if first != second {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
+        let mut proof = CellSplitSupervisorMonotonicFrontierV1 {
+            schema: CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1.to_owned(),
+            journal_domain_id: first.journal_domain_id.clone(),
+            journal_authority_epoch: first.journal_authority_epoch,
+            journal_revision: first.journal_revision,
+            minimum_checkpoint_digest: first.minimum_checkpoint_digest.clone(),
+            original_store_record_digest: first.original_store_record_digest.clone(),
+            challenge_nonce: request.challenge_nonce,
+            signature_bytes: Vec::new(),
+        };
+        proof.signature_bytes = self
+            .signer
+            .sign(
+                &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                    .map_err(|_| CellSplitMonotonicRpcErrorV1::Invalid)?,
+            )
+            .to_bytes()
+            .to_vec();
+        // Signing is not a commit. A fresh third read must prove the same
+        // durable source before writing this positive evidence to the socket.
+        if self.read_verified_domain(&first.journal_domain_id)? != first {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
+        send_frame_with_deadline(
+            stream,
+            &CellSplitMonotonicRpcResponseV1 {
+                schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.to_owned(),
+                method: READ_METHOD.to_owned(),
+                proof: Some(proof),
+                error: None,
+            },
+            self.timeout,
+        )?;
+        Ok(())
+    }
+
+    fn read_verified_domain(
+        &mut self,
+        domain: &str,
+    ) -> Result<CellSplitMonotonicDurableFrontierV1, CellSplitMonotonicRpcErrorV1> {
+        let current = self.source.read_committed_domain(domain)
+            .map_err(|error| CellSplitMonotonicRpcErrorV1::Denied(error.to_string()))?;
+        if current.journal_domain_id != domain
+            || current.journal_authority_epoch == 0
+            || current.journal_revision == 0
+            || current.durable_source_sequence == 0
+            || !canonical_digest(&current.minimum_checkpoint_digest)
+            || !canonical_digest(&current.original_store_record_digest)
+            || !self.source.verify_still_current(&current)
+                .map_err(|error| CellSplitMonotonicRpcErrorV1::Denied(error.to_string()))?
+        {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
+        Ok(current)
+    }
 }
 
 #[cfg(test)]

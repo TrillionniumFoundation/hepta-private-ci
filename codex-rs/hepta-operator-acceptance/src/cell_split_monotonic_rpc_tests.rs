@@ -256,3 +256,165 @@ fn invalid_and_dual_status_envelopes_fail_closed() {
     ));
     server.join().expect("service");
 }
+
+
+/// A disk-backed *test-only* view of an external domain high-water registry.
+/// A real deployment must replace this with independently operated monotonic
+/// custody; a signed local file cannot detect full directory restoration.
+struct DiskAuthoritativeRegistry {
+    file: PathBuf,
+    reads: usize,
+    revoke_on_read: Option<usize>,
+}
+
+impl DiskAuthoritativeRegistry {
+    fn open(file: PathBuf) -> Self {
+        Self {
+            file,
+            reads: 0,
+            revoke_on_read: None,
+        }
+    }
+}
+
+impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
+    type Error = std::io::Error;
+
+    fn read_committed_domain(
+        &mut self,
+        domain: &str,
+    ) -> Result<CellSplitMonotonicDurableFrontierV1, Self::Error> {
+        self.reads += 1;
+        if self.revoke_on_read == Some(self.reads) {
+            std::fs::remove_file(&self.file)?;
+        }
+        let bytes = std::fs::read(&self.file)?;
+        let record: CellSplitMonotonicDurableFrontierV1 =
+            serde_json::from_slice(&bytes).map_err(std::io::Error::other)?;
+        if record.journal_domain_id != domain
+            || crate::durable::canonical_json(&record)
+                .map_err(std::io::Error::other)? != bytes
+        {
+            return Err(std::io::Error::other("untrusted domain registry record"));
+        }
+        Ok(record)
+    }
+
+    fn verify_still_current(
+        &mut self,
+        committed: &CellSplitMonotonicDurableFrontierV1,
+    ) -> Result<bool, Self::Error> {
+        let bytes = std::fs::read(&self.file)?;
+        Ok(crate::durable::canonical_json(committed)
+            .map_err(std::io::Error::other)? == bytes)
+    }
+}
+
+fn write_test_registry(root: &Path) -> PathBuf {
+    let path = root.join("external-domain-highwater.json");
+    let record = CellSplitMonotonicDurableFrontierV1 {
+        journal_domain_id: DOMAIN.to_owned(),
+        journal_authority_epoch: 7,
+        journal_revision: 10,
+        minimum_checkpoint_digest: "aa".repeat(32),
+        original_store_record_digest: "bb".repeat(32),
+        durable_source_sequence: 41,
+    };
+    crate::durable::write_private_new(
+        &path,
+        &crate::durable::canonical_json(&record).expect("canonical highwater"),
+    ).expect("fsynced external fixture registry");
+    path
+}
+
+#[test]
+fn independent_server_reads_real_durable_domain_and_signs_client_challenge() {
+    let root = tempfile::tempdir().expect("private registry");
+    let file = write_test_registry(root.path());
+    let (socket, listener) = listener(root.path());
+    let server = thread::spawn(move || {
+        let (mut peer, _) = listener.accept().expect("real Unix socket");
+        let owner = DiskAuthoritativeRegistry::open(file);
+        let mut service = CellSplitMonotonicRpcServiceV1::new(
+            owner,
+            signer(),
+            Duration::from_secs(3),
+        ).expect("separately pinned signer");
+        service.serve_connection(&mut peer)
+            .expect("fresh durable frontier");
+    });
+    let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
+        socket, signer().verifying_key(), Duration::from_secs(3),
+    ).expect("original trusted signer");
+    let accepted = client.read_domain_frontier(DOMAIN, &"aa".repeat(32))
+        .expect("independently signed original source");
+    assert_eq!(accepted.journal_authority_epoch, 7);
+    assert_eq!(accepted.journal_revision, 10);
+    assert_eq!(accepted.challenge_nonce, "aa".repeat(32));
+    server.join().expect("owner finished");
+}
+
+#[test]
+fn independent_server_fences_revoked_domain_before_signed_reply() {
+    let root = tempfile::tempdir().expect("private registry");
+    let file = write_test_registry(root.path());
+    let mut backend = DiskAuthoritativeRegistry::open(file.clone());
+    // First read succeeds; the next read observes an externally revoked
+    // authoritative record and may not sign the old current snapshot.
+    backend.revoke_on_read = Some(2);
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        backend,
+        signer(),
+        Duration::from_secs(2),
+    ).expect("independent owner");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: DOMAIN.into(),
+            challenge_nonce: "cc".repeat(32),
+        },
+    ).expect("read-only request");
+    assert!(service.serve_connection(&mut server).is_err());
+    assert!(!file.exists());
+}
+
+#[test]
+fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
+    let root = tempfile::tempdir().expect("private registry");
+    let file = write_test_registry(root.path());
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file.clone()),
+        signer(),
+        Duration::from_secs(2),
+    ).expect("trusted signer");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("pair");
+    send_frame(
+        &mut client,
+        &serde_json::json!({
+            "schema": CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1,
+            "method": READ_METHOD,
+            "journalDomainId": DOMAIN,
+            "challengeNonce": "dd".repeat(32),
+            "journalRevision": 999,
+        }),
+    ).expect("forged self-affirming request");
+    assert!(service.serve_connection(&mut server).is_err());
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: "unrelated.domain".into(),
+            challenge_nonce: "ee".repeat(32),
+        },
+    ).expect("wrong domain request");
+    assert!(service.serve_connection(&mut server).is_err());
+    assert!(file.exists());
+}

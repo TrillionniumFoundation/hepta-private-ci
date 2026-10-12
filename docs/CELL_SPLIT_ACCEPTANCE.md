@@ -350,6 +350,28 @@ activation remains false pending deployment-owned monotonic custody, exact
 HEAD CI, fault recovery, independent NDU/Selector final-use and measured
 target-host evidence.
 
+### Read-only monotonic frontier Unix signing service (source boundary)
+
+The existing externally pinned \`CellSplitSupervisorMonotonicUnixPortV1\`
+has a corresponding read-only \`CellSplitMonotonicRpcServiceV1\` serving
+the exact four-field domain-and-challenge protocol. The service delegates
+all high-water observation to an independently administered
+\`CellSplitMonotonicAuthoritativeRegistryV1\`, which must read real durable
+domain state and validate that state independently. It reads and verifies
+the same epoch, revision, checkpoint digest, immutable record digest, and
+source sequence repeatedly, signs only the freshly supplied verifier
+challenge, and checks the source again before returning positive proof.
+Absent/tampered/revoked state and requests containing a caller-supplied
+revision are denied. Source-only disk fixtures test the signed socket,
+revocation and malformed request; they are not production registry owners.
+
+**Not production-qualified:** The independent monotonic registry still
+needs a real separately deployed, rollback-resistant persistence owner,
+key provisioning, endpoint access controls, current-domain high-water
+advancement and exact-HEAD CI. A locally signed fixture, local fsync or
+advisory lock is NOT a substitute for external anti-rollback custody.
+Neither service nor client grants split authorization.
+
 ### Retrospective rollback evidence is not a live successor route
 
 The signed target-host lifecycle also includes rollback, tombstone and
