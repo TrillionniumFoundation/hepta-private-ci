@@ -189,10 +189,12 @@ impl CpuGatedHead {
         }
 
         let mut outputs = (0..lanes.len())
-            .map(|_| (
-                Vec::with_capacity(self.output_width),
-                Vec::with_capacity(self.output_width),
-            ))
+            .map(|_| {
+                (
+                    Vec::with_capacity(self.output_width),
+                    Vec::with_capacity(self.output_width),
+                )
+            })
             .collect::<Vec<_>>();
         // Bounded at 32 lanes. Reuse Q48 accumulators across output rows.
         let mut acc = vec![[0_i128; 3]; lanes.len()];
@@ -210,11 +212,8 @@ impl CpuGatedHead {
                 let index = offset + col;
                 let gate_w = self.gate_weights_q24.get(index).copied().unwrap_or(0) as i128;
                 let drive_w = self.drive_weights_q24[index] as i128;
-                let predict_w = self
-                    .prediction_weights_q24
-                    .get(index)
-                    .copied()
-                    .unwrap_or(0) as i128;
+                let predict_w =
+                    self.prediction_weights_q24.get(index).copied().unwrap_or(0) as i128;
                 for (out, &lane) in acc.iter_mut().zip(lanes) {
                     let input_index = lane * input_width + col;
                     let x = packed_inputs[input_index] as i128;
@@ -236,7 +235,6 @@ impl CpuGatedHead {
         }
         Ok(outputs)
     }
-
 }
 
 fn round_q48_to_q24(value: i128) -> Result<i64, Error> {
@@ -481,9 +479,10 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
                 .ok_or(Error::ArithmeticOverflow)?;
             tracked_accumulator_peak = tracked_accumulator_peak
                 .max(u64::try_from(accumulator_bytes).map_err(|_| Error::ArithmeticOverflow)?);
-            for (&index, output) in lanes
-                .iter()
-                .zip(head.infer_batch(&contiguous, &lanes, width)?)
+            for (&index, output) in
+                lanes
+                    .iter()
+                    .zip(head.infer_batch(&contiguous, &lanes, width)?)
             {
                 results[index] = Some(output);
             }
@@ -492,9 +491,7 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
         let mut members = Vec::with_capacity(requests.len());
         let mut tracked_outputs = 0u64;
         for (index, request) in requests.iter().enumerate() {
-            let (drive, prediction) = results[index]
-                .take()
-                .ok_or(Error::FeatureBatchMismatch)?;
+            let (drive, prediction) = results[index].take().ok_or(Error::FeatureBatchMismatch)?;
             let temporary = (drive.capacity() + prediction.capacity())
                 .checked_mul(std::mem::size_of::<i64>())
                 .ok_or(Error::ArithmeticOverflow)?;
