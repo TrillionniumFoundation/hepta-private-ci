@@ -372,7 +372,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 self.poisoned = true;
                 return Err(Error::PayloadMismatch);
             }
-            let features = batch_result.feature;
+            let mut features = batch_result.feature;
             if let Err(error) = super::validate_neuron_memory_budget(
                 other_model_resident_bytes,
                 loaded.handle.observed_memory_bytes,
@@ -428,6 +428,11 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                     return Err(Error::FeatureContract);
                 }
             };
+            // Normalize the accounted resident floor BEFORE hashing the
+            // public observation. Otherwise its digest would bind a smaller
+            // private driver claim than the bytes exposed to consumers.
+            features.observed_memory_bytes =
+                features.observed_memory_bytes.max(resident_floor);
             let observation_digest =
                 observation_digest_v2(request, &features, status, self.generation, identity_digest);
             outputs.push(SharedNeuronFeatureResultV2 {
@@ -443,8 +448,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 status,
                 drive_q24: features.drive_q24,
                 prediction_q24: features.prediction_q24,
-                // Reusing an Arc does not change the loaded-model resident floor.
-                observed_memory_bytes: features.observed_memory_bytes.max(resident_floor),
+                observed_memory_bytes: features.observed_memory_bytes,
                 transient_allocation_bytes: features.transient_allocation_bytes,
                 queue_age_micros: features.queue_age_micros,
                 latency_micros: features.latency_micros,
