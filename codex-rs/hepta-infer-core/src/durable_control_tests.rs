@@ -170,3 +170,155 @@ fn invalid_event_is_rejected_before_append() {
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }
+
+fn native_request(id: &str) -> native::NativeRequest {
+    native::NativeRequest {
+        request_id: id.to_string(),
+        principal_id: "native-principal".to_string(),
+        worker_generation: 1,
+        model: "native-model".to_string(),
+        payload_digest: "a".repeat(64),
+    }
+}
+
+#[test]
+fn failed_legacy_append_preserves_all_records() {
+    let location = path("failed-legacy-append");
+    let mut owner = DurableInferenceControl::open(&location, 8).expect("owner");
+    owner.submit(100, request()).expect("target");
+    let mut unrelated = request();
+    unrelated.request_id = "unrelated".to_string();
+    owner.submit(100, unrelated).expect("unrelated");
+    owner
+        .reserve_native(native_request("native"), 1)
+        .expect("native record");
+    let legacy_before = owner.records.clone();
+    let native_before = owner.native.records.clone();
+    let journal_bytes_before = owner.journal_bytes;
+    drop(owner);
+    let bytes_before = fs::read(&location).expect("committed bytes");
+    let mut owner = DurableInferenceControl::open(&location, 8).expect("reopen");
+    let held_writer = std::mem::replace(
+        &mut owner.file,
+        File::open(&location).expect("read-only append handle"),
+    );
+    assert!(matches!(owner.cancel("request.1", 1), Err(Error::Io(_))));
+    assert!(owner.poisoned);
+    assert_eq!(owner.records, legacy_before);
+    assert_eq!(owner.native.records, native_before);
+    assert_eq!(owner.journal_bytes, journal_bytes_before);
+    assert_eq!(owner.cancel("unrelated", 1), Err(Error::WriterUnavailable));
+    assert!(matches!(
+        DurableInferenceControl::open(&location, 8),
+        Err(Error::WriterUnavailable)
+    ));
+    drop(owner);
+    drop(held_writer);
+    assert_eq!(fs::read(&location).expect("unchanged bytes"), bytes_before);
+    let recovered = DurableInferenceControl::open(&location, 8).expect("recover");
+    assert_eq!(recovered.records, legacy_before);
+    assert_eq!(recovered.native.records, native_before);
+    drop(recovered);
+    fs::remove_file(location).expect("cleanup");
+}
+
+#[test]
+fn legacy_mutation_keeps_unrelated_record_storage() {
+    let location = path("legacy-no-unrelated-clone");
+    let mut owner = DurableInferenceControl::open(&location, 8).expect("owner");
+    owner.submit(100, request()).expect("target");
+    let mut unrelated = request();
+    unrelated.request_id = "unrelated".to_string();
+    owner.submit(100, unrelated).expect("unrelated");
+    let before = owner.get("unrelated").expect("unrelated").clone();
+    let payload_buffer = owner
+        .get("unrelated")
+        .expect("unrelated")
+        .request
+        .payload_digest
+        .as_ptr();
+    owner.cancel("request.1", 1).expect("cancel target");
+    let after = owner.get("unrelated").expect("unrelated");
+    assert_eq!(after, &before);
+    assert_eq!(
+        after.request.payload_digest.as_ptr(),
+        payload_buffer,
+        "a mutation must not replace an unrelated live payload allocation"
+    );
+    drop(owner);
+    let recovered = DurableInferenceControl::open(&location, 8).expect("reopen");
+    assert_eq!(recovered.get("unrelated"), Some(&before));
+    drop(recovered);
+    fs::remove_file(location).expect("cleanup");
+}
+
+fn mixed_journal_frames(
+    legacy_id: &str,
+    native_id: &str,
+) -> (Vec<u8>, Vec<u8>, RequestRecord, native::NativeRunRecord) {
+    let location = path("mixed-namespace-source");
+    let mut legacy = DurableInferenceControl::open(&location, 8).expect("legacy owner");
+    let mut requested = request();
+    requested.request_id = legacy_id.to_string();
+    legacy.submit(100, requested).expect("legacy submit");
+    legacy.cancel(legacy_id, 1).expect("valid legacy tail");
+    let legacy_record = legacy.get(legacy_id).expect("legacy record").clone();
+    drop(legacy);
+    let legacy_bytes = fs::read(&location).expect("legacy frames");
+    fs::remove_file(&location).expect("remove legacy fixture");
+
+    let mut native = DurableInferenceControl::open(&location, 8).expect("native owner");
+    native
+        .reserve_native(native_request(native_id), 1)
+        .expect("native reserve");
+    let native_record = native
+        .stop_native_before_dispatch(native_id, "before effect".to_string())
+        .expect("valid native tail");
+    drop(native);
+    let native_bytes = fs::read(&location).expect("native frames");
+    fs::remove_file(location).expect("remove native fixture");
+    (legacy_bytes, native_bytes, legacy_record, native_record)
+}
+
+#[test]
+fn mixed_namespace_replay_rejects_collisions_in_both_orders() {
+    let (legacy, native, _, _) = mixed_journal_frames("collision", "collision");
+    for frames in [
+        [legacy.as_slice(), native.as_slice()],
+        [native.as_slice(), legacy.as_slice()],
+    ] {
+        let location = path("mixed-collision");
+        // Let the production constructor establish the private journal mode.
+        drop(DurableInferenceControl::open(&location, 8).expect("private fixture"));
+        let bytes = frames.concat();
+        fs::write(&location, &bytes).expect("write colliding histories");
+        assert!(matches!(
+            DurableInferenceControl::open(&location, 8),
+            Err(Error::CapacityExceeded)
+        ));
+        assert_eq!(fs::read(&location).expect("unchanged journal"), bytes);
+        fs::remove_file(location).expect("cleanup");
+    }
+}
+
+#[test]
+fn mixed_namespace_replay_preserves_noncolliding_records_in_both_orders() {
+    let (legacy, native, legacy_record, native_record) = mixed_journal_frames("legacy", "native");
+    for frames in [
+        [legacy.as_slice(), native.as_slice()],
+        [native.as_slice(), legacy.as_slice()],
+    ] {
+        let location = path("mixed-valid");
+        drop(DurableInferenceControl::open(&location, 8).expect("private fixture"));
+        let bytes = frames.concat();
+        fs::write(&location, &bytes).expect("write valid histories");
+        let recovered = DurableInferenceControl::open(&location, 8).expect("mixed replay");
+        assert_eq!(recovered.records.len(), 1);
+        assert_eq!(recovered.native.records.len(), 1);
+        assert_eq!(recovered.get("legacy"), Some(&legacy_record));
+        assert_eq!(recovered.native_record("native"), Some(&native_record));
+        drop(recovered);
+        assert_eq!(fs::read(&location).expect("unchanged journal"), bytes);
+        fs::remove_file(location).expect("cleanup");
+    }
+}
