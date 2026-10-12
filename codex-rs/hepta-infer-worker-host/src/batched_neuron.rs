@@ -9,6 +9,8 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Instant;
 
 use codex_hepta_contracts::FinalUseAuthority;
@@ -87,6 +89,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: AtomicU64,
     maximum_ids: usize,
 }
 
@@ -157,6 +160,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            failed_metrics: AtomicU64::new(0),
             maximum_ids: MAX_WORKER_RETIRED_IDS,
         })
     }
@@ -164,6 +168,27 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         self.metric_sink = Some(sink);
         self
+    }
+
+    /// Production readiness is a separate Evidence barrier, never implicit
+    /// authorization from one successful model execution. A failed write
+    /// remains latched even if the current metric sink later reports healthy.
+    pub fn production_metrics_ready(&self) -> bool {
+        self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    /// Flush only after worker effects have settled; do not replay an effect
+    /// when telemetry is uncommitted or unavailable.
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metric_sink else {
+            return false;
+        };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
     }
 
     pub fn pending(&self) -> usize {
@@ -186,13 +211,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
         let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
         if let Some(sink) = &self.metric_sink {
-            let _ = sink.record(PhaseMetricEventV1 {
+            if sink.record(PhaseMetricEventV1 {
                 scope_digest,
                 operation_digest,
                 phase: PhaseMetricKindV1::Admission,
                 latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
                 succeeded: result.is_ok(),
-            });
+            }).is_err() {
+                self.failed_metrics.fetch_add(1, Ordering::Release);
+            }
         }
         result
     }
@@ -270,14 +297,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             // One phase sample per admitted request, not just the first
             // member of a batch (which would silently undercount throughput).
             for intent in &batch.requests {
-                let _ = sink.record(PhaseMetricEventV1 {
+                if sink.record(PhaseMetricEventV1 {
                     scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                     operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
                     phase: PhaseMetricKindV1::Microbatch,
                     latency_micros: u64::try_from(started.elapsed().as_micros())
                         .unwrap_or(u64::MAX),
                     succeeded: true,
-                });
+                }).is_err() {
+                self.failed_metrics.fetch_add(1, Ordering::Release);
+            }
             }
         }
         for id in &poll.expired_request_ids {
@@ -326,7 +355,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
                                 });
                                 if let Some(sink) = &self.metric_sink {
-                                    let _ = sink.record(PhaseMetricEventV1 {
+                                    if sink.record(PhaseMetricEventV1 {
                                         scope_digest: Digest32::of_bytes(
                                             batch.key.scope_id.as_str().as_bytes(),
                                         ),
@@ -341,7 +370,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                             Ok(receipt) if receipt.status
                                                 == NeuronFeatureTerminalStatusV1::Succeeded
                                         ),
-                                    });
+                                    }).is_err() {
+                self.failed_metrics.fetch_add(1, Ordering::Release);
+            }
                                 }
                                 result
                             }
@@ -464,7 +495,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .zip(results.drain(..))
             .map(|((intent, _), result)| {
                 if let Some(sink) = &self.metric_sink {
-                    let _ = sink.record(PhaseMetricEventV1 {
+                    if sink.record(PhaseMetricEventV1 {
                         scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                         operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
                         phase: PhaseMetricKindV1::NeuronFeature,
@@ -475,7 +506,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                             Ok(receipt) if receipt.status
                                 == NeuronFeatureTerminalStatusV1::Succeeded
                         ),
-                    });
+                    }).is_err() {
+                self.failed_metrics.fetch_add(1, Ordering::Release);
+            }
                 }
                 BatchWorkerItemOutcomeV1 {
                     request_id: intent.request_id,
