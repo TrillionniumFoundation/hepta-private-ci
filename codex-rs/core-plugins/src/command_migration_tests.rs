@@ -145,7 +145,6 @@ fn command_slug_collisions_are_skipped() {
     );
 }
 
-
 #[test]
 fn safe_yaml_command_description_rejects_duplicate_or_aliased_identity() {
     assert_eq!(
