@@ -5,11 +5,12 @@ on:
   pull_request:
     paths:
       - "qualification/neuron-stem/fbsde_tracking*.py"
-      - "qualification/neuron-stem/test_fbsde_tracking.py"
+      - "qualification/neuron-stem/test_fbsde_tracking*.py"
       - "qualification/neuron-stem/fbsde_study.py"
       - "qualification/neuron-stem/four_gate_pretrained.py"
       - "qualification/neuron-stem/four_gate_common.py"
       - "qualification/neuron-stem/FBSDE_VERIFIED_TRACKING_V1.md"
+      - "qualification/neuron-stem/FBSDE_TRACKING_FEATURES_V2.md"
       - ".github/workflows/hepta-neuron-verified-tracking.yml"
 
 permissions:
@@ -57,6 +58,7 @@ jobs:
       max-parallel: 2
       matrix:
         backend: [hashing_reference_v1, mmbert]
+        feature_profile: [ordinal_sensitive_v1, local_participant_v2]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -77,18 +79,19 @@ jobs:
           HF_HUB_DISABLE_TELEMETRY: "1"
           TOKENIZERS_PARALLELISM: "false"
           BACKEND: ${{ matrix.backend }}
+          FEATURE_PROFILE: ${{ matrix.feature_profile }}
         run: |
           set -euo pipefail
           export PYTHONPATH=qualification/neuron-stem
-          /tmp/tracking-venv/bin/python -m unittest fbsde_tracking_tensor_checks -v 2>&1 | tee tensor-tests.log
+          /tmp/tracking-venv/bin/python -m unittest fbsde_tracking_tensor_checks fbsde_tracking_features_tensor_checks -v 2>&1 | tee tensor-tests.log
           /tmp/tracking-venv/bin/python qualification/neuron-stem/fbsde_study.py \
-            --profile verified_tracking_v1 --tracking-source bbh --backend "$BACKEND" \
+            --profile verified_tracking_v1 --tracking-source bbh --backend "$BACKEND" --tracking-feature-profile "$FEATURE_PROFILE" \
             --model-dir /tmp/tracking-mmbert --output tracking-study 2>&1 | tee study.log
           git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: verified-tracking-${{ matrix.backend }}-${{ github.run_id }}
+          name: verified-tracking-${{ matrix.backend }}-${{ matrix.feature_profile }}-${{ github.run_id }}
           path: |
             source.txt
             source.tar.gz
