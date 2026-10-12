@@ -41,20 +41,27 @@ pub enum SkillParseError {
 }
 
 /// Parses and validates the metadata frontmatter from `SKILL.md` contents.
+fn safe_yaml_options() -> serde_yaml::Options {
+    // Untrusted Skill frontmatter cannot inject custom constructor tags.
+    serde_yaml::options! {
+        reject_unsupported_tags: true,
+    }
+}
+
 pub fn parse_skill_frontmatter_metadata(
     contents: &str,
     default_name: impl FnOnce() -> String,
 ) -> Result<ParsedSkillFrontmatter, SkillParseError> {
     let frontmatter = extract_frontmatter(contents).ok_or(SkillParseError::MissingFrontmatter)?;
 
-    let parsed: SkillFrontmatter = match serde_yaml::from_str(&frontmatter) {
+    let parsed: SkillFrontmatter = match serde_yaml::from_str_with_options(&frontmatter, safe_yaml_options()) {
         Ok(parsed) => Ok(parsed),
         Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
             // Some third-party skills use prose like `description: Build for AWS: ECS`
             // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
             // so unrelated invalid YAML still surfaces.
             Some(repaired_frontmatter) => {
-                serde_yaml::from_str(&repaired_frontmatter).map_err(|_| original_error)
+                serde_yaml::from_str_with_options(&repaired_frontmatter, safe_yaml_options()).map_err(|_| original_error)
             }
             None => Err(original_error),
         },
@@ -165,7 +172,7 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
             }
         }
         let invalid_flow_like_scalar = matches!(first_char, '[' | '{' | '@' | '`')
-            && serde_yaml::from_str::<serde_json::Value>(scalar).is_err();
+            && serde_yaml::from_str_with_options::<serde_json::Value>(scalar, safe_yaml_options()).is_err();
         if !has_colon_separator && !invalid_flow_like_scalar {
             repaired_lines.push(line.to_string());
             continue;
