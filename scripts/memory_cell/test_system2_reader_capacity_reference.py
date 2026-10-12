@@ -12,7 +12,7 @@ from system2_multihop_evidence import parse_relation
 from system2_multihop_trial import ABSTAIN, evidence
 from system2_reader_capacity_reference import (
     ARMS, CASE_COUNT, COHORTS, LABEL_RAW_SHA, MODEL_ID, MODEL_REV,
-    MODEL_FILES, PLAN_SIZE, TOKEN_LIMIT, MAX_NEW_TOKENS, cohorts,
+    MODEL_FILES, PLAN_SIZE, TOKEN_LIMIT, cohorts,
     fixed_new_cases, load_baseline_archives, outcome, run, score,
     selected, study_plan,
 )
