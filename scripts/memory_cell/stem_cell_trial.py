@@ -50,6 +50,10 @@ from stem_native_pairwise_shadow import (
     native_pairwise_shadow,
     review_pairwise_shadow,
 )
+from stem_native_matched_objectives import (
+    matched_objective_shadow,
+    review_objectives,
+)
 from selector_evaluation import support_indices
 from stem_cell_shadow_scale import (
     calibrate_shadow_scale,
@@ -960,6 +964,27 @@ def run(staged, ranker_dir, output):
         write(output / "pairwise-shadow-train-fits.json", pairwise_shadow_fits)
         for record in pairwise_shadow_choices:
             append(output / "pairwise-shadow-label-blind-choices.jsonl", record)
+        # Explicit control: identical initial Head bytes and admitted
+        # contrastive questions; only the CE versus pairwise objective differs.
+        # No Reader/Encoder calls and NO evaluation labels have been opened.
+        matched_objective_fits, matched_objective_choices = (
+            matched_objective_shadow(
+                qs, rows, initial_features, cut, plan["routes"], output,
+            )
+        )
+        if (
+            reader_session.summary() != previous_reader_accounting
+            or any(
+                sha256(heads[key].export()) != before
+                for key, before in frozen_head_snapshots.items()
+            )
+        ):
+            raise ValueError(
+                "matched Head objective control mutated original six policies or Reader"
+            )
+        write(output / "matched-objective-train-fits.json", matched_objective_fits)
+        for row in matched_objective_choices:
+            append(output / "matched-objective-label-blind-choices.jsonl", row)
         census = validate_census(attempts, plan)
         scored = [
             score_attempt(
@@ -987,6 +1012,18 @@ def run(staged, ranker_dir, output):
         write(
             output / "pairwise-shadow-posthoc-source-support.json",
             pairwise_shadow_report,
+        )
+        matched_objective_review = review_objectives(
+            qs, matched_objective_fits, matched_objective_choices, pools,
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES for q in qs[phase]
+            },
+            support_indices=support_indices,
+        )
+        write(
+            output / "matched-objective-posthoc-weak-source.json",
+            matched_objective_review,
         )
         # The shadow candidate choices were sealed before ANY native
         # post-hoc target annotations are used to judge support.
@@ -1191,6 +1228,7 @@ def run(staged, ranker_dir, output):
             shadow_source_provenance=shadow_provenance,
             shadow_source_support_postpolicy=shadow_source_report,
             native_pairwise_shadow_source_only=pairwise_shadow_report,
+            matched_objective_shadow_source_only=matched_objective_review,
             census=census,
             **summarize(scored),
             learning=learning,
