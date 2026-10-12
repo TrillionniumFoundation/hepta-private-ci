@@ -246,12 +246,19 @@ class SharedStemEngine:
                 batch_bytes.extend(encoded)
         ident = hashlib.sha256(batch_bytes).hexdigest()
         missing = OrderedDict()
+        # Snapshot immutable cache hits for the lifetime of this invocation.
+        # Publishing newly encoded misses may evict any old cache entry; a
+        # preflight hit must not become an unresolved feature halfway through
+        # an otherwise valid bounded batch.
+        inflight_hits = {}
         hits = 0
         for r in requests:
             key = r.cache_key()
-            if self.cache.get(key) is None:
+            cached = self.cache.get(key)
+            if cached is None:
                 missing.setdefault(key, r.text)
             else:
+                inflight_hits.setdefault(key, cached)
                 hits += 1
         calls = 0
         batch_widths = []
@@ -278,7 +285,10 @@ class SharedStemEngine:
         receipts = []
         ephemeral_features = []
         for r in requests:
-            item = self.cache.get(r.cache_key()) or local_results.get(r.cache_key())
+            key = r.cache_key()
+            # Use the preflight snapshot for hits and the validated invocation
+            # result for misses. Neither is invalidated by cache LRU eviction.
+            item = inflight_hits.get(key) or local_results.get(key)
             if item is None:
                 raise ValueError("unresolved feature after backend invocation")
             if return_features:
