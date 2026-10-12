@@ -6,7 +6,8 @@ import unittest
 from pathlib import Path
 
 from scale import generate, trace_report
-from study import (admission, classifier_metrics, load_jsonl, paired_group_deltas, wilson_upper,
+from study import (MAX_EVIDENCE_ROW_BYTES, admission, classifier_metrics,
+                   load_jsonl, paired_group_deltas, wilson_upper,
                    validate_dataset, validate_outcomes, validate_predictions)
 
 DIGEST_A = "a" * 64
@@ -64,6 +65,26 @@ class StemStudyTests(unittest.TestCase):
     def test_duplicate_sample(self):
         with self.assertRaisesRegex(ValueError, "duplicate sample"):
             validate_dataset(inputs() + [inputs()[0]])
+
+    def test_jsonl_has_single_meaning_and_bounded_physical_lines(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp, "evidence.jsonl")
+            path.write_text('{"case_id":"one"}\\n{"case_id":"two"}\\n')
+            self.assertEqual(len(list(load_jsonl(path))), 2)
+            for payload, error in (
+                ('{"case_id":"safe","case_id":"forged"}\\n', "duplicate JSON evidence field"),
+                ('{"nested":{"label":0,"label":1}}\\n', "duplicate JSON evidence field"),
+                ('{"metric":NaN}\\n', "nonfinite/nonstandard"),
+                ('{"metric":Infinity}\\n', "nonfinite/nonstandard"),
+                ('{"case_id":"one"}\\n\\n', "blank evidence JSONL row"),
+                ('[1, 2]\\n', "JSON object"),
+                ('{"text":"' + "x" * MAX_EVIDENCE_ROW_BYTES + '"}\\n',
+                 "oversized evidence JSONL row"),
+            ):
+                with self.subTest(reason=error):
+                    path.write_text(payload, encoding="utf-8")
+                    with self.assertRaisesRegex(ValueError, error):
+                        list(load_jsonl(path))
 
     def test_prediction_mutates_observer(self):
         outputs = model_outputs(self.dataset)
