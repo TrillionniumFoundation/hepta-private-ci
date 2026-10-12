@@ -442,3 +442,9 @@ fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
     bytes.extend_from_slice(&(value.len() as u32).to_be_bytes());
     bytes.extend_from_slice(value);
 }
+
+// Keep white-box canary compatibility tests next to the sealed receipt
+// implementation. Do not expose its digest/eligibility helpers publicly.
+#[cfg(test)]
+#[path = "cell_split_lifecycle_tests.rs"]
+mod cell_split_lifecycle_tests;
