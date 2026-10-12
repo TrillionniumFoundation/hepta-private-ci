@@ -142,6 +142,10 @@ def audit(metadata, original_manifest, staged_manifest):
         features = sdk_node.get("features", [])
         if not isinstance(features, list) or not REQUIRED_FEATURES.issubset(features):
             errors.append("SDK_E2EE_SQLITE_FEATURES_NOT_ENABLED")
+        for required in ("matrix-sdk-base", "matrix-sdk-crypto", "matrix-sdk-sqlite", "anymap3"):
+            target = by_name.get(required, [])
+            if len(target) != 1 or not _reaches(nodes, sdk_id, target[0]["id"]):
+                errors.append("PINNED_SDK_NOT_LINKED_TO_" + required.upper().replace("-", "_"))
         for hepta_name in HEPTA_PACKAGES:
             hepta = by_name.get(hepta_name, [])
             if len(hepta) != 1 or not _reaches(nodes, hepta[0]["id"], sdk_id):
