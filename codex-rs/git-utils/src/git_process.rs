@@ -71,25 +71,13 @@ async fn wait_for_git_command_with_timeout_output(
     process_tree: KillGitProcessTreeOnDrop,
     timeout_duration: Duration,
 ) -> Option<Output> {
-    #[cfg(unix)]
-    let mut process_tree = process_tree;
-    #[cfg(windows)]
+    // Preserve process-tree ownership through every terminal outcome,
+    // including a successfully exited Git wrapper with living descendants.
+    // On Unix Drop kills the original process group; on Windows the JobObject
+    // closes and terminates any contained descendants.
     let _process_tree = process_tree;
-
-    let result = timeout(timeout_duration, child.wait_with_output()).await;
-
-    match result {
-        Ok(Ok(output)) => {
-            // Even a wrapper that exits successfully may leave inherited Git
-            // descendants running. Keep the JobObject kill-on-close fence:
-            // successful output is returned, but orphan descendants are not
-            // detached from the bounded command lifetime.
-            #[cfg(unix)]
-            {
-                process_tree.armed = false;
-            }
-            Some(output)
-        }
+    match timeout(timeout_duration, child.wait_with_output()).await {
+        Ok(Ok(output)) => Some(output),
         _ => None,
     }
 }
