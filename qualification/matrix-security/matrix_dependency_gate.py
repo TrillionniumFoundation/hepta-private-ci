@@ -177,6 +177,23 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
     if deny_graph.get("no-default-features") is True:
         errors.append("FORBIDDEN_MATRIX_DEFAULT_FEATURE_SUPPRESSION")
 
+    # Cargo.lock merges dependencies from both [dependencies] and
+    # [dev-dependencies].  Matrixd's direct test-only matrix-sdk edge can
+    # make an apparently healthy matrixd -> matrix-sdk -> crypto path EVEN
+    # WHEN the production codex-hepta-matrix-sdk adapter is detached.
+    # Validate both required immediate product edges, and reject duplicate
+    # or absent root packages before accepting any reachable dependency path.
+    product_roots = ("codex-hepta-matrixd", "codex-hepta-matrix-sdk")
+    for owner in product_roots:
+        if len(_package_names(pkgs, owner)) != 1:
+            errors.append(f"MATRIX_PRODUCT_ROOT_MISSING_OR_AMBIGUOUS:{owner}")
+    if "codex-hepta-matrix-sdk" not in graph.get("codex-hepta-matrixd", ()):
+        errors.append("MATRIX_PRODUCT_ADAPTER_DEPENDENCY_MISSING")
+    if "matrix-sdk" not in graph.get("codex-hepta-matrix-sdk", ()):
+        errors.append("MATRIX_PRODUCT_ADAPTER_SDK_EDGE_MISSING")
+    if find_path(graph, "codex-hepta-matrix-sdk", "matrix-sdk-crypto") is None:
+        errors.append("MATRIX_PRODUCT_ADAPTER_E2EE_PATH_MISSING")
+
     for target in ("matrix-sdk", "matrix-sdk-crypto"):
         path = find_path(graph, "codex-hepta-matrixd", target)
         if path is None:
@@ -185,6 +202,17 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         errors.append("EXPECTED_MATRIX_DEPENDENCY_PATH_MISSING:anymap2")
     paths = {target: find_path(graph, "codex-hepta-matrixd", target)
              for target in ("matrix-sdk", "anymap2", "matrix-sdk-crypto")}
+    production_paths = {
+        "matrixd_to_adapter": find_path(
+            graph, "codex-hepta-matrixd", "codex-hepta-matrix-sdk"
+        ),
+        "adapter_to_sdk": find_path(
+            graph, "codex-hepta-matrix-sdk", "matrix-sdk"
+        ),
+        "adapter_to_crypto": find_path(
+            graph, "codex-hepta-matrix-sdk", "matrix-sdk-crypto"
+        ),
+    }
     # A *static* pass is never evidence for production approval; always run
     # cargo-deny, real Matrix E2EE, SQLite recovery and full target CI.
     return {
@@ -194,6 +222,7 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         "matrix_sdk_lock_versions": versions,
         "rust_toolchain": channel,
         "dependency_paths": paths,
+        "production_adapter_paths": production_paths,
         "blocking_prerequisites": sorted(set(errors)),
         "upstream_review_notes": notes,
         "static_prerequisites_passed": not errors,
