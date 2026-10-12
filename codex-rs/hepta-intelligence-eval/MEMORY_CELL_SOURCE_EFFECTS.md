@@ -64,3 +64,17 @@ The focused regression workflow uses only read permissions, full inherited
 regressions and required repository formatting. The temporary formatter produces
 only a separate inspected candidate and removes itself; it never updates main
 or the PR head. Unit fixtures contain authored answers, not pretrained outputs.
+
+## Saturation and citation delivery diagnostics
+
+`source_write_effects.py` now reports the exact baseline headroom remaining in
+completed paired tasks. An organizer already successful on all planned tasks has
+**zero observable room for more task successes on that cohort**; a tie cannot
+establish learned knowledge improvement. Failed pairs are not called saturated.
+The same report separately counts original emitted `[E...]` marker occurrences,
+markers naming an actually delivered label, markers naming no delivered label,
+markers emitted with an entirely empty evidence set, and answers missing a marker
+despite delivered sources. It preserves the original answers and scores. Matching
+a label is only structural identity, never an independent semantic entailment
+verdict. Missing citations and invented labels remain visible, with independent
+precision null and `production_accepted=false`.

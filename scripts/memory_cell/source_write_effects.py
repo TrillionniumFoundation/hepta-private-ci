@@ -158,6 +158,51 @@ def align_records(raw, scored, cases):
     return grouped
 
 
+def citation_structure(grouped):
+    """Report marker delivery, not entailment, from immutable actual outputs."""
+    from citation_audit import MARKER
+
+    out = {}
+    for arm in ARMS:
+        stats = dict(
+            planned=len(grouped),
+            failed_or_missing=0,
+            answers_with_delivered_sources=0,
+            uncited_answers_with_sources=0,
+            emitted_markers=0,
+            markers_with_delivered_labels=0,
+            markers_without_delivered_labels=0,
+            markers_without_any_sources=0,
+        )
+        for group in grouped.values():
+            row = group[arm]
+            if row["status"] != "succeeded":
+                stats["failed_or_missing"] += 1
+                continue
+            sources = row["receipt"]["delivered_evidence"]
+            labels = [s["label"] for s in sources]
+            if (
+                any(not isinstance(label, str) or not re.fullmatch(r"E[1-9][0-9]{0,5}", label) for label in labels)
+                or len(set(labels)) != len(labels)
+            ):
+                raise ValueError("invalid delivered citation labels")
+            emitted = [m.group()[1:-1].decode("ascii") for m in MARKER.finditer(row["answer"].encode())]
+            matched = sum(label in labels for label in emitted)
+            stats["answers_with_delivered_sources"] += bool(sources)
+            stats["uncited_answers_with_sources"] += bool(sources) and not emitted
+            stats["emitted_markers"] += len(emitted)
+            stats["markers_with_delivered_labels"] += matched
+            stats["markers_without_delivered_labels"] += len(emitted) - matched
+            stats["markers_without_any_sources"] += len(emitted) if not sources else 0
+        out[arm] = stats
+    return dict(
+        by_arm=out,
+        marker_delivery_does_not_establish_semantic_entailment=True,
+        independently_adjudicated_precision=None,
+        production_accepted=False,
+    )
+
+
 def effects(raw, scored, cases):
     grouped = align_records(raw, scored, cases)
     result = {}
@@ -194,10 +239,13 @@ def effects(raw, scored, cases):
                     (wins - losses + missing) / len(ids),
                 ],
                 observed_win_without_loss=missing == 0 and wins > 0 and losses == 0,
+                observed_baseline_success_headroom=len(ids) - missing - baseline_good,
+                baseline_saturated_on_all_planned_pairs=(missing == 0 and baseline_good == len(ids)),
                 significance_established=False,
             )
     return dict(
         schema="hepta.source-write.effects.v1",
+        structural_citations=citation_structure(grouped),
         actual_tasks=len(cases),
         original_answer_executions=len(raw),
         contrasts=result,
