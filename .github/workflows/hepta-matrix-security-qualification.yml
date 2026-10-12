@@ -247,8 +247,39 @@ jobs:
           set +e
           timeout 480 cargo +1.96.0 metadata --manifest-path "$STAGE/codex-rs/Cargo.toml" --format-version=1 > "$RUNNER_TEMP/hepta-matrix-metadata.json" 2> "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
           result=$?
+          initial_result="$result"
+          update_result="not_attempted"
           set -e
-          CARGO_RESOLUTION_STATUS="$result" python3 - <<'PY'
+          # The resolver is permitted to adjust ONE stale transitive lock
+          # version only in the disposable worktree, only after the exact
+          # previously observed async-trait 0.1.89/0.1.92 conflict is proven.
+          # Unknown errors, source/feature drift and security changes fail
+          # closed. Never edit real Cargo.lock, ignore an advisory, or claim
+          # model/recovery readiness from a dependency graph.
+          if [ "$result" -ne 0 ] && python3 qualification/matrix-security/isolated_lock_repin_probe.py \
+            --stderr "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log" \
+            --manifest "$STAGE/codex-rs/Cargo.toml" \
+            --lock "$STAGE/codex-rs/Cargo.lock" \
+            --output "$RUNNER_TEMP/hepta-matrix-async-trait-repin-plan.json"; then
+            cp "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log" \
+              "$RUNNER_TEMP/hepta-matrix-metadata-first-stderr.log"
+            set +e
+            timeout 180 cargo +1.96.0 update \
+              --manifest-path "$STAGE/codex-rs/Cargo.toml" \
+              -p async-trait --precise 0.1.92 \
+              > "$RUNNER_TEMP/hepta-matrix-async-trait-update.log" 2>&1
+            update_result=$?
+            if [ "$update_result" -eq 0 ]; then
+              timeout 480 cargo +1.96.0 metadata \
+                --manifest-path "$STAGE/codex-rs/Cargo.toml" \
+                --format-version=1 \
+                > "$RUNNER_TEMP/hepta-matrix-metadata.json" \
+                2> "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
+              result=$?
+            fi
+            set -e
+          fi
+          CARGO_INITIAL_STATUS="$initial_result" CARGO_UPDATE_STATUS="$update_result" CARGO_RESOLUTION_STATUS="$result" python3 - <<'PY'
           import json, os
           from pathlib import Path
           root=Path(os.environ['RUNNER_TEMP'])
@@ -262,6 +293,12 @@ jobs:
           out={'schema':'hepta.matrix-sdk-resolution-result.v2',
                'sqlite_arm':os.environ['RESOLVE_ARM'],
                'status_code':status,'cargo_resolution_completed':status==0,
+               'initial_resolution_status':int(os.environ['CARGO_INITIAL_STATUS']),
+               'disposable_async_trait_repin_attempted':os.environ['CARGO_UPDATE_STATUS']!='not_attempted',
+               'disposable_async_trait_update_status':(
+                   None if os.environ['CARGO_UPDATE_STATUS']=='not_attempted'
+                   else int(os.environ['CARGO_UPDATE_STATUS'])),
+               'no_production_lock_mutation':True,
                'exact_upstream_sha':'b3c07ea6ba6e8e46e30811c0500b04505c4be9f9',
                'versions':versions,
                'no_anymap2':status==0 and not versions['anymap2'],
@@ -285,6 +322,9 @@ jobs:
             ${{ runner.temp }}/hepta-matrix-resolution-stage.json
             ${{ runner.temp }}/hepta-matrix-resolution-result.json
             ${{ runner.temp }}/hepta-matrix-metadata-stderr.log
+            ${{ runner.temp }}/hepta-matrix-metadata-first-stderr.log
+            ${{ runner.temp }}/hepta-matrix-async-trait-repin-plan.json
+            ${{ runner.temp }}/hepta-matrix-async-trait-update.log
           if-no-files-found: warn
           retention-days: 14
       - name: Restore isolation and assert source clean
