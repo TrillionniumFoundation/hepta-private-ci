@@ -50,9 +50,7 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         )
         .expect("write child script");
         let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => {
-                "Wait-Process -Id $child.Id"
-            }
+            GitWrapperLifetime::WaitForChild => "Wait-Process -Id $child.Id",
             GitWrapperLifetime::ExitBeforeTimeout => {
                 "while (-not (Test-Path -LiteralPath $env:RELEASE_WRAPPER_FILE)) { Start-Sleep -Milliseconds 25 }"
             }
@@ -88,11 +86,13 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
                 break child_pid.trim().to_string();
             }
             if let Some(status) = wrapper.try_wait().expect("poll Git wrapper") {
-                let output = wrapper.wait_with_output().await.expect("collect failed Git wrapper");
+                // Keep ownership of the exact Child handle for the later
+                // timeout/process-tree cleanup. wait_with_output consumes it,
+                // invalidating the subsequent checks on Windows (E0382).
                 panic!(
-                    "Git wrapper exited before its real child was ready ({status}); stdout={} stderr={}",
-                    String::from_utf8_lossy(&output.stdout),
-                    String::from_utf8_lossy(&output.stderr)
+                    "Git wrapper exited before its real child was ready ({status}); child PID marker present: {}, readiness marker present: {}",
+                    child_pid_file.exists(),
+                    child_ready_file.exists(),
                 );
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
