@@ -156,9 +156,26 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
             errors.append(f"FORBIDDEN_ADVISORY_IGNORE:{advisory}")
     # Deny's normal graph must remain full: no pruning to hide the vulnerable
     # Matrix dependency. This guard does not attempt to reinterpret cargo-deny.
-    excluded = deny.get("graph", {}).get("exclude", [])
-    if any(any(k in str(item) for k in ("matrix-sdk", "anymap2")) for item in excluded):
+    # Pruning Matrix's *consumer* removes its entire transitive E2EE graph:
+    # looking only for the matrix-sdk package name misses a trivially renamed
+    # selector like `codex-hepta-matrixd`. Storage/crypto dependencies must
+    # likewise stay visible to unchanged cargo-deny.
+    deny_graph = deny.get("graph", {})
+    excluded = deny_graph.get("exclude", [])
+    sensitive = ("matrix-sdk", "codex-hepta-matrixd", "anymap2",
+                 "anymap3", "matrix-sdk-crypto", "sqlx", "rusqlite",
+                 "libsqlite3-sys")
+    if not isinstance(excluded, list) or any(
+        any(name in str(item) for name in sensitive) for item in excluded
+    ):
         errors.append("FORBIDDEN_MATRIX_GRAPH_PRUNE")
+    # A single target triple can silently hide a platform-dependent SQLite or
+    # encryption edge. Unchanged global cargo-deny must retain every target;
+    # feature-filtered metadata also cannot certify the deployed E2EE graph.
+    if deny_graph.get("targets"):
+        errors.append("FORBIDDEN_MATRIX_TARGET_FILTER")
+    if deny_graph.get("no-default-features") is True:
+        errors.append("FORBIDDEN_MATRIX_DEFAULT_FEATURE_SUPPRESSION")
 
     for target in ("matrix-sdk", "matrix-sdk-crypto"):
         path = find_path(graph, "codex-hepta-matrixd", target)
