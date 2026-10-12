@@ -116,6 +116,22 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
             )
         if vals["negative_transfer_rate"] > 1:
             raise InvalidEvidence(f"{key}: negative-transfer rate is not a fraction")
+        # A run that completed real model requests cannot claim a measured
+        # zero-cost CPU, zero resident memory, zero backend work or zero recovery.
+        # Such packets are incomplete diagnostics, not exceptional performance.
+        # This is only a plausibility check; independently signed target-host
+        # provenance remains a separate required production gate.
+        for field in (
+            "p50_ms",
+            "cpu_seconds",
+            "rss_peak_bytes",
+            "native_backend_calls",
+            "recovery_ms",
+        ):
+            if vals[field] == 0:
+                raise InvalidEvidence(
+                    f"{scope}/{mode}: missing nonzero observation of {field}"
+                )
         vals["throughput_rps"] = vals["completed"] / vals["elapsed_seconds"]
         vals["cpu_per_request_s"] = vals["cpu_seconds"] / vals["completed"]
         vals["communication_per_request_bytes"] = (
