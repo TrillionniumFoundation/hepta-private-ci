@@ -343,6 +343,70 @@ class ScaleTraceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "requested-count"):
             trace_report(self.jobs[:-1], self.events)
 
+    def test_earliest_cold_completion_is_order_independent(self):
+        # Multiple cold workers can race for a shared input. Only the earliest
+        # completed one is required to precede a cache-hit Head invocation.
+        # Mutating one cold completion must not poison a still-valid source.
+        self.events[0]["end_us"] = 11000
+        result = trace_report(self.jobs, list(reversed(self.events)))
+        self.assertEqual(result["cold_and_cached_latency"]["cache_hit_head"]["count"], 1)
+        self.assertFalse(result["native_worker_attested"])
+
+    def test_cache_hit_rejected_if_every_cold_source_completes_too_late(self):
+        # The trace event order is irrelevant: no shared cold input completed
+        # before the claimed cache-hit Head started.
+        for event in self.events[:3]:
+            event["end_us"] = 11000
+        with self.assertRaisesRegex(ValueError, "cache hit lacks a completed"):
+            trace_report(self.jobs, list(reversed(self.events)))
+
+    def test_4096_logical_cells_reuse_has_bounded_trace_analysis(self):
+        # This is a deterministic trace CONTRACT, not a model benchmark.
+        # 90% repeated input across 4,096 logical Cells previously needed
+        # scanning every cold source for every cache-hit request.
+        jobs = generate(4096, 1.0, 0.9, "same_family", DIGEST_A)
+        first_seen = set()
+        events, cold = [], []
+        for job in jobs:
+            key = (job["scope"], job["generation"],
+                   job["model_digest"], job["input_key"])
+            is_cold = key not in first_seen
+            first_seen.add(key)
+            observation = dict(
+                kind="request", request_id=job["request_id"],
+                scope=job["scope"], generation=job["generation"],
+                model_digest=job["model_digest"], status="ok",
+                path="cold_encoder" if is_cold else "cache_hit_head",
+                enqueued_us=1000,
+                start_us=1010 if is_cold else 1060,
+                end_us=1050 if is_cold else 1070,
+                cpu_us=8, rss_bytes=1000000,
+            )
+            if is_cold:
+                cold.append(observation)
+            events.append(observation)
+        for index in range(0, len(cold), 32):
+            group = cold[index:index + 32]
+            batch_id = f"batch.{index // 32}"
+            for item in group:
+                item["batch_id"] = batch_id
+            events.append(dict(
+                kind="backend_batch", batch_id=batch_id,
+                backend="native_hepta", batch_size=len(group),
+                model_digest=DIGEST_A, scope=jobs[0]["scope"],
+                generation=jobs[0]["generation"],
+                member_request_ids=[item["request_id"] for item in group],
+                backend_started_us=1020, backend_ended_us=1040,
+            ))
+        report = trace_report(jobs, events)
+        self.assertEqual(report["logical_cells"], 4096)
+        self.assertEqual(report["completed"], 4096)
+        self.assertEqual(report["cold_and_cached_latency"]["cache_hit_head"]["count"],
+                         4096 - len(cold))
+        self.assertIsNone(report["independently_verified_cache_hit_fraction"])
+        self.assertFalse(report["native_worker_attested"])
+        self.assertFalse(report["production_authorized"])
+
 
 
 
