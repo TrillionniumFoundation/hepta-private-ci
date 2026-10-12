@@ -1,0 +1,46 @@
+name: Hepta Windows P0 Provider and Manifest Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - 'codex-rs/core/src/client.rs'
+      - 'codex-rs/windows-sandbox-rs/tests/helper_manifest.rs'
+      - '.github/workflows/hepta-windows-p0-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  provider-terminal-policy-msvc:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust and rustfmt
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Exact source formatting
+        run: cargo +1.95.0 fmt --package codex-core --package codex-windows-sandbox -- --check
+      - name: Real Windows MSVC Core provider terminal-policy tests
+        run: cargo +1.95.0 test --locked -p codex-core --lib client::provider_policy_tests -- --nocapture
+
+  windows-helper-manifest:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust and rustfmt
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Actual Windows asInvoker manifest resource tests
+        run: cargo +1.95.0 test --locked -p codex-windows-sandbox --test helper_manifest -- --nocapture
