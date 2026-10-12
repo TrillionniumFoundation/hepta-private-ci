@@ -397,6 +397,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         return Err(BatchWorkerErrorV1::InvalidBinding);
                     }
                 } else {
+                    // Reject unsupported batches before allocating or
+                    // hashing any re-materialized feature vector, and before
+                    // any signed nonce can be consumed.
+                    if !self.worker.can_run_neuron_feature_batch(&pending.model_id) {
+                        return Err(BatchWorkerErrorV1::BatchUnsupported);
+                    }
                     model_id = Some(&pending.model_id);
                 }
                 let mut request = pending.request.clone();
@@ -412,12 +418,6 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 requests.push(request);
             }
             let model_id = model_id.ok_or(BatchWorkerErrorV1::NoAdmission)?.to_owned();
-            // Unsupported native batching is a known no-effect condition.
-            // Reject before consuming signed one-shot nonces; never replace
-            // an unavailable batch backend with N separate model calls.
-            if !self.worker.can_run_neuron_feature_batch(&model_id) {
-                return Err(BatchWorkerErrorV1::BatchUnsupported);
-            }
             // Prevalidate all members before one durable nonce-group claim.
             // A denied member never causes a partially dispatched model batch.
             let entries = items
