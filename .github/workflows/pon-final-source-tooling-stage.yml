@@ -1,0 +1,101 @@
+name: PoN exact-source tooling stage
+on:
+  push:
+    branches: [ci/pon-final-source-tooling-20261012-r2]
+permissions:
+  contents: read
+env:
+  PIN: 106400a5ffc7ef969dbe0812c1cda869323b59e1
+jobs:
+  format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+      - name: Reproduce and export the actual pinned formatter output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PIN"
+          test -z "$(git status --porcelain)"
+          root="$RUNNER_TEMP/pon-format"
+          mkdir "$root"
+          git rev-parse HEAD HEAD^{tree} > "$root/source.txt"
+          uv run --frozen --project scripts ruff --version > "$root/formatter-version.txt"
+          python3 - <<'PY'
+          import ast, json, os
+          from pathlib import Path
+          paths = ['scripts/hepta_ci_exec.py', 'scripts/test_hepta_ci_exec_identity.py']
+          result = {p: ast.dump(ast.parse(Path(p).read_text()), include_attributes=False) for p in paths}
+          (Path(os.environ['RUNNER_TEMP']) / 'pon-format/before-ast.json').write_text(json.dumps(result))
+          PY
+          set +e
+          uv run --frozen --project scripts ruff format --check scripts .github > "$root/original-check.log" 2>&1
+          original=$?
+          set -e
+          printf '%s\n' "$original" > "$root/original-check.exit"
+          test "$original" = 1
+          uv run --frozen --project scripts ruff format scripts/hepta_ci_exec.py scripts/test_hepta_ci_exec_identity.py
+          uv run --frozen --project scripts ruff format --check scripts .github > "$root/final-check.log" 2>&1
+          python3 - <<'PY'
+          import ast, json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'pon-format'
+          before = json.loads((root / 'before-ast.json').read_text())
+          assert set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()) == set(before)
+          for name, expected in before.items():
+              data = Path(name).read_bytes()
+              assert ast.dump(ast.parse(data), include_attributes=False) == expected, name
+              (root / Path(name).name).write_bytes(data)
+          PY
+          git diff --binary --full-index > "$root/format.patch"
+          uv run --frozen --project scripts python -c 'import shutil,sys; shutil.copyfile(shutil.which("ruff"),sys.argv[1])' "$root/ruff"
+          sha256sum "$root"/*.py "$root/format.patch" "$root/ruff" > "$root/output.sha256"
+      - name: Execute every original and additive receipt test
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v 2>&1 | tee "$RUNNER_TEMP/pon-format/tests.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: pon-format-${{ github.run_id }}
+          path: ${{ runner.temp }}/pon-format
+          if-no-files-found: error
+  bazel-lock:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: pon-final-source-lock-stage
+      - name: Regenerate with the original lock owner and retain every failure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PIN"
+          test -z "$(git status --porcelain)"
+          root="$RUNNER_TEMP/pon-lock"
+          mkdir "$root"
+          git rev-parse HEAD HEAD^{tree} > "$root/source.txt"
+          trap 'git diff --binary --full-index > "$root/lock.patch"; cp MODULE.bazel.lock "$root/MODULE.bazel.lock"; sha256sum "$root/MODULE.bazel.lock" > "$root/lock.sha256"' EXIT
+          just bazel-lock-update 2>&1 | tee "$root/regenerate.log"
+          ./scripts/check-module-bazel-lock.sh 2>&1 | tee "$root/check.log"
+          test "$(git diff --name-only)" = MODULE.bazel.lock
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: pon-lock-${{ github.run_id }}
+          path: ${{ runner.temp }}/pon-lock
+          if-no-files-found: error
