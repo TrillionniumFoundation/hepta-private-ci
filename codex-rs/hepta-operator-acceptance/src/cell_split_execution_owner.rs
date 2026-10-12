@@ -834,6 +834,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self.port
             .verify_committed(&intent, &receipt)
             .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+        // An effect may finish after another owner revoked a predecessor or
+        // replaced a frozen local frame. Before acknowledging the new step,
+        // revalidate the original signed owner prefix and still-pending intent.
+        // If this fails, leave the durable intent pending for reconciliation:
+        // the external operation may already have committed and MUST NOT be
+        // dispatched a second time.
+        self.verify_committed_prefix()?;
         write_private_new(
             &frame_path(&self.root, self.cursor, "committed"),
             &canonical_json(&receipt)?,
