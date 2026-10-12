@@ -365,13 +365,17 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1
         self.authority
             .verify_current_authority(&self.plan, intent)
             .map_err(|e| CellSplitArtifactCasErrorV1::Denied(e.to_string()))?;
+        let committed_sequence = self
+            .frontier()?
+            .checked_add(1)
+            .ok_or(CellSplitArtifactCasErrorV1::Invalid)?;
         let record = ArtifactCasCommitV1 {
             schema: SCHEMA.into(),
             intent: intent.clone(),
             parent_digest: self.plan.parent_artifact_digest.clone(),
             child_digest: self.plan.child_artifact_digest.clone(),
             object_bytes: size,
-            sequence: self.frontier()?.checked_add(1).ok_or(CellSplitArtifactCasErrorV1::Invalid)?,
+            sequence: committed_sequence,
         };
         write_private_new(&self.commit_path(intent), &canonical_json(&record)?)?;
         Ok(())
@@ -420,7 +424,9 @@ impl<A: CellSplitCasFinalUsePortV1> CellSplitDurableEffectBackendV1
         // Only the verified, intent-bound create-only commit marker advances
         // the CAS frontier. A copied or orphaned object is not a commit.
         if self.committed_record(intent)?.is_some() {
-            predecessor.checked_add(1).ok_or(CellSplitArtifactCasErrorV1::Invalid)
+            predecessor
+                .checked_add(1)
+                .ok_or(CellSplitArtifactCasErrorV1::Invalid)
         } else {
             Ok(predecessor)
         }
