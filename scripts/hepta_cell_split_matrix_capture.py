@@ -145,6 +145,10 @@ def execute_matrix(
             env["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"] = str(scope)
             env["HEPTA_CELL_SPLIT_EXPECTED_MODE"] = mode
             argv = commands[(scope, mode)]
+            # A matching HEAD at matrix startup is insufficient: a workload
+            # may modify tracked code between two runs. Revalidate the exact
+            # checkout immediately before every external invocation.
+            verify_exact_source(repository, manifest["source_sha"])
             with prefix.with_suffix(".stdout.log").open("wb") as stdout:
                 with prefix.with_suffix(".stderr.log").open("wb") as stderr:
                     try:
@@ -165,6 +169,9 @@ def execute_matrix(
                 raise InvalidEvidence(
                     f"{scope}/{mode}: workload exited {result.returncode}"
                 )
+            # Never accept a measurement from a command that changed tracked
+            # source. Stop before reading its JSON or launching the next mode.
+            verify_exact_source(repository, manifest["source_sha"])
             try:
                 observed = json.loads(result_path.read_text(encoding="utf-8"))
             except (OSError, ValueError) as error:
@@ -182,6 +189,9 @@ def execute_matrix(
     }
     # Validate complete comparable evidence, but never sign/activate it.
     comparison = analyze(packet)
+    # Refuse a final report if another process changed the checkout while the
+    # measurements were being assembled. This is not host attestation.
+    verify_exact_source(repository, manifest["source_sha"])
     (output / "measured-matrix.json").write_text(
         json.dumps(packet, sort_keys=True, indent=2) + "\n", encoding="utf-8"
     )

@@ -5,6 +5,9 @@ diagnostic file protocol; it is not deployment evidence.
 """
 
 import json
+import os
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -131,14 +134,15 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
             output = Path(directory) / "matrix"
             # Injecting fixture counters is acceptable only within this
             # source-only unit test; they never authorize production.
-            import os
-
             data = {"measurement": observed(packet)}
             with (
-                patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                patch(
+                    "hepta_cell_split_matrix_capture.verify_exact_source"
+                ) as source_check,
                 patch.dict(os.environ, {"HEPTA_TEST_PACKET": json.dumps(data)}),
             ):
                 result = execute_matrix(packet, ROOT, output, 30)
+            self.assertEqual(source_check.call_count, 34)
             self.assertTrue(result["comparative_gate_passed"])
             self.assertFalse(result["production_evidence_verified"])
             self.assertFalse(result["production_activation_authorized"])
@@ -151,6 +155,67 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
                 self.assertRaises(FileExistsError),
             ):
                 execute_matrix(packet, ROOT, output, 30)
+
+    @unittest.skipUnless(shutil.which("git"), "git is required")
+    def test_workload_mutating_tracked_source_aborts_before_second_run(self):
+        packet = manifest()
+        script = """
+import json
+import os
+from pathlib import Path
+
+Path("tracked.txt").write_text("changed by workload", encoding="utf-8")
+row = json.loads(os.environ["HEPTA_TEST_MEASUREMENT"])
+row["scopes"] = int(os.environ["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"])
+row["mode"] = os.environ["HEPTA_CELL_SPLIT_EXPECTED_MODE"]
+Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(
+    json.dumps(row), encoding="utf-8"
+)
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            checkout = Path(directory) / "checkout"
+            checkout.mkdir()
+            (checkout / "tracked.txt").write_text("frozen", encoding="utf-8")
+            subprocess.run(
+                ["git", "init", "-q"], cwd=checkout, check=True, capture_output=True
+            )
+            subprocess.run(
+                ["git", "add", "tracked.txt"],
+                cwd=checkout,
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Hepta Test",
+                    "-c",
+                    "user.email=hepta-test@example.invalid",
+                    "-c",
+                    "commit.gpgsign=false",
+                    "commit",
+                    "-qm",
+                    "freeze",
+                ],
+                cwd=checkout,
+                check=True,
+                capture_output=True,
+            )
+            packet["source_sha"] = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=checkout, text=True
+            ).strip()
+            packet["runs"][0]["argv"] = [sys.executable, "-c", script]
+            output = Path(directory) / "matrix"
+            with patch.dict(
+                os.environ,
+                {"HEPTA_TEST_MEASUREMENT": json.dumps(observed(packet))},
+            ):
+                with self.assertRaisesRegex(InvalidEvidence, "source checkout"):
+                    execute_matrix(packet, checkout, output, 30)
+            self.assertTrue((output / "64-no_split.stdout.log").exists())
+            self.assertFalse((output / "64-logical_split.stdout.log").exists())
+            self.assertFalse((output / "measured-matrix.json").exists())
 
 
 if __name__ == "__main__":
