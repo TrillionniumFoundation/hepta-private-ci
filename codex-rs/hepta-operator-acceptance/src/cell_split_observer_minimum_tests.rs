@@ -96,7 +96,10 @@ fn independent_minimum_requires_durable_publication_and_live_challenge() {
     ).expect("reopened minimum remains valid");
     let mut future = expected.clone();
     future.journal_revision += 1;
-    assert!(reopened.publish_once(&future, &mut admission).is_err(), "no in-place witness replacement");
+    assert!(
+        reopened.publish_once(&future, &mut admission).is_err(),
+        "no in-place witness replacement"
+    );
     assert!(reopened.read_current(&future, &"dd".repeat(32)).is_err());
     let mut other_host = expected;
     other_host.target_host_nonce.push_str("-different");
