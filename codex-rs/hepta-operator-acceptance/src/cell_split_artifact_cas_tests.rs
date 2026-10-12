@@ -109,6 +109,28 @@ impl Fixture {
     }
 }
 
+#[cfg(unix)]
+#[test]
+fn missing_original_cas_writer_lock_never_creates_second_writer() {
+    let fixture = Fixture::new();
+    let allowed = ExternalFinalUse(Arc::new(AtomicBool::new(true)));
+    let _original = fixture.owner(allowed.clone());
+    let lock = fixture.store.join(crate::durable::SIDECAR_LOCK_FILE);
+    fs::remove_file(&lock).expect("unlink original writer lock");
+    assert!(matches!(
+        CellSplitArtifactCasOwnerV1::open(
+            &fixture.store,
+            &fixture.parent,
+            &fixture.child,
+            plan(),
+            allowed,
+        ),
+        Err(CellSplitArtifactCasErrorV1::Durable(_))
+    ));
+    assert!(!lock.exists(), "must not mint a replacement writer lock");
+    assert!(fixture.store.join("cas-frontier.json").exists());
+}
+
 #[test]
 fn missing_frontier_after_owner_initialization_never_resets_durable_cas_history() {
     for committed in [false, true] {
