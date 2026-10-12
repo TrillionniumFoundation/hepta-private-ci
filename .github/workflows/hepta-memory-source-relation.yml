@@ -1,0 +1,53 @@
+name: MemoryCell experimental source-relation gradient contracts
+on:
+  push:
+    branches:
+      - "codex/memory-source-relations-20261012"
+    paths:
+      - "scripts/memory_cell/source_relation_margin.py"
+      - "scripts/memory_cell/test_source_relation_margin.py"
+      - ".github/workflows/hepta-memory-source-relation.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-relation-autograd:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Install pinned research CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/relation-python
+          /tmp/relation-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/relation-python/bin/pip install numpy==1.26.4 ruff==0.14.3
+      - name: Test actual source identities and gradients
+        run: |
+          set -euo pipefail
+          /tmp/relation-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_relation_margin.py' -v
+          /tmp/relation-python/bin/python -m compileall -q scripts/memory_cell/source_relation_margin.py scripts/memory_cell/test_source_relation_margin.py
+      - name: Keep Python formatting fail closed
+        run: |
+          set -euo pipefail
+          /tmp/relation-python/bin/ruff format --check scripts/memory_cell/source_relation_margin.py scripts/memory_cell/test_source_relation_margin.py
+      - name: Preserve source and tested commit, even on failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/relation-receipt
+          git rev-parse HEAD > /tmp/relation-receipt/commit.txt
+          cp scripts/memory_cell/source_relation_margin.py scripts/memory_cell/test_source_relation_margin.py /tmp/relation-receipt/
+          (cd /tmp/relation-receipt && sha256sum *.py *.txt > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: source-relation-gradient-development
+          path: /tmp/relation-receipt
+          if-no-files-found: error
