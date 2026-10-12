@@ -1023,7 +1023,6 @@ fn trickled_owner_request_cannot_extend_total_frame_deadline() {
     assert!(!root.path().join("committed").exists());
 }
 
-
 #[test]
 fn new_execute_cannot_adopt_effect_created_after_negative_preflight() {
     let root = tempfile::tempdir().expect("private owner root");
