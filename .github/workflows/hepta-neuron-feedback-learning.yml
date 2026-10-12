@@ -6,6 +6,8 @@ on:
     paths:
       - "qualification/neuron-stem/fbsde_tracking_feedback*.py"
       - "qualification/neuron-stem/fbsde_depth*.py"
+      - "qualification/neuron-stem/fbsde_gain*.py"
+      - "qualification/neuron-stem/test_fbsde_gain.py"
       - "qualification/neuron-stem/fbsde_prepared_gate*.py"
       - "qualification/neuron-stem/test_fbsde_prepared_gate.py"
       - "qualification/neuron-stem/prepared_gate_artifact_checks.py"
@@ -92,6 +94,15 @@ jobs:
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile prepared_gate_execution_v1 --evidence-dir outcome-study --output prepared-gate-study 2>&1 | tee prepared-gate-study.log
           /tmp/feedback-venv/bin/python -m unittest prepared_gate_artifact_checks -v 2>&1 | tee prepared-gate-artifact-tests.log
           git diff --exit-code
+      - name: Learn signed computation gain without changing prior experiments
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python -m unittest fbsde_gain_tensor_checks -v 2>&1 | tee gain-tensor-tests.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile gain_weighted_routing_v1 --evidence-dir outcome-study --output gain-study 2>&1 | tee gain-study.log
+          HEPTA_GAIN_ARTIFACT=gain-study HEPTA_GAIN_SOURCE=outcome-study /tmp/feedback-venv/bin/python -m unittest fbsde_gain_artifact_checks -v 2>&1 | tee gain-artifact-tests.log
+          git diff --exit-code
       - name: Preserve original outputs and failures, never grant promotion
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -114,6 +125,10 @@ jobs:
             depth-reuse-study.log
             depth-reuse-study/
             depth-engine-comparison.json
+            gain-study/
+            gain-study.log
+            gain-tensor-tests.log
+            gain-artifact-tests.log
             outcome-tensor-tests.log
             outcome-artifact-tests.log
             outcome-study.log
