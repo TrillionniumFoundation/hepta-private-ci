@@ -33,7 +33,9 @@ class Bf16RunnerGateTests(unittest.TestCase):
                     runner_arch="X64",
                 )
                 self.assertTrue(receipt["host_eligible"])
-                self.assertEqual(receipt["shared_acceleration_features"], [hardware_flag])
+                self.assertEqual(
+                    receipt["shared_acceleration_features"], [hardware_flag]
+                )
                 self.assertEqual(receipt["schema"], SCHEMA)
                 self.assertFalse(receipt["full_inference_latency_qualified"])
 
@@ -45,12 +47,20 @@ class Bf16RunnerGateTests(unittest.TestCase):
 
     def test_architecture_and_runner_label_are_bound(self):
         cpu = cpu_info([["avx512_bf16"]])
-        self.assertFalse(assess(cpu, machine="aarch64", runner_arch="ARM64")["host_eligible"])
-        self.assertFalse(assess(cpu, machine="x86_64", runner_arch="ARM64")["host_eligible"])
+        self.assertFalse(
+            assess(cpu, machine="aarch64", runner_arch="ARM64")["host_eligible"]
+        )
+        self.assertFalse(
+            assess(cpu, machine="x86_64", runner_arch="ARM64")["host_eligible"]
+        )
 
     def test_missing_flags_model_or_truncated_cpuinfo_fail_closed(self):
         self.assertFalse(assess("processor : 0", machine="x86_64")["host_eligible"])
-        self.assertFalse(assess("processor: 0\nflags: avx512_bf16", machine="x86_64")["host_eligible"])
+        self.assertFalse(
+            assess(
+                "processor: 0\nflags: avx512_bf16", machine="x86_64"
+            )["host_eligible"]
+        )
         for invalid in ("", "x" * (256 * 1024 + 1)):
             with self.assertRaises(ValueError):
                 assess(invalid, machine="x86_64")

@@ -33,12 +33,15 @@ def assess(cpuinfo, *, machine, runner_arch=None):
     model_names = sorted(
         set(re.findall(r"^\s*model name\s*:\s*(.+)$", cpuinfo, re.MULTILINE))
     )
-    available = sorted(set.intersection(*(set(cpu) for cpu in cpus))) if cpus else []
+    shared = set.intersection(*(set(cpu) for cpu in cpus)) if cpus else set()
+    all_accelerated = bool(cpus) and all(
+        set(cpu) & ACCELERATED for cpu in cpus
+    )
     supported = bool(
         machine == "x86_64"
         and (runner_arch is None or runner_arch == "X64")
         and cpus
-        and all(set(cpu) & ACCELERATED for cpu in cpus)
+        and all_accelerated
     )
     if supported and not model_names:
         supported = False
@@ -50,9 +53,8 @@ def assess(cpuinfo, *, machine, runner_arch=None):
         "runner_arch": runner_arch,
         "logical_cpu_records": len(cpus),
         "cpu_models": model_names[:8],
-        "all_cpus_bf16_accelerated": bool(cpus)
-        and all(set(cpu) & ACCELERATED for cpu in cpus),
-        "shared_acceleration_features": sorted(set(available) & ACCELERATED),
+        "all_cpus_bf16_accelerated": all_accelerated,
+        "shared_acceleration_features": sorted(shared & ACCELERATED),
         "cpuinfo_sha256": hashlib.sha256(cpuinfo.encode()).hexdigest(),
         "rejection_reason": (
             None
