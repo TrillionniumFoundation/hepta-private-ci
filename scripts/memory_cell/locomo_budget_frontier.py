@@ -19,12 +19,31 @@ ARMS = tuple(
     for k in (2, 4, 8)
 )
 SOURCE_COMMIT = "fcc24ad653700ad5f47f09350cf7815242dc5de8"
+PUBLISHED_REPORT_GIT_BLOB = "6b7592e000bf5e0569b47dc2bcce1ec5b5004717"
+ORIGINAL_DECISIONS_SHA256 = "0c80477394abadce7cfd192404ac2531c571e14a9dabdefb371633c1ae3aec89"
+REPLAY_JOURNAL_SHA256 = "d3c09d944f5bfc855056d109fa0cc379a9a2dc11a3e628556af0448f8be82197"
 SCHEMA = "hepta.memorycell.locomo-nine-arm-independent-evaluation.v1"
 
 
 def _require(allowed, why):
     if not allowed:
         raise ValueError(why)
+
+
+def verified_original_report_bytes(data):
+    """Pin the exact original committed report bytes before interpreting scores."""
+    _require(
+        isinstance(data, bytes) and 0 < len(data) <= 512000,
+        "bounded original report bytes required",
+    )
+    git_blob = hashlib.sha1(
+        f"blob {len(data)}".encode("ascii") + bytes((0,)) + data
+    ).hexdigest()
+    _require(
+        git_blob == PUBLISHED_REPORT_GIT_BLOB,
+        "historical source-only result Git blob pin drift",
+    )
+    return hashlib.sha256(data).hexdigest()
 
 
 def _phase(rows, *, name, eligible, unknown, outside):
@@ -91,6 +110,9 @@ def audit_frontier(report):
         and report.get("tested_families") == 2
         and report.get("selected_arm") == "lexical_k8"
         and report.get("models_generated") == 0
+        and report.get("original_pinned_six_arm_decisions_sha256")
+            == ORIGINAL_DECISIONS_SHA256
+        and report.get("journal_sha256") == REPLAY_JOURNAL_SHA256
         and report.get("original_six_arm_replay_agrees") is True
         and report.get("independent_source_family_authentication") is False
         and report.get("published_data_pretraining_contamination_unknown") is True
@@ -178,8 +200,7 @@ def main():
     if args.source.is_symlink() or not args.source.is_file():
         raise ValueError("original result must be regular pinned local file")
     data = args.source.read_bytes()
-    if not 0 < len(data) <= 512000:
-        raise ValueError("bounded original source result required")
+    original_byte_sha256 = verified_original_report_bytes(data)
     def unique(pairs):
         o = {}
         for k, v in pairs:
@@ -192,6 +213,8 @@ def main():
         parse_constant=lambda v: (_ for _ in ()).throw(ValueError(v)),
     )
     output = audit_frontier(report)
+    output["original_source_exact_bytes_sha256"] = original_byte_sha256
+    output["original_source_git_blob_sha1"] = PUBLISHED_REPORT_GIT_BLOB
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(output, stream, ensure_ascii=False, indent=2, allow_nan=False)
         stream.write("\n")

@@ -5,7 +5,9 @@ import json
 from pathlib import Path
 import unittest
 
-from locomo_budget_frontier import ARMS, audit_frontier
+from locomo_budget_frontier import (
+    ARMS, audit_frontier, verified_original_report_bytes,
+)
 
 
 PINNED = Path(__file__).parent / "data" / "locomo-ninearm-offline-20261012.json"
@@ -28,6 +30,15 @@ class BudgetFrontierTests(unittest.TestCase):
         self.assertTrue(x["posthoc_selection_of_new_policy_prohibited"])
         self.assertTrue(report["no_new_source_reader_calls"])
         self.assertFalse(report["production_accepted"])
+
+    def test_exact_committed_original_byte_pin_rejects_rewrites(self):
+        raw = PINNED.read_bytes()
+        self.assertEqual(len(verified_original_report_bytes(raw)), 64)
+        for modified in (raw + b" ", raw.replace(b"lexical_k8", b"lexical_k4", 1)):
+            with self.subTest(size=len(modified)), self.assertRaisesRegex(
+                ValueError, "blob pin drift"
+            ):
+                verified_original_report_bytes(modified)
 
     def test_posthoc_frontier_does_not_choose_a_new_policy(self):
         out = audit_frontier(original())
