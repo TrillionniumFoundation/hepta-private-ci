@@ -116,10 +116,23 @@ def execute(row, arm, kernel, objective, provider, fixed, threshold, tables, hea
     raise ValueError('acquisition policy exceeded horizon')
 
 
+def make_head(torch):
+    """Shared exact acquisition Head for fitting and source-bound CPU replay."""
+    nn = torch.nn
+    class Head(nn.Module):
+        def __init__(self):
+            super().__init__(); self.value = nn.Linear(384, 16); self.gate = nn.Linear(384, 16); self.out = nn.Linear(16, 8)
+        def forward(self, x): return self.out(self.value(x).tanh()*self.gate(x).sigmoid())
+    return Head()
+
+
 def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_dir=None,
-        kernel_profile=LEGACY_KERNEL, cohort="banking_v1"):
+        kernel_profile=LEGACY_KERNEL, cohort="banking_v1", clock_diagnostics=False):
     intents, partitions = cohort_spec(cohort)
     guarded = cohort == "travel_guard_v1"
+    require(type(clock_diagnostics) is bool, "explicit clock diagnostics mode")
+    if clock_diagnostics:
+        from fbsde_cpu_replay import PhaseClock
     require(not guarded or kernel_profile == SUPPORTED_KERNEL, "guard requires supported kernel")
     import torch
     from torch import nn
@@ -133,6 +146,9 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
     torch.set_num_threads(2); torch.manual_seed(SEED)
     envelope_cpu = time.process_time_ns(); jobs = []
     sources = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(__file__).parent.glob('fbsde_acquisition*.py')}
+    if clock_diagnostics:
+        sources.update({name:hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+                        for name in ('fbsde_cpu_replay.py','fbsde_cpu_replay_audit.py')})
     objective, risk = Objective(), Objective(rho=.5)
     write_once(output/'plan.json', {'schema': 'hepta.fbsde.semantic-acquisition.plan.v1',
         'backend': backend, 'model': MODEL if backend == 'mmbert' else 'deterministic_sha256_lexical_384',
@@ -146,6 +162,7 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         'kernel_model_profile': kernel_profile,
         'fixed_grid': FIXED, 'confidence_grid': THRESHOLDS, 'prediction_cpu_limit_ns': 100_000_000,
         'view_attempt_profile': 'measured_attempts_v1',
+        'cpu_clock_profile': 'parallel_clocks_v1' if clock_diagnostics else 'process_only_v1',
         'test_labels_not_used_for_selection': True, 'real_future_observations': False,
         'source_author_independence_unknown': True, 'production_promotion_permitted': False})
     begin = time.process_time_ns()
@@ -188,11 +205,7 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
     normalize = lambda x: ((x-mean)/scale).clamp(-8, 8)
     fit_x = normalize(fit_x); features = {k: normalize(v) for k, v in features.items()}
     jobs.append({'id': 'pretest_features_and_normalizer', 'phase': 'training', 'cpu_ns': time.process_time_ns()-begin})
-    class Head(nn.Module):
-        def __init__(self):
-            super().__init__(); self.value = nn.Linear(384, 16); self.gate = nn.Linear(384, 16); self.out = nn.Linear(16, 8)
-        def forward(self, x): return self.out(self.value(x).tanh()*self.gate(x).sigmoid())
-    begin = time.process_time_ns(); head = Head(); optimizer = torch.optim.AdamW(head.parameters(), lr=.003)
+    begin = time.process_time_ns(); head = make_head(torch); optimizer = torch.optim.AdamW(head.parameters(), lr=.003)
     fit_y = torch.tensor([labels['fit'][uid] for uid, _ in fit_keys]); losses = []
     for _ in range(96):
         optimizer.zero_grad(); loss = nn.functional.cross_entropy(head(fit_x), fit_y)
@@ -266,16 +279,30 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         split_arms = tuple(a for a in arms if not (guarded and split == 'validation' and a == 'risk_selected'))
         streams = {a: (output/f'{split}-{a}.jsonl').open('xb') for a in split_arms}
         attempts = AttemptJournal(output/f'{split}-view-attempts.jsonl')
+        clocks = AttemptJournal(output/f'{split}-parallel-clocks.jsonl') if clock_diagnostics else None
         try:
             for ordinal, row in enumerate(inputs[split]):
                 order = list(split_arms); random.Random(SEED+ordinal).shuffle(order)
                 for arm in order:
                     obj = risk if arm == 'risk_ndu' else objective
                     def provider(view):
-                        return observe_view(view, lambda v: text_view(row['text'], v), encode,
-                            normalize, head, torch, head_id, attempts,
-                            {'split': split, 'arm': arm, 'id': row['id'],
-                             'source_input_sha256': row['text_sha256']})
+                        clock = PhaseClock() if clock_diagnostics else time.process_time_ns
+                        status = 'returned'; sequence = attempts.sequence
+                        try:
+                            return observe_view(view, lambda v: text_view(row['text'], v), encode,
+                                normalize, head, torch, head_id, attempts,
+                                {'split': split, 'arm': arm, 'id': row['id'],
+                                 'source_input_sha256': row['text_sha256']}, cpu_clock=clock)
+                        except Exception as error:
+                            from fbsde_acquisition_observe import ViewBudgetExceeded
+                            status = 'budget_exceeded' if isinstance(error, ViewBudgetExceeded) else 'execution_error'
+                            raise
+                        finally:
+                            if clocks is not None:
+                                clocks.append({'split': split, 'id': row['id'], 'arm': arm,
+                                    'view': view, 'status': status,
+                                    'source_sequence': sequence, 'source_attempt_sha256': attempts.previous,
+                                    **clock.report()})
                     rec = execute(row, arm, kernel, obj, provider, fixed, threshold, tables, head_id, intents, guard)
                     streams[arm].write(canonical(rec)+b'\n'); streams[arm].flush()
                     (records if split == 'test' else validation_records)[arm].append(rec)
@@ -289,6 +316,7 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
             raise
         finally:
             attempts.close()
+            if clocks is not None: clocks.close()
             for stream in streams.values():
                 stream.flush(); os.fsync(stream.fileno()); stream.close()
         if guarded and split == 'validation':
@@ -336,4 +364,7 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
     write_once(output/'results.json', report)
     from fbsde_acquisition_audit import audit
     write_once(output/'arithmetic-audit.json', audit(output, splits))
+    if clock_diagnostics:
+        from fbsde_cpu_replay_audit import audit_live
+        write_once(output/'clock-audit.json', audit_live(output))
     return report
