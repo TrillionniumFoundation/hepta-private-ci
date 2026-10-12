@@ -226,6 +226,64 @@ fn physical_affinity_index_cleans_up_after_expiry_and_cutover() {
     assert!(q.physical_lanes.is_empty());
 }
 
+#[test]
+fn coalesced_scope_reuses_its_stale_round_robin_slot_on_readmission() {
+    let mut config = limits();
+    config.max_batch_size = 2;
+    config.max_lanes_per_poll = 2;
+    let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
+
+    q.enqueue(1, intent("first", "scope-a", 1, 1, 100))
+        .unwrap();
+    q.enqueue(1, intent("coalesced", "scope-b", 1, 2, 100))
+        .unwrap();
+    let first = q.poll_physically_compatible(11).unwrap().batch.unwrap();
+    assert_eq!(first.requests.len(), 2);
+    assert_eq!(q.pending(), 0);
+    // scope-b was consumed by the affinity index, so it still has exactly
+    // one unvisited round-robin slot until the next ordinary poll.
+    assert_eq!(q.round_robin.len(), 1);
+    assert_eq!(q.round_robin_members.len(), 1);
+
+    q.enqueue(12, intent("readmitted", "scope-b", 1, 2, 100))
+        .unwrap();
+    assert_eq!(q.active_lanes(), 1);
+    assert_eq!(q.round_robin.len(), 1);
+    assert_eq!(q.round_robin_members.len(), 1);
+    let second = q.poll_physically_compatible(22).unwrap().batch.unwrap();
+    assert_eq!(second.requests.len(), 1);
+    assert_eq!(second.requests[0].request_id, id("readmitted"));
+    assert_eq!(q.pending(), 0);
+    assert!(q.round_robin_members.is_empty());
+}
+
+#[test]
+fn repeated_cross_scope_coalescing_never_accumulates_duplicate_queue_slots() {
+    let mut config = limits();
+    config.max_batch_size = 2;
+    config.max_lanes_per_poll = 2;
+    let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
+
+    for round in 0..128_u64 {
+        let now = 1 + round * 20;
+        q.enqueue(
+            now,
+            intent(&format!("a-{round}"), "scope-a", 1, 1, now + 100),
+        )
+        .unwrap();
+        q.enqueue(
+            now,
+            intent(&format!("b-{round}"), "scope-b", 1, 2, now + 100),
+        )
+        .unwrap();
+        let result = q.poll_physically_compatible(now + 10).unwrap();
+        assert_eq!(result.batch.unwrap().requests.len(), 2);
+        assert_eq!(q.pending(), 0);
+        assert!(q.round_robin.len() <= 1);
+        assert_eq!(q.round_robin_members.len(), q.round_robin.len());
+    }
+}
+
 // Opt-in source benchmark: not hardware acceptance, report raw durations.
 #[test]
 #[ignore = "run with --ignored --nocapture on deployment hardware"]
