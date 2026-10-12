@@ -259,8 +259,13 @@ fn native_worker_port_rejects_wrong_model_generation_and_payload_before_driver()
             3 => reservation.reservation_model_digest = "f".repeat(64),
             _ => reservation.lease_payload_digest = "f".repeat(64),
         }
-        let mut port =
-            WorkerNeuronControlPort::from_reserved_worker(&mut worker, model_id, reservation, typed.generation, 100);
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            model_id,
+            reservation,
+            typed.generation,
+            100,
+        );
         assert_eq!(
             port.execute_feature(&request),
             Err(NeuronModelError::Rejected),

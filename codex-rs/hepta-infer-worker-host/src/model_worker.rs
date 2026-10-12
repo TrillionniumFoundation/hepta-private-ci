@@ -808,12 +808,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let logical_generation =
             Generation::new(self.generation).map_err(|_| Error::FeatureContract)?;
         self.consume_neuron_attempt(&request.authorization)?;
-        self.run_neuron_features_receipt_consumed(
-            now_ms,
-            model_id,
-            request,
-            logical_generation,
-        )
+        self.run_neuron_features_receipt_consumed(now_ms, model_id, request, logical_generation)
     }
 
     /// Used by WorkerNeuronControlPort after it records the attempt BEFORE

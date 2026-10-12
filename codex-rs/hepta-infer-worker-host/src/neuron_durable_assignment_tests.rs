@@ -605,7 +605,10 @@ fn model_generation_is_not_worker_process_generation_after_restart() {
     assert_eq!(claim.state, RequestState::Dispatching);
     assert_eq!(claim.revision, 4);
     let receipt = port.execute_feature(&request).unwrap();
-    assert_eq!(receipt.status, codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(
+        receipt.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
     assert_eq!(
         receipt.request_digest,
         neuron_feature_request_digest_v1(&request).unwrap()

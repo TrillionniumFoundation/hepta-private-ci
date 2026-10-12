@@ -14,8 +14,8 @@ use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
-use codex_hepta_types::Generation;
 use codex_hepta_neuron::NeuronModelError;
+use codex_hepta_types::Generation;
 
 use crate::model_worker::InferenceWorker;
 use crate::model_worker::ModelDriver;
