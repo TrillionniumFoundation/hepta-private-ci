@@ -121,6 +121,13 @@ class GitGraphTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # Git may launch auto-maintenance after a synchronous fixture commit.
+        # A detached maintenance child can race TemporaryDirectory.cleanup()
+        # by writing fresh .git files while rmtree is already removing them.
+        # These ephemeral graph tests never need auto GC; prohibit that
+        # background writer rather than ignoring failed cleanup or sleeping.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
@@ -151,6 +158,14 @@ renamed = { package = "leaf", path = "leaf" }
         self.git("add", ".")
         self.git("commit", "-qm", "fixture")
         return self.git("rev-parse", "HEAD")
+
+    def test_ephemeral_git_fixture_disables_background_maintenance(self):
+        self.assertEqual(self.git("config", "--get", "maintenance.auto"), "false")
+        self.assertEqual(self.git("config", "--get", "gc.auto"), "0")
+        # Maintenance stays forbidden after a real graph snapshot; the
+        # selector still analyzes the actual on-disk, committed Git tree.
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.base)
+        self.assertFalse(ci.plan(self.root, self.base, self.base)["full_workspace"])
 
     def test_workspace_alias_optional_target_and_build_dependencies(self):
         with (self.root / "codex-rs/owner/Cargo.toml").open("a") as stream:
@@ -217,6 +232,8 @@ class DocumentInputTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
         self.write(
