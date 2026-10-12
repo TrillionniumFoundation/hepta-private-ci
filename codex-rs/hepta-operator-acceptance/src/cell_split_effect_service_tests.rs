@@ -1111,6 +1111,45 @@ fn new_execute_cannot_adopt_effect_created_after_negative_preflight() {
 }
 
 #[test]
+fn new_execute_rejects_an_effect_that_appears_during_precommit_frontier_read() {
+    let root = tempfile::tempdir().expect("owner root");
+    let backend = MutateAtFrontierRead {
+        inner: DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
+        intent: intent(),
+        mode: MutationAtFrontier::CommitBeforeNegativeSignature,
+        sequence_reads: 0,
+    };
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+    )
+    .expect("service");
+    let (mut client, mut server) = UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: intent(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("execute request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect already committed before new execute intent"
+        ))
+    ));
+    // The independently racing mutation is the only committed effect.
+    assert_eq!(service.backend().sequence_reads, 1);
+    assert_eq!(service.backend().inner.commits, 1);
+}
+
+#[test]
 fn new_execute_requires_fresh_original_owner_frontier_advance() {
     let root = tempfile::tempdir().expect("owner root");
     let mut backend = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
