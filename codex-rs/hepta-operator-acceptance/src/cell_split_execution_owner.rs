@@ -816,14 +816,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             }
         }
         if let Some(prepared) = pending_prepared {
-            if read_frame(&frame_path(&self.root, self.cursor, "prepared"))? != Some(prepared)
-                || read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
-                || has_successor_frame(&self.root, self.cursor + 1)?
-            {
-                return Err(CellSplitExecutionErrorV1::Invalid(
-                    "pending frame changed during live owner readback",
-                ));
-            }
+            verify_pending_frame_unchanged(&self.root, self.cursor, &prepared)?;
         }
         // An original owner may take arbitrarily long to answer. In addition
         // to rechecking existing bytes, reject any newly injected frame or
@@ -1028,6 +1021,24 @@ fn has_successor_frame(root: &Path, from_index: usize) -> Result<bool, CellSplit
         }
     }
     Ok(false)
+}
+
+/// An in-flight original-owner read must not authorize a replaced pending
+/// intent, an unexpected committed frame or a newly injected successor.
+fn verify_pending_frame_unchanged(
+    root: &Path,
+    index: usize,
+    original_prepared: &[u8],
+) -> Result<(), CellSplitExecutionErrorV1> {
+    if read_frame(&frame_path(root, index, "prepared"))?.as_deref() != Some(original_prepared)
+        || read_frame(&frame_path(root, index, "committed"))?.is_some()
+        || has_successor_frame(root, index + 1)?
+    {
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "pending frame changed during live owner readback",
+        ));
+    }
+    Ok(())
 }
 
 fn read_frame(path: &Path) -> Result<Option<Vec<u8>>, CellSplitExecutionErrorV1> {
