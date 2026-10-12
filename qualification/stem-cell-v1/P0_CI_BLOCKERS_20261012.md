@@ -28,3 +28,11 @@ This is a read-only engineering audit, not production authorization. Source HEAD
 P0 is **BLOCKED** unless the final combined SHA passes Rust compile, test, fmt, Clippy, cargo-deny, cross-platform Bazel and global CI. P1 requires real signed CAS/current/final-use and restart/fence recovery, P2 approved pinned model weights, P3 target-machine 64–4096 Cell traces, and P4 independent future-window NDU/negative transfer. No mock output, digest declaration or research shadow trace counts as production success.
 
 **Status: shadow-only, Draft PR, production authorization DENIED.**
+
+## 2026-10-12 latest-head checkpoint: 8987efdaae7ec75f07171f159fa724dc5dab77d8
+
+- This checkpoint is **not a release authorization**. Dedicated Stem L1: [38236387375](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38236387375), Matrix security candidate: [38236387380](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38236387380), and global blocking CI: [38236387735](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38236387735) were queued/pending at inspection. No latest-SHA green claim.
+- Previous exact SHA `d55a1982d62e09ef1711774c3bd672af6a8e25d3` had **four successful dedicated L1 jobs**: [38103057957](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38103057957). That older success must not be projected onto this new head.
+- The Matrix hard gate now explicitly evaluates candidate upstream source, compatibility, two SQLite resolver modes, dependency graph and an anymap3 backport. These are **diagnostic gates**, not proof of applied security remediation.
+- Blocking criteria remain unchanged: actual `cargo deny check --locked` with no ignores, no resolved `anymap2`, patched compatible crypto, real Matrix E2EE/SQLite and revocation/recovery tests, cross-platform Bazel and exact-SHA global CI.
+- Even after P0, L2/L3/L4 require audited actual Encoder snapshots, target-host measurements and independent future-window NDU outcomes. No Shadow result authorizes production routing.
