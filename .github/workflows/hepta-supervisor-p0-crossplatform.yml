@@ -31,8 +31,15 @@ jobs:
           persist-credentials: false
       - name: Install pinned Rust 1.95
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
-      - name: Verify canonical Rust format
+      - name: Verify full-workspace canonical Rust format on Linux
+        if: runner.os == 'Linux'
         run: cargo +1.95.0 fmt --all -- --check
+      - name: Verify Supervisor canonical Rust format on Windows
+        if: runner.os == 'Windows'
+        # A Windows runner cannot pass the entire huge Hepta workspace to
+        # rustfmt in one command (OS error 206: argument list too long).
+        # The same complete workspace is independently checked on Linux.
+        run: cargo +1.95.0 fmt -p codex-hepta-supervisor -- --check
       - name: Execute actual restart budget, repeated recovery and signed intent recovery
         run: cargo +1.95.0 test --locked -p codex-hepta-supervisor --test restart_budget --test restart_budget_recovery --test signed_intent_recovery -- --nocapture
       - name: Strict Supervisor Clippy
