@@ -10,6 +10,9 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+/// Read-only physical CAS integrity validation for pinned Stem substrates.
+pub mod stem_artifact_cas;
+
 pub mod final_use_authorizer;
 pub mod native_app_server;
 
