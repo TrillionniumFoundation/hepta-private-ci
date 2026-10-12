@@ -268,7 +268,7 @@ def acquire(manifest, output, *, manifest_sha, fetch):
                 or len({row["sha"] for row in chain}) != len(chain)
             ):
                 raise ValueError("registered original Git commits must end at HEAD")
-            for predecessor, successor in zip(chain, chain[1:]):
+            for predecessor, successor in zip(chain, chain[1:], strict=False):
                 if predecessor["sha"] not in successor["parents"]:
                     raise ValueError("registered Git commit is not an ancestor of HEAD")
             commits.extend(chain)
@@ -420,9 +420,7 @@ def reopen(manifest, output, *, manifest_sha):
         raise ValueError("registered commit object identities differ")
     cursor = 0
     for case in manifest["cases"]:
-        chain = inventory["commits"][
-            cursor : cursor + len(case["commits"])
-        ]
+        chain = inventory["commits"][cursor : cursor + len(case["commits"])]
         cursor += len(chain)
         if (
             not chain
@@ -432,7 +430,7 @@ def reopen(manifest, output, *, manifest_sha):
             or len({row["sha"] for row in chain}) != len(chain)
         ):
             raise ValueError("reopened Git HEAD/commit ancestry differs")
-        for predecessor, successor in zip(chain, chain[1:]):
+        for predecessor, successor in zip(chain, chain[1:], strict=False):
             if predecessor["sha"] not in successor.get("parents", []):
                 raise ValueError("reopened Git commit chain disconnected")
     seen, total, non_utf8 = {}, 0, 0

@@ -27,9 +27,7 @@ def synthetic():
         root = oid(f"root{i}")
         subtree = oid(f"sub{i}")
         commit_ids = [oid(f"commit{i}-{j}") for j in range(ncommits)]
-        parent_ids = (
-            [commit_ids[-2]] if len(commit_ids) > 1 else [oid(f"parent{i}")]
-        )
+        parent_ids = [commit_ids[-2]] if len(commit_ids) > 1 else [oid(f"parent{i}")]
         case = dict(
             repo=repo,
             partition=part,
@@ -70,9 +68,7 @@ def synthetic():
             sha=subtree, truncated=False, tree=entries
         )
         for index, c in enumerate(commit_ids):
-            original_parent = (
-                commit_ids[index - 1] if index else oid(f"parent{i}")
-            )
+            original_parent = commit_ids[index - 1] if index else oid(f"parent{i}")
             source_objects[(repo, "commits", c)] = dict(
                 sha=c,
                 author=dict(date="2026-10-12T14:00:00Z"),
