@@ -38,6 +38,34 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
+      - name: Refresh actual pull request base while fencing exact source head
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PR_NUMBER"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          current="$(gh api "repos/$REPO/pulls/$PR_NUMBER")"
+          current_head="$(jq -er '.head.sha' <<<"$current")"
+          current_base="$(jq -er '.base.sha' <<<"$current")"
+          current_ref="$(jq -er '.base.ref' <<<"$current")"
+          [[ "$current_head" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$current_base" =~ ^[0-9a-f]{40}$ ]]
+          test "$current_head" = "$SOURCE_SHA"
+          test "$current_ref" = "$EXPECTED_BASE_REF"
+          if [[ "$BASE_SHA" != "$current_base" ]]; then
+            echo "::notice::PR webhook base SHA is historical; using exact current GitHub base"
+          fi
+          # The SAME parent is passed into history, merge-ref validation,
+          # synthetic candidate construction, and both scoped test lanes.
+          # Any subsequent base/head race still fails closed at the live
+          # GitHub merge parent's exact SHA/tree verification below.
+          printf 'BASE_SHA=%s\n' "$current_base" >> "$GITHUB_ENV"
       - name: Fetch exact qualification history
         env:
           GH_TOKEN: ${{ github.token }}
