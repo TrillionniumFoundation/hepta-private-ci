@@ -34,7 +34,15 @@ jobs:
           python3 -m compileall -q scripts/memory_cell/locomo_reader_paired_cost.py scripts/memory_cell/test_locomo_reader_paired_cost.py
           python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_ninearm_source_replay.py' -v
           python3 -m pip install uv==0.8.22
-          uv run --frozen --project scripts ruff format --check scripts/memory_cell/locomo_frozen_reader_pair.py scripts/memory_cell/test_locomo_frozen_reader_pair.py
+          # Preserve the exact Ruff-required patch when formatting blocks Qwen.
+          if ! uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/locomo_frozen_reader_pair.py \
+            scripts/memory_cell/test_locomo_frozen_reader_pair.py; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/locomo_frozen_reader_pair.py \
+              scripts/memory_cell/test_locomo_frozen_reader_pair.py || true
+            exit 1
+          fi
   reader:
     needs: checks
     runs-on: ubuntu-22.04
