@@ -132,6 +132,8 @@ class OfflineEncoder:
     def encode(self, records: list[dict[str, Any]], batch: int = 8) -> torch.Tensor:
         if not records or batch <= 0:
             raise ValueError('empty records / invalid batch')
+        # Disallow model-file changes before *any* inference computation.
+        self._check_bundle_unchanged()
         chunks = []
         with torch.inference_mode():
             for start in range(0, len(records), batch):
@@ -176,6 +178,7 @@ class OfflineEncoder:
     def laya_baseline_probabilities(self, records: list[dict[str, Any]]) -> torch.Tensor:
         if self.kind != 'laya-joint':
             raise ValueError('full Laya baseline only supported by laya-joint')
+        self._check_bundle_unchanged()
         predictions = []
         for row in records:
             q = {'q': {'type': 'choice', 'instructions': row['question'],
