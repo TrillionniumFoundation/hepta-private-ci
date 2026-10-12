@@ -149,6 +149,94 @@ impl CpuGatedHead {
         }
         Ok((drive, prediction))
     }
+
+    /// Execute Q24 affine operations by output row across several Cell inputs.
+    /// Each read-only Head coefficient is fetched once per output/feature and
+    /// applied to every lane in this group. This is CPU arithmetic over a
+    /// contiguous buffer, NOT a fused Encoder/tensor-runtime or SIMD claim.
+    ///
+    /// Returned rows preserve the caller's lane order. No partially valid
+    /// predictions escape when any member is malformed or overflows Q24.
+    fn infer_batch(
+        &self,
+        packed_inputs: &[i64],
+        lanes: &[usize],
+        input_width: usize,
+    ) -> Result<Vec<(Vec<i64>, Vec<i64>)>, Error> {
+        self.validate()?;
+        if lanes.is_empty()
+            || lanes.len() > 32
+            || input_width != self.input_width
+            || packed_inputs.len() % input_width != 0
+        {
+            return Err(Error::FeatureBatchMismatch);
+        }
+        let available = packed_inputs.len() / input_width;
+        let mut distinct = std::collections::BTreeSet::new();
+        for &lane in lanes {
+            if lane >= available || !distinct.insert(lane) {
+                return Err(Error::FeatureBatchMismatch);
+            }
+            let start = lane
+                .checked_mul(input_width)
+                .ok_or(Error::ArithmeticOverflow)?;
+            if packed_inputs[start..start + input_width]
+                .iter()
+                .any(|x| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(x))
+            {
+                return Err(Error::FeatureLimit);
+            }
+        }
+
+        let mut outputs = (0..lanes.len())
+            .map(|_| (
+                Vec::with_capacity(self.output_width),
+                Vec::with_capacity(self.output_width),
+            ))
+            .collect::<Vec<_>>();
+        // Bounded at 32 lanes. Reuse Q48 accumulators across output rows.
+        let mut acc = vec![[0_i128; 3]; lanes.len()];
+        for row in 0..self.output_width {
+            let baseline = [
+                (self.gate_bias_q24[row] as i128) * Q,
+                (self.drive_bias_q24[row] as i128) * Q,
+                (self.prediction_bias_q24[row] as i128) * Q,
+            ];
+            acc.fill(baseline);
+            let offset = row
+                .checked_mul(input_width)
+                .ok_or(Error::ArithmeticOverflow)?;
+            for col in 0..input_width {
+                let index = offset + col;
+                let gate_w = self.gate_weights_q24.get(index).copied().unwrap_or(0) as i128;
+                let drive_w = self.drive_weights_q24[index] as i128;
+                let predict_w = self
+                    .prediction_weights_q24
+                    .get(index)
+                    .copied()
+                    .unwrap_or(0) as i128;
+                for (out, &lane) in acc.iter_mut().zip(lanes) {
+                    let input_index = lane * input_width + col;
+                    let x = packed_inputs[input_index] as i128;
+                    out[0] += x * gate_w;
+                    out[1] += x * drive_w;
+                    out[2] += x * predict_w;
+                }
+            }
+            for (output, values) in outputs.iter_mut().zip(&acc) {
+                let gate_pre = round_q48_to_q24(values[0])?;
+                let numerator = (gate_pre as i128 + Q).clamp(0, 2 * Q);
+                let half = numerator / 2;
+                let gate = half + i128::from(numerator % 2 != 0 && half % 2 != 0);
+                let d = round_q48_to_q24(values[1])?;
+                let p = round_q48_to_q24(values[2])?;
+                output.0.push(round_q48_to_q24((d as i128) * gate)?);
+                output.1.push(round_q48_to_q24((p as i128) * gate)?);
+            }
+        }
+        Ok(outputs)
+    }
+
 }
 
 fn round_q48_to_q24(value: i128) -> Result<i64, Error> {
@@ -360,13 +448,36 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
             .backend_batch_invocations
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
+        // Batch by exact immutable Head digest. This kernel traverses each
+        // Head's row weights across all of its lanes, rather than repeatedly
+        // invoking the single-Cell Head kernel for every request.
+        let mut head_lanes = BTreeMap::<&str, Vec<usize>>::new();
+        for (index, request) in requests.iter().enumerate() {
+            head_lanes
+                .entry(request.head_digest.as_str())
+                .or_default()
+                .push(index);
+        }
+        let mut results = (0..requests.len())
+            .map(|_| None)
+            .collect::<Vec<Option<(Vec<i64>, Vec<i64>)>>>();
+        for (head_digest, lanes) in head_lanes {
+            let head = self.heads.get(head_digest).ok_or(Error::ModelMismatch)?;
+            for (&index, output) in lanes
+                .iter()
+                .zip(head.infer_batch(&contiguous, &lanes, width)?)
+            {
+                results[index] = Some(output);
+            }
+        }
+
         let mut members = Vec::with_capacity(requests.len());
         let mut tracked_outputs = 0u64;
         for (index, request) in requests.iter().enumerate() {
             let per_member_started = Instant::now();
-            let input = &contiguous[index * width..(index + 1) * width];
-            let head = self.validate_selected(handle, request)?;
-            let (drive, prediction) = head.infer(input)?;
+            let (drive, prediction) = results[index]
+                .take()
+                .ok_or(Error::FeatureBatchMismatch)?;
             let temporary = (drive.capacity() + prediction.capacity())
                 .checked_mul(std::mem::size_of::<i64>())
                 .ok_or(Error::ArithmeticOverflow)?;
