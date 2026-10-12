@@ -235,11 +235,22 @@ fn native_worker_single_use_port_executes_exact_neuron_model_port() {
     assert_eq!(actual.runtime_receipt.resident_bytes, 4096);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     assert!(!control.reservation_unconsumed());
+    let metered = control.metered_result_v1().expect("actual backend usage");
+    assert!(metered.validate_integrity());
+    assert_eq!(metered.consumed_tokens, 4);
+    assert_eq!(metered.request_id, typed.request_id.as_str());
+    assert_eq!(metered.reservation_id, "reservation.1");
+    assert_eq!(metered.neuron_generation, typed.generation);
+    assert_eq!(metered.status, NeuronFeatureTerminalStatusV1::Succeeded);
+    let mut changed = metered.clone();
+    changed.consumed_tokens = 64; // reserved quota is not actual usage
+    assert!(!changed.validate_integrity());
     assert_eq!(
         control.execute_feature(&typed),
         Err(NeuronModelError::Rejected),
         "a successful reservation cannot be reused"
     );
+    assert!(control.metered_result_v1().is_none());
     assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
 
@@ -295,6 +306,10 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
     );
     let receipt = port.execute_feature(&typed).unwrap();
     assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Indeterminate);
+    assert_eq!(
+        port.metered_result_v1().map(|value| value.status),
+        Some(NeuronFeatureTerminalStatusV1::Indeterminate)
+    );
     assert!(receipt.drive_q24.is_empty());
     assert!(receipt.prediction_q24.is_empty());
     assert!(!port.reservation_unconsumed());
@@ -312,6 +327,7 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
         Err(NeuronModelError::Indeterminate),
         "driver identity drift after invocation has an unknown effect outcome"
     );
+    assert!(port.metered_result_v1().is_none());
     assert_eq!(
         port.execute_feature(&typed),
         Err(NeuronModelError::Rejected)
@@ -341,6 +357,7 @@ fn post_driver_token_overrun_is_indeterminate_and_unrepeatable_across_ports() {
             Err(NeuronModelError::Indeterminate)
         );
         assert!(!port.reservation_unconsumed());
+        assert!(port.metered_result_v1().is_none());
     }
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     let mut recreated = WorkerNeuronControlPort::from_reserved_worker(

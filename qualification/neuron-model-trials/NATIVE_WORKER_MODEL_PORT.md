@@ -38,6 +38,18 @@ selected production no-change baseline; the independent evaluator must map the
 event to the authoritative selected-route/cell identity and Ledger Episode,
 retain a historical signed receipt, and revalidate source/route final-use.
 
+The Worker now also preserves the actual post-driver **consumed token count**
+outside the frozen NeuronFeatureReceiptV1 wire contract. A
+`WorkerNeuronControlPort::metered_result_v1` is emitted only after full
+typed-receipt verification and binds the precise request/reservation, Worker
+and Neuron generations, terminal status, actual consumed tokens and receipt
+digest. Its checksum and `DENY_ALL` posture do not make it a signed
+resource-meter receipt. A failed/malformed backend return or post-driver
+token overrun yields no successful metered diagnostic; an Indeterminate
+receipt keeps that status and can never imply a completed task. Production
+Control settlement must independently authenticate Worker usage and
+preserve the unknown-outcome path; a reserved quota is not observed usage.
+
 The qualification tests run the actual Worker and the actual Neuron ModelPort,
 with a **fixture ModelDriver** that produces deterministic Q24 vectors.
 A separate integration test now composes a real AgentdNeuronOwner,
