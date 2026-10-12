@@ -1,0 +1,101 @@
+name: Hepta System2 verified search and Riccati parity
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_verified_search.py"
+      - "scripts/memory_cell/test_system2_verified_search.py"
+      - "scripts/memory_cell/test_system2_riccati_lq.py"
+      - "codex-rs/hepta-ndu/research/riccati_lq.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_VERIFIED_CONTROL.md"
+      - ".github/workflows/hepta-system2-verified-control.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-verified-control-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  numerical-and-search:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-regression.zip
+      HEPTA_SYSTEM2_ORIGINAL_ARCHIVE: /tmp/system2-original.zip
+      HEPTA_SYSTEM2_CONTENT_ARCHIVE: /tmp/system2-content.zip
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pinned CPU environment without pretrained model staging
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/verified-control
+          python3 -m venv /tmp/system2-python
+          /tmp/system2-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/system2-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8
+          /tmp/system2-python/bin/pip freeze > /tmp/verified-control/environment.txt
+      - name: Preserve original regression fixtures and inspect completed matched trial
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_STEM_STRICT_ARCHIVE"
+          printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 "$HEPTA_STEM_STRICT_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11703482865/zip > "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE"
+          printf '%s  %s\n' 80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11706235289/zip > "$HEPTA_SYSTEM2_CONTENT_ARCHIVE"
+          printf '%s  %s\n' 2d7d1058c724f79298b8ccd28c319629b929a842f2107301c3e1c1adef09bcea "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11723737889/zip > /tmp/matched-evidence.zip
+          /tmp/system2-python/bin/python - <<'PY'
+          from pathlib import Path
+          import json
+          from system2_native_receipt import verified_archive, strict_json
+          pin='b98de07cf0bfb2de460bc656747f601ee156dedd25f87a28089c31e90a5f9a7e'
+          files=verified_archive(Path('/tmp/matched-evidence.zip'),pin)
+          if files['tested-commit.txt'].decode().strip()!='bb78e061a7b35b19e817dce6862d3be1a5481e5f':
+              raise ValueError('original matched trial generating source changed')
+          summary=strict_json(files['native/run-summary.json'])
+          Path('/tmp/verified-control/previous-matched-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          print('PREVIOUS_MATCHED_TRIAL',json.dumps({'archive_sha256':pin,'verified_files':len(files)-1,'summary':summary}))
+          PY
+      - name: All MemoryCell regressions and new static diagnostics
+        run: |
+          set -euo pipefail
+          /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/verified-control/regression.log 2>&1 || { tail -100 /tmp/verified-control/regression.log; exit 1; }
+          tail -5 /tmp/verified-control/regression.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_verified_search.py scripts/memory_cell/test_system2_verified_search.py scripts/memory_cell/test_system2_riccati_lq.py codex-rs/hepta-ndu/research/riccati_lq.py | tee /tmp/verified-control/lint.log
+      - name: Exact finite-horizon solver replacement and actual measured cost
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/verified-control/lq-resources.txt /tmp/system2-python/bin/python codex-rs/hepta-ndu/research/riccati_lq.py /tmp/verified-control/lq 2>&1 | tee /tmp/verified-control/lq.log
+      - name: Frozen process critics and bounded exact-verifier search
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/verified-control/search-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_verified_search.py /tmp/verified-control/search 2>&1 | tee /tmp/verified-control/search.log
+      - name: Retain source identity, partial records and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/verified-control/source
+          git rev-parse HEAD > /tmp/verified-control/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/verified-control/tested-tree.txt
+          cp codex-rs/hepta-ndu/research/{riccati_lq.py,SYSTEM2_VERIFIED_CONTROL.md} /tmp/verified-control/source/
+          cp scripts/memory_cell/{system2_verified_search.py,test_system2_verified_search.py,test_system2_riccati_lq.py} /tmp/verified-control/source/
+          cp .github/workflows/hepta-system2-verified-control.yml /tmp/verified-control/source/
+          (cd /tmp/verified-control && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-verified-control
+          path: /tmp/verified-control
+          if-no-files-found: error
