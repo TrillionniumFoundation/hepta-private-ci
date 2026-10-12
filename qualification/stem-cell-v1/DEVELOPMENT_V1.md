@@ -178,3 +178,99 @@ native JIT was slower than typed interpretation. These outcomes are not discarde
 Hosted source-head/prospective-merge, global Rust/Bazel/security, physical pretrained
 weights, independent future evidence and actual production owner recovery remain
 mandatory before broader acceptance. No main merge or production activation.
+
+## Third slice: fair specialization and paid computation reuse
+
+Parent: `d32914a10f847a35aaf127ac47c29a162e43f0d6` / existing Draft PR #1648.
+The earlier reports above remain historical observations. This slice changes
+research operators only, not production execution or any authority owner.
+
+### Correct the structural comparison before declaring a split win
+
+`RouteAwareUnsplit` is one conditional Head with no Cell IDs or topology edits.
+It receives the same public route bit, shared basis, initial function, local
+parameter count and SGD stream as the split. At binary routes it contains the
+split function exactly. This deliberately strong equivalence control separates
+new capacity/information from the mere existence of a second logical identity.
+The original weak parent, larger-Head and more-data arms remain visible.
+`structural_arms` now REQUIRES separate `train_fold` and `holdout_fold`; scope,
+source-family and chronological overlap fail before optimizer entry. Metadata
+is caller-supplied and is not authenticated provenance. Synthetic logical times
+are not real future windows. Existing callers and regression tests are updated.
+
+Actual fixed-seed synthetic held-out accuracies: split 0.75, route-aware unsplit
+0.75, and route-aware unsplit with more data 0.875. The former comparison against
+a route-ignoring parent therefore does not establish a split-specific advantage.
+This does not rule out lifecycle, transfer or scheduling benefits of real Cells;
+those require their own comparisons. Whole state-tensor bytes and actual training
+examples are reported, including frozen shared tensors rather than just deltas.
+
+### Reuse recurrence, not evaluation work from another arm
+
+`incremental_depth_candidates` pays for one recurrent prefix and keeps each
+requested depth's own readout. Fixed-depth controls are still independently run.
+Neither path changes the selected model's `depth` attribute; the explicit depth
+argument removes temporary shared configuration mutation. In the 16-case fixture,
+independent depths 1/2/4 execute 112 state transitions versus 64 for shared prefixes,
+with exactly equal logits at each requested depth. Counts are not a wall-time,
+semantic reasoning or general NDU improvement claim. Per-arm CPU/wall measurements
+remain separate; cumulative/nested spans must not be added as independent costs.
+
+The generator study now runs zero-condition and within-modality permuted-condition
+controls without passing target bytes into inference. All their inference work is
+charged. Full conditions recover 16/16 tiny payloads, zero conditions 2/16, and
+permuted conditions 0/16. These remain tiny repeated concepts, not broad multimodal
+understanding or unseen-concept generalization. They test conditioning dependence,
+not independent semantic correctness or realistic video/audio generation quality.
+
+### Native execution: admit immutable programs, still validate every input
+
+Both `PreparedDecision` and compiled execution validate static IR once and retain
+a detached private snapshot. Public `program` returns a copy and has no setter;
+replacing its width can no longer resize buffers for a differently compiled ABI.
+This is not protection against arbitrary Python/ctypes code in the same process.
+All dynamic input type, finite-value, range, shape and batch checks remain active.
+
+The only new loop is compiler-emitted and bounded to 1..32 rows. Whole-batch
+preflight precedes one actual native FFI call; malformed late members do not
+partially dispatch. Cache eviction keeps outstanding executable objects alive.
+Typed interpretation receives the SAME static-admission optimization: it is not
+an intentionally slow per-call-IR-validation strawman. Native error does not
+silently fall back or retry. No syscalls, GUI effects, new grants or raw code inputs.
+
+`development_native_benchmark.py` measures fixed policies on identical observations,
+rotates backend order, keeps every timing sample and charges validation/marshalling.
+It reports whole-batch p50/p95/p99 and throughput, NEVER batch time divided by rows
+as request latency. Cold per-policy admission and extra admission amortization are
+separate; LLVM itself may already be warm within a process. Verification is timed
+separately and total benchmark time includes it. No queue or computer-use E2E claim.
+
+Three fresh-process runs on the same final benchmark source/inputs show: 32-row
+complex guard scans improve median batch latency by 6.72..7.00 times versus the
+prepared typed control; tiny and medium policies remain slower in native code.
+The guard-scan profile is explicitly branch-heavy, not a representative workload
+claim. Local unsigned host noise is visible in the retained p95/p99 samples.
+Compile admission amortizes after an estimated 74..82 such batches in these runs;
+nonpositive-saving cases retain null amortization. Do not always choose native.
+
+### Executed checks and remaining physical gates
+
+45 local tests passed without failures/skips, including all 26 prior Torch/LLVM
+checks, 16 new regressions and the three previously unexecuted sharing checks.
+The latter now run against exact original SharedStemEngine/cache-accounting Git
+blobs, but their Encoder is still explicitly simulated. This is a sparse checkout,
+not a full Rust/Bazel/global CI result. The existing workflow keeps all original
+checks and adds the new tests/benchmark for exact source and prospective merge.
+
+No approved model snapshot was supplied locally and direct model downloads failed.
+No weights were fabricated and the existing safetensors-only loader was NOT relaxed.
+Real pretrained task quality, independent future NDU, 64..4096 target-host resource
+measurements, GPU/Wasm/MCP/computer-use E2E and production Final-use/WAL recovery
+remain unaccepted. Remote checks must finish on the actual latest SHA.
+
+```sh
+PYTHONPATH=qualification/stem-cell-v1 python3 -m unittest -v \
+  development_ablation_checks development_native_batch_checks development_sharing_checks
+PYTHONPATH=qualification/stem-cell-v1 python3 \
+  qualification/stem-cell-v1/development_native_benchmark.py --output /new/native-study
+```
