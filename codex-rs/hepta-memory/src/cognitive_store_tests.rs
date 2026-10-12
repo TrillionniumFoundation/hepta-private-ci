@@ -1109,5 +1109,8 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
     .fetch_one(&migrated.pool)
     .await
     .expect("V15 shared-experience-use table");
-    assert_eq!(new_owner_tables, 1, "V15 table must exist after V2 migration");
+    assert_eq!(
+        new_owner_tables, 1,
+        "V15 table must exist after V2 migration"
+    );
 }
