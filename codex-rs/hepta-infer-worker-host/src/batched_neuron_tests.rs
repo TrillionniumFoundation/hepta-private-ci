@@ -465,6 +465,10 @@ impl NeuronFeatureDriver for NativeTestDriver {
         Driver.run_neuron_features(handle, request)
     }
 
+    fn supports_neuron_feature_batch(&self, _handle: &DriverModelHandle) -> bool {
+        true
+    }
+
     fn run_neuron_features_batch(
         &mut self,
         _handle: &DriverModelHandle,
@@ -714,35 +718,63 @@ fn native_batch_backend_absence_fails_closed_instead_of_sequential_fallback() {
     let signer = SigningKey::from_bytes(&[39; 32]);
     let (model, first, key) = fixture_request();
     let second = second_request(&first);
-    let mut worker = runner_with_driver(&signer, dir.path(), model, Driver, 2);
     let one = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
     let two = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
-    worker
-        .enqueue(
-            100,
-            "model".into(),
-            first,
-            key.clone(),
-            signed_member(&signer, one, "grant-1", 45),
-        )
+    let first_grant = signed_member(&signer, one, "grant-1", 45);
+    let second_grant = signed_member(&signer, two, "grant-2", 46);
+    {
+        let mut worker = runner_with_driver(&signer, dir.path(), model.clone(), Driver, 2);
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                first.clone(),
+                key.clone(),
+                first_grant.clone(),
+            )
+            .unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                second.clone(),
+                key.clone(),
+                second_grant.clone(),
+            )
+            .unwrap();
+        let observed = worker.poll_and_execute(101).unwrap();
+        assert_eq!(observed.outcomes.len(), 2);
+        assert!(observed.outcomes.iter().all(|item| {
+            matches!(item.result, Err(BatchWorkerErrorV1::BatchUnsupported))
+        }));
+        assert_eq!(worker.pending(), 0);
+    }
+
+    // The unsupported driver never entered a model call, so its grants
+    // were not consumed. Reopen the actual durable authority journal with
+    // a newly selected batch-capable backend; the exact grants remain valid.
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut recovered = runner_with_driver(&signer, dir.path(), model, driver, 2);
+    recovered
+        .enqueue(200, "model".into(), first, key.clone(), first_grant)
         .unwrap();
-    worker
-        .enqueue(
-            100,
-            "model".into(),
-            second,
-            key,
-            signed_member(&signer, two, "grant-2", 46),
-        )
+    recovered
+        .enqueue(200, "model".into(), second, key, second_grant)
         .unwrap();
-    let observed = worker.poll_and_execute(101).unwrap();
-    assert_eq!(observed.outcomes.len(), 2);
-    assert!(
-        observed
-            .outcomes
-            .iter()
-            .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::BatchUnsupported)))
-    );
+    let completed = recovered.poll_and_execute(201).unwrap();
+    assert_eq!(completed.outcomes.len(), 2);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert!(completed.outcomes.iter().all(|item| {
+        matches!(
+            &item.result,
+            Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        )
+    }));
 }
 
 #[test]
