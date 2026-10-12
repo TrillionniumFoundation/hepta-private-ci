@@ -266,6 +266,18 @@ selection remain separate gates. This code never changes production
 selection, release, final-use permission, model rankings or NDU.
 
 
+
+The typed Neuron driver now additionally reports `consumed_tokens` observed
+**after** real execution. The Worker rejects post-driver token use beyond
+*any* of the request, reservation or loaded-model limits, matching ordinary
+Worker accounting. The ModelPort treats this as **Indeterminate**, retains
+the already-consumed attempt tombstone, and must not retry the durable
+Dispatching claim. The raw observation includes the token count for local
+resource diagnostics; the existing `NeuronFeatureReceiptV1` wire contract
+does **not yet** export it, so this is not end-to-end token cost accounting.
+Tests use a fixture driver consuming 17 tokens against a limit of 16 and
+verify no replay; they do not prove third-party GPU/CPU driver metering.
+
 ## Defense-in-depth: enforce typed Neuron token quotas inside the Worker
 
 The durable inference.control assignment already bounds the requested tokens

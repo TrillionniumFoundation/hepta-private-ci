@@ -13,6 +13,7 @@ struct Driver {
     invalid_handle: bool,
     shared_handle: bool,
     memory_bytes: Option<u64>,
+    neuron_consumed_tokens: Option<u32>,
 }
 
 impl ModelDriver for Driver {
@@ -77,6 +78,7 @@ impl NeuronFeatureDriver for Driver {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
                 succeeded: false,
+                consumed_tokens: self.neuron_consumed_tokens.unwrap_or(4),
                 encoder_digest: request.encoder_digest.clone(),
                 head_digest: request.head_digest.clone(),
                 drive_q24: Vec::new(),
@@ -90,6 +92,7 @@ impl NeuronFeatureDriver for Driver {
         Ok(DriverNeuronFeatureObservation {
             terminal_observed: true,
             succeeded: !self.fail_terminal,
+            consumed_tokens: self.neuron_consumed_tokens.unwrap_or(4),
             encoder_digest: request.encoder_digest.clone(),
             head_digest: if self.corrupt_neuron_head {
                 "f".repeat(64)
@@ -314,6 +317,50 @@ fn typed_neuron_worker_enforces_model_and_reservation_token_limits_before_driver
     let observation = worker.run_neuron_features(100, "model.1", valid).unwrap();
     assert_eq!(observation.status, ExecutionStatus::Succeeded);
     assert_eq!(worker.driver.neuron_calls, 1);
+}
+
+
+#[test]
+fn typed_neuron_driver_actual_token_overrun_is_rejected_and_cannot_replay() {
+    let driver = Driver {
+        neuron_consumed_tokens: Some(17),
+        ..Driver::default()
+    };
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.typed-usage".to_owned(),
+        3,
+        grant(),
+        driver,
+    )
+    .unwrap();
+    let mut constrained = manifest();
+    constrained.maximum_tokens = 16;
+    worker.load_model(100, constrained).unwrap();
+    let mut request = neuron_feature_request();
+    request.authorization.maximum_tokens = 16;
+    request.authorization.reservation_maximum_tokens = 16;
+    // The request passed both pre-driver token caps. The backend then
+    // actually consumed 17 and must never become a successful typed receipt.
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", request.clone()),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.neuron_calls, 1);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", request),
+        Err(Error::NeuronReservationReplay)
+    );
+
+    let mut fresh = neuron_feature_request();
+    fresh.authorization.request_id = "request.usage2".to_owned();
+    fresh.authorization.reservation_id = "reservation.usage2".to_owned();
+    fresh.authorization.maximum_tokens = 16;
+    fresh.authorization.reservation_maximum_tokens = 16;
+    worker.driver.neuron_consumed_tokens = Some(16);
+    let within = worker.run_neuron_features(100, "model.1", fresh).unwrap();
+    assert_eq!(within.consumed_tokens, 16);
+    assert_eq!(worker.driver.neuron_calls, 2);
 }
 
 #[test]

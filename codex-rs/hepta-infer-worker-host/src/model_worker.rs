@@ -616,6 +616,9 @@ pub struct NeuronFeatureRequest {
 pub struct DriverNeuronFeatureObservation {
     pub terminal_observed: bool,
     pub succeeded: bool,
+    /// Tokens the backend actually observed consuming. A claimed quota is not
+    /// evidence of physical usage, so validate this after the driver returns.
+    pub consumed_tokens: u32,
     pub encoder_digest: String,
     pub head_digest: String,
     pub drive_q24: Vec<i64>,
@@ -632,6 +635,7 @@ pub struct NeuronFeatureExecutionObservation {
     pub reservation_id: String,
     pub worker_generation: u64,
     pub manifest: ModelManifest,
+    pub consumed_tokens: u32,
     pub encoder_digest: String,
     pub head_digest: String,
     pub input_digest: String,
@@ -725,6 +729,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 head_digest: request.head_digest,
                 input_digest: request.input_digest,
                 status: ExecutionStatus::Cancelled,
+                consumed_tokens: 0,
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
                 observed_memory_bytes: loaded.handle.observed_memory_bytes,
@@ -748,6 +753,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
+        // This is a post-driver resource check: the physical operation may
+        // have happened. The owning ModelPort MUST classify this error as
+        // Indeterminate and may not replay the consumed durable reservation.
+        if observed.consumed_tokens > request.authorization.maximum_tokens
+            || observed.consumed_tokens > request.authorization.reservation_maximum_tokens
+            || observed.consumed_tokens > loaded.manifest.maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
@@ -768,6 +782,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             head_digest: observed.head_digest,
             input_digest: request.input_digest,
             status,
+            consumed_tokens: observed.consumed_tokens,
             drive_q24: observed.drive_q24,
             prediction_q24: observed.prediction_q24,
             observed_memory_bytes: observed.observed_memory_bytes,
