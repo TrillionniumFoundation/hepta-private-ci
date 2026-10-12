@@ -1,0 +1,135 @@
+name: MemoryCell LoCoMo nine-arm frozen retrieval replay
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - ".github/workflows/hepta-memory-locomo-ninearm-replay.yml"
+      - "scripts/memory_cell/locomo_frozen_retrieval.py"
+      - "scripts/memory_cell/test_locomo_frozen_retrieval.py"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  pinned-ninearm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test all nine-arm retrieval contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ninearm-proof
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_frozen_retrieval.py' -v 2>&1 | tee /tmp/ninearm-proof/tests.log
+      - name: Pin original public histories and six-arm decisions
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/ninearm-public.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/ninearm-original.zip
+          printf '%s  %s\n' \
+            51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37 /tmp/ninearm-public.zip \
+            3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097 /tmp/ninearm-original.zip | sha256sum -c -
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          import stat, zipfile
+          for name, expected in [
+              ('public', ('population.json','histories.jsonl','histories-manifest.json')),
+              ('original', ('decisions.jsonl','receipt.json','SHA256SUMS')),
+          ]:
+              root = Path('/tmp/ninearm-' + name)
+              root.mkdir()
+              with zipfile.ZipFile('/tmp/ninearm-' + name + '.zip') as z:
+                  assert set(z.namelist()) == set(expected)
+                  assert sum(i.file_size for i in z.infolist()) < 6_000_000
+                  for item in z.infolist():
+                      assert not item.is_dir() and not stat.S_ISLNK(item.external_attr >> 16)
+                      assert item.filename in expected and item.file_size < 4_000_000
+                      (root/item.filename).write_bytes(z.read(item))
+          PY
+      - name: Regenerate 720 decisions before opening any labels
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/locomo_frozen_retrieval.py retrieve /tmp/ninearm-public /tmp/ninearm-proof/retrieval
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          import hashlib, json
+          original = Path('/tmp/ninearm-original/decisions.jsonl').read_bytes()
+          updated = Path('/tmp/ninearm-proof/retrieval/decisions.jsonl').read_bytes()
+          assert hashlib.sha256(original).hexdigest() == '0c80477394abadce7cfd192404ac2531c571e14a9dabdefb371633c1ae3aec89'
+          previous = [json.loads(x) for x in original.splitlines()]
+          new = [json.loads(x) for x in updated.splitlines()]
+          assert len(previous) == 480 and len(new) == 720
+          lookup = {(row['question_id'],row['arm']):row for row in new}
+          assert len(lookup) == 720 and all(lookup[(row['question_id'],row['arm'])] == row for row in previous)
+          assert {r['arm'] for r in new} == {f'{name}_k{k}' for name in ('lexical','recent','fusion') for k in (2,4,8)}
+          receipt = json.loads(Path('/tmp/ninearm-proof/retrieval/receipt.json').read_bytes())
+          assert receipt['model_generations'] == 0 and receipt['labels_opened'] is False
+          result = {'schema':'hepta.memorycell.locomo-ninearm.old-six-binding.v1','identical_original_six':480,'new_fusion_decisions':240,'complete_decisions':720,'source_sha256':hashlib.sha256(original).hexdigest(),'new_sha256':hashlib.sha256(updated).hexdigest(),'generation_commit':os.environ.get('GITHUB_SHA'),'production_accepted':False}
+          Path('/tmp/ninearm-proof/replay.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+          PY
+      - name: Freeze selection using only selection-family targets
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728632417/zip > /tmp/ninearm-selection.zip
+          echo 'ba8e2282034c5bb51fe319e8909e11d028619f85dfbbce5a6fff78284f9f220c  /tmp/ninearm-selection.zip' | sha256sum -c -
+          python3 - <<'PY'
+          import zipfile
+          from pathlib import Path
+          import os
+          with zipfile.ZipFile('/tmp/ninearm-selection.zip') as z:
+              assert z.namelist() == ['targets.json']
+              Path('/tmp/ninearm-selection-targets.json').write_bytes(z.read('targets.json'))
+          PY
+          python3 scripts/memory_cell/locomo_frozen_retrieval.py score-selection \
+            /tmp/ninearm-public /tmp/ninearm-proof/retrieval \
+            /tmp/ninearm-selection-targets.json /tmp/ninearm-proof/selection-policy.json
+      - name: Open held-out evaluation targets only after policy freeze
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/ninearm-evaluation.zip
+          echo 'd09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978  /tmp/ninearm-evaluation.zip' | sha256sum -c -
+          python3 - <<'PY'
+          import zipfile
+          from pathlib import Path
+          import os
+          with zipfile.ZipFile('/tmp/ninearm-evaluation.zip') as z:
+              assert z.namelist() == ['targets.json']
+              Path('/tmp/ninearm-evaluation-targets.json').write_bytes(z.read('targets.json'))
+          PY
+          python3 scripts/memory_cell/locomo_frozen_retrieval.py score-evaluation \
+            /tmp/ninearm-public /tmp/ninearm-proof/retrieval \
+            /tmp/ninearm-proof/selection-policy.json /tmp/ninearm-evaluation-targets.json \
+            /tmp/ninearm-proof/evaluation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          import os
+          p = json.loads(Path('/tmp/ninearm-proof/selection-policy.json').read_text())
+          r = json.loads(Path('/tmp/ninearm-proof/evaluation.json').read_text())
+          assert p['selection_arm'] == r['chosen_by_selection_only'] == 'lexical_k8'
+          assert p['heldout_labels_opened'] is False
+          assert r['frozen_choice_on_evaluation']['eligible'] == 13
+          assert r['frozen_choice_on_evaluation']['full_annotated_support_covered'] == 9
+          assert r['evaluation']['fusion_k8']['full_annotated_support_covered'] == 3
+          assert r['production_accepted'] is False and r['model_answers_generated'] == 0
+          print(json.dumps({k:{'covered':v['full_annotated_support_covered'],'eligible':v['eligible'],'source_bytes':v['selected_source_bytes']} for k,v in r['evaluation'].items()},indent=2))
+          PY
+      - name: Preserve exact results and failure logs
+        if: always()
+        run: |
+          git rev-parse HEAD > /tmp/ninearm-proof/tested-commit.txt
+          (cd /tmp/ninearm-proof && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-locomo-ninearm-frozen-replay
+          path: /tmp/ninearm-proof
+          if-no-files-found: error
