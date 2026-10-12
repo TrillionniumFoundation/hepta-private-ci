@@ -1095,6 +1095,103 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
 
 #[cfg(unix)]
 #[test]
+fn production_deep_join_requires_fresh_independent_minimum_store() {
+    use std::fs;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    use crate::CellSplitSupervisorMinimumFileStoreV1;
+
+    let host = key(3);
+    let observer = key(7);
+    let (envelope, transcript, owner_trust) =
+        bound_host_owner_fixture(&host, &observer);
+    let join = signed_observer_join_fixture(
+        &envelope, &transcript, &host, &observer,
+    );
+    let cns_key = key(71).verifying_key();
+    let journal_key = key(72).verifying_key();
+    let minimum_store_signer = key(93);
+    let minimum_store_key = minimum_store_signer.verifying_key();
+    let journal: crate::CellSplitSupervisorCommitV1 = serde_json::from_slice(
+        &transcript.receipts[3].owner_receipt_bytes,
+    ).expect("original journal");
+    let checkpoint: serde_json::Value = serde_json::from_slice(
+        &journal.original_checkpoint_bytes,
+    ).expect("canonical terminal checkpoint");
+    let minimum_digest = checkpoint["receiptDigest"].as_str()
+        .expect("signed checkpoint minimum").to_owned();
+    let minimum_signature = signed_supervisor_minimum_witness(
+        &envelope, &transcript, &observer, &minimum_digest,
+    );
+    let runtime_trust = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &cns_key,
+        supervisor_original_journal_key: &journal_key,
+        supervisor_minimum_checkpoint_digest: &minimum_digest,
+        supervisor_minimum_observer_signature: &minimum_signature,
+    };
+    let subject = crate::CellSplitSupervisorMinimumSubjectV1 {
+        split_id: transcript.plan.split_id.clone(),
+        target_host_id: envelope.payload.target_host_id.clone(),
+        target_host_nonce: envelope.payload.target_host_nonce.clone(),
+        plan_digest: transcript.plan.digest().expect("frozen plan"),
+        host_evidence_digest: envelope.payload.evidence_digest.clone(),
+        journal_domain_id: journal.domain_id.clone(),
+        journal_idempotency_key: journal.idempotency_key.clone(),
+        journal_authority_epoch: journal.authority_epoch,
+        journal_revision: journal.committed_revision,
+        original_checkpoint_bytes_digest:
+            crate::durable::sha256(&journal.original_checkpoint_bytes),
+        minimum_checkpoint_digest: minimum_digest,
+    };
+
+    let root = tempfile::tempdir().expect("external minimum root");
+    fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
+        .expect("independent private storage");
+    let mut external = CellSplitSupervisorMinimumFileStoreV1::open(
+        root.path(), minimum_store_signer,
+    ).expect("separate owner");
+    let mut current = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &minimum_store_key, &mut external, &mut current,
+        ).is_err(), "a signed old checkpoint does not replace a current store");
+    assert_eq!(current.verification_count, 0);
+
+    external.publish_once(&subject).expect("durable independent minimum");
+    let mut current = CurrentEffectFixture::new(&transcript);
+    let accepted = crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &minimum_store_key, &mut external, &mut current,
+        ).expect("current minimum and four original owner observations");
+    assert!(accepted.live_minimum_readback_digest.is_some());
+    assert_eq!(current.verification_count, 4);
+    assert!(!accepted.production_activation_authorized);
+
+    let mut denied = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &observer.verifying_key(), &mut external, &mut denied,
+        ).is_err(), "minimum signer cannot reuse the Observer key");
+    assert_eq!(denied.verification_count, 0);
+    let mut denied = CurrentEffectFixture::new(&transcript);
+    denied.committed.clear();
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &minimum_store_key, &mut external, &mut denied,
+        ).is_err(), "fresh minimum cannot conceal revoked owner receipts");
+    assert_eq!(denied.verification_count, 1);
+}
+
+#[cfg(unix)]
+#[test]
 fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
     use ed25519_dalek::Signer as _;
 
