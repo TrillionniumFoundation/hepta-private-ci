@@ -1140,6 +1140,23 @@ impl crate::CellSplitExecutionPortV1 for RevokeMinimumDuringEffectRead {
     }
 }
 
+/// Any forged join must be rejected before consulting the online minimum.
+#[cfg(unix)]
+struct RejectAllMinimumReads;
+
+#[cfg(unix)]
+impl crate::CellSplitSupervisorMinimumOnlinePortV1 for RejectAllMinimumReads {
+    type Error = &'static str;
+
+    fn read_current(
+        &mut self,
+        _subject: &crate::CellSplitSupervisorMinimumSubjectV1,
+        _challenge_nonce: &str,
+    ) -> Result<crate::CellSplitSupervisorMinimumReadbackV1, Self::Error> {
+        panic!("forged observer join reached online minimum store");
+    }
+}
+
 #[cfg(unix)]
 struct IndependentlyAdmittedJournalMinimum;
 
@@ -1207,6 +1224,20 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
             crate::durable::sha256(&journal.original_checkpoint_bytes),
         minimum_checkpoint_digest: minimum_digest,
     };
+
+    // A valid historical transcript paired with a forged join is not
+    // sufficient reason to contact a separate online minimum source.
+    let mut forged_join = join.clone();
+    forged_join.host_signature.signature_base64 = "forged".into();
+    let mut forbidden_store = RejectAllMinimumReads;
+    let mut unread_effects = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &forged_join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &minimum_store_key, &mut forbidden_store, &mut unread_effects,
+        ).is_err(), "forged join must not reach the minimum or effect owners");
+    assert_eq!(unread_effects.verification_count, 0);
 
     let root = tempfile::tempdir().expect("external minimum root");
     fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
