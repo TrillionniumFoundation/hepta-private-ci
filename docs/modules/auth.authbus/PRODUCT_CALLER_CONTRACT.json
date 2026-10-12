@@ -48,8 +48,7 @@
         "reconciliation_required: true"
       ],
       "forbiddenTokens": [
-        "AuthBusAuthorityStore",
-        "pub operation_id: StableId"
+        "AuthBusAuthorityStore"
       ],
       "contracts": {
         "noBypass": "The qualified product entry accepts an entered sealed kernel.operations handle and only AuthBusExecutionPort; it does not accept caller-minted operation metadata.",

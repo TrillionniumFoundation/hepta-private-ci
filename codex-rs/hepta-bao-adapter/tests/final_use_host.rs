@@ -1,3 +1,4 @@
+#[cfg(test)]
 #[cfg(unix)]
 mod unix {
     use std::collections::BTreeSet;

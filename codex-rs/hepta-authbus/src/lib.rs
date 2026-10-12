@@ -13,6 +13,7 @@ mod authority;
 mod authority_schema;
 mod authority_store;
 mod bootstrap;
+mod frontier_sequence;
 mod host;
 mod issuer_registry;
 #[cfg(feature = "legacy-preverified-replay")]

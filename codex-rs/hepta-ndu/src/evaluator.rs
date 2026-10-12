@@ -62,21 +62,6 @@ struct ValidatedEvaluationPolicy {
     tolerances: BTreeMap<StableId, FixedQ32>,
 }
 
-/// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
-/// Pareto semantics are now materialized as a digestible policy.
-#[deprecated(
-    since = "0.0.0",
-    note = "new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2"
-)]
-pub fn evaluate_candidates(
-    set: ContributionSet,
-    profile: UtilityProfile,
-    scalarization: Option<ScalarizationProfile>,
-) -> Result<NduEvaluationReceipt, NduError> {
-    let policy = legacy_evaluation_policy(&profile)?;
-    Ok(evaluate_candidates_with_policy(set, profile, scalarization, policy)?.base)
-}
-
 /// Applies hard feasibility, complete profile-bound aggregation, tolerant
 /// Pareto filtering and optional registered scalarization. Any recommendation
 /// remains advisory and carries no selection or effect authority.

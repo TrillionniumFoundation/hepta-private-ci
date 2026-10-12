@@ -83,9 +83,11 @@ impl BaoClient {
     /// digest `durable_operation_payload_digest(request)`. A stale revision,
     /// writer fence or owner generation is rejected before trusted-time,
     /// reservation or network activity.
-    pub async fn consume_kv_v2_with_durable_authbus_operation<
-        E: BaoAuthBusEvidenceProvider,
-    >(
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the existing sealed-operation API must retain separate owner handle, AuthBus admission and independent provider authority inputs"
+    )]
+    pub async fn consume_kv_v2_with_durable_authbus_operation<E: BaoAuthBusEvidenceProvider>(
         &self,
         operations: &DurableOperationStore,
         operation: &EnteredAuthBusOperationHandle,

@@ -5,7 +5,6 @@ use std::time::Duration;
 
 use codex_hepta_types::StableId;
 use serde::Serialize;
-use sqlx::Acquire;
 use sqlx::Row;
 
 use crate::AuthBusAuthorityError;
@@ -266,6 +265,7 @@ pub(crate) fn record_owner_acquisition_failure(error: &AuthBusAuthorityError) {
     }
 }
 
+#[cfg(feature = "legacy-preverified-replay")]
 pub(crate) fn record_replay_rejection() {
     REPLAY_REJECTIONS.fetch_add(1, Ordering::Relaxed);
 }

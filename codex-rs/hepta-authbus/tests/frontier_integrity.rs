@@ -1,10 +1,11 @@
+#![cfg(test)]
 #![cfg(unix)]
 
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 use std::time::Duration;
 
-use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::bootstrap_retryable;
 use codex_hepta_types::Digest32;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteJournalMode;
@@ -38,7 +39,7 @@ fn private_paths() -> Paths {
 async fn clean_accumulator_and_dirty_clear_are_guarded_by_sqlite() {
     let paths = private_paths();
     let owner_id = "frontier-integrity-owner";
-    let host = AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), owner_id)
+    let host = bootstrap_retryable(&paths.database, paths.checkpoint.clone(), owner_id)
         .await
         .expect("bootstrap authority owner");
     drop(host);
@@ -50,6 +51,10 @@ async fn clean_accumulator_and_dirty_clear_are_guarded_by_sqlite() {
         .synchronous(SqliteSynchronous::Full)
         .foreign_keys(true)
         .busy_timeout(Duration::from_secs(5));
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "negative fixture deliberately opens the closed authority database to attempt forbidden frontier mutations"
+    )]
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
         .connect_with(options)

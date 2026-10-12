@@ -177,7 +177,8 @@ impl AuthBusAuthorityStore {
             "negative reservation archive row count",
         )?;
         let estimated_reservation_bytes = nonnegative_i64(
-            row.try_get::<i64, _>("reservation_bytes").map_err(storage)?,
+            row.try_get::<i64, _>("reservation_bytes")
+                .map_err(storage)?,
             "negative reservation archive byte count",
         )?;
         let oldest_archived_at_ms = row
@@ -268,8 +269,10 @@ mod tests {
             alert.kind == AuthBusArchiveAlertKind::ReservationRows
                 && alert.severity == AuthBusArchiveAlertSeverity::Critical
         }));
-        assert!(alerts
-            .iter()
-            .any(|alert| alert.kind == AuthBusArchiveAlertKind::CompactionReviewDue));
+        assert!(
+            alerts
+                .iter()
+                .any(|alert| alert.kind == AuthBusArchiveAlertKind::CompactionReviewDue)
+        );
     }
 }

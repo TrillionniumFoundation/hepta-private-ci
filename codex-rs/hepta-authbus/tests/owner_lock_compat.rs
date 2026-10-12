@@ -1,3 +1,4 @@
+#![cfg(test)]
 #![cfg(target_os = "linux")]
 
 use std::fs::OpenOptions;
@@ -13,6 +14,7 @@ use std::time::Instant;
 
 use codex_hepta_authbus::AuthBusAuthorityError;
 use codex_hepta_authbus::AuthBusAuthorityHost;
+use codex_hepta_authbus::bootstrap_retryable;
 use tempfile::TempDir;
 
 const CHILD_TIMEOUT: Duration = Duration::from_secs(10);
@@ -124,10 +126,9 @@ fn run_legacy_probe(paths: &Paths, marker_name: &str) -> String {
 async fn ofd_owner_survives_unrelated_close_and_blocks_new_and_legacy_owners() {
     let paths = private_paths();
     let owner_id = "descriptor-lifetime-owner";
-    let owner =
-        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), owner_id)
-            .await
-            .expect("bootstrap owner");
+    let owner = bootstrap_retryable(&paths.database, paths.checkpoint.clone(), owner_id)
+        .await
+        .expect("bootstrap owner");
 
     let unrelated = OpenOptions::new()
         .read(true)
@@ -171,8 +172,7 @@ async fn legacy_posix_owner_blocks_new_ofd_owner_during_rolling_replacement() {
     wait_for_path(&ready);
 
     let blocked =
-        AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "new-ofd-owner")
-            .await;
+        bootstrap_retryable(&paths.database, paths.checkpoint.clone(), "new-ofd-owner").await;
     std::fs::write(&release, b"release").expect("release legacy POSIX holder");
     wait_for_child(child, "legacy POSIX holder");
     assert!(matches!(
@@ -180,7 +180,7 @@ async fn legacy_posix_owner_blocks_new_ofd_owner_during_rolling_replacement() {
         Err(AuthBusAuthorityError::OwnerAlreadyActive)
     ));
 
-    AuthBusAuthorityHost::bootstrap(&paths.database, paths.checkpoint.clone(), "new-ofd-owner")
+    bootstrap_retryable(&paths.database, paths.checkpoint.clone(), "new-ofd-owner")
         .await
         .expect("new OFD owner after legacy release");
 }

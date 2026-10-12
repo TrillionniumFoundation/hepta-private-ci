@@ -320,7 +320,8 @@ fn storage_io(error: std::io::Error) -> AuthBusAuthorityError {
     AuthBusAuthorityError::Storage(error.to_string())
 }
 
-#[cfg(all(test, target_os = "linux"))]
+#[cfg(test)]
+#[cfg(target_os = "linux")]
 mod tests {
     use std::os::unix::fs::MetadataExt;
     use std::os::unix::fs::PermissionsExt;

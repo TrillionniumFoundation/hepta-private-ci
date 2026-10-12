@@ -1132,10 +1132,10 @@ mod tests {
                     .expect("bootstrap");
             let first_receipt = store.append(Digest32::ZERO, first.clone()).expect("first");
             let second_receipt = store
-                .append(first_receipt.frame_digest, second.clone())
+                .append(first_receipt.frame_digest, second)
                 .expect("second");
             let replay = store
-                .append(second_receipt.frame_digest, first.clone())
+                .append(second_receipt.frame_digest, first)
                 .expect("replay");
             assert_eq!(replay.disposition, AppendDisposition::Unchanged);
             assert_eq!(replay.sequence, first_receipt.sequence);

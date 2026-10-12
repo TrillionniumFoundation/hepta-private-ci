@@ -39,9 +39,7 @@ impl HeptaEvidenceStore {
     }
 }
 
-pub(crate) async fn authbus_now(
-    tx: &mut Transaction<'_, Sqlite>,
-) -> Result<i64, EvidenceError> {
+pub(crate) async fn authbus_now(tx: &mut Transaction<'_, Sqlite>) -> Result<i64, EvidenceError> {
     let floor = advance_authbus_time_floor(tx, now_millis()?).await?;
     i64::try_from(floor.wall_time_ms)
         .map_err(|_| EvidenceError::Corrupt("AuthBus time floor exceeds i64".into()))
