@@ -185,6 +185,28 @@ generation, domain, authority epoch, revision and absence of unknown effects.
 Only then does it perform the existing four fresh, nonce-bound signed owner
 readbacks. No signature is minted by this verifier.
 
+### Full Supervisor original-checkpoint verification (source gate)
+
+The deep Observer now parses the original Supervisor journal bytes using the
+exact version-1 persisted WriterHandoff checkpoint fields, rejects unknown
+or missing fields, and requires the Supervisor's own ordered JSON encoding.
+It independently reconstructs the checkpoint content SHA-256 using the
+writer-handoff domain, length-prefixed writer identities, big-endian
+generations/epoch/revision, exact digest fields, phase tag and drain watermark.
+Only a verified terminal `retired` record with the canonical tenth revision,
+zero unknown effects, a retained outbox watermark, and a correct self-digest
+can match the original signed Supervisor cutover acknowledgement.
+
+Regression fixtures now use the complete native checkpoint encoding rather
+than a structurally plausible short JSON record. Native tests cover a fixed
+independent SHA-256 vector, rehashed invalid states, noncanonical encoding,
+missing/unknown fields and altered journal identity/generation/epoch.
+
+This protects offline structural verification, **not** cross-process
+linearizability, independent checkpoint minimum, actual journal custody,
+or protection against whole-directory rollback. The real Supervisor must
+still recover its fsynced history against an independently retained minimum
+and expose fresh nonce-bound live state before final-use or promotion.
 A valid deep join is **still read-only** and explicitly sets
 \`productionActivationAuthorized=false\`: it does not create a globally
 atomic four-owner snapshot, issue NDU/Selector final-use authorization,
