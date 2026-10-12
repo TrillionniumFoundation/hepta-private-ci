@@ -835,9 +835,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     }
 
     /// Product admission seam: independently reread current NDU/Selector state
-    /// after the original owner's potentially slow preflight, before writing
-    /// the first prepared intent. This callback is advisory, not final-use;
-    /// the independent effect backend must reauthorize at its commit boundary.
+    /// after the original owner's potentially slow preflight and again after
+    /// its live predecessor readback, before persisting a fresh prepared intent.
+    /// The callback is read-only and may run twice. It is not final-use; the
+    /// independent effect backend must reauthorize at its commit boundary.
     pub(crate) fn advance_with_admission(
         &mut self,
         mut revalidate: impl FnMut() -> Result<(), String>,
