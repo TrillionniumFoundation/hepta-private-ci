@@ -27,11 +27,11 @@ class BazelFailureStatusTests(unittest.TestCase):
         startup = self.root / "failure environment.sh"
         startup.write_bytes(
             b'failure_tools="$BAZEL_FAILURE_TOOLS"\n'
-            b'if command -v cygpath >/dev/null 2>&1; then\n'
+            b"if command -v cygpath >/dev/null 2>&1; then\n"
             b'  failure_tools="$(cygpath -u "$failure_tools")" || exit\n'
-            b'fi\n'
+            b"fi\n"
             b'export PATH="$failure_tools:$PATH"\n'
-            b'hash -r\n'
+            b"hash -r\n"
         )
         # This fixture is private to the test's temporary directory/environment;
         # neither the product wrapper nor Bazel's action environment is changed.
@@ -69,8 +69,12 @@ class BazelFailureStatusTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.env["BAZEL_PROBE_FAIL"] = "1"
         result, calls = self.run_wrapper(
-            "--print-failed-action-summary", "--print-failed-test-logs",
-            "--", "test", "--", "//fake:target"
+            "--print-failed-action-summary",
+            "--print-failed-test-logs",
+            "--",
+            "test",
+            "--",
+            "//fake:target",
         )
         self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
         self.assertIn("undefined symbol: __stack_chk_fail", result.stdout)
