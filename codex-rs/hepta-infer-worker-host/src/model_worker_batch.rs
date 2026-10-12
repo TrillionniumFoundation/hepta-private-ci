@@ -339,7 +339,9 @@ mod tests {
         ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
             self.batches += 1;
             if self.fail_batch {
-                return Err(Error::DriverFailure("batch terminality unknown".to_string()));
+                return Err(Error::DriverFailure(
+                    "batch terminality unknown".to_string(),
+                ));
             }
             let mut outputs: Vec<_> = requests
                 .iter()
@@ -644,7 +646,9 @@ mod tests {
         });
         assert_eq!(
             worker.run_neuron_features_batch(100, "model.v2", vec![feature("request.1", 'b')]),
-            Err(Error::DriverFailure("batch terminality unknown".to_string()))
+            Err(Error::DriverFailure(
+                "batch terminality unknown".to_string()
+            ))
         );
         assert_eq!(worker.driver.batches, 1);
         assert!(worker.active_requests.is_empty());
