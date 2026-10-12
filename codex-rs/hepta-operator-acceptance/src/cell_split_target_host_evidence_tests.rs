@@ -635,6 +635,55 @@ impl crate::CellSplitExecutionPortV1 for CurrentEffectFixture {
 }
 
 #[test]
+fn observer_join_rejects_independently_signed_disconnected_operations() {
+    let host = key(3);
+    let observer = key(7);
+    let (original, transcript, _) = bound_host_owner_fixture(&host, &observer);
+    let variants = [
+        ("artifact-operation", CellSplitTargetHostEventKindV1::ArtifactLoaded, true),
+        ("artifact-receipt", CellSplitTargetHostEventKindV1::ArtifactLoaded, false),
+        ("cns-operation", CellSplitTargetHostEventKindV1::RouteCutover, true),
+        ("cns-receipt", CellSplitTargetHostEventKindV1::RouteCutover, false),
+    ];
+    for (name, stage, change_operation) in variants {
+        let mut payload = original.payload.clone();
+        let event = payload.events.iter_mut()
+            .find(|record| record.event_kind == stage)
+            .expect("required host lifecycle operation");
+        if change_operation {
+            event.operation_id = format!("independently-signed-unrelated-{name}");
+        } else {
+            event.receipt_digest =
+                crate::durable::sha256(format!("independent-host-{name}").as_bytes());
+        }
+        let mut predecessor = ZERO_DIGEST.to_string();
+        for event in &mut payload.events {
+            event.previous_event_digest = predecessor;
+            event.event_digest = event_digest(event).expect("new signed event digest");
+            predecessor = event.event_digest.clone();
+        }
+        payload.evidence_digest =
+            evidence_digest(&payload).expect("new independent host chain");
+        let unrelated = payload.sign(
+            "host-signer", &host,
+            [("observer-signer".to_string(), observer.clone())],
+        ).expect("otherwise valid independent host/Observer evidence");
+        assert!(
+            verify_cell_split_target_host_evidence(
+                &unrelated, &policy(&host, &observer),
+            ).is_ok(),
+            "{name}: host and observer evidence must be independently valid",
+        );
+        assert!(matches!(
+            crate::cell_split_observer_join_payload_v1(&transcript, &unrelated),
+            Err(crate::CellSplitObserverJoinErrorV1::Invalid(
+                "host lifecycle is not bound to original Artifact CAS and CNS owner receipts"
+            ))
+        ), "{name}: a valid signature on an unrelated operation must fail the join");
+    }
+}
+
+#[test]
 fn independent_observer_join_requires_all_four_current_owners() {
     let host = key(3);
     let observer = key(7);
