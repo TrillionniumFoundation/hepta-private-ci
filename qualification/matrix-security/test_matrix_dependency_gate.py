@@ -136,6 +136,25 @@ class AuditTests(unittest.TestCase):
         self.deny['graph']['exclude']=['matrix-sdk 0.18.0']
         self.assertIn('FORBIDDEN_MATRIX_GRAPH_PRUNE',self.result()['blocking_prerequisites'])
 
+    def test_pruning_matrix_consumer_root_cannot_hide_crypto_advisories(self):
+        # Removing the consuming package prunes the complete transitive graph,
+        # even without spelling matrix-sdk or anymap2 in the exclusion.
+        for package in ('codex-hepta-matrixd', 'anymap3', 'rusqlite',
+                        'sqlx', 'libsqlite3-sys'):
+            self.deny['graph']['exclude']=[package]
+            self.assertIn('FORBIDDEN_MATRIX_GRAPH_PRUNE',
+                          self.result()['blocking_prerequisites'])
+        self.deny['graph']['exclude']=[]
+
+    def test_platform_scoped_deny_or_suppressed_defaults_are_not_global_security(self):
+        self.deny['graph']['targets']=['wasm32-unknown-unknown']
+        self.assertIn('FORBIDDEN_MATRIX_TARGET_FILTER',
+                      self.result()['blocking_prerequisites'])
+        self.deny['graph'].pop('targets')
+        self.deny['graph']['no-default-features']=True
+        self.assertIn('FORBIDDEN_MATRIX_DEFAULT_FEATURE_SUPPRESSION',
+                      self.result()['blocking_prerequisites'])
+
     def test_disabling_e2ee_or_sqlite_is_not_an_upgrade(self):
         for feat in ('e2e-encryption','sqlite'):
             clone=copy.deepcopy(self.workspace)
