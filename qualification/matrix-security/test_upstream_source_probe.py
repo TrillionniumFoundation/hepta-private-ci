@@ -39,6 +39,57 @@ class UpstreamTests(unittest.TestCase):
         r=inspect_upstream(self.root,UPSTREAM_GIT_SHA,source_head=UPSTREAM_GIT_SHA)
         self.assertIn('UPSTREAM_ANYMAP3_MIGRATION_MISSING',r['manifest_errors'])
 
+    def test_integrated_019_native_sqlite_source_without_legacy_patch(self):
+        file=self.root/'codex-rs/Cargo.toml'
+        base=file.read_text()
+        secured=base.replace(
+            'libsqlite3-sys={version="0.37"',
+            'libsqlite3-sys={version="=0.38.2"'
+        ).replace('matrix-sdk={version="0.18.0"',
+                  'matrix-sdk={version="=0.19.1"'
+        ).replace('matrix-sdk-sqlite={path="third_party/matrix-sdk-sqlite-0.18.0"}',
+                  'matrix-sdk={path="third_party/matrix-sdk-0.19.1"}')
+        file.write_text(secured)
+        (self.root/'codex-rs/rust-toolchain.toml').write_text(
+            '[toolchain]\\nchannel="1.96.0"\\n')
+        upstream=inspect_upstream(self.root,UPSTREAM_GIT_SHA,source_head=UPSTREAM_GIT_SHA)
+        report=compare_local(upstream,self.root)
+        self.assertEqual(report['migration_blockers'],[])
+        self.assertEqual(report['local_matrix_sdk_version'],'=0.19.1')
+        self.assertEqual(report['local_sqlite_source_mode'],
+                         'pinned_sdk_native_sqlite_requires_wal_qualification')
+        self.assertFalse(report['migration_ready'])
+        self.assertFalse(report['upstream_source_reviewed'])
+        self.assertFalse(report['full_E2EE_restoration_verified'])
+        # Removing the exact reviewed SDK source pin is not a valid upgrade.
+        file.write_text(secured.replace(
+            'matrix-sdk={path="third_party/matrix-sdk-0.19.1"}',''))
+        missing=compare_local(upstream,self.root)
+        self.assertIn('HEPTA_NATIVE_SQLITE_UPSTREAM_SDK_SOURCE_UNBOUND',
+                      missing['migration_blockers'])
+        # Stale old native sqlite patch can never piggyback on a new SDK.
+        file.write_text(secured.replace(
+            'matrix-sdk={path="third_party/matrix-sdk-0.19.1"}',
+            'matrix-sdk-sqlite={path="third_party/matrix-sdk-sqlite-0.18.0"}'))
+        stale=compare_local(upstream,self.root)
+        self.assertIn('HEPTA_SQLITE_PATCH_STILL_018',
+                      stale['migration_blockers'])
+        # Retain the mandatory encrypted sqlite capability.
+        file.write_text(secured.replace('"e2e-encryption",',''))
+        no_e2ee=compare_local(upstream,self.root)
+        self.assertIn('HEPTA_E2EE_SQLITE_FEATURES_MISSING',
+                      no_e2ee['migration_blockers'])
+
+    def test_missing_legacy_sqlite_patch_is_not_a_safe_018_configuration(self):
+        file=self.root/'codex-rs/Cargo.toml'
+        file.write_text(file.read_text().replace(
+            'matrix-sdk-sqlite={path="third_party/matrix-sdk-sqlite-0.18.0"}',''))
+        upstream=inspect_upstream(self.root,UPSTREAM_GIT_SHA,source_head=UPSTREAM_GIT_SHA)
+        local=compare_local(upstream,self.root)
+        self.assertIn('HEPTA_SQLITE_PATCH_STILL_018',
+                      local['migration_blockers'])
+        self.assertFalse(local['migration_ready'])
+
     def test_unpatched_crypto_fails_source_review(self):
         (self.root/'crates/matrix-sdk-crypto/Cargo.toml').write_text('[package]\nversion="0.18.0"\n')
         r=inspect_upstream(self.root,UPSTREAM_GIT_SHA,source_head=UPSTREAM_GIT_SHA)
