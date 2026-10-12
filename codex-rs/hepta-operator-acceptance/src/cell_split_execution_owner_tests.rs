@@ -1100,6 +1100,30 @@ fn pending_step_recovery_rejects_dangling_successor_frame() {
 }
 
 #[test]
+fn effect_completion_does_not_acknowledge_replaced_local_trust_frames() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let port = FixturePort::new(state.clone());
+    let tamper = port.tamper_during_live_readback.clone();
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+    // The real external commit occurs before its signed live-readback
+    // callback. A local trust change at that exact point must leave the
+    // prepared intent unreconciled rather than reporting a completed step.
+    *tamper.borrow_mut() = Some(root.path().join("cell-split-owner-trust-pins.json"));
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+    assert_eq!(owner.completed_steps(), 0);
+    assert!(root.path().join("cell-split-00-prepared.json").exists());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+    assert!(owner.advance().is_err(), "cannot retry an ambiguous effect");
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn transcript_rejects_local_evidence_replacement_during_live_owner_verification() {
     // Every signed remote receipt remains current. Tampering only with the
     // local frozen plan, pinned owner keys or an earlier committed frame
