@@ -27,7 +27,9 @@ def synthetic():
         root = oid(f"root{i}")
         subtree = oid(f"sub{i}")
         commit_ids = [oid(f"commit{i}-{j}") for j in range(ncommits)]
-        parent_ids = [oid(f"parent{i}")]
+        parent_ids = (
+            [commit_ids[-2]] if len(commit_ids) > 1 else [oid(f"parent{i}")]
+        )
         case = dict(
             repo=repo,
             partition=part,
@@ -67,13 +69,16 @@ def synthetic():
         source_objects[(repo, "trees", subtree)] = dict(
             sha=subtree, truncated=False, tree=entries
         )
-        for c in commit_ids:
+        for index, c in enumerate(commit_ids):
+            original_parent = (
+                commit_ids[index - 1] if index else oid(f"parent{i}")
+            )
             source_objects[(repo, "commits", c)] = dict(
                 sha=c,
                 author=dict(date="2026-10-12T14:00:00Z"),
                 committer=dict(date="2026-10-12T15:00:00Z"),
                 tree=dict(sha=root),
-                parents=[dict(sha=p) for p in parent_ids],
+                parents=[dict(sha=original_parent)],
             )
         cases.append(case)
     return dict(cases=cases), source_objects, binary
@@ -163,6 +168,55 @@ class ExternalImmutableBytesTests(unittest.TestCase):
                         manifest, Path(directory) / "original",
                         manifest_sha="e" * 64, fetch=lambda *key: objects[key],
                     )
+
+    def test_nonancestor_or_reordered_original_git_commit_rejected(self):
+        for violation in ("orphan", "reverse", "duplicate"):
+            manifest, objects, _ = synthetic()
+            case = next(c for c in manifest["cases"] if len(c["commits"]) > 1)
+            if violation == "orphan":
+                second = case["commits"][1]["sha"]
+                objects[(case["repo"], "commits", second)]["parents"] = [
+                    dict(sha=oid("unrelated-branch"))
+                ]
+            elif violation == "reverse":
+                case["commits"].reverse()
+            else:
+                case["commits"][0] = case["commits"][1].copy()
+            with tempfile.TemporaryDirectory() as directory:
+                output = Path(directory) / "original"
+                with self.subTest(violation=violation), self.assertRaises(ValueError):
+                    trial.acquire(
+                        manifest, output, manifest_sha="e" * 64,
+                        fetch=lambda *key: objects[key],
+                    )
+                self.assertFalse((output / "READY.json").exists())
+
+    def test_reopen_rejects_forged_original_commit_parent_chain(self):
+        manifest, objects, _ = synthetic()
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "original"
+            trial.acquire(
+                manifest, output, manifest_sha="e" * 64,
+                fetch=lambda *key: deepcopy(objects[key]),
+            )
+            from project_pr_extension_source_bytes import canonical, digest
+
+            inv = output / "inventory.json"
+            ready = output / "READY.json"
+            inventory = trial.strict_json(inv.read_bytes())
+            case = next(c for c in manifest["cases"] if len(c["commits"]) > 1)
+            position = next(
+                i for i, row in enumerate(inventory["commits"])
+                if row["sha"] == case["commits"][1]["sha"]
+            )
+            inventory["commits"][position]["parents"] = [oid("orphan")]
+            changed = canonical(inventory)
+            inv.write_bytes(changed)
+            marker = trial.strict_json(ready.read_bytes())
+            marker["inventory_sha256"] = digest(changed)
+            ready.write_bytes(canonical(marker))
+            with self.assertRaises(ValueError):
+                trial.reopen(manifest, output, manifest_sha="e" * 64)
 
     def test_bad_base64_or_size_or_duplicate_json_rejected(self):
         obj = dict(

@@ -164,14 +164,25 @@ def verify_commit(case, commit, objects, *, head=False):
         raise ValueError("committer time no longer matches frozen cut")
     if asof(obj.get("author", {}).get("date")) > asof(CUT):
         raise ValueError("authored future source admitted before cut")
-    parents = [x.get("sha") for x in obj.get("parents", [])]
+    raw_parents = obj.get("parents")
+    if not isinstance(raw_parents, list) or len(raw_parents) > 8:
+        raise ValueError("invalid frozen Git parent census")
+    parents = [sha(x.get("sha")) for x in raw_parents]
+    if len(set(parents)) != len(parents):
+        raise ValueError("duplicate parent in original Git commit")
+    tree_sha = sha(obj.get("tree", {}).get("sha"))
     if head and (
         obj.get("tree", {}).get("sha") != case["tree_sha"]
         or parents != case["parents"]
         or commit["sha"] != case["head_sha"]
     ):
         raise ValueError("original head tree/parent binding differs")
-    return {"repo": case["repo"], "sha": obj["sha"], "tree": obj["tree"]["sha"]}
+    return {
+        "repo": case["repo"],
+        "sha": obj["sha"],
+        "tree": tree_sha,
+        "parents": parents,
+    }
 
 
 def verify_path(case, source, objects):
@@ -247,13 +258,20 @@ def acquire(manifest, output, *, manifest_sha, fetch):
     rows, commits, seen, total, non_utf8 = [], [], {}, 0, 0
     try:
         for case in manifest["cases"]:
-            head_present = False
+            chain = []
             for item in case["commits"]:
                 is_head = item["sha"] == case["head_sha"]
-                commits.append(verify_commit(case, item, reader, head=is_head))
-                head_present |= is_head
-            if not head_present:
-                raise ValueError("no registered immutable head commit")
+                chain.append(verify_commit(case, item, reader, head=is_head))
+            if (
+                not chain
+                or chain[-1]["sha"] != case["head_sha"]
+                or len({row["sha"] for row in chain}) != len(chain)
+            ):
+                raise ValueError("registered original Git commits must end at HEAD")
+            for predecessor, successor in zip(chain, chain[1:]):
+                if predecessor["sha"] not in successor["parents"]:
+                    raise ValueError("registered Git commit is not an ancestor of HEAD")
+            commits.extend(chain)
             for source in case["files"]:
                 mode = verify_path(case, source, reader)
                 oid = sha(source["blob_sha"])
@@ -290,6 +308,9 @@ def acquire(manifest, output, *, manifest_sha, fetch):
             "source_manifest_sha256": manifest_sha,
             "source_family_proxies": 6,
             "original_commit_objects": len(commits),
+            "registered_parent_edges": sum(
+                len(case["commits"]) - 1 for case in manifest["cases"]
+            ),
             "original_file_bindings": len(rows),
             "unique_original_blobs": len(seen),
             "total_original_bytes": total,
@@ -362,6 +383,9 @@ def reopen(manifest, output, *, manifest_sha):
         or inventory.get("source_family_proxies") != 6
         or inventory.get("original_file_bindings") != 32
         or inventory.get("original_commit_objects") != 14
+        or inventory.get("registered_parent_edges") != sum(
+            len(case["commits"]) - 1 for case in manifest["cases"]
+        )
         or inventory.get("no_answer_targets_opened") is not True
         or inventory.get("model_calls") != 0
         or inventory.get("production_accepted") is not False
@@ -394,6 +418,23 @@ def reopen(manifest, output, *, manifest_sha):
     got_commits = [(c["repo"], c["sha"]) for c in inventory.get("commits", [])]
     if got_commits != expected_commits:
         raise ValueError("registered commit object identities differ")
+    cursor = 0
+    for case in manifest["cases"]:
+        chain = inventory["commits"][
+            cursor : cursor + len(case["commits"])
+        ]
+        cursor += len(chain)
+        if (
+            not chain
+            or chain[-1]["sha"] != case["head_sha"]
+            or chain[-1].get("tree") != case["tree_sha"]
+            or chain[-1].get("parents") != case["parents"]
+            or len({row["sha"] for row in chain}) != len(chain)
+        ):
+            raise ValueError("reopened Git HEAD/commit ancestry differs")
+        for predecessor, successor in zip(chain, chain[1:]):
+            if predecessor["sha"] not in successor.get("parents", []):
+                raise ValueError("reopened Git commit chain disconnected")
     seen, total, non_utf8 = {}, 0, 0
     for row in inventory["files"]:
         oid = sha(row["blob_sha"])
