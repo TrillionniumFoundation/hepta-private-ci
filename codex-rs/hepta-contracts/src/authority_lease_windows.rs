@@ -118,13 +118,44 @@ mod tests {
         assert!(reopened.verifier().verify_use(
             "win-lease-one", 1, &sample().binding,
         ).is_ok());
+        let receipt = reopened
+            .revoke("win-lease-one", 1, [9; 32])
+            .expect("persist revocation and prevent lease reuse");
+        assert_eq!(receipt.lease_revision, 2);
+        let revoked_head = reopened.frontier().expect("revoked store frontier");
         drop(reopened);
 
-        // A second owner identity cannot adopt a previously authenticated
-        // lease file or manufacture an empty lease history.
+        let reopened = AuthorityLeaseRegistry::open_state_dir_with_clock(
+            &state_dir, owner.clone(), revoked_head, Arc::clone(&clock),
+        )
+        .expect("reopen exact persisted revocation");
+        assert!(reopened
+            .read_revocation("win-lease-one")
+            .expect("durable revocation lookup")
+            .is_some());
+        assert!(matches!(
+            reopened.verifier().verify_use(
+                "win-lease-one", 2, &sample().binding,
+            ),
+            Err(AuthorityLeaseError::Revoked),
+        ));
+        drop(reopened);
+
+        // Even if local lease bytes still exist, a forged future external
+        // host frontier must never be accepted as a clean current snapshot.
+        let mut false_future = revoked_head;
+        false_future.store_revision += 1;
         assert!(matches!(
             AuthorityLeaseRegistry::open_state_dir_with_clock(
-                &state_dir, "other-owner".into(), next, Arc::clone(&clock),
+                &state_dir, owner.clone(), false_future, Arc::clone(&clock),
+            ),
+            Err(AuthorityLeaseError::AntiRollbackViolation),
+        ));
+        // A second owner identity cannot adopt previously authenticated
+        // lease/revocation files or manufacture an empty authority history.
+        assert!(matches!(
+            AuthorityLeaseRegistry::open_state_dir_with_clock(
+                &state_dir, "other-owner".into(), revoked_head, Arc::clone(&clock),
             ),
             Err(AuthorityLeaseError::InvalidTrust),
         ));
