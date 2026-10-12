@@ -1069,7 +1069,7 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
             upstream_request_id: None,
             session_telemetry: test_session_telemetry(),
             inference_trace_attempt: attempt,
-            provider: provider,
+            provider,
             provider_attempt: None,
             redact_provider_errors: true,
             encoded_request_observer: None,
