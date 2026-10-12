@@ -186,6 +186,43 @@ pub(crate) fn verify_pinned_neuron_model_descriptor_v1(
     Ok(report)
 }
 
+/// An old diagnostic is only usable while a NEW independent CURRENT view,
+/// selector signature, pinned immutable descriptor and live witnessed Neuron
+/// all produce the identical candidate. No stale/self-rehashed receipt can
+/// mint fresh authority. The host supplies owner-authenticated inputs again.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn revalidate_pinned_neuron_model_descriptor_v1(
+    previous: &NeuronCandidateModelArtifactV1,
+    local: &NeuronLocalCheckpointBindingV1,
+    verifier: &ArtifactSelectionVerifierV1,
+    signed: &SignedArtifactSelectionV1,
+    current: VerifiedCurrentRegistryViewV1,
+    registry_snapshot: File,
+    descriptor_payload: File,
+    now: u64,
+) -> Result<(), NeuronCandidateModelArtifactErrorV1> {
+    if !previous.validate_integrity() {
+        return Err(NeuronCandidateModelArtifactErrorV1::Descriptor(
+            "previous candidate diagnostic integrity",
+        ));
+    }
+    let fresh = verify_pinned_neuron_model_descriptor_v1(
+        local,
+        verifier,
+        signed,
+        current,
+        registry_snapshot,
+        descriptor_payload,
+        now,
+    )?;
+    if &fresh != previous {
+        return Err(NeuronCandidateModelArtifactErrorV1::Descriptor(
+            "candidate model or current artifact frontier changed",
+        ));
+    }
+    Ok(())
+}
+
 fn decode_descriptor(
     bytes: &[u8],
 ) -> Result<NeuronSelectedModelDescriptorV1, NeuronCandidateModelArtifactErrorV1> {
@@ -559,6 +596,74 @@ mod tests {
         assert_eq!(
             receipt.local_checkpoint_binding_digest,
             local.binding_digest
+        );
+
+        // A diagnostic has no ambient lifetime. Revalidate with an entirely
+        // fresh signed CURRENT owner read and the exact persisted files.
+        let current = verified_fixture_current_view(
+            File::open(&snapshot).unwrap(),
+            registry_receipt,
+            Digest32::ZERO,
+        )
+        .unwrap();
+        revalidate_pinned_neuron_model_descriptor_v1(
+            &receipt,
+            &local,
+            &verifier,
+            &signed,
+            current,
+            File::open(&snapshot).unwrap(),
+            File::open(&payload).unwrap(),
+            31,
+        )
+        .unwrap();
+
+        // Even a self-consistent, rehashed old diagnostic cannot silently
+        // transplant itself onto a changed CURRENT artifact head.
+        let mut rehashed_old = receipt.clone();
+        rehashed_old.current_registry_head_digest = digest("fabricated-old-head");
+        rehashed_old.candidate_digest = rehashed_old.computed_digest();
+        assert!(rehashed_old.validate_integrity());
+        let current = verified_fixture_current_view(
+            File::open(&snapshot).unwrap(),
+            registry_receipt,
+            Digest32::ZERO,
+        )
+        .unwrap();
+        assert!(
+            revalidate_pinned_neuron_model_descriptor_v1(
+                &rehashed_old,
+                &local,
+                &verifier,
+                &signed,
+                current,
+                File::open(&snapshot).unwrap(),
+                File::open(&payload).unwrap(),
+                31,
+            )
+            .is_err()
+        );
+
+        // A previously valid selection cannot survive the independent
+        // selector's expiry, even if every old report hash is unchanged.
+        let current = verified_fixture_current_view(
+            File::open(&snapshot).unwrap(),
+            registry_receipt,
+            Digest32::ZERO,
+        )
+        .unwrap();
+        assert!(
+            revalidate_pinned_neuron_model_descriptor_v1(
+                &receipt,
+                &local,
+                &verifier,
+                &signed,
+                current,
+                File::open(&snapshot).unwrap(),
+                File::open(&payload).unwrap(),
+                81,
+            )
+            .is_err()
         );
 
         // A separately loaded model with the wrong weights cannot inherit the

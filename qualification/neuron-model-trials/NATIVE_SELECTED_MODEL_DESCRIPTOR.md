@@ -42,3 +42,15 @@ artifact crate's existing \`art_12\` test covers the independent CURRENT
 selection signature and revoked/changed head. All true production selection,
 actual future-label evaluation, NDU and resource/rollback acceptance remain
 external. PR #1494 remains Draft.
+
+## Strict revalidation before diagnostic reuse
+
+`AgentdNeuronOwner::revalidate_model_artifact_candidate_v1` refuses to accept a cached
+candidate from a prior step as current by digest equality alone. The Agentd owner
+reads its actual local Journal/Witness again and consumes a newly authenticated
+CURRENT artifact registry view, independent selector verification, and exact
+pinned descriptor files. It then compares the complete new diagnostic with the
+previous one. A self-rehashed stale registry head, changed model checkpoint,
+expired independent selector, or withdrawn artifact fails closed. This check
+still does not open CNS production routing or create a final-use grant; external
+host orchestration must serialize all owners at the real use boundary.

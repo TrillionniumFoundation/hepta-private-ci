@@ -21,6 +21,7 @@ use std::fs::File;
 
 use crate::neuron_selected_artifact::NeuronCandidateModelArtifactErrorV1;
 use crate::neuron_selected_artifact::NeuronCandidateModelArtifactV1;
+use crate::neuron_selected_artifact::revalidate_pinned_neuron_model_descriptor_v1;
 use crate::neuron_selected_artifact::verify_pinned_neuron_model_descriptor_v1;
 use crate::neuron_tick_observation::AgentdNeuronTickObservationV1;
 use crate::neuron_tick_observation::from_actual_committed_tick;
@@ -117,6 +118,37 @@ where
     ) -> Result<NeuronCandidateModelArtifactV1, NeuronCandidateModelArtifactErrorV1> {
         let local = self.read_local_checkpoint_binding_v1()?;
         verify_pinned_neuron_model_descriptor_v1(
+            &local,
+            verifier,
+            signed,
+            current,
+            registry_snapshot,
+            descriptor_payload,
+            now,
+        )
+    }
+
+    /// Fail-closed recheck of a previously observed Model candidate. This
+    /// re-reads the exact live Neuron Journal/Witness and requires fresh signed
+    /// CURRENT artifact evidence and exact pinned descriptor bytes. A locally
+    /// rehashed old receipt can never extend its own validity.
+    ///
+    /// No independent CNS route selection or physical model loading follows
+    /// from this read; production final-use is still an external gate.
+    #[allow(clippy::too_many_arguments)]
+    pub fn revalidate_model_artifact_candidate_v1(
+        &self,
+        previous: &NeuronCandidateModelArtifactV1,
+        verifier: &ArtifactSelectionVerifierV1,
+        signed: &SignedArtifactSelectionV1,
+        current: VerifiedCurrentRegistryViewV1,
+        registry_snapshot: File,
+        descriptor_payload: File,
+        now: u64,
+    ) -> Result<(), NeuronCandidateModelArtifactErrorV1> {
+        let local = self.read_local_checkpoint_binding_v1()?;
+        revalidate_pinned_neuron_model_descriptor_v1(
+            previous,
             &local,
             verifier,
             signed,
