@@ -186,7 +186,12 @@ jobs:
               target["name"]: Path(target["src_path"]).name
               for target in packages[0]["targets"] if "bin" in target["kind"]
           }
-          expected = {"codex": "codex.rs", "hepta": "hepta.rs", "logs_client": "logs_client.rs"}
+          expected = {
+              "codex": "codex.rs",
+              "codex-cli": "codex.rs",
+              "hepta": "hepta.rs",
+              "logs_client": "logs_client.rs",
+          }
           if binaries != expected:
               raise SystemExit(f"unexpected implicit or wrongly rooted CLI binary: {binaries!r}")
           root = Path("codex-rs/cli/src")
