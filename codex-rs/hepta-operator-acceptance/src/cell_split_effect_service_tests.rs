@@ -809,3 +809,92 @@ fn execute_acknowledgement_rejects_a_changing_durable_frontier() {
     assert!(root.path().join("committed").exists());
     assert!(root.path().join("live-owner-state").exists());
 }
+
+
+/// Simulate the independent Selector withdrawing final-use during the real
+/// disk commit. The effect may exist, but it must not receive a fresh signed
+/// Execute acknowledgement after the current authorization has been revoked.
+struct RevokeFinalUseAfterCommit {
+    inner: DiskEffect,
+    authorized: bool,
+    authority_checks: usize,
+}
+
+impl CellSplitDurableEffectBackendV1 for RevokeFinalUseAfterCommit {
+    type Error = io::Error;
+
+    fn authorize_execute(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        self.authority_checks += 1;
+        if !self.authorized {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "independent final-use revoked",
+            ));
+        }
+        self.inner.authorize_execute(intent)
+    }
+
+    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
+        self.inner.commit_once(intent)?;
+        self.authorized = false;
+        Ok(())
+    }
+
+    fn read_committed(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<Option<CellSplitOwnedEffectV1>, Self::Error> {
+        self.inner.read_committed(intent)
+    }
+
+    fn verify_current(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+        effect: &CellSplitOwnedEffectV1,
+    ) -> Result<bool, Self::Error> {
+        self.inner.verify_current(intent, effect)
+    }
+
+    fn current_sequence(&mut self) -> Result<u64, Self::Error> {
+        self.inner.current_sequence()
+    }
+}
+
+#[test]
+fn execute_does_not_sign_after_independent_final_use_revocation() {
+    let root = tempfile::tempdir().expect("durable fixture");
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        RevokeFinalUseAfterCommit {
+            inner: DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
+            authorized: true,
+            authority_checks: 0,
+        },
+    )
+    .expect("independent owner");
+    let (mut client, mut server) = UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: intent(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("execute request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Rejected(_))
+    ));
+    assert_eq!(service.backend().authority_checks, 2);
+    assert_eq!(service.backend().inner.commits, 1);
+    assert!(root.path().join("committed").exists());
+    assert!(root.path().join("live-owner-state").exists());
+}
