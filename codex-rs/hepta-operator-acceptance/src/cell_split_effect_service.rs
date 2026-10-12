@@ -177,6 +177,28 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                         "owner frontier changed during signed readback",
                     ));
                 }
+                // A frontier accessor can observe a stable sequence while an
+                // independent route/fence owner revokes the effect during the
+                // read. Reconfirm the live effect after the final frontier
+                // sample; never sign an already-revoked positive observation.
+                // Production owners still require an atomic/linearizable
+                // state-and-frontier snapshot for complete race freedom.
+                let last_effect = self
+                    .backend
+                    .read_committed(&request.intent)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                if last_effect != committed
+                    || (committed.as_ref().is_some_and(|effect| {
+                        self.backend
+                            .verify_current(&request.intent, effect)
+                            .unwrap_or(false)
+                            == false
+                    }))
+                {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "effect changed after final frontier read",
+                    ));
+                }
                 let mut readback = CellSplitEffectReadbackV1 {
                     schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
                     intent: request.intent.clone(),
