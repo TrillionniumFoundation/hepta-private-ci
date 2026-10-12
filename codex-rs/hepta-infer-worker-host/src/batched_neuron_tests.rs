@@ -648,3 +648,65 @@ fn stale_cns_fence_denies_complete_batch_after_valid_signature_claims() {
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
     assert_eq!(owner.pending(), 0);
 }
+
+
+#[test]
+fn cns_guard_excludes_concurrent_route_cutover_until_all_readers_exit() {
+    let currentness = FixtureCnsCurrentness::default();
+    let (_, _, key) = fixture_request();
+    currentness.set_current(key.clone());
+    let held = currentness.enter_current(&[key]).unwrap();
+    assert!(
+        currentness.bindings.try_write().is_err(),
+        "route writer must not acquire exclusive cutover during physical forward"
+    );
+    drop(held);
+    assert!(
+        currentness.bindings.try_write().is_ok(),
+        "route writer may cut over after physical forward exits"
+    );
+}
+
+#[test]
+fn one_stale_scope_denies_entire_cross_scope_backend_batch() {
+    let temp = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[65; 32]);
+    let (model, fixture, base) = fixture_request();
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let currentness = std::sync::Arc::new(FixtureCnsCurrentness::default());
+    let mut owner = runner_with_counter(&signer, temp.path(), model, 2, calls.clone())
+        .with_scope_currentness(currentness.clone());
+    for index in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("mixed-{index}");
+        request.authorization.reservation_id = format!("mixed-reservation-{index}");
+        let digest = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = digest.clone();
+        request.authorization.lease_payload_digest = digest;
+        let mut key = base.clone();
+        key.scope_id = StableId::new(format!("mixed-scope-{index}")).unwrap();
+        key.route_fence = u64::from(index + 4);
+        let mut current = key.clone();
+        if index == 1 {
+            current.route_fence += 1; // CNS already committed a newer route.
+        }
+        currentness.set_current(current);
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("mixed-grant-{index}");
+        grant.grant.nonce = [index + 81; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        owner.enqueue(100, "model".into(), request, key, grant).unwrap();
+    }
+    let batch = owner.poll_and_execute_physical(106).unwrap();
+    assert_eq!(batch.outcomes.len(), 2);
+    assert!(batch
+        .outcomes
+        .iter()
+        .all(|item| item.result.as_ref().err() == Some(&BatchWorkerErrorV1::ScopeFenceDenied)));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert_eq!(owner.pending(), 0);
+}
