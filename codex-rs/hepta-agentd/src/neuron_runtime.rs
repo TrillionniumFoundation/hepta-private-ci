@@ -138,6 +138,11 @@ where
             owner_id,
             authority,
             signed_grant,
+            || {
+                read_verifier
+                    .verify(signed_read)
+                    .map_err(|_| NeuronRuntimeError::InvalidInput)
+            },
         )
     }
 

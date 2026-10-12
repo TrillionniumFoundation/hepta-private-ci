@@ -288,6 +288,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         neuron_owner_id: &StableId,
         authority: &FinalUseAuthority,
         signed_grant: &SignedFinalUseGrant,
+        verify_live_ndu_read: impl FnOnce() -> Result<Digest32, NeuronRuntimeError>,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let tick_digest = input.semantic_digest()?;
         crate::bind_ndu_snapshot_stage_v1(
@@ -307,6 +308,13 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         )?;
         let token = FinalUseAuthority::claim(authority, signed_grant, &binding)
             .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        // A durable nonce claim may outlive the protected NDU read. Consume
+        // the grant, but fail closed before any model effect if the receipt
+        // expires, Control changes generation/fence, or the witness vanishes.
+        // The verifier must be owned by the independent NDU/Control boundary.
+        if verify_live_ndu_read()? != admitted_read_receipt_digest {
+            return Err(NeuronRuntimeError::InvalidInput);
+        }
         FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
             self.tick(model, input)
         })
