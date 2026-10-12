@@ -123,6 +123,9 @@ class GitGraphTests(unittest.TestCase):
         self.git("init", "-q")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
+        # Prevent Git background auto-maintenance from racing fixture cleanup.
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.write(
             "codex-rs/Cargo.toml",
             """[workspace]
