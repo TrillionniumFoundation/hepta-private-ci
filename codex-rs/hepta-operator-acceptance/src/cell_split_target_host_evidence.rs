@@ -275,9 +275,10 @@ impl CellSplitTargetHostEvidenceAdapterV1 {
 /// Durable owner for an already signed target-host evidence envelope.
 ///
 /// The owner verifies the envelope against the externally pinned trust policy
-/// before writing it, uses the same private atomic-replace protocol as the
-/// operator acceptance sidecars, and verifies the exact persisted bytes on
-/// reopen.  It deliberately accepts no unsigned payload and never creates a
+/// before writing it, publishes a create-only immutable original evidence
+/// file, and verifies the exact persisted bytes on reopen. Repeated identical
+/// reports are idempotent; differently signed historical reports MUST NOT
+/// overwrite one another under the same witness path. It never creates a
 /// production receipt from the source simulation harness.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct CellSplitTargetHostEvidenceStoreV1;
@@ -310,9 +311,26 @@ impl CellSplitTargetHostEvidenceStoreV1 {
         let receipt = verify_cell_split_target_host_evidence(envelope, policy)?;
         let bytes = envelope.canonical_bytes()?;
         let path = path.as_ref();
-        let temporary = path.with_extension("target-host-evidence.tmp");
-        crate::durable::write_private_atomic_replace(path, &temporary, &bytes)
-            .map_err(|error| durable_error(error.to_string()))?;
+        // A verified historical report is an original operation witness, not
+        // a mutable cache. Create-new is atomic across competing writers and
+        // fsyncs both the file and parent directory. Replacing it with another
+        // valid signed report could silently rewind the observed lifecycle.
+        match crate::durable::write_private_new(path, &bytes) {
+            Ok(()) => {}
+            Err(crate::AcceptanceError::Io(ref error))
+                if error.kind() == std::io::ErrorKind::AlreadyExists =>
+            {
+                let original =
+                    crate::durable::secure_read(path, crate::durable::MAX_SMALL_FILE_BYTES)
+                        .map_err(|error| durable_error(error.to_string()))?;
+                if original != bytes {
+                    return Err(invalid(
+                        "original signed target-host evidence is immutable; use a new witness path",
+                    ));
+                }
+            }
+            Err(error) => return Err(durable_error(error.to_string())),
+        }
         Ok(receipt)
     }
 
