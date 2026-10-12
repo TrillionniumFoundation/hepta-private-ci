@@ -932,3 +932,60 @@ fn another_native_process_exits_after_nonce_fsync_then_parent_must_hold() {
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
     assert_eq!(f.ledger.records().unwrap().len(), 1);
 }
+
+#[cfg(unix)]
+#[test]
+fn atomic_openat_dirfd_blocks_exact_between_check_and_open_path_race() {
+    use std::os::unix::fs::PermissionsExt;
+    let mut f = Fixture::new();
+    let path = f.dir.join("owner-nonce-journal");
+    let saved = f.dir.join("owner-nonce-journal-RENAMED-ORIGINAL");
+    let replacement = path.clone();
+    let grant = f.grant.clone();
+    let result = f.nonce_journal.reserve_with_test_rebind(&grant, move || {
+        // Controlled deterministic TOCTOU that happens AFTER the live
+        // owner directory identity check and BEFORE the file open.
+        fs::rename(&replacement, &saved).unwrap();
+        fs::create_dir(&replacement).unwrap();
+        fs::set_permissions(&replacement, fs::Permissions::from_mode(0o700)).unwrap();
+    });
+    assert_eq!(result, Err(AckOnlyRecoveryError::NonceStoreUnavailable));
+    assert_eq!(
+        fs::read_dir(&path).unwrap().count(),
+        0,
+        "path-swapped replacement never receives a signed nonce"
+    );
+    let kept = f.dir.join("owner-nonce-journal-RENAMED-ORIGINAL");
+    assert_eq!(
+        fs::read_dir(&kept).unwrap().count(),
+        1,
+        "pinned original openat dirfd receives original reservation"
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(f.ledger.records().unwrap().len(), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn preexisting_nonce_filename_symlink_is_not_followed_or_overwritten() {
+    use std::os::unix::fs::symlink;
+    let mut f = Fixture::new();
+    let mut filename = String::from("nonce-");
+    for byte in f.grant.grant_nonce.as_array() {
+        use std::fmt::Write as _;
+        write!(filename, "{byte:02x}").unwrap();
+    }
+    let trap = f.dir.join("attacker-controlled-file");
+    let nonce_path = f.dir.join("owner-nonce-journal").join(&filename);
+    symlink(&trap, &nonce_path).unwrap();
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+    );
+    assert!(
+        !trap.exists(),
+        "O_EXCL + NOFOLLOW must not follow nonce symlink"
+    );
+    assert!(nonce_path.is_symlink());
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+}
