@@ -1298,3 +1298,45 @@ task gain from execution count, or interpret `semantic_citation_precision=null`
 as measured precision. The next useful resource allocation must be based
 on *native correct-support improvements on independent families* and
 Reader answer/citation review, not increased Head/Adapter step count.
+
+## Immutable cross-cohort negative admission gate (Oct 12)
+
+`stem_cross_cohort_gate.py` reads **only three previously committed historical
+JSON receipts**, each verified against its exact Git blob SHA-1 before parsing:
+
+- LoCoMo nine-arm, 2 held-out source-family proxies: selection chose
+  `lexical_k8`; on evaluation it covered **9 of 13** eligible native
+  supporting sources from **16** registered questions; `lexical_k4`
+  covered **8 of 13**. The eighth candidate expanded output by **8,449
+  UTF-8 source bytes** for only **one** additional covered question.
+  `fusion_k8` covered **3 of 13**. This is *source-ID coverage*, not Reader
+  accuracy or semantic entailment. Source bytes are **not** tokens or total cost.
+- Two strict-as-of six-arm Stem runs: both **576/576 policy executions**
+  passed their original runners, but there are only **16 distinct
+  test/transfer questions**, replayed at three checkpoints.
+  **Zero learned test/transfer source or answer gains** have been established.
+  The original repeated Reader token-F1 and zero citation-marker receipts
+  do not certify meaningfully grounded answers or semantic precision.
+- Four actual authored-task strong-RAG runs: **448 original model
+  generations**, still only **8 repeated authored evaluation questions**.
+  Full source path and organized path both achieve **8/8 task answers**
+  with only **4/8 complete *declared* source/citation chains**;
+  an automatically selected short context yields **5/8** answers and
+  **3/8** declared chains. This is *not* an independent human entailment
+  judgment, nor a claim that the authored tasks generalize.
+
+These denominators and cohorts are **never pooled**, and four repeated
+runs are not mistaken for four independent populations. The gate does not
+train a Cell, invoke a Reader, tune policies, grade hidden labels, assert
+a 99% semantic-citation rate, or modify production. It explicitly sets
+`learned_cell_scale_out_authorized=false` and
+`production_accepted=false`, pending independent source-family
+evaluations, verified Reader evidence sufficiency, semantic citation
+review, and full lifecycle latency/dollar/energy TCO.
+
+`.github/workflows/hepta-memory-cross-cohort-gate.yml` runs
+stdlib-only tamper tests and retains the precise tested source/tree, three
+input byte receipts, machine-readable gate verdict, logs, and SHA256SUMS
+in an all-failure-preserving artifact. A green workflow means only that
+the pinned historical evidence was reconciled, **not** that the product
+was scientifically or production qualified.
