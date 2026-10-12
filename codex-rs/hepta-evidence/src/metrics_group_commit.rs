@@ -58,6 +58,8 @@ pub enum MetricsJournalErrorV1 {
     Corrupt,
     WriterUnavailable,
     Poisoned,
+    /// A journal must be a regular owner-only file in a non-writable-by-peers directory.
+    UnsafePath,
 }
 impl From<std::io::Error> for MetricsJournalErrorV1 {
     fn from(error: std::io::Error) -> Self {
@@ -88,6 +90,7 @@ impl MetricsGroupCommitV1 {
         if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
             fs::create_dir_all(parent)?;
         }
+        check_journal_path(path)?;
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
         #[cfg(unix)]
@@ -96,6 +99,9 @@ impl MetricsGroupCommitV1 {
             options.mode(0o600);
         }
         let file = options.open(path)?;
+        // Opening with create/append must not silently accept a replacement
+        // symlink or an existing file with relaxed privacy permissions.
+        check_open_file(path, &file)?;
         file.try_lock()
             .map_err(|_| MetricsJournalErrorV1::WriterUnavailable)?;
         let mut reader = BufReader::new(file.try_clone()?);
@@ -206,6 +212,67 @@ impl MetricsGroupCommitV1 {
         self.staged.clear();
         Ok(Some(receipt))
     }
+}
+
+/// Never open a metrics journal through a symbolic link or a directory
+/// other users may modify. The owner must provision the directory before
+/// starting its effects; telemetry path rejection is a readiness failure.
+fn check_journal_path(path: &Path) -> Result<(), MetricsJournalErrorV1> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let parent = path
+            .parent()
+            .filter(|p| !p.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        let directory = fs::symlink_metadata(parent)?;
+        if !directory.is_dir()
+            || directory.file_type().is_symlink()
+            || directory.permissions().mode() & 0o022 != 0
+        {
+            return Err(MetricsJournalErrorV1::UnsafePath);
+        }
+    }
+    match fs::symlink_metadata(path) {
+        Ok(metadata) => {
+            if !metadata.file_type().is_file() {
+                return Err(MetricsJournalErrorV1::UnsafePath);
+            }
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                if metadata.permissions().mode() & 0o077 != 0 {
+                    return Err(MetricsJournalErrorV1::UnsafePath);
+                }
+            }
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(error) => return Err(MetricsJournalErrorV1::Io(error)),
+    }
+    Ok(())
+}
+
+/// A second inspection binds the opened file to the protected path. On Unix
+/// the inode comparison catches replacement between preflight and open.
+fn check_open_file(path: &Path, file: &File) -> Result<(), MetricsJournalErrorV1> {
+    let actual = file.metadata()?;
+    let on_path = fs::symlink_metadata(path)?;
+    if !actual.is_file() || !on_path.file_type().is_file() {
+        return Err(MetricsJournalErrorV1::UnsafePath);
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::PermissionsExt;
+        if actual.permissions().mode() & 0o077 != 0
+            || on_path.permissions().mode() & 0o077 != 0
+            || actual.dev() != on_path.dev()
+            || actual.ino() != on_path.ino()
+        {
+            return Err(MetricsJournalErrorV1::UnsafePath);
+        }
+    }
+    Ok(())
 }
 
 /// Timed operation and its result stay together. Telemetry is separate so an
