@@ -22,8 +22,8 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::durable::{
-    SidecarLock, canonical_json, lock_sidecar, secure_read, secure_root, sha256,
-    write_private_new,
+    SidecarLock, canonical_json, lock_existing_sidecar, lock_sidecar,
+    secure_read, secure_root, sha256, write_private_new,
 };
 
 const SCHEMA: &str = "hepta.learning.cell-split.supervisor-minimum-online.v1";
@@ -169,16 +169,41 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
         root: &Path,
         signer: SigningKey,
     ) -> Result<Self, CellSplitSupervisorMinimumErrorV1> {
+        Self::open_inner(root, signer, false)
+    }
+
+    /// Read-only recovery cannot initialize an empty root, create a lock,
+    /// or publish a caller-supplied minimum to compensate for missing state.
+    pub fn open_existing(
+        root: &Path,
+        signer: SigningKey,
+    ) -> Result<Self, CellSplitSupervisorMinimumErrorV1> {
+        Self::open_inner(root, signer, true)
+    }
+
+    fn open_inner(
+        root: &Path,
+        signer: SigningKey,
+        existing_only: bool,
+    ) -> Result<Self, CellSplitSupervisorMinimumErrorV1> {
         if signer.verifying_key().is_weak() {
             return Err(CellSplitSupervisorMinimumErrorV1::Invalid);
         }
         let root = secure_root(root, "independent Supervisor minimum store")?;
-        let lock = lock_sidecar(&root)?;
-        Ok(Self {
+        let lock = if existing_only {
+            lock_existing_sidecar(&root)?
+        } else {
+            lock_sidecar(&root)?
+        };
+        let store = Self {
             root,
             signer,
             _lock: lock,
-        })
+        };
+        if existing_only {
+            let _ = store.read_verified()?;
+        }
+        Ok(store)
     }
 
     /// Host-authorized irreversible *first* minimum publication. A resumed
