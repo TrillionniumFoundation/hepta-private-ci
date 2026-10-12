@@ -290,6 +290,7 @@ mod tests {
         corrupt_head: bool,
         indeterminate_with_output: bool,
         swap_items: bool,
+        fail_after_execution: bool,
     }
 
     impl ModelDriver for BatchMock {
@@ -330,6 +331,9 @@ mod tests {
             requests: &[NeuronFeatureRequest],
         ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
             self.batches += 1;
+            if self.fail_after_execution {
+                return Err(Error::DriverFailure("batch may have executed".to_string()));
+            }
             let mut outputs: Vec<_> = requests
                 .iter()
                 .map(|req| NeuronFeatureBatchItemObservationV2 {
@@ -599,6 +603,7 @@ mod tests {
         assert_eq!(err, Err(Error::PayloadMismatch));
         assert!(worker.active_requests.is_empty());
         assert_eq!(worker.models["model.v2"].active_requests, 0);
+        assert!(worker.poisoned);
     }
 
     #[test]
@@ -626,6 +631,38 @@ mod tests {
             assert_eq!(err, Err(Error::FeatureOutputMismatch));
             assert!(worker.active_requests.is_empty());
             assert_eq!(worker.models["model.v2"].active_requests, 0);
+            assert!(worker.poisoned);
+            assert_eq!(
+                worker.run_neuron_features_batch(
+                    100,
+                    "model.v2",
+                    vec![feature("request.1", 'b'), feature("request.2", 'c')]
+                ),
+                Err(Error::IndeterminateLifecycle)
+            );
+            assert_eq!(worker.driver.batches, 1);
         }
+    }
+
+    #[test]
+    fn driver_error_after_physical_batch_cannot_be_retried() {
+        let mut worker = worker(BatchMock {
+            fail_after_execution: true,
+            ..BatchMock::default()
+        });
+        let inputs = vec![feature("request.1", 'b'), feature("request.2", 'c')];
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", inputs.clone()),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert!(worker.poisoned);
+        assert_eq!(worker.driver.batches, 1);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.v2"].active_requests, 0);
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", inputs),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(worker.driver.batches, 1);
     }
 }
