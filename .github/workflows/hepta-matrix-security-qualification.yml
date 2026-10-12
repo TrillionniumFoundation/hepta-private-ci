@@ -95,6 +95,49 @@ jobs:
           git diff --check
           git diff --exit-code
 
+  minimal-anymap-backport-source-probe:
+    name: Minimal signed-release anymap3 backport (read-only source check)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Read upstream 0.19.1 signed release commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Read exact upstream anymap3 migration and its parent
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify only upstream source hunks apply to published release
+        run: |
+          python3 qualification/matrix-security/minimal_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --output "$RUNNER_TEMP/hepta-matrix-minimal-backport.json"
+      - name: Upload exact-commit source compatibility evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-minimal-anymap3-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-minimal-backport.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Source tracked files unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
   disposable-cargo-resolution-probe:
     name: Disposable pinned SDK Cargo resolver (${{ matrix.sqlite_arm }}, diagnostic only)
     runs-on: ubuntu-24.04
