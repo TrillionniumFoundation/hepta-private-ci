@@ -1,6 +1,6 @@
 # Qwen frozen-reader CPU feasibility gate — observed October 12, 2026
 
-**Disposition: BLOCK the 40-calibration + 72-evaluation CPU-only workflow pending a qualified compute environment.** This is an audited runtime/engineering disposition, not model accuracy, reader-equivalence or production admission.
+**Scope-specific disposition: BLOCK the old monolithic 180-minute CPU execution on this measured host.** Subsequent SHA-pinned **sharded CPU** 40-calibration + 72-evaluation executions already completed successfully. This original resource failure is an engineering negative observation, not a global ban on CPU runs, proof of model incapacity, or production admission.
 
 ## Exact real observations
 
@@ -20,10 +20,45 @@
 
 Sum of the four original model seconds: approximately **7,067.9 seconds (117.8 minutes)**. The first recorded attempts already show incomplete or underspecified answers; do not treat a journal status of `succeeded` as strict task correctness.
 
-## Engineering decision
+## Engineering decision, with superseding completed CPU evidence
 
-The CPU workflow's 180-minute job boundary was reached before even finishing its first 5-k calibration question. With all 40 calibration calls and 72 final test calls pending, merely increasing a single-job timeout or repeatedly queuing more CPU-only runs is not justified. These four observations are insufficient for a measured full-run duration or a confident hardware-independent extrapolation; they are sufficient to **reject the present CPU-only execution budget**.
+The original monolithic job's 180-minute limit was reached before completing
+its first five-k calibration question. **That exact job layout and observed host
+are unqualified**; merely enlarging the timeout or ignoring missing attempts
+would not repair it. The four partial responses do not establish model task
+accuracy or a hardware-independent inference-speed estimate.
 
-Only resume the full experimental specification when an authorized execution runner (e.g. GPU or other provisioned accelerated inference) demonstrates a measured frozen-model throughput sufficient for the separate calibration and nine-arm evaluation phases, and demonstrates parity of exact input construction, output decode, source/plan/model pins, budget, citation and procedure semantics. A different model family or changing prompts to fit a budget cannot be credited as MemoryCell gains.
+### Later successful, separate sharded Qwen CPU runs
+
+This report originally predated two *distinct source-pinned* sharded CPU
+runs that later completed the very same 40 calibration and 72 evaluation
+model calls with separate read-only replay:
+
+- [Actions #38148514657](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38148514657), generating source
+  `8250698244417eb14994518af05fa6f79e783066`: overall workflow **success**.
+- [Actions #38146546731](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38146546731), generating source
+  `eba9af092cca1c2875552ffaea2219678143a73c`: overall workflow **success**.
+- [Actions #38114667490](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38114667490), generating source
+  `c24fad24b65984a6255a8854c6714c141911ff79`: model generation and
+  separate read-only replay passed, but the *overall* workflow failed its
+  unrelated formatting job.
+
+The exact outer ZIP identities, inner manifests, original reader/prompt
+SHA consistency, 40/72 raw-answer censuses and cross-run discrepancies
+were independently checked in
+[MEMORY_CELL_STRONG_RAG_THREE_RUN_REPLICATION_20261012.md](MEMORY_CELL_STRONG_RAG_THREE_RUN_REPLICATION_20261012.md).
+All three chose top-k=1; full-path entity/time and organized each achieved
+8/8 original task answers and 4/8 complete program-declared citation chains.
+The organizer had **zero additional task successes or complete chains**;
+it saved 573 input tokens across eight reads. These are the same eight
+authored, exposed questions, not new independent families or independent
+semantic citation review.
+
+**Do not repeat the old monolithic CPU job** solely to recreate an already
+completed sharded experiment. Any new CPU/GPU runtime must separately
+measure and publish capacity, generation parity, source/model/citation
+identity, complete attempts and resource costs. Original reader failures
+and variation across hosts remain first-class evidence; sharded research
+success is not the same as a production-qualifying latency SLO.
 
 Keep partial raw records and failure denominators, pin and independently verify all artifacts, and preserve no-test-label-before-full-journal rules. No trained/parametric gain, independent citation-entailment review, future-source superiority, lifecycle ROI, or production qualification has been established.
