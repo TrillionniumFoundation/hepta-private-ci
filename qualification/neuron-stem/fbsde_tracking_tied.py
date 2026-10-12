@@ -94,3 +94,25 @@ class InputTiedBelief(SharedHeadBelief):
             result[w[2]] += p
         require(abs(math.fsum(result)-1) < 1e-10, 'tied holder conservation')
         return result
+
+    def information_state(self, known=()):
+        """One conditional-world reduction for a decision-local planner snapshot.
+
+        No extra observation or inference is introduced. Each sum visits the
+        SAME normalized worlds in the SAME order as the individual ports.
+        Arrays are fresh and contain no source labels or model objects.
+        """
+        history, observed, worlds = self._conditional(known)
+        available = tuple(i for g,i in enumerate(self.representatives) if g not in observed)
+        probabilities = [0.]*self.actors
+        posterior = [0.]*len(self.members)
+        outcomes = {i:[0.]*len(self.pairs) for i in available}
+        for world, p in worlds:
+            probabilities[world[2]] += p
+            posterior[world[0]] += p
+            for event, values in outcomes.items():
+                values[world[1][self.groups[event]]] += p
+        require(abs(math.fsum(probabilities)-1) < 1e-10, 'tied holder conservation')
+        return {'history': history, 'probabilities': tuple(probabilities),
+                'available': available, 'posterior': tuple(posterior),
+                'outcomes': {i:tuple(values) for i,values in outcomes.items()}}

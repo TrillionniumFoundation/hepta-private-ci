@@ -5,7 +5,6 @@ errors across events are a declared modelling approximation, NOT established
 because a common gate was trained. Exact source operations are unavailable to
 this planner; a separate callback reveals only the requested event after choice.
 """
-from functools import lru_cache
 from itertools import combinations
 import math
 import time
@@ -127,49 +126,14 @@ def plan(problem, known=(), *, horizon=2, cost=.02, max_nodes=20000):
     One horizon is TOTAL remaining checks; replanning cannot silently reset it.
     The upper bound 1-cost allows exact early stopping, not outcome pruning.
     """
-    require(type(horizon) is int and 0 <= horizon <= 2 and type(max_nodes) is int and
-            1 <= max_nodes <= 20000, 'bounded planning budget')
-    require(type(cost) in (int, float) and math.isfinite(cost) and 0 <= cost <= 1, 'verification cost')
-    root = problem.history(known)
-    count = 0; maximum_residual = 0.
-    started = time.process_time_ns()
-
-    @lru_cache(maxsize=20000)
-    def visit(history, depth):
-        nonlocal count, maximum_residual
-        count += 1
-        if count > max_nodes:
-            raise PlanningBudgetError('verification planner node budget exhausted', problem, count, started)
-        if time.process_time_ns()-started > 100_000_000:
-            raise PlanningBudgetError('verification planner CPU budget exhausted', problem, count, started)
-        probabilities = problem.marginal(history)
-        label = max(range(problem.actors), key=lambda j: (probabilities[j], -j))
-        best = max(0., 2*probabilities[label]-1)
-        action = 'abstain' if best == 0 else f'answer:{label}'
-        available = problem.available_events(history)
-        bounded = depth == 0 or not available or best >= 1-cost-1e-12
-        alternatives = []
-        if not bounded:
-            for i in available:
-                children = [(p, visit(tuple(sorted(history+((i, j),))), depth-1)[0])
-                            for j, p in enumerate(problem.outcome_law(i, history)) if p > 0]
-                mean = math.fsum(p*v for p, v in children)
-                value = mean-cost
-                residual = max(abs(v-value-cost-(v-mean)) for _, v in children)
-                centered = abs(math.fsum(p*(v-mean) for p,v in children))
-                maximum_residual = max(maximum_residual, residual, centered)
-                require(maximum_residual < 1e-10, 'finite BSDE interface')
-                alternatives.append({'event': i, 'value': value})
-                if value > best+1e-12:
-                    best, action = value, f'verify:{i}'
-        return best, action, probabilities, alternatives, bounded
-
-    value, action, probabilities, alternatives, bounded = visit(root, horizon)
-    cpu = time.process_time_ns()-started
-    if cpu > 100_000_000:
-        raise PlanningBudgetError('verification planner CPU budget exhausted', problem, count, started)
-    return {'action': action, 'value': value, 'probabilities': probabilities,
-            'known': root, 'remaining_checks': horizon, 'alternatives': alternatives,
-            'upper_bound_stop': bounded, 'nodes': count, 'cpu_ns': cpu,
-            'max_bsde_residual': maximum_residual, 'problem_sha256': problem.identity,
-            'posterior_is_model_dependent': True, 'semantic_certificate': False}
+    require(type(horizon) is int and 0 <= horizon <= 2, 'bounded planning budget')
+    from fbsde_planning_workspace import PlanningWorkspace
+    work = PlanningWorkspace(problem, known, cost=cost, max_nodes=max_nodes)
+    started = work.started
+    with work:
+        result = work.solve(known, horizon=horizon)
+    # Include construction and deterministic cache disposal in the original budget.
+    result['cpu_ns'] = time.process_time_ns()-started
+    if result['cpu_ns'] > 100_000_000:
+        raise PlanningBudgetError('verification planner CPU budget exhausted', problem, result['nodes'], started)
+    return result

@@ -10,26 +10,28 @@ from four_gate_common import digest, require
 from fbsde_tracking_control import plan, PlanningBudgetError
 
 PROFILE = 'learned_depth_allocation_v1'
+ENGINES = ('fresh_solve_v1', 'shared_continuation_v2')
 WIDTH = 15
 GAIN_PRICE = .002  # Declared model-utility price, NOT measured CPU or hardware price.
 THRESHOLDS = (0., .25, .5, .75, 1.01)
 
 
-def features(problem, known, one):
+def features(problem, known, one, *, workspace=None):
     require(problem.actors == 3 and one['problem_sha256'] == problem.identity,
             'three-actor current-model router input')
     require(one['remaining_checks'] == 1 and tuple(one['known']) == problem.history(known),
             'router must use this history and paid one-step plan')
-    p = one['probabilities']; available = problem.available_events(known)
+    conditional = workspace if workspace is not None else problem
+    p = one['probabilities']; available = conditional.available_events(known)
     def entropy(q): return -math.fsum(x*math.log(x) for x in q if x > 0)/math.log(3)
-    laws = [problem.outcome_law(i, known) for i in available]
+    laws = [conditional.outcome_law(i, known) for i in available]
     ent = [entropy(q) for q in laws] or [0.]
     peaks = [max(q) for q in laws] or [1.]
     stop = max(0., 2*max(p)-1)
     value = sorted(p, reverse=True) + [one['value'], stop, one['value']-stop,
         entropy(p), len(available)/16, len(problem.laws)/16, max(ent),
         math.fsum(ent)/len(ent), max(peaks), min(peaks),
-        len(set(problem.keys))/len(problem.keys), max(problem.member_posterior(known))]
+        len(set(problem.keys))/len(problem.keys), max(conditional.member_posterior(known))]
     require(len(value) == WIDTH and all(math.isfinite(x) for x in value), 'finite router features')
     return value
 
@@ -121,7 +123,7 @@ def select_threshold(rows, state, kind, selection_profile="registered_coarse_v1"
             'selection_uses_external_outcomes':False}
 
 
-def allocate(problem, known, remaining, mode, bundle):
+def allocate(problem, known, remaining, mode, bundle, *, engine=ENGINES[0]):
     require(mode in ('myopic','full','learned','confidence','frozen','learned_complete','confidence_complete') and type(remaining) is int
             and 0 <= remaining <= 2, 'bounded depth mode/horizon')
     require(type(bundle['context']) is dict and set(bundle['context']) == {'source','model','calibration','scope','generation'}
@@ -129,27 +131,39 @@ def allocate(problem, known, remaining, mode, bundle):
             and bundle['context']['model'] == bundle['model']
             and bundle['context']['calibration'] == bundle['calibration']
             and bundle['problem_binding'] == problem.binding, 'router model/calibration scope binding')
+    require(engine in ENGINES, 'explicit planning engine')
+    from fbsde_planning_workspace import PlanningWorkspace
     started = time.process_time_ns()
-    if remaining < 2 or mode == 'full':
-        result = plan(problem,known,horizon=min(remaining,1 if mode=='myopic' else 2))
-        route = {'features':None,'probability':None,'selected_depth':result['remaining_checks'],
-                 'planner_cpu_ns':result['cpu_ns'],'one_step_cpu_ns':0,
-                 'planner_nodes':result['nodes'],'one_step_nodes':0}
-    else:
-        one = plan(problem,known,horizon=1); values = features(problem,known,one)
-        probability = scalar_score(bundle['initial' if mode=='frozen' else 'state'],values) if mode in ('learned','frozen','learned_complete') else None
-        deep = (probability >= (bundle['complete_threshold'] if mode=='learned_complete' else bundle['threshold'] if mode=='learned' else .5) if probability is not None
-                else values[0] < (bundle['complete_confidence_threshold'] if mode=='confidence_complete' else bundle['confidence_threshold']) if mode in ('confidence','confidence_complete') else False)
-        if deep and one['nodes'] >= 20000:
-            raise PlanningBudgetError('combined depth-allocation node budget exhausted',problem,one['nodes'],started)
-        result = plan(problem,known,horizon=2,max_nodes=20000-one['nodes']) if deep else one
-        route = {'features':values,'probability':probability,'selected_depth':2 if deep else 1,
-                 'one_step_cpu_ns':one['cpu_ns'],'planner_cpu_ns':one['cpu_ns']+(result['cpu_ns'] if deep else 0),
-                 'one_step_nodes':one['nodes'],'planner_nodes':one['nodes']+(result['nodes'] if deep else 0)}
+    work = PlanningWorkspace(problem, known) if engine == ENGINES[1] else None
+    def solve(*, horizon, max_nodes=20000):
+        # Workspace node counts are cumulative; no fresh allowance on escalation.
+        return (work.solve(known, horizon=horizon) if work is not None else
+                plan(problem, known, horizon=horizon, max_nodes=max_nodes))
+    try:
+        if remaining < 2 or mode == 'full':
+            result = solve(horizon=min(remaining,1 if mode=='myopic' else 2))
+            route = {'features':None,'probability':None,'selected_depth':result['remaining_checks'],
+                     'planner_cpu_ns':result['cpu_ns'],'one_step_cpu_ns':0,
+                     'planner_nodes':result['nodes'],'one_step_nodes':0}
+        else:
+            one = solve(horizon=1); values = features(problem,known,one,workspace=work)
+            probability = scalar_score(bundle['initial' if mode=='frozen' else 'state'],values) if mode in ('learned','frozen','learned_complete') else None
+            deep = (probability >= (bundle['complete_threshold'] if mode=='learned_complete' else bundle['threshold'] if mode=='learned' else .5) if probability is not None
+                    else values[0] < (bundle['complete_confidence_threshold'] if mode=='confidence_complete' else bundle['confidence_threshold']) if mode in ('confidence','confidence_complete') else False)
+            if deep and one['nodes'] >= 20000:
+                raise PlanningBudgetError('combined depth-allocation node budget exhausted',problem,one['nodes'],started)
+            result = solve(horizon=2,max_nodes=20000-one['nodes']) if deep else one
+            route = {'features':values,'probability':probability,'selected_depth':2 if deep else 1,
+                     'one_step_cpu_ns':one['cpu_ns'],'planner_cpu_ns':one['cpu_ns']+(result['cpu_ns'] if deep else 0),
+                     'one_step_nodes':one['nodes'],'planner_nodes':one['nodes']+(result['nodes'] if deep else 0)}
+    finally:
+        if work is not None:
+            work.close()
     elapsed = time.process_time_ns()-started
     if elapsed > 100_000_000:
         error = PlanningBudgetError('combined depth-allocation CPU budget exhausted',problem,result['nodes'],started)
         error.evidence.update(route=route); raise error
     return result, {**route,'cpu_ns':elapsed,'known':known,'remaining':remaining,
         'mode':mode,'problem_sha256':problem.identity,'bundle_sha256':digest(bundle),
-        'returned':True,'exact_two_step_optimality_claimed':mode=='full'}
+        'returned':True,'exact_two_step_optimality_claimed':mode=='full',
+        'planning_engine':engine, 'workspace':work.counters() if work is not None else None}
