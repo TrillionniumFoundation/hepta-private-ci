@@ -7,6 +7,7 @@ reviewer authority, or sufficient task evidence.
 
 import argparse
 import json
+import os
 from pathlib import Path
 import re
 
@@ -192,7 +193,12 @@ def run(source, original, out, *, sha, offline=False):
         raise ValueError("ancestry output must not overwrite another run")
     Path(out).mkdir(parents=True)
     try:
-        observed, requests = records_from_remote(manifest, github_json)
+        observed, requests = records_from_remote(
+            manifest,
+            lambda repo, kind, oid: github_json(
+                repo, kind, oid, token=os.environ.get("GITHUB_TOKEN")
+            ),
+        )
         report = assess(manifest, observed)
         atomic_json(
             Path(out) / "inventory.json",
