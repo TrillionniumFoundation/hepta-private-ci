@@ -602,8 +602,7 @@ fn native_three_member_batch_preserves_distinct_signed_nonces_and_metrics() {
         let mut request = first.clone();
         request.authorization.request_id = format!("batch-three-request-{index}");
         request.authorization.reservation_id = format!("batch-three-reservation-{index}");
-        let binding =
-            neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
         let grant = signed_member(
             &signer,
             binding,
