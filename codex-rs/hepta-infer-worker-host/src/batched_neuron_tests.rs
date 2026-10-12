@@ -744,9 +744,12 @@ fn native_batch_backend_absence_fails_closed_instead_of_sequential_fallback() {
             .unwrap();
         let observed = worker.poll_and_execute(101).unwrap();
         assert_eq!(observed.outcomes.len(), 2);
-        assert!(observed.outcomes.iter().all(|item| {
-            matches!(item.result, Err(BatchWorkerErrorV1::BatchUnsupported))
-        }));
+        assert!(
+            observed
+                .outcomes
+                .iter()
+                .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::BatchUnsupported)))
+        );
         assert_eq!(worker.pending(), 0);
     }
 
@@ -769,12 +772,10 @@ fn native_batch_backend_absence_fails_closed_instead_of_sequential_fallback() {
     let completed = recovered.poll_and_execute(201).unwrap();
     assert_eq!(completed.outcomes.len(), 2);
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
-    assert!(completed.outcomes.iter().all(|item| {
-        matches!(
-            &item.result,
-            Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
-        )
-    }));
+    for item in &completed.outcomes {
+        let receipt = item.result.as_ref().expect("authorized native batch");
+        assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Succeeded);
+    }
 }
 
 #[test]
