@@ -39,14 +39,23 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
-        let wrapper_command = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
-            ),
-            GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
-            ),
+        // Use the .NET CreateProcess path rather than Start-Process
+        // -NoNewWindow, which can fail to launch under Windows Bazel's
+        // redirected/no-console test host. Keep the UTF-16LE encoded command:
+        // the wrapper must start a *real* descendant in its JobObject, whose
+        // cleanup is what this test is intended to verify.
+        let encoded_command = format!(
+            "$encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes('{child_command}')); "
+        );
+        let lifecycle = match wrapper_lifetime {
+            GitWrapperLifetime::WaitForChild => "Wait-Process -Id $child.Id",
+            GitWrapperLifetime::ExitBeforeTimeout => {
+                "while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) { Start-Sleep -Milliseconds 25 }"
+            }
         };
+        let wrapper_command = format!(
+            "{encoded_command}$start = [System.Diagnostics.ProcessStartInfo]::new(); $start.FileName = 'powershell.exe'; $start.Arguments = '-NoProfile -NonInteractive -EncodedCommand ' + $encoded; $start.UseShellExecute = $false; $start.CreateNoWindow = $true; $child = [System.Diagnostics.Process]::new(); $child.StartInfo = $start; if (-not $child.Start()) {{ throw 'Git child did not start' }}; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); {lifecycle}"
+        );
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
             .arg(wrapper_command);
