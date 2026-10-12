@@ -17,6 +17,18 @@ PARTITIONS = (('fit', 'train', 0, 60), ('kernel', 'train', 60, 100),
               ('selection', 'val', 0, 10), ('validation', 'val', 10, 20),
               ('test', 'test', 0, 30))
 
+TRAVEL_INTENTS = ('book_flight', 'book_hotel', 'car_rental', 'flight_status',
+                  'lost_luggage', 'carry_on', 'plug_type', 'international_visa')
+TRAVEL_PARTITIONS = (('fit', 'train', 0, 40), ('kernel', 'train', 40, 70),
+    ('selection', 'val', 0, 10), ('validation', 'train', 70, 100),
+    ('validation', 'val', 10, 20), ('test', 'test', 0, 30))
+COHORTS = ('banking_v1', 'travel_guard_v1')
+
+
+def cohort_spec(name):
+    require(name in COHORTS, 'registered task cohort')
+    return (INTENTS, PARTITIONS) if name == 'banking_v1' else (TRAVEL_INTENTS, TRAVEL_PARTITIONS)
+
 
 def load_publisher(directory):
     """Read unchanged publisher bytes, or fetch the existing pinned public source."""
@@ -32,25 +44,28 @@ def load_publisher(directory):
     return strict_loads((directory/'data/data_full.json').read_bytes())
 
 
-def partition(data):
+def partition(data, cohort='banking_v1'):
+    intents, partitions = cohort_spec(cohort)
     grouped = defaultdict(list)
     for origin in ('train', 'val', 'test'):
         for ordinal, (text, label) in enumerate(data[origin]):
-            if label in INTENTS:
+            if label in intents:
                 require(type(text) is str and 0 < len(text) <= 4096, 'bounded original text')
                 grouped[(origin, label)].append({'id': f'{origin}:{ordinal}', 'text': text,
-                    'label': INTENTS.index(label), 'text_sha256': digest(text)})
+                    'label': intents.index(label), 'text_sha256': digest(text)})
     result, seen = {}, set()
-    for split, origin, begin, end in PARTITIONS:
-        result[split] = []
-        for label in INTENTS:
+    for split, origin, begin, end in partitions:
+        result.setdefault(split, [])
+        new_rows = []
+        for label in intents:
             rows = grouped[(origin, label)]
             require(len(rows) >= end, 'publisher count mismatch')
-            result[split].extend(rows[begin:end])
-        hashes = [r['text_sha256'] for r in result[split]]
+            new_rows.extend(rows[begin:end])
+        hashes = [r['text_sha256'] for r in new_rows]
         require(len(set(hashes)) == len(hashes) and not seen.intersection(hashes),
                 'source overlap; do not silently discard difficult/duplicate rows')
         seen.update(hashes)
+        result[split].extend(new_rows)
         result[split].sort(key=lambda r: r['id'])
     return result
 
