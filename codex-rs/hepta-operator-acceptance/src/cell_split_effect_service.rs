@@ -148,11 +148,19 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 self.backend
                     .authorize_execute(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
-                if self.read_verified(&request.intent)?.is_none() {
-                    self.backend
-                        .commit_once(&request.intent)
-                        .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                // The coordinator dispatches Execute only once, following a
+                // nonce-bound negative preflight and a durable prepared intent.
+                // A previously committed effect is not evidence that *this*
+                // Execute caused it: a different caller may have raced the
+                // preflight. Lost acknowledgements recover only by ReadBack.
+                if self.read_verified(&request.intent)?.is_some() {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "effect already committed before new execute intent",
+                    ));
                 }
+                self.backend
+                    .commit_once(&request.intent)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 let committed = self.read_verified(&request.intent)?.ok_or(
                     CellSplitEffectRpcErrorV1::Invalid("effect absent after commit"),
                 )?;
