@@ -233,11 +233,7 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
     """Held-out labels only after the TRAIN-only choice is immutable."""
     verify_train_selection(plan, selection)
     eval_ids = [q for p in PHASES[1:] for q in plan["questions"][p]]
-    if (
-        set(targets) != set(eval_ids)
-        or len(eval_ids) != 32
-        or len(set(eval_ids)) != 32
-    ):
+    if set(targets) != set(eval_ids) or len(eval_ids) != 32 or len(set(eval_ids)) != 32:
         raise ValueError("evaluation targets changed calibration selection")
     out, decisions = {}, []
     for phase in PHASES[1:]:
@@ -250,7 +246,9 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
                 or a["source_family"] != plan["question_families"][qid]
                 or a["original_as_of_index_sha256"] != b["original_as_of_index_sha256"]
             ):
-                raise ValueError("retrieval evaluation changed native family or as-of index")
+                raise ValueError(
+                    "retrieval evaluation changed native family or as-of index"
+                )
             original, proposed = annotate(a, targets[qid]), annotate(b, targets[qid])
             counts["planned"] += 1
             row = dict(
@@ -284,13 +282,12 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
                 )
             decisions.append(row)
         all_rows = [row for row in decisions if row["phase"] == phase]
-        counts["original_planned_family_count"] = len({
-            row["source_family"] for row in all_rows
-        })
-        counts["native_scored_family_count"] = len({
-            row["source_family"] for row in all_rows
-            if row["native_support_resolved"]
-        })
+        counts["original_planned_family_count"] = len(
+            {row["source_family"] for row in all_rows}
+        )
+        counts["native_scored_family_count"] = len(
+            {row["source_family"] for row in all_rows if row["native_support_resolved"]}
+        )
         out[phase] = dict(counts)
     return dict(
         schema="hepta.stem-frozen-retrieval-grid-eval.v2",
@@ -301,9 +298,9 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
         same_candidate_window_budget=True,
         selected_policy=selection["selected_policy"],
         matched_question_count=32,
-        distinct_heldout_question_source_families=len({
-            row["source_family"] for row in decisions
-        }),
+        distinct_heldout_question_source_families=len(
+            {row["source_family"] for row in decisions}
+        ),
         independent_family_effect_not_verified=True,
         train_policy_revalidated_against_original_scorecard=True,
         results=out,

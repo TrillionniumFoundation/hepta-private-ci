@@ -264,7 +264,8 @@ class FrozenGridTests(unittest.TestCase):
         self.assertEqual(verify_train_selection(plan, selected)["id"], "k128/lex0.75")
         eval_targets = {
             qid: targets[qid]
-            for phase in PHASES[1:] for qid in plan["questions"][phase]
+            for phase in PHASES[1:]
+            for qid in plan["questions"][phase]
         }
         score = evaluate_fixed(plan, unlabeled, eval_targets, selected)
         self.assertTrue(score["train_policy_revalidated_against_original_scorecard"])
@@ -277,11 +278,21 @@ class FrozenGridTests(unittest.TestCase):
         plan, rows, targets = fixture()
         unlabelled = validate_unlabelled(plan, rows)
         chosen = select_from_train(
-            plan, unlabelled,
+            plan,
+            unlabelled,
             {qid: targets[qid] for qid in plan["questions"]["train"]},
         )
-        cases = ("winner", "cohort", "domain", "score", "candidate",
-                 "order", "flag", "baseline", "ntrain")
+        cases = (
+            "winner",
+            "cohort",
+            "domain",
+            "score",
+            "candidate",
+            "order",
+            "flag",
+            "baseline",
+            "ntrain",
+        )
         for mode in cases:
             forged = deepcopy(chosen)
             if mode == "winner":
@@ -322,9 +333,7 @@ class FrozenGridTests(unittest.TestCase):
             elif mode == "replay-truthy-string":
                 row["replayed_original_pool_sha256"] = "yes"
             elif mode == "baseline-truthy-string":
-                baseline = next(
-                    r for r in rows if r["policy"] == label_key(BASELINE)
-                )
+                baseline = next(r for r in rows if r["policy"] == label_key(BASELINE))
                 baseline["replayed_original_pool_sha256"] = "yes"
             else:
                 row["replayed_original_pool_sha256"] = False
@@ -335,17 +344,22 @@ class FrozenGridTests(unittest.TestCase):
         plan, rows, targets = fixture()
         unlabeled = validate_unlabelled(plan, rows)
         selected = select_from_train(
-            plan, unlabeled,
+            plan,
+            unlabeled,
             {qid: targets[qid] for qid in plan["questions"]["train"]},
         )
         selected["selected_policy"] = "k64/lex0.00"
         eval_targets = {
-            qid: targets[qid] for phase in PHASES[1:]
+            qid: targets[qid]
+            for phase in PHASES[1:]
             for qid in plan["questions"][phase]
         }
         with self.assertRaises(ValueError):
             posthoc_all_registered_grid_ceiling(
-                plan, unlabeled, eval_targets, selected,
+                plan,
+                unlabeled,
+                eval_targets,
+                selected,
             )
 
     def test_a_different_registered_grid_cannot_be_injected(self):
