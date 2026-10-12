@@ -113,6 +113,10 @@ fn reconciliation_response(
     session_id: &str,
     turns: Vec<Turn>,
 ) -> RemoteAppServerObservedResponse<ThreadReadResponse> {
+    // ThreadReadResponse.cwd is an AbsolutePathBuf. A Unix-only "/tmp"
+    // fails deserialization on Windows before recovery bindings are tested.
+    // Use the actual native absolute directory of this test process.
+    let absolute_test_cwd = std::env::current_dir().expect("native absolute test cwd");
     let mut response: ThreadReadResponse = serde_json::from_value(json!({
         "thread": {
             "id": "thread:test",
@@ -124,7 +128,7 @@ fn reconciliation_response(
             "updatedAt": 2,
             "recencyAt": 2,
             "status": {"type": "idle"},
-            "cwd": "/tmp",
+            "cwd": absolute_test_cwd.to_string_lossy(),
             "cliVersion": "test",
             "source": "exec",
             "turns": []
