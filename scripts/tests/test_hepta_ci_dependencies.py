@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import errno
 import importlib.util
 import json
 import subprocess
 import sys
 import tempfile
+import time
 import tomllib
 import unittest
 from pathlib import Path
@@ -18,12 +20,55 @@ sys.modules[spec.name] = ci
 spec.loader.exec_module(ci)
 
 
+def cleanup_git_fixture_with_bounded_retry(temp: tempfile.TemporaryDirectory) -> None:
+    """Retry only a transient nonempty Git directory during fixture teardown.
+
+    Git/runner filesystem activity can briefly race with TemporaryDirectory's
+    recursive removal after *all synchronous Git operations have returned*.
+    Preserve real test failure and do not silently ignore permanent cleanup
+    errors: the final cleanup attempt or a different errno must still raise.
+    """
+    for attempt in range(7):
+        try:
+            temp.cleanup()
+        except OSError as exc:
+            if exc.errno != errno.ENOTEMPTY or attempt == 6:
+                raise
+            time.sleep(min(0.02 * 2**attempt, 0.25))
+        else:
+            return
+
+
 class SelectionTests(unittest.TestCase):
     def setUp(self):
         self.graph = ci.Graph(
             {f"codex-rs/{n}": n for n in ("leaf", "owner", "host", "unrelated")},
             frozenset({("leaf", "owner", False), ("owner", "host", False)}),
         )
+
+    def test_git_fixture_cleanup_retries_only_enotempty(self):
+        class FlakyFixture:
+            def __init__(self, fail_errno, until):
+                self.attempts = 0
+                self.fail_errno = fail_errno
+                self.until = until
+
+            def cleanup(self):
+                self.attempts += 1
+                if self.attempts <= self.until:
+                    raise OSError(self.fail_errno, "test fixture cleanup failure")
+
+        transient = FlakyFixture(errno.ENOTEMPTY, 2)
+        cleanup_git_fixture_with_bounded_retry(transient)
+        self.assertEqual(transient.attempts, 3)
+        permanent = FlakyFixture(errno.EACCES, 1)
+        with self.assertRaises(OSError):
+            cleanup_git_fixture_with_bounded_retry(permanent)
+        self.assertEqual(permanent.attempts, 1)
+        persistent = FlakyFixture(errno.ENOTEMPTY, 7)
+        with self.assertRaises(OSError):
+            cleanup_git_fixture_with_bounded_retry(persistent)
+        self.assertEqual(persistent.attempts, 7)
 
     def test_reverse_transitive_closure_not_all_packages(self):
         result = ci.select_packages(
@@ -118,7 +163,7 @@ class SelectionTests(unittest.TestCase):
 class GitGraphTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
+        self.addCleanup(cleanup_git_fixture_with_bounded_retry, self.temp)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
         self.git("config", "user.name", "CI regression")
@@ -214,7 +259,7 @@ renamed = { package = "leaf", path = "leaf" }
 class DocumentInputTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.tmp.cleanup)
+        self.addCleanup(cleanup_git_fixture_with_bounded_retry, self.tmp)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
         self.git("config", "user.name", "Regression")
