@@ -74,6 +74,17 @@ class JinaSnapshotCensusTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "differs"):
             self.census(expected=before)
 
+    def test_real_loader_requires_preapproved_local_bytes(self):
+        with self.assertRaisesRegex(ValueError, "precommitted"):
+            FrozenJinaV5(self.model, REV, allow_pinned_remote_code=True)
+        with self.assertRaisesRegex(ValueError, "must not download"):
+            FrozenJinaV5(self.model, REV, allow_pinned_remote_code=True,
+                         allow_download=True)
+        with self.assertRaisesRegex(ValueError, "fake model cannot claim"):
+            FrozenJinaV5(self.model, REV, model_factory=lambda _: object(),
+                         snapshot_dir=self.snap, store_root=self.root,
+                         expected_snapshot_digest=self.census()["manifest_sha256"])
+
     def test_task_adapter_not_interchangeable_and_missing_rejected(self):
         with self.assertRaisesRegex(ValueError, "incomplete"):
             census.attest_snapshot(
