@@ -274,3 +274,114 @@ PYTHONPATH=qualification/stem-cell-v1 python3 -m unittest -v \
 PYTHONPATH=qualification/stem-cell-v1 python3 \
   qualification/stem-cell-v1/development_native_benchmark.py --output /new/native-study
 ```
+
+## Independent quality floors and shared anytime supervision
+
+Parent is `723f65adc2f2cd9ef007e95e78b8c532f44b7708` on existing Draft PR #1648.
+The earlier studies are retained as historical evidence. This continuation adds
+research functions to the existing qualification owner, not another registry,
+NDU subject, runtime authority, or production selector.
+
+### Stop quality is a constraint, not a cheaper way to lose correct answers
+
+`development_quality.py` freezes baseline/candidate identities before a fifth
+fold protocol: model-fit, critic-fit, calibration, independent risk, then heldout.
+Baseline fixed-depth/confidence controls and the naive learned threshold are
+chosen on calibration only. Risk labels never enter the executor, and heldout
+labels never choose a threshold, model or fallback. All policies and declared
+subgroups are tested; incomplete panels, wrong ordering/digests, missing rows,
+foreign groups, duplicate content across purported independent groups and
+chronological overlap reject. Missing declared strata cannot pass.
+
+The tested event for source group g is H_g = 1 if ANY baseline-correct answer in
+that group becomes candidate-wrong. Improvements on other answers do not cancel
+H_g. Correlated rows count as one group. With n IID groups and k harmful groups,
+the one-sided Clopper-Pearson upper bound solves BinomialCDF(k;n,p)=alpha/M,
+where M counts every candidate and overall/stratum test. Zero observed harms
+still have upper bound 1-(alpha/M)^(1/n), not zero. A literal zero-harm tolerance
+retains the baseline; finite data alone cannot certify a different policy at
+zero risk. The implementation uses log-space CDFs and conservative bisection.
+Exact small-binomial probability enumeration independently checks coverage.
+
+The demonstration uses a preregistered 2% harmful-GROUP event bound, NOT absolute
+2% error, exact same quality, a row-weighted population claim or product policy.
+With IID groups, the group-mean extra error is bounded by this event probability.
+IID/source provenance and distribution stability are assumptions, not verified
+by hashes. Alpha is allocated across all seeds and, for paired training, both
+training variants. Timing floors are explicitly empirical, not confidence bounds.
+This is a conservative Learn-then-Test special case, not a general NDU theorem:
+Angelopoulos et al., https://arxiv.org/abs/2110.01052 .
+
+After quality testing, a candidate must also save at least 5% median measured
+wall time and be faster in every matched repetition. Static identity checks,
+input hashing, dynamic validation, recurrent execution and output construction
+are timed for ALL policies. Repeats rotate policy order and charge every run.
+Compilation/model initialization, native device resources and energy are not
+measured. Costs and nested total-phase times must not be summed twice.
+
+`development_quality_runtime.py` calls the existing `run_stopping`; it does not
+replace its state transitions. Bindings include model, critic parameters and
+unit-cost profile, threshold, execution-source bytes and runtime identity. Entire
+populations are validated before the first microbatch. Only the preselected
+policy runs on heldout data; exceptions propagate without trying another policy.
+Python dataclasses are NOT cryptographic authorization or protection against
+arbitrary in-process code. Live owner serialization, CURRENT, Final-use, revocation
+and WAL remain separate product obligations.
+
+### Learn usable intermediate outputs instead of just scheduling weak exits
+
+`development_anytime.py` trains the EXISTING GRU and shared readout against the
+same training labels at all four depths, with fixed equal loss weights. It adds
+no per-depth model, Head bank, parameters or private optimizer service. Training
+uses the same initialization, rows, SGD stream, learning rate and step budget
+as the terminal-only reference. Four readout/loss evaluations cost more than one;
+actual CPU/wall, readout rows and recurrent transitions are reported. A terminal-
+only weight vector reproduces the existing fitter's parameter updates in tests.
+Inputs and original selected parameters stay unchanged.
+
+### Executed evidence and retained negative results
+
+95 local sparse-source tests pass: 62 retained plus 33 new. These include exact
+risk-bound checks, stratified failures, zero-tolerance fallback, source/critic
+mutation refusal, no partial dispatch or fallback after an exception, real GRU
+execution counters and actual multi-exit gradients. This is NOT full repo CI.
+
+The first three 512-row heldout studies retain baseline accuracy/counts exactly:
+101: 0.93359375 / 512; 202: 0.927734375 / 868; 303: 0.939453125 / 862.
+All four learned candidates fail either a quality slice or the empirical cost
+floor, so all three selections retain baseline. Naive stopping on seed 303 uses
+649 transitions but scores 0.912109375; lower work is not counted as qualification.
+
+Before running the new training comparison, fix fresh seeds 404/505/606 and both
+training variants. The three paired calibrated-baseline results are:
+
+| Seed | Terminal-only accuracy / transitions | Anytime accuracy / transitions |
+| --- | --- | --- |
+| 404 | 0.939453125 / 926 | 0.916015625 / 972 |
+| 505 | 0.92578125 / 979 | 0.943359375 / 512 |
+| 606 | 0.9375 / 512 | 0.939453125 / 512 |
+
+These are descriptive synthetic comparisons, not an accepted cross-model
+improvement. Each guard uses its OWN frozen baseline; it does not certify an
+anytime model against the terminal-only model. All six guarded selections retain
+their baseline. The cheap exact task rule is still 100% correct. Keep the seed-404
+regression and all extra training/selection costs; do not select a training method
+using heldout results or claim that deeper supervision is universally better.
+
+All risk predictions and full timing schedules are saved before risk scoring;
+all heldout predictions are saved before heldout scoring. Initial and final
+studies remain separate, source-hashed, create-only outputs. The existing CI lane
+adds both studies and all new tests without removing old tests, native benchmarks,
+source-head/merge lanes or global Rust/Bazel/security gates. Exact remote results
+are still required. No approved pretrained snapshot was obtained; local DNS and
+public-download attempts failed. No fallback weights or unsafe loader changes.
+
+```sh
+PYTHONPATH=qualification/stem-cell-v1 python3 -m unittest -v \
+  development_quality_checks development_quality_runtime_checks development_anytime_checks
+PYTHONPATH=qualification/stem-cell-v1 python3 \
+  qualification/stem-cell-v1/development_quality_study.py --synthetic --output /new/quality-study
+PYTHONPATH=qualification/stem-cell-v1 python3 \
+  qualification/stem-cell-v1/development_quality_study.py --synthetic --paired-anytime \
+  --output /new/paired-study
+```
