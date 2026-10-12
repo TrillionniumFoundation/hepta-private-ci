@@ -499,6 +499,38 @@ fn external_predecessor_revocation_fences_every_successor_and_completed_replay()
 }
 
 #[test]
+fn terminal_status_requires_current_owner_readbacks_not_historical_receipts() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    assert!(!owner.verified_complete().expect("incomplete"));
+    assert_eq!(state.borrow().verifications, 0);
+
+    for _ in 0..4 {
+        owner.advance().expect("committed effect");
+    }
+    assert!(owner.is_complete(), "historical ledger reached its final step");
+    let previous_reads = state.borrow().verifications;
+    assert!(owner.verified_complete().expect("live terminal"));
+    assert_eq!(state.borrow().verifications - previous_reads, 4);
+
+    // The sequence of four signed receipts is still present on disk, but
+    // the independently observed original effects have been invalidated.
+    state.borrow_mut().commits.clear();
+    assert!(matches!(
+        owner.verified_complete(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert_eq!(state.borrow().executions, 4, "no effect was replayed");
+}
+
+#[test]
 fn post_open_future_frame_fences_first_effect_and_read_only_export() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
