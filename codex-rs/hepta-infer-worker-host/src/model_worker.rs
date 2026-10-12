@@ -594,14 +594,33 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        // A physical call was attempted. An unknown backend outcome must
+        // fence all future dispatches until independently owned reconciliation.
+        // Request counters were released above on both success and error.
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
+        }
+        if observed.encoder_digest != request.encoder_digest
+            || observed.head_digest != request.head_digest
+        {
+            self.poisoned = true;
+            return Err(Error::FeatureOutputMismatch);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                self.poisoned = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
@@ -609,7 +628,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if status != ExecutionStatus::Succeeded
             && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
         {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
+        }
+        if status == ExecutionStatus::Indeterminate {
+            self.poisoned = true;
         }
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
@@ -642,7 +665,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        project_neuron_feature_receipt_v1(request_copy, observed)
+        let receipt = project_neuron_feature_receipt_v1(request_copy, observed);
+        if receipt.is_err() {
+            // The physical output has already been observed; an invalid
+            // receipt must never be retried as though no execution occurred.
+            self.poisoned = true;
+        }
+        receipt
     }
 }
 
