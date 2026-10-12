@@ -510,6 +510,51 @@ fn signed_owner_transcript_for_host(
     (transcript, trusted)
 }
 
+/// Bind real stage identities before the host and Observer sign the report.
+/// Previously the positive fixture used unrelated event IDs and receipt hashes;
+/// that made a correctly signed but disconnected lifecycle look acceptable.
+fn bound_host_owner_fixture(
+    host: &SigningKey,
+    observer: &SigningKey,
+) -> (
+    CellSplitSignedTargetHostEvidenceV1,
+    crate::CellSplitExecutionTranscriptV1,
+    crate::CellSplitOwnerTrustV1,
+) {
+    let mut payload = complete_recorder();
+    let (transcript, trust) = signed_owner_transcript_for_host(&payload);
+    for event in &mut payload.events {
+        let receipt = match event.event_kind {
+            CellSplitTargetHostEventKindV1::ArtifactLoaded => {
+                Some(&transcript.receipts[0])
+            }
+            CellSplitTargetHostEventKindV1::RouteCutover => {
+                Some(&transcript.receipts[2])
+            }
+            _ => None,
+        };
+        if let Some(original) = receipt {
+            event.operation_id = original.intent.idempotency_key.clone();
+            event.receipt_digest = original.receipt_digest.clone();
+        }
+    }
+    let mut predecessor = ZERO_DIGEST.to_string();
+    for event in &mut payload.events {
+        event.previous_event_digest = predecessor;
+        event.event_digest = event_digest(event).expect("bound event");
+        predecessor = event.event_digest.clone();
+    }
+    payload.evidence_digest = evidence_digest(&payload).expect("bound evidence");
+    let envelope = payload
+        .sign(
+            "host-signer",
+            host,
+            [("observer-signer".to_string(), observer.clone())],
+        )
+        .expect("independent signed host and Observer report");
+    (envelope, transcript, trust)
+}
+
 fn signed_observer_join_fixture(
     envelope: &CellSplitSignedTargetHostEvidenceV1,
     transcript: &crate::CellSplitExecutionTranscriptV1,
@@ -591,14 +636,9 @@ impl crate::CellSplitExecutionPortV1 for CurrentEffectFixture {
 
 #[test]
 fn independent_observer_join_requires_all_four_current_owners() {
-    let target = complete_recorder();
     let host = key(3);
     let observer = key(7);
-    let envelope = target.sign(
-        "host-signer", &host,
-        [("observer-signer".to_string(), observer.clone())],
-    ).expect("signed target host");
-    let (transcript, trust) = signed_owner_transcript_for_host(&envelope.payload);
+    let (envelope, transcript, trust) = bound_host_owner_fixture(&host, &observer);
     let signed_join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
     let target_policy = policy(&host, &observer);
     let mut current = CurrentEffectFixture::new(&transcript);
@@ -623,14 +663,9 @@ fn independent_observer_join_requires_all_four_current_owners() {
 
 #[test]
 fn observer_join_rejects_mixed_host_and_effect_lineage_before_remote_reads() {
-    let target = complete_recorder();
     let host = key(3);
     let observer = key(7);
-    let envelope = target.sign(
-        "host-signer", &host,
-        [("observer-signer".to_string(), observer.clone())],
-    ).expect("signed target host");
-    let (transcript, trust) = signed_owner_transcript_for_host(&envelope.payload);
+    let (envelope, transcript, trust) = bound_host_owner_fixture(&host, &observer);
     let mut signed_join = signed_observer_join_fixture(
         &envelope, &transcript, &host, &observer,
     );
@@ -666,18 +701,13 @@ fn observer_join_rejects_mixed_host_and_effect_lineage_before_remote_reads() {
 
 #[test]
 fn observer_join_rejects_reused_effect_owner_as_host_signer() {
-    let payload = complete_recorder();
     // Signing key 51 also belongs to the first CellSplit effect owner.
     // Trusting the key as a host signer as well must not create an
     // independently observed production cross-attestation.
     let duplicated_host = key(51);
     let observer = key(7);
-    let envelope = payload.sign(
-        "host-signer",
-        &duplicated_host,
-        [("observer-signer".to_string(), observer.clone())],
-    ).expect("host report can be signed independently of trust role");
-    let (transcript, trust) = signed_owner_transcript_for_host(&envelope.payload);
+    let (envelope, transcript, trust) =
+        bound_host_owner_fixture(&duplicated_host, &observer);
     let join = signed_observer_join_fixture(
         &envelope,
         &transcript,
@@ -702,14 +732,9 @@ fn observer_join_rejects_reused_effect_owner_as_host_signer() {
 fn observer_public_gate_refuses_independently_rekeyed_rpc_transport() {
     use std::time::Duration;
 
-    let payload = complete_recorder();
     let host = key(3);
     let observer = key(7);
-    let envelope = payload.sign(
-        "host-signer", &host,
-        [("observer-signer".to_string(), observer.clone())],
-    ).expect("signed evidence");
-    let (transcript, trust) = signed_owner_transcript_for_host(&envelope.payload);
+    let (envelope, transcript, trust) = bound_host_owner_fixture(&host, &observer);
     let signed_join = signed_observer_join_fixture(
         &envelope, &transcript, &host, &observer,
     );
@@ -757,11 +782,8 @@ fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
 
     let host = key(3);
     let observer = key(7);
-    let envelope = complete_recorder().sign(
-        "host-signer", &host,
-        [("observer-signer".to_string(), observer.clone())],
-    ).expect("separate signed host lifecycle");
-    let (transcript, frozen_keys) = signed_owner_transcript_for_host(&envelope.payload);
+    let (envelope, transcript, frozen_keys) =
+        bound_host_owner_fixture(&host, &observer);
     let join = signed_observer_join_fixture(
         &envelope, &transcript, &host, &observer,
     );
