@@ -112,8 +112,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
         // expired request or ResourceGrant execute after its real deadline.
         // Account for elapsed monotonic time including the durable claim;
         // the host remains responsible for authenticating observed_now_ms.
-        let elapsed_ms = u64::try_from(self.claim_started.elapsed().as_millis())
-            .map_err(|_| NeuronModelError::Rejected)?;
+        let elapsed = Instant::now()
+            .checked_duration_since(self.claim_started)
+            .ok_or(NeuronModelError::Rejected)?;
+        let elapsed_ms =
+            u64::try_from(elapsed.as_millis()).map_err(|_| NeuronModelError::Rejected)?;
         let execution_now_ms = self
             .observed_now_ms
             .checked_add(elapsed_ms)
