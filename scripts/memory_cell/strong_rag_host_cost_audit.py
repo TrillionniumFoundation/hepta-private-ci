@@ -37,8 +37,15 @@ PINS = {
 }
 CAL = ("k1", "k2", "k3", "k4", "k6")
 EVAL = (
-    "selected_k", "hybrid_k4", "hybrid_k6", "hybrid_k4_reversed",
-    "single_hop", "entity_time", "organized", "program_support", "empty",
+    "selected_k",
+    "hybrid_k4",
+    "hybrid_k6",
+    "hybrid_k4_reversed",
+    "single_hop",
+    "entity_time",
+    "organized",
+    "program_support",
+    "empty",
 )
 SCORE_FIELDS = frozenset(
     (
@@ -255,11 +262,18 @@ def audit(directory: Path):
                     or g <= 0
                 ):
                     raise ValueError("invalid actual reader execution clock/token")
-                observations.append({
-                    "run": name, "phase": phase, "question_id": row["question_id"],
-                    "arm": row["arm"], "native_bf16": native, "model": model,
-                    "seconds": float(seconds), "generated_tokens": g,
-                })
+                observations.append(
+                    {
+                        "run": name,
+                        "phase": phase,
+                        "question_id": row["question_id"],
+                        "arm": row["arm"],
+                        "native_bf16": native,
+                        "model": model,
+                        "seconds": float(seconds),
+                        "generated_tokens": g,
+                    }
+                )
             shard_count += 1
         if shard_count != 32 or len(replayed) != 112:
             raise ValueError("missing sharded CPU or original model evidence")
@@ -269,7 +283,8 @@ def audit(directory: Path):
         arm_host_census = {}
         for arm in ("entity_time", "organized"):
             arm_rows = [
-                row for row in observations
+                row
+                for row in observations
                 if row["run"] == name
                 and row["phase"] == "evaluation"
                 and row["arm"] == arm
@@ -320,9 +335,7 @@ def audit(directory: Path):
     for group in matching.values():
         fast = [r["seconds"] / r["generated_tokens"] for r in group if r["native_bf16"]]
         slow = [
-            r["seconds"] / r["generated_tokens"]
-            for r in group
-            if not r["native_bf16"]
+            r["seconds"] / r["generated_tokens"] for r in group if not r["native_bf16"]
         ]
         if fast and slow:
             ratios.append(statistics.median(slow) / statistics.median(fast))
@@ -374,8 +387,12 @@ def main():
     result = audit(args.directory)
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(
-            result, stream, ensure_ascii=False, sort_keys=True,
-            indent=2, allow_nan=False,
+            result,
+            stream,
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+            allow_nan=False,
         )
         stream.write("\n")
     print(
