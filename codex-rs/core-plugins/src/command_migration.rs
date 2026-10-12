@@ -321,7 +321,7 @@ fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
     .ok()?;
     let mapping = parsed.as_object()?;
     mapping.iter().find_map(|(key, value)| {
-        if key.as_str()?.trim() == "description" {
+        if key.as_str().trim() == "description" {
             yaml_scalar(value)
         } else {
             None
