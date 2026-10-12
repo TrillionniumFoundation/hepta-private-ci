@@ -348,7 +348,9 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitDurableEffectBackendV1
 
     fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
         if self.actual_effect(intent)?.is_some() {
-            return Ok(());
+            // Finalization already exists; only a fresh signed ReadBack may
+            // reconcile it. It is not evidence caused by this new Execute.
+            return Err(CellSplitSupervisorFenceErrorV1::Ambiguous);
         }
         // Production finalization must be an actual durable writer-handoff
         // transition. The independent port must reverify CNS and final-use
