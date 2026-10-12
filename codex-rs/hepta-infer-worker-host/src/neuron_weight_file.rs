@@ -315,11 +315,45 @@ impl<D: NeuronPreopenedWeightModelDriver> InferenceWorker<D> {
             return Err(NeuronWeightFileDiagnosticErrorV1::DigestMismatch);
         }
         weights.seek(SeekFrom::Start(0))?;
+        // File::try_clone retains the same opened inode/handle. Rehash after
+        // the driver returns: a writer mutating this FD during load cannot
+        // silently leave an admitted Worker model behind. The driver's only
+        // loading input is STILL the original, single-moved File.
+        let mut postload_file = weights.try_clone()?;
         // load_model_with owns normal quarantine, resident budget, handle
         // uniqueness and failure clean-up. The FD is moved exactly once.
         let model_load = self.load_model_with(now_ms, manifest, move |driver, selected| {
             driver.load_from_preopened_weight_file(selected, weights)
         })?;
+        // The loader might have returned a live handle. Any unknown I/O or
+        // changed source content after that point permanently quarantines
+        // this Worker generation; never return a successful load receipt.
+        let postload_check: Result<(), NeuronWeightFileDiagnosticErrorV1> = (|| {
+            let after = postload_file.metadata()?;
+            if !after.is_file()
+                || after.len() != before.len()
+                || after.modified()? != before_modified
+            {
+                return Err(NeuronWeightFileDiagnosticErrorV1::ChangedDuringRead);
+            }
+            postload_file.seek(SeekFrom::Start(0))?;
+            let rehashed = Digest32::of_reader(&mut postload_file, MAX_WEIGHT_FILE_BYTES)?;
+            let after_hash = postload_file.metadata()?;
+            if !after_hash.is_file()
+                || after_hash.len() != before.len()
+                || after_hash.modified()? != before_modified
+            {
+                return Err(NeuronWeightFileDiagnosticErrorV1::ChangedDuringRead);
+            }
+            if rehashed != measured {
+                return Err(NeuronWeightFileDiagnosticErrorV1::DigestMismatch);
+            }
+            Ok(())
+        })();
+        if let Err(error) = postload_check {
+            self.quarantined = true;
+            return Err(error);
+        }
         let mut receipt = NeuronFileBoundModelLoadV1 {
             model_load,
             manifest_model_digest: model_digest,
@@ -627,6 +661,95 @@ mod tests {
                 second,
             ),
             Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::WorkerQuarantined))
+        );
+    }
+
+    struct MutatingFileDriver;
+
+    impl ModelDriver for MutatingFileDriver {
+        fn load(&mut self, _: &ModelManifest) -> Result<DriverModelHandle, Error> {
+            Err(Error::DriverFailure("legacy loader is prohibited".into()))
+        }
+
+        fn run(
+            &mut self,
+            _: &DriverModelHandle,
+            _: &WorkerRequest,
+        ) -> Result<DriverRunObservation, Error> {
+            Err(Error::DriverFailure("quarantined model must not run".into()))
+        }
+
+        fn unload(&mut self, _: DriverModelHandle) -> Result<(), Error> {
+            Ok(())
+        }
+    }
+
+    impl NeuronPreopenedWeightModelDriver for MutatingFileDriver {
+        fn load_from_preopened_weight_file(
+            &mut self,
+            _: &ModelManifest,
+            mut weights: File,
+        ) -> Result<DriverModelHandle, Error> {
+            // Deliberately change the SAME descriptor after the Worker has
+            // verified its digest but before model load returns.
+            weights.seek(SeekFrom::Start(0))
+                .map_err(|error| Error::DriverFailure(error.to_string()))?;
+            weights
+                .write_all(b"mutated-during-driver-load")
+                .map_err(|error| Error::DriverFailure(error.to_string()))?;
+            weights
+                .flush()
+                .map_err(|error| Error::DriverFailure(error.to_string()))?;
+            Ok(DriverModelHandle {
+                opaque_id: "untrusted-mutator-handle".into(),
+                observed_memory_bytes: 1_024,
+            })
+        }
+    }
+
+    #[test]
+    fn postload_rehash_detects_file_mutation_and_quarantines_live_worker() {
+        let bytes = vec![0x71_u8; 5_120];
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.1".into(),
+            3,
+            grant(),
+            MutatingFileDriver,
+        )
+        .unwrap();
+        let mut file = tempfile::tempfile().unwrap();
+        file.write_all(&bytes).unwrap();
+        file.flush().unwrap();
+        let result = worker.load_model_from_preopened_weight_file_v1(
+            101,
+            manifest(&bytes),
+            file,
+        );
+        assert!(matches!(
+            result,
+            Err(NeuronWeightFileDiagnosticErrorV1::ChangedDuringRead)
+                | Err(NeuronWeightFileDiagnosticErrorV1::DigestMismatch)
+        ));
+        assert!(worker.is_quarantined());
+        // Because the driver returned a handle before postload validation,
+        // this worker must be retired by its Supervisor, not silently reused
+        // or counted as a cleanly unloaded allocation.
+        assert!(matches!(
+            worker.unload_model(102, "model.1"),
+            Err(Error::WorkerQuarantined)
+        ));
+        let mut second = tempfile::tempfile().unwrap();
+        second.write_all(&bytes).unwrap();
+        assert_eq!(
+            worker.load_model_from_preopened_weight_file_v1(
+                102,
+                manifest(&bytes),
+                second,
+            ),
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(
+                Error::WorkerQuarantined
+            ))
         );
     }
 }

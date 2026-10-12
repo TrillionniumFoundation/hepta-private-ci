@@ -391,6 +391,16 @@ rejected handles. An indeterminate physical load quarantines the Worker
 instance. The diagnostic receipt binds actual preloaded file digest, length,
 model and handle identity, Worker generation, and `DENY_ALL` authority.
 
+A separate handle cloned from the SAME open file is retained before invoking
+the driver. After the driver returns a live model handle, the Worker rechecks
+the source file metadata and **streams a second full SHA-256 over the same
+inode**. A failed/changed read (including in-driver mutation) permanently
+quarantines the Worker generation and withholds the successful load receipt.
+No subsequent model run, unload or new load can use this poisoned Worker.
+This deliberate double hash is a slow-path model-load cost only, not per Cell
+or per inference. The source-hash check is still a diagnostic, not trusted
+CAS immutability, loader-code attestation, a signed load receipt or CNS route.
+
 Tests use a real preopened temporary file and a driver that reads ONLY that
 file; wrong bytes are rejected before driver entry while unknown driver
 outcomes quarantine the Worker. No synthetic throughput is presented as real
