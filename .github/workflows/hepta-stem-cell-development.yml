@@ -49,7 +49,8 @@ jobs:
               test_shared_encoder_eviction development_tensor_checks development_repository_checks \
               development_ablation_checks development_native_batch_checks development_sharing_checks \
               development_learning_checks development_stopping_checks \
-              development_quality_checks development_quality_runtime_checks development_anytime_checks
+              development_quality_checks development_quality_runtime_checks development_anytime_checks \
+              development_head_training_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Execute synthetic learning and native fixed-policy controls
         env:
@@ -90,6 +91,15 @@ jobs:
           "$RUNNER_TEMP/stem-development-venv/bin/python" \
             qualification/stem-cell-v1/development_quality_study.py --synthetic --paired-anytime \
             --output "$RUNNER_TEMP/stem-anytime-quality-study"
+      - name: Compare scalar and grouped independent Head training
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_head_training_study.py --synthetic \
+            --output "$RUNNER_TEMP/stem-head-training-study"
       - name: Preserve exact-source result including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -102,6 +112,7 @@ jobs:
             ${{ runner.temp }}/stem-stopping-study
             ${{ runner.temp }}/stem-quality-study
             ${{ runner.temp }}/stem-anytime-quality-study
+            ${{ runner.temp }}/stem-head-training-study
           if-no-files-found: warn
           retention-days: 14
       - name: Check source unchanged
