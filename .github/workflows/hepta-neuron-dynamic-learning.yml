@@ -1,0 +1,89 @@
+name: Neuron dynamic learning shadow qualification
+
+on:
+  pull_request:
+    paths:
+      - "qualification/neuron-dynamic-learning/**"
+      - "codex-rs/hepta-infer-core/src/shared_feature_v2.rs"
+      - "codex-rs/hepta-infer-worker-host/src/model_worker*.rs"
+      - ".github/workflows/hepta-neuron-dynamic-learning.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-dynamic-learning-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline-learning:
+    name: Frozen Cell and Organ offline tests (L1; no pretrained weight)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout immutable tested head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Source attestation
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install bounded numerical dependency (no model downloads)
+        run: |
+          python3 -m pip install --only-binary=:all: 'numpy==2.2.6'
+      - name: Run actual NumPy training and no-authority adversarial tests
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q qualification/neuron-dynamic-learning
+          python3 -m unittest discover -v -s qualification/neuron-dynamic-learning -p 'test_*.py'
+      - name: Source remains untouched
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  native-q24:
+    name: Native Q24 dynamic Cell kernel and scope fencing (L1)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Checkout/source check
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          rustc --version
+          cargo --version
+      - name: Run all-target build
+        run: cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets
+      - name: Install project test harness
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Native shared cache and Worker tests via project just defaults
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-infer-core --lib
+          just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(model_worker::)'
+      - name: Native safety lint on changed owners
+        run: cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D clippy::correctness
+      - name: Strict native format
+        if: always()
+        run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host -- --check
+      - name: Source remains untouched
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
