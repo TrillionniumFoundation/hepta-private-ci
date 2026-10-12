@@ -144,7 +144,7 @@
 +    STATE.with(|state| {
 +        let mut state = state.borrow_mut();
 +        if !state.active() { return; }
-+        state.push(format!("\"stage\":\"parse-start\",\"font\":\"{font}\"));
++        state.push(format!("\"stage\":\"parse-start\",\"font\":\"{font}\""));
 +    });
 +}
 +pub fn parsed(font: u64, bytes: &[u8]) {
