@@ -157,6 +157,26 @@ def verify_serving_probe(folder, run, selection, config):
             "identity_and_counts_consistent": True, "physical_measurements_attested": False}
 
 
+def verify_feature_origin(folder, run):
+    """A cached artifact must never be reported as a fresh Encoder execution."""
+    if run["schema"] != "hepta.stem.cached-feature-run.v1":
+        return None
+    from historical_feature_study import ARTIFACT_ID, ARTIFACT_SHA256, FEATURE_SHA256, MODEL, REVISION, SOURCE_SHA
+    reference, reference_sha = record(folder / "reference.json")
+    required = {"artifact_id": ARTIFACT_ID, "archive_sha256": ARTIFACT_SHA256,
+                "feature_sha256": FEATURE_SHA256, "source_sha": SOURCE_SHA,
+                "model": MODEL, "revision": REVISION}
+    if (reference_sha != run.get("reference_sha256") or reference != run.get("feature_origin")
+            or any(reference.get(k) != v for k, v in required.items())
+            or run.get("real_weights_executed") is not False
+            or run.get("historical_pretrained_features_reused") is not True
+            or type(run.get("encoder_forward_calls_this_run")) is not int
+            or run["encoder_forward_calls_this_run"] != 0):
+        raise ValueError("cached feature provenance cannot assert fresh pretrained execution")
+    return {"reference_sha256": reference_sha, "archive_sha256": ARTIFACT_SHA256,
+            "new_encoder_forward_calls": 0, "independent_execution_attestation": False}
+
+
 def replay(folder, dataset):
     import torch
     from safetensors.torch import load
@@ -164,9 +184,10 @@ def replay(folder, dataset):
     run, run_sha = record(folder / "run.json")
     selection, selection_sha = record(folder / "selection.json")
     predictions, predictions_sha = record(folder / "predictions.json", 67_108_864)
-    if (run.get("schema") not in {"hepta.stem.structural-run.v2", "hepta.stem.structural-run.v3"}
+    if (run.get("schema") not in {"hepta.stem.structural-run.v2", "hepta.stem.structural-run.v3", "hepta.stem.cached-feature-run.v1"}
             or selection.get("schema") != "hepta.stem.structural-selection.v2"):
         raise ValueError("historical unbound schemas cannot be reinterpreted as replay-qualified")
+    feature_origin = verify_feature_origin(folder, run)
     sealed = run["sealed"]
     if (selection_sha != sealed["selection_sha256"] or predictions_sha != sealed["predictions_sha256"]):
         raise ValueError("sealed records changed")
@@ -242,6 +263,7 @@ def replay(folder, dataset):
         "prediction_rows": len(predictions), "checkpoint_count": len(buffers), "max_abs_logit_error": error,
         "argmax_reversals": 0, "time_basis": config.time_basis,
         "selection_replay": selection_replay, "serving_probe": probe_replay,
+        "cached_feature_origin": feature_origin,
         "encoder_execution_independently_attested": False, "production_authorized": False}
 
 
