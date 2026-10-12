@@ -26,6 +26,11 @@ fn plan() -> CellSplitPlanV1 {
         predecessor_artifact_id: id("artifact:parent"),
         child_artifact_id: id("artifact:child"),
         selected_candidate_id: id("candidate:child-1"),
+        objective_digest: digest(b"frozen objective"),
+        no_change_baseline_id: id("candidate:no-change"),
+        no_change_baseline_digest: digest(b"frozen no-change"),
+        evaluation_dataset_digest: digest(b"held-out dataset"),
+        minimum_future_window_micros: 1_000_000,
         predecessor_generation: generation(7),
         child_generation: generation(8),
         predecessor_artifact_digest: digest(b"old artifact"),
@@ -537,6 +542,27 @@ fn selection_candidate_mapping_changes_operation_keys() {
         left.operation_key(CellSplitStepV1::CnsRouteCutover),
         right.operation_key(CellSplitStepV1::CnsRouteCutover)
     );
+}
+
+#[test]
+fn split_binding_rejects_rebound_baseline_and_future_window() {
+    let frozen = plan();
+    let mut different_baseline = frozen.clone();
+    different_baseline.no_change_baseline_digest = digest(b"other baseline");
+    assert_ne!(frozen.binding_digest(), different_baseline.binding_digest());
+    assert_ne!(
+        frozen.operation_key(CellSplitStepV1::CnsRouteCutover),
+        different_baseline.operation_key(CellSplitStepV1::CnsRouteCutover)
+    );
+    let mut wrong_objective = frozen.clone();
+    wrong_objective.objective_digest = digest(b"other objective");
+    assert_ne!(frozen.binding_digest(), wrong_objective.binding_digest());
+    let mut too_short = frozen.clone();
+    too_short.minimum_future_window_micros = 0;
+    assert_eq!(too_short.validate(), Err(CellSplitErrorV1::InvalidPlan));
+    let mut no_change_as_candidate = frozen.clone();
+    no_change_as_candidate.no_change_baseline_id = frozen.selected_candidate_id.clone();
+    assert_eq!(no_change_as_candidate.validate(), Err(CellSplitErrorV1::InvalidPlan));
 }
 
 #[test]
