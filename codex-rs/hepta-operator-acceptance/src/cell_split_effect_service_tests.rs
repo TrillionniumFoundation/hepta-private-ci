@@ -589,15 +589,19 @@ impl CellSplitDurableEffectBackendV1 for MutateAtFrontierRead {
         {
             self.inner.commit_once(&self.intent)?;
         }
-        if (matches!(self.mode, MutationAtFrontier::AdvanceDuringPositiveSignature)
-            || matches!(self.mode, MutationAtFrontier::AdvanceDuringExecuteAcknowledgement))
-            && self.sequence_reads == 3
+        if matches!(
+            self.mode,
+            MutationAtFrontier::AdvanceDuringPositiveSignature
+                | MutationAtFrontier::AdvanceDuringExecuteAcknowledgement
+        ) && self.sequence_reads == 3
         {
             self.inner.sequence_override = Some(8);
         }
-        if (matches!(self.mode, MutationAtFrontier::RevokeDuringFinalFrontier)
-            || matches!(self.mode, MutationAtFrontier::RevokeDuringExecuteAcknowledgement))
-            && self.sequence_reads == 3
+        if matches!(
+            self.mode,
+            MutationAtFrontier::RevokeDuringFinalFrontier
+                | MutationAtFrontier::RevokeDuringExecuteAcknowledgement
+        ) && self.sequence_reads == 3
         {
             fs::remove_file(self.inner.live_path())?;
         }
