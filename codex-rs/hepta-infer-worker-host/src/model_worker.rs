@@ -265,9 +265,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
         // Bound the SUM of model resident allocations, not each individual
         // handle in isolation. With MAX_MODELS <= 8, this bounded reduction
         // cannot introduce a global lock or a per-cell O(n) hot-path scan.
-        let already_loaded = self.models.values().try_fold(0_u64, |sum, entry| {
-            sum.checked_add(entry.handle.observed_memory_bytes)
-        }).ok_or(Error::ArithmeticOverflow)?;
+        let already_loaded = self
+            .models
+            .values()
+            .try_fold(0_u64, |sum, entry| {
+                sum.checked_add(entry.handle.observed_memory_bytes)
+            })
+            .ok_or(Error::ArithmeticOverflow)?;
         // ModelDriver::load may allocate before returning an error. Fence the
         // entire Worker before calling it: only a fully checked live handle or
         // independently completed cleanup can release this fence.
@@ -291,7 +295,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow);
         if handle.observed_memory_bytes == 0
             || total_resident.is_err()
-            || total_resident.ok().is_none_or(|value| value > self.grant.maximum_memory_bytes)
+            || total_resident
+                .ok()
+                .is_none_or(|value| value > self.grant.maximum_memory_bytes)
         {
             return self.dispose_failed_load(handle, Error::ModelCapacity);
         }

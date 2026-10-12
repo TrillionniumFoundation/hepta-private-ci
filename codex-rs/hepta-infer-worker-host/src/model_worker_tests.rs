@@ -350,8 +350,7 @@ fn model_load_enforces_aggregate_resident_budget_and_reclaims_rejected_handle() 
     let mut budget = grant();
     budget.maximum_memory_bytes = 2_000;
     let mut worker =
-        InferenceWorker::new(100, "worker.total-rss".into(), 3, budget, Driver::default())
-            .unwrap();
+        InferenceWorker::new(100, "worker.total-rss".into(), 3, budget, Driver::default()).unwrap();
     worker.load_model(100, manifest()).unwrap();
     let mut second = manifest();
     second.model_id = "model.2".into();
@@ -380,7 +379,10 @@ fn invalid_or_zero_resource_model_handle_is_unloaded_before_returning_error() {
     assert!(!worker.is_quarantined());
     worker.driver.invalid_handle = false;
     worker.driver.memory_bytes = Some(0);
-    assert_eq!(worker.load_model(100, manifest()), Err(Error::ModelCapacity));
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::ModelCapacity)
+    );
     assert_eq!(worker.driver.loaded, 0);
     assert_eq!(worker.driver.unload_attempts, 2);
     assert!(!worker.is_quarantined());
@@ -433,9 +435,14 @@ fn unknown_load_or_cleanup_failure_quarantines_worker_for_entire_generation() {
 
 #[test]
 fn failed_unload_preserves_occupied_handle_and_never_reuses_budget() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.unknown-unload".into(), 3, grant(), Driver::default())
-            .unwrap();
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.unknown-unload".into(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .unwrap();
     worker.load_model(100, manifest()).unwrap();
     worker.driver.fail_unload = true;
     assert!(matches!(
