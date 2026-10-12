@@ -121,22 +121,26 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 )?;
                 // Execute acknowledgements require a second current-owner
                 // observation just as signed recovery readbacks do.
-                let before = self.backend.current_sequence().map_err(|e| {
-                    CellSplitEffectRpcErrorV1::Rejected(e.to_string())
-                })?;
-                let observed = self.backend.read_committed(&request.intent).map_err(|e| {
-                    CellSplitEffectRpcErrorV1::Rejected(e.to_string())
-                })?;
-                let after = self.backend.current_sequence().map_err(|e| {
-                    CellSplitEffectRpcErrorV1::Rejected(e.to_string())
-                })?;
+                let before = self
+                    .backend
+                    .current_sequence()
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                let observed = self
+                    .backend
+                    .read_committed(&request.intent)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                let after = self
+                    .backend
+                    .current_sequence()
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 if before == 0
                     || before != after
                     || committed.owner_sequence > after
                     || observed.as_ref() != Some(&committed)
-                    || !self.backend.verify_current(&request.intent, &committed).map_err(|e| {
-                        CellSplitEffectRpcErrorV1::Rejected(e.to_string())
-                    })?
+                    || !self
+                        .backend
+                        .verify_current(&request.intent, &committed)
+                        .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?
                 {
                     return Err(CellSplitEffectRpcErrorV1::Invalid(
                         "effect changed before signed execute acknowledgement",
