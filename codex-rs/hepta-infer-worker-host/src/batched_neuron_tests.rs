@@ -353,3 +353,47 @@ fn same_lane_three_item_group_preserves_independent_final_use_nonces() {
     }));
     // This verifies admission grouping, not physical backend batching.
 }
+
+#[derive(Debug)]
+struct UnavailableMetricSink;
+
+impl PhaseMetricSinkV1 for UnavailableMetricSink {
+    fn record(&self, _event: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1> {
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn worker_metrics_failures_latch_not_ready_without_retrying_authorized_effect() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[27; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut execution = runner(&signer, dir.path(), model);
+    assert!(!execution.production_metrics_ready());
+    assert!(!execution.flush_production_metrics());
+    execution = execution.with_metric_sink(Arc::new(UnavailableMetricSink));
+    assert!(execution.production_metrics_ready());
+    // Admission succeeds even though non-authorizing telemetry fails.
+    execution
+        .enqueue(100, "model".to_string(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert!(!execution.production_metrics_ready());
+    assert!(!execution.flush_production_metrics());
+    let completed = execution.poll_and_execute(101).unwrap();
+    assert_eq!(completed.outcomes.len(), 1);
+    assert!(matches!(
+        &completed.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+    assert_eq!(execution.pending(), 0);
+    assert!(!execution.production_metrics_ready());
+}

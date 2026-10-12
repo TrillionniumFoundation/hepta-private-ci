@@ -298,5 +298,8 @@ fn typed_receipt_borrows_original_q24_allocation_for_driver_execution() {
         observed_ptr.load(std::sync::atomic::Ordering::SeqCst),
         original_allocation
     );
-    assert_eq!(receipt.status, codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(
+        receipt.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
 }

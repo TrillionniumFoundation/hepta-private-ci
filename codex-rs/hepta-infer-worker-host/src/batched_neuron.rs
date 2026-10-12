@@ -9,6 +9,8 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -79,6 +81,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<StableId>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: AtomicU64,
     maximum_ids: usize,
 }
 
@@ -140,6 +143,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            failed_metrics: AtomicU64::new(0),
             maximum_ids: limits.max_pending,
         })
     }
@@ -147,6 +151,26 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         self.metric_sink = Some(sink);
         self
+    }
+
+    /// Source-side telemetry readiness is a separate acceptance barrier.
+    /// An absent, failed, or unflushed Evidence sink never makes this owner ready.
+    /// Telemetry failure does not retroactively undo or retry an external effect.
+    pub fn production_metrics_ready(&self) -> bool {
+        self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    /// Call outside a model effect boundary, after all admitted work settles.
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metric_sink else {
+            return false;
+        };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
     }
 
     pub fn pending(&self) -> usize {
@@ -164,13 +188,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         succeeded: bool,
     ) {
         if let Some(sink) = &self.metric_sink {
-            let _ = sink.record(PhaseMetricEventV1 {
-                scope_digest: Digest32::of_bytes(scope.as_str().as_bytes()),
-                operation_digest: Digest32::of_bytes(request_id.as_str().as_bytes()),
-                phase,
-                latency_micros: u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX),
-                succeeded,
-            });
+            if sink
+                .record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(scope.as_str().as_bytes()),
+                    operation_digest: Digest32::of_bytes(request_id.as_str().as_bytes()),
+                    phase,
+                    latency_micros: u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX),
+                    succeeded,
+                })
+                .is_err()
+            {
+                self.failed_metrics.fetch_add(1, Ordering::Release);
+            }
         }
     }
 

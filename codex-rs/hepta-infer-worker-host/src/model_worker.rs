@@ -575,7 +575,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            validate_neuron_feature_output(request, &observed)?;
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
