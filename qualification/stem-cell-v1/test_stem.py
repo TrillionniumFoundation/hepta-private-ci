@@ -174,8 +174,15 @@ class ScaleTraceTests(unittest.TestCase):
         for row in self.events:
             if row["batch_id"] is None:
                 del row["batch_id"]
-        self.events.append(dict(kind="backend_batch", batch_id="batch1", backend="native_hepta",
-                                batch_size=3, model_digest=DIGEST_A))
+        cold_members = self.events[:3]
+        self.events.append(dict(
+            kind="backend_batch", batch_id="batch1", backend="native_hepta",
+            batch_size=3, model_digest=DIGEST_A,
+            scope=self.jobs[0]["scope"], generation=self.jobs[0]["generation"],
+            member_request_ids=[row["request_id"] for row in cold_members],
+            backend_started_us=max(row["start_us"] for row in cold_members),
+            backend_ended_us=min(row["end_us"] for row in cold_members),
+        ))
         self.events.append(dict(kind="wal_fsync", latency_us=800))
         self.events.append(dict(kind="restart", recovery_ms=12, checksum_verified=True))
 
@@ -187,7 +194,10 @@ class ScaleTraceTests(unittest.TestCase):
     def test_real_trace_is_still_unverified(self):
         result = trace_report(self.jobs, self.events)
         self.assertEqual(result["backend_batches"], 1)
-        self.assertEqual(result["actual_backend_multi_request_batches"], 1)
+        self.assertEqual(result["trace_claimed_multi_request_batches"], 1)
+        self.assertIsNone(result["independently_verified_backend_multi_request_batches"])
+        self.assertFalse(result["native_worker_attested"])
+        self.assertEqual(result["schema"], "hepta.stem-cell-scale-observation.v2")
         self.assertEqual(result["completed"], 7)
         self.assertGreater(result["cold_and_cached_latency"]["cold_encoder"]["p99_ms"],
                            result["cold_and_cached_latency"]["cold_encoder"]["execution_p99_ms"])
@@ -198,7 +208,62 @@ class ScaleTraceTests(unittest.TestCase):
 
     def test_batch_claim_requires_matching_members(self):
         self.events[-3]["batch_size"] = 4
-        with self.assertRaisesRegex(ValueError, "batch size"):
+        with self.assertRaisesRegex(ValueError, "backend batch"):
+            trace_report(self.jobs, self.events)
+
+    def test_mixed_scope_inside_one_model_batch_is_rejected(self):
+        # Each request individually matches its workload; ONLY the backend
+        # grouping is illegal. A shared model digest is not tenant authority.
+        self.jobs[1]["scope"] = "second_scope"
+        self.events[1]["scope"] = "second_scope"
+        with self.assertRaisesRegex(ValueError, "mixed-scope/generation"):
+            trace_report(self.jobs, self.events)
+
+    def test_mixed_generation_inside_one_model_batch_is_rejected(self):
+        self.jobs[2]["generation"] += 1
+        self.events[2]["generation"] += 1
+        with self.assertRaisesRegex(ValueError, "mixed-scope/generation"):
+            trace_report(self.jobs, self.events)
+
+    def test_backend_scope_and_generation_echo_are_required(self):
+        for key, wrong in (("scope", "another"), ("generation", 2)):
+            with self.subTest(key=key):
+                batch = self.events[-3]
+                before = batch[key]
+                batch[key] = wrong
+                with self.assertRaisesRegex(ValueError, "mixed-scope/generation"):
+                    trace_report(self.jobs, self.events)
+                batch[key] = before
+
+    def test_backend_membership_cannot_be_forged(self):
+        batch = self.events[-3]
+        batch["member_request_ids"][1] = self.jobs[3]["request_id"]
+        with self.assertRaisesRegex(ValueError, "member identity"):
+            trace_report(self.jobs, self.events)
+
+    def test_duplicate_batch_members_and_unbounded_batch_width_are_rejected(self):
+        batch = self.events[-3]
+        batch["member_request_ids"][1] = batch["member_request_ids"][0]
+        with self.assertRaisesRegex(ValueError, "membership"):
+            trace_report(self.jobs, self.events)
+        batch["member_request_ids"][1] = self.events[1]["request_id"]
+        batch["batch_size"] = 33
+        with self.assertRaisesRegex(ValueError, "backend batch"):
+            trace_report(self.jobs, self.events)
+
+    def test_backend_interval_must_cover_every_member(self):
+        batch = self.events[-3]
+        batch["backend_started_us"] = self.events[0]["start_us"] - 1
+        with self.assertRaisesRegex(ValueError, "interval not covered"):
+            trace_report(self.jobs, self.events)
+
+    def test_noninteger_clocks_and_resource_claims_are_denied(self):
+        self.events[0]["start_us"] = float(self.events[0]["start_us"])
+        with self.assertRaisesRegex(ValueError, "clock"):
+            trace_report(self.jobs, self.events)
+        self.events[0]["start_us"] = self.events[0]["enqueued_us"] + 100
+        self.events[0]["rss_bytes"] = True
+        with self.assertRaisesRegex(ValueError, "resource counters"):
             trace_report(self.jobs, self.events)
 
     def test_wrong_scope_rejected(self):
