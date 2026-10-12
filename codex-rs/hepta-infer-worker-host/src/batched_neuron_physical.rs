@@ -24,6 +24,11 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
             return Err(BatchWorkerErrorV1::TelemetryUnavailable);
         }
         self.ensure_telemetry_live()?;
+        let routes = Arc::clone(
+            self.scope_routes
+                .as_ref()
+                .ok_or(BatchWorkerErrorV1::RouteUnavailable)?,
+        );
         let poll = self
             .scheduler
             .poll_physical_compatible(now_ms)
@@ -42,10 +47,21 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
         };
         let mut ids = Vec::with_capacity(batch.requests.len());
         let mut items = Vec::with_capacity(batch.requests.len());
+        // These route holds must stay alive through the *entire* physical
+        // effect, preventing a CNS cutover from racing the model invocation.
+        let mut route_guards = Vec::with_capacity(batch.requests.len());
         let mut scope_bytes = b"hepta.worker.physical-batch-scopes.v1".to_vec();
         scope_bytes.extend_from_slice(&(batch.requests.len() as u64).to_be_bytes());
         let mut failure = None;
         for intent in batch.requests {
+            // Acquire the exact live scope/model/generation/fence/epoch from
+            // an independently owned route port before any nonce claim.
+            // A stale or unavailable route poisons this batch, but cannot
+            // retroactively authorize a different scope in the group.
+            match routes.enter_exact_route(&intent.key) {
+                Ok(guard) => route_guards.push(guard),
+                Err(_) => failure = Some(BatchWorkerErrorV1::StaleRoute),
+            }
             let scope = intent.key.scope_id.as_str().as_bytes();
             scope_bytes.extend_from_slice(&(scope.len() as u64).to_be_bytes());
             scope_bytes.extend_from_slice(scope);
@@ -132,6 +148,9 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
                 self.worker
                     .run_physical_batch_receipts(now_ms, &model_id, requests)
             });
+        // Guard release occurs only after final-use and the backend have
+        // returned (including every error/unknown outcome).
+        drop(route_guards);
         let completed = match execution {
             Ok(Ok(receipts)) if receipts.len() == ids.len() => ids
                 .into_iter()
