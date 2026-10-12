@@ -16,12 +16,15 @@ use std::time::Instant;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseError;
+use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::SharedFeatureBufferV1;
 use codex_hepta_infer_core::microbatch::BoundedMicrobatchSchedulerV1;
 use codex_hepta_infer_core::microbatch::InferenceIntentV1;
 use codex_hepta_infer_core::microbatch::MicrobatchKeyV1;
 use codex_hepta_infer_core::microbatch::MicrobatchLimitsV1;
+use codex_hepta_infer_core::microbatch::MicrobatchPlanV1;
 use codex_hepta_infer_core::microbatch::SchedulerErrorV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::PhaseMetricEventV1;
@@ -138,6 +141,23 @@ pub fn neuron_batch_final_use_binding_v1(
         scope_sha256: *Digest32::of_bytes(&scope_bytes).as_array(),
         payload_sha256: *payload_digest.as_array(),
     })
+}
+
+
+fn with_all_final_use_effects<T, F: FnOnce() -> T>(
+    authority: &FinalUseAuthority,
+    mut claims: std::vec::IntoIter<(VerifiedUseToken, FinalUseBinding)>,
+    effect: &mut Option<F>,
+) -> Result<T, FinalUseError> {
+    if let Some((claim, binding)) = claims.next() {
+        // Nested entry holds every independent signed nonce's revocation
+        // fence until the single synchronous physical backend call finishes.
+        authority.with_verified_effect(claim, &binding, || {
+            with_all_final_use_effects(authority, claims, effect)
+        })?
+    } else {
+        effect.take().map(|invoke| invoke()).ok_or(FinalUseError::Unavailable)
+    }
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1<D> {
@@ -328,7 +348,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
-            for intent in batch.requests {
+            if batch.requests.len() > 1 && self.worker.supports_physical_neuron_batch() {
+                outcomes = self.execute_native_batch(now_ms, batch);
+            } else {
+                for intent in batch.requests {
                 let id = intent.request_id;
                 let started = Instant::now();
                 self.retired.insert(terminal_request_fingerprint(&id));
@@ -383,6 +406,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     request_id: id,
                     result: outcome,
                 });
+                }
             }
         }
         Ok(BatchWorkerPollV1 {
@@ -391,6 +415,130 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             scanned_lanes: poll.scanned_lanes,
             pending: self.pending.len(),
         })
+    }
+
+
+    /// Only called when the loaded driver explicitly advertises physical
+    /// batching. Authentication remains per request, not per batch; rejected
+    /// grants never enter the device. Each claimed nonce is terminal even if
+    /// the physical call fails with an unknown outcome.
+    fn execute_native_batch(
+        &mut self,
+        now_ms: u64,
+        batch: MicrobatchPlanV1,
+    ) -> Vec<BatchWorkerItemOutcomeV1> {
+        let mut slots = Vec::with_capacity(batch.requests.len());
+        let mut admitted = Vec::with_capacity(batch.requests.len());
+        for intent in batch.requests {
+            let id = intent.request_id;
+            self.retired.insert(terminal_request_fingerprint(&id));
+            let result = (|| {
+                let mut pending = self
+                    .pending
+                    .remove(&id)
+                    .ok_or(BatchWorkerErrorV1::NoAdmission)?;
+                if pending.feature.digest() != intent.feature_digest
+                    || pending.signed.grant.authority_epoch != batch.key.authority_epoch
+                {
+                    return Err(BatchWorkerErrorV1::InvalidBinding);
+                }
+                pending.request.feature_vector_q24 = pending.feature.as_slice().to_vec();
+                let token = FinalUseAuthority::claim(
+                    &self.authority,
+                    &pending.signed,
+                    &pending.binding,
+                )
+                .map_err(|_| BatchWorkerErrorV1::Authority)?;
+                Ok((pending, token))
+            })();
+            match result {
+                Ok(value) => {
+                    slots.push((id, None));
+                    admitted.push(value);
+                }
+                Err(error) => slots.push((id, Some(error))),
+            }
+        }
+
+        let admitted_count = admitted.len();
+        let valid_results: Vec<Result<NeuronFeatureReceiptV1, BatchWorkerErrorV1>> =
+            if admitted_count >= 2
+                && admitted
+                    .iter()
+                    .all(|(pending, _)| pending.model_id == admitted[0].0.model_id)
+            {
+                let model_id = admitted[0].0.model_id.clone();
+                let mut claims = Vec::with_capacity(admitted_count);
+                let mut requests = Vec::with_capacity(admitted_count);
+                for (pending, token) in admitted {
+                    claims.push((token, pending.binding));
+                    requests.push(pending.request);
+                }
+                let mut physical = Some(|| {
+                    self.worker
+                        .run_neuron_features_batch_receipts(now_ms, &model_id, requests)
+                });
+                match with_all_final_use_effects(
+                    &self.authority,
+                    claims.into_iter(),
+                    &mut physical,
+                ) {
+                    Ok(Ok(receipts)) if receipts.len() == admitted_count => receipts
+                        .into_iter()
+                        .map(|result| result.map_err(|_| BatchWorkerErrorV1::Worker))
+                        .collect(),
+                    Ok(_) => vec![Err(BatchWorkerErrorV1::Worker); admitted_count],
+                    Err(_) => vec![Err(BatchWorkerErrorV1::Authority); admitted_count],
+                }
+            } else {
+                // Any single accepted request or mixed model-id grouping falls
+                // back to independently checked scalar execution, never a
+                // falsely labelled physical batch.
+                admitted
+                    .into_iter()
+                    .map(|(pending, token)| {
+                        FinalUseAuthority::with_verified_effect(
+                            &self.authority,
+                            token,
+                            &pending.binding,
+                            || {
+                                self.worker.run_neuron_features_receipt(
+                                    now_ms,
+                                    &pending.model_id,
+                                    pending.request,
+                                )
+                            },
+                        )
+                        .map_err(|_| BatchWorkerErrorV1::Authority)
+                        .and_then(|result| result.map_err(|_| BatchWorkerErrorV1::Worker))
+                    })
+                    .collect()
+            };
+
+        let mut ready = valid_results.into_iter();
+        slots
+            .into_iter()
+            .map(|(id, denial)| {
+                let result = denial.map_or_else(
+                    || ready.next().unwrap_or(Err(BatchWorkerErrorV1::Worker)),
+                    Err,
+                );
+                self.emit_metric(
+                    &batch.key.scope_id,
+                    &id,
+                    PhaseMetricKindV1::NeuronFeature,
+                    Duration::ZERO,
+                    matches!(
+                        &result,
+                        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+                    ),
+                );
+                BatchWorkerItemOutcomeV1 {
+                    request_id: id,
+                    result,
+                }
+            })
+            .collect()
     }
 
     /// Cutover drops all stale queued requests without ever invoking a driver.
