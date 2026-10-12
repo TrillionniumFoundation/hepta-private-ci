@@ -366,29 +366,35 @@ mod tests {
 
     #[test]
     fn expired_capacity_is_reclaimed_without_evicting_live_entries() {
-        let mut cache = SharedFeatureCacheV2::new(1, 16).expect("cache");
+        let mut cache = SharedFeatureCacheV2::new(2, 16).expect("cache");
         let old_id = identity("old", "purpose", 2);
         let old_snapshot = cache
-            .insert(10, old_id.clone(), 20, Arc::from([1_i64, 2]))
+            .insert(10, old_id.clone(), 20, Arc::from([1_i64]))
             .expect("old snapshot");
+        let live_id = identity("live", "purpose", 2);
+        let live_snapshot = cache
+            .insert(10, live_id.clone(), 40, Arc::from([2_i64]))
+            .expect("live snapshot");
         let new_id = identity("new", "purpose", 2);
         assert_eq!(
-            cache.insert(19, new_id.clone(), 40, Arc::from([3_i64, 4])),
+            cache.insert(19, new_id.clone(), 40, Arc::from([3_i64])),
             Err(SharedFeatureErrorV2::CapacityExceeded)
         );
         assert_eq!(
             cache.insert(20, new_id.clone(), 40, Arc::from([9_i64 << 24])),
             Err(SharedFeatureErrorV2::InvalidFeature)
         );
-        assert_eq!(cache.len(), 1);
+        assert_eq!(cache.len(), 2);
         cache
-            .insert(20, new_id.clone(), 40, Arc::from([3_i64, 4]))
+            .insert(20, new_id.clone(), 40, Arc::from([3_i64]))
             .expect("expired capacity may be reused");
-        assert_eq!(cache.len(), 1);
+        assert_eq!(cache.len(), 2);
         assert_eq!(cache.resident_bytes(), 16);
         assert!(cache.get(20, &old_id).expect("expired lookup").is_none());
         assert!(cache.get(20, &new_id).expect("new lookup").is_some());
-        assert_eq!(old_snapshot.features_q24.as_ref(), &[1, 2]);
+        let live_hit = cache.get(20, &live_id).expect("live lookup").expect("present");
+        assert!(Arc::ptr_eq(&live_snapshot, &live_hit));
+        assert_eq!(old_snapshot.features_q24.as_ref(), &[1]);
     }
 
     #[test]
