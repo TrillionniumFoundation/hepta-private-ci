@@ -37,7 +37,6 @@ use crate::model_worker::canonical_neuron_feature_payload_digest;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 const MAX_TERMINAL_REQUEST_IDS: usize = 1_048_576;
 
 /// Fixed-size local replay fingerprint: never evict IDs while an owner lives.
@@ -50,6 +49,7 @@ fn terminal_request_fingerprint(id: &StableId) -> Digest32 {
     ])
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BatchWorkerErrorV1 {
     InvalidRequest,
     InvalidBinding,
