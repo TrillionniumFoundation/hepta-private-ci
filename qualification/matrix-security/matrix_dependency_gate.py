@@ -93,7 +93,8 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         errors.append("MATRIX_E2EE_CONFORMANCE_DEPENDENCY_REMOVED")
 
     versions = {name: _package_names(pkgs, name) for name in
-                ("matrix-sdk", "matrix-sdk-crypto", "matrix-sdk-sqlite", "anymap2", "anymap3")}
+                ("matrix-sdk", "matrix-sdk-base", "matrix-sdk-crypto",
+                 "matrix-sdk-sqlite", "anymap2", "anymap3")}
     if len(versions["matrix-sdk"]) != 1:
         errors.append("MATRIX_SDK_LOCK_AMBIGUOUS_OR_MISSING")
     elif version(versions["matrix-sdk"][0]) != desired_tuple:
@@ -103,6 +104,28 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         errors.append("MATRIX_CRYPTO_MISSING_WITH_E2EE_REQUIRED")
     elif any(version(v) < (0, 19, 0) for v in versions["matrix-sdk-crypto"]):
         errors.append(ADVISORY_CRYPTO)
+
+    # A crypto-only bump is NOT a safe Matrix migration. A mixed 0.18/0.19
+    # SDK/base/crypto/SQLite graph may look advisory-free while retaining an
+    # unqualified state store and incompatible encrypted-session contracts.
+    # Compare version families (major.minor), not patch releases: the upstream
+    # SDK crates can ship different patch versions within a compatible family.
+    for component in ("matrix-sdk-base", "matrix-sdk-crypto", "matrix-sdk-sqlite"):
+        observed = versions[component]
+        if len(observed) != 1:
+            errors.append(f"MATRIX_FAMILY_COMPONENT_MISSING_OR_AMBIGUOUS:{component}")
+        elif desired_tuple != (0, 0, 0):
+            try:
+                if version(observed[0])[:2] != desired_tuple[:2]:
+                    errors.append(f"MATRIX_FAMILY_RELEASE_MISMATCH:{component}")
+            except ValueError:
+                errors.append(f"MATRIX_FAMILY_INVALID_VERSION:{component}")
+    # The selected production SDK must actually own its Base, SQLite and
+    # Crypto dependencies. Unrelated safe-looking lockfile crates do not
+    # repair a disconnected or pruned SDK feature graph.
+    for component in ("matrix-sdk-base", "matrix-sdk-sqlite", "matrix-sdk-crypto"):
+        if find_path(graph, "matrix-sdk", component) is None:
+            errors.append(f"MATRIX_FAMILY_DEPENDENCY_PATH_MISSING:{component}")
     if versions["anymap2"] or "anymap2" in graph.get("matrix-sdk", ()):
         errors.append(ADVISORY_ANYMAP)
     if versions["matrix-sdk"] and desired_tuple >= (0, 19, 0):
@@ -157,7 +180,10 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         "blocking_prerequisites": sorted(set(errors)),
         "upstream_review_notes": notes,
         "static_prerequisites_passed": not errors,
-        "security_advisories_resolved": not errors and not versions["anymap2"],
+        # An offline lockfile inspection cannot certify advisory remediation:
+        # only unchanged cargo-deny plus real E2EE/recovery evidence can do so.
+        "static_graph_advisory_candidates_clean": not errors and not versions["anymap2"],
+        "security_advisories_resolved": False,
         "cargo_deny_verified": False,
         "matrix_e2ee_verified": False,
         "sqlite_wal_recovery_verified": False,
