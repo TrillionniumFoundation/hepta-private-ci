@@ -237,6 +237,15 @@ def trace_report(workload, events):
             "native_worker_attested": False, "production_authorized": False}
 
 
+def file_sha256(path):
+    """Byte identity for an unsigned but immutable offline trace source."""
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate Cell intents or summarize real native trace")
     sub = parser.add_subparsers(dest="action", required=True)
@@ -262,7 +271,17 @@ def main():
                 handle.write(json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
         print(f"generated {len(jobs)} input intents; no model executed")
     else:
+        # The report must bind the byte identity of both source artifacts,
+        # not just whatever a subsequent filesystem read happens to return.
+        workload_sha = file_sha256(args.workload)
+        trace_sha = file_sha256(args.trace)
         result = trace_report(list(load_jsonl(args.workload)), list(load_jsonl(args.trace)))
+        if (workload_sha != file_sha256(args.workload) or
+                trace_sha != file_sha256(args.trace)):
+            raise ValueError("source workload or native trace changed during audit")
+        result["source_workload_file_sha256"] = workload_sha
+        result["source_native_trace_file_sha256"] = trace_sha
+        result["source_file_bytes_authenticated"] = False
         # Reject invalid/NaN output before creating any evidence file, and
         # preserve exact prior bytes if a diagnostic is executed twice.
         serialized = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
