@@ -81,7 +81,9 @@ def original_prompt_parity(groups, original, wrappers, shared):
                 frontier=frontier, revoked=set(), token_limit=TOKEN_LIMIT)
             earlier = previous['reader']
             if (previous['selected'] != [doc.identity for doc in docs]
-                    or previous['bundle_digest'] != bundle.seal()
+                    or earlier['bundle_digest'] != bundle.seal()
+                    or (('bundle_digest' in previous) and
+                        previous['bundle_digest'] != earlier['bundle_digest'])
                     or receipt['input_ids_digest'] != earlier['input_ids_digest']
                     or receipt['input_tokens'] != earlier['input_tokens']
                     or earlier['reader_identity'] != shared.identity

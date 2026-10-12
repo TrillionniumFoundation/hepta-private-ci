@@ -83,7 +83,7 @@ def fake_fixture():
             rec.update(reader_identity=shared.identity,reader_profile=wrappers[p].profile,
                        generated_ids_digest=digest([1,2,3]))
             by_key[case.question.identity,arm,p]=dict(status='succeeded',
-                        selected=[d.identity for d in docs],bundle_digest=bundle.seal(),
+                        selected=[d.identity for d in docs],
                         reader=rec,answer=case.answer if arm in ARMS[:2] else ABSTAIN)
     return shared,wrappers,groups,dict(by_key=by_key,raw_sha256='f'*64)
 
@@ -148,6 +148,43 @@ class SameQuestionReaderTests(unittest.TestCase):
         parent['by_key'].pop(next(iter(parent['by_key'])))
         with self.assertRaisesRegex(ValueError,'missing previously completed'):
             original_prompt_parity(groups,parent,wrappers,shared)
+
+    def test_receipt_only_bundle_binding_is_admitted_without_model_calls(self):
+        # The completed hosted label study persists bundle_digest in the
+        # Reader receipt, NOT as a duplicate top-level row field.
+        shared,wrappers,groups,parent=fake_fixture()
+        self.assertTrue(all('bundle_digest' not in row
+                            for row in parent['by_key'].values()))
+        parity=original_prompt_parity(groups,parent,wrappers,shared)
+        self.assertEqual(len(parity),NEW_CALLS)
+        self.assertEqual(sum(w.calls for w in wrappers.values()),0)
+
+    def test_tampered_reader_only_bundle_drift_fails_closed(self):
+        shared,wrappers,groups,parent=fake_fixture()
+        key=next(iter(parent['by_key']))
+        parent['by_key'][key]['reader']['bundle_digest']='forged-bundle'
+        with self.assertRaisesRegex(ValueError,'old exact encoded'):
+            original_prompt_parity(groups,parent,wrappers,shared)
+        self.assertEqual(sum(w.calls for w in wrappers.values()),0)
+
+    @unittest.skipUnless(os.environ.get('HEPTA_CARDINALITY_ARCHIVE') and
+                         os.environ.get('HEPTA_LABEL_ARCHIVE'),
+                         'pinned original 140-call and label archives not staged')
+    def test_real_label_archive_binds_historical_receipts_without_top_level(self):
+        original=load_baseline_archives(os.environ['HEPTA_CARDINALITY_ARCHIVE'],
+                                        os.environ['HEPTA_LABEL_ARCHIVE'])
+        self.assertEqual(len(original['by_key']),140)
+        old=cohorts()['exposed_20']
+        for case in old:
+            for arm in ARMS:
+                presentation=presentation_for(arm)
+                row=original['by_key'][case.question.identity,arm,presentation]
+                self.assertNotIn('bundle_digest',row)
+                selected_docs=selected(case,arm)
+                bundle,_,_=evidence(case,selected_docs,'answer-only:'+arm)
+                self.assertEqual(row['reader']['bundle_digest'],bundle.seal())
+                self.assertEqual(row['selected'],[d.identity for d in selected_docs])
+                self.assertEqual(row['reader']['delivered_evidence'],bundle.delivered())
 
     def test_bad_old_source_scope_fails_closed(self):
         shared,wrappers,groups,parent=fake_fixture()
