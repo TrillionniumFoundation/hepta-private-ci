@@ -412,9 +412,10 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
         .unwrap()
         .expect("reopened marker");
     assert!(reopened.verify_current(&intent, &signed).unwrap());
-    reopened
-        .commit_once(&intent)
-        .expect("verified duplicate is idempotent");
+    assert!(matches!(
+        reopened.commit_once(&intent),
+        Err(CellSplitChildStateCasErrorV1::Ambiguous)
+    ));
     let path = reopened.child_path(
         0,
         &intent,
