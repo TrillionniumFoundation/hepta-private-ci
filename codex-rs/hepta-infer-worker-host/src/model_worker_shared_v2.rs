@@ -363,6 +363,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             self.poisoned = true;
             return Err(error);
         }
+        let resident_floor = loaded.handle.observed_memory_bytes;
         let mut outputs = Vec::with_capacity(requests.len());
         for (request, batch_result) in requests.iter().zip(observed) {
             if batch_result.request_id != request.authorization.request_id
@@ -371,7 +372,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 self.poisoned = true;
                 return Err(Error::PayloadMismatch);
             }
-            let features = batch_result.feature;
+            let mut features = batch_result.feature;
             if let Err(error) = super::validate_neuron_memory_budget(
                 other_model_resident_bytes,
                 loaded.handle.observed_memory_bytes,
@@ -427,6 +428,11 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                     return Err(Error::FeatureContract);
                 }
             };
+            // Normalize the accounted resident floor BEFORE hashing the
+            // public observation. Otherwise its digest would bind a smaller
+            // private driver claim than the bytes exposed to consumers.
+            features.observed_memory_bytes =
+                features.observed_memory_bytes.max(resident_floor);
             let observation_digest =
                 observation_digest_v2(request, &features, status, self.generation, identity_digest);
             outputs.push(SharedNeuronFeatureResultV2 {
@@ -707,6 +713,7 @@ mod tests {
         oversized_transient: bool,
         bounded_transient: bool,
         non_terminal_last_row: bool,
+        reported_memory_bytes: Option<u64>,
     }
 
     impl ModelDriver for AmbiguousPhysicalV2Driver {
@@ -740,7 +747,13 @@ mod tests {
             requests: &[SharedNeuronFeatureRequestV2],
         ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
             self.batches += 1;
-            if self.oversized_transient || self.bounded_transient || self.non_terminal_last_row {
+            if self.oversized_transient
+                || self.bounded_transient
+                || self.non_terminal_last_row
+                || self.reported_memory_bytes.is_some()
+            {
+                let default_memory = if self.bounded_transient { 2048 } else { 1024 };
+                let reported_memory = self.reported_memory_bytes.unwrap_or(default_memory);
                 let mut observations: Vec<_> = requests
                     .iter()
                     .map(|request| NeuronFeatureBatchItemObservationV2 {
@@ -753,11 +766,7 @@ mod tests {
                             head_digest: request.head_digest.clone(),
                             drive_q24: vec![0; request.expected_output_width],
                             prediction_q24: vec![0; request.expected_output_width],
-                            observed_memory_bytes: if self.bounded_transient {
-                                2048
-                            } else {
-                                1024
-                            },
+                            observed_memory_bytes: reported_memory,
                             transient_allocation_bytes: if self.oversized_transient {
                                 u64::MAX
                             } else {
@@ -896,6 +905,88 @@ mod tests {
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
+    }
+
+    #[test]
+    fn shared_batch_receipts_preserve_loaded_residency_without_authority() {
+        let snapshot = frame(2);
+        let grant = super::super::ResourceGrant {
+            grant_id: "grant.floor-v2".into(),
+            authority_epoch: 2,
+            generation: 3,
+            expires_at_ms: 10_000,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 4,
+            maximum_memory_bytes: 4096,
+            semantic_digest: "1".repeat(64),
+        };
+        let driver = AmbiguousPhysicalV2Driver {
+            reported_memory_bytes: Some(0),
+            ..AmbiguousPhysicalV2Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.floor-v2".into(), 3, grant, driver)
+                .expect("worker");
+        let manifest = super::super::ModelManifest {
+            model_id: "model.shared-v2".into(),
+            model_digest: "b".repeat(64),
+            weights_digest: "e".repeat(64),
+            tokenizer_digest: snapshot.identity.tokenizer_digest.to_string(),
+            preprocessor_digest: snapshot.identity.normalizer_digest.to_string(),
+            quantization_digest: snapshot.identity.quantization_digest.to_string(),
+            runtime_digest: "1".repeat(64),
+            device_digest: "2".repeat(64),
+            maximum_tokens: 64,
+        };
+        worker.load_model(100, manifest).expect("loaded");
+        let requests = vec![
+            req("cell.a", "request.a", Arc::clone(&snapshot)),
+            req("cell.b", "request.b", Arc::clone(&snapshot)),
+        ];
+        let digest_request = requests[0].clone();
+        let results = worker
+            .run_shared_neuron_features_batch_v2(100, "model.shared-v2", requests)
+            .expect("physical rows");
+        assert_eq!(results.len(), 2);
+        assert!(results.iter().all(|row| row.observed_memory_bytes == 1024));
+        assert!(results.iter().all(|row| row.authority == NonAuthorizingPosture::DENY_ALL));
+
+        let first = &results[0];
+        let accounted = DriverNeuronFeatureObservation {
+            terminal_observed: true,
+            succeeded: true,
+            encoder_digest: digest_request.snapshot.identity.encoder_digest.to_string(),
+            head_digest: first.head_digest.clone(),
+            drive_q24: first.drive_q24.clone(),
+            prediction_q24: first.prediction_q24.clone(),
+            observed_memory_bytes: first.observed_memory_bytes,
+            transient_allocation_bytes: first.transient_allocation_bytes,
+            queue_age_micros: first.queue_age_micros,
+            latency_micros: first.latency_micros,
+        };
+        let expected_digest = observation_digest_v2(
+            &digest_request,
+            &accounted,
+            ExecutionStatus::Succeeded,
+            first.worker_generation,
+            first.feature_identity_digest,
+        );
+        assert_eq!(first.observation_digest, expected_digest);
+        let mut raw_driver_claim = accounted;
+        raw_driver_claim.observed_memory_bytes = 0;
+        assert_ne!(
+            first.observation_digest,
+            observation_digest_v2(
+                &digest_request,
+                &raw_driver_claim,
+                ExecutionStatus::Succeeded,
+                first.worker_generation,
+                first.feature_identity_digest,
+            )
+        );
+        assert_eq!(worker.driver.batches, 1);
+        assert!(!worker.poisoned);
     }
 
     #[test]
