@@ -6,7 +6,7 @@ A found answer is never treated as certified semantic correctness.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, replace
+from dataclasses import replace
 import hashlib
 import json
 import os
