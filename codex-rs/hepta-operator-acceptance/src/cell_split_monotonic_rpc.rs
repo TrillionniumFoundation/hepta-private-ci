@@ -8,6 +8,7 @@
 //! genuinely rollback-resistant server storage. An authenticated response
 //! is evidence, not permission to promote or physically split a Cell.
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::io;
 use std::os::unix::fs::FileTypeExt as _;
@@ -34,6 +35,9 @@ use crate::cell_split_supervisor_monotonic_frontier_signing_payload_v1;
 pub const CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1: &str =
     "hepta.learning.cell-split.monotonic-frontier-rpc.v1";
 const READ_METHOD: &str = "read_domain_frontier";
+// Bound the signer process's additional defense against rollback of its source.
+// The independent durable registry, not this process-local floor, is authoritative.
+const MAX_SIGNED_JOURNAL_DOMAINS: usize = 4096;
 
 /// A remote store must derive its current high-water from *its own* durable
 /// journal-domain registry. Neither revision nor digest is sent to the server.
@@ -236,6 +240,7 @@ pub struct CellSplitMonotonicRpcServiceV1<R: CellSplitMonotonicAuthoritativeRegi
     source: R,
     signer: ed25519_dalek::SigningKey,
     timeout: Duration,
+    signed_highwater: BTreeMap<String, CellSplitMonotonicDurableFrontierV1>,
 }
 
 impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV1<R> {
@@ -254,6 +259,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
             source,
             signer,
             timeout,
+            signed_highwater: BTreeMap::new(),
         })
     }
 
@@ -306,6 +312,33 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         if self.read_verified_domain(&first.journal_domain_id)? != first {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
+        // A local signed response must never regress while this signer stays
+        // alive, even if its backing registry later serves a valid-looking
+        // older record. This bounded floor is defense-in-depth only: after a
+        // restart, rollback resistance still belongs to independent custody.
+        match self.signed_highwater.get(&first.journal_domain_id) {
+            Some(previous)
+                if (first.journal_authority_epoch, first.journal_revision)
+                    < (previous.journal_authority_epoch, previous.journal_revision)
+                    || first.durable_source_sequence < previous.durable_source_sequence
+                    || ((first.journal_authority_epoch, first.journal_revision)
+                        == (previous.journal_authority_epoch, previous.journal_revision)
+                        && (first.minimum_checkpoint_digest
+                            != previous.minimum_checkpoint_digest
+                            || first.original_store_record_digest
+                                != previous.original_store_record_digest)) =>
+            {
+                return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+            }
+            None if self.signed_highwater.len() >= MAX_SIGNED_JOURNAL_DOMAINS => {
+                return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+            }
+            _ => {}
+        }
+        // Record before sending: the signature already exists and a failed
+        // socket acknowledgement must not allow a later downgraded signature.
+        self.signed_highwater
+            .insert(first.journal_domain_id.clone(), first);
         send_frame_with_deadline(
             stream,
             &CellSplitMonotonicRpcResponseV1 {
