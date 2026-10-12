@@ -1,0 +1,73 @@
+name: MemoryCell isolated seven-file Ruff format candidate
+on:
+  push:
+    branches:
+      - codex/memory-format-stage-20261012
+    paths:
+      - .github/workflows/hepta-memory-isolated-format.yml
+permissions:
+  contents: write
+jobs:
+  format-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/memory-format-stage-20261012'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Apply only AST-identical Ruff changes
+        env:
+          EXPECTED_PARENT: 993a9d02ad7c87be7fb795ab98e679247a409ab6
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          files=(
+            scripts/memory_cell/stem_native_nonpromotion.py
+            scripts/memory_cell/strong_rag_fourrun_audit.py
+            scripts/memory_cell/strong_rag_host_cost_audit.py
+            scripts/memory_cell/strong_rag_host_gate.py
+            scripts/memory_cell/test_stem_native_nonpromotion.py
+            scripts/memory_cell/test_strong_rag_fourrun_audit.py
+            scripts/memory_cell/test_strong_rag_host_gate.py
+          )
+          python3 - <<'PY'
+          import ast,json
+          from pathlib import Path
+          names=[
+            "scripts/memory_cell/stem_native_nonpromotion.py",
+            "scripts/memory_cell/strong_rag_fourrun_audit.py",
+            "scripts/memory_cell/strong_rag_host_cost_audit.py",
+            "scripts/memory_cell/strong_rag_host_gate.py",
+            "scripts/memory_cell/test_stem_native_nonpromotion.py",
+            "scripts/memory_cell/test_strong_rag_fourrun_audit.py",
+            "scripts/memory_cell/test_strong_rag_host_gate.py",
+          ]
+          assert all(Path(n).is_file() and not Path(n).is_symlink() for n in names)
+          Path("/tmp/memory-format-ast.json").write_text(json.dumps({n:ast.dump(ast.parse(Path(n).read_text())) for n in names}))
+          PY
+          python3 -m pip install --user uv==0.8.22
+          uv run --frozen --project scripts ruff format "${files[@]}"
+          python3 - <<'PY'
+          import ast,json,subprocess
+          from pathlib import Path
+          original=json.loads(Path("/tmp/memory-format-ast.json").read_text())
+          changed=set(subprocess.check_output(["git","diff","--name-only"],text=True).splitlines())
+          if not changed or changed-set(original):
+              raise ValueError("missing format diff or changed files outside admission")
+          for name,expected in original.items():
+              if ast.dump(ast.parse(Path(name).read_text()))!=expected:
+                  raise ValueError("formatter changed executable Python AST")
+          print("AST_EQUAL=true; format-only files:",sorted(changed))
+          PY
+          uv run --frozen --project scripts ruff format --check "${files[@]}"
+          git add -- "${files[@]}"
+          git rm -- .github/workflows/hepta-memory-isolated-format.yml
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): exact Ruff formatting for seven strong-RAG research audits'
+          git push origin HEAD:refs/heads/codex/memory-format-stage-20261012
+          echo "CANDIDATE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
