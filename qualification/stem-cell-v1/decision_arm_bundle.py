@@ -165,6 +165,7 @@ def assemble(plan, evidence_root, entries, dataset, scope):
                         "missing_keys": 0, "unexpected_keys": 0,
                         "mismatched_keys": 0, "error_msgs": 0,
                     } or not checked_tensors or
+                    run.get("checkpoint_and_dataset_reverified_before_scoring_output") is not True or
                     run.get("pretrained_typed_decision_head_existed") is not False or
                     run.get("checkpoint_zero_shot_score_emitted") is not False):
                 raise ValueError("HF arm lacks complete audited safetensors loading/runner evidence")
