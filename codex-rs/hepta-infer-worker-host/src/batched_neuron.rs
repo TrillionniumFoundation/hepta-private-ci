@@ -328,6 +328,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
+            if batch.requests.len() > 1 && self.worker.supports_native_neuron_batch() {
+                outcomes.extend(self.execute_physical_batch(now_ms, batch));
+                return Ok(BatchWorkerPollV1 {
+                    expired: poll.expired_request_ids,
+                    outcomes,
+                    scanned_lanes: poll.scanned_lanes,
+                    pending: self.pending.len(),
+                });
+            }
             for intent in batch.requests {
                 let id = intent.request_id;
                 let started = Instant::now();
@@ -411,6 +420,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         removed
     }
 }
+
+#[path = "batched_neuron_physical.rs"]
+mod physical;
 
 #[cfg(test)]
 #[path = "batched_neuron_tests.rs"]
