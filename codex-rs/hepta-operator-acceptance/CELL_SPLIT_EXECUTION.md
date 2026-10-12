@@ -15,6 +15,31 @@ Selector/NDU and final-use checks, maintain an idempotent durable effect key,
 and expose signed current-state readbacks. The four public keys and sockets
 must belong to independently controlled effect owners.
 
+## Original-owner durable frontier
+
+The signed effect service compares the original owner's **intent-scoped**
+durable sequence before and after `Execute`. A freshly committed effect must
+advance that sequence; a previously committed matching effect must not be
+adopted as a new execution.
+
+- Artifact CAS starts at its independently frozen sequence-one predecessor
+  frontier. Only an exact, create-only, intent-bound committed CAS record
+  advances the acknowledged sequence to two. A copied artifact without that
+  record is an ambiguous orphan, not a committed step.
+- Child-state migration starts at the acknowledged parent Neuron checkpoint
+  sequence *N*. Only a verified all-child batch marker for the exact intent
+  advances its acknowledged sequence to *N+1*. Staged Q24 children or an
+  interrupted multi-child write do not advance it.
+- CNS and Supervisor retain their native monotonic durable sequence/revision
+  readers; they must never substitute an in-memory callback count.
+
+The source candidate changes the CAS receipt sequence from the earlier
+non-advancing value. Pre-existing, non-monotonic receipt frames must **not**
+be silently rewritten or grandfathered into successful Execute evidence.
+They require original-owner reconciliation under an independently controlled
+deployment plan. None of this constitutes a cross-owner atomic transaction,
+physical power-loss witness, or production acceptance.
+
 ## Trusted configuration
 
 The deployment owner must prepare a **private**, canonical, absolute-path JSON
