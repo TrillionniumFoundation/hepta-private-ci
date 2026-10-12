@@ -64,7 +64,11 @@ def beam2_generate(reader, prompt, arm):
 def _keyed(rows, targets):
     expected = {(qid, arm) for qid in targets for arm in ARMS}
     keys = [(row["question_id"], row["arm"]) for row in rows]
-    if len(rows) != len(expected) or len(set(keys)) != len(rows) or set(keys) != expected:
+    if (
+        len(rows) != len(expected)
+        or len(set(keys)) != len(rows)
+        or set(keys) != expected
+    ):
         raise ValueError("incomplete or duplicated source readout census")
     result = dict(zip(keys, rows, strict=True))
     for (qid, _arm), row in result.items():
@@ -99,7 +103,10 @@ def summarize(greedy_rows, beam_rows, targets):
     if (
         not isinstance(targets, dict)
         or not 1 <= len(targets) <= MAX_SCOPES
-        or any(not isinstance(k, str) or not k or not isinstance(v, str) or not v for k, v in targets.items())
+        or any(
+            not isinstance(k, str) or not k or not isinstance(v, str) or not v
+            for k, v in targets.items()
+        )
     ):
         raise ValueError("bounded original source-target census required")
     indexed = {
@@ -244,18 +251,21 @@ def paired_probe(
         else Question(**item["query"])
         for item in selected
     ]
-    targets = {q.identity: item["target"] for q, item in zip(questions, selected, strict=True)}
+    targets = {
+        q.identity: item["target"] for q, item in zip(questions, selected, strict=True)
+    }
     if len(targets) != len(questions):
         raise ValueError("duplicate source question")
     # Render the full REAL Reader input, including explicit source scope,
     # before any model call. Equal input tokens for different questions
     # cannot count as two independent tests, even if labels differ.
     planned_prompts = {
-        q.identity: digest(render(reader.tokenizer, q, [], []))
-        for q in questions
+        q.identity: digest(render(reader.tokenizer, q, [], [])) for q in questions
     }
     if len(set(planned_prompts.values())) != len(questions):
-        raise ValueError("colliding source questions have indistinguishable Reader prompts")
+        raise ValueError(
+            "colliding source questions have indistinguishable Reader prompts"
+        )
     output.mkdir()
     plan = dict(
         schema="hepta.source-decode-factorial.plan.v1",
@@ -300,6 +310,7 @@ def paired_probe(
             question_mode=question_mode,
             training=training,
         )
+
     def unique_object(items):
         result = {}
         for key, value in items:
@@ -316,7 +327,9 @@ def paired_probe(
     for decoder in DECODERS:
         original = (output / decoder / "raw-answers.jsonl").read_bytes()
         records[decoder] = [
-            json.loads(line, object_pairs_hook=unique_object, parse_constant=reject_nonfinite)
+            json.loads(
+                line, object_pairs_hook=unique_object, parse_constant=reject_nonfinite
+            )
             for line in original.decode().splitlines()
         ]
         digests[decoder] = hashlib.sha256(original).hexdigest()
@@ -325,7 +338,9 @@ def paired_probe(
     for decoder in DECODERS:
         for row in records[decoder]:
             if row["prompt_sha256"] != planned_prompts.get(row["question_id"]):
-                raise ValueError("actual Reader prompt differs from preregistered input")
+                raise ValueError(
+                    "actual Reader prompt differs from preregistered input"
+                )
     result = summarize(records["greedy"], records["beam2"], targets)
     result.update(
         generating_commit=source_commit,

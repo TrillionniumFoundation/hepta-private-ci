@@ -64,21 +64,15 @@ class DecoderFactorialTests(unittest.TestCase):
     def test_algorithm_gain_is_not_misattributed_to_lora(self):
         result = summarize(self.greedy, self.beam, self.targets)
         self.assertEqual(
-            result["decoder_effect_holding_adapter_fixed"]["memory"][
-                "candidate_wins"
-            ],
+            result["decoder_effect_holding_adapter_fixed"]["memory"]["candidate_wins"],
             2,
         )
         self.assertEqual(
-            result["adapter_effect_holding_decoder_fixed"]["greedy"][
-                "candidate_wins"
-            ],
+            result["adapter_effect_holding_decoder_fixed"]["greedy"]["candidate_wins"],
             0,
         )
         self.assertEqual(
-            result["adapter_effect_holding_decoder_fixed"]["beam2"][
-                "candidate_wins"
-            ],
+            result["adapter_effect_holding_decoder_fixed"]["beam2"]["candidate_wins"],
             2,
         )
         self.assertEqual(result["observed_interaction_mean"], 1.0)
@@ -164,9 +158,13 @@ class DecoderFactorialTests(unittest.TestCase):
             destination = Path(root) / "factorial"
             with self.assertRaisesRegex(ValueError, "colliding source questions"):
                 paired_probe(
-                    self.reader, self.docs, destination,
-                    snapshot_sha="a" * 64, writer_source="b" * 40,
-                    source_commit="c" * 40, maximum=2,
+                    self.reader,
+                    self.docs,
+                    destination,
+                    snapshot_sha="a" * 64,
+                    writer_source="b" * 40,
+                    source_commit="c" * 40,
+                    maximum=2,
                     greedy=lambda *args: calls.append("greedy"),
                     beam=lambda *args: calls.append("beam"),
                 )
