@@ -44,6 +44,8 @@ pub enum BatchWorkerErrorV1 {
     Worker,
     Capacity,
     TelemetryUnavailable,
+    RouteUnavailable,
+    StaleRoute,
 }
 
 #[derive(Debug)]
@@ -58,6 +60,23 @@ pub struct BatchWorkerPollV1 {
     pub outcomes: Vec<BatchWorkerItemOutcomeV1>,
     pub scanned_lanes: usize,
     pub pending: usize,
+}
+
+/// Scoped, non-forgeable-by-payload live-route hold from an independently
+/// configured CNS route owner. A correct implementation must atomically check
+/// the exact route tuple and prevent cutover until this guard is dropped.
+/// The marker is NOT evidence of independent owner qualification by itself.
+pub trait ScopedRouteEffectGuardV1: std::fmt::Debug {}
+impl<T: std::fmt::Debug> ScopedRouteEffectGuardV1 for T {}
+
+/// Non-authorizing, read-only effect-boundary port. No fake currentness
+/// fallback or digest-only admission exists in the physical Worker path.
+/// Production startup must install a trusted CNS owner backed implementation.
+pub trait CurrentScopeRoutePortV1: std::fmt::Debug + Send + Sync {
+    fn enter_exact_route(
+        &self,
+        key: &MicrobatchKeyV1,
+    ) -> Result<Box<dyn ScopedRouteEffectGuardV1>, BatchWorkerErrorV1>;
 }
 
 struct PendingV1 {
@@ -78,6 +97,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<StableId>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    scope_routes: Option<Arc<dyn CurrentScopeRoutePortV1>>,
     metrics_poisoned: bool,
     maximum_ids: usize,
 }
@@ -140,6 +160,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            scope_routes: None,
             metrics_poisoned: false,
             maximum_ids: limits.max_pending,
         })
@@ -147,6 +168,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         self.metric_sink = Some(sink);
+        self
+    }
+
+    /// Install the independent CNS route owner before physical serving.
+    /// Missing route owner always denies physical effect admission.
+    pub fn with_current_scope_routes(mut self, routes: Arc<dyn CurrentScopeRoutePortV1>) -> Self {
+        self.scope_routes = Some(routes);
         self
     }
 
