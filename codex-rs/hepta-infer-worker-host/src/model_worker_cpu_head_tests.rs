@@ -147,15 +147,18 @@ fn native_cpu_rejects_tampered_tensors_and_head_identity() {
     let (mut worker, heads) = local_worker();
     let mut request = cpu_request(1, "f".repeat(64), weights.clone());
     let mut request2 = cpu_request(2, heads[1].clone(), weights);
-    assert!(
-        worker
-            .run_neuron_features_backend_batch(
-                100,
-                "model.cpu-head",
-                vec![request.clone(), request2.clone()]
-            )
-            .is_err()
+    // A foreign Head digest is rejected during immutable preflight, before
+    // the backend has a chance to execute or quarantine this generation.
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(
+            100,
+            "model.cpu-head",
+            vec![request.clone(), request2.clone()],
+        ),
+        Err(Error::ModelMismatch),
     );
+    assert_eq!(worker.driver.observed_backend_batch_invocations(), 0);
+    assert!(!worker.requires_external_recovery());
     request.encoder_digest = "f".repeat(64);
     request.head_digest = heads[0].clone();
     let payload = canonical_neuron_feature_payload_digest(&request);
@@ -165,14 +168,26 @@ fn native_cpu_rejects_tampered_tensors_and_head_identity() {
     let payload = canonical_neuron_feature_payload_digest(&request2);
     request2.authorization.payload_digest = payload.clone();
     request2.authorization.lease_payload_digest = payload;
-    // The first invalid batch reached the driver, whose failure cannot
-    // prove no physical execution occurred. The generation is quarantined:
-    // a follow-up request must not re-enter the driver even if its identity
-    // would independently have been rejected as ModelMismatch.
+    // A forged Encoder identity with correctly rehashed transport digests
+    // still fails the CPU Head driver's read-only preflight. No dispatch has
+    // happened, so fail closed without inventing indeterminate execution.
     assert_eq!(
         worker.run_neuron_features_backend_batch(100, "model.cpu-head", vec![request, request2]),
-        Err(Error::ExecutionIndeterminate)
+        Err(Error::ModelMismatch),
     );
+    assert_eq!(worker.driver.observed_backend_batch_invocations(), 0);
+    assert!(!worker.requires_external_recovery());
+    // A legitimate paired request must still execute in this same generation:
+    // this proves the malformed input never reached the physical backend.
+    let healthy = vec![
+        cpu_request(11, heads[0].clone(), worker.driver.manifest.weights_digest.clone()),
+        cpu_request(12, heads[1].clone(), worker.driver.manifest.weights_digest.clone()),
+    ];
+    let valid = worker
+        .run_neuron_features_backend_batch(100, "model.cpu-head", healthy)
+        .expect("valid same-generation batch after preflight denials");
+    assert_eq!(valid.receipts.len(), 2);
+    assert_eq!(worker.driver.observed_backend_batch_invocations(), 1);
 }
 
 #[test]
