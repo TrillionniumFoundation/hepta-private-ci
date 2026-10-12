@@ -147,6 +147,22 @@ fn command_slug_collisions_are_skipped() {
 
 
 #[test]
+fn safe_yaml_command_description_rejects_duplicate_or_aliased_identity() {
+    assert_eq!(
+        parse_command_description("description: trusted\ndescription: substituted"),
+        None,
+    );
+    assert_eq!(
+        parse_command_description("description: &d trusted\ndescription: *d"),
+        None,
+    );
+    assert_eq!(
+        parse_command_description("description: !invoke arbitrary-constructor"),
+        None,
+    );
+}
+
+#[test]
 fn safe_yaml_command_migration_only_accepts_scalar_description() {
     assert_eq!(
         parse_command_description("description: 'a safe: command'"),
