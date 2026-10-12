@@ -18,6 +18,8 @@ on:
       - "codex-rs/utils/path-utils/**"
       - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-agentd/src/test_support.rs"
+      - "codex-rs/hepta-contracts/src/authority_lease.rs"
+      - "codex-rs/hepta-contracts/src/authority_lease_windows.rs"
       - "codex-rs/git-utils/src/git_process_tests.rs"
       - "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
       - "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
@@ -102,6 +104,8 @@ jobs:
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-registry --lib durable::windows::tests:: -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --lib final_use::store::windows::tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --lib authority_lease::windows::tests:: -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host -- --exact --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
