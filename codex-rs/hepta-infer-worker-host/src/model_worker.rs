@@ -577,6 +577,29 @@ fn validate_neuron_memory_budget(
     }
 }
 
+/// Conservative post-dispatch batch resource bound. The largest reported
+/// resident footprint plus all per-row transient allocations must fit the
+/// grant. A driver with recycled scratch needs a separate batch-level peak
+/// receipt to claim less; these row receipts are not measured OS RSS.
+fn validate_neuron_batch_memory_budget<'a>(
+    resident_bytes: u64,
+    maximum_memory_bytes: u64,
+    observations: impl IntoIterator<Item = &'a DriverNeuronFeatureObservation>,
+) -> Result<(), Error> {
+    let mut maximum_resident = resident_bytes;
+    let mut total_transient = 0_u64;
+    for observed in observations {
+        maximum_resident = maximum_resident.max(observed.observed_memory_bytes);
+        total_transient = total_transient
+            .checked_add(observed.transient_allocation_bytes)
+            .ok_or(Error::ModelCapacity)?;
+    }
+    match maximum_resident.checked_add(total_transient) {
+        Some(peak) if peak <= maximum_memory_bytes => Ok(()),
+        _ => Err(Error::ModelCapacity),
+    }
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     pub fn run_neuron_features(
         &mut self,

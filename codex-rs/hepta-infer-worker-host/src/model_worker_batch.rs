@@ -196,6 +196,15 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
+        // Individually safe rows can have an unsafe additive batch peak.
+        if let Err(error) = super::validate_neuron_batch_memory_budget(
+            resident_bytes,
+            self.grant.maximum_memory_bytes,
+            observations.iter().map(|item| &item.feature),
+        ) {
+            self.poisoned = true;
+            return Err(error);
+        }
         let mut result = Vec::with_capacity(requests.len());
         for (request, batch_item) in requests.iter().zip(observations) {
             if batch_item.request_id != request.authorization.request_id
@@ -684,6 +693,26 @@ mod tests {
         // Preflight reference tensors fit, but the driver reports a larger
         // resident-plus-transient peak after physical execution.
         let mut worker = worker_with_memory_budget(BatchMock::default(), 2048 + 128 - 1);
+        let requests = vec![feature("request.1", 'b'), feature("request.2", 'c')];
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", requests.clone()),
+            Err(Error::ModelCapacity)
+        );
+        assert!(worker.poisoned);
+        assert_eq!(worker.driver.batches, 1);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.v2"].active_requests, 0);
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", requests),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(worker.driver.batches, 1);
+    }
+
+    #[test]
+    fn individually_safe_rows_must_not_hide_additive_batch_transients() {
+        // One row fits (2048 + 128 <= 2303), two rows do not (2048 + 256).
+        let mut worker = worker_with_memory_budget(BatchMock::default(), 2303);
         let requests = vec![feature("request.1", 'b'), feature("request.2", 'c')];
         assert_eq!(
             worker.run_neuron_features_batch(100, "model.v2", requests.clone()),
