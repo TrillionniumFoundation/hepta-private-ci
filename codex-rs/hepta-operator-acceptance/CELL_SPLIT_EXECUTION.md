@@ -40,6 +40,26 @@ They require original-owner reconciliation under an independently controlled
 deployment plan. None of this constitutes a cross-owner atomic transaction,
 physical power-loss witness, or production acceptance.
 
+### Monotonic RPC signer process fence (additional source hardening)
+
+The independent, read-only Supervisor monotonic RPC signing service now retains
+a **bounded process-local high-water per journal domain** after the third
+verified durable-source read and before sending a signed response. During the
+same signer process lifetime, it rejects regressed authority epochs/revisions,
+regressed original durable source sequences, and changed checkpoint/store
+identities at the same revision. The signer refuses new domains once its
+4,096-domain capacity is exhausted; it never resets this floor in place to
+resume signing.
+
+This is only defense in depth. **Process restart, service replacement, disk
+restoration, compromised source reads, and revocation across owners remain
+outside this in-memory check.** Production still requires a separately
+administered, rollback-resistant original journal-domain registry, independent
+signer custody, current NDU/Selector admission and external observer evidence.
+A valid response from this process does not grant a split, activation or
+promotion. Regression tests use an intentionally source-only disk registry
+that cannot establish the required cross-restart monotonicity.
+
 ## Trusted configuration
 
 The deployment owner must prepare a **private**, canonical, absolute-path JSON
