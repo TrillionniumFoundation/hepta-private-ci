@@ -1092,9 +1092,7 @@ def run(staged, ranker_dir, output):
         # This post-policy audit is REGISTERED for the 32 evaluation
         # questions, whereas the runtime pool also contains 48 TRAIN
         # questions. Keep that strict source-role boundary intact.
-        postpolicy_questions = {
-            q.identity: q for phase in PHASES for q in qs[phase]
-        }
+        postpolicy_questions = {q.identity: q for phase in PHASES for q in qs[phase]}
         postpolicy_pools = {
             qid: pools[qid] for qid in postpolicy_questions if qid in pools
         }
@@ -1104,10 +1102,7 @@ def run(staged, ranker_dir, output):
             scored,
             postpolicy_pools,
             postpolicy_questions,
-            {
-                qid: source_for[qid].targets[qid]
-                for qid in postpolicy_questions
-            },
+            {qid: source_for[qid].targets[qid] for qid in postpolicy_questions},
         )
         write(
             output / "postpolicy-score-integrity.json",
