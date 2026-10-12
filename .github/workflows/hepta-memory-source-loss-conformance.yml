@@ -6,6 +6,8 @@ on:
     paths:
       - "scripts/memory_cell/source_completion_loss.py"
       - "scripts/memory_cell/test_source_completion_*.py"
+      - "scripts/memory_cell/source_loss_admission.py"
+      - "scripts/memory_cell/test_source_loss_admission.py"
       - ".github/workflows/hepta-memory-source-loss-conformance.yml"
   workflow_dispatch:
 permissions:
@@ -40,9 +42,10 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/memory-source-loss-proof
           /tmp/memory-source-loss/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_completion_*.py' -v 2>&1 | tee /tmp/memory-source-loss-proof/tests.log
+          /tmp/memory-source-loss/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_loss_admission.py' -v 2>&1 | tee /tmp/memory-source-loss-proof/admission-tests.log
           /tmp/memory-source-loss/bin/python -m pip freeze > /tmp/memory-source-loss-proof/environment.txt
           git rev-parse HEAD > /tmp/memory-source-loss-proof/source-sha.txt
-          sha256sum scripts/memory_cell/source_completion_loss.py scripts/memory_cell/test_source_completion_*.py > /tmp/memory-source-loss-proof/source-sha256.txt
+          sha256sum scripts/memory_cell/source_completion_loss.py scripts/memory_cell/test_source_completion_*.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_loss_admission.py > /tmp/memory-source-loss-proof/source-sha256.txt
       - name: Keep success and failure receipts
         if: always()
         run: |

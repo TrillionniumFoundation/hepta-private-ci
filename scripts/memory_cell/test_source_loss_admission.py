@@ -19,7 +19,11 @@ def sample():
         "model_repository": "Qwen/Qwen2.5-3B-Instruct",
         "model_revision": "d" * 40,
         "curriculum": "single_hop",
-        "dependency_versions": {"torch": "2.5.1+cpu", "transformers": "4.57.1", "peft": "0.17.1"},
+        "dependency_versions": {
+            "torch": "2.5.1+cpu",
+            "transformers": "4.57.1",
+            "peft": "0.17.1",
+        },
         "source_example_selected_from_write_schedule": True,
         "frozen_pretrained_base_unchanged": True,
         "matched_optimization_step": True,
@@ -116,12 +120,16 @@ class SourceLossAdmissionTests(unittest.TestCase):
                     self.admit(row)
 
     def test_optimizer_parity_aggregate_and_dependency_drift_reject(self):
+        wrong_torch = dict(sample()["dependency_versions"])
+        wrong_torch["torch"] = "2.5.1"
+        wrong_peft = dict(sample()["dependency_versions"])
+        wrong_peft["peft"] = "0.17.2"
         for field, wrong in (
             ("maximum_gradient_absolute_difference", 0.025),
             ("maximum_updated_parameter_absolute_difference", 0.021),
             ("compared_input_tokens", 2113),
-            ("dependency_versions", {"torch": "2.5.1", "transformers": "4.57.1", "peft": "0.17.1"}),
-            ("dependency_versions", {"torch": "2.5.1+cpu", "transformers": "4.57.1", "peft": "0.17.2"}),
+            ("dependency_versions", wrong_torch),
+            ("dependency_versions", wrong_peft),
         ):
             item = deepcopy(sample())
             item[field] = wrong

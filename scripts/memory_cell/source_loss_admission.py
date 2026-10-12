@@ -106,10 +106,14 @@ def require_parity(
     # L2-clipped gradients and the producer's rtol=.02/atol=.002 imply
     # at most ~.022 absolute drift; allow .024 for BF16 rounding.
     versions = item.get("dependency_versions")
+    expected_versions = {
+        "torch": "2.5.1+cpu",
+        "transformers": "4.57.1",
+        "peft": "0.17.1",
+    }
     if (
         type(versions) is not dict
-        or versions
-        != {"torch": "2.5.1+cpu", "transformers": "4.57.1", "peft": "0.17.1"}
+        or versions != expected_versions
         or item["compared_input_tokens"] > 2112
         or item["maximum_gradient_absolute_difference"] > 0.024
         or item["maximum_updated_parameter_absolute_difference"] > 0.02
