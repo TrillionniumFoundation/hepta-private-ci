@@ -57,9 +57,9 @@ class Bf16RunnerGateTests(unittest.TestCase):
     def test_missing_flags_model_or_truncated_cpuinfo_fail_closed(self):
         self.assertFalse(assess("processor : 0", machine="x86_64")["host_eligible"])
         self.assertFalse(
-            assess(
-                "processor: 0\nflags: avx512_bf16", machine="x86_64"
-            )["host_eligible"]
+            assess("processor: 0\nflags: avx512_bf16", machine="x86_64")[
+                "host_eligible"
+            ]
         )
         for invalid in ("", "x" * (256 * 1024 + 1)):
             with self.assertRaises(ValueError):
