@@ -826,7 +826,6 @@ mod tests {
         );
     }
 
-
     #[test]
     fn oversized_zero_copy_physical_transient_quarantines_generation() {
         let snapshot = frame(2);
@@ -898,14 +897,9 @@ mod tests {
             bounded_transient: true,
             ..AmbiguousPhysicalV2Driver::default()
         };
-        let mut worker = InferenceWorker::new(
-            100,
-            "worker.aggregate-v2".into(),
-            3,
-            grant,
-            driver,
-        )
-        .expect("worker");
+        let mut worker =
+            InferenceWorker::new(100, "worker.aggregate-v2".into(), 3, grant, driver)
+                .expect("worker");
         let manifest = super::super::ModelManifest {
             model_id: "model.shared-v2".into(),
             model_digest: "b".repeat(64),
@@ -939,6 +933,4 @@ mod tests {
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
-    }
-
-}
+    }}

@@ -727,6 +727,4 @@ mod tests {
             Err(Error::IndeterminateLifecycle)
         );
         assert_eq!(worker.driver.batches, 1);
-    }
-
-}
+    }}
