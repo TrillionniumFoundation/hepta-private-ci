@@ -65,8 +65,16 @@ mod tests {
     }
 
     #[test]
-    fn sandbox_feature_matches_linked_v8() {
-        assert_eq!(super::linked_v8_has_sandbox(), cfg!(feature = "sandbox"));
+    fn linked_v8_has_required_sandbox() {
+        // Bazel sets the actual linked V8 sandbox config independently of
+        // this crate's Cargo feature flags. Inspect the linked library, not
+        // cfg!(feature = "sandbox"), which is false for default Bazel tests.
+        // Initialize once before querying the V8 runtime from parallel tests.
+        initialize_v8();
+        assert!(
+            super::linked_v8_has_sandbox(),
+            "linked V8 must have its in-process sandbox enabled"
+        );
     }
 
     #[test]
