@@ -310,3 +310,28 @@ impl FrontmatterValue {
         }
     }
 }
+
+#[cfg(test)]
+mod safe_yaml_parser_migration_tests {
+    use super::*;
+
+    #[test]
+    fn yaml_frontmatter_preserves_scalars_and_denies_ambiguous_metadata() {
+        let (metadata, error) = parse_frontmatter(
+            "name: verified\ndescription: A bounded helper\nenabled: true\nsteps: [a, b]\n",
+        );
+        assert!(error.is_none(), "valid YAML frontmatter must remain parseable");
+        assert_eq!(metadata.get("name").and_then(FrontmatterValue::as_scalar), Some("verified"));
+        assert_eq!(
+            metadata.get("description").and_then(FrontmatterValue::as_scalar),
+            Some("A bounded helper")
+        );
+        assert_eq!(metadata.get("enabled").and_then(FrontmatterValue::as_scalar), Some("true"));
+        assert!(metadata.get("steps").is_some_and(|entry| entry.as_scalar().is_none()));
+
+        let (_, duplicate) = parse_frontmatter("name: original\nname: forged\n");
+        assert!(duplicate.is_some(), "duplicated identity must fail closed");
+        let (_, malformed) = parse_frontmatter("name: [unterminated\n");
+        assert!(malformed.is_some(), "malformed YAML must fail closed");
+    }
+}
