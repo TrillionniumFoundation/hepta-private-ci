@@ -236,12 +236,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })?;
         let handle = match self.driver.load(&manifest) {
             Ok(handle) => handle,
-            Err(error) => {
+            Err(_error) => {
                 // A load error provides no terminal no-allocation receipt.
-                // The driver might have allocated before failing: seal this
-                // entire generation rather than silently retrying the load.
+                // Report the typed indeterminate status immediately so the
+                // owning Supervisor cannot mistake this for a safe retry.
+                // Driver-specific diagnostics belong to its own receipt/log.
                 self.load_indeterminate = true;
-                return Err(error);
+                return Err(Error::ModelLoadIndeterminate);
             }
         };
         let invalid_handle = validate_identity(&handle.opaque_id, "model handle").err();
