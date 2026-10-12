@@ -158,12 +158,45 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                         "effect already committed before new execute intent",
                     ));
                 }
+                // Freeze an independently read original-owner frontier before
+                // dispatch. A newly signed Execute must observe a *new*
+                // durable commit, not an old idempotency match or an effect
+                // whose receipt was published against a static sequence.
+                // This is not an atomic prepared-intent reservation: the
+                // backend must still provide single-writer linearizability.
+                let predecessor_sequence = self
+                    .backend
+                    .current_sequence()
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
+                if predecessor_sequence == 0 {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "owner frontier unavailable before execute",
+                    ));
+                }
+                // A prior effect may have appeared during the frontier read.
+                // Do not call a potentially idempotent commit_once in that
+                // case, even if its original payload would match.
+                if self
+                    .backend
+                    .read_committed(&request.intent)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?
+                    .is_some()
+                {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "effect already committed before new execute intent",
+                    ));
+                }
                 self.backend
                     .commit_once(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 let committed = self.read_verified(&request.intent)?.ok_or(
                     CellSplitEffectRpcErrorV1::Invalid("effect absent after commit"),
                 )?;
+                if committed.owner_sequence <= predecessor_sequence {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "effect did not advance original durable owner frontier",
+                    ));
+                }
                 // Execute acknowledgements require a second current-owner
                 // observation just as signed recovery readbacks do.
                 let before = self
