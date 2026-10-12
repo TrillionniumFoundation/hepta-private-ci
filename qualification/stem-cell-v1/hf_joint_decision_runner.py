@@ -424,6 +424,17 @@ def run(args):
                 "token_count": lengths[sid],
                 "backend_kind": "offline_local_hf_frozen_backbone_trainable_decision_head",
             })
+    # A pre-load hash is not a valid post-inference provenance receipt when
+    # the operator-controlled checkpoint or approved dataset could have
+    # changed while the model was being loaded or Head training was running.
+    # Check both physical inputs again BEFORE materializing any scored output.
+    # This still is not a signed owner attestation or defense against an
+    # adversary who changes and restores bytes between our observations.
+    if snapshot_digest(checkpoint) != args.expected_snapshot_sha256:
+        raise ValueError("checkpoint snapshot changed during Encoder execution")
+    if sha256_file(args.dataset) != args.expected_dataset_sha256:
+        raise ValueError("approved dataset bytes changed during Encoder execution")
+
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
     with target.open("x", encoding="utf-8") as stream:
@@ -466,6 +477,7 @@ def run(args):
         "output_predictions_sha256": sha256_file(target),
         "sample_count": len(indexed), "scored_count": len(predictions),
         "encoder_requires_only_local_weights": True,
+        "checkpoint_and_dataset_reverified_before_scoring_output": True,
         "pretrained_typed_decision_head_existed": False,
         "checkpoint_zero_shot_score_emitted": False,
         "production_promotion_permitted": False,
