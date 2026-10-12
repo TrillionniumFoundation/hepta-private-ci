@@ -26,15 +26,15 @@ jobs:
           mkdir -p /tmp/hepta-scoped-format
           python3 -m pip install uv==0.8.22
           cat > /tmp/hepta-scoped-format/paths.txt <<'PATHS'
-scripts/memory_cell/locomo_frozen_retrieval.py
-scripts/memory_cell/locomo_ninearm_source_replay.py
-scripts/memory_cell/stem_oct12_reader_capacity_triage.py
-scripts/memory_cell/stem_train_heldout_bridge.py
-scripts/memory_cell/test_locomo_frozen_retrieval.py
-scripts/memory_cell/test_locomo_ninearm_source_replay.py
-scripts/memory_cell/test_stem_blind_review_workflow.py
-scripts/memory_cell/test_stem_oct12_reader_capacity_triage.py
-scripts/memory_cell/test_stem_train_heldout_bridge.py
+          scripts/memory_cell/locomo_frozen_retrieval.py
+          scripts/memory_cell/locomo_ninearm_source_replay.py
+          scripts/memory_cell/stem_oct12_reader_capacity_triage.py
+          scripts/memory_cell/stem_train_heldout_bridge.py
+          scripts/memory_cell/test_locomo_frozen_retrieval.py
+          scripts/memory_cell/test_locomo_ninearm_source_replay.py
+          scripts/memory_cell/test_stem_blind_review_workflow.py
+          scripts/memory_cell/test_stem_oct12_reader_capacity_triage.py
+          scripts/memory_cell/test_stem_train_heldout_bridge.py
           PATHS
           python3 - <<'PY'
           import ast, json
