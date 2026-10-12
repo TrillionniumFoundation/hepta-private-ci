@@ -49,5 +49,7 @@ jobs:
       - name: Real typed YAML frontend, plugin and migration compile
         run: |
           cargo +1.95.0 check --locked -p codex-skills -p codex-core-plugins -p codex-external-agent-migration -p codex-skills-extension
+      - name: Execute typed Skill frontmatter YAML compatibility regressions
+        run: cargo +1.95.0 test --locked -p codex-skills --lib parser::tests -- --nocapture
       - name: Exact Rust format
         run: cargo +1.95.0 fmt --all -- --check
