@@ -71,8 +71,9 @@ class CapacityReferenceTests(unittest.TestCase):
 
     def test_fixed_reference_revision_and_model_accounting(self):
         self.assertEqual(MODEL_ID,'Qwen/Qwen2.5-0.5B-Instruct')
-        self.assertEqual(len(MODEL_REV),40)
+        self.assertEqual(MODEL_REV,'a338b55dd21219a5f4da42bc11a9313d1a27d4cc')
         self.assertIn('model.safetensors',MODEL_FILES)
+        self.assertIn('config.json',MODEL_FILES)
         groups=cohorts()
         p=study_plan(groups,'a'*40,LABEL_RAW_SHA)
         self.assertTrue(p['tokenizer_and_model_differ'])

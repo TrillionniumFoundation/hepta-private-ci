@@ -29,7 +29,7 @@ from system2_native_receipt import strict_json, verified_archive
 from system2_onehop_label_pair_audit import audit as validate_old_label_census
 
 MODEL_ID = "Qwen/Qwen2.5-0.5B-Instruct"
-MODEL_REV = "367ae90eaf97b8d64787d6ee9101a04460b55392"
+MODEL_REV = "a338b55dd21219a5f4da42bc11a9313d1a27d4cc"
 MODEL_FILES = ("model.safetensors", "config.json", "tokenizer_config.json")
 ARMS = ("single_fact", "target_decoy_two_first", "decoy_one", "no_evidence")
 COHORTS = ("exposed_20", "fixed_new_20")

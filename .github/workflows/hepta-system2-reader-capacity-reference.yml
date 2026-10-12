@@ -66,7 +66,7 @@ jobs:
           from huggingface_hub import snapshot_download
           from pretrained import file_inventory
           from system2_reader_capacity_reference import MODEL_ID, MODEL_REV, MODEL_FILES
-          if MODEL_ID != 'Qwen/Qwen2.5-0.5B-Instruct' or MODEL_REV != '367ae90eaf97b8d64787d6ee9101a04460b55392':
+          if MODEL_ID != 'Qwen/Qwen2.5-0.5B-Instruct' or MODEL_REV != 'a338b55dd21219a5f4da42bc11a9313d1a27d4cc':
               raise ValueError('unregistered reference model')
           root=Path('/tmp/capacity-qwen-0.5b')
           snapshot_download(repo_id=MODEL_ID, revision=MODEL_REV, token=False,
@@ -76,8 +76,9 @@ jobs:
                   'model.safetensors','merges.txt','vocab.json'],
               ignore_patterns=['*.bin','*.pt','*.onnx','*.msgpack'])
           inventory=file_inventory(root)
-          if any(k not in inventory for k in MODEL_FILES):
-              raise ValueError('model download missing required files')
+          missing=sorted(set(MODEL_FILES)-set(inventory))
+          if missing:
+              raise ValueError('model download missing required files: '+repr(missing))
           if (not root.joinpath('model.safetensors').is_file() or
                   root.joinpath('model.safetensors').stat().st_size < 500_000_000):
               raise ValueError('unexpected strong reference checkpoint size')

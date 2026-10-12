@@ -21,8 +21,15 @@ more Cell parameters or longer FBSDE recursion will make the 135M Reader
 adequate. A separate public, instruction-tuned reference model is pinned:
 
 - Model: `Qwen/Qwen2.5-0.5B-Instruct`
-- Exact source revision: `367ae90eaf97b8d64787d6ee9101a04460b55392`
+- Exact source revision: `a338b55dd21219a5f4da42bc11a9313d1a27d4cc`
 - Source and license: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
+- The earlier pin `367ae90eaf97b8d64787d6ee9101a04460b55392`
+  **deleted `config.json`** upstream; hosted run 38287169597 failed closed
+  at model staging without any capacity-model inference. The replacement
+  `a338b55dd21219a5f4da42bc11a9313d1a27d4cc` is a distinct
+  complete upstream snapshot with config, tokenizer and safetensors.
+  Re-pinning is an explicit model-source change, NOT successful inference or
+  identical pretrained parameters automatically assumed.
 - Snapshot includes only model safetensors and ordinary tokenizer/config
   files, pinned by revision and independently hashed in the hosted receipt.
   No remote custom Python code is trusted, and model is frozen at inference.
