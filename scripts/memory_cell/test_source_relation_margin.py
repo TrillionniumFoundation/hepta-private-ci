@@ -115,14 +115,9 @@ class RelationLossTests(unittest.TestCase):
         from source_completion_loss import completion_loss
 
         def margin():
-            with torch.no_grad():
-                p, _ = completion_loss(
-                    model, *tasks[0], backend="supervised_positions"
-                )
-                n, _ = completion_loss(
-                    model, *negative[0], backend="supervised_positions"
-                )
-                return float(n - p)
+            p, _ = completion_loss(model, *tasks[0], backend="supervised_positions")
+            n, _ = completion_loss(model, *negative[0], backend="supervised_positions")
+            return float((n - p).detach())
 
         before = margin()
         opt = torch.optim.AdamW(

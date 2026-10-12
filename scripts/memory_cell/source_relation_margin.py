@@ -39,7 +39,10 @@ def source_negatives(documents, examples, prepared, tokenizer):
         if qid in seen or scope not in projection or not ex["sources"]:
             raise ValueError("duplicate or unbound source-only question")
         seen.add(qid)
-        facts = [projection[scope].facts[s] for s in ex["sources"]]
+        try:
+            facts = [projection[scope].facts[s] for s in ex["sources"]]
+        except KeyError as error:
+            raise ValueError("selected fact missing from its source scope") from error
         triples = {(f["entity"], f["attribute"], f["value"]) for f in facts}
         if len(triples) != 1 or next(iter(triples))[2] != ex["target"]:
             raise ValueError("positive completion differs from source facts")
