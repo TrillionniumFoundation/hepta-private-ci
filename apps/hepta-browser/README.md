@@ -21,6 +21,32 @@ After a dispatch may have crossed the worker boundary, exceptions and timeouts b
 
 `FileBrowserOperationJournal` is append-only, checksum-bound, size-bounded, fsynced and mode-0600 on Unix. A process restart can use `reconcilePersistedOperation()` without issuing another effect. Terminal operations are bounded in memory while durable tombstones remain available for replay.
 
+Journal ownership uses private local files, durable directory barriers and a
+`<journal>.writer-lock` recovery fence. Same-path callers serialize; a crash or
+uncertain write, sync or close retains the fence. Stop the old writer, inspect
+and reconcile its history, and durably repair it before explicit owner recovery;
+never automatically steal or delete a lock. Stop legacy writers before upgrading:
+they do not participate in this ownership protocol. Verified-prefix continuity
+cannot detect history erased before a fresh owner's first admitted load. A
+parent replacement detected before locking poisons the existing owner but does
+not install a fence in the replacement parent; a fresh owner needs an external
+trusted parent/history anchor to detect that change. Successful lock removal is
+not directory-synchronized, so a crash may conservatively restore a stale fence.
+
+V1 replay preserves raw checksummed history, including the exact historical
+`BrowserEffectObservationV1` receipt adornment with all three authority flags
+false. That adornment is validated only on replayed observations and grants no
+authority; immutable identities and terminal outcomes remain enforced. Future
+writes use the canonical durable-operation shape. No history rewrite or format
+migration is performed.
+
+The production Agentd service currently supports the Linux launcher only.
+Filesystem-journal durability requires working local directory synchronization;
+Unix owner/mode/hard-link checks remain Unix-only. No Windows or macOS production
+isolation/durability qualification is implied, and unsupported directory barriers
+fail rather than silently weakening acknowledgement. Memory/proposal APIs do not
+acquire filesystem ownership or add a platform restriction.
+
 ## Worker boundary
 
 `src/worker-protocol.js` implements the private protocol: four-byte big-endian length prefix, at most 1 MiB canonical JSON, payload digest, session ID, generation, monotonic sequence and request identity. Unknown/non-canonical frames fail closed.

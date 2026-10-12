@@ -18,6 +18,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AdoptSpec;
 use codex_hepta_supervisor::Adoption;
+use codex_hepta_supervisor::AgentFault;
 use codex_hepta_supervisor::AgentRelease;
 use codex_hepta_supervisor::ManagedProcess;
 use codex_hepta_supervisor::ProcessDriver;
@@ -248,16 +249,14 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
-    assert!(
-        supervisor
-            .snapshot(&agent_id)
-            .expect("snapshot")
+    let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert_eq!(
+        snapshot
             .events
             .iter()
-            .any(|event| matches!(
-                &event.kind,
-                SupervisorEventKind::RestartQueued
-            ))
+            .filter(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
+            .count(),
+        1
     );
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(499)),
@@ -278,20 +277,16 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     now += Duration::from_millis(1);
     control.crash(&agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
-    assert!(
-        supervisor
-            .snapshot(&agent_id)
-            .expect("snapshot")
+    let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
+    assert_eq!(
+        snapshot
             .events
             .iter()
-            .any(|event| matches!(
-                &event.kind,
-                SupervisorEventKind::RestartQueued
-            ))
+            .filter(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
+            .count(),
+        1
     );
-    // The second recovery must preserve attempt-three's full 1,000 ms
-    // exponential delay. This is stronger evidence of the persisted attempt
-    // than the generic in-memory RestartQueued event name.
+    // Recovery must preserve attempt three's full exponential delay.
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(999)),
         TickReport::default()
@@ -311,7 +306,15 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(
+        supervisor.tick(now),
+        TickReport {
+            faults: vec![AgentFault {
+                agent_id: agent_id.clone(),
+                message: SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string(),
+            }],
+        }
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(
@@ -319,5 +322,12 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
     )));
     assert_eq!(control.spawn_count(&agent_id), 4);
+    // Recovery cannot leave another retry queued after reporting exhaustion.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(/*secs*/ 30)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    assert!(!supervisor.snapshot(&agent_id).expect("snapshot").active);
     Ok(())
 }

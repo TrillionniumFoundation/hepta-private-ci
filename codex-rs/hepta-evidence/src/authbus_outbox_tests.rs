@@ -437,6 +437,15 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     .unwrap();
     assert_eq!(largest_issuer, AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
     let (issuer, message) = fixture(2, u64::MAX);
+    let counts: (i64, i64) = sqlx::query_as(
+        "SELECT COUNT(*), COUNT(CASE WHEN issuer_id = ? AND state IN ('queued', 'leased') THEN 1 END)
+         FROM authbus_outbox",
+    )
+    .bind(issuer.issuer_id.as_str())
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(counts, (AUTHBUS_OUTBOX_MAX_ROWS, 1));
     assert!(matches!(
         store
             .enqueue_authbus_message(
@@ -481,8 +490,9 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
             AuthBusAdmissionError::Authentication(Error::Replay)
         ))
     ));
-    // Retire the fixture epoch, release only terminal capacity, and still reject
-    // the consumed old sequence after all terminal rows are old enough to prune.
+    // Quarantine the real issuer's active message and prune its terminal row
+    // under pressure. Later maintenance must preserve unrelated active rows
+    // and the replay fence.
     let revoked = IssuerRegistration {
         revoked: true,
         ..issuer
@@ -494,6 +504,18 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .unwrap();
     tx.commit().await.unwrap();
     let (issuer, old) = fixture(1, u64::MAX);
+    let counts: (i64, i64) = sqlx::query_as(
+        "SELECT COUNT(*), COUNT(CASE WHEN issuer_id != ? AND state IN ('queued', 'leased') THEN 1 END)
+         FROM authbus_outbox",
+    )
+    .bind(issuer.issuer_id.as_str())
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(
+        counts,
+        (AUTHBUS_OUTBOX_MAX_ROWS - 1, AUTHBUS_OUTBOX_MAX_ROWS - 1)
+    );
     assert!(matches!(
         store
             .enqueue_authbus_message(
