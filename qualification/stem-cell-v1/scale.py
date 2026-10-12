@@ -71,21 +71,41 @@ def trace_report(workload, events):
             # The workload contains synthetic arrival OFFSETS. Never compare
             # them to the worker's actual monotonic clock! All three measured
             # timestamps must originate from the same native clock domain.
-            if not (event["enqueued_us"] <= event["start_us"] <= event["end_us"]):
+            times = (event["enqueued_us"], event["start_us"], event["end_us"])
+            if any(type(value) is not int or value < 0 for value in times):
+                raise ValueError("unregistered native request clock values")
+            if not (times[0] <= times[1] <= times[2]):
                 raise ValueError("non-monotone native request timing")
             if event["path"] not in ("cold_encoder", "cache_hit_head"):
                 raise ValueError("unseparated request path")
             if event["status"] not in ("ok", "rejected", "failed"):
                 raise ValueError("unknown status")
-            if event["rss_bytes"] < 0 or event["cpu_us"] < 0:
+            if any(type(event[key]) is not int or event[key] < 0
+                   for key in ("rss_bytes", "cpu_us")):
                 raise ValueError("invalid resource counters")
             requests_trace[rid] = event
         elif kind == "backend_batch":
             bid = event["batch_id"]
-            if bid in backend_batches or event.get("batch_size", 0) <= 0:
+            batch_size = event.get("batch_size")
+            if (type(bid) is not str or not bid or bid in backend_batches or
+                    type(batch_size) is not int or not 1 <= batch_size <= 32):
                 raise ValueError("invalid or duplicate backend batch")
             if event.get("backend") != "native_hepta":
                 raise ValueError("non-native backend cannot claim a native batch")
+            # Batch-wide owner identity, exact membership and a same-clock
+            # backend interval are mandatory for *diagnostic consistency*.
+            # These self-reported values are never cryptographic attestation.
+            declared = event.get("member_request_ids")
+            if (type(event.get("scope")) is not str or not event["scope"] or
+                    type(event.get("generation")) is not int or event["generation"] < 1 or
+                    type(declared) is not list or len(declared) != batch_size or
+                    any(type(item) is not str or not item for item in declared) or
+                    len(set(declared)) != len(declared)):
+                raise ValueError("missing or duplicate backend batch ownership/membership")
+            start, end = event.get("backend_started_us"), event.get("backend_ended_us")
+            if (type(start) is not int or type(end) is not int or
+                    start < 0 or end < start):
+                raise ValueError("unbound native backend clock interval")
             backend_batches[bid] = event
         elif kind == "wal_fsync":
             if event["latency_us"] < 0:
@@ -110,10 +130,21 @@ def trace_report(workload, events):
     if set(used_batches) != set(backend_batches):
         raise ValueError("orphan backend batch")
     for bid, members in used_batches.items():
-        if len(members) != backend_batches[bid]["batch_size"]:
+        batch = backend_batches[bid]
+        if len(members) != batch["batch_size"]:
             raise ValueError("batch size is not actual member count")
-        if any(m["model_digest"] != backend_batches[bid]["model_digest"] for m in members):
+        if {m["request_id"] for m in members} != set(batch["member_request_ids"]):
+            raise ValueError("backend batch member identity mismatch")
+        if any(m["model_digest"] != batch["model_digest"] for m in members):
             raise ValueError("mixed-model backend batch")
+        if (len({m["scope"] for m in members}) != 1 or
+                len({m["generation"] for m in members}) != 1 or
+                any(m["scope"] != batch["scope"] or
+                    m["generation"] != batch["generation"] for m in members)):
+            raise ValueError("mixed-scope/generation backend batch")
+        if any(not (m["start_us"] <= batch["backend_started_us"] <=
+                    batch["backend_ended_us"] <= m["end_us"]) for m in members):
+            raise ValueError("backend batch interval not covered by every member")
     ok = [r for r in requests_trace.values() if r["status"] == "ok"]
     lat = {}
     for path in ("cold_encoder", "cache_hit_head"):
@@ -125,7 +156,7 @@ def trace_report(workload, events):
                      "p95_ms": quantile(values, 0.95), "p99_ms": quantile(values, 0.99),
                      "execution_p99_ms": quantile(execution, 0.99),
                      "queue_p99_ms": quantile(queue, 0.99)}
-    return {"schema": "hepta.stem-cell-scale-observation.v1", "authority": "read_only_diagnostic",
+    return {"schema": "hepta.stem-cell-scale-observation.v2", "authority": "read_only_diagnostic",
             "trust": "unverified_trace_not_production_attestation",
             "logical_cells": workload[0]["scenario"]["logical_cells"],
             "requested": len(workload), "completed": len(ok),
@@ -133,7 +164,13 @@ def trace_report(workload, events):
             "cold_and_cached_latency": lat,
             "backend_batches": len(backend_batches),
             "batch_size_p95": quantile([b["batch_size"] for b in backend_batches.values()], 0.95),
-            "actual_backend_multi_request_batches": sum(b["batch_size"] > 1 for b in backend_batches.values()),
+            "trace_claimed_multi_request_batches": sum(
+                b["batch_size"] > 1 for b in backend_batches.values()),
+            "independently_verified_backend_multi_request_batches": None,
+            "batch_evidence": "exact_members_scope_generation_clock_self_reported_unattested",
+            "backend_execution_p99_ms_unattested": quantile(
+                [(b["backend_ended_us"] - b["backend_started_us"]) / 1000
+                 for b in backend_batches.values()], 0.99),
             "cache_hit_fraction": sum(r["path"] == "cache_hit_head" for r in ok) / len(ok) if ok else None,
             "request_attributed_cpu_seconds": sum(r["cpu_us"] for r in requests_trace.values()) / 1e6,
             "peak_rss_bytes": max(r["rss_bytes"] for r in requests_trace.values()),
