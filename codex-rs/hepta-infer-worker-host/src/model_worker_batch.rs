@@ -101,6 +101,9 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
         {
             return Err(Error::RequestCapacity);
         }
+        // Batch peak is scoped to the dispatched driver; all other loaded
+        // handles still consume the same generation-wide memory grant.
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.unload_indeterminate {
             return Err(Error::ModelUnloadIndeterminate);
@@ -190,7 +193,10 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
 
         if executed.batch_digest != batch_digest
             || executed.members.len() != count
-            || executed.observed_peak_memory_bytes > self.grant.maximum_memory_bytes
+            || executed
+                .observed_peak_memory_bytes
+                .checked_add(other_model_resident_bytes)
+                .is_none_or(|peak| peak > self.grant.maximum_memory_bytes)
             || executed.observed_peak_memory_bytes < handle.observed_memory_bytes
         {
             self.execution_indeterminate = true;
@@ -211,7 +217,13 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
         for (request, member) in requests.into_iter().zip(executed.members) {
             if member.request_id != request.authorization.request_id
                 || member.input_digest != request.input_digest
-                || member.observation.observed_memory_bytes > executed.observed_peak_memory_bytes
+                // A member cannot report resident+transient allocations
+                // greater than the peak of its containing backend batch.
+                || member
+                    .observation
+                    .observed_memory_bytes
+                    .checked_add(member.observation.transient_allocation_bytes)
+                    .is_none_or(|member_peak| member_peak > executed.observed_peak_memory_bytes)
             {
                 self.execution_indeterminate = true;
                 return Err(Error::FeatureBatchMismatch);
