@@ -1,0 +1,152 @@
+{
+  "disposition": "NO-GO for treating fewer prompt tokens as a measured faster reader or for starting parametric learning on these repeated authored tasks",
+  "distinct_original_prompts": 112,
+  "frozen_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "frozen_reader_inventory": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "host_groups": {
+    "no_reported_native_bf16": {
+      "calls": 241,
+      "calls_over_180_seconds": 200,
+      "generated_tokens": 3004,
+      "median_call_seconds": 977.0123,
+      "median_seconds_per_generated_token": 100.9343,
+      "model_hosts": {
+        "AMD EPYC 7763 64-Core Processor": 193,
+        "AMD EPYC 9V74 80-Core Processor": 2,
+        "INTEL(R) XEON(R) PLATINUM 8573C": 17,
+        "Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz": 29
+      },
+      "q90_call_seconds_rank": 3782.6892,
+      "reader_seconds_sum": 363038.868
+    },
+    "reported_native_bf16": {
+      "calls": 95,
+      "calls_over_180_seconds": 0,
+      "generated_tokens": 1228,
+      "median_call_seconds": 13.4667,
+      "median_seconds_per_generated_token": 1.0561,
+      "model_hosts": {
+        "AMD EPYC 9V45 96-Core Processor": 41,
+        "AMD EPYC 9V74 80-Core Processor": 34,
+        "INTEL(R) XEON(R) PLATINUM 8573C": 17,
+        "Intel(R) Xeon(R) 6973P-C": 3
+      },
+      "q90_call_seconds_rank": 27.7173,
+      "reader_seconds_sum": 1524.5704
+    }
+  },
+  "input_tokens_are_not_total_lifecycle_cost": true,
+  "new_independent_source_families": 0,
+  "no_incremental_organized_task_success": true,
+  "no_randomized_hardware_allocation": true,
+  "original_model_calls": 336,
+  "per_run": {
+    "A": {
+      "arm_cpu_instruction_census": {
+        "entity_time": {
+          "no_reported_native_bf16": 6,
+          "reported_native_bf16": 2
+        },
+        "organized": {
+          "no_reported_native_bf16": 6,
+          "reported_native_bf16": 2
+        }
+      },
+      "calibration_answers": 40,
+      "chosen_k": 1,
+      "entity_time_correct": 8,
+      "entity_time_input_tokens": 5752,
+      "entity_time_reader_seconds": 7753.7822,
+      "evaluation_answers": 72,
+      "organized_correct": 8,
+      "organized_input_tokens": 5179,
+      "organized_minus_entity_time_reader_seconds": -479.7745,
+      "organized_reader_seconds": 7274.0077,
+      "outer_zip_sha256": "7c991f0996fc24c650efb28f6266da51ed1655b78585e11b78dbc424707b7b7f",
+      "sharded_host_observations": 32,
+      "source_commit": "8250698244417eb14994518af05fa6f79e783066",
+      "verified_archive_members": 267
+    },
+    "B": {
+      "arm_cpu_instruction_census": {
+        "entity_time": {
+          "no_reported_native_bf16": 8,
+          "reported_native_bf16": 0
+        },
+        "organized": {
+          "no_reported_native_bf16": 6,
+          "reported_native_bf16": 2
+        }
+      },
+      "calibration_answers": 40,
+      "chosen_k": 1,
+      "entity_time_correct": 8,
+      "entity_time_input_tokens": 5752,
+      "entity_time_reader_seconds": 6440.3516,
+      "evaluation_answers": 72,
+      "organized_correct": 8,
+      "organized_input_tokens": 5179,
+      "organized_minus_entity_time_reader_seconds": -2884.6913,
+      "organized_reader_seconds": 3555.6603,
+      "outer_zip_sha256": "b4cf1346ce4c5b1625cdc57845bcca33fcf82f84340433b602d76258c10c1138",
+      "sharded_host_observations": 32,
+      "source_commit": "eba9af092cca1c2875552ffaea2219678143a73c",
+      "verified_archive_members": 267
+    },
+    "D": {
+      "arm_cpu_instruction_census": {
+        "entity_time": {
+          "no_reported_native_bf16": 6,
+          "reported_native_bf16": 2
+        },
+        "organized": {
+          "no_reported_native_bf16": 7,
+          "reported_native_bf16": 1
+        }
+      },
+      "calibration_answers": 40,
+      "chosen_k": 1,
+      "entity_time_correct": 8,
+      "entity_time_input_tokens": 5752,
+      "entity_time_reader_seconds": 5603.8264,
+      "evaluation_answers": 72,
+      "organized_correct": 8,
+      "organized_input_tokens": 5179,
+      "organized_minus_entity_time_reader_seconds": 1176.5687,
+      "organized_reader_seconds": 6780.3951,
+      "outer_zip_sha256": "d59560882e217d8772e4044ec33b8cdb10f5297f19b0a6e03e53266407c839a0",
+      "sharded_host_observations": 32,
+      "source_commit": "e0e413d670be8982b9986a119696c6ca164ca518",
+      "verified_archive_members": 300
+    }
+  },
+  "production_accepted": false,
+  "reader_seconds_exclude_model_staging_and_host_billing": true,
+  "reported_native_bf16_cpu_flags": [
+    "amx_bf16",
+    "avx512_bf16",
+    "bf16"
+  ],
+  "same_prompt_cross_host": {
+    "matched_prompt_positions": 77,
+    "median_non_native_to_native_seconds_per_generated_token_ratio": 97.5811,
+    "ratio_is_causal_estimate": false
+  },
+  "schema": "hepta.memory-strong-rag.native-bf16-host-cost.v1",
+  "source_pins": {
+    "A": {
+      "outer_zip_sha256": "7c991f0996fc24c650efb28f6266da51ed1655b78585e11b78dbc424707b7b7f",
+      "source_commit": "8250698244417eb14994518af05fa6f79e783066"
+    },
+    "B": {
+      "outer_zip_sha256": "b4cf1346ce4c5b1625cdc57845bcca33fcf82f84340433b602d76258c10c1138",
+      "source_commit": "eba9af092cca1c2875552ffaea2219678143a73c"
+    },
+    "D": {
+      "outer_zip_sha256": "d59560882e217d8772e4044ec33b8cdb10f5297f19b0a6e03e53266407c839a0",
+      "source_commit": "e0e413d670be8982b9986a119696c6ca164ca518"
+    }
+  },
+  "statistical_superiority": false,
+  "three_repetitions_are_independent_tasks": false
+}

@@ -1,0 +1,65 @@
+name: MemoryCell frozen Qwen native BF16 host-cost replay
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/strong_rag_host_cost_audit.py"
+      - "scripts/memory_cell/test_strong_rag_host_cost_audit.py"
+      - "scripts/memory_cell/data/strong-rag-native-bf16-host-cost-20261012.json"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_STRONG_RAG_HOST_COST_20261012.md"
+      - ".github/workflows/hepta-memory-strong-rag-host-cost.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memorycell-strong-rag-bf16-audit-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  read-only-original-cost-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_MEMORY_BF16_COST_ARCHIVES: /tmp/bf16-frozen-archives
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Restore only three existing fully sharded research archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$HEPTA_MEMORY_BF16_COST_ARCHIVES" /tmp/bf16-host-cost-replay
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11720146105/zip \
+            > "$HEPTA_MEMORY_BF16_COST_ARCHIVES/A-full.zip"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11717450320/zip \
+            > "$HEPTA_MEMORY_BF16_COST_ARCHIVES/B-full.zip"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11722740803/zip \
+            > "$HEPTA_MEMORY_BF16_COST_ARCHIVES/D-full.zip"
+      - name: Original answer and host provenance integrity checks
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/strong_rag_host_cost_audit.py \
+            scripts/memory_cell/test_strong_rag_host_cost_audit.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_strong_rag_host_cost_audit.py' -v \
+            2>&1 | tee /tmp/bf16-host-cost-replay/tests.log
+          python3 scripts/memory_cell/strong_rag_host_cost_audit.py \
+            "$HEPTA_MEMORY_BF16_COST_ARCHIVES" \
+            --output /tmp/bf16-host-cost-replay/recomputed.json \
+            2>&1 | tee /tmp/bf16-host-cost-replay/audit.log
+          diff -u scripts/memory_cell/data/strong-rag-native-bf16-host-cost-20261012.json \
+            /tmp/bf16-host-cost-replay/recomputed.json
+          git rev-parse HEAD > /tmp/bf16-host-cost-replay/auditor-source-commit.txt
+          (cd /tmp/bf16-host-cost-replay && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memorycell-native-bf16-reader-cost-independent-replay
+          path: /tmp/bf16-host-cost-replay
+          if-no-files-found: warn
