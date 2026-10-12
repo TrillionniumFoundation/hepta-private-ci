@@ -267,6 +267,46 @@ production startup and final-use owner must verify live monotonic retention
 and retain its own authenticated checkpoint minimum. This source gate does
 not permit physical split, promotion, or a production completion claim.
 
+### Fresh online minimum-store readback (P0 source boundary)
+
+A detached Observer signature and a matching historical checkpoint digest
+are **not** evidence that a separately retained monotonic minimum is still
+current. The strict public deep-verification entry now requires an online
+minimum source and an externally pinned **separate** source verification key.
+The key must be independent of the two original runtime signers, the four
+effect-owner signers, the target host, and every evidence Observer signer.
+
+The source implementation introduces a narrowly scoped
+`CellSplitSupervisorMinimumOnlinePortV1` and the concrete
+`CellSplitSupervisorMinimumFileStoreV1` qualification owner:
+
+- Create-only canonical Supervisor minimum record in a private isolated
+  root, with file/directory fsync and an exclusive owner lock;
+- Independent original journal/Selector admission before durable first
+  publication, with the admission repeated immediately before the write;
+- Read-only `open_existing` recovery, no missing-record regeneration,
+  hardlink/symlink and mismatched original signing-key rejection;
+- A fresh 256-bit challenge signed by the separately pinned minimum owner;
+- Two online minimum challenges, **before and after** rechecking four original
+  signed effect owners. The underlying durable record digest must match
+  across both reads or the deep verdict fails closed.
+
+The resulting read-only deep receipt includes a digest of both fresh signed
+minimum readbacks and continues to set
+`productionActivationAuthorized=false`. Regression tests cover missing
+record, untrusted publication, duplicate publication, restart/reopen,
+concurrent writer, corrupted record, changed original epoch, stale nonce,
+different host, and external minimum deletion while four owners are checked.
+
+This does not grant global five-owner atomic linearizability. An isolated
+ordinary filesystem still cannot detect restoration of its **entire** root
+to an older, internally valid snapshot. Production must keep the minimum
+and signer under independent rollback-resistant custody, retain an external
+minimum against which the store itself recovers, and prove live target-host
+and NDU/Selector final-use. The filesystem implementation is not a complete
+hardware-backed remote witness service. Current exact-head CI is not yet
+qualified; no physical split, route promotion, or merge is authorized.
+
 ### Retrospective rollback evidence is not a live successor route
 
 The signed target-host lifecycle also includes rollback, tombstone and
