@@ -1219,3 +1219,88 @@ fn new_execute_rejects_unavailable_frontier_without_committing() {
     assert_eq!(service.backend().commits, 0);
     assert!(!root.path().join("committed").exists());
 }
+
+struct RevokeLiveEffectAtFinalAuthorization {
+    inner: DiskEffect,
+    authorization_reads: usize,
+}
+
+impl CellSplitDurableEffectBackendV1 for RevokeLiveEffectAtFinalAuthorization {
+    type Error = io::Error;
+
+    fn authorize_execute(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        self.authorization_reads += 1;
+        self.inner.authorize_execute(intent)?;
+        if self.authorization_reads == 2 {
+            // A separate owner revokes the actual effect while the final
+            // Selector/final-use check is in flight.
+            fs::remove_file(self.inner.live_path())?;
+        }
+        Ok(())
+    }
+
+    fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
+        self.inner.commit_once(intent)
+    }
+
+    fn read_committed(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<Option<CellSplitOwnedEffectV1>, Self::Error> {
+        self.inner.read_committed(intent)
+    }
+
+    fn verify_current(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+        effect: &CellSplitOwnedEffectV1,
+    ) -> Result<bool, Self::Error> {
+        self.inner.verify_current(intent, effect)
+    }
+
+    fn current_sequence(&mut self) -> Result<u64, Self::Error> {
+        self.inner.current_sequence()
+    }
+}
+
+#[test]
+fn execute_does_not_sign_a_revoked_effect_after_final_authority_revalidation() {
+    let root = tempfile::tempdir().expect("owner root");
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        RevokeLiveEffectAtFinalAuthorization {
+            inner: DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
+            authorization_reads: 0,
+        },
+    )
+    .expect("signed original owner");
+    let (mut client, mut server) = UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: intent(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("execute request");
+
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect changed after final authority revalidation"
+        ))
+    ));
+    assert_eq!(service.backend().authorization_reads, 2);
+    assert_eq!(service.backend().inner.commits, 1);
+    assert!(root.path().join("committed").exists());
+    assert!(!root.path().join("live-owner-state").exists());
+    // The effect is ambiguous and must be read back; never dispatch twice.
+}
