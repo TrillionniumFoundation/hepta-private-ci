@@ -70,7 +70,7 @@ install:
     #!powershell.exe -File
     $pwsh = Get-Command pwsh.exe -ErrorAction SilentlyContinue
     if (-not $pwsh) {
-        winget install --exact --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements
+        winget install --exact --id Microsoft.PowerShell --source winget --accept-source-agreements --accept-source-agreements
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
     }
     rustup show active-toolchain
@@ -176,7 +176,7 @@ build-for-release:
 
 # Run the MCP server
 mcp-server-run *args:
-    cargo run -p codex-mcp-server -- {args}
+    cargo run --bin codex-mcp-server -- {args}
 
 # Regenerate the json schema for config.toml from the current config types.
 write-config-schema:
@@ -211,4 +211,4 @@ log *args:
 
 [windows]
 log *args:
-    $forwarded_args = @($args | Select-Object -Skip 1); if ($forwarded_args.Count -gt 0 -and $forwarded_args[0] -eq "--") { $forwarded_args = @($args | Select-Object -Skip 1) }; cargo run -p codex-cli --bin logs_client -- @forwarded_args
+    $forwarded_args = @($args | Select-Object -Skip 1); if ($forwarded_args.Count -gt 0 -and $forwarded_args[0] -eq "--") { $forwarded_args = @($forwarded_args | Select-Object -Skip 1) }; cargo run -p codex-cli --bin logs_client -- @forwarded_args
