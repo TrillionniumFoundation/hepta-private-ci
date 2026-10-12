@@ -139,6 +139,22 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         self.assertTrue(any("1024: physical p50" in x for x in result["violations"]))
         self.assertFalse(result["production_activation_authorized"])
 
+    def test_zero_resource_and_backend_counters_are_not_real_scale_evidence(self):
+        for field in (
+            "p50_ms",
+            "cpu_seconds",
+            "rss_peak_bytes",
+            "native_backend_calls",
+            "recovery_ms",
+        ):
+            with self.subTest(field=field):
+                packet = synthetic_matrix()
+                packet["runs"][0][field] = 0
+                with self.assertRaisesRegex(
+                    InvalidEvidence, f"missing nonzero observation of {field}"
+                ):
+                    analyze(packet)
+
     def test_reject_nonfinite_and_inconsistent_measurements(self):
         packet = synthetic_matrix()
         packet["runs"][0]["cpu_seconds"] = float("nan")
