@@ -9,6 +9,7 @@ use codex_hepta_infer_core::durable_control::RequestState;
 use codex_hepta_infer_core::durable_control::Reservation;
 use codex_hepta_infer_core::durable_control::TerminalObservation;
 use codex_hepta_neuron::NeuronInferenceControlPort;
+use codex_hepta_neuron::NeuronModelError;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
@@ -21,6 +22,7 @@ use crate::model_worker::ResourceGrant;
 
 struct FixtureDriver {
     _calls: Arc<AtomicUsize>,
+    observed_tokens: u32,
 }
 
 impl ModelDriver for FixtureDriver {
@@ -55,7 +57,7 @@ impl NeuronFeatureDriver for FixtureDriver {
         Ok(DriverNeuronFeatureObservation {
             terminal_observed: true,
             succeeded: true,
-            consumed_tokens: 4,
+            consumed_tokens: self.observed_tokens,
             encoder_digest: request.encoder_digest.clone(),
             head_digest: request.head_digest.clone(),
             drive_q24: vec![1 << 24; request.expected_output_width],
@@ -87,6 +89,13 @@ fn worker() -> InferenceWorker<FixtureDriver> {
 }
 
 fn worker_with_calls(calls: Arc<AtomicUsize>) -> InferenceWorker<FixtureDriver> {
+    worker_with_calls_and_tokens(calls, 4)
+}
+
+fn worker_with_calls_and_tokens(
+    calls: Arc<AtomicUsize>,
+    observed_tokens: u32,
+) -> InferenceWorker<FixtureDriver> {
     let mut value = InferenceWorker::new(
         100,
         "worker.1".to_owned(),
@@ -102,7 +111,10 @@ fn worker_with_calls(calls: Arc<AtomicUsize>) -> InferenceWorker<FixtureDriver> 
             maximum_memory_bytes: 8192,
             semantic_digest: "1".repeat(64),
         },
-        FixtureDriver { _calls: calls },
+        FixtureDriver {
+            _calls: calls,
+            observed_tokens,
+        },
     )
     .unwrap();
     value
@@ -519,4 +531,50 @@ fn abandoned_fsynced_neuron_dispatch_is_not_replayable_after_crash() {
         Err(NeuronDurableAssignmentErrorV1::NotAssigned)
     ));
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
+
+#[test]
+fn fsynced_neuron_token_overrun_is_indeterminate_and_not_replayable_after_crash() {
+    let directory = tempfile::tempdir().unwrap();
+    let request = typed_request();
+    let mut owner = control(&directory, &request);
+    let calls = Arc::new(AtomicUsize::new(0));
+    // Pre-driver both the durable reservation and the loaded manifest allow
+    // this request (64 tokens); the backend actually reports consuming 65.
+    let mut worker = worker_with_calls_and_tokens(calls.clone(), 65);
+    let (claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &request, 100).unwrap();
+    assert_eq!(claim.state, RequestState::Dispatching);
+    assert_eq!(claim.revision, 4);
+    assert_eq!(
+        port.execute_feature(&request),
+        Err(NeuronModelError::Indeterminate),
+        "physical overrun is an unknown outcome, never a successful model receipt"
+    );
+    assert!(!port.reservation_unconsumed());
+    drop(port);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(
+        owner.get(request.request_id.as_str()).unwrap().state,
+        RequestState::Dispatching
+    );
+    drop(worker);
+    drop(owner);
+
+    // A restart loses in-memory Worker tombstones, but not the fsynced
+    // Dispatching record. It cannot double-execute the same reservation.
+    let mut reopened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    assert_eq!(
+        reopened.get(request.request_id.as_str()).unwrap().state,
+        RequestState::Dispatching
+    );
+    let mut fresh_worker = worker_with_calls(calls.clone());
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(&mut reopened, &mut fresh_worker, &request, 100),
+        Err(NeuronDurableAssignmentErrorV1::NotAssigned)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    // Only a separate authenticated terminal/recovery owner can settle this
+    // uncertain execution. No local retry or arbitrary success is issued.
 }
