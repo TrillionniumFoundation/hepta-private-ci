@@ -31,6 +31,11 @@ pub trait CellSplitScopeSelectionAdmissionV1 {
 
     fn current_scope_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error>;
 
+    /// Read the current Objective revision from the independently owned
+    /// Control registry. A previously signed Selector decision is not valid
+    /// after this macro-control objective changes, even if Scope is unchanged.
+    fn current_objective_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error>;
+
     fn verify_current_selection(
         &self,
         scope: &StableId,
@@ -93,6 +98,7 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
                 &signed_ndu_read.snapshot.scope_id,
                 admission,
             )?;
+            validate_objective_binding(selected_scope_id, selected.objective_digest, admission)?;
             // Independently refresh Selector membership, not merely the
             // signature originally verified when the token was constructed.
             admission
@@ -122,6 +128,23 @@ fn validate_scope_binding<A: CellSplitScopeSelectionAdmissionV1>(
         .map_err(|e| format!("current Control scope unavailable: {e}"))?;
     if current.to_string() != plan.scope_digest {
         return Err("current Control scope differs from frozen CellSplit plan".into());
+    }
+    Ok(())
+}
+
+fn validate_objective_binding<A: CellSplitScopeSelectionAdmissionV1>(
+    scope: &StableId,
+    selected_objective_digest: Digest32,
+    admission: &A,
+) -> Result<(), String> {
+    if selected_objective_digest.is_zero() {
+        return Err("frozen Selector objective is missing".into());
+    }
+    let current = admission
+        .current_objective_digest(scope)
+        .map_err(|e| format!("current Control objective unavailable: {e}"))?;
+    if current.is_zero() || current != selected_objective_digest {
+        return Err("current Control objective differs from frozen Selector objective".into());
     }
     Ok(())
 }
@@ -173,6 +196,7 @@ mod tests {
     struct CurrentScope {
         expected_scope: StableId,
         current_digest: Digest32,
+        current_objective: Digest32,
         unavailable: bool,
     }
 
@@ -184,6 +208,14 @@ mod tests {
                 Err("independent Control scope missing")
             } else {
                 Ok(self.current_digest)
+            }
+        }
+
+        fn current_objective_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error> {
+            if self.unavailable || scope != &self.expected_scope {
+                Err("independent Control objective missing")
+            } else {
+                Ok(self.current_objective)
             }
         }
 
@@ -204,6 +236,7 @@ mod tests {
         let current = CurrentScope {
             expected_scope: requested.clone(),
             current_digest: Digest32::from_array([0x11; 32]),
+            current_objective: Digest32::from_array([0x66; 32]),
             unavailable: false,
         };
         let frozen = plan();
@@ -228,6 +261,33 @@ mod tests {
             validate_scope_binding(&frozen, &requested, &requested, &unavailable).is_err(),
             "loss of live scope authority fails closed"
         );
+    }
+
+    #[test]
+    fn current_control_objective_fences_stale_ndu_selector_decisions() {
+        let scope = StableId::new("scope-a").expect("scope");
+        let frozen_objective = Digest32::from_array([0x66; 32]);
+        let current = CurrentScope {
+            expected_scope: scope.clone(),
+            current_digest: Digest32::from_array([0x11; 32]),
+            current_objective: frozen_objective,
+            unavailable: false,
+        };
+        assert!(validate_objective_binding(&scope, frozen_objective, &current).is_ok());
+        assert!(validate_objective_binding(&scope, Digest32::ZERO, &current).is_err());
+
+        // Scope and signed Selection can remain unchanged while the actual
+        // Objective owner has moved to a new revision. Reject before intent.
+        let changed = CurrentScope {
+            current_objective: Digest32::from_array([0x77; 32]),
+            ..current
+        };
+        assert!(validate_objective_binding(&scope, frozen_objective, &changed).is_err());
+        let unavailable = CurrentScope {
+            unavailable: true,
+            ..changed
+        };
+        assert!(validate_objective_binding(&scope, frozen_objective, &unavailable).is_err());
     }
 
     #[test]
