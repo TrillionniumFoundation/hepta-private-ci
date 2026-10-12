@@ -1,7 +1,7 @@
 import copy
 import unittest
 
-from adapter_candidate_gate import GIT_REMOTE, SDK_PACKAGES, audit
+from adapter_candidate_gate import GIT_REMOTE, audit
 from upstream_source_probe import UPSTREAM_GIT_SHA
 
 
@@ -121,6 +121,20 @@ class CandidatePreflightTests(unittest.TestCase):
         data["resolve"]["nodes"][3]["dependencies"] = []
         self.assertIn("PINNED_SDK_NOT_LINKED_TO_MATRIX_SDK_CRYPTO",
                       audit(data, ORIGINAL, STAGED)["errors"])
+
+    def test_disposable_manifest_cannot_modify_unrelated_dependencies(self):
+        other = STAGED + b'# harmless-looking but unauthorized change\\n'
+        self.assertIn(
+            "DISPOSABLE_WORKSPACE_MANIFEST_UNAUTHORIZED_DRIFT",
+            audit(fixture(), ORIGINAL, other)["errors"]
+        )
+        # The staged SQLx/SQLite features cannot silently change in an
+        # otherwise pinned candidate, even if metadata says E2EE is enabled.
+        changed = STAGED.replace(b"\\"sqlite\\"]", b"\\"sqlite\\", \\"extra\\"]")
+        self.assertIn(
+            "DISPOSABLE_WORKSPACE_MANIFEST_UNAUTHORIZED_DRIFT",
+            audit(fixture(), ORIGINAL, changed)["errors"]
+        )
 
     def test_missing_resolver_or_package_roots_fail_closed(self):
         data = fixture()
