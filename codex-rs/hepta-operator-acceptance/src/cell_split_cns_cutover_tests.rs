@@ -494,7 +494,7 @@ fn requires_original_runtime_effect_and_exact_live_route() {
         recovered.read_committed(&request).expect("reopened CNS"),
         Some(first.clone())
     );
-    let mut backend = DiskCns::open(
+    let backend = DiskCns::open(
         root.path().to_path_buf(),
         SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),
@@ -515,7 +515,7 @@ fn lost_runtime_ack_is_ambiguous_and_cannot_forge_success() {
     let request = intent();
     // A simulated crash between real route mutation and the separately
     // persisted original owner receipt. No second cutover is permitted.
-    let mut backend = DiskCns::open(
+    let backend = DiskCns::open(
         root.path().to_path_buf(),
         SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),

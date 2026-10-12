@@ -261,12 +261,12 @@ fn frozen_owner_trust_pins(
     if trust.plan_digest != plan.digest()? {
         return Err(CellSplitExecutionErrorV1::Invalid("owner trust plan drift"));
     }
-    canonical_json(&CellSplitOwnerTrustPinsV1 {
+    Ok(canonical_json(&CellSplitOwnerTrustPinsV1 {
         schema: "hepta.learning.cell-split.owner-trust-pins.v1",
         plan_digest: &trust.plan_digest,
         owner_ids: &plan.owner_ids,
         verifying_keys: std::array::from_fn(|index| trust.owner_keys[index].to_bytes()),
-    })
+    })?)
 }
 
 fn receipt_digest(

@@ -3,7 +3,6 @@ use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::thread;
 
-use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
 
 use super::*;
