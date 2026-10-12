@@ -441,6 +441,13 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
             if request.feature_vector_q24.len() != width {
                 return Err(Error::FeatureBatchMismatch);
             }
+            if request
+                .feature_vector_q24
+                .iter()
+                .any(|value| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(value))
+            {
+                return Err(Error::FeatureLimit);
+            }
             contiguous.extend_from_slice(&request.feature_vector_q24);
         }
         // Count only a fully validated dispatch, not an invalid input batch.
@@ -461,8 +468,19 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
         let mut results = (0..requests.len())
             .map(|_| None)
             .collect::<Vec<Option<(Vec<i64>, Vec<i64>)>>>();
+        let mut tracked_accumulator_peak = 0u64;
         for (head_digest, lanes) in head_lanes {
             let head = self.heads.get(head_digest).ok_or(Error::ModelMismatch)?;
+            // A bounded Q48 workspace is allocated once per immutable Head
+            // group and reused for each output row. Include its high-water
+            // bound rather than undercounting the newly batched arithmetic.
+            let accumulator_bytes = lanes
+                .len()
+                .checked_mul(3)
+                .and_then(|n| n.checked_mul(std::mem::size_of::<i128>()))
+                .ok_or(Error::ArithmeticOverflow)?;
+            tracked_accumulator_peak = tracked_accumulator_peak
+                .max(u64::try_from(accumulator_bytes).map_err(|_| Error::ArithmeticOverflow)?);
             for (&index, output) in lanes
                 .iter()
                 .zip(head.infer_batch(&contiguous, &lanes, width)?)
@@ -515,6 +533,7 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
             .tracked_weights_bytes
             .checked_add(u64::try_from(input_bytes).map_err(|_| Error::ArithmeticOverflow)?)
             .and_then(|n| n.checked_add(tracked_outputs))
+            .and_then(|n| n.checked_add(tracked_accumulator_peak))
             .ok_or(Error::ArithmeticOverflow)?;
         Ok(DriverNeuronBackendBatch {
             batch_digest: batch_digest.to_string(),
