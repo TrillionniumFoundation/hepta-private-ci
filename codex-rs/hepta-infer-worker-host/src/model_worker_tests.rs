@@ -407,7 +407,10 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
-    assert!(worker.is_quarantined(), "post-driver identity corruption quarantines the Worker");
+    assert!(
+        worker.is_quarantined(),
+        "post-driver identity corruption quarantines the Worker"
+    );
 }
 
 #[test]
@@ -753,9 +756,14 @@ fn unobserved_physical_neuron_terminality_quarantines_backend_for_new_requests()
 
 #[test]
 fn invalid_pre_driver_neuron_request_does_not_quarantine_healthy_backend() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.neuron-preflight".to_owned(), 3, grant(), Driver::default())
-            .unwrap();
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.neuron-preflight".to_owned(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .unwrap();
     worker.load_model(100, manifest()).unwrap();
     let mut invalid = neuron_feature_request();
     invalid.feature_vector_q24[0] += 1;
@@ -768,7 +776,8 @@ fn invalid_pre_driver_neuron_request_does_not_quarantine_healthy_backend() {
     healthy.authorization.request_id = "request.valid2".into();
     healthy.authorization.reservation_id = "reservation.valid2".into();
     assert_eq!(
-        worker.run_neuron_features(100, "model.1", healthy)
+        worker
+            .run_neuron_features(100, "model.1", healthy)
             .unwrap()
             .status,
         ExecutionStatus::Succeeded
