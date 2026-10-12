@@ -541,6 +541,17 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             None => write_private_new(&pins_path, &frozen_pins)?,
         }
 
+        // Snapshot the complete bounded local namespace before querying
+        // any original owner. A remote readback may race with local corruption
+        // or replacement; neither a reconstructed cursor nor a fresh open
+        // may accept the resulting mixed local history.
+        let mut frame_snapshots = Vec::with_capacity(STEP_COUNT);
+        for index in 0..STEP_COUNT {
+            frame_snapshots.push((
+                read_frame(&frame_path(&root, index, "prepared"))?,
+                read_frame(&frame_path(&root, index, "committed"))?,
+            ));
+        }
         let mut cursor = 0;
         let mut pending = false;
         let mut previous_receipt_digest = plan_digest.clone();
@@ -549,8 +560,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 .ok_or(CellSplitExecutionErrorV1::Invalid("step index"))?;
             let intent = make_intent(&plan, &plan_digest, step, &previous_receipt_digest);
             let expected = canonical_json(&intent)?;
-            let prepared = read_frame(&frame_path(&root, index, "prepared"))?;
-            let committed = read_frame(&frame_path(&root, index, "committed"))?;
+            let (prepared, committed) = frame_snapshots[index].clone();
             match (prepared, committed) {
                 (None, None) => {
                     if has_successor_frame(&root, index + 1)? {
@@ -588,6 +598,25 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 }
             }
         }
+        // Original-owner RPCs can be slow. Reconfirm both the immutable
+        // execution identity and *every* originally observed frame after the
+        // last remote callback, before declaring a successful recovery.
+        verify_split_frame_namespace(&root)?;
+        if read_frame(&path)? != Some(bytes) || read_frame(&pins_path)? != Some(frozen_pins) {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "frozen identity changed during owner recovery",
+            ));
+        }
+        for (index, (prepared, committed)) in frame_snapshots.into_iter().enumerate() {
+            if read_frame(&frame_path(&root, index, "prepared"))? != prepared
+                || read_frame(&frame_path(&root, index, "committed"))? != committed
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "local history changed during owner recovery",
+                ));
+            }
+        }
+        lock.verify_current(&root)?;
         Ok(Self {
             root,
             plan,
