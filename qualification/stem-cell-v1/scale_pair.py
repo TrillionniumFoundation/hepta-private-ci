@@ -206,7 +206,14 @@ def compare(baseline_workload, candidate_workload, baseline_trace, candidate_tra
 
 
 def _read_json(path):
-    raw = Path(path).read_text(encoding="utf-8")
+    with Path(path).open("rb") as source:
+        raw = source.read(64 * 1024 + 1)
+    if not raw or len(raw) > 64 * 1024:
+        raise ValueError("missing or oversized host run manifest")
+    try:
+        raw = raw.decode("utf-8")
+    except UnicodeError as error:
+        raise ValueError("invalid run manifest UTF-8") from error
     def unique(items):
         result = {}
         for name, value in items:
