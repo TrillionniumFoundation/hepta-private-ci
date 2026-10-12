@@ -221,6 +221,38 @@ fn wrong_loaded_model_id_fails_before_consuming_valid_signed_nonce() {
 }
 
 #[test]
+fn detached_batch_features_preserve_final_use_and_reject_mutation() {
+    let (_, mut request, key) = fixture_request();
+    let frozen_features = request.feature_vector_q24.clone();
+    let expected = neuron_batch_final_use_binding_v1("worker-one", &key, &request)
+        .expect("original full feature binding");
+    // Queued requests store only metadata; the signed Q24 vector lives in an
+    // immutable shared buffer until final-use and must not be cloned to hash.
+    request.feature_vector_q24.clear();
+    let detached = neuron_batch_final_use_binding_with_slice_v1(
+        "worker-one",
+        &key,
+        &request,
+        &frozen_features,
+    )
+    .expect("borrowed feature binding");
+    assert_eq!(detached, expected);
+
+    let mut changed = frozen_features;
+    changed[0] += 1;
+    assert_eq!(
+        neuron_batch_final_use_binding_with_slice_v1(
+            "worker-one",
+            &key,
+            &request,
+            &changed,
+        ),
+        Err(BatchWorkerErrorV1::InvalidBinding),
+        "changed shared Q24 bytes must never reuse the original signed grant",
+    );
+}
+
+#[test]
 fn signed_batch_executes_driver_once_then_rejects_duplicate() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[17; 32]);
