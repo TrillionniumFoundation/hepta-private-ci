@@ -606,9 +606,21 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self.cursor
     }
 
+    /// Historical four-step cursor only. Never treat this as a live production
+    /// readiness check; an independently signed owner effect can be revoked.
     #[must_use]
     pub fn is_complete(&self) -> bool {
         self.cursor == STEP_COUNT
+    }
+
+    /// Demand a fresh readback of all four original durable owners before
+    /// reporting a complete current lifecycle. No activation authority.
+    pub fn verified_complete(&mut self) -> Result<bool, CellSplitExecutionErrorV1> {
+        if !self.is_complete() {
+            return Ok(false);
+        }
+        self.verify_committed_prefix()?;
+        Ok(true)
     }
 
     /// Export a four-effect proof only while every original commit is still
@@ -769,6 +781,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             self.port
                 .preflight_uncommitted(&intent)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            // External preflight is not a durable reservation. It can observe
+            // a valid predecessor and then return after another owner has
+            // revoked it or the frozen trust frames have changed.
+            // Fail before creating the prepared intent in either case.
+            self.verify_committed_prefix()?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,
