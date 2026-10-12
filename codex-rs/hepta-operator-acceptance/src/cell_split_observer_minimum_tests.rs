@@ -452,6 +452,40 @@ fn monotonic_frontier_rejects_validly_signed_old_checkpoint_and_replayed_challen
         "a current high-water at revision 11 rejects a restored revision 10 minimum"
     );
 
+    // A new authority epoch is a distinct writer tenancy even if a restored
+    // checkpoint still has the same local revision and valid old signature.
+    let mut newer_epoch = proof.clone();
+    newer_epoch.journal_authority_epoch += 1;
+    seal(&mut newer_epoch);
+    assert!(
+        verify_cell_split_supervisor_monotonic_frontier_v1(
+            &expected,
+            &store_record_digest,
+            &nonce,
+            &newer_epoch,
+            &signer.verifying_key(),
+        )
+        .is_err(),
+        "old locally signed minimum cannot cross authority epoch rollover"
+    );
+
+    // A separate domain may coincidentally share the same generations and
+    // checkpoint hash. A correctly signed proof for that domain is not ours.
+    let mut foreign_domain = proof.clone();
+    foreign_domain.journal_domain_id.push_str("-foreign");
+    seal(&mut foreign_domain);
+    assert!(
+        verify_cell_split_supervisor_monotonic_frontier_v1(
+            &expected,
+            &store_record_digest,
+            &nonce,
+            &foreign_domain,
+            &signer.verifying_key(),
+        )
+        .is_err(),
+        "independent monotonic high-water cannot be reused across domains"
+    );
+
     let mut unrelated = proof.clone();
     unrelated.original_store_record_digest = "dd".repeat(32);
     seal(&mut unrelated);
