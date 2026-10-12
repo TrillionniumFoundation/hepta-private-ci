@@ -22,7 +22,7 @@ class MinimalBackportTests(unittest.TestCase):
             '[dependencies]\nanymap2={version="0.13.0",default-features=false}\n'
         )
         (sdk / "src/event_handler/mod.rs").write_text(
-            "use anymap2::CloneAny;\ntype AnyMap = anymap2::Map<dyn CloneAny>;\n"
+            "use anymap2::CloneAny;\n// Stable adjacent context\ntype AnyMap = anymap2::Map<dyn CloneAny>;\n"
         )
         (self.release / "Cargo.lock").write_text("[[package]]\nname=\"anymap2\"\nversion=\"0.13.0\"\n")
         self._commit(self.release, "release")
@@ -34,7 +34,7 @@ class MinimalBackportTests(unittest.TestCase):
             '[dependencies]\nanymap3={version="1.1.0",default-features=false}\n'
         )
         (self.patch / "crates/matrix-sdk/src/event_handler/mod.rs").write_text(
-            "use anymap3::CloneAny;\ntype AnyMap = anymap3::Map<dyn CloneAny>;\n"
+            "use anymap3::CloneAny;\n// Stable adjacent context\ntype AnyMap = anymap3::Map<dyn CloneAny>;\n"
         )
         self._commit(self.patch, "upstream anymap3 migration")
         self.patch_sha = self._sha(self.patch)
@@ -97,11 +97,24 @@ class MinimalBackportTests(unittest.TestCase):
         path.write_text("use anymap2::CloneAny;\ntype OtherMap = anymap2::Map<dyn CloneAny>;\n")
         self._commit(self.release, "alternate event-handler API")
         self.release_sha = self._sha(self.release)
-        result = self._probe()
-        self.assertFalse(result["source_patch_applies_clean"])
-        self.assertNotEqual(result["git_apply_check_exit_code"], 0)
-        self.assertFalse(result["production_authorized"])
+        with self.assertRaisesRegex(ValueError, "incompatible with exact upstream AnyMap"):
+            self._probe()
         self.assertEqual(path.read_text(), "use anymap2::CloneAny;\ntype OtherMap = anymap2::Map<dyn CloneAny>;\n")
+
+    def test_later_upstream_context_drift_is_not_imported(self):
+        manifest = self.release / "crates/matrix-sdk/Cargo.toml"
+        manifest.write_text(manifest.read_text().replace(
+            'anymap2={version="0.13.0",default-features=false}\n',
+            'anymap2={version="0.13.0",default-features=false}\n'
+            'unrelated_new_dependency="1.0"\n',
+        ))
+        self._commit(self.release, "only different dependency context")
+        self.release_sha = self._sha(self.release)
+        report = self._probe()
+        self.assertTrue(report["source_patch_applies_clean"])
+        self.assertFalse(report["upstream_raw_patch_applies_clean"])
+        self.assertFalse(report["production_authorized"])
+        self.assertIn('unrelated_new_dependency', manifest.read_text())
 
     def test_reject_nested_or_same_checkout_paths(self):
         with self.assertRaisesRegex(ValueError, "separate"):
