@@ -126,6 +126,67 @@ class AuditTests(unittest.TestCase):
                           r['blocking_prerequisites'])
             self.assertFalse(r['static_prerequisites_passed'])
 
+    def test_direct_test_sdk_edge_cannot_disguise_detached_production_adapter(self):
+        self._candidate_without_known_static_advisory()
+        # Matrixd directly uses Matrix SDK in native E2EE test code, so the
+        # old name-only root path was satisfied even if production lost its
+        # mandatory codex-hepta-matrix-sdk adapter.
+        self.assertTrue(self.result()['static_prerequisites_passed'])
+        row = next(p for p in self.lock['package']
+                   if p['name'] == 'codex-hepta-matrixd')
+        row['dependencies'].remove('codex-hepta-matrix-sdk')
+        report = self.result()
+        self.assertIn('MATRIX_PRODUCT_ADAPTER_DEPENDENCY_MISSING',
+                      report['blocking_prerequisites'])
+        self.assertEqual(report['dependency_paths']['matrix-sdk'],
+                         ['codex-hepta-matrixd', 'matrix-sdk'])
+        self.assertFalse(report['static_prerequisites_passed'])
+        self.assertFalse(report['production_authorized'])
+
+    def test_production_adapter_must_link_real_sdk_and_crypto(self):
+        self._candidate_without_known_static_advisory()
+        row = next(p for p in self.lock['package']
+                   if p['name'] == 'codex-hepta-matrix-sdk')
+        row['dependencies'].remove('matrix-sdk')
+        report = self.result()
+        self.assertIn('MATRIX_PRODUCT_ADAPTER_SDK_EDGE_MISSING',
+                      report['blocking_prerequisites'])
+        self.assertIn('MATRIX_PRODUCT_ADAPTER_E2EE_PATH_MISSING',
+                      report['blocking_prerequisites'])
+        self.assertIsNone(report['production_adapter_paths']['adapter_to_crypto'])
+        self.assertFalse(report['static_graph_advisory_candidates_clean'])
+
+    def test_e2ee_test_manifest_and_lock_must_agree(self):
+        self._candidate_without_known_static_advisory()
+        row = next(p for p in self.lock['package']
+                   if p['name'] == 'codex-hepta-matrixd')
+        row['dependencies'].remove('matrix-sdk')
+        report = self.result()
+        self.assertIn('MATRIX_E2EE_CONFORMANCE_LOCK_EDGE_MISSING',
+                      report['blocking_prerequisites'])
+        # Production remains linked, but dropped native E2EE test coverage
+        # still prevents declaring even the static prerequisite complete.
+        self.assertEqual(report['production_adapter_paths']['adapter_to_sdk'],
+                         ['codex-hepta-matrix-sdk', 'matrix-sdk'])
+        self.assertFalse(report['static_prerequisites_passed'])
+
+    def test_duplicate_or_missing_product_roots_cannot_merge_lock_edges(self):
+        self._candidate_without_known_static_advisory()
+        for name in ('codex-hepta-matrixd', 'codex-hepta-matrix-sdk'):
+            duplicate = copy.deepcopy(self.lock)
+            victim = next(p for p in duplicate['package'] if p['name'] == name)
+            duplicate['package'].append(copy.deepcopy(victim))
+            report = audit(self.workspace, duplicate, self.deny, self.toolchain,
+                           self.sdk_manifest, self.matrixd_manifest)
+            self.assertIn('MATRIX_PRODUCT_ROOT_MISSING_OR_AMBIGUOUS:' + name,
+                          report['blocking_prerequisites'])
+            missing = copy.deepcopy(self.lock)
+            missing['package'] = [p for p in missing['package'] if p['name'] != name]
+            report = audit(self.workspace, missing, self.deny, self.toolchain,
+                           self.sdk_manifest, self.matrixd_manifest)
+            self.assertIn('MATRIX_PRODUCT_ROOT_MISSING_OR_AMBIGUOUS:' + name,
+                          report['blocking_prerequisites'])
+
     def test_advisory_ignore_makes_security_check_fail(self):
         self.deny['advisories']['ignore']=[{'id':ADVISORY_CRYPTO,'reason':'pretend'}]
         self.assertIn('FORBIDDEN_ADVISORY_IGNORE:'+ADVISORY_CRYPTO, self.result()['blocking_prerequisites'])
