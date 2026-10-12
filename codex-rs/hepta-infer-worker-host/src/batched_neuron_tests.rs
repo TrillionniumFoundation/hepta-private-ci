@@ -241,6 +241,11 @@ fn runner_with_counter(
     .with_metric_sink(std::sync::Arc::new(FixtureMetricSink {
         reject_records: false,
     }))
+    .with_scope_currentness({
+        let currentness = std::sync::Arc::new(FixtureCnsCurrentness::default());
+        currentness.set_current(fixture_request().2);
+        currentness
+    })
 }
 
 fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseGrant {
@@ -613,6 +618,7 @@ fn physical_serving_requires_cns_currentness_port_before_dequeue_or_nonce_claim(
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
     let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
     let mut owner = runner_with_counter(&signer, temp.path(), model, 1, calls.clone());
+    owner.scope_currentness = None;
     owner.enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();
     assert!(matches!(
@@ -709,4 +715,28 @@ fn one_stale_scope_denies_entire_cross_scope_backend_batch() {
         .all(|item| item.result.as_ref().err() == Some(&BatchWorkerErrorV1::ScopeFenceDenied)));
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
     assert_eq!(owner.pending(), 0);
+}
+
+
+#[test]
+fn sequential_effect_cannot_bypass_stale_cns_generation_fence() {
+    let temp = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[67; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let currentness = std::sync::Arc::new(FixtureCnsCurrentness::default());
+    let mut successor = key.clone();
+    successor.generation = Generation::new(key.generation.get() + 1).unwrap();
+    currentness.set_current(successor);
+    let mut owner = runner(&signer, temp.path(), model)
+        .with_scope_currentness(currentness);
+    owner.enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let result = owner.poll_and_execute(101).unwrap();
+    assert_eq!(result.outcomes.len(), 1);
+    assert_eq!(
+        result.outcomes[0].result,
+        Err(BatchWorkerErrorV1::ScopeFenceDenied)
+    );
+    assert_eq!(result.pending, 0);
 }
