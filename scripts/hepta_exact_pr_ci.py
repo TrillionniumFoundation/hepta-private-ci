@@ -111,30 +111,26 @@ def prospective_merge_identity(repo: str, number: int, head: str, base: str) -> 
         }
 
 
+def run_started_after_merge(run: dict, merge_created_at: str | None) -> bool:
+    if merge_created_at is None:
+        return True
+    merge_time = parse_utc_timestamp(merge_created_at)
+    run_time = parse_utc_timestamp(run.get("created_at"))
+    return merge_time is not None and run_time is not None and run_time >= merge_time
+
+
 def evaluate(
     pr: dict, runs: Sequence[dict], repo: str, number: int, sha: str,
     *, merge_created_at: str | None = None,
 ) -> dict:
     _, base = validate_pr(pr, repo, number, sha)
-    minimum_run_time = (
-        parse_utc_timestamp(merge_created_at)
-        if merge_created_at is not None else None
-    )
     statuses = {}
     for workflow in REQUIRED:
         candidates = [
             run for run in runs
             if run.get("name") == workflow
             and exact_pr_run(run, repo, number, sha, base)
-            and (
-                merge_created_at is None
-                or (
-                    minimum_run_time is not None
-                    and (run_time := parse_utc_timestamp(run.get("created_at")))
-                    is not None
-                    and run_time >= minimum_run_time
-                )
-            )
+            and run_started_after_merge(run, merge_created_at)
         ]
         # A later failed rerun may not be superseded by an older green run.
         candidates.sort(
