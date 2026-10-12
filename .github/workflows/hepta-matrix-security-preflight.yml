@@ -1,0 +1,101 @@
+name: Matrix SDK advisory upgrade feasibility (research only)
+
+on:
+  push:
+    branches: [research/matrix-sdk-security-019-preflight-20261012]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matrix-sdk-security-research-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  matrix-security-probe:
+    name: Report exact 0.19.1 resolution, compile and residual advisories (no promotion)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - name: Read exact candidate without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check preflight logic and record original dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --check
+          python3 -m unittest -v scripts.test_matrix_sdk_security_probe
+          mkdir -p "$RUNNER_TEMP/matrix-security"
+          python3 scripts/matrix_sdk_security_probe.py \
+            --manifest codex-rs/Cargo.toml --lock codex-rs/Cargo.lock \
+            --deny codex-rs/deny.toml \
+            --output "$RUNNER_TEMP/matrix-security/baseline.json"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/matrix-security/source.sha"
+          cat codex-rs/rust-toolchain.toml > "$RUNNER_TEMP/matrix-security/source-toolchain.toml"
+      - name: Install Matrix 0.19 minimum compiler solely for isolated research
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.96.1 --profile minimal
+          cargo +1.96.1 --version > "$RUNNER_TEMP/matrix-security/research-toolchain.txt"
+          rustc +1.96.1 --version >> "$RUNNER_TEMP/matrix-security/research-toolchain.txt"
+      - name: Resolve and compile 0.19.1 in a detached disposable worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate="$RUNNER_TEMP/matrix-sdk-019-candidate"
+          report="$RUNNER_TEMP/matrix-security"
+          git worktree add --detach "$candidate" "$GITHUB_SHA"
+          python3 - "$candidate/codex-rs/Cargo.toml" <<'PY'
+          import pathlib, sys
+          target = pathlib.Path(sys.argv[1]); source = target.read_text()
+          old = 'matrix-sdk = { version = "0.18.0", default-features = false, features = ["e2e-encryption", "sqlite"] }'
+          replacement = old.replace('0.18.0', '0.19.1')
+          if source.count(old) != 1:
+              raise SystemExit('exact Matrix SDK dependency pin differs; no speculative rewrite')
+          target.write_text(source.replace(old, replacement))
+          PY
+          update=failed
+          check=not-run
+          test=not-run
+          if timeout 480 cargo +1.96.1 update --manifest-path "$candidate/codex-rs/Cargo.toml" -p matrix-sdk --precise 0.19.1 > "$report/cargo-update.log" 2>&1; then
+            update=success
+            if timeout 1080 cargo +1.96.1 check --locked --manifest-path "$candidate/codex-rs/Cargo.toml" -p codex-hepta-matrix-sdk -p codex-hepta-matrixd --all-targets > "$report/cargo-check.log" 2>&1; then
+              check=success
+              if timeout 500 cargo +1.96.1 test --locked --manifest-path "$candidate/codex-rs/Cargo.toml" -p codex-hepta-matrix-sdk --lib > "$report/cargo-test.log" 2>&1; then
+                test=success
+              else
+                test=failed
+              fi
+            else
+              check=failed
+            fi
+            cargo +1.96.1 tree --manifest-path "$candidate/codex-rs/Cargo.toml" -i anymap2 > "$report/anymap2-paths.txt" 2>&1 || true
+          fi
+          python3 scripts/matrix_sdk_security_probe.py \
+            --manifest "$candidate/codex-rs/Cargo.toml" \
+            --lock "$candidate/codex-rs/Cargo.lock" \
+            --deny "$candidate/codex-rs/deny.toml" \
+            --update-status "$update" --check-status "$check" --test-status "$test" \
+            --output "$report/candidate.json"
+          git -C "$candidate" diff -- codex-rs/Cargo.toml codex-rs/Cargo.lock > "$report/proposed-dependency.patch"
+          cat "$report/candidate.json"
+          # A completed feasibility report is NOT a passing security check.
+          test -s "$report/candidate.json"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+      - name: Retain actual security feasibility evidence, never release authority
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-sdk-security-preflight-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-security/
+          retention-days: 14
+          if-no-files-found: error
