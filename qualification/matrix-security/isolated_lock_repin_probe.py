@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Fail-closed, read-only detector for ONE disposable Matrix SDK Cargo lock conflict.
 
-This script never runs Cargo or modifies files. A caller may execute the fixed
-Cargo UPDATE command it returns only INSIDE an already verified, detachable
-research worktree. A successful resolver is NOT a crypto/security acceptance.
+This script never runs Cargo or modifies Cargo source/lock files; its only
+write is the requested diagnostic JSON. The fixed Cargo update version is
+admitted only for an independently verified disposable worktree. A successful resolver is NOT a crypto/security acceptance.
 """
 
 import argparse
@@ -83,6 +83,12 @@ def main(argv=None):
     parser.add_argument('--lock', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args(argv)
+    # Never replace an input manifest/lock/log with an apparently valid report,
+    # including symlink aliases of those inputs.
+    if args.output.resolve() in {
+        args.manifest.resolve(), args.lock.resolve(), args.stderr.resolve()
+    }:
+        parser.error('diagnostic output must not overwrite any input file')
     result = inspect_lock_conflict(
         args.stderr.read_text(encoding='utf-8', errors='replace'),
         args.manifest.read_bytes(), args.lock.read_bytes(),
