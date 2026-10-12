@@ -1099,6 +1099,46 @@ fn pending_step_recovery_rejects_dangling_successor_frame() {
     assert_eq!(state.borrow().executions, 1);
 }
 
+#[cfg(unix)]
+#[test]
+fn replacing_lock_inode_fences_live_execution_and_verified_transcripts() {
+    for completed in [0, 4] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("single writer owner");
+        for _ in 0..completed {
+            owner.advance().expect("current effect");
+        }
+
+        // The original process still holds an OS lock on the old inode.
+        // A second process can obtain the replacement path's lock unless
+        // the original owner rechecks the actual directory identity.
+        fs::remove_file(root.path().join(crate::durable::SIDECAR_LOCK_FILE))
+            .expect("unlink original lock inode");
+        let _replacement = crate::durable::lock_sidecar(root.path())
+            .expect("second lock on a different inode");
+
+        assert!(matches!(
+            owner.advance(),
+            Err(CellSplitExecutionErrorV1::Durable(_))
+        ));
+        assert!(matches!(
+            owner.verified_transcript(),
+            Err(CellSplitExecutionErrorV1::Durable(_))
+        ));
+        assert_eq!(state.borrow().executions, completed);
+        if completed == 0 {
+            assert!(!root.path().join("cell-split-00-prepared.json").exists());
+        }
+    }
+}
+
 #[test]
 fn effect_completion_does_not_acknowledge_replaced_local_trust_frames() {
     let root = private_tempdir();
