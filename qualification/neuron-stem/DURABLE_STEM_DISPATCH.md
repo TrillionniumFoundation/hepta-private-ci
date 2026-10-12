@@ -32,6 +32,12 @@ bytes. Reopening on a different process preserves the marker; a missing
 post-crash acknowledgement requires external reconciliation, not a second
 native Worker run. No historical event or replay format is rewritten.
 
+The formerly public signed-but-non-WAL
+`run_verified_stem_feature_receipt_v1` is now **crate-private**, as are
+the unsigned feature execution/receipt methods. The only public
+Shared-Stem native effect entry is the fsync-fenced method, so external
+clients cannot accidentally bypass this one-shot control-owner admission.
+
 The signed Worker
 `run_verified_stem_feature_durably_v1(control, authority, token, ...)`
 verifies the **actual** current control owner record against the complete
