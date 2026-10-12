@@ -660,3 +660,70 @@ fn legacy_group_commit_failure_denies_remaining_intents_without_claiming_them() 
         Err(BatchWorkerErrorV1::TelemetryUnavailable)
     ));
 }
+
+
+#[test]
+fn physical_batch_without_current_cns_route_owner_denies_before_nonce_claim() {
+    let directory = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[57; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut owner = runner(&signer, directory.path(), model);
+    owner.scope_routes = None;
+    owner
+        .enqueue(100, "model".to_owned(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert!(matches!(
+        owner.poll_and_execute_physical(101),
+        Err(BatchWorkerErrorV1::RouteUnavailable)
+    ));
+    assert_eq!(owner.pending(), 1);
+    assert_eq!(owner.authority.capacity().unwrap().used_nonces, 0);
+}
+
+#[test]
+fn stale_scope_cutover_denies_entire_cross_scope_batch_without_any_nonce_claim() {
+    let directory = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[59; 32]);
+    let (model, fixture, key) = fixture_request();
+    let stale_scope = StableId::new("scope-cutover").unwrap();
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = runner_with_counter(&signer, directory.path(), model, 2, calls.clone())
+        .with_current_scope_routes(std::sync::Arc::new(SingleStaleScopeRoutesV1 {
+            stale_scope: stale_scope.clone(),
+        }));
+    for index in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("cutover-request-{index}");
+        request.authorization.reservation_id = format!("cutover-reservation-{index}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let mut scoped = key.clone();
+        scoped.scope_id = if index == 0 {
+            StableId::new("scope-live").unwrap()
+        } else {
+            stale_scope.clone()
+        };
+        scoped.route_fence = u64::from(index) + 10;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &scoped, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("cutover-grant-{index}");
+        grant.grant.nonce = [index + 101; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        owner
+            .enqueue(100, "model".to_owned(), request, scoped, grant)
+            .unwrap();
+    }
+    let result = owner.poll_and_execute_physical(106).unwrap();
+    assert_eq!(result.outcomes.len(), 2);
+    assert_eq!(result.pending, 0);
+    assert!(result.outcomes.iter().all(|item| {
+        item.result.as_ref().err() == Some(&BatchWorkerErrorV1::StaleRoute)
+    }));
+    assert_eq!(owner.authority.capacity().unwrap().used_nonces, 0);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
