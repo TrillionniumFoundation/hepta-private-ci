@@ -89,10 +89,10 @@ pub fn run_pinned_cell_split_execution_with_admission_v1<F>(
     action: &str,
     config_path: &Path,
     externally_pinned_config_sha256: &str,
-    admit_selected_plan: F,
+    mut admit_selected_plan: F,
 ) -> Result<CellSplitExecutionCliOutcomeV1, String>
 where
-    F: FnOnce(&CellSplitExecutionPlanV1) -> Result<(), String>,
+    F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
 {
     let selected_action = match action {
         "advance" => "advance",
@@ -115,6 +115,10 @@ where
     // this independent selection check. The operator pin alone does not
     // establish the current NDU or Selector authorization.
     admit_selected_plan(&config.plan)?;
+    // Opening and recovering the coordinator may require disk and original
+    // owner readbacks. Revalidate the independent selection after that work,
+    // immediately before a new durable intent may be prepared.
+    let recheck_plan = (selected_action == "advance").then(|| config.plan.clone());
     if !(1..=30_000).contains(&config.timeout_millis) {
         return Err("RPC timeout must be between 1 and 30000 ms".to_string());
     }
@@ -140,6 +144,11 @@ where
         CellSplitExecutionOwnerV1::open(&config.execution_root, config.plan, trust, port)
     }
     .map_err(|error| error.to_string())?;
+    if let Some(plan) = recheck_plan.as_ref() {
+        // The callback is only an admission check, never a grant: each real
+        // effect backend must still revalidate its own final-use frontier.
+        admit_selected_plan(plan)?;
+    }
     let (receipt, transcript) = match selected_action {
         "advance" => (owner.advance().map_err(|error| error.to_string())?, None),
         _ => (
@@ -352,6 +361,27 @@ mod tests {
         assert!(run_pinned_cell_split_execution_v1("transcript", &config_path, &pin).is_err());
         assert!(!execution_root.join("cell-split-frozen-plan.json").exists());
         assert!(!execution_root.join(".operator-acceptance.lock").exists());
+
+        // A valid selection can be revoked while the coordinator opens its
+        // frozen plan. A second denial must leave no prepared effect intent.
+        let mut admissions = 0_usize;
+        let stale = run_pinned_cell_split_execution_with_admission_v1(
+            "advance",
+            &config_path,
+            &pin,
+            |_| {
+                admissions += 1;
+                if admissions == 1 {
+                    Ok(())
+                } else {
+                    Err("independent Selector revoked during owner open".to_string())
+                }
+            },
+        );
+        assert!(stale.expect_err("stale selection").contains("Selector revoked"));
+        assert_eq!(admissions, 2);
+        assert!(execution_root.join("cell-split-frozen-plan.json").exists());
+        assert!(!execution_root.join("cell-split-00-prepared.json").exists());
 
         // A pinned hash and independently admitted fixture cannot turn a
         // missing owner socket into an ambiguous effect. The coordinator may
