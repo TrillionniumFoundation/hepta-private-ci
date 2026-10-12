@@ -902,6 +902,7 @@ mod tests {
     use tokio_tungstenite::accept_async;
     use tokio_tungstenite::tungstenite::Message;
     use tracing::Level;
+    use tracing::instrument::WithSubscriber;
     use tracing_subscriber::fmt::format::FmtSpan;
     use tracing_test::internal::MockWriter;
 
@@ -1260,9 +1261,14 @@ url = "ws://127.0.0.1:8765"
         ));
         environments
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
+        // A set_default subscriber is thread-local: Tokio can poll this
+        // snapshot on another worker. Preserve the same dispatcher for the
+        // entire spawned future so the real nested snapshot/wait spans are
+        // observed instead of silently losing them on Windows CI.
+        let task_subscriber = tracing::dispatcher::get_default(Clone::clone);
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
+            async move { environments.snapshot().await }.with_subscriber(task_subscriber)
         });
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());
