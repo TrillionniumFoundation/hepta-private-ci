@@ -89,7 +89,6 @@ def audit(cardinality_zip, e_zip, r_zip):
     qids = {c.question.identity for c in cohort}
     if len(cohort) != 20 or len(qids) != 20:
         raise ValueError('original 20-question synthetic cohort changed')
-    cmap = {c.question.identity:c for c in cohort}
     eexpected = {(qid,arm,pres) for qid in qids for arm,pres in E_ARMS}
     rexpected = {(qid,arm,pres) for qid in qids for arm,pres in R_ARMS}
     ekeys = [(r['qid'],r['arm'],r['presentation']) for r in erows]
