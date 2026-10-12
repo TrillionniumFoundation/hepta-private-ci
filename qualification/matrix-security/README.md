@@ -110,10 +110,11 @@ and checks that upstream changed *only those three files*. The upstream raw
 manifest hunk has later dependency context that the signed 0.19.1 release
 does not have (including `assert_matches2`); the raw hunk is therefore
 evaluated **separately** and its failure cannot justify importing 189 or 278
-unrelated upstream commits. The probe extracts exactly **three AnyMap
-substitution blocks** from the two source files, rejects any additional source
-mutation, translates only those substitutions onto exact release bytes, and
-runs `git apply --check` against the **unaltered** release. Its report binds
+unrelated upstream commits. The probe extracts exactly **four AnyMap
+substitution blocks** (one manifest block and three event-handler blocks)
+from the two source files, rejects any additional source mutation, translates
+only those substitutions onto exact release bytes, and runs `git apply --check`
+against the **unaltered** release. Its report binds
 both original and release-specific patch SHA-256 values and both check results.
 It does not cherry-pick, execute external code, change any Cargo dependency,
 or declare the patched tree trustworthy. The job fails if the minimal
@@ -132,6 +133,36 @@ compatible **entire SDK family** resolution, Rust toolchain approval, SQLite
 `links` migration, E2EE and WAL crash recovery before `cargo-deny` and
 production authorization can become eligible. A source-only patch applying
 cleanly does **not** show it compiles or repairs the Matrix vulnerabilities.
+
+## Verified workflow startup and isolated, actually applied source candidate
+
+The Matrix research workflow formerly failed before spawning any job because
+`jobs.disposable-cargo-resolution-probe.env.STAGE` referenced
+`${{ runner.temp }}`, which GitHub Actions does not allow at job scope.
+It now stages to a uniquely named **sibling** of
+`${{ github.workspace }}` using only permitted `github` and `matrix`
+contexts. `test_workflow_context_contract.py` protects the fix and verifies
+that `--require-safe` is still mandatory. Successful workflow parsing is NOT
+a security advisory waiver.
+
+`disposable_backport_probe.py` builds upon the strict read-only source probe.
+After checking the exact published-release and exact upstream migration SHAs,
+it clones the pinned 0.19.1 release with **no hardlinks** into a previously
+nonexistent, separate candidate directory, applies only the verified two-file
+AnyMap3 source patch there, checks the changed file inventory, and confirms
+the original source checkouts and Hepta workspace remain unchanged. It cannot
+replace `Cargo.lock`, publish a model, or issue any production authorization.
+
+The CI then uses Rust 1.96 in that **disposable candidate** for a genuine
+`cargo metadata` resolution. The resulting diagnostic records the actual
+exit code, resolved `anymap2/anymap3` and `matrix-sdk-crypto` versions, and
+explicitly marks Hepta integration, E2EE, WAL and `cargo-deny` as unverified.
+If the graph fails or still contains the vulnerable dependency, the candidate
+qualification fails; the independent no-waiver security gate remains blocked
+until the **real Hepta** graph is remediated and fully tested.
+
+This is source-identity checking, **not** independent cryptographic release
+signature verification or proof that the upgraded SDK's behavior is safe.
 
 ## Isolated SQLite dependency resolution: two non-promoting arms
 
