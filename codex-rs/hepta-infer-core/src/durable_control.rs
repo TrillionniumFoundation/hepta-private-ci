@@ -238,7 +238,9 @@ impl DurableInferenceControl {
         {
             use std::os::unix::fs::PermissionsExt;
             if parent.permissions().mode() & 0o022 != 0 {
-                return Err(Error::InvalidIdentity("production WAL directory is writable by others"));
+                return Err(Error::InvalidIdentity(
+                    "production WAL directory is writable by others",
+                ));
             }
         }
         match fs::symlink_metadata(path) {

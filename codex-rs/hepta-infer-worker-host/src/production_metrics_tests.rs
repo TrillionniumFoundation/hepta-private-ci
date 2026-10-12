@@ -75,7 +75,8 @@ fn native_production_wal_refuses_unsafe_files_directories_and_aliases() {
     let dir = tempfile::tempdir().expect("private root");
     let journal = dir.path().join("control.wal");
     {
-        let control = open_metrics_bound_native_control_v1(&journal, 32).expect("private bootstrap");
+        let control =
+            open_metrics_bound_native_control_v1(&journal, 32).expect("private bootstrap");
         assert!(control.production_metrics_ready());
     }
     let before = std::fs::read(&journal).expect("WAL bytes");
@@ -110,4 +111,25 @@ fn native_production_wal_rejects_hardlink_alias() {
     std::fs::hard_link(&journal, dir.path().join("second-name.wal"))
         .expect("make hardlink");
     assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
+}
+
+#[test]
+fn native_production_bootstrap_requires_exclusive_wal_and_metrics_writers() {
+    let dir = tempfile::tempdir().expect("private root");
+    let journal = dir.path().join("control.wal");
+    let metrics = production_metrics_journal_path_v1(&journal).expect("metrics path");
+    {
+        let first = open_metrics_bound_native_control_v1(&journal, 32).expect("first owner");
+        assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
+        assert!(first.production_metrics_ready());
+    }
+    {
+        let locked_metrics =
+            codex_hepta_agentd::DurablePhaseMetricSinkV1::open(&metrics, 16, 8, 25)
+                .expect("standalone Evidence writer");
+        assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
+        assert!(locked_metrics.healthy());
+    }
+    let reopened = open_metrics_bound_native_control_v1(&journal, 32).expect("both locks released");
+    assert!(reopened.production_metrics_ready());
 }
