@@ -282,6 +282,8 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
         for phase in PHASES:
             for kind in KINDS:
                 changed = scored = pairwise_wins = ce_wins = uncertain = 0
+                ce_gain = ce_regression = pw_gain = pw_regression = 0
+                ce_frozen_flips = pw_frozen_flips = 0
                 for q in questions[phase]:
                     qid = q.identity
                     ce = index[stage, phase, qid, kind, OBJECTIVES[0]]
@@ -314,7 +316,18 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
                     if ce["status"] != "succeeded" or pair["status"] != "succeeded":
                         uncertain += 1
                         continue
+                    frozen = ce["original_frozen_selected"]
+                    if (
+                        frozen != pair["original_frozen_selected"]
+                        or not isinstance(frozen, int)
+                        or not 0 <= frozen < ce["candidate_count"]
+                    ):
+                        raise ValueError(
+                            "CE or pairwise original frozen winner drift"
+                        )
                     changed += ce["selected"] != pair["selected"]
+                    ce_frozen_flips += ce["selected"] != frozen
+                    pw_frozen_flips += pair["selected"] != frozen
                     target = targets[qid]
                     if target.unanswerable or target.unresolved_evidence or not target.evidence:
                         uncertain += 1
@@ -328,6 +341,11 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
                     after = pair["selected"] in support
                     pairwise_wins += after and not before
                     ce_wins += before and not after
+                    original = frozen in support
+                    ce_gain += before and not original
+                    ce_regression += original and not before
+                    pw_gain += after and not original
+                    pw_regression += original and not after
                 if scored + uncertain != 8:
                     raise ValueError("shadow objective review denominator mismatch")
                 results[f"{stage}/{phase}/{kind}"] = dict(
@@ -337,11 +355,17 @@ def review_objectives(questions, fitted, choices, pools, targets, *,
                     unscored_or_failed=uncertain,
                     pairwise_over_ce_weak_source_gains=pairwise_wins,
                     ce_over_pairwise_weak_source_gains=ce_wins,
+                    ce_vs_original_frozen_top1_changes=ce_frozen_flips,
+                    pairwise_vs_original_frozen_top1_changes=pw_frozen_flips,
+                    ce_vs_frozen_weak_source_gains=ce_gain,
+                    ce_vs_frozen_weak_source_regressions=ce_regression,
+                    pairwise_vs_frozen_weak_source_gains=pw_gain,
+                    pairwise_vs_frozen_weak_source_regressions=pw_regression,
                     native_weak_document_labels_not_entailment=True,
                     original_reader_calls=0,
                 )
     return dict(
-        schema="hepta.stem-identical-initialization-objective-shadow.v1",
+        schema="hepta.stem-identical-initialization-objective-shadow.v2",
         fitted_objective_checkpoints=len(fitted),
         label_blind_shadow_decisions=len(choices),
         fixed_frozen_encoder_inputs=True,

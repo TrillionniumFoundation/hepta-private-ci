@@ -68,6 +68,14 @@ class ObjectiveMatchedNativeTests(unittest.TestCase):
             192,
         )
         self.assertTrue(review["initial_head_weights_identical"])
+        for group in review["by_stage_phase_kind"].values():
+            self.assertLessEqual(group["ce_vs_frozen_weak_source_gains"], 8)
+            self.assertLessEqual(group["pairwise_vs_frozen_weak_source_gains"], 8)
+            self.assertLessEqual(
+                group["pairwise_over_ce_weak_source_gains"]
+                + group["ce_over_pairwise_weak_source_gains"],
+                group["matched_label_blind_selection_changes"],
+            )
         self.assertFalse(review["independent_semantic_source_judgment"])
         self.assertFalse(review["production_accepted"])
 
@@ -86,6 +94,18 @@ class ObjectiveMatchedNativeTests(unittest.TestCase):
                     questions, fitted, changed, pools, targets,
                     support_indices=support_indices,
                 )
+
+    def test_frozen_baseline_identity_must_match_both_objectives(self):
+        questions, _, encoded, _, _, fitted, decisions = self.execute()
+        pools, targets, _ = targets_and_frozen(questions, encoded)
+        tampered = deepcopy(decisions)
+        # Original frozen fixture scores [0.2, 0.5] select 1.
+        tampered[0]["original_frozen_selected"] = 0
+        with self.assertRaisesRegex(ValueError, "original frozen winner drift"):
+            review_objectives(
+                questions, fitted, tampered, pools, targets,
+                support_indices=support_indices,
+            )
 
     def test_train_supervision_cannot_use_registered_heldout_question(self):
         questions, supervised, encoded, cut, routes = fixture()

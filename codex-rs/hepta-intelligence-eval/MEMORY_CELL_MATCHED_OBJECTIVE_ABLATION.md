@@ -62,3 +62,21 @@ selection; independent prospective source families and a genuine blind
 semantic citation judge are still missing. Pairwise wins against CE can justify
 a separately registered new-family Reader experiment, not direct production
 adoption. `production_accepted=false`; `scale_out_permitted=false`.
+
+## Three fixed, unpromoted comparisons
+
+The post-answer weak-source review emits **three separate denominators and
+directions** on each registered question: matched Pairwise versus matched CE,
+matched CE versus the unchanged frozen ranker, and matched Pairwise versus
+the unchanged frozen ranker. For each, it records selection changes plus
+native *document-level* weak-support gains **and regressions**. Original
+frozen top-1 and the sealed ordered candidate IDs must be identical across
+both matched objective arms; even one mismatched frozen winner rejects the
+result.
+
+An improvement relative to one matched objective is not automatically a
+gain over the frozen baseline. And a better weak-source count still does
+not demonstrate a better Reader answer: neither experimental objective
+performs additional Reader inference. The same held-out development labels
+cannot be used to select the best objective, loss margin, seed or scaling
+rule for the next supposedly independent benchmark.
