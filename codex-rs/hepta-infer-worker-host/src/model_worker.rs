@@ -235,6 +235,18 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
             return Err(error);
         }
+        // Opaque handles are owned by one loaded model. If a buggy driver
+        // returns an already-live handle for another manifest, unloading the
+        // new handle could also unload the original model. Keep both physical
+        // outcomes quarantined for owner-led generation reconciliation.
+        if self
+            .models
+            .values()
+            .any(|loaded| loaded.handle.opaque_id == handle.opaque_id)
+        {
+            self.poisoned = true;
+            return Err(Error::IndeterminateLifecycle);
+        }
         // Account for all resident model handles, not merely the new model.
         let total_after_load = self
             .models
