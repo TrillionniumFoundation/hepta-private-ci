@@ -336,7 +336,10 @@ fn requires_closed_old_writer_and_current_route_before_finalizing() {
         .expect("committed");
     assert_eq!(original.owner_sequence, 9);
     assert!(owner.verify_current(&intent(), &original).expect("live"));
-    owner.commit_once(&intent()).expect("idempotent original");
+    assert!(matches!(
+        owner.commit_once(&intent()),
+        Err(CellSplitSupervisorFenceErrorV1::Ambiguous)
+    ));
     drop(owner);
     let mut reopened = owner_factory(root.path(), allowed.clone());
     assert_eq!(
