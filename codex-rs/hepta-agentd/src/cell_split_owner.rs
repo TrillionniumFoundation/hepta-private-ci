@@ -44,6 +44,13 @@ pub struct CellSplitPlanV1 {
     pub child_artifact_id: StableId,
     /// Frozen candidate mapping; candidate identity is NOT the child Cell ID.
     pub selected_candidate_id: StableId,
+    /// Frozen independent evaluation context; a valid selector token from a
+    /// different objective or no-change control must never be reused.
+    pub objective_digest: Digest32,
+    pub no_change_baseline_id: StableId,
+    pub no_change_baseline_digest: Digest32,
+    pub evaluation_dataset_digest: Digest32,
+    pub minimum_future_window_micros: u64,
     pub predecessor_generation: Generation,
     pub child_generation: Generation,
     pub predecessor_artifact_digest: Digest32,
@@ -59,9 +66,14 @@ impl CellSplitPlanV1 {
     fn validate(&self) -> Result<(), CellSplitErrorV1> {
         if self.predecessor_id == self.child_id
             || self.predecessor_artifact_id == self.child_artifact_id
+            || self.no_change_baseline_id == self.selected_candidate_id
+            || self.minimum_future_window_micros == 0
             || self.predecessor_generation.next() != Ok(self.child_generation)
             || [
                 self.scope_digest,
+                self.objective_digest,
+                self.no_change_baseline_digest,
+                self.evaluation_dataset_digest,
                 self.predecessor_artifact_digest,
                 self.child_artifact_digest,
                 self.state_migration_digest,
@@ -85,6 +97,7 @@ impl CellSplitPlanV1 {
             &self.predecessor_artifact_id,
             &self.child_artifact_id,
             &self.selected_candidate_id,
+            &self.no_change_baseline_id,
         ] {
             let raw = id.as_str().as_bytes();
             bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
@@ -92,8 +105,12 @@ impl CellSplitPlanV1 {
         }
         bytes.extend_from_slice(&self.predecessor_generation.get().to_be_bytes());
         bytes.extend_from_slice(&self.child_generation.get().to_be_bytes());
+        bytes.extend_from_slice(&self.minimum_future_window_micros.to_be_bytes());
         for value in [
             self.scope_digest,
+            self.objective_digest,
+            self.no_change_baseline_digest,
+            self.evaluation_dataset_digest,
             self.predecessor_artifact_digest,
             self.child_artifact_digest,
             self.state_migration_digest,
@@ -117,6 +134,11 @@ impl CellSplitPlanV1 {
         self.validate()?;
         let receipt = selected.receipt();
         if selected.selection_digest() != self.selection_digest
+            || receipt.objective_digest != self.objective_digest
+            || receipt.no_change_baseline_id != self.no_change_baseline_id
+            || receipt.no_change_baseline_digest != self.no_change_baseline_digest
+            || receipt.dataset_digest != self.evaluation_dataset_digest
+            || receipt.minimum_future_window_micros < self.minimum_future_window_micros
             || receipt.predecessor_id != self.predecessor_id
             || receipt.predecessor_generation != self.predecessor_generation
             || receipt.predecessor_artifact_digest != self.predecessor_artifact_digest
