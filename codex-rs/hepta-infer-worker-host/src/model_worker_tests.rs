@@ -357,7 +357,8 @@ fn load_driver_error_without_terminal_cleanup_proof_seals_generation() {
     .expect("worker");
     assert_eq!(
         worker.load_model(100, manifest()),
-        Err(Error::DriverFailure("injected partial load".to_string()))
+        Err(Error::ModelLoadIndeterminate),
+        "an ambiguous first load must report its quarantine state immediately"
     );
     assert_eq!(worker.driver.loaded, 1);
     assert!(worker.load_indeterminate);
@@ -367,6 +368,35 @@ fn load_driver_error_without_terminal_cleanup_proof_seals_generation() {
     );
     assert_eq!(
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelLoadIndeterminate)
+    );
+}
+
+#[test]
+fn ambiguous_second_model_load_fences_previously_loaded_model() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.existing-model-fenced".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("original model");
+    worker.driver.fail_load_after_allocation = true;
+    let mut other = manifest();
+    other.model_id = "model.2".to_string();
+    assert_eq!(
+        worker.load_model(100, other),
+        Err(Error::ModelLoadIndeterminate)
+    );
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelLoadIndeterminate),
+        "partial load poisons the whole driver generation, not just new ID"
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
         Err(Error::ModelLoadIndeterminate)
     );
 }
