@@ -7,6 +7,10 @@ struct Driver {
     corrupt_neuron_head: bool,
     fail_unload: bool,
     fail_load_after_allocation: bool,
+    fail_run_after_execution: bool,
+    fail_feature_run_after_execution: bool,
+    run_calls: usize,
+    feature_run_calls: usize,
     invalid_handle: bool,
     reported_memory_bytes: u64,
     unload_calls: usize,
@@ -38,6 +42,10 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        self.run_calls += 1;
+        if self.fail_run_after_execution {
+            return Err(Error::DriverFailure("injected unknown run state".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
@@ -72,6 +80,10 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.feature_run_calls += 1;
+        if self.fail_feature_run_after_execution {
+            return Err(Error::DriverFailure("injected unknown feature state".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -199,6 +211,94 @@ fn lost_driver_terminality_is_indeterminate() {
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
     assert_eq!(observed.output_digest, None);
+    assert!(worker.requires_external_recovery());
+    assert_eq!(worker.driver.run_calls, 1);
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert_eq!(worker.driver.run_calls, 1, "unknown run may not execute twice");
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::ExecutionIndeterminate)
+    );
+}
+
+#[test]
+fn failed_driver_run_is_never_retried_without_external_recovery() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.run-error".to_string(),
+        3,
+        grant(),
+        Driver {
+            fail_run_after_execution: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+    assert!(worker.requires_external_recovery());
+    worker.driver.fail_run_after_execution = false;
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+    assert_eq!(worker.driver.feature_run_calls, 0);
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::ExecutionIndeterminate)
+    );
+    let mut other = manifest();
+    other.model_id = "model.2".to_string();
+    assert_eq!(
+        worker.load_model(100, other),
+        Err(Error::ExecutionIndeterminate)
+    );
+}
+
+#[test]
+fn unknown_feature_terminal_or_driver_error_requires_external_reconciliation() {
+    for error in [false, true] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.feature-unknown".to_string(),
+            3,
+            grant(),
+            Driver {
+                indeterminate: !error,
+                fail_feature_run_after_execution: error,
+                ..Driver::default()
+            },
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let result = worker.run_neuron_features(100, "model.1", neuron_feature_request());
+        if error {
+            assert_eq!(result, Err(Error::ExecutionIndeterminate));
+        } else {
+            let observation = result.expect("indeterminate terminal observation");
+            assert_eq!(observation.status, ExecutionStatus::Indeterminate);
+            assert!(!observation.terminal_observed);
+        }
+        assert!(worker.requires_external_recovery());
+        assert_eq!(worker.driver.feature_run_calls, 1);
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::ExecutionIndeterminate)
+        );
+        assert_eq!(worker.driver.feature_run_calls, 1);
+    }
 }
 
 #[test]
@@ -535,6 +635,7 @@ enum BatchFault {
     WrongDigest,
     WrongMemory,
     DriverError,
+    NoTerminal,
 }
 
 #[derive(Debug, Default)]
@@ -599,6 +700,9 @@ impl NeuronBackendBatchDriver for MockBatchDriver {
             BatchFault::Swapped => members.swap(0, 1),
             BatchFault::Missing => {
                 members.pop();
+            }
+            BatchFault::NoTerminal => {
+                members[0].observation.terminal_observed = false;
             }
             BatchFault::None
             | BatchFault::WrongDigest
