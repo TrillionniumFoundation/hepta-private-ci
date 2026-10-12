@@ -141,6 +141,10 @@ fn safe_yaml_rejects_duplicate_skill_identity_and_alias_overrides() {
         "---\nname: first\ndescription: safe\ndescription: unsafe\n---\n",
         "---\nname: first\ndescription: &alias safe\ndescription: *alias\n---\n",
         "---\nname: !executor malicious\ndescription: safe\n---\n",
+        // A colon in the untrusted tag must not cause the scalar repair
+        // fallback to turn executable tag syntax into an accepted string.
+        "---\nname: unsafe\ndescription: !executor payload: arguments\n---\n",
+        "---\nname: unsafe\ndescription: *undefined alias: arguments\n---\n",
     ] {
         let result = parse_skill_frontmatter_metadata(source, || "default".to_string());
         assert!(result.is_err(), "untrusted frontmatter must not override identity");
