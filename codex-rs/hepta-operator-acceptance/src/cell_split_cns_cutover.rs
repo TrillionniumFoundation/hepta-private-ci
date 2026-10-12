@@ -30,6 +30,7 @@ use crate::durable::SIDECAR_LOCK_FILE;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
+use crate::durable::reject_recreated_sidecar_for_owner_history;
 use crate::durable::secure_read;
 use crate::durable::secure_root;
 use crate::durable::sha256;
@@ -277,7 +278,19 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitCnsCutoverOwnerV1<P> {
             Err(error) if error.kind() == ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),
         };
+        reject_recreated_sidecar_for_owner_history(
+            &root,
+            initialized_before,
+            &[FROZEN],
+            &["cell-split-cns-"],
+        )?;
         let lock = lock_sidecar(&root)?;
+        reject_recreated_sidecar_for_owner_history(
+            &root,
+            initialized_before,
+            &[FROZEN],
+            &["cell-split-cns-"],
+        )?;
         let frozen = canonical_json(&(plan.clone(), binding.clone()))?;
         let frozen_path = root.join(FROZEN);
         let mut owner = Self {
