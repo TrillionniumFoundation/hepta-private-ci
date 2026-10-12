@@ -44,6 +44,8 @@ pub enum BatchWorkerErrorV1 {
     Worker,
     Capacity,
     TelemetryUnavailable,
+    ScopeFenceUnavailable,
+    ScopeFenceDenied,
 }
 
 #[derive(Debug)]
@@ -78,6 +80,8 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<StableId>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    /// Never a request-provided currentness cache: injected CNS route owner.
+    scope_currentness: Option<Arc<dyn PhysicalScopeCurrentnessPortV1>>,
     metrics_poisoned: bool,
     maximum_ids: usize,
 }
@@ -140,6 +144,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            scope_currentness: None,
             metrics_poisoned: false,
             maximum_ids: limits.max_pending,
         })
@@ -147,6 +152,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         self.metric_sink = Some(sink);
+        self
+    }
+
+    /// Inject an independent CNS currentness owner; absent means no physical
+    /// serving. The adapter must hold read-side route fences during execution.
+    pub fn with_scope_currentness(
+        mut self,
+        currentness: Arc<dyn PhysicalScopeCurrentnessPortV1>,
+    ) -> Self {
+        self.scope_currentness = Some(currentness);
         self
     }
 
@@ -315,6 +330,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         removed
     }
 }
+
+#[path = "batched_neuron_scope_fence.rs"]
+mod scope_fence;
+pub use scope_fence::{
+    PhysicalScopeBatchGuardV1, PhysicalScopeCurrentnessErrorV1,
+    PhysicalScopeCurrentnessPortV1,
+};
 
 #[path = "batched_neuron_physical.rs"]
 mod physical;
