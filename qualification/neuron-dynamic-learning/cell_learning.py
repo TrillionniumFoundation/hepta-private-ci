@@ -54,8 +54,15 @@ class DynamicCell:
     ) -> "DynamicCell":
         if not 1 <= width <= 512 or not 1 <= groups <= min(64, width) or not 1 <= rank <= 32:
             raise LearningContractError("unsupported dimensions")
-        if not isinstance(encoder_digest, str) or len(encoder_digest) != 64:
-            raise LearningContractError("missing pinned encoder digest")
+        if (type(cell_id) is not str or not 1 <= len(cell_id) <= 128 or
+                not cell_id.isascii() or
+                any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-"
+                    for c in cell_id)):
+            raise LearningContractError("invalid canonical Rust Cell identity")
+        if (type(encoder_digest) is not str or len(encoder_digest) != 64 or
+                not any(c != "0" for c in encoder_digest) or
+                any(c not in "0123456789abcdef" for c in encoder_digest)):
+            raise LearningContractError("missing pinned lowercase nonzero encoder digest")
         rng = np.random.default_rng(seed)
         return cls(
             cell_id, encoder_digest, width, groups, rank,
@@ -190,8 +197,60 @@ def budgeted_cell(
     return cell
 
 
+_Q24_TENSORS = (
+    "down_q24", "up_q24", "gate_bias_q24", "cell_state_q24",
+    "drive_weights_q24", "prediction_weights_q24",
+    "drive_bias_q24", "prediction_bias_q24",
+)
+_RUST_CANDIDATE_FIELDS = frozenset((
+    "cell_identity", "encoder_digest", "input_width", "output_width",
+    "rank", "groups", *_Q24_TENSORS,
+))
+
+
+def validate_rust_candidate(candidate: dict) -> int:
+    """Mirror Rust DynamicGateArtifactV3::new before hashing or arithmetic.
+
+    Reject any input Python would coerce (float/bool to int), silently ignore
+    (extra coefficients), or hash despite Rust's fail-closed admission.
+    This is not a production signature or trusted model-source receipt.
+    """
+    if type(candidate) is not dict or set(candidate) != _RUST_CANDIDATE_FIELDS:
+        raise LearningContractError("Rust candidate field inventory mismatch")
+    cell_id, digest = candidate["cell_identity"], candidate["encoder_digest"]
+    if (type(cell_id) is not str or not 1 <= len(cell_id) <= 128 or
+            not cell_id.isascii() or
+            any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._:-"
+                for c in cell_id)):
+        raise LearningContractError("invalid canonical Rust Cell identity")
+    if (type(digest) is not str or len(digest) != 64 or
+            not any(c != "0" for c in digest) or
+            any(c not in "0123456789abcdef" for c in digest)):
+        raise LearningContractError("invalid canonical Rust Encoder digest")
+    dims = (candidate[name] for name in ("input_width", "output_width", "groups", "rank"))
+    width, outputs, groups, rank = dims
+    if (any(type(v) is not int for v in (width, outputs, groups, rank)) or
+            not 1 <= width <= 512 or not 1 <= outputs <= 512 or
+            not 1 <= groups <= min(64, width) or not 1 <= rank <= 32):
+        raise LearningContractError("Rust dynamic Cell tensor dimensions not admitted")
+    dense = width * outputs
+    lengths = (rank * width, groups * rank, groups, groups,
+               dense, dense, outputs, outputs)
+    total = sum(lengths)
+    if total > MAX_HEAD_PARAMETERS:
+        raise LearningContractError("Rust dynamic Cell parameter ceiling exceeded")
+    for name, size in zip(_Q24_TENSORS, lengths):
+        tensor = candidate[name]
+        if (type(tensor) is not list or len(tensor) != size or
+                any(type(v) is not int or not -MAX_Q24 <= v <= MAX_Q24
+                    for v in tensor)):
+            raise LearningContractError("Rust Q24 tensor invalid size/type/range: " + name)
+    return total
+
+
 def rust_candidate_digest(candidate: dict) -> str:
     """Exact field order/domain separator of DynamicGateArtifactV3::new."""
+    validate_rust_candidate(candidate)
     h = hashlib.sha256(b"hepta.infer.dynamic-cell-gate.v3")
     for field in ("cell_identity", "encoder_digest"):
         raw = candidate[field].encode("utf-8")
@@ -213,9 +272,12 @@ def rust_candidate_digest(candidate: dict) -> str:
 
 def q24_reference(candidate: dict, input_q24: list[int]) -> tuple[list[int], list[int]]:
     """Integer parity oracle, no float shortcuts in gate or dense kernels."""
+    validate_rust_candidate(candidate)
     width, groups, rank = (candidate[k] for k in ("input_width", "groups", "rank"))
-    if len(input_q24) != width or any(abs(v) > MAX_Q24 for v in input_q24):
-        raise LearningContractError("invalid reference input")
+    if (type(input_q24) is not list or len(input_q24) != width or
+            any(type(v) is not int or not -MAX_Q24 <= v <= MAX_Q24
+                for v in input_q24)):
+        raise LearningContractError("invalid reference Q24 input")
 
     def round_checked(raw: int) -> int:
         floor, remainder = divmod(raw, Q24)
