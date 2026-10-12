@@ -312,6 +312,29 @@ fn owner(root: &Path, ready: Arc<AtomicBool>) -> CellSplitCnsCutoverOwnerV1<Disk
     .expect("owner")
 }
 
+#[cfg(unix)]
+#[test]
+fn missing_original_cns_writer_lock_never_creates_second_writer() {
+    let root = private_root();
+    let ready = Arc::new(AtomicBool::new(true));
+    let _original = owner(root.path(), ready.clone());
+    let lock = root.path().join(crate::durable::SIDECAR_LOCK_FILE);
+    fs::remove_file(&lock).expect("unlink original writer lock");
+    let reopened = CellSplitCnsCutoverOwnerV1::open(
+        root.path(),
+        plan(),
+        binding(),
+        DiskCns::open(
+            root.path().to_path_buf(),
+            SigningKey::from_bytes(&[9; 32]),
+            ready,
+        ),
+    );
+    assert!(matches!(reopened, Err(CellSplitCnsCutoverErrorV1::Durable(_))));
+    assert!(!lock.exists(), "must not mint a replacement writer lock");
+    assert!(root.path().join(FROZEN).exists());
+}
+
 #[test]
 fn deleted_frozen_binding_before_cutover_does_not_rebind_initialized_owner() {
     let root = private_root();
