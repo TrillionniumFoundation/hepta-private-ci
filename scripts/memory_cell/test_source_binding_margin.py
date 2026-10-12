@@ -67,6 +67,82 @@ class SourceBindingTests(unittest.TestCase):
             (),
         )
 
+    def test_verified_superseded_value_precedes_other_hard_negatives(self):
+        from experience_memory import source_examples
+
+        docs = (
+            event("old", "service", "location", "mode_11112222", 1, scope="s"),
+            event(
+                "new",
+                "service",
+                "location",
+                "mode_33334444",
+                2,
+                ("old",),
+                scope="s",
+            ),
+            event("noise", "other", "location", "mode_55556666", 1, scope="s"),
+            event(
+                "future",
+                "service",
+                "location",
+                "mode_77778888",
+                3,
+                ("new",),
+                scope="s",
+            ),
+        )
+        examples, _ = source_examples(
+            docs,
+            revision=2,
+            allowed_roots={d.root for d in docs},
+            revoked=set(),
+        )
+        current = next(i for i, x in enumerate(examples) if x["sources"] == ["new"])
+        chosen, _ = source_hard_negatives(
+            list(examples),
+            docs,
+            SourceTokenizer(),
+            allowed_roots={d.root for d in docs},
+            revoked=set(),
+        )
+        item = chosen[current]
+        self.assertEqual(item["negative_category"], "same_entity_relation_superseded")
+        self.assertEqual(item["negative_value"], "mode_11112222")
+        self.assertEqual(item["negative_roots"], ("root_old",))
+        self.assertEqual(item["positive_roots"], ("root_new",))
+        self.assertNotEqual(item["negative_value"], "mode_77778888")
+
+    def test_unlinked_newer_event_is_not_a_stale_negative(self):
+        from experience_memory import source_examples
+
+        docs = (
+            event("old", "service", "location", "mode_11112222", 1, scope="s"),
+            event("unlinked", "service", "location", "mode_33334444", 2, scope="s"),
+        )
+        with self.assertRaises(ValueError):
+            source_examples(
+                docs,
+                revision=2,
+                allowed_roots={d.root for d in docs},
+                revoked=set(),
+            )
+        # Do not rescue the unresolved conflict by assuming latest-wins.
+        claims = [dict(
+            query=dict(identity="qold", scope="s"),
+            sources=["old"],
+            target="mode_11112222",
+        )]
+        pairs, missing = source_hard_negatives(
+            claims,
+            docs,
+            SourceTokenizer(),
+            allowed_roots={d.root for d in docs},
+            revoked=set(),
+        )
+        self.assertEqual(pairs, {})
+        self.assertEqual(missing, ("qold",))
+
     def test_revoked_cross_scope_and_altered_target_reject(self):
         docs = sources()
         args = dict(

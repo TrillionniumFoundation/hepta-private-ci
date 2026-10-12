@@ -94,6 +94,42 @@ def source_hard_negatives(examples, documents, tokenizer, *, allowed_roots, revo
     chosen, unmatched = {}, []
     for positive in rows:
         options = []
+        # A stale value is a negative only when a CURRENT admitted fact
+        # explicitly supersedes it, possibly across several original events.
+        # An unlinked newer record is a conflict, never a negative by recency.
+        projection = projections[positive["scope"]]
+        source_ids = examples[positive["index"]]["sources"]
+        frontier = list(source_ids)
+        inspected = set()
+        while frontier:
+            current_id = frontier.pop()
+            if current_id in inspected:
+                continue
+            inspected.add(current_id)
+            if len(inspected) > MAX_DOCUMENTS:
+                raise ValueError("unbounded source correction ancestry")
+            current = projection.facts[current_id]
+            for parent_id in sorted(current["supersedes"]):
+                parent = projection.facts[parent_id]
+                # EventProjection already verified source scope, relation,
+                # strict revision order and complete ancestor existence.
+                if parent["value"] != positive["target"]:
+                    tokens = _value_tokens(tokenizer, parent["value"])
+                    if len(tokens) == len(positive["tokens"]):
+                        previous = projection.originals[parent_id]
+                        options.append(
+                            (
+                                -1,
+                                parent_id,
+                                dict(
+                                    identity=parent_id,
+                                    target=parent["value"],
+                                    roots=(previous.root,),
+                                ),
+                                "same_entity_relation_superseded",
+                            )
+                        )
+                frontier.append(parent_id)
         for negative in rows:
             if (
                 positive["index"] == negative["index"]
