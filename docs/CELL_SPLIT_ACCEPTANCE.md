@@ -160,3 +160,34 @@ observer_join tests, including valid binding, refused revoked CNS owner,
 false host/owner combinations, tampered Observer signature and host/owner
 key reuse. These tests use synthetic signing keys and do not claim
 production evidence. Their exact-HEAD CI status is not yet verified.
+
+
+### Exact Artifact/CNS owner-event linkage and original-runtime signer separation
+
+The signed Observer join now refuses independently valid lifecycle reports
+unless ArtifactLoaded carries the exact Artifact CAS owner **idempotency key
+and signed receipt digest**, and RouteCutover carries the exact CNS owner's
+idempotency key and signed receipt digest. A shared split ID, identical model
+digests, a correctly rehashed event chain or a host/Observer signature over
+that chain cannot substitute for these exact operation identities. The
+source tests deliberately re-sign four unrelated-but-otherwise-valid host
+events and require rejection before any owner RPC read.
+
+The additional Unix-only
+\`verify_cell_split_observer_join_deep_v1\` requires two more deployment-pinned
+trust roots: the original CNS runtime signing key and the original Supervisor
+journal signing key. They must be distinct from each other, all four outer
+effect-owner keys and every host/Observer key. It checks the typed original
+CNS runtime attestation against the same frozen split and witnessed
+predecessor/successor routes, then checks the domain-separated original
+Supervisor journal signature and its terminal \`retired\` checkpoint,
+generation, domain, authority epoch, revision and absence of unknown effects.
+Only then does it perform the existing four fresh, nonce-bound signed owner
+readbacks. No signature is minted by this verifier.
+
+A valid deep join is **still read-only** and explicitly sets
+\`productionActivationAuthorized=false\`: it does not create a globally
+atomic four-owner snapshot, issue NDU/Selector final-use authorization,
+supply target-host measured CPU/RSS/p99/negative-transfer evidence or
+prove power-loss recovery on deployed machines. Its corresponding
+cross-language and native exact-HEAD CI qualification must still be obtained.
