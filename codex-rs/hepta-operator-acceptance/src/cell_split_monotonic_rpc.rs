@@ -264,10 +264,9 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
     }
 
     /// Authenticate one request against a *currently durable* remote-domain
-    /// registry entry. Sign only after repeated source reads, then recheck
-    /// once more before sending: a revoked or advancing frontier never gets
-    /// a positive response from this owner. This is not a cross-owner atomic
-    /// snapshot; separate monotonic custody is still required.
+    /// registry entry. Require three matching source reads and the local
+    /// monotonic floor before creating a signature. This is not a cross-owner
+    /// atomic snapshot; separate monotonic custody is still required.
     pub fn serve_connection(
         &mut self,
         stream: &mut UnixStream,
