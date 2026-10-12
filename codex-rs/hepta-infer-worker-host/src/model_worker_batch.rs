@@ -681,7 +681,6 @@ mod tests {
         }
     }
 
-
     #[test]
     fn nonterminal_row_never_publishes_earlier_success_or_allows_retry() {
         let mut worker = worker(BatchMock {

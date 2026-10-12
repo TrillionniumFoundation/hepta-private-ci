@@ -842,7 +842,6 @@ mod tests {
         );
     }
 
-
     #[test]
     fn nonterminal_shared_batch_never_publishes_earlier_success_or_allows_retry() {
         let snapshot = frame(2);
