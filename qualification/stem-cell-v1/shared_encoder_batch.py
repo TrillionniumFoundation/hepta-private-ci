@@ -157,6 +157,9 @@ class ScopedFeatureCache:
         if type(value) is not FrozenFeature:
             raise ValueError("invalid shared-feature cache payload")
         value.verify_integrity()
+        existing = self._entries.get(key)
+        if existing is not None and existing[0].feature_digest != value.feature_digest:
+            raise ValueError("different feature content for identical scoped cache key")
         size = estimated_python_cache_entry_bytes(key, value, value.values)
         if size > self.maximum_bytes:
             return
