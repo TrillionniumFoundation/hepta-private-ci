@@ -68,6 +68,7 @@ class FullPipelineModelFreeTests(unittest.TestCase):
 
         class FakeEncoder:
             config = SimpleNamespace(hidden_size=16, max_position_embeddings=512)
+            mutate_reviewed_input_on_first_forward = None
 
             def to(self, device):
                 return self
@@ -82,6 +83,12 @@ class FullPipelineModelFreeTests(unittest.TestCase):
                 return {"synthetic.registered_weight": torch.tensor([0.5])}
 
             def __call__(self, **inputs):
+                # Adversarial fixture: change the actual checkpoint or dataset
+                # after its initial SHA check but before score publication.
+                tamper = FakeEncoder.mutate_reviewed_input_on_first_forward
+                if tamper is not None:
+                    FakeEncoder.mutate_reviewed_input_on_first_forward = None
+                    tamper()
                 values = inputs["input_ids"].float().unsqueeze(-1)
                 states = torch.cat(
                     [values / (index + 1) for index in range(16)], dim=-1)
@@ -162,6 +169,8 @@ class FullPipelineModelFreeTests(unittest.TestCase):
             self.assertTrue(0 < receipt["trainable_parameters"] <= 262144)
             self.assertEqual(receipt["train_steps"], 4)
             self.assertEqual(receipt["truncated_input_count"], 0)
+            self.assertTrue(
+                receipt["checkpoint_and_dataset_reverified_before_scoring_output"])
             self.assertEqual(receipt["physical_encoder_forward_calls"], 6)
             self.assertEqual(receipt["observed_physical_encoder_batch_sizes"], [4] * 6)
             self.assertTrue(receipt["per_case_latency_conservatively_charged_full_batch"])
@@ -188,6 +197,27 @@ class FullPipelineModelFreeTests(unittest.TestCase):
             with scoped_fake_transformers(fake_hf, fake_safetensors):
                 with self.assertRaises(FileExistsError):
                     run(args)
+
+            # Actual file mutations happen between admission and model output.
+            # Scoring must refuse both, and leave no partial prediction/report.
+            for source_path, expected_error in (
+                    (model / "config.json", "checkpoint snapshot changed during Encoder"),
+                    (data, "approved dataset bytes changed during Encoder")):
+                original_bytes = source_path.read_bytes()
+                next_output = root / (source_path.name + ".tampered-predictions.jsonl")
+                args.output = str(next_output)
+                FakeEncoder.mutate_reviewed_input_on_first_forward = (
+                    lambda path=source_path, source=original_bytes:
+                    path.write_bytes(source + b"\\n"))
+                try:
+                    with scoped_fake_transformers(fake_hf, fake_safetensors):
+                        with self.assertRaisesRegex(ValueError, expected_error):
+                            run(args)
+                    self.assertFalse(next_output.exists())
+                    self.assertFalse(Path(str(next_output) + ".run.json").exists())
+                finally:
+                    FakeEncoder.mutate_reviewed_input_on_first_forward = None
+                    source_path.write_bytes(original_bytes)
 
 
 if __name__ == "__main__":
