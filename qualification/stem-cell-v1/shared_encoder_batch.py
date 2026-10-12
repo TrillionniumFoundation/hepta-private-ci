@@ -113,12 +113,17 @@ class FeatureReceipt:
 
 
 class ScopedFeatureCache:
-    """Bounded LRU of immutable feature tuples, scoped at every reuse boundary."""
+    """Bounded LRU of immutable Python float tuples, scoped at every reuse.
+
+    The byte ceiling is an object-aware conservative estimate, NOT raw f32
+    payload bytes or measured process RSS. We never claim GPU allocation.
+    """
 
     def __init__(self, maximum_bytes):
-        if not isinstance(maximum_bytes, int) or maximum_bytes < 0:
-            raise ValueError("cache capacity must be non-negative")
+        if type(maximum_bytes) is not int or maximum_bytes < 0:
+            raise ValueError("cache capacity must be a non-negative integer")
         self.maximum_bytes = maximum_bytes
+        # key -> (FrozenFeature, charged resident estimate)
         self._entries = OrderedDict()
         self.size_bytes = 0
         self.evictions = 0
@@ -127,33 +132,35 @@ class ScopedFeatureCache:
         if key not in self._entries:
             return None
         self._entries.move_to_end(key)
-        return self._entries[key]
+        return self._entries[key][0]
 
     def put(self, key, value):
-        size = len(value.values) * 4
+        from cache_accounting import estimated_python_cache_entry_bytes
+
+        size = estimated_python_cache_entry_bytes(key, value, value.values)
         if size > self.maximum_bytes:
             return
         if key in self._entries:
-            old = self._entries.pop(key)
-            self.size_bytes -= len(old.values) * 4
+            _, old_size = self._entries.pop(key)
+            self.size_bytes -= old_size
         while self.size_bytes + size > self.maximum_bytes:
-            _, old = self._entries.popitem(last=False)
-            self.size_bytes -= len(old.values) * 4
+            _, (_, old_size) = self._entries.popitem(last=False)
+            self.size_bytes -= old_size
             self.evictions += 1
-        self._entries[key] = value
+        self._entries[key] = (value, size)
         self.size_bytes += size
 
     def invalidate_scope(self, scope_digest):
         for key in list(self._entries):
             if key[0] == scope_digest:
-                feature = self._entries.pop(key)
-                self.size_bytes -= len(feature.values) * 4
+                _, size = self._entries.pop(key)
+                self.size_bytes -= size
 
     def invalidate_generation(self, scope_digest, generation):
         for key in list(self._entries):
             if key[0] == scope_digest and key[1] != generation:
-                feature = self._entries.pop(key)
-                self.size_bytes -= len(feature.values) * 4
+                _, size = self._entries.pop(key)
+                self.size_bytes -= size
 
 
 @dataclass(frozen=True)
