@@ -84,9 +84,11 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
                 "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
             ),
         };
+        // Encode the wrapper too. Nested PowerShell command lines otherwise
+        // depend on the Windows process argument joiner's quoting rules.
         command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .args(["-NoProfile", "-NonInteractive", "-EncodedCommand"])
+            .arg(encoded_powershell_command(&wrapper_command));
         command
     };
     command

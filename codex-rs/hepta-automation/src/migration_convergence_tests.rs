@@ -133,6 +133,10 @@ async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     let temp = tempfile::tempdir().expect("private owner root");
     let root = temp.path().join("owner");
     std::fs::create_dir(&root).expect("owner directory");
+    // Windows canonical paths may carry a verbatim volume prefix. The
+    // production owner requires an exact canonical root, and the fixture
+    // must satisfy that contract rather than weaken the security check.
+    let root = root.canonicalize().expect("canonical owner root");
     let (pool, _temporary) = historical_pool(displaced).await;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")

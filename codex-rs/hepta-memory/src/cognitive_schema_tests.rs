@@ -1,5 +1,5 @@
 //! Independently derive the schema from compiled migrations, never owner bytes.
- 
+
 use super::*;
 
 #[tokio::test]
