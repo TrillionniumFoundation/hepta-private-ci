@@ -319,8 +319,6 @@ pub fn verify_cell_split_observer_join_v1(
     )
 }
 
-/// Crate-only generic verification permits deterministic failure injection in
-/// tests but cannot mint a production-facing readback via a fake port.
 /// Reject forged host/observer joins before contacting any online minimum
 /// store or original effect owner. Static verification cannot attest liveness.
 fn verify_cell_split_observer_join_static_v1(
@@ -371,6 +369,8 @@ fn verify_cell_split_observer_join_static_v1(
     Ok(())
 }
 
+/// Crate-only generic verification permits deterministic failure injection in
+/// tests but cannot mint a production-facing readback via a fake port.
 pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecutionPortV1>(
     join: &CellSplitSignedObserverJoinV1,
     transcript: &CellSplitExecutionTranscriptV1,
