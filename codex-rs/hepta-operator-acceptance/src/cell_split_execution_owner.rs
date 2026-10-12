@@ -797,6 +797,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 ));
             }
         }
+        // An original owner may take arbitrarily long to answer. In addition
+        // to rechecking existing bytes, reject any newly injected frame or
+        // unknown successor that appeared while its live RPC was in flight.
+        // Only the single split owner may extend this write-once namespace.
+        verify_split_frame_namespace(&self.root)?;
         self._lock.verify_current(&self.root)?;
         Ok(receipts)
     }
