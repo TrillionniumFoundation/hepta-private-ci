@@ -162,7 +162,7 @@ def audit(directory):
                     a,b=e['pair'];holder=b if holder==a else a if holder==b else holder
                 dist=[float(i==holder) for i in range(n)];action=f'answer:{holder}'
             else:
-                depth=min(remaining,1 if policy=='myopic_verify' else 2) if policy in ('ndu_two_step','myopic_verify') else 0
+                depth=min(remaining,1 if policy=='myopic_verify' else 2) if policy in ('myopic_verify','ndu_two_step') else 0
                 value,action=choose(h,depth,cost);dist=state(h)[0]
                 require(not action.startswith('verify:') and len(row['decisions'])==di+1,'premature stopping or ghost decision')
                 last=row['decisions'][di]

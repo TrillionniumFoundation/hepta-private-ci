@@ -55,7 +55,7 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
             'explicit backend/data; no silent replacement')
     require(feature_profile in PROFILES, 'explicit local feature profile')
     require(record_profile in RECORD_PROFILES, 'explicit record retention profile')
-    require(control_profile in ('all_steps_v1', 'learned_belief_v1'), 'explicit tracking controller')
+    require(control_profile in ('all_steps_v1', 'learned_belief_v1', 'shared_head_mixture_v2'), 'explicit tracking controller')
     output = Path(output); output.mkdir(parents=True, exist_ok=False)
     torch.set_num_threads(2); torch.manual_seed(32452843)
     started = time.process_time_ns(); sources = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
@@ -109,6 +109,11 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         'training_rows': len(training), 'training_sha256': digest(training), 'gate_sha256': identity,
         'fit_cpu_including_encoding_ns': fit_cpu, 'load_cpu_ns': load_cpu, 'physical': physical,
         'feature_binding': store.binding, 'weights_file_sha256': hashlib.sha256((output/'gates.pt').read_bytes()).hexdigest()})
+    if control_profile == 'shared_head_mixture_v2':
+        from fbsde_tracking_mixture_study import run as run_mixture
+        return run_mixture(output, gate, store, tracking_source=tracking_source,
+            publisher_root=publisher_root, started=started,
+            fit=strict_loads((output/'fit.json').read_bytes()))
     if control_profile == 'learned_belief_v1':
         from fbsde_tracking_control_study import run as run_control
         return run_control(output, gate, store, tracking_source=tracking_source,

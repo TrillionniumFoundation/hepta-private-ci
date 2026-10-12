@@ -63,7 +63,7 @@ def run(output, profile="exact_v1", **options):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--tracking-control-profile', choices=('all_steps_v1','learned_belief_v1'), default='all_steps_v1')
+    parser.add_argument('--tracking-control-profile', choices=('all_steps_v1','learned_belief_v1','shared_head_mixture_v2'), default='all_steps_v1')
     parser.add_argument('--tracking-record-profile', choices=('retained_objects_v1','serialized_records_v2'), default='retained_objects_v1')
     parser.add_argument('--tracking-feature-profile', choices=('ordinal_sensitive_v1','local_participant_v2'), default='ordinal_sensitive_v1')
     parser.add_argument('--tracking-source', choices=('generated', 'bbh'), default='generated')

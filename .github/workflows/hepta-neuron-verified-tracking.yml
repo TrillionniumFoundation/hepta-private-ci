@@ -13,6 +13,7 @@ on:
       - "qualification/neuron-stem/FBSDE_TRACKING_FEATURES_V2.md"
       - "qualification/neuron-stem/FBSDE_TRACKING_RECORD_RETENTION_V2.md"
       - "qualification/neuron-stem/FBSDE_TRACKING_CONTROL_V1.md"
+      - "qualification/neuron-stem/FBSDE_TRACKING_MIXTURE_V2.md"
       - ".github/workflows/hepta-neuron-verified-tracking.yml"
 
 permissions:
@@ -80,6 +81,14 @@ jobs:
             feature_profile: local_participant_v2
             record_profile: serialized_records_v2
             control_profile: learned_belief_v1
+          - backend: hashing_reference_v1
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: shared_head_mixture_v2
+          - backend: mmbert
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: shared_head_mixture_v2
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -107,6 +116,9 @@ jobs:
           set -euo pipefail
           export PYTHONPATH=qualification/neuron-stem
           /tmp/tracking-venv/bin/python -m unittest fbsde_tracking_tensor_checks fbsde_tracking_features_tensor_checks fbsde_tracking_records_tensor_checks fbsde_tracking_control_tensor_checks -v 2>&1 | tee tensor-tests.log
+          if [ "$CONTROL_PROFILE" = "shared_head_mixture_v2" ]; then
+            /tmp/tracking-venv/bin/python -m unittest fbsde_tracking_mixture_tensor_checks -v 2>&1 | tee mixture-tests.log
+          fi
           /tmp/tracking-venv/bin/python qualification/neuron-stem/fbsde_study.py \
             --profile verified_tracking_v1 --tracking-source bbh --backend "$BACKEND" --tracking-feature-profile "$FEATURE_PROFILE" --tracking-record-profile "$RECORD_PROFILE" --tracking-control-profile "$CONTROL_PROFILE" \
             --model-dir /tmp/tracking-mmbert --output tracking-study 2>&1 | tee study.log
@@ -120,6 +132,7 @@ jobs:
             source.tar.gz
             environment.txt
             tensor-tests.log
+            mixture-tests.log
             study.log
             tracking-study/
           if-no-files-found: error
