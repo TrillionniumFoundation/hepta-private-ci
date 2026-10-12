@@ -21,6 +21,8 @@ on:
       - "qualification/neuron-stem/fbsde_tracking_tied.py"
       - "qualification/neuron-stem/test_fbsde_depth.py"
       - "qualification/neuron-stem/test_fbsde_tracking_feedback.py"
+      - "qualification/neuron-stem/fbsde_effect*.py"
+      - "qualification/neuron-stem/test_fbsde_effect_family.py"
       - "qualification/neuron-stem/fbsde_study.py"
       - ".github/workflows/hepta-neuron-feedback-learning.yml"
 
@@ -113,6 +115,14 @@ jobs:
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile verified_role_program_v1 --evidence-dir outcome-study --output role-study 2>&1 | tee role-study.log
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_role_artifact_checks.py --study role-study --source outcome-study 2>&1 | tee role-artifact-tests.log
           git diff --exit-code
+      - name: Detect and revise effect families without erasing observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile effect_family_revision_v1 --output effect-study 2>&1 | tee effect-study.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_effect_artifact_checks.py -v effect-study 2>&1 | tee effect-artifact-checks.log
+          git diff --exit-code
       - name: Preserve original outputs and failures, never grant promotion
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -122,6 +132,9 @@ jobs:
             role-study.log
             role-artifact-tests.log
             role-study/
+            effect-study.log
+            effect-artifact-checks.log
+            effect-study/
             source.txt
             source.tar.gz
             environment.txt
