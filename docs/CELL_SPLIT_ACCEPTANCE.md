@@ -307,6 +307,38 @@ and NDU/Selector final-use. The filesystem implementation is not a complete
 hardware-backed remote witness service. Current exact-head CI is not yet
 qualified; no physical split, route promotion, or merge is authorized.
 
+### Independent signed monotonic high-water frontier (production gate)
+
+The public `verify_cell_split_observer_join_deep_v1` now requires **two
+separately pinned online signing roots**: the original per-split minimum
+checkpoint store and an additional monotonic high-water store. Both keys must
+be distinct from each other, the original CNS/Supervisor runtime keys, the four
+outer execution-owner keys, the host keys and all Observer keys.
+
+The `CellSplitSupervisorMonotonicFrontierPortV1` is queried **by the
+authoritative journal domain alone**; the caller must never provide the expected
+revision or digest as search parameters. Its fresh signed answer binds domain,
+authority epoch, committed revision, minimum checkpoint digest, original
+minimum-store record digest and a verifier-generated 256-bit challenge.
+The verifier rejects a correctly signed local minimum if an external domain
+frontier reports a later revision or a different checkpoint/record. It repeats
+**both independent challenges after** the four owner readbacks, compares their
+underlying identities across reads, and preserves hashes of both proofs in the
+read-only Observer receipt. A source-only test simulates a still-valid revision
+10 minimum with a separately signed revision 11 high-water and requires
+rejection before the live effect owners are queried; another moves the
+high-water during the four reads and must fail afterwards.
+
+The separate high-water port intentionally has **no local filesystem
+implementation or allow-all default**. It must be connected to a real
+independently managed, rollback-resistant service whose signer key is not
+controlled by the local minimum/host/Supervisor writer. A mock signed high-water
+in a unit test does NOT qualify that service. Even two fresh independent
+signatures do not implement one globally atomic transaction. Production
+activation remains false pending deployment-owned monotonic custody, exact
+HEAD CI, fault recovery, independent NDU/Selector final-use and measured
+target-host evidence.
+
 ### Retrospective rollback evidence is not a live successor route
 
 The signed target-host lifecycle also includes rollback, tombstone and
