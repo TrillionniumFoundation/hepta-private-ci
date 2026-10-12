@@ -21,6 +21,7 @@ fn plan() -> CellSplitPlanV1 {
     CellSplitPlanV1 {
         split_id: id("split:case:1"),
         scope_digest: digest(b"scope"),
+        artifact_storage_binding_digest: digest(b"artifact-store:partition-1"),
         predecessor_id: id("cell:parent"),
         child_id: id("cell:child"),
         predecessor_artifact_id: id("artifact:parent"),
@@ -577,6 +578,9 @@ fn artifact_identity_is_independent_from_cell_and_candidate_ids() {
         p.operation_key(CellSplitStepV1::ArtifactCas),
         switched_artifact.operation_key(CellSplitStepV1::ArtifactCas)
     );
+    let mut other_storage = p.clone();
+    other_storage.artifact_storage_binding_digest = digest(b"artifact-store:partition-2");
+    assert_ne!(p.binding_digest(), other_storage.binding_digest());
     let mut stale_lineage = p.clone();
     stale_lineage.predecessor_artifact_id = id("artifact:wrong-parent");
     assert_ne!(p.binding_digest(), stale_lineage.binding_digest());
