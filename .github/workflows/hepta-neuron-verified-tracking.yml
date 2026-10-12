@@ -12,6 +12,7 @@ on:
       - "qualification/neuron-stem/FBSDE_VERIFIED_TRACKING_V1.md"
       - "qualification/neuron-stem/FBSDE_TRACKING_FEATURES_V2.md"
       - "qualification/neuron-stem/FBSDE_TRACKING_RECORD_RETENTION_V2.md"
+      - "qualification/neuron-stem/FBSDE_TRACKING_CONTROL_V1.md"
       - ".github/workflows/hepta-neuron-verified-tracking.yml"
 
 permissions:
@@ -61,13 +62,24 @@ jobs:
         backend: [hashing_reference_v1, mmbert]
         feature_profile: [ordinal_sensitive_v1, local_participant_v2]
         record_profile: [retained_objects_v1]
+        control_profile: [all_steps_v1]
         include:
           - backend: hashing_reference_v1
             feature_profile: local_participant_v2
             record_profile: serialized_records_v2
+            control_profile: all_steps_v1
           - backend: mmbert
             feature_profile: local_participant_v2
             record_profile: serialized_records_v2
+            control_profile: all_steps_v1
+          - backend: hashing_reference_v1
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: learned_belief_v1
+          - backend: mmbert
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: learned_belief_v1
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -90,18 +102,19 @@ jobs:
           BACKEND: ${{ matrix.backend }}
           FEATURE_PROFILE: ${{ matrix.feature_profile }}
           RECORD_PROFILE: ${{ matrix.record_profile }}
+          CONTROL_PROFILE: ${{ matrix.control_profile }}
         run: |
           set -euo pipefail
           export PYTHONPATH=qualification/neuron-stem
-          /tmp/tracking-venv/bin/python -m unittest fbsde_tracking_tensor_checks fbsde_tracking_features_tensor_checks fbsde_tracking_records_tensor_checks -v 2>&1 | tee tensor-tests.log
+          /tmp/tracking-venv/bin/python -m unittest fbsde_tracking_tensor_checks fbsde_tracking_features_tensor_checks fbsde_tracking_records_tensor_checks fbsde_tracking_control_tensor_checks -v 2>&1 | tee tensor-tests.log
           /tmp/tracking-venv/bin/python qualification/neuron-stem/fbsde_study.py \
-            --profile verified_tracking_v1 --tracking-source bbh --backend "$BACKEND" --tracking-feature-profile "$FEATURE_PROFILE" --tracking-record-profile "$RECORD_PROFILE" \
+            --profile verified_tracking_v1 --tracking-source bbh --backend "$BACKEND" --tracking-feature-profile "$FEATURE_PROFILE" --tracking-record-profile "$RECORD_PROFILE" --tracking-control-profile "$CONTROL_PROFILE" \
             --model-dir /tmp/tracking-mmbert --output tracking-study 2>&1 | tee study.log
           git diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: verified-tracking-${{ matrix.backend }}-${{ matrix.feature_profile }}-${{ matrix.record_profile }}-${{ github.run_id }}
+          name: verified-tracking-${{ matrix.backend }}-${{ matrix.feature_profile }}-${{ matrix.record_profile }}-${{ matrix.control_profile }}-${{ github.run_id }}
           path: |
             source.txt
             source.tar.gz
