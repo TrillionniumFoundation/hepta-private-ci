@@ -756,6 +756,103 @@ fn observer_join_rejects_independently_signed_disconnected_operations() {
 }
 
 #[test]
+fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
+    let host = key(3);
+    let observer = key(7);
+    let (envelope, transcript, owner_trust) =
+        bound_host_owner_fixture(&host, &observer);
+    let join = signed_observer_join_fixture(
+        &envelope, &transcript, &host, &observer,
+    );
+    let external_cns = key(71).verifying_key();
+    let external_supervisor = key(72).verifying_key();
+    let trust = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &external_cns,
+        supervisor_original_journal_key: &external_supervisor,
+    };
+    let mut current = CurrentEffectFixture::new(&transcript);
+    let accepted = crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &trust,
+            &mut current,
+        ).expect("original CNS, original terminal journal and four current owners");
+    assert_eq!(current.verification_count, 4);
+    assert!(accepted.independently_signed_original_runtime_and_journal);
+    assert_eq!(accepted.join.split_id, transcript.plan.split_id);
+    assert!(!accepted.production_activation_authorized);
+    assert!(!accepted.join.production_activation_authorized);
+    assert_eq!(
+        accepted.original_cns_runtime_digest,
+        crate::durable::sha256(
+            &serde_json::from_slice::<crate::CellSplitCnsRuntimeCommitV1>(
+                &transcript.receipts[2].owner_receipt_bytes,
+            ).expect("typed cutover").original_runtime_receipt_bytes,
+        ),
+    );
+
+    // A separately valid but unrelated CNS signing key must not be accepted.
+    let incorrect_cns = key(73).verifying_key();
+    let wrong_cns = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &incorrect_cns,
+        supervisor_original_journal_key: &external_supervisor,
+    };
+    let mut current = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &wrong_cns,
+            &mut current,
+        ).is_err());
+    assert_eq!(current.verification_count, 0);
+
+    let incorrect_supervisor = key(74).verifying_key();
+    let wrong_supervisor = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &external_cns,
+        supervisor_original_journal_key: &incorrect_supervisor,
+    };
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &wrong_supervisor,
+            &mut current,
+        ).is_err());
+    assert_eq!(current.verification_count, 0);
+
+    // Host/Observer or outer effect owners cannot masquerade as the
+    // separately pinned origin of a CNS/Supervisor runtime checkpoint.
+    let reused_host = host.verifying_key();
+    let reused_owner = key(54).verifying_key();
+    let conflated = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &reused_host,
+        supervisor_original_journal_key: &reused_owner,
+    };
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &conflated,
+            &mut current,
+        ).is_err());
+    assert_eq!(current.verification_count, 0);
+}
+
+#[test]
 fn independent_observer_join_requires_all_four_current_owners() {
     let host = key(3);
     let observer = key(7);
