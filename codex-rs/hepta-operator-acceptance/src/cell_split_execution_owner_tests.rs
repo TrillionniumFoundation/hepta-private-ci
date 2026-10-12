@@ -3,6 +3,7 @@ use ed25519_dalek::SigningKey;
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::fs;
+use std::path::PathBuf;
 use std::rc::Rc;
 
 use super::CellSplitExecutionErrorV1;
@@ -30,6 +31,8 @@ struct FixturePort {
     observed: Rc<RefCell<Observed>>,
     drop_ack: bool,
     reject_signature: bool,
+    tamper_frozen_during_preflight: Option<PathBuf>,
+    revoke_previous_during_preflight: bool,
 }
 
 impl FixturePort {
@@ -38,6 +41,8 @@ impl FixturePort {
             observed,
             drop_ack: false,
             reject_signature: false,
+            tamper_frozen_during_preflight: None,
+            revoke_previous_during_preflight: false,
         }
     }
 
@@ -74,6 +79,12 @@ impl CellSplitExecutionPortV1 for FixturePort {
             .contains_key(&intent.idempotency_key)
         {
             return Err("effect already exists");
+        }
+        if let Some(path) = &self.tamper_frozen_during_preflight {
+            fs::write(path, b"{}").map_err(|_| "fixture could not tamper frozen binding")?;
+        }
+        if self.revoke_previous_during_preflight {
+            self.observed.borrow_mut().commits.clear();
         }
         Ok(())
     }
@@ -646,6 +657,42 @@ fn post_open_frozen_plan_tampering_fences_first_effect() {
         Err(CellSplitExecutionErrorV1::Invalid(_))
     ));
     assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
+fn frozen_trust_tampered_during_preflight_never_prepares_or_executes() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(state.clone());
+    port.tamper_frozen_during_preflight =
+        Some(root.path().join("cell-split-owner-trust-pins.json"));
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"))
+    ));
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+    assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
+fn predecessor_revoked_during_preflight_never_prepares_successor() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(state.clone());
+    port.revoke_previous_during_preflight = true;
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+
+    owner.advance().expect("first committed artifact effect");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert!(!root.path().join("cell-split-01-prepared.json").exists());
+    assert_eq!(state.borrow().executions, 1);
 }
 
 #[test]

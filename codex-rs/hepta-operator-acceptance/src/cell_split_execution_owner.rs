@@ -784,6 +784,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             self.port
                 .preflight_uncommitted(&intent)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            // A signed negative preflight is not an exclusive reservation.
+            // Revalidate the frozen namespace and all original-owner receipts
+            // before persisting intent or allowing an external mutation.
+            self.verify_committed_prefix()?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,
