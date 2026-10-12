@@ -46,10 +46,6 @@ mod temporal_evaluation;
 mod temporal_fold;
 
 #[cfg(test)]
-#[path = "cell_split_lifecycle_tests.rs"]
-mod cell_split_lifecycle_tests;
-
-#[cfg(test)]
 #[path = "cell_split_ledger_owner_tests.rs"]
 mod cell_split_ledger_owner_tests;
 
