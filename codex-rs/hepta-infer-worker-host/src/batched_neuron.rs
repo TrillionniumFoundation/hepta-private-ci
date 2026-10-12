@@ -324,7 +324,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         for id in &poll.expired_request_ids {
             self.pending.remove(id);
-            self.retired.insert(terminal_request_fingerprint(&id));
+            self.retired.insert(terminal_request_fingerprint(id));
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
@@ -406,7 +406,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 .retain_scope_binding(scope, generation, fence, authority_epoch);
         for id in &removed {
             self.pending.remove(id);
-            self.retired.insert(terminal_request_fingerprint(&id));
+            self.retired.insert(terminal_request_fingerprint(id));
         }
         removed
     }
