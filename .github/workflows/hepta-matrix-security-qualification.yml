@@ -4,15 +4,15 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'qualification/matrix-security/**'
-      - 'codex-rs/Cargo.toml'
-      - 'codex-rs/Cargo.lock'
-      - 'codex-rs/deny.toml'
-      - 'codex-rs/rust-toolchain.toml'
-      - 'codex-rs/hepta-matrix-sdk/**'
-      - 'codex-rs/hepta-matrixd/Cargo.toml'
-      - 'codex-rs/third_party/matrix-sdk-sqlite-*/**'
-      - '.github/workflows/hepta-matrix-security-qualification.yml'
+      - "qualification/matrix-security/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/deny.toml"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/Cargo.toml"
+      - "codex-rs/third_party/matrix-sdk-sqlite-*/**"
+      - ".github/workflows/hepta-matrix-security-qualification.yml"
 
 permissions:
   contents: read
