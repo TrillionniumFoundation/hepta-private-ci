@@ -473,49 +473,6 @@ def validate_resource_reports(reports, trial):
     return all_coverage and all(r["research_resource_gate_passed"] for r in reports)
 
 
-def verify_feature_cache_budget(trial):
-    """Check a self-reported retained tensor budget, never process RSS.
-
-    Older shadow trials legitimately lack this optional field and are marked
-    unverified; a partially populated or impossible newer receipt is denied.
-    """
-    keys = ("max_feature_cache_bytes", "feature_cache_peak_resident_bytes",
-            "feature_cache_resident_bytes", "feature_cache_retained_cases",
-            "feature_cache_evictions", "feature_cache_hits",
-            "feature_cache_misses", "feature_cache_is_not_process_rss")
-    if not any(key in trial for key in keys):
-        return {
-            "receipt_present": False,
-            "budget_consistency_verified": False,
-            "independently_attested": False,
-            "production_rss_qualified": False,
-        }
-    if any(key not in trial for key in keys):
-        raise ValueError("partial learned Cell Feature cache resource receipt")
-    ceiling, peak, resident, retained, evictions, hits, misses = (
-        trial[key] for key in keys[:-1])
-    if (any(type(x) is not int for x in (
-            ceiling, peak, resident, retained, evictions, hits, misses)) or
-            not 4096 <= ceiling <= 512 * 1024 * 1024 or
-            not 0 <= resident <= peak <= ceiling or
-            retained < 0 or evictions < 0 or hits < 0 or misses <= 0 or
-            (retained > 0 and resident == 0) or
-            (retained == 0 and resident != 0) or
-            trial["feature_cache_is_not_process_rss"] is not True):
-        raise ValueError("invalid or unbounded learned Cell Feature cache receipt")
-    return {
-        "receipt_present": True,
-        "budget_consistency_verified": True,
-        "independently_attested": False,
-        "production_rss_qualified": False,
-        "max_retained_tensor_bytes": ceiling,
-        "peak_retained_tensor_bytes": peak,
-        "cache_evictions": evictions,
-        "cache_hits": hits,
-        "cache_misses": misses,
-    }
-
-
 def review(dataset, trial, journal_bytes, nochange, *,
            resources=None, ood_receipts=None, min_future_groups=30,
            replicates=2000, seed=20261011):
@@ -562,7 +519,6 @@ def review(dataset, trial, journal_bytes, nochange, *,
         item["brier_delta_bonferroni_ucb"] < 0
         for part in pairing.values() for item in part.values())
     resource_ok = validate_resource_reports(resources, trial)
-    feature_cache_evidence = verify_feature_cache_budget(trial)
     offline_ood = (offline_threeway_ood_diagnostic(
         dataset, trial, owner, ood_receipts)
         if ood_receipts is not None else None)
@@ -580,7 +536,6 @@ def review(dataset, trial, journal_bytes, nochange, *,
         "frozen_control_head_weights_sealed_and_unchanged": True,
         "observed_actual_head_parameter_change_in_offline_trace": head_learning_evidence,
         "four_scale_research_resource_precheck_passed": resource_ok,
-        "offline_feature_cache_budget_diagnostic": feature_cache_evidence,
         "joint_offline_diagnostic_passed": predictive_pass and resource_ok,
         "dataset_digest": audit["dataset_digest"],
         "trial_digest": sha256_record(trial),
@@ -602,9 +557,7 @@ def review(dataset, trial, journal_bytes, nochange, *,
             "A journal SHA and fsync claim are not a signature or live receipt",
             "Resource pairs measure research Python, not native Rust Worker physical dispatch",
             "A positive predictive gain cannot replace causal external NDU/future outcome receipts",
-            ("Paired OOD model predictions are only unsigned local research evidence, not a signed OOD/NDU gate"
-             if offline_ood is not None else
-             "Paired OOD model predictions are absent; ECE on offline future labels does not satisfy OOD gate"),
+            "OOD three-way model predictions are absent; ECE on offline future labels does not satisfy OOD gate",
             "Selector, Executor, Artifact CAS, generation-fenced final-use and unclean crash recovery remain unverified",
         ],
     }

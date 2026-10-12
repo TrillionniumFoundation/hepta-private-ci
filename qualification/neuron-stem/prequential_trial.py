@@ -8,7 +8,7 @@ an offline chronological replay, not live NDU, production learning or proof
 of long-term efficacy.
 """
 import argparse
-from collections import OrderedDict, defaultdict
+from collections import defaultdict
 import copy
 import hashlib
 from datetime import datetime, timezone
@@ -23,49 +23,6 @@ from jina_v5 import FrozenJinaV5, research_environment, sha256_record
 from jina_v5_trial import effective_weights_digest, render_case
 from q24_bridge import Q24, quantize_q24
 from qualified_eval import audit_dataset, read_jsonl, write_json
-
-
-class BoundedFeatureCache:
-    """Per-run, byte-accounted LRU of immutable frozen Stem feature vectors.
-
-    This bounds only retained per-case tensors, not PyTorch allocator, model
-    weights, tokenizer or producer-internal caches. An oversized single vector
-    fails closed instead of silently creating a resource-unbounded trial.
-    """
-
-    def __init__(self, max_bytes):
-        if type(max_bytes) is not int or max_bytes <= 0:
-            raise ValueError("invalid frozen Feature cache byte ceiling")
-        self.max_bytes = max_bytes
-        self.entries = OrderedDict()
-        self.resident_bytes = 0
-        self.peak_resident_bytes = 0
-        self.evictions = 0
-        self.hits = 0
-        self.misses = 0
-
-    def get_or_build(self, key, build):
-        if key in self.entries:
-            self.hits += 1
-            self.entries.move_to_end(key)
-            return self.entries[key][0]
-        self.misses += 1
-        value = build()
-        elements = value.numel()
-        element_size = value.element_size()
-        if (type(elements) is not int or type(element_size) is not int or
-                elements <= 0 or element_size <= 0 or
-                elements * element_size > self.max_bytes):
-            raise ValueError("one Stem feature exceeds frozen cache budget")
-        retained = elements * element_size
-        while self.resident_bytes + retained > self.max_bytes:
-            _, (_, evicted_bytes) = self.entries.popitem(last=False)
-            self.resident_bytes -= evicted_bytes
-            self.evictions += 1
-        self.entries[key] = (value, retained)
-        self.resident_bytes += retained
-        self.peak_resident_bytes = max(self.peak_resident_bytes, self.resident_bytes)
-        return value
 
 
 def iso_time(row):
@@ -216,11 +173,6 @@ def trial(args):
                (args.max_total_head_parameters, args.max_dataset_cases,
                 args.max_future_events, args.threads)):
         raise ValueError("event/parameter/thread bounds must be positive")
-    feature_cache_bytes = getattr(args, "max_feature_cache_bytes", 64 * 1024 * 1024)
-    if (type(feature_cache_bytes) is not int or
-            not 4 * 1024 <= feature_cache_bytes <= 512 * 1024 * 1024 or
-            args.dimension * 4 > feature_cache_bytes):
-        raise ValueError("unregistered or undersized frozen Feature cache byte budget")
     rows = read_jsonl(args.dataset)
     if len(rows) > args.max_dataset_cases:
         raise ValueError("dataset exceeds precommitted bounded event envelope")
@@ -255,25 +207,18 @@ def trial(args):
         cache_entries=args.cache_entries, allow_download=args.allow_model_download,
         allow_pinned_remote_code=args.allow_pinned_remote_code,
     )
-    feature_cache = BoundedFeatureCache(feature_cache_bytes)
-
+    feature_cache = {}
     def feature(row):
-        # Include immutable input content and Scope/Cell identity. A reused
-        # case_id with changed options must never return a stale feature.
-        key = (row["case_id"], row["scope_id"], row["cell_id"],
-               sha256_record([row["state"], row["question"], row["options"]]))
-
-        def encode():
+        if row["case_id"] not in feature_cache:
             v, _ = stem.encode_batch(
                 [render_case(row, "joint")], scope_id=row["scope_id"],
                 principal_id=args.principal_id, generation=args.generation,
                 authority_epoch=args.authority_epoch, intent="document",
             )
-            return torch.tensor(
+            feature_cache[row["case_id"]] = torch.tensor(
                 [x / Q24 for x in quantize_q24(v[0])],
                 dtype=torch.float32, device=args.device)
-
-        return feature_cache.get_or_build(key, encode)
+        return feature_cache[row["case_id"]]
 
     cell_heads, control_heads, optimizers, parameter_total = {}, {}, {}, 0
     for index, key in enumerate(keys):
@@ -511,14 +456,6 @@ def trial(args):
             - accuracy_brier(outcomes)["multiclass_brier"]
         ),
         "encoder_calls": stem.encoder_calls, "cache_hits": stem.cache_hits,
-        "max_feature_cache_bytes": feature_cache.max_bytes,
-        "feature_cache_peak_resident_bytes": feature_cache.peak_resident_bytes,
-        "feature_cache_resident_bytes": feature_cache.resident_bytes,
-        "feature_cache_retained_cases": len(feature_cache.entries),
-        "feature_cache_evictions": feature_cache.evictions,
-        "feature_cache_hits": feature_cache.hits,
-        "feature_cache_misses": feature_cache.misses,
-        "feature_cache_is_not_process_rss": True,
         "model_load_ms": stem.load_ms,
         "max_observed_rss_bytes": max(row["rss_bytes"] for row in records),
         "environment": research_environment(),
@@ -572,8 +509,6 @@ def main():
                    help="Emit only real frozen/learned model traces; never invent no-change")
     p.add_argument("--max-tokens", type=int, default=512)
     p.add_argument("--cache-entries", type=int, default=256)
-    p.add_argument("--max-feature-cache-bytes", type=int, default=64 * 1024 * 1024,
-                   help="hard cap on retained local Q24-decoded case features, not process RSS")
     p.add_argument("--device", default="cpu")
     p.add_argument("--threads", type=int, default=4)
     p.add_argument("--seed", type=int, default=20261011)

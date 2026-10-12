@@ -569,25 +569,3 @@ This is local **integrity**, not independent producer authentication:
 an adversary controlling both the unsigned trial and its sidecar can
 rewrite both. Real operator/observer signatures and future NDU outcomes
 remain separately mandatory, and the reviewer can never promote a Cell.
-
-
-### Bounded frozen Stem feature retention in the real learned-Head trial
-
-`prequential_trial.py --max-feature-cache-bytes N` now limits retained
-per-case Q24-decoded local frozen Encoder features, with a default of
-64 MiB and an explicit registered envelope of 4 KiB through 512 MiB.
-The cache is an exact Scope/Cell/case/ordered-input-identity LRU; miss and
-eviction recompute the *real* frozen Encoder feature rather than returning a
-synthetic cache hit. A single feature that cannot fit the byte ceiling
-fails closed. The trial records the prescribed byte cap, observed resident
-and peak retained tensor bytes, hits, misses, evictions and retained
-feature count.
-
-These bytes are the measured retained feature TENSOR STORAGE, not the
-actual process RSS, peak PyTorch allocator usage, model memory, tokenizer
-buffers, Windows filesystem handles or GPU VRAM. The independently
-measured `max_observed_rss_bytes` remains a separate diagnostic and native
-target-host 64/256/1024/4096 Cell p99/RSS/throughput/recovery qualification
-remains pending. Resource-limited research trials must compare candidates
-under the SAME precommitted feature cache ceiling. No production gate,
-Final-use permission or learned Cell promotion is issued.

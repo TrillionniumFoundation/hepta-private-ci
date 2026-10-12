@@ -10,7 +10,7 @@ from jina_v5 import sha256_record
 from prequential_trial import prediction_precommit
 from prequential_threeway_review import (
     future_calibration_metrics, offline_threeway_ood_diagnostic,
-    read_journal, review, verify_feature_cache_budget, write_frozen_report,
+    read_journal, review, write_frozen_report,
 )
 from qualified_eval import audit_dataset
 
@@ -118,47 +118,6 @@ class PrequentialThreeWayTests(unittest.TestCase):
     def run_report(self, resources=None):
         return review(self.rows, self.trial, self.journal, self.nochange,
                       resources=resources, min_future_groups=30, replicates=1000)
-
-    def test_feature_cache_receipt_is_bounded_and_never_production_rss(self):
-        old = verify_feature_cache_budget(self.trial)
-        self.assertFalse(old["receipt_present"])
-        self.assertFalse(old["production_rss_qualified"])
-        trial = copy.deepcopy(self.trial)
-        trial.update({
-            "max_feature_cache_bytes": 16384,
-            "feature_cache_peak_resident_bytes": 4096,
-            "feature_cache_resident_bytes": 2048,
-            "feature_cache_retained_cases": 2,
-            "feature_cache_evictions": 10,
-            "feature_cache_hits": 9,
-            "feature_cache_misses": 11,
-            "feature_cache_is_not_process_rss": True,
-        })
-        result = review(
-            self.rows, trial, self.journal, self.nochange,
-            min_future_groups=30, replicates=1000)
-        cache = result["offline_feature_cache_budget_diagnostic"]
-        self.assertTrue(cache["budget_consistency_verified"])
-        self.assertEqual(cache["peak_retained_tensor_bytes"], 4096)
-        self.assertFalse(cache["independently_attested"])
-        self.assertFalse(cache["production_rss_qualified"])
-        self.assertFalse(result["production_promotion_permitted"])
-        invalid = copy.deepcopy(trial)
-        invalid["feature_cache_peak_resident_bytes"] = 16385
-        with self.assertRaisesRegex(ValueError, "invalid or unbounded"):
-            verify_feature_cache_budget(invalid)
-        invalid = copy.deepcopy(trial)
-        invalid.pop("feature_cache_misses")
-        with self.assertRaisesRegex(ValueError, "partial"):
-            verify_feature_cache_budget(invalid)
-        invalid = copy.deepcopy(trial)
-        invalid["feature_cache_is_not_process_rss"] = False
-        with self.assertRaisesRegex(ValueError, "invalid or unbounded"):
-            verify_feature_cache_budget(invalid)
-        invalid = copy.deepcopy(trial)
-        invalid["max_feature_cache_bytes"] = True
-        with self.assertRaisesRegex(ValueError, "invalid or unbounded"):
-            verify_feature_cache_budget(invalid)
 
     def test_true_three_way_future_grouping_never_promotes(self):
         result = self.run_report()

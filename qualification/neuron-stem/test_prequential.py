@@ -1,9 +1,8 @@
 """Chronological continual-learning proof obligations; offline pure-Python only."""
 import unittest
 
-from prequential_trial import (BoundedFeatureCache, model_only_ood_receipt,
-                              prepare_chronology, prediction_precommit,
-                              score_prediction)
+from prequential_trial import (model_only_ood_receipt, prepare_chronology,
+                              prediction_precommit, score_prediction)
 
 
 def rows_fixture():
@@ -25,64 +24,6 @@ def rows_fixture():
 
 
 class PrequentialTests(unittest.TestCase):
-    def test_bounded_case_feature_cache_is_lru_and_byte_accounted(self):
-        class FakeFrozenFeature:
-            def __init__(self, elements, size=4):
-                self.elements, self.size = elements, size
-
-            def numel(self):
-                return self.elements
-
-            def element_size(self):
-                return self.size
-
-        with self.assertRaisesRegex(ValueError, "Feature cache byte ceiling"):
-            BoundedFeatureCache(0)
-        with self.assertRaisesRegex(ValueError, "Feature cache byte ceiling"):
-            BoundedFeatureCache(True)
-
-        cache = BoundedFeatureCache(16)
-        called = []
-        def build(key, elements=2):
-            def produce():
-                called.append(key)
-                return FakeFrozenFeature(elements)
-            return produce
-
-        a = cache.get_or_build(("S", "a"), build("a"))
-        cache.get_or_build(("S", "b"), build("b"))
-        self.assertIs(cache.get_or_build(("S", "a"), build("must-not-execute")), a)
-        cache.get_or_build(("S", "c"), build("c"))
-        self.assertEqual(cache.resident_bytes, 16)
-        self.assertEqual(cache.peak_resident_bytes, 16)
-        self.assertEqual(cache.evictions, 1)
-        self.assertEqual(cache.hits, 1)
-        self.assertEqual(cache.misses, 3)
-        self.assertEqual(called, ["a", "b", "c"])
-        cache.get_or_build(("S", "b"), build("b-again"))
-        self.assertEqual(called, ["a", "b", "c", "b-again"])
-        self.assertLessEqual(cache.resident_bytes, cache.max_bytes)
-        with self.assertRaisesRegex(ValueError, "exceeds frozen cache budget"):
-            cache.get_or_build(("S", "too-large"), build("oversized", 5))
-        self.assertLessEqual(cache.resident_bytes, cache.max_bytes)
-        self.assertNotIn(("S", "too-large"), cache.entries)
-
-    def test_feature_cache_keys_must_bind_full_cell_and_options_identity(self):
-        from jina_v5 import sha256_record
-        before = rows_fixture()[0]
-        key = (before["case_id"], before["scope_id"], before["cell_id"],
-               sha256_record([before["state"], before["question"], before["options"]]))
-        altered = dict(before)
-        altered["options"] = list(reversed(before["options"]))
-        reordered_key = (altered["case_id"], altered["scope_id"], altered["cell_id"],
-                         sha256_record([altered["state"], altered["question"], altered["options"]]))
-        self.assertNotEqual(key, reordered_key)
-        altered["options"] = before["options"]
-        altered["scope_id"] = "other-scope"
-        scope_key = (altered["case_id"], altered["scope_id"], altered["cell_id"],
-                     sha256_record([altered["state"], altered["question"], altered["options"]]))
-        self.assertNotEqual(key, scope_key)
-
     def test_ood_receipts_are_model_only_and_never_embed_labels(self):
         record = dict(rows_fixture()[3])
         record["split"] = "ood"
