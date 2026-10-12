@@ -4,6 +4,27 @@ use ed25519_dalek::SigningKey;
 
 use super::*;
 
+struct VerifiedOriginalMinimum {
+    allow: bool,
+    checks: usize,
+}
+
+impl CellSplitSupervisorMinimumAdmissionPortV1 for VerifiedOriginalMinimum {
+    type Error = &'static str;
+
+    fn verify_original_minimum(
+        &mut self,
+        _subject: &CellSplitSupervisorMinimumSubjectV1,
+    ) -> Result<(), Self::Error> {
+        self.checks += 1;
+        if self.allow {
+            Ok(())
+        } else {
+            Err("external journal and Selector minimum unavailable")
+        }
+    }
+}
+
 fn subject() -> CellSplitSupervisorMinimumSubjectV1 {
     CellSplitSupervisorMinimumSubjectV1 {
         split_id: "split.migration.original".into(),
@@ -34,6 +55,10 @@ fn independent_minimum_requires_durable_publication_and_live_challenge() {
     let key = SigningKey::from_bytes(&[91; 32]);
     let policy_key = key.verifying_key();
     let expected = subject();
+    let mut admission = VerifiedOriginalMinimum {
+        allow: true,
+        checks: 0,
+    };
     {
         let mut store = CellSplitSupervisorMinimumFileStoreV1::open(root.path(), key.clone())
             .expect("independent root");
@@ -41,8 +66,8 @@ fn independent_minimum_requires_durable_publication_and_live_challenge() {
             store.read_current(&expected, &"aa".repeat(32)),
             Err(CellSplitSupervisorMinimumErrorV1::Missing)
         ));
-        store.publish_once(&expected).expect("first immutable checkpoint minimum");
-        store.publish_once(&expected).expect("exact replay is idempotent");
+        store.publish_once(&expected, &mut admission).expect("first immutable checkpoint minimum");
+        store.publish_once(&expected, &mut admission).expect("exact replay is idempotent");
         let original = store.read_current(&expected, &"aa".repeat(32))
             .expect("current minimum proof");
         verify_cell_split_supervisor_minimum_online_v1(
@@ -71,7 +96,7 @@ fn independent_minimum_requires_durable_publication_and_live_challenge() {
     ).expect("reopened minimum remains valid");
     let mut future = expected.clone();
     future.journal_revision += 1;
-    assert!(reopened.publish_once(&future).is_err(), "no in-place witness replacement");
+    assert!(reopened.publish_once(&future, &mut admission).is_err(), "no in-place witness replacement");
     assert!(reopened.read_current(&future, &"dd".repeat(32)).is_err());
     let mut other_host = expected;
     other_host.target_host_nonce.push_str("-different");
@@ -85,13 +110,17 @@ fn independently_persisted_minimum_tampering_fails_closed() {
     let mut store = CellSplitSupervisorMinimumFileStoreV1::open(root.path(), key)
         .expect("independent source");
     let expected = subject();
-    store.publish_once(&expected).expect("durable original");
+    let mut admission = VerifiedOriginalMinimum {
+        allow: true,
+        checks: 0,
+    };
+    store.publish_once(&expected, &mut admission).expect("durable original");
     let path = root.path().join(STORE_FILE);
     let saved = fs::read(&path).expect("stored bytes");
     assert!(!saved.is_empty());
     fs::write(&path, b"{}").expect("simulated corruption");
     assert!(store.read_current(&expected, &"aa".repeat(32)).is_err());
-    assert!(store.publish_once(&expected).is_err());
+    assert!(store.publish_once(&expected, &mut admission).is_err());
     fs::write(&path, &saved).expect("restore original for alias test");
     let other = root.path().join("hard-linked-minimum");
     fs::hard_link(&path, &other).expect("simulate untrusted alias");
@@ -106,7 +135,11 @@ fn signer_replay_cannot_certify_a_different_checkpoint() {
     let mut source = CellSplitSupervisorMinimumFileStoreV1::open(root.path(), key)
         .expect("signed source");
     let original = subject();
-    source.publish_once(&original).expect("frozen minimum");
+    let mut admission = VerifiedOriginalMinimum {
+        allow: true,
+        checks: 0,
+    };
+    source.publish_once(&original, &mut admission).expect("frozen minimum");
     let proof = source.read_current(&original, &"bb".repeat(32))
         .expect("proof");
     let mut switched = proof.clone();
@@ -119,4 +152,24 @@ fn signer_replay_cannot_certify_a_different_checkpoint() {
     assert!(verify_cell_split_supervisor_minimum_online_v1(
         &original, &"bb".repeat(32), &switched, &trusted,
     ).is_err());
+}
+
+#[test]
+fn minimum_store_denies_publication_without_independent_journal_admission() {
+    let root = private_root();
+    let mut store = CellSplitSupervisorMinimumFileStoreV1::open(
+        root.path(),
+        SigningKey::from_bytes(&[91; 32]),
+    ).expect("isolated owner");
+    let mut admission = VerifiedOriginalMinimum {
+        allow: false,
+        checks: 0,
+    };
+    assert!(store.publish_once(&subject(), &mut admission).is_err());
+    assert_eq!(admission.checks, 1);
+    assert!(!root.path().join(STORE_FILE).exists());
+    admission.allow = true;
+    store.publish_once(&subject(), &mut admission)
+        .expect("independently admitted durable publication");
+    assert_eq!(admission.checks, 3);
 }
