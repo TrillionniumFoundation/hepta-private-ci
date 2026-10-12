@@ -189,7 +189,7 @@ class ExperienceReader(ReferenceReader):
         if binding_objective not in ("completion_ce", "source_margin"):
             raise ValueError("unregistered source-only learning objective")
         if binding_objective == "source_margin" and curriculum != "single_hop":
-            raise ValueError("source binding trial requires original full Qwen loss")
+            raise ValueError("source binding trial requires single-hop source training")
         if curriculum == "source_two_hop":
             from source_composition_curriculum import combine_source_examples
 

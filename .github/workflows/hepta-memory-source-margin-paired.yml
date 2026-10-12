@@ -53,6 +53,9 @@ jobs:
   # The PR-wide formatting gate is retained above. A formatting failure in an
   # unrelated research file must not censor a source-only model experiment.
   # Scoped source validation and the full locked regression suite remain required.
+  # Qwen3B CE projection parity binds the sparse backend; actual small
+  # Qwen2/PEFT dual-forward regression checks full-vs-sparse margin gradients.
+  # These mechanics tests do not assert margin task gains or acceptance.
   source-contracts:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -75,7 +78,12 @@ jobs:
             scripts/memory_cell/source_write_effects.py \
             scripts/memory_cell/test_source_completion_hf.py \
             scripts/memory_cell/test_source_write_execution_gate.py
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/experience_memory.py \
+            scripts/memory_cell/experience_write_trial.py \
+            scripts/memory_cell/test_source_margin_sparse_admission.py
           python3 -m compileall -q scripts/memory_cell
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_margin_sparse_admission.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_execution_gate.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_source_workflow_gates.py' -v
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"

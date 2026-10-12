@@ -79,10 +79,11 @@ def write_memory(
         raise ValueError("unregistered source-only curriculum")
     if binding_objective not in ("completion_ce", "source_margin"):
         raise ValueError("unregistered source-only binding objective")
-    if binding_objective == "source_margin" and (
-        loss_backend != "full" or curriculum != "single_hop"
-    ):
-        raise ValueError("unregistered source-binding/backend combination")
+    # Both loss backends are legal on the source-only single-hop task.
+    # The sparse backend still requires the exact-source Qwen pretrained CE
+    # projection proof below, and the dual-forward margin Qwen/PEFT regression.
+    if binding_objective == "source_margin" and curriculum != "single_hop":
+        raise ValueError("source margin requires source-only single-hop curriculum")
 
     commit = exact_source()
     documents = original_documents(sources, source_sha)
