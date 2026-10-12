@@ -90,15 +90,24 @@ class BindingWriterTests(unittest.TestCase):
                     loss_backend=backend,
                 )
             self.assertEqual(receipt["steps"], 4)
-            self.assertEqual(receipt["input_tokens"], 2 * receipt["write_schedule"]["planned_input_tokens"])
-            self.assertEqual(receipt["supervised_tokens"], 2 * receipt["write_schedule"]["planned_supervised_tokens"])
+            self.assertEqual(
+                receipt["input_tokens"],
+                2 * receipt["write_schedule"]["planned_input_tokens"],
+            )
+            self.assertEqual(
+                receipt["supervised_tokens"],
+                2 * receipt["write_schedule"]["planned_supervised_tokens"],
+            )
             self.assertEqual(receipt["loss_backend"], backend)
             self.assertTrue(receipt["base_unchanged"])
             self.assertFalse(receipt["production_accepted"])
             actual.append(receipt)
         self.assertEqual(actual[0]["input_tokens"], actual[1]["input_tokens"])
         self.assertEqual(actual[0]["write_schedule"], actual[1]["write_schedule"])
-        self.assertEqual(actual[0]["full_projection_positions"], actual[1]["full_projection_positions"])
+        self.assertEqual(
+            actual[0]["full_projection_positions"],
+            actual[1]["full_projection_positions"],
+        )
         self.assertLess(
             actual[1]["actual_projection_positions"],
             actual[0]["actual_projection_positions"],
@@ -117,7 +126,9 @@ class BindingWriterTests(unittest.TestCase):
         ]
         self.assertEqual(set(states[0]), set(states[1]))
         for name in states[0]:
-            torch.testing.assert_close(states[0][name], states[1][name], rtol=1e-5, atol=1e-5)
+            torch.testing.assert_close(
+                states[0][name], states[1][name], rtol=1e-5, atol=1e-5
+            )
 
     def test_unsupported_loss_or_two_hop_pairing_rejected_before_update(self):
         writer = reader()

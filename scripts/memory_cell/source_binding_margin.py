@@ -120,7 +120,7 @@ def source_hard_negatives(examples, documents, tokenizer, *, allowed_roots, revo
                         options.append(
                             (
                                 -1,
-                                parent_id,
+                                f"{10000 - parent['revision']:05d}:{parent_id}",
                                 dict(
                                     identity=parent_id,
                                     target=parent["value"],

@@ -113,6 +113,38 @@ class SourceBindingTests(unittest.TestCase):
         self.assertEqual(item["positive_roots"], ("root_new",))
         self.assertNotEqual(item["negative_value"], "mode_77778888")
 
+    def test_multihop_correction_prefers_nearest_stale_revision(self):
+        from experience_memory import source_examples
+
+        docs = (
+            event("aold", "service", "location", "mode_11112222", 1, scope="s"),
+            event(
+                "zmiddle", "service", "location", "mode_33334444",
+                2, ("aold",), scope="s",
+            ),
+            event(
+                "new", "service", "location", "mode_55556666",
+                3, ("zmiddle",), scope="s",
+            ),
+        )
+        cases, _ = source_examples(
+            docs,
+            revision=3,
+            allowed_roots={d.root for d in docs},
+            revoked=set(),
+        )
+        chosen, unmatched = source_hard_negatives(
+            list(cases),
+            docs,
+            SourceTokenizer(),
+            allowed_roots={d.root for d in docs},
+            revoked=set(),
+        )
+        self.assertEqual(unmatched, ())
+        self.assertEqual(chosen[0]["negative_category"], "same_entity_relation_superseded")
+        self.assertEqual(chosen[0]["negative_value"], "mode_33334444")
+        self.assertEqual(chosen[0]["negative_roots"], ("root_zmiddle",))
+
     def test_unlinked_newer_event_is_not_a_stale_negative(self):
         from experience_memory import source_examples
 
