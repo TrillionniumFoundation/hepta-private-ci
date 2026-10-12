@@ -966,3 +966,52 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
         Err(Error::FinalUseDenied),
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn signed_final_use_refuses_proof_for_another_stem_generation_before_effect() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.cas-generation".into(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded Head fixture");
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let mut wrong_source = source.clone();
+    wrong_source.stem_generation = Generation::new(4).unwrap();
+    let (wrong_artifacts, _cas_root) = verified_stem_cas_fixture(&wrong_source);
+    let expected = worker
+        .expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &authorization,
+        )
+        .expect("valid original unsigned proposal");
+    let (authority, signed, _authority_dir) = signed_stem_final_use_fixture(expected.clone());
+    let token = authority
+        .claim(&signed, &expected)
+        .expect("real signed original claim");
+
+    assert_eq!(
+        worker.run_verified_stem_feature_receipt_v1(
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                verified_artifacts: &wrong_artifacts,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization,
+            },
+        ),
+        Err(Error::FeatureContract)
+    );
+}
