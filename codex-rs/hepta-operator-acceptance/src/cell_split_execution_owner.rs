@@ -828,6 +828,19 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     pub fn advance(
         &mut self,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
+        // Low-level coordinator callers still depend on the *original*
+        // effect owner to enforce independent NDU/Selector final-use.
+        self.advance_with_admission(|| Ok(()))
+    }
+
+    /// Product admission seam: independently reread current NDU/Selector state
+    /// after the original owner's potentially slow preflight, before writing
+    /// the first prepared intent. This callback is advisory, not final-use;
+    /// the independent effect backend must reauthorize at its commit boundary.
+    pub(crate) fn advance_with_admission(
+        &mut self,
+        mut revalidate: impl FnMut() -> Result<(), String>,
+    ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
         // Inspection handles may authenticate existing evidence but must never
         // prepare an intent or invoke an external CAS/CNS/Supervisor effect.
         if self.read_only {
@@ -863,9 +876,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 .preflight_uncommitted(&intent)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
             // External preflight is not a durable reservation. It can observe
-            // a valid predecessor and then return after another owner has
-            // revoked it or the frozen trust frames have changed.
-            // Fail before creating the prepared intent in either case.
+            // a valid predecessor and then return after the independent
+            // Selector/NDU has withdrawn admission. Refuse to create even a
+            // prepared intent when the current selection has been revoked.
+            revalidate().map_err(CellSplitExecutionErrorV1::External)?;
+            // Also recheck external predecessor effects and frozen local pins
+            // after the preflight/admission callbacks, never trust old reads.
             self.verify_committed_prefix()?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
