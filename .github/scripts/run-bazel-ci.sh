@@ -470,7 +470,7 @@ fi
 # target set with identical arguments. A second failure remains hard red.
 if [[ ${bazel_status:-0} -ne 0 ]] \
   && grep -Fq "GET returned 504 Gateway Time-out" "$bazel_console_log" \
-  && ! grep -Eq '(^|[[:space:]])FAIL: //|error\\[E[0-9]+\\]:|(^|[[:space:]])error:|test result: FAILED|panicked at|ERROR: .* (Compiling|Linking|Testing) .* failed' "$bazel_console_log"; then
+  && ! grep -Eq '(^|[[:space:]])FAIL: //|error\[E[0-9]+\]:|(^|[[:space:]])error:|test result: FAILED|panicked at|ERROR: .* (Compiling|Linking|Testing) .* failed' "$bazel_console_log"; then
   echo "::warning::Pinned Bazel dependency download returned HTTP 504; retrying the identical complete Bazel target set once."
   echo "External archive transport retry 1/1 (previous status $bazel_status)" >> "$bazel_console_log"
   set +e
