@@ -878,6 +878,34 @@ mod tests {
             Err(Error::FeatureContract)
         ));
         assert_eq!(worker.driver.batch_calls(), 0);
+        // A well-formed row from another principal or purpose must not
+        // enter the same *physical* backend invocation. Recompute its payload
+        // and lease digests so the denial cannot be attributed to stale bytes.
+        for change_principal in [true, false] {
+            let mut mixed = b.clone();
+            let mut isolated_snapshot = (*mixed.snapshot).clone();
+            if change_principal {
+                mixed.principal_id = id("principal.other");
+                isolated_snapshot.identity.principal_id = mixed.principal_id.clone();
+            } else {
+                mixed.purpose_id = id("purpose.other");
+                isolated_snapshot.identity.purpose_id = mixed.purpose_id.clone();
+            }
+            mixed.snapshot = std::sync::Arc::new(isolated_snapshot);
+            let mixed_digest = super::super::canonical_shared_neuron_payload_digest_v2(&mixed)
+                .expect("fresh mixed-partition payload");
+            mixed.authorization.payload_digest = mixed_digest.clone();
+            mixed.authorization.lease_payload_digest = mixed_digest;
+            assert_eq!(
+                worker.run_shared_neuron_features_batch_v2(
+                    100,
+                    "model.gated",
+                    vec![a.clone(), mixed],
+                ),
+                Err(Error::FeatureContract)
+            );
+            assert_eq!(worker.driver.batch_calls(), 0);
+        }
         let results = worker
             .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
             .expect("batched references");
