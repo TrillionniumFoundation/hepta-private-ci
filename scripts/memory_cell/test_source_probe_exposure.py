@@ -49,31 +49,35 @@ class SourceExposureReplayTests(unittest.TestCase):
         original = {item["query"]["identity"] for item in self.entries}
         self.assertEqual(set(visits), original)
         self.assertEqual(sum(visits.values()), self.receipt["steps"])
-        self.assertEqual(set(visits) - active, {
-            item["query"]["identity"]
-            for item in self.entries
-            if item["query"]["identity"] not in active
-        })
-        self.assertTrue(all(visits[q] == 0 for q in set(visits) - active))
+        unseen = set(visits) - active
         self.assertEqual(
-            schedule_digest, self.receipt["schedule_sha256"]
+            unseen,
+            {
+                item["query"]["identity"]
+                for item in self.entries
+                if item["query"]["identity"] not in active
+            },
         )
+        self.assertEqual(len(unseen), 1)
+        self.assertTrue(all(visits[q] == 0 for q in set(visits) - active))
+        self.assertEqual(schedule_digest, self.receipt["schedule_sha256"])
 
     def test_tampered_hard_negative_or_subset_cannot_claim_exposure(self):
-        corruptions = (
-            ("binding_receipt", lambda r: r["training_pairs"][0].update(
-                negative_value="forged"
-            )),
-            ("source_supervision", lambda r: r.append(self.entries[-1])),
-            ("input_tokens", lambda r: r + 1),
-            ("actual_projection_positions", lambda r: r - 1),
-        )
-        for field, mutate in corruptions:
+        for field in (
+            "binding_receipt",
+            "source_supervision",
+            "input_tokens",
+            "actual_projection_positions",
+        ):
             forged = deepcopy(self.receipt)
-            value = forged[field]
-            outcome = mutate(value)
-            if outcome is not None:
-                forged[field] = outcome
+            if field == "binding_receipt":
+                forged[field]["training_pairs"][0]["negative_value"] = "forged"
+            elif field == "source_supervision":
+                forged[field].append(self.entries[-1])
+            elif field == "input_tokens":
+                forged[field] += 1
+            else:
+                forged[field] -= 1
             with self.subTest(field=field), self.assertRaises(ValueError):
                 self.replay(forged)
 
