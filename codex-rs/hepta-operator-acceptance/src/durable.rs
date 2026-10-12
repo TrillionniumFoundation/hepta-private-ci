@@ -247,6 +247,33 @@ pub(crate) struct SidecarLock {
     _file: File,
 }
 
+impl SidecarLock {
+    /// A held OS file lock is not proof that the directory still names the
+    /// same inode: an uncooperative writer can unlink/recreate the lock path.
+    /// Keep the single-writer assumption fail-closed across long readbacks
+    /// and asynchronous effect callbacks, not only during initial open.
+    pub(crate) fn verify_current(&self, root: &Path) -> Result<(), AcceptanceError> {
+        verify_secure_directory(root, "sidecar directory")?;
+        let path = root.join(SIDECAR_LOCK_FILE);
+        let held = self._file.metadata()?;
+        let at_path = std::fs::metadata(&path)?;
+        let link = std::fs::symlink_metadata(&path)?;
+        verify_regular_metadata(&held, "sidecar lock")?;
+        if link.file_type().is_symlink()
+            || !same_file_snapshot(&held, &at_path)
+            || !same_file_snapshot(&held, &link)
+        {
+            return Err(invalid("held sidecar lock no longer names the live lock path"));
+        }
+        #[cfg(windows)]
+        {
+            let snapshot = windows::FileSnapshot::capture(&self._file, "sidecar lock")?;
+            windows::verify_unchanged(&self._file, &path, &snapshot, "sidecar lock")?;
+        }
+        Ok(())
+    }
+}
+
 pub(crate) fn lock_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
     open_sidecar_lock(root, /*create*/ true)
 }
