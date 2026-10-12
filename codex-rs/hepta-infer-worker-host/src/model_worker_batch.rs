@@ -323,6 +323,7 @@ mod tests {
         non_terminal_last_row: bool,
         swap_items: bool,
         fail_after_execution: bool,
+        reported_memory_bytes: Option<u64>,
     }
 
     impl ModelDriver for BatchMock {
@@ -382,7 +383,7 @@ mod tests {
                         },
                         drive_q24: vec![1 << 24; req.expected_output_width],
                         prediction_q24: vec![0; req.expected_output_width],
-                        observed_memory_bytes: 2048,
+                        observed_memory_bytes: self.reported_memory_bytes.unwrap_or(2048),
                         transient_allocation_bytes: 128,
                         queue_age_micros: 3,
                         latency_micros: 10,
@@ -543,6 +544,25 @@ mod tests {
             Err(Error::PayloadMismatch)
         );
         assert_eq!(worker.driver.batches, 0);
+    }
+
+    #[test]
+    fn batch_receipt_preserves_loaded_residency_against_underreporting_driver() {
+        let mut worker = worker(BatchMock {
+            reported_memory_bytes: Some(0),
+            ..BatchMock::default()
+        });
+        let results = worker
+            .run_neuron_features_batch(
+                100,
+                "model.v2",
+                vec![feature("request.1", 'b'), feature("request.2", 'c')],
+            )
+            .expect("two-row batch");
+        assert_eq!(results.len(), 2);
+        assert!(results.iter().all(|row| row.observed_memory_bytes == 1024));
+        assert_eq!(worker.driver.batches, 1);
+        assert!(!worker.poisoned);
     }
 
     #[test]
