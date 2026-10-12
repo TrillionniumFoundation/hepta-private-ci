@@ -166,6 +166,11 @@ class BatchTests(unittest.TestCase):
                 cache.put(key, bogus)
             self.assertIs(cache.get(key), good)
             self.assertEqual(cache.size_bytes, original_size)
+        different = FrozenFeature.from_values([0.25, 0.75], 2, "mean")
+        with self.assertRaisesRegex(ValueError, "identical scoped cache key"):
+            cache.put(key, different)
+        self.assertIs(cache.get(key), good)
+        self.assertEqual(cache.size_bytes, original_size)
 
     def test_feature_tokens_and_scalar_type_are_strictly_bounded(self):
         for tokens in (True, -1, 0, 8193):
