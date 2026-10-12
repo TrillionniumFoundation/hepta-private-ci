@@ -470,6 +470,12 @@ fn abandoned_partial_child_and_stale_authority_never_publish_a_batch_marker() {
         Err(CellSplitChildStateCasErrorV1::Ambiguous)
     ));
     assert!(batch.read_committed(&intent).unwrap().is_none());
+    assert_eq!(
+        batch
+            .current_sequence_for_intent(&intent)
+            .expect("partial child is not a committed batch"),
+        batch.migration.parent_anchor().sequence
+    );
     drop(batch);
     let mut recovered = owner(root.path(), migration, auth);
     assert!(matches!(
