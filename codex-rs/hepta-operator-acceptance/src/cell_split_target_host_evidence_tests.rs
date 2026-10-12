@@ -482,6 +482,7 @@ fn signed_owner_transcript_for_host(
             previous_receipt_digest: predecessor.clone(),
         };
         let owner_bytes = match index {
+            #[cfg(unix)]
             2 => {
                 // Independent CNS runtime original, bound to the exact host
                 // route before the outer CNS effect signer seals its receipt.
@@ -509,6 +510,7 @@ fn signed_owner_transcript_for_host(
                     .to_vec();
                 canonical_json(&original).expect("original signed CNS cutover")
             }
+            #[cfg(unix)]
             3 => {
                 // The Supervisor original journal is signed with a *distinct*
                 // key and a domain-separated payload, not the outer owner key.
@@ -755,6 +757,7 @@ fn observer_join_rejects_independently_signed_disconnected_operations() {
     }
 }
 
+#[cfg(unix)]
 #[test]
 fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     let host = key(3);
@@ -852,6 +855,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     assert_eq!(current.verification_count, 0);
 }
 
+#[cfg(unix)]
 #[test]
 fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
     use ed25519_dalek::Signer as _;
