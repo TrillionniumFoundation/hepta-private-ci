@@ -317,7 +317,8 @@ fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
     let parsed: YamlValue = serde_yaml::from_str_with_options(
         raw_frontmatter,
         serde_yaml::options! { reject_unsupported_tags: true },
-    ).ok()?;
+    )
+    .ok()?;
     let mapping = parsed.as_object()?;
     mapping.iter().find_map(|(key, value)| {
         if key.as_str()?.trim() == "description" {
@@ -333,9 +334,7 @@ fn yaml_scalar(value: &YamlValue) -> Option<String> {
         YamlValue::String(value) => Some(value.trim().to_string()),
         YamlValue::Bool(value) => Some(value.to_string()),
         YamlValue::Number(value) => Some(value.to_string()),
-        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => {
-            None
-        }
+        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => None,
     }
 }
 
