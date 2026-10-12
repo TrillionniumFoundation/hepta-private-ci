@@ -167,7 +167,7 @@ jobs:
           rustup toolchain install 1.96.0 --profile minimal
           RUSTUP_TOOLCHAIN=1.96.0 python3 apps/hepta-control-ui/tools/build-product-preview.py --target-dir "$RUNNER_TEMP/product-gateway-target"
       - id: product_gateway_transport_tests
-        name: Execute bounded gateway transport regressions
+        name: Execute bounded gateway transport and boundary regressions
         env:
           RUSTUP_TOOLCHAIN: 1.96.0
           CARGO_TARGET_DIR: ${{ runner.temp }}/product-gateway-target
@@ -177,6 +177,9 @@ jobs:
           HEPTA_CI_LANE: ${{ matrix.lane }}
         run: |
           TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-transport-${{ matrix.lane }}.json" --minimum-tests 9 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(http_transport::tests::)'
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-owner-status-${{ matrix.lane }}.json" --minimum-tests 5 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(owner_status::tests::)'
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-ui-bundle-${{ matrix.lane }}.json" --minimum-tests 11 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(ui_bundle::tests::)'
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-boundary-http-origin-${{ matrix.lane }}.json" --minimum-tests 2 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(http_origin::tests::)'
       - id: product_gateway_browser
         name: Exercise real gateway unavailable status and cancellation
         working-directory: apps/hepta-control-ui
@@ -193,6 +196,7 @@ jobs:
             apps/hepta-control-ui/test-results/product-status-results.json
             ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview.hepta-build.json
             ${{ runner.temp }}/gateway-transport-${{ matrix.lane }}.json*
+            ${{ runner.temp }}/gateway-boundary-*-${{ matrix.lane }}.json*
           if-no-files-found: warn
       - id: fixture_build
         if: always() && steps.default_build.outcome == 'success'
