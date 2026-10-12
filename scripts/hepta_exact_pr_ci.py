@@ -170,7 +170,9 @@ def current(repo: str, number: int, sha: str) -> tuple[dict, dict]:
     )
     report = evaluate(
         pr, runs, repo, number, sha,
-        merge_created_at=merge.get("merge_created_at"),
+        merge_created_at=(
+            merge.get("merge_created_at") if merge["qualified"] else None
+        ),
     )
     report["prospective_merge_ref"] = merge
     report["qualified"] = report["qualified"] and merge["qualified"]
