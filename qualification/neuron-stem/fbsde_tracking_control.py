@@ -81,6 +81,9 @@ class BeliefProblem:
         require(all(self.laws[i][j] > 0 for i,j in known), 'observation outside declared model support')
         return tuple(sorted(known))
 
+    def available_events(self, known=()):
+        return [i for i in range(len(self.laws)) if i not in dict(self.history(known))]
+
     def outcome_law(self, event, known=()):
         """Conditional-law port; V1 is independent, other profiles need not be."""
         require(type(event) is int and 0 <= event < len(self.laws), 'observation event index')
@@ -143,7 +146,7 @@ def plan(problem, known=(), *, horizon=2, cost=.02, max_nodes=20000):
         label = max(range(problem.actors), key=lambda j: (probabilities[j], -j))
         best = max(0., 2*probabilities[label]-1)
         action = 'abstain' if best == 0 else f'answer:{label}'
-        available = [i for i in range(len(problem.laws)) if i not in dict(history)]
+        available = problem.available_events(history)
         bounded = depth == 0 or not available or best >= 1-cost-1e-12
         alternatives = []
         if not bounded:
