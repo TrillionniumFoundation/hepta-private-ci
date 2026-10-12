@@ -17,6 +17,20 @@ from typing import Any
 SCOPES = (64, 256, 1024, 4096)
 MODES = ("no_split", "logical_split", "optimized_logical_split", "physical_split")
 TRACE_FIELD = "attempted_request_trace_sha256"
+# Hardware counters and request cardinalities are exact u64 quantities. Never
+# coerce them through float: 2**53 + 1 would round to 2**53 and could turn
+# inconsistent terminal accounting into an apparently matching measurement.
+COUNT_FIELDS = frozenset({
+    "attempted",
+    "completed",
+    "communication_bytes",
+    "native_backend_calls",
+    "native_batch_requests",
+    "fsync_count",
+    "failed_requests",
+})
+MAX_U64 = (1 << 64) - 1
+
 FIELDS = (
     "attempted",
     "completed",
@@ -47,6 +61,12 @@ def positive_number(value: Any, field: str, *, allow_zero: bool = True) -> float
     value = float(value)
     if not math.isfinite(value) or value < 0 or (not allow_zero and value == 0):
         raise InvalidEvidence(f"{field}: non-finite or invalid measurement")
+    return value
+
+
+def exact_count(value: Any, field: str, *, allow_zero: bool = True) -> int:
+    if type(value) is not int or value < 0 or value > MAX_U64 or (not allow_zero and value == 0):
+        raise InvalidEvidence(f"{field}: expected exact unsigned 64-bit integer measurement")
     return value
 
 
@@ -85,25 +105,20 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
                 f"{scope}/{mode}: missing canonical attempted request trace SHA-256"
             )
         vals = {
-            field: positive_number(
-                entry.get(field),
-                f"{scope}/{mode}/{field}",
-                allow_zero=field not in ("attempted", "completed", "elapsed_seconds"),
+            field: (
+                exact_count(
+                    entry.get(field), f"{scope}/{mode}/{field}",
+                    allow_zero=field not in ("attempted", "completed"),
+                )
+                if field in COUNT_FIELDS
+                else positive_number(
+                    entry.get(field), f"{scope}/{mode}/{field}",
+                    allow_zero=field != "elapsed_seconds",
+                )
             )
             for field in FIELDS
         }
         vals[TRACE_FIELD] = trace
-        for field in (
-            "attempted",
-            "completed",
-            "communication_bytes",
-            "native_backend_calls",
-            "native_batch_requests",
-            "fsync_count",
-            "failed_requests",
-        ):
-            if not vals[field].is_integer():
-                raise InvalidEvidence(f"{scope}/{mode}/{field}: expected integer")
         if vals["completed"] + vals["failed_requests"] != vals["attempted"]:
             raise InvalidEvidence(f"{key}: inconsistent terminal request accounting")
         if not vals["p50_ms"] <= vals["p95_ms"] <= vals["p99_ms"]:
