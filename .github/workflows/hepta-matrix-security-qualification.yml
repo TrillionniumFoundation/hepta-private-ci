@@ -96,12 +96,18 @@ jobs:
           git diff --exit-code
 
   disposable-cargo-resolution-probe:
-    name: Disposable pinned SDK Cargo resolver (diagnostic only)
+    name: Disposable pinned SDK Cargo resolver (${{ matrix.sqlite_arm }}, diagnostic only)
     runs-on: ubuntu-24.04
-    timeout-minutes: 22
+    timeout-minutes: 24
+    strategy:
+      fail-fast: false
+      matrix:
+        sqlite_arm: [retain_legacy_sqlite_patch, use_upstream_sqlite]
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      STAGE: ${{ runner.temp }}/hepta-matrix-stage
+      STAGE: ${{ runner.temp }}/hepta-matrix-stage-${{ matrix.sqlite_arm }}
+      RESOLVE_ARM: ${{ matrix.sqlite_arm }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -114,7 +120,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git worktree add --detach "$STAGE" "$SOURCE_SHA"
-          python3 qualification/matrix-security/staged_resolution_probe.py --source . --stage "$STAGE" --sha "$SOURCE_SHA" --output "$RUNNER_TEMP/hepta-matrix-resolution-stage.json"
+          python3 qualification/matrix-security/staged_resolution_probe.py --source . --stage "$STAGE" --sha "$SOURCE_SHA" --sqlite-arm "$RESOLVE_ARM" --output "$RUNNER_TEMP/hepta-matrix-resolution-stage.json"
       - name: Install candidate upstream minimum Rust compiler
         run: rustup toolchain install 1.96.0 --profile minimal
       - name: Resolve pinned matrix-sdk Git graph without compiling external source
@@ -136,7 +142,8 @@ jobs:
           pkgs=data.get('packages',[])
           names=('matrix-sdk','matrix-sdk-base','matrix-sdk-crypto','matrix-sdk-sqlite','anymap2','anymap3','libsqlite3-sys')
           versions={name:sorted(x['version'] for x in pkgs if x['name']==name) for name in names}
-          out={'schema':'hepta.matrix-sdk-resolution-result.v1',
+          out={'schema':'hepta.matrix-sdk-resolution-result.v2',
+               'sqlite_arm':os.environ['RESOLVE_ARM'],
                'status_code':status,'cargo_resolution_completed':status==0,
                'exact_upstream_sha':'b3c07ea6ba6e8e46e30811c0500b04505c4be9f9',
                'versions':versions,
@@ -156,7 +163,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-matrix-cargo-resolution-${{ github.run_id }}
+          name: hepta-matrix-cargo-resolution-${{ github.run_id }}-${{ matrix.sqlite_arm }}
           path: |
             ${{ runner.temp }}/hepta-matrix-resolution-stage.json
             ${{ runner.temp }}/hepta-matrix-resolution-result.json
