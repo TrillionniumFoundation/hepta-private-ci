@@ -152,6 +152,16 @@ pub use cell_split_observer_minimum::CellSplitSupervisorMinimumReadbackV1;
 #[cfg(unix)]
 pub use cell_split_observer_minimum::CellSplitSupervisorMinimumSubjectV1;
 #[cfg(unix)]
+pub use cell_split_observer_minimum::CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMonotonicFrontierPortV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMonotonicFrontierV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::cell_split_supervisor_monotonic_frontier_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::verify_cell_split_supervisor_monotonic_frontier_v1;
+#[cfg(unix)]
 pub use cell_split_observer_minimum::cell_split_supervisor_minimum_readback_signing_payload_v1;
 #[cfg(unix)]
 pub use cell_split_observer_minimum::verify_cell_split_supervisor_minimum_online_v1;
