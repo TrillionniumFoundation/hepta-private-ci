@@ -44,8 +44,8 @@ class WorkflowContextContractTests(unittest.TestCase):
         # Audit EVERY checkout, including later SDK candidate jobs; a default
         # checkout may otherwise silently alter the security graph.
         checkout_pattern = re.compile(
-            r"(?m)^ {6,8}(?:- )?uses: actions/checkout@[a-f0-9]{40}\\n"
-            r" {8}with:\\n((?: {10}[a-z-]+:.*\\n)+)"
+            r"(?m)^ {6,8}(?:- )?uses: actions/checkout@[a-f0-9]{40}\n"
+            r" {8}with:\n((?: {10}[a-z-]+:.*\n)+)"
         )
         groups = checkout_pattern.findall(self.source)
         self.assertEqual(self.source.count("uses: actions/checkout@"), len(groups))
@@ -75,13 +75,13 @@ class WorkflowContextContractTests(unittest.TestCase):
         # The invariant is intended to detect a future accidental removal of
         # an explicit PR-source pin, not simply the current source shape.
         checkout_pattern = re.compile(
-            r"(?m)^ {6,8}(?:- )?uses: actions/checkout@[a-f0-9]{40}\\n"
-            r" {8}with:\\n((?: {10}[a-z-]+:.*\\n)+)"
+            r"(?m)^ {6,8}(?:- )?uses: actions/checkout@[a-f0-9]{40}\n"
+            r" {8}with:\n((?: {10}[a-z-]+:.*\n)+)"
         )
         correct = checkout_pattern.findall(self.source)
         self.assertEqual(len(correct), 11)
         tampered = self.source.replace(
-            "          ref: ${{ github.event.pull_request.head.sha || github.sha }}\\n",
+            "          ref: ${{ github.event.pull_request.head.sha || github.sha }}\n",
             "",
             1,
         )
