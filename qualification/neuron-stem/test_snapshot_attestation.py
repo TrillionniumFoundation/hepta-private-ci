@@ -75,11 +75,16 @@ class JinaSnapshotCensusTests(unittest.TestCase):
             self.census(expected=before)
 
     def test_real_loader_requires_preapproved_local_bytes(self):
-        with self.assertRaisesRegex(ValueError, "precommitted"):
-            FrozenJinaV5(self.model, REV, allow_pinned_remote_code=True)
-        with self.assertRaisesRegex(ValueError, "must not download"):
-            FrozenJinaV5(self.model, REV, allow_pinned_remote_code=True,
-                         allow_download=True)
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(ValueError, "HF_HUB_OFFLINE=1"):
+                FrozenJinaV5(self.model, REV, allow_pinned_remote_code=True)
+        with patch.dict(os.environ,
+                        {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}):
+            with self.assertRaisesRegex(ValueError, "precommitted"):
+                FrozenJinaV5(self.model, REV, allow_pinned_remote_code=True)
+            with self.assertRaisesRegex(ValueError, "must not download"):
+                FrozenJinaV5(self.model, REV, allow_pinned_remote_code=True,
+                             allow_download=True)
         with self.assertRaisesRegex(ValueError, "fake model cannot claim"):
             FrozenJinaV5(self.model, REV, model_factory=lambda _: object(),
                          snapshot_dir=self.snap, store_root=self.root,
