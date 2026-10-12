@@ -1,0 +1,66 @@
+name: MemoryCell pinned native pairwise Shadow disposition
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/stem_pairwise_pinned_disposition.py"
+      - "scripts/memory_cell/test_stem_pairwise_pinned_disposition.py"
+      - ".github/workflows/hepta-memory-stem-pairwise-pinned-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-pairwise-pinned-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-192-decision-disposition:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Synthetic anti-forgery checks without native labels or model
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/stem-pairwise-audit"
+          git rev-parse HEAD > "$RUNNER_TEMP/stem-pairwise-audit/auditor-commit.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/stem-pairwise-audit/auditor-tree.txt"
+          python3 -m unittest -v test_stem_pairwise_pinned_disposition 2>&1 | tee "$RUNNER_TEMP/stem-pairwise-audit/tests.log"
+          python3 -m compileall -q scripts/memory_cell/stem_pairwise_pinned_disposition.py scripts/memory_cell/test_stem_pairwise_pinned_disposition.py
+      - name: Download original completed native experiment without executing it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11756269634/zip > "$RUNNER_TEMP/stem-pairwise-original.zip"
+          printf '%s  %s\n' 694401ca61859bd11a24ae212c0edb4c3b493182581e07d373cc73f4fd0aeae1 "$RUNNER_TEMP/stem-pairwise-original.zip" | sha256sum -c -
+      - name: Verify all ZIP members, original Heads, 576 policies and 192 shadow choices
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/stem_pairwise_pinned_disposition.py "$RUNNER_TEMP/stem-pairwise-original.zip" \
+            --out "$RUNNER_TEMP/stem-pairwise-audit/source-only-disposition.json" \
+            2>&1 | tee "$RUNNER_TEMP/stem-pairwise-audit/audit.log"
+      - name: Preserve tested source and every failure with SHA256SUMS
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/stem-pairwise-audit/source"
+          cp scripts/memory_cell/stem_pairwise_pinned_disposition.py "$RUNNER_TEMP/stem-pairwise-audit/source/"
+          cp scripts/memory_cell/test_stem_pairwise_pinned_disposition.py "$RUNNER_TEMP/stem-pairwise-audit/source/"
+          cp scripts/memory_cell/stem_audit_archive.py "$RUNNER_TEMP/stem-pairwise-audit/source/"
+          cp scripts/memory_cell/stem_native_nonpromotion.py "$RUNNER_TEMP/stem-pairwise-audit/source/"
+          cp .github/workflows/hepta-memory-stem-pairwise-pinned-audit.yml "$RUNNER_TEMP/stem-pairwise-audit/source/"
+          (cd "$RUNNER_TEMP/stem-pairwise-audit" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-pairwise-pinned-disposition
+          path: ${{ runner.temp }}/stem-pairwise-audit
+          if-no-files-found: error
