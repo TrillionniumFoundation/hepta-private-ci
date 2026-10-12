@@ -1022,11 +1022,8 @@ mod tests {
         forged.authorization.payload_digest = forged_payload.clone();
         forged.authorization.lease_payload_digest = forged_payload;
         assert_eq!(
-            worker.run_shared_neuron_features_batch_v2(
-                100,
-                "model.gated",
-                vec![a.clone(), forged],
-            ),
+            worker
+                .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a.clone(), forged],),
             Err(Error::FeatureContract)
         );
         assert_eq!(worker.driver.batch_calls(), 0);
