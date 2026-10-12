@@ -179,6 +179,12 @@ class DynamicLearning(unittest.TestCase):
                     rust_candidate_digest(item)
                 with self.assertRaises(LearningContractError):
                     q24_reference(item, [Q24, Q24])
+        # Q24+1 is a valid fractional fixed-point number; keep the
+        # Python oracle aligned with Rust's inclusive +/-8*Q24 domain.
+        fractional = [Q24 + 1, Q24]
+        fractional_drive, fractional_prediction = q24_reference(valid, fractional)
+        self.assertEqual(len(fractional_drive), 1)
+        self.assertEqual(len(fractional_prediction), 1)
         for bad_inputs in (
                 [True, Q24], [Q24, float(Q24)],
                 [8 * Q24 + 1, Q24], [Q24],
