@@ -444,6 +444,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
         })
     }
 
+    fn other_model_resident_bytes(&self, excluded_model_id: &str) -> Result<u64, Error> {
+        self.models
+            .iter()
+            .filter(|(model_id, _)| model_id.as_str() != excluded_model_id)
+            .try_fold(0_u64, |total, (_, model)| {
+                total
+                    .checked_add(model.handle.observed_memory_bytes)
+                    .ok_or(Error::ArithmeticOverflow)
+            })
+    }
+
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
         if self.load_indeterminate {
             return Err(Error::ModelLoadIndeterminate);
@@ -614,6 +625,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        // A Worker grant covers ALL loaded handles and any transient
+        // allocations reported by this invocation, not just the selected
+        // model's resident handle.
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.unload_indeterminate {
             return Err(Error::ModelUnloadIndeterminate);
@@ -672,7 +687,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if !observed.terminal_observed {
             self.execution_indeterminate = true;
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // Fail closed on a claimed resident+transient peak exceeding the
+        // generation-wide grant. Checked arithmetic matters: an overflowing
+        // driver counter is no more trustworthy than an over-budget value.
+        let claimed_peak = observed
+            .observed_memory_bytes
+            .checked_add(observed.transient_allocation_bytes)
+            .and_then(|bytes| bytes.checked_add(other_model_resident_bytes));
+        if claimed_peak.is_none_or(|bytes| bytes > self.grant.maximum_memory_bytes) {
             self.execution_indeterminate = true;
             return Err(Error::ModelCapacity);
         }
