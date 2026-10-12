@@ -110,12 +110,33 @@ class BatchTests(unittest.TestCase):
                 engine.run([req(1)])
             self.assertEqual(engine.cache.size_bytes, 0)
 
+    def test_boxed_python_float_cache_does_not_claim_raw_f32_budget(self):
+        from shared_encoder_batch import ScopedFeatureCache
+
+        key = req(1, "cache-test").cache_key()
+        value = FrozenFeature.from_values([0.25] * 768, 20, "mean")
+        payload_bytes = 768 * 4
+        cache = ScopedFeatureCache(payload_bytes)
+        cache.put(key, value)
+        self.assertIsNone(cache.get(key))
+        self.assertEqual(cache.size_bytes, 0)
+        # Admission to a sufficiently large cache must charge key, object,
+        # Python float storage and a conservative bookkeeping allowance.
+        cache = ScopedFeatureCache(128 * 1024)
+        cache.put(key, value)
+        self.assertIs(cache.get(key), value)
+        self.assertGreater(cache.size_bytes, payload_bytes)
+        self.assertLessEqual(cache.size_bytes, cache.maximum_bytes)
+        cache.invalidate_scope(req(1).scope_digest)
+        self.assertEqual(cache.size_bytes, 0)
+
     def test_cache_eviction_is_bounded(self):
         backend = FakeBackend(width=8)
-        engine = SharedStemEngine(backend, max_cache_bytes=32)
+        engine = SharedStemEngine(backend, max_cache_bytes=3000)
         engine.run([req(1, "alpha")])
         engine.run([req(2, "beta")])
-        self.assertEqual(engine.cache.size_bytes, 32)
+        self.assertGreater(engine.cache.size_bytes, 8 * 4)
+        self.assertLessEqual(engine.cache.size_bytes, 3000)
         self.assertGreaterEqual(engine.cache.evictions, 1)
         engine.run([req(3, "alpha")])
         self.assertEqual(len(backend.calls), 3)
@@ -129,7 +150,7 @@ class BatchTests(unittest.TestCase):
 
     def test_4096_logical_cells_are_bounded_batches_not_4096_encoder_invocations(self):
         backend = FakeBackend(width=8)
-        engine = SharedStemEngine(backend, max_cache_bytes=128)
+        engine = SharedStemEngine(backend, max_cache_bytes=4096)
         all_receipts = []
         counts = []
         for base in range(0, 4096, 32):
@@ -190,7 +211,7 @@ class BatchTests(unittest.TestCase):
             D("a"), D("b"), D("c"), D("d"), "mean", 768, 2, 1,
             tuple(a), (Q, 0), (0, 0),
         )
-        bridge = ProjectedStemEngine(encoder, projection, maximum_projection_cache_bytes=16)
+        bridge = ProjectedStemEngine(encoder, projection, maximum_projection_cache_bytes=4096)
         result = bridge.run([req(1, "one"), req(2, "one")])
         self.assertEqual(result.encoder_observation.backend_batch_widths, (1,))
         self.assertEqual(len(result.refs), 2)
