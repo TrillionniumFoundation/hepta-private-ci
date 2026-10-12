@@ -19,6 +19,7 @@ def sample():
         "model_repository": "Qwen/Qwen2.5-3B-Instruct",
         "model_revision": "d" * 40,
         "curriculum": "single_hop",
+        "dependency_versions": {"torch": "2.5.1+cpu", "transformers": "4.57.1", "peft": "0.17.1"},
         "source_example_selected_from_write_schedule": True,
         "frozen_pretrained_base_unchanged": True,
         "matched_optimization_step": True,
@@ -113,6 +114,27 @@ class SourceLossAdmissionTests(unittest.TestCase):
             else:
                 with self.subTest(key=key), self.assertRaises(ValueError):
                     self.admit(row)
+
+    def test_optimizer_parity_aggregate_and_dependency_drift_reject(self):
+        for field, wrong in (
+            ("maximum_gradient_absolute_difference", 0.025),
+            ("maximum_updated_parameter_absolute_difference", 0.021),
+            ("compared_input_tokens", 2113),
+            ("dependency_versions", {"torch": "2.5.1", "transformers": "4.57.1", "peft": "0.17.1"}),
+            ("dependency_versions", {"torch": "2.5.1+cpu", "transformers": "4.57.1", "peft": "0.17.2"}),
+        ):
+            item = deepcopy(sample())
+            item[field] = wrong
+            if field == "compared_input_tokens":
+                item["full_projection_positions"] = wrong
+            with self.subTest(field=field, value=wrong), self.assertRaises(ValueError):
+                self.admit(item)
+
+    def test_missing_versions_do_not_authorize_optimized_writer(self):
+        item = sample()
+        del item["dependency_versions"]
+        with self.assertRaises(ValueError):
+            self.admit(item)
 
     def test_tampered_json_or_symlink_cannot_cross_admission(self):
         original = self.admit()
