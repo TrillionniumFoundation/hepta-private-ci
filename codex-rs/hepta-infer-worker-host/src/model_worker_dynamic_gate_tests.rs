@@ -50,8 +50,14 @@ fn exact_fractional_q24_input_is_admitted_but_out_of_domain_is_denied() {
     assert_eq!(drive.len(), 1);
     assert_eq!(prediction.len(), 1);
     // Actual Q24 absolute limit is 8*Q24, with both endpoints inclusive.
-    assert!(head.compute(&"a".repeat(64), "cell.a", &[8 * Q24 + 1, Q24], 1).is_err());
-    assert!(head.compute(&"a".repeat(64), "cell.a", &[-8 * Q24 - 1, Q24], 1).is_err());
+    assert!(
+        head.compute(&"a".repeat(64), "cell.a", &[8 * Q24 + 1, Q24], 1)
+            .is_err()
+    );
+    assert!(
+        head.compute(&"a".repeat(64), "cell.a", &[-8 * Q24 - 1, Q24], 1)
+            .is_err()
+    );
 }
 
 #[test]
