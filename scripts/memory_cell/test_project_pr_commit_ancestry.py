@@ -3,8 +3,10 @@
 import tempfile
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
-from project_pr_commit_ancestry import assess, check_case, read_receipt, unique_pairs
+from project_pr_commit_ancestry import assess, check_case, read_receipt, run, unique_pairs
+from project_pr_source_materialize import canonical, digest
 
 CUT = "2026-10-12T08:00:00Z"
 
@@ -117,6 +119,53 @@ class RegisteredAncestryTests(unittest.TestCase):
         self.assertIsNone(result["citation_precision"])
         self.assertFalse(result["production_accepted"])
         self.assertFalse(result["independent_semantic_review"])
+
+    def test_offline_receipt_rejects_forged_authority_and_extra_files(self):
+        case, observed, _ = corpus()
+        manifest = dict(cases=[case])
+        sha = "9" * 64
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            output = root / "ancestry"
+            output.mkdir()
+            inventory = dict(
+                schema="hepta.memorycell.project-registered-ancestry.v1",
+                original_source_sha256=sha,
+                original_ready_sha256="8" * 64,
+                observed=[observed],
+                analysis=assess(manifest, [observed]),
+                remote_git_object_requests=2,
+                complete_original_git_commit_objects=True,
+            )
+            receipt = output / "inventory.json"
+            receipt.write_bytes(canonical(inventory) + b"\n")
+            ready = dict(
+                schema="hepta.memorycell.project-registered-ancestry-ready.v1",
+                inventory_sha256=digest(receipt.read_bytes()),
+                original_source_sha256=sha,
+                research_only=True,
+                independent_semantic_review=False,
+                production_accepted=False,
+            )
+            (output / "READY.json").write_bytes(canonical(ready) + b"\n")
+            with (
+                patch("project_pr_commit_ancestry.read_pinned", return_value=manifest),
+                patch("project_pr_commit_ancestry.reopen_materialized", return_value={"original_ready_sha256": "8" * 64}),
+            ):
+                self.assertEqual(run(root, root, output, sha=sha, offline=True), inventory["analysis"])
+                inventory["independent_review_certified"] = True
+                receipt.write_bytes(canonical(inventory) + b"\n")
+                ready["inventory_sha256"] = digest(receipt.read_bytes())
+                (output / "READY.json").write_bytes(canonical(ready) + b"\n")
+                with self.assertRaises(ValueError):
+                    run(root, root, output, sha=sha, offline=True)
+                inventory.pop("independent_review_certified")
+                receipt.write_bytes(canonical(inventory) + b"\n")
+                ready["inventory_sha256"] = digest(receipt.read_bytes())
+                (output / "READY.json").write_bytes(canonical(ready) + b"\n")
+                (output / "INCOMPLETE.json").write_text("{}")
+                with self.assertRaises(ValueError):
+                    run(root, root, output, sha=sha, offline=True)
 
     def test_canonical_record_duplicate_and_symlink_rejected(self):
         with self.assertRaises(ValueError):

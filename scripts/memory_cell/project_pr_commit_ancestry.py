@@ -168,10 +168,30 @@ def run(source, original, out, *, sha, offline=False):
     manifest = read_pinned(source, sha)
     reopened = reopen_materialized(manifest, original, manifest_sha=sha)
     if offline:
-        raw, raw_sha = read_receipt(Path(out) / "inventory.json")
+        output = Path(out)
+        if (
+            output.is_symlink()
+            or not output.is_dir()
+            or {p.name for p in output.iterdir()}
+            != {"inventory.json", "READY.json"}
+        ):
+            raise ValueError("unsealed or contaminated ancestry output directory")
+        raw, raw_sha = read_receipt(output / "inventory.json")
         ready, _ = read_receipt(Path(out) / "READY.json")
         if (
-            raw.get("schema") != SCHEMA
+            set(raw)
+            != {
+                "schema",
+                "original_source_sha256",
+                "original_ready_sha256",
+                "observed",
+                "analysis",
+                "remote_git_object_requests",
+                "complete_original_git_commit_objects",
+            }
+            or type(raw.get("remote_git_object_requests")) is not int
+            or not 1 <= raw["remote_git_object_requests"] <= 128
+            or raw.get("schema") != SCHEMA
             or raw.get("original_source_sha256") != sha
             or raw.get("original_ready_sha256")
             != reopened["original_ready_sha256"]
