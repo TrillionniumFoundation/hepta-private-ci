@@ -24,7 +24,8 @@ CANDIDATE_SPEC = (f'matrix-sdk = {{ git = "https://github.com/matrix-org/matrix-
 # Two independent, disposable dependency-resolution arms. The real repo's
 # patched SDK SQLite (0.18) remains unchanged throughout both experiments.
 SQLITE_PATCH_SPEC = 'matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }'
-SQLITE_ARMS = ('retain_legacy_sqlite_patch', 'use_upstream_sqlite')
+SQLITE_ARMS = ('retain_legacy_sqlite_patch', 'use_upstream_sqlite',
+               'audit_integrated_secure_lock')
 
 
 def stage_manifest(source, stage, exact_source_sha, *, sqlite_arm='retain_legacy_sqlite_patch'):
@@ -41,6 +42,47 @@ def stage_manifest(source, stage, exact_source_sha, *, sqlite_arm='retain_legacy
         raise ValueError('disposable worktree is not the exact requested SHA')
     target = stage/'codex-rs/Cargo.toml'
     original = target.read_text(encoding='utf-8')
+    if sqlite_arm == 'audit_integrated_secure_lock':
+        # Already migrated trees do not have the old 0.18 source or SQLite
+        # patch. Do NOT silently restore that old source merely to make the
+        # legacy resolver jobs green. Re-qualify the actual current graph.
+        manifest=tomllib.loads(original)
+        deps=manifest['workspace']['dependencies']
+        sdk=deps['matrix-sdk']
+        patches=manifest.get('patch',{}).get('crates-io',{})
+        if (sdk.get('version') != '=0.19.1'
+                or sdk.get('default-features') is not False
+                or not {'e2e-encryption','sqlite'}.issubset(
+                    set(sdk.get('features',[])))
+                or patches.get('matrix-sdk') != {
+                    'path':'third_party/matrix-sdk-0.19.1'
+                } or patches.get('matrix-sdk-sqlite') is not None
+                or deps['libsqlite3-sys'].get('version') != '=0.38.2'):
+            raise ValueError('integrated Matrix 0.19 source/features/SQLite pins mismatch')
+        source_lock=(source/'codex-rs/Cargo.lock').read_bytes()
+        stage_lock=(stage/'codex-rs/Cargo.lock').read_bytes()
+        if not source_lock or source_lock != stage_lock:
+            raise ValueError('integrated secure Cargo.lock is absent or substituted')
+        if original != (source/'codex-rs/Cargo.toml').read_text(encoding='utf-8'):
+            raise ValueError('integrated secure manifest does not match source')
+        return {
+            'schema':'hepta.matrix-sdk-cargo-resolution-probe.v2',
+            'sqlite_arm':sqlite_arm,
+            'legacy_sqlite_patch_preserved':False,
+            'integrated_lock_read_only':True,
+            'source_sha':exact_source_sha,
+            'candidate_git_sha':UPSTREAM_GIT_SHA,
+            'source_manifest_sha256':sha256(original.encode()).hexdigest(),
+            'staged_manifest_sha256':sha256(original.encode()).hexdigest(),
+            'unchanged_lock_sha256':sha256(stage_lock).hexdigest(),
+            'preserved_e2ee_and_sqlite':True,
+            'affected_workspace_files':[],
+            'upstream_source_reviewed':False,
+            'cargo_graph_resolution_passed':False,
+            'cargo_deny_passed':False,
+            'e2ee_crash_recovery_passed':False,
+            'production_authorized':False,
+        }
     if original.count(SOURCE_SPEC) != 1:
         raise ValueError('workspace SDK dependency no longer matches frozen baseline')
     # The retention arm must really retain an audited 0.18 SQLite patch;
