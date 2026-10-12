@@ -18,8 +18,8 @@ use crate::model_worker::DriverModelHandle;
 use crate::model_worker::DriverNeuronFeatureObservation;
 use crate::model_worker::DriverRunObservation;
 use crate::model_worker::ModelManifest;
-use crate::model_worker::NeuronPreopenedWeightModelDriver;
 use crate::model_worker::NeuronFeatureDriver;
+use crate::model_worker::NeuronPreopenedWeightModelDriver;
 use crate::model_worker::ResourceGrant;
 
 struct FixtureDriver {
