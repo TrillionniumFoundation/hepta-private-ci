@@ -26,6 +26,7 @@ struct FixtureDriver {
     calls: Arc<AtomicUsize>,
     indeterminate: bool,
     bad_head: bool,
+    consumed_tokens: u32,
 }
 
 impl ModelDriver for FixtureDriver {
@@ -62,7 +63,7 @@ impl NeuronFeatureDriver for FixtureDriver {
         Ok(DriverNeuronFeatureObservation {
             terminal_observed: successful,
             succeeded: successful,
-            consumed_tokens: 4,
+            consumed_tokens: self.consumed_tokens,
             encoder_digest: request.encoder_digest.clone(),
             head_digest: if self.bad_head {
                 "f".repeat(64)
@@ -143,6 +144,15 @@ fn worker(
     indeterminate: bool,
     bad_head: bool,
 ) -> InferenceWorker<FixtureDriver> {
+    worker_with_observed_tokens(calls, indeterminate, bad_head, 4)
+}
+
+fn worker_with_observed_tokens(
+    calls: Arc<AtomicUsize>,
+    indeterminate: bool,
+    bad_head: bool,
+    consumed_tokens: u32,
+) -> InferenceWorker<FixtureDriver> {
     let mut worker = InferenceWorker::new(
         100,
         "worker.1".to_owned(),
@@ -162,6 +172,7 @@ fn worker(
             calls,
             indeterminate,
             bad_head,
+            consumed_tokens,
         },
     )
     .unwrap();
@@ -298,6 +309,42 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
         Err(NeuronModelError::Rejected)
     );
     assert_eq!(calls.load(Ordering::SeqCst), 2);
+}
+
+#[test]
+fn post_driver_token_overrun_is_indeterminate_and_unrepeatable_across_ports() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker_with_observed_tokens(Arc::clone(&calls), false, false, 65);
+    let typed = typed_request();
+    let reservation = preadmitted_reservation(&typed);
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "model.1".to_owned(),
+            reservation.clone(),
+            100,
+        );
+        // The request is authorized for 64 tokens but the backend observed
+        // consuming 65. The effect may already have happened, so rejection
+        // as "safe to retry" is incorrect.
+        assert_eq!(
+            port.execute_feature(&typed),
+            Err(NeuronModelError::Indeterminate)
+        );
+        assert!(!port.reservation_unconsumed());
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    let mut recreated = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        reservation,
+        100,
+    );
+    assert_eq!(
+        recreated.execute_feature(&typed),
+        Err(NeuronModelError::Rejected)
+    );
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
 }
 
 #[test]
