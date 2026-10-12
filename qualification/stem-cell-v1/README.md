@@ -712,3 +712,26 @@ full 64/256/1024/4096 Cell factorial on permitted target hardware with
 independent signed model/host execution, proper restart evidence, frozen
 no-change semantics and separate future-window NDU evaluation before considering
 production admission.
+
+
+### Shared feature cache publication and padded batch bounds
+
+The offline `SharedStemEngine` now validates every proposed physical
+Encoder feature cache insertion and its conservative Python-object byte
+charge BEFORE evicting or publishing any member of the batch. A late key
+collision rejects all new insertions instead of leaving earlier vectors
+available after a failed invocation. This is shadow execution integrity,
+not a lock, a signed owner receipt or production concurrency guarantee.
+
+`FrozenLocalHfBackend` rehashes the local immutable checkpoint tree after
+the actual HF weights and tensors have loaded, refusing mid-load file
+replacement that would otherwise be cached under an obsolete checkpoint
+digest. Actual batched inputs also have a strict
+`32,768 padded token-element` envelope in addition to the 8,192-token
+per-input bound. The limit applies BEFORE the forward call and includes
+padding, rather than quietly estimating only non-padding tokens.
+
+Synthetic regression fixtures exercise conflicting late cache writes,
+the lack of partial publication, snapshot mutation during loading and
+32 individually valid inputs whose padded batch is too large. These are
+not real 400M-model quality results or 4096-Cell production benchmarks.
