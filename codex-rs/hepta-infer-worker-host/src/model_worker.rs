@@ -132,6 +132,10 @@ pub enum Error {
     /// Loading or post-load cleanup may have left unknown resident resources.
     /// Deny every operation in this generation until independent reconciliation.
     ModelLoadIndeterminate,
+    /// A driver executed or may have executed without a complete canonical
+    /// terminal observation. No run, batch, load or unload can be retried in
+    /// this Worker generation until a separate recovery owner reconciles it.
+    ExecutionIndeterminate,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -183,6 +187,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     // its subsequent rollback fails. Without an independently reconciled
     // handle, this generation must reject every further operation.
     load_indeterminate: bool,
+    execution_indeterminate: bool,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
 }
@@ -206,6 +211,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             grant,
             driver,
             load_indeterminate: false,
+            execution_indeterminate: false,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
@@ -221,7 +227,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     /// not issue a recovery receipt or authorize a restart.
     #[must_use]
     pub fn requires_external_recovery(&self) -> bool {
-        self.load_indeterminate || self.models.values().any(|model| model.unload_indeterminate)
+        self.load_indeterminate
+            || self.execution_indeterminate
+            || self.models.values().any(|model| model.unload_indeterminate)
     }
 
     pub fn load_model(
@@ -349,7 +357,19 @@ impl<D: ModelDriver> InferenceWorker<D> {
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(value) => value,
+            Err(_) => {
+                // The driver did not prove that an invocation never started.
+                // Reusing this generation could duplicate an effect or touch
+                // a resource whose true terminal state is unknown.
+                self.execution_indeterminate = true;
+                return Err(Error::ExecutionIndeterminate);
+            }
+        };
+        if !observed.terminal_observed {
+            self.execution_indeterminate = true;
+        }
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
@@ -419,6 +439,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
         if self.load_indeterminate {
             return Err(Error::ModelLoadIndeterminate);
+        }
+        if self.execution_indeterminate {
+            return Err(Error::ExecutionIndeterminate);
         }
         validate_grant(now_ms, &self.grant)
     }
@@ -631,7 +654,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(value) => value,
+            Err(_) => {
+                self.execution_indeterminate = true;
+                return Err(Error::ExecutionIndeterminate);
+            }
+        };
+        if !observed.terminal_observed {
+            self.execution_indeterminate = true;
+        }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
