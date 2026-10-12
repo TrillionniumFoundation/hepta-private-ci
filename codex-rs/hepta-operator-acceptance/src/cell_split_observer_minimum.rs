@@ -218,10 +218,19 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
             signer,
             _lock: lock,
         };
+        store.verify_current_lock()?;
         if existing_only {
             let _ = store.read_verified()?;
+            store.verify_current_lock()?;
         }
         Ok(store)
+    }
+
+    // A held flock is insufficient after an uncooperative process unlinks or
+    // replaces its pathname. This store must not publish or sign a current
+    // minimum while the original lock no longer protects the live root.
+    fn verify_current_lock(&self) -> Result<(), CellSplitSupervisorMinimumErrorV1> {
+        self._lock.verify_current(&self.root).map_err(Into::into)
     }
 
     /// Host-authorized irreversible *first* minimum publication. A resumed
@@ -232,10 +241,14 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
         subject: &CellSplitSupervisorMinimumSubjectV1,
         admission: &mut A,
     ) -> Result<(), CellSplitSupervisorMinimumErrorV1> {
+        self.verify_current_lock()?;
         subject.validate()?;
         admission
             .verify_original_minimum(subject)
             .map_err(|_| CellSplitSupervisorMinimumErrorV1::Invalid)?;
+        // Admission is an external callback and can race with replacement of
+        // the lock path. Check again before examining or creating the record.
+        self.verify_current_lock()?;
         let record = StoredMinimumV1 {
             schema: STORED_SCHEMA.into(),
             subject: subject.clone(),
@@ -250,17 +263,24 @@ impl CellSplitSupervisorMinimumFileStoreV1 {
             Ok(_) if self.read_stored_bytes()? != expected => {
                 Err(CellSplitSupervisorMinimumErrorV1::Invalid)
             }
-            Ok(_) => Ok(()),
+            Ok(_) => {
+                self.verify_current_lock()?;
+                Ok(())
+            }
             Err(error) if error.kind() == ErrorKind::NotFound => {
                 // Admission may change during preparation; recheck immediately
                 // before the irreversible, create-only durable publication.
                 admission
                     .verify_original_minimum(subject)
                     .map_err(|_| CellSplitSupervisorMinimumErrorV1::Invalid)?;
+                self.verify_current_lock()?;
                 write_private_new(&self.root.join(STORE_FILE), &expected)?;
                 if self.read_stored_bytes()? != expected {
                     return Err(CellSplitSupervisorMinimumErrorV1::Invalid);
                 }
+                // A raced lock replacement makes a successful file write an
+                // uncertain effect, never an acknowledged minimum publication.
+                self.verify_current_lock()?;
                 Ok(())
             }
             Err(error) => Err(error.into()),
@@ -308,6 +328,7 @@ impl CellSplitSupervisorMinimumOnlinePortV1 for CellSplitSupervisorMinimumFileSt
         subject: &CellSplitSupervisorMinimumSubjectV1,
         challenge_nonce: &str,
     ) -> Result<CellSplitSupervisorMinimumReadbackV1, Self::Error> {
+        self.verify_current_lock()?;
         subject.validate()?;
         if !digest_shape(challenge_nonce) {
             return Err(CellSplitSupervisorMinimumErrorV1::Invalid);
@@ -333,6 +354,7 @@ impl CellSplitSupervisorMinimumOnlinePortV1 for CellSplitSupervisorMinimumFileSt
         if self.read_stored_bytes()? != bytes {
             return Err(CellSplitSupervisorMinimumErrorV1::Invalid);
         }
+        self.verify_current_lock()?;
         Ok(proof)
     }
 }
