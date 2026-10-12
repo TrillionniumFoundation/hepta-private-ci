@@ -281,13 +281,13 @@ def summarize(rows, cases, decisions, targets):
             for r, marks in zip(successes, cites, strict=True)
         )
         output[arm] = dict(
-            planned=PLANNED, succeeded=len(successes),
-            failed=PLANNED - len(successes), diagnostic_scored=len(valid),
+            planned=len(cases), succeeded=len(successes),
+            failed=len(cases) - len(successes), diagnostic_scored=len(valid),
             diagnostic_unscored=len(successes) - len(valid),
             diagnostic_f1=sum(f1s) / len(f1s) if f1s else None,
             all_planned_f1_bounds=[
-                sum(f1s) / PLANNED,
-                (sum(f1s) + PLANNED - len(valid)) / PLANNED,
+                sum(f1s) / len(cases),
+                (sum(f1s) + len(cases) - len(valid)) / len(cases),
             ],
             emitted_citation_markers=sum(map(len, cites)),
             answers_with_undelivered_marker=undelivered,
@@ -318,12 +318,12 @@ def summarize(rows, cases, decisions, targets):
         loss += d < 0
         tie += d == 0
     pairs = dict(
-        planned=PLANNED, complete_scored=len(deltas), wins=win, losses=loss,
+        planned=len(cases), complete_scored=len(deltas), wins=win, losses=loss,
         ties=tie, missing_or_unscored=unknown,
         observed_mean_f1_delta=sum(deltas) / len(deltas) if deltas else None,
         all_planned_delta_bounds=[
-            (sum(deltas) - unknown) / PLANNED,
-            (sum(deltas) + unknown) / PLANNED,
+            (sum(deltas) - unknown) / len(cases),
+            (sum(deltas) + unknown) / len(cases),
         ],
         family_proxies=2, independent_family_significance_established=False,
     )
@@ -338,7 +338,7 @@ def summarize(rows, cases, decisions, targets):
 
 
 def score(public_root, evaluation_root, read_root, output):
-    cases, _, decisions = source_plan(public_root)
+    cases, documents, decisions = source_plan(public_root)
     manifest = strict_json((read_root / "READY.json").read_bytes())
     raw = (read_root / "raw-answers.jsonl").read_bytes()
     if (
@@ -356,6 +356,24 @@ def score(public_root, evaluation_root, read_root, output):
     ):
         raise ValueError("not a complete immutable original model record")
     rows = [strict_json(line) for line in raw.splitlines()]
+    by_question = {case["question_id"]: case for case in cases}
+    originals = {k: original_document(v) for k, v in documents.items()}
+    for row in rows:
+        if row["status"] != "succeeded":
+            continue
+        if row["question_id"] not in by_question:
+            raise ValueError("unknown original question")
+        _, bundle = bundle_for(
+            by_question[row["question_id"]], row["arm"],
+            originals, row["selected"],
+        )
+        receipt = row["receipt"]
+        if (
+            receipt["delivered_evidence"] != bundle.delivered()
+            or receipt["reader_identity"] != manifest["model_identity"]
+            or receipt["reader_profile"] != manifest["model_profile"]
+        ):
+            raise ValueError("original evidence or pinned reader drift")
     evaluation_raw = read_zip(evaluation_root, "evaluation")["targets.json"]
     targets = strict_json(evaluation_raw)
     report = summarize(rows, cases, decisions, targets)
