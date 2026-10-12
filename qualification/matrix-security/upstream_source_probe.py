@@ -81,6 +81,9 @@ def compare_local(upstream, local_root):
         issues.append('LIBSQLITE3_SYS_037_VS_UPSTREAM_RUSQLITE_040_LINKS_038')
     if version(current) != version(upstream['sdk_version']):
         issues.append('HEPTA_MATRIX_SDK_RELEASE_NEEDS_MIGRATION')
+    if (version(current) >= (0,19,0) and
+            current != f"={upstream['sdk_version']}"):
+        issues.append('HEPTA_MATRIX_SDK_REQUIREMENT_NOT_EXACT')
     features=set(local_sdk.get('features',[]))
     if (local_sdk.get('default-features') is not False or
             not {'e2e-encryption','sqlite'}.issubset(features)):
