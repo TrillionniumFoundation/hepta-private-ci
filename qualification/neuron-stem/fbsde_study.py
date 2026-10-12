@@ -11,7 +11,10 @@ import fbsde_tree
 
 
 def run(output, profile="exact_v1", **options):
-    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1"), "study profile")
+    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1"), "study profile")
+    if profile == "verified_tracking_v1":
+        from fbsde_tracking_study import run as run_tracking
+        return run_tracking(output, **options)
     if profile == "continuation_workspace_v1":
         from fbsde_workspace_study import run as run_workspace
         return run_workspace(output)
@@ -60,8 +63,9 @@ def run(output, profile="exact_v1", **options):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--tracking-source', choices=('generated', 'bbh'), default='generated')
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1"), default="exact_v1")
+    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1"), default="exact_v1")
     parser.add_argument("--cohort", choices=("banking_v1", "travel_guard_v1"), default="banking_v1")
     parser.add_argument("--backend", choices=("hashing_reference_v1", "mmbert"), default="hashing_reference_v1")
     parser.add_argument("--kernel-profile", choices=("uniform_joint_v1", "joint_backoff_cv_v2"), default="uniform_joint_v1")
@@ -75,4 +79,7 @@ if __name__=='__main__':
     if args.profile == "cpu_tail_replay_v1":
         require(args.evidence_dir is not None, "replay evidence directory required")
         options = dict(evidence_dir=args.evidence_dir, repeats=args.replay_count, model_dir=args.model_dir)
+    if args.profile == "verified_tracking_v1":
+        options = dict(backend=args.backend, publisher_root=args.publisher_root,
+                       model_dir=args.model_dir, tracking_source=args.tracking_source)
     run(args.output, args.profile, **options)
