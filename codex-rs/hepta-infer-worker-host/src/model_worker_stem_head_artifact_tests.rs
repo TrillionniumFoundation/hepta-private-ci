@@ -879,3 +879,30 @@ fn dual_cas_selection_time_must_be_identical_before_any_dispatched_model_call() 
         .unload_model(100, "model.clock.fenced")
         .expect("no backend use");
 }
+
+#[test]
+fn dual_cas_rejects_different_valid_current_registry_snapshots() {
+    // Both views are signed by the SAME trusted owner. A legitimate newer
+    // Registry publication makes mixing them unsafe even with identical
+    // caller-supplied selection clock values.
+    let mut fixture = CasPair::new();
+    let (_, earlier) = fixture.current("dual-current.earlier", Digest32::ZERO);
+    let (_, matching) = fixture.current("dual-current.matching", Digest32::ZERO);
+    assert!(require_same_current_registry_view(&earlier, &matching).is_ok());
+
+    let predecessor = fixture.registry.snapshot().head_digest;
+    let mut unrelated = fixture.projection.clone();
+    unrelated.artifact_id = id("unrelated-candidate");
+    fixture
+        .registry
+        .append(ArtifactEvent::Register {
+            event_id: id("register-unrelated-candidate"),
+            manifest: unrelated,
+        })
+        .expect("append a distinct current registry event");
+    let (_, newer) = fixture.current("dual-current.newer", predecessor);
+    assert!(matches!(
+        require_same_current_registry_view(&earlier, &newer),
+        Err(StemHeadArtifactError::InvalidBinding)
+    ));
+}
