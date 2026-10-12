@@ -59,7 +59,7 @@ def select(rows, scores, objective):
     return {'selected':best['threshold'],'grid':grid,'objective':objective,'rows_sha256':digest(rows)}
 
 
-def execute(problem, arm, reveal, bundle=None):
+def execute(problem, arm, reveal, bundle=None, *, prepared=None, context=None):
     """Only reveal(event) may expose a true pair, and only AFTER action choice.
 
     Adaptive root pays a one-step pilot; deeper computation shares the same
@@ -68,6 +68,15 @@ def execute(problem, arm, reveal, bundle=None):
     """
     require(arm in ARMS and arm not in ('exact_reverse','best_fixed'), 'deployed planner arm')
     started=time.process_time_ns(); h=(); remaining=2; decisions=[]; checks=[]; route=None
+    if prepared is not None:
+        from fbsde_prepared_gate import PreparedOutcomeGate
+        require(type(prepared) is PreparedOutcomeGate and bundle is None and
+                arm in ('numeric_router','model_model','model_outcome','outcome_model',
+                        'outcome_outcome','confidence_outcome'), 'prepared adaptive arm')
+        require(prepared.kind == ('confidence' if arm=='confidence_outcome' else 'learned'),
+                'prepared arm kind mismatch')
+    else:
+        require(context is None, 'request context requires a prepared gate')
     for turn in range(len(problem.laws)+1):
         begin=time.process_time_ns()
         with PlanningWorkspace(problem,h) as w:
@@ -77,14 +86,18 @@ def execute(problem, arm, reveal, bundle=None):
             else:
                 depth=0 if arm in ('no_checks','verify_all_unique') else min(remaining,1 if arm=='one_step' else 2)
                 if turn==0 and arm not in ('no_checks','one_step','two_step','verify_all_unique'):
-                    require(bundle is not None and bundle['binding']==problem.binding, 'bound frozen router')
+                    if prepared is None:
+                        require(bundle is not None and bundle['binding']==problem.binding, 'bound frozen router')
+                    else:
+                        bundle_id=prepared.bind(problem,context)
                     one=w.solve(h,horizon=1); x=features(problem,h,one,workspace=w)
-                    score=1-x[0] if arm=='confidence_outcome' else scalar_score(bundle['state'],x)
-                    depth=2 if score>=bundle['threshold'] else 1
+                    score=(1-x[0] if arm=='confidence_outcome' else scalar_score(bundle['state'],x)) if prepared is None else prepared.score(x)
+                    threshold=bundle['threshold'] if prepared is None else prepared.threshold
+                    depth=2 if score>=threshold else 1
                     d=w.solve(h,horizon=2) if depth==2 else one
-                    route={'features':x,'score':score,'threshold':bundle['threshold'],
+                    route={'features':x,'score':score,'threshold':threshold,
                            'selected_depth':depth,'pilot_value':one['value'],
-                           'bundle_sha256':digest(bundle)}
+                           'bundle_sha256':digest(bundle) if prepared is None else bundle_id}
                 else: d=w.solve(h,horizon=depth)
                 action=d['action']
         elapsed=time.process_time_ns()-begin
