@@ -174,6 +174,37 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         )
         self.assertFalse(result["production_evidence_verified"])
 
+    def test_u64_per_request_cost_regressions_below_float_precision_are_rejected(self):
+        packet = synthetic_matrix()
+        for row in packet["runs"]:
+            row["communication_bytes"] = 1 << 53
+            row["fsync_count"] = 1 << 53
+        optimized = next(
+            row
+            for row in packet["runs"]
+            if row["scopes"] == 1024 and row["mode"] == "optimized_logical_split"
+        )
+        physical = next(
+            row
+            for row in packet["runs"]
+            if row["scopes"] == 4096 and row["mode"] == "physical_split"
+        )
+        optimized["communication_bytes"] += 1
+        optimized["fsync_count"] += 1
+        physical["communication_bytes"] += 1
+        physical["fsync_count"] += 1
+        result = analyze(packet)
+        self.assertFalse(result["comparative_gate_passed"])
+        for message in (
+            "1024: optimized communication_per_request_bytes",
+            "1024: optimized fsync_per_request",
+            "4096: physical communication_per_request_bytes",
+            "4096: physical fsync_per_request",
+        ):
+            self.assertTrue(
+                any(message in reason for reason in result["violations"]), message
+            )
+
     def test_reject_nonfinite_and_inconsistent_measurements(self):
         packet = synthetic_matrix()
         packet["runs"][0]["cpu_seconds"] = float("nan")
