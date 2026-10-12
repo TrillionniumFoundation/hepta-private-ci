@@ -1122,3 +1122,56 @@ show passage entailment, a correct Reader answer, improved citations,
 retention, or a production p95/cost gain. An all-grid *post-hoc* upper
 bound is explicitly distinguished from the single TRAIN-selected policy,
 and none of its evaluation-label-derived winners may be promoted.
+
+## Strict 576/576 complete does not imply transferable learning (12 Oct 2026)
+
+Read-only evidence pins:
+
+- Hosted exact-source run `38192122547`, commit
+  `565f41fcd1ab6c036c6ddecc3e64b7f9033e1cbf`, tree
+  `e748067a7ecf0f7fb91df6ef7dde915bd44b5882`, archived ZIP
+  `11722775596` SHA-256
+  `b4cf1918d9f00baa357eb386397c36f52aac54b333a0c1a629fa3389e7ae7135`.
+  All **151 internal manifest members** verified. Workflow **success**,
+  **1,076 full Python regression tests pass**, and 576/576 original policy
+  attempts complete with zero Reader failures.
+- Independent *execution replay* `38191864069`, source
+  `06f081daa780dafa4bed0ff20def0999702b299f`, ZIP
+  `11722640804` SHA-256
+  `0a1e21d6d7b5161dddde743f182b9c2820750b09f5f3384ed38a840ab704f228`,
+  also has **151 internally verified members**, 576/576 completed
+  policy attempts. Across both runs, all 576 original policy records
+  have identical source top-1, original answer bytes, Reader input and
+  generated output token hashes. This repeats *the same* public questions,
+  not an independent population or fresh future window.
+
+The byte-pinned exact question+checkpoint comparison makes the following
+critical distinctions. The five learned arms contribute
+**5 × 96 = 480** frozen-paired policy observations, with **only one
+top-1 change**: checkpoint 48, retention question
+`locomo:conv-43/q217`, lineage-LoRA gated arm. Its original Reader
+answer was unchanged and the native document-source support score
+did not improve. All **test/transfer** top-1 and original answers
+remain frozen-identical. No model-generated citations appear, so
+semantic citation precision is **null**, never 100%.
+
+The real 30 Head update checkpoints show **23 reductions** of mean
+within-TRAIN weak-source loss, but **zero changed TRAIN top-1 decisions**
+and zero improvements in TRAIN native-support top-1. The adapter warm-start
+provided only 10 unique positive+negative training questions, and
+28/40 final Head-admitted questions contain a positive/negative candidate
+pair. The final post-policy native-source ceiling observed **8 unsupported
+retrieval misses** across select/retention/test/transfer (3/3/2/0),
+so merely modifying an existing-candidate Head cannot fix those misses.
+
+The primary registered **test+transfer** panel contains 16 unique
+questions *per arm*, not 48 independent cases from three checkpoints;
+source-family sampling independence is **not authenticated**. A more
+capable Reader, as-of retrieval and reviewed sufficient evidence must
+be diagnosed separately. No independent prospective effect, reviewed
+citation entailment, qualified energy/dollar TCO or production admission
+was obtained. The read-only
+`stem_native_nonpromotion.py` gate reconstructs the full policy
+and Head receipt keys, prevents cancelling gains/regressions in
+aggregates, verifies strict same-query Reader/request provenance,
+and explicitly returns `scale_out_permitted=false`.
