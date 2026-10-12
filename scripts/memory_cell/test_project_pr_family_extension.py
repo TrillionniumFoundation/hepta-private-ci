@@ -31,16 +31,14 @@ class ProjectExtensionTests(unittest.TestCase):
         # b0b3a24a033d8cfe2742a81de49c2fb06d89fba2. A 39-digit
         # Git SHA is not repaired by guessing the final nibble.
         tokio = next(
-            item for item in self.manifest["cases"]
-            if item["repo"] == "tokio-rs/tokio"
+            item for item in self.manifest["cases"] if item["repo"] == "tokio-rs/tokio"
         )
         file = next(
-            item for item in tokio["files"]
+            item
+            for item in tokio["files"]
             if item["path"] == "tokio-util/tests/length_delimited.rs"
         )
-        self.assertEqual(
-            file["blob_sha"], "41f79024cd9c9f445fd2d8b0c023c87e4d54231d"
-        )
+        self.assertEqual(file["blob_sha"], "41f79024cd9c9f445fd2d8b0c023c87e4d54231d")
         self.assertEqual(len(file["blob_sha"]), 40)
 
     def test_real_source_only_six_project_extension(self):
@@ -106,9 +104,7 @@ class ProjectExtensionTests(unittest.TestCase):
             with self.subTest(field=key), self.assertRaises(ValueError):
                 audit(bad)
         bad = deepcopy(self.manifest)
-        bad["cases"][0]["commits"][0]["committed_at"] = (
-            "2026-10-13T00:00:00Z"
-        )
+        bad["cases"][0]["commits"][0]["committed_at"] = "2026-10-13T00:00:00Z"
         with self.assertRaises(ValueError):
             audit(bad)
 
@@ -139,9 +135,9 @@ class ProjectExtensionTests(unittest.TestCase):
             elif change == "head_sha":
                 bad["cases"][0][change] = "a" * 40
             else:
-                bad["cases"][0]["files"][0]["blob_sha"] = (
-                    bad["cases"][1]["files"][0]["blob_sha"]
-                )
+                bad["cases"][0]["files"][0]["blob_sha"] = bad["cases"][1]["files"][0][
+                    "blob_sha"
+                ]
             with self.subTest(field=change), self.assertRaises(ValueError):
                 audit(bad)
 

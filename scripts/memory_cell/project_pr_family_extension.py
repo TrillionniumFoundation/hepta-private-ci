@@ -23,9 +23,7 @@ from project_pr_source_precommit import (
 
 SCHEMA = "hepta.memorycell.public-pr-independent-extension.v1"
 CUT = "2026-10-12T16:05:00Z"
-PREVIOUS_SHA = (
-    "ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463"
-)
+PREVIOUS_SHA = "ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463"
 PARTITIONS = {
     "python/cpython": "evaluation",
     "pandas-dev/pandas": "train",
@@ -57,12 +55,21 @@ def audit(manifest):
         isinstance(manifest, dict)
         and set(manifest)
         == {
-            "schema", "source_cut_utc", "previous_corpus_sha256", "policy",
-            "partitions", "task_types", "no_gold_answers",
-            "no_model_outputs", "source_bytes_not_yet_verified",
+            "schema",
+            "source_cut_utc",
+            "previous_corpus_sha256",
+            "policy",
+            "partitions",
+            "task_types",
+            "no_gold_answers",
+            "no_model_outputs",
+            "source_bytes_not_yet_verified",
             "independent_source_families_certified",
-            "independent_review_certified", "effective_independent_n",
-            "semantic_citation_precision", "production_accepted", "cases",
+            "independent_review_certified",
+            "effective_independent_n",
+            "semantic_citation_precision",
+            "production_accepted",
+            "cases",
         },
         "source-only extension has unexpected/missing fields",
     )
@@ -105,10 +112,19 @@ def audit(manifest):
             isinstance(case, dict)
             and set(case)
             == {
-                "repo", "partition", "pull_number", "pull_url",
-                "created_at", "updated_at", "state_at_capture",
-                "head_sha", "head_committed_at", "tree_sha", "parents",
-                "commits", "files",
+                "repo",
+                "partition",
+                "pull_number",
+                "pull_url",
+                "created_at",
+                "updated_at",
+                "state_at_capture",
+                "head_sha",
+                "head_committed_at",
+                "tree_sha",
+                "parents",
+                "commits",
+                "files",
             },
             "unexpected historical PR metadata or answer-like field",
         )
@@ -130,9 +146,7 @@ def audit(manifest):
         )
         check(
             case["state_at_capture"] == "open"
-            and timestamp(case["created_at"])
-            <= timestamp(case["updated_at"])
-            <= cut
+            and timestamp(case["created_at"]) <= timestamp(case["updated_at"]) <= cut
             and timestamp(case["head_committed_at"]) <= cut,
             "unbounded PR metadata or future commit",
         )
@@ -158,14 +172,12 @@ def audit(manifest):
         seen_commits = set()
         for commit in commits:
             check(
-                isinstance(commit, dict)
-                and set(commit) == {"sha", "committed_at"},
+                isinstance(commit, dict) and set(commit) == {"sha", "committed_at"},
                 "missing or extra original commit field",
             )
             oid = checksum(commit["sha"])
             check(
-                oid not in seen_commits
-                and timestamp(commit["committed_at"]) <= cut,
+                oid not in seen_commits and timestamp(commit["committed_at"]) <= cut,
                 "duplicate or future original commit",
             )
             seen_commits.add(oid)
@@ -178,9 +190,14 @@ def audit(manifest):
         for source in files:
             check(
                 isinstance(source, dict)
-                and set(source) == {
-                    "path", "blob_sha", "status", "additions",
-                    "deletions", "changes",
+                and set(source)
+                == {
+                    "path",
+                    "blob_sha",
+                    "status",
+                    "additions",
+                    "deletions",
+                    "changes",
                 },
                 "unexpected original changed-file data",
             )
@@ -195,8 +212,7 @@ def audit(manifest):
             seen_paths.add(path)
             blob = checksum(source["blob_sha"])
             check(
-                blob not in blobs
-                and source["status"] in ("added", "modified"),
+                blob not in blobs and source["status"] in ("added", "modified"),
                 "cross-project blob reused or unsupported file state",
             )
             blobs.add(blob)
@@ -204,8 +220,10 @@ def audit(manifest):
                 source[k] for k in ("additions", "deletions", "changes")
             )
             check(
-                all(type(n) is int and 0 <= n < 1_000_000
-                    for n in (add, delete, changed))
+                all(
+                    type(n) is int and 0 <= n < 1_000_000
+                    for n in (add, delete, changed)
+                )
                 and add + delete == changed,
                 "source changes do not match public file metadata",
             )
@@ -242,8 +260,7 @@ def unsigned_review_worklist(manifest):
     for case in manifest["cases"]:
         prefix = f"{case['repo']}#{case['pull_number']}@{case['head_sha']}"
         refs = [
-            {"path": f["path"], "git_blob_sha1": f["blob_sha"]}
-            for f in case["files"]
+            {"path": f["path"], "git_blob_sha1": f["blob_sha"]} for f in case["files"]
         ]
         for kind in TYPES:
             question = (
@@ -255,22 +272,24 @@ def unsigned_review_worklist(manifest):
                 "gap using only original code and parent changes. Separate "
                 "uncertainty and never infer unseen CI outcomes."
             )
-            tasks.append({
-                "task_id": prefix + "/" + kind,
-                "partition": case["partition"],
-                "question": question,
-                "source_project": case["repo"],
-                "source_pr": case["pull_number"],
-                "frozen_head_sha": case["head_sha"],
-                "original_commit_shas": [x["sha"] for x in case["commits"]],
-                "original_blob_ids": refs,
-                "decoded_code_verified": False,
-                "answer": None,
-                "reviewer_verdict": "unreviewed",
-                "independent_reviewer_authenticated": False,
-                "source_sufficiency": "unknown",
-                "model_prediction": None,
-            })
+            tasks.append(
+                {
+                    "task_id": prefix + "/" + kind,
+                    "partition": case["partition"],
+                    "question": question,
+                    "source_project": case["repo"],
+                    "source_pr": case["pull_number"],
+                    "frozen_head_sha": case["head_sha"],
+                    "original_commit_shas": [x["sha"] for x in case["commits"]],
+                    "original_blob_ids": refs,
+                    "decoded_code_verified": False,
+                    "answer": None,
+                    "reviewer_verdict": "unreviewed",
+                    "independent_reviewer_authenticated": False,
+                    "source_sufficiency": "unknown",
+                    "model_prediction": None,
+                }
+            )
     return {
         "schema": "hepta.memorycell.source-family-extension.worklist.v1",
         "unsigned": True,

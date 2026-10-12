@@ -181,18 +181,20 @@ def collect(extension, previous, output, *, source_sha256, fetch):
                 sink.write(data)
                 sink.flush()
                 os.fsync(sink.fileno())
-            originals.append({
-                "project": case["repo"],
-                "partition": case["partition"],
-                "pull_number": case["pull_number"],
-                "head_sha": case["head_sha"],
-                "tree_sha": case["tree_sha"],
-                "path": file["path"],
-                "mode": mode,
-                "blob_sha": oid,
-                "byte_sha256": digest(data),
-                "bytes": len(data),
-            })
+            originals.append(
+                {
+                    "project": case["repo"],
+                    "partition": case["partition"],
+                    "pull_number": case["pull_number"],
+                    "head_sha": case["head_sha"],
+                    "tree_sha": case["tree_sha"],
+                    "path": file["path"],
+                    "mode": mode,
+                    "blob_sha": oid,
+                    "byte_sha256": digest(data),
+                    "bytes": len(data),
+                }
+            )
     if len(originals) != 32 or source_commits != 14:
         raise ValueError("missing original Git objects")
     inventory = {
@@ -219,9 +221,7 @@ def collect(extension, previous, output, *, source_sha256, fetch):
     ready = {
         "schema": "hepta.memorycell.public-pr-extension.source-ready.v1",
         "source_manifest_sha256": source_sha256,
-        "original_inventory_sha256": digest(
-            (output / "inventory.json").read_bytes()
-        ),
+        "original_inventory_sha256": digest((output / "inventory.json").read_bytes()),
         "original_reopen_sha256": digest((output / "readback.json").read_bytes()),
         "original_files_verified": 32,
         "original_commits_verified": source_commits,
