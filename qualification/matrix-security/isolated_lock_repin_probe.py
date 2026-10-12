@@ -8,7 +8,7 @@ research worktree. A successful resolver is NOT a crypto/security acceptance.
 
 import argparse
 import json
-
+from hashlib import sha256
 from pathlib import Path
 import tomllib
 
@@ -65,6 +65,8 @@ def inspect_lock_conflict(stderr: str, manifest_bytes: bytes, lock_bytes: bytes)
         'old_version': OBSOLETE_ASYNC_TRAIT,
         'new_version': MINIMUM_ASYNC_TRAIT,
         'upstream_revision': SOURCE_SHA,
+        'staged_manifest_sha256': sha256(manifest_bytes).hexdigest(),
+        'original_cargo_lock_sha256': sha256(lock_bytes).hexdigest(),
         'modifies_original_checkout': False,
         'advisory_ignored': False,
         'security_advisories_resolved': False,
