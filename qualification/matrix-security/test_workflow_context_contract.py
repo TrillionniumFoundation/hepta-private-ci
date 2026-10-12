@@ -38,6 +38,60 @@ class WorkflowContextContractTests(unittest.TestCase):
                 self.assertNotIn("${{ runner.", field)
         self.assertGreater(job_env_sections, 0)
 
+    def test_all_matrix_checkouts_are_immutable_source_or_pinned_upstream(self):
+        # GitHub's default pull_request checkout is a synthetic merge commit,
+        # not the source HEAD on which the claimed security gate must be bound.
+        # Audit EVERY checkout, including later SDK candidate jobs; a default
+        # checkout may otherwise silently alter the security graph.
+        checkout_pattern = re.compile(
+            r"(?m)^ {6,8}(?:- )?uses: actions/checkout@[a-f0-9]{40}\\n"
+            r" {8}with:\\n((?: {10}[a-z-]+:.*\\n)+)"
+        )
+        groups = checkout_pattern.findall(self.source)
+        self.assertEqual(self.source.count("uses: actions/checkout@"), len(groups))
+        own = upstream = 0
+        for block in groups:
+            attrs = dict(re.findall(r"(?m)^ {10}([a-z-]+): (.*)$", block))
+            self.assertEqual(attrs.get("persist-credentials"), "false")
+            if "repository" not in attrs:
+                own += 1
+                self.assertEqual(
+                    attrs.get("ref"), "${{ github.event.pull_request.head.sha || github.sha }}",
+                    "a Matrix security job must never silently test synthetic merge HEAD",
+                )
+            else:
+                upstream += 1
+                self.assertEqual(attrs["repository"], "matrix-org/matrix-rust-sdk")
+                self.assertRegex(attrs.get("ref", ""), r"^[0-9a-f]{40}$")
+                self.assertIn(attrs.get("path"), ("upstream", "upstream-release", "upstream-anymap-commit"))
+        self.assertEqual((own, upstream), (6, 5))
+        # The original four non-pinned checkouts were also merely printing
+        # git rev-parse instead of refusing a wrong SHA.
+        self.assertEqual(
+            self.source.count('test "$(git rev-parse HEAD)" = "$HEPTA_SOURCE_SHA"'), 4
+        )
+
+    def test_missing_exact_head_checkout_is_detected_by_contract(self):
+        # The invariant is intended to detect a future accidental removal of
+        # an explicit PR-source pin, not simply the current source shape.
+        checkout_pattern = re.compile(
+            r"(?m)^ {6,8}(?:- )?uses: actions/checkout@[a-f0-9]{40}\\n"
+            r" {8}with:\\n((?: {10}[a-z-]+:.*\\n)+)"
+        )
+        correct = checkout_pattern.findall(self.source)
+        self.assertEqual(len(correct), 11)
+        tampered = self.source.replace(
+            "          ref: ${{ github.event.pull_request.head.sha || github.sha }}\\n",
+            "",
+            1,
+        )
+        unpinned = checkout_pattern.findall(tampered)
+        self.assertEqual(len(unpinned), len(correct))
+        self.assertTrue(any(
+            "repository:" not in block and "          ref:" not in block
+            for block in unpinned
+        ))
+
     def test_disposable_stage_is_unique_and_outside_repository(self):
         matching = [
             line.strip()
