@@ -87,7 +87,13 @@ impl NeuronFeatureDriver for FixtureDriver {
 }
 
 fn digest(v: &str) -> Digest32 {
-    v.repeat(64).parse().expect("fixed fixture digest")
+    // The single-hex-character fixtures match loaded Worker manifest hashes.
+    // Multi-character labels are semantic test data, not repeated hex bytes.
+    if v.len() == 1 && v.as_bytes()[0].is_ascii_hexdigit() {
+        v.repeat(64).parse().expect("fixed fixture digest")
+    } else {
+        Digest32::of_bytes(v.as_bytes())
+    }
 }
 
 fn typed_request() -> NeuronFeatureRequestV1 {
