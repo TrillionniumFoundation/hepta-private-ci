@@ -393,7 +393,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
             status,
             output_digest,
             consumed_tokens: observed.consumed_tokens,
-            observed_memory_bytes: observed.observed_memory_bytes,
+            // A later driver report cannot understate a still-loaded handle.
+            observed_memory_bytes: selected_resident_bytes,
             terminal_observed,
         })
     }
@@ -747,6 +748,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
+        let resident_floor = loaded.handle.observed_memory_bytes;
         Ok(NeuronFeatureExecutionObservation {
             request_id: request.authorization.request_id,
             reservation_id: request.authorization.reservation_id,
@@ -758,7 +760,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             status,
             drive_q24: observed.drive_q24,
             prediction_q24: observed.prediction_q24,
-            observed_memory_bytes: observed.observed_memory_bytes,
+            // Preserve the load-time resident floor in the public receipt.
+            observed_memory_bytes: observed.observed_memory_bytes.max(resident_floor),
             transient_allocation_bytes: observed.transient_allocation_bytes,
             queue_age_micros: observed.queue_age_micros,
             latency_micros: observed.latency_micros,
