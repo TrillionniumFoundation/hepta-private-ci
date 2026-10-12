@@ -139,6 +139,32 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         self.assertTrue(any("1024: physical p50" in x for x in result["violations"]))
         self.assertFalse(result["production_activation_authorized"])
 
+    def test_exact_u64_accounting_does_not_round_large_counters(self):
+        packet = synthetic_matrix()
+        # float(2**53 + 1) == float(2**53): the old float conversion
+        # accepted contradictory terminal accounting in this individual row.
+        packet["runs"][0]["attempted"] = (1 << 53) + 1
+        packet["runs"][0]["completed"] = 1 << 53
+        packet["runs"][0]["failed_requests"] = 0
+        with self.assertRaisesRegex(InvalidEvidence, "inconsistent terminal request"):
+            analyze(packet)
+
+    def test_counter_types_and_range_are_not_coerced(self):
+        for invalid in (1.0, True, -1, 1 << 64):
+            with self.subTest(invalid=invalid):
+                packet = synthetic_matrix()
+                packet["runs"][0]["native_backend_calls"] = invalid
+                with self.assertRaisesRegex(InvalidEvidence, "exact unsigned 64-bit integer"):
+                    analyze(packet)
+
+    def test_u64_counter_boundary_remains_exact(self):
+        packet = synthetic_matrix()
+        for row in packet["runs"]:
+            row["communication_bytes"] = (1 << 64) - 1
+        result = analyze(packet)
+        self.assertEqual(result["comparisons"][0]["no_split"]["communication_bytes"], (1 << 64) - 1)
+        self.assertFalse(result["production_evidence_verified"])
+
     def test_reject_nonfinite_and_inconsistent_measurements(self):
         packet = synthetic_matrix()
         packet["runs"][0]["cpu_seconds"] = float("nan")
