@@ -76,17 +76,24 @@ def main():
     if (selection_sha != run["sealed"]["selection_sha256"]
             or predictions_sha != run["sealed"]["predictions_sha256"]):
         raise ValueError("sealed experiment output changed")
-    if run.get("schema") != "hepta.stem.structural-run.v2":
+    if run.get("schema") not in {"hepta.stem.structural-run.v2", "hepta.stem.structural-run.v3"}:
         raise ValueError("use the historical source for legacy unbound run scoring")
     # Old pre-v2 runs without a normalizer binding remain historical-only.
     from development_study_replay import verify_checkpoint_files
     verify_checkpoint_files(args.run, run["sealed"], selection)
     config = StudyConfig(**selection["config"]).validate()
     rows = read_dataset(args.dataset, run["dataset_sha256"], config)
+    numerical_replay = None
+    if config.seal_replay:
+        # A self-consistent digest alone cannot certify the selected structure.
+        from development_study_replay import replay
+        numerical_replay = replay(args.run, args.dataset)
     result = score_predictions(predictions, rows, tuple(selection["checkpoints"]), config.classes)
     result.update({"selected_arm": selection["selected_arm"], "origin": config.origin,
                    "time_basis": config.time_basis,
-                   "source_sha": run["source_sha"], "sealed": run["sealed"]})
+                   "source_sha": run["source_sha"], "sealed": run["sealed"],
+                   "numerical_replay": numerical_replay,
+                   "selection_arithmetic_replayed": numerical_replay is not None})
     write_once(args.output, result)
 
 

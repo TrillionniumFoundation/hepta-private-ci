@@ -89,7 +89,72 @@ def tensor_forward(tensors, x, cells, classes):
     gate = gates[indices]
     activation = torch.sigmoid((x @ tensors["bank.gate_axes"].T * gate[:, :-1]).sum(1) + gate[:, -1])
     residual = torch.einsum("bd,rdk,br->bk", x, tensors["bank.basis"], coefficients[indices])
-    return torch.nn.functional.linear(x, tensors["bank.base.weight"], tensors["bank.base.bias"]) + activation[:, None] * residual
+    output = torch.nn.functional.linear(x, tensors["bank.base.weight"], tensors["bank.base.bias"]) + activation[:, None] * residual
+    if not torch.isfinite(output).all():
+        raise ValueError("nonfinite independently replayed logits")
+    return output
+
+
+
+def verify_serving_probe(folder, run, selection, config):
+    """Check recorded probe identity/count consistency, not physical attestation."""
+    if run["schema"] != "hepta.stem.structural-run.v3":
+        return None
+    probe, probe_sha = record(Path(folder) / "serving-probe.json", 8_388_608)
+    fields = {"schema": "hepta.stem.trained-serving-probe.v1",
+              "selected_arm": selection["selected_arm"],
+              "selection_sha256": run["sealed"]["selection_sha256"],
+              "head_sha256": selection["checkpoints"][selection["selected_arm"]]["sha256"],
+              "normalizer_sha256": run["sealed"]["normalizer_sha256"],
+              "encoder_digest": run["snapshot_sha256"], "generation": config.generation,
+              "argmax_reversals": 0, "production_authorized": False,
+              "quality_or_resource_superiority_established": False, "native_worker_executed": False}
+    if (probe_sha != run.get("serving_probe_sha256")
+            or any(type(probe.get(k)) is not type(v) or probe[k] != v for k, v in fields.items())
+            or (run.get("real_weights_executed") is True and probe.get("simulated_encoder") is not False)):
+        raise ValueError("serving probe identity differs from sealed run")
+    import math
+    max_error = probe.get("max_abs_logit_error")
+    if type(max_error) not in (int, float) or not math.isfinite(max_error) or not 0 <= max_error <= 1e-4:
+        raise ValueError("invalid serving output-parity error")
+    trials = probe.get("trials")
+    if type(trials) is not list or len(trials) != 9:
+        raise ValueError("incomplete serving timing-repeat census")
+    seen, requests, errors = set(), set(), []
+    for trial in trials:
+        key = (trial["repeat"], trial["path"])
+        if (type(trial["repeat"]) is not int or trial["repeat"] not in range(3)
+                or trial["path"] not in {"serial_no_cache", "serial_reuse", "batch_reuse"}
+                or key in seen):
+            raise ValueError("duplicate or unknown serving timing trial")
+        seen.add(key)
+        error = trial.get("max_abs_logit_error")
+        if type(error) not in (int, float) or not math.isfinite(error) or not 0 <= error <= 1e-4:
+            raise ValueError("invalid serving trial parity")
+        errors.append(error)
+        batches = trial["batches"]
+        if type(batches) is not list or not 1 <= len(batches) <= 256:
+            raise ValueError("invalid serving batch census")
+        for batch in batches:
+            if (any(type(batch.get(k)) is not int or batch[k] < 0 for k in
+                    ("members", "backend_calls", "encoded_rows", "prior_cache_hits", "cpu_ns", "wall_ns"))
+                    or not 1 <= batch["members"] <= (32 if trial["path"] == "batch_reuse" else 1)
+                    or batch["backend_calls"] > 1 or batch["encoded_rows"] > batch["members"]
+                    or batch["prior_cache_hits"] > batch["members"]):
+                raise ValueError("invalid serving member accounting")
+        expected = {"logical_requests": sum(b["members"] for b in batches),
+                    "head_evaluated_rows": sum(b["members"] for b in batches),
+                    "backend_calls": sum(b["backend_calls"] for b in batches),
+                    "encoded_rows": sum(b["encoded_rows"] for b in batches)}
+        if (any(type(trial.get(k)) is not int or trial[k] != v for k, v in expected.items())
+                or any(type(trial.get(k)) is not int or trial[k] < sum(b[k] for b in batches)
+                       for k in ("cpu_ns", "wall_ns"))):
+            raise ValueError("serving totals differ from recorded batch work")
+        requests.add(trial["logical_requests"])
+    if len(requests) != 1 or not 1 <= next(iter(requests)) <= 256 or max(errors) != max_error:
+        raise ValueError("unpaired serving request census")
+    return {"sha256": probe_sha, "trials": 9, "logical_requests_per_trial": next(iter(requests)),
+            "identity_and_counts_consistent": True, "physical_measurements_attested": False}
 
 
 def replay(folder, dataset):
@@ -99,7 +164,7 @@ def replay(folder, dataset):
     run, run_sha = record(folder / "run.json")
     selection, selection_sha = record(folder / "selection.json")
     predictions, predictions_sha = record(folder / "predictions.json", 67_108_864)
-    if (run.get("schema") != "hepta.stem.structural-run.v2"
+    if (run.get("schema") not in {"hepta.stem.structural-run.v2", "hepta.stem.structural-run.v3"}
             or selection.get("schema") != "hepta.stem.structural-selection.v2"):
         raise ValueError("historical unbound schemas cannot be reinterpreted as replay-qualified")
     sealed = run["sealed"]
@@ -109,6 +174,7 @@ def replay(folder, dataset):
     config = StudyConfig(**selection["config"]).validate()
     if not config.seal_replay:
         raise ValueError("run did not opt in to scoped feature replay")
+    probe_replay = verify_serving_probe(folder, run, selection, config)
     rows = read_dataset(dataset, run["dataset_sha256"], config)
     inputs, inputs_sha = record(folder / "replay-inputs.json", 8_388_608)
     feature_bytes = read_bytes(folder / "replay-features.safetensors", 16_777_216)
@@ -133,8 +199,17 @@ def replay(folder, dataset):
     for key, value in (("mean", base.mean(0)), ("scale", base.std(0, unbiased=False).clamp_min(1e-6))):
         if not torch.allclose(value, normalizer[key], atol=1e-6, rtol=1e-6):
             raise ValueError("normalizer not derived from base training only")
+    normalized = (features - normalizer["mean"]) / normalizer["scale"]
+    if not torch.isfinite(normalized).all():
+        raise ValueError("nonfinite normalized replay features")
+    decoded = {name: load(raw) for name, raw in buffers.items()}
+    from development_selection_replay import verify_selection
+    with torch.no_grad():
+        selection_replay = verify_selection(selection, decoded, normalized, inputs,
+            torch.tensor([r["label"] for r in rows if phase(r) == "calibration"], dtype=torch.long),
+            config, tensor_forward)
     evaluated = [i for i, r in enumerate(inputs) if r["phase"] not in TRAIN]
-    x = (features[evaluated] - normalizer["mean"]) / normalizer["scale"]
+    x = normalized[evaluated]
     if type(predictions) is not list or len(predictions) != len(evaluated) * len(buffers):
         raise ValueError("incomplete replay prediction census")
     by_key = {}
@@ -149,7 +224,7 @@ def replay(folder, dataset):
     with torch.no_grad():
         for name, raw in buffers.items():
             info = selection["checkpoints"][name]
-            predicted = tensor_forward(load(raw), x, len(info["cell_ids"]), config.classes)
+            predicted = tensor_forward(decoded[name], x, len(info["cell_ids"]), config.classes)
             for index, logits in zip(evaluated, predicted):
                 p = by_key.pop((name, inputs[index]["sample_id"]))
                 if p["input_fingerprint"] != inputs[index]["input_fingerprint"]:
@@ -163,9 +238,10 @@ def replay(folder, dataset):
                 error = max(error, delta)
     if by_key:
         raise ValueError("unmatched replay predictions")
-    return {"schema": "hepta.stem.structural-replay.v1", "run_sha256": run_sha,
+    return {"schema": "hepta.stem.structural-replay.v2", "run_sha256": run_sha,
         "prediction_rows": len(predictions), "checkpoint_count": len(buffers), "max_abs_logit_error": error,
         "argmax_reversals": 0, "time_basis": config.time_basis,
+        "selection_replay": selection_replay, "serving_probe": probe_replay,
         "encoder_execution_independently_attested": False, "production_authorized": False}
 
 
