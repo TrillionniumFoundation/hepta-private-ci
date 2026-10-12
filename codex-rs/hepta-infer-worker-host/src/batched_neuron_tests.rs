@@ -613,3 +613,50 @@ fn invalid_signed_grant_denies_whole_physical_batch_without_driver_entry() {
         .iter()
         .all(|outcome| outcome.result == Err(BatchWorkerErrorV1::Authority)));
 }
+
+
+#[test]
+fn mixed_head_digests_do_not_enter_same_physical_backend_batch() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[53; 32]);
+    let (model, fixture, key) = fixture_request();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut execution = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        2,
+        PhysicalDriver {
+            batch_calls: Arc::clone(&calls),
+        },
+    );
+    for i in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("head-request-{i}");
+        request.authorization.reservation_id = format!("head-reservation-{i}");
+        if i == 1 {
+            request.head_digest = digest(b"other-head").to_string();
+        }
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("head-final-use-{i}");
+        grant.grant.nonce = [i + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        execution
+            .enqueue(100, "model".to_owned(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let completed = execution.poll_and_execute(101).unwrap();
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(completed
+        .outcomes
+        .iter()
+        .all(|outcome| outcome.result == Err(BatchWorkerErrorV1::InvalidBinding)));
+}

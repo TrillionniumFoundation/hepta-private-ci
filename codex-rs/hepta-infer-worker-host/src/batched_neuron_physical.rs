@@ -62,10 +62,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             admitted.push((id, pending));
         }
         if admitted.first().is_some_and(|(_, first)| {
-            admitted
-                .iter()
-                .any(|(_, item)| item.model_id != first.model_id)
+            admitted.iter().any(|(_, item)| {
+                item.model_id != first.model_id
+                    || item.request.encoder_digest != first.request.encoder_digest
+                    || item.request.head_digest != first.request.head_digest
+                    || item.request.weights_digest != first.request.weights_digest
+                    || item.request.expected_output_width != first.request.expected_output_width
+            })
         }) {
+            // Physical backend kernels may share one Encoder/Head tuple. Do
+            // not conflate per-request signed grants with kernel compatibility.
             rejected = true;
         }
         if rejected {
