@@ -127,6 +127,20 @@ fn caller_rehashed_tick_cannot_impersonate_last_agentd_owned_observation() {
     assert!(observed.validate_integrity());
     assert!(super::require_owner_issued_tick(None, &observed).is_err());
     assert!(super::require_owner_issued_tick(Some(&observed), &observed).is_ok());
+    assert!(super::require_single_owner_issued_tick(
+        &[observed.clone()],
+        Some(&observed),
+        &observed,
+    )
+    .is_ok());
+    // Prevent selecting one favorable Episode from several real issued ticks.
+    assert!(super::require_single_owner_issued_tick(
+        &[observed.clone(), observed.clone()],
+        Some(&observed),
+        &observed,
+    )
+    .is_err());
+    assert!(super::require_single_owner_issued_tick(&[], Some(&observed), &observed).is_err());
 
     let mut forged = observed.clone();
     forged.input_digest = digest("forged-input");

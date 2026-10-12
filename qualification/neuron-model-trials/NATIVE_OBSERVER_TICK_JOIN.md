@@ -97,7 +97,11 @@ Direct ticks, failed execution or Witness uncertainty clear the trail.
 
 Both Agentd observer-link entrypoints are single-use. The legacy
 single-Episode read now consumes that SAME live issuance, so it cannot be
-followed by a cohort read that credits the same tick again. Neither entry
+followed by a cohort read that credits the same tick again.
+Furthermore the legacy single-Episode path now requires exactly ONE
+outstanding owner-issued Tick. An owner that observed multiple consecutive
+Tick outcomes must submit the entire independently signed cohort or fail
+closed; it cannot report only a favorable Episode. Neither entry
 can be used twice in the same running Agentd owner, whether the independent
 Observer signature was accepted or rejected. This does not provide global
 or cross-restart uniqueness: a durable external Observer/evidence owner must

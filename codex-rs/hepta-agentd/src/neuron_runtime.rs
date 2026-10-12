@@ -188,10 +188,12 @@ where
     ) -> Result<NeuronTrialObservedTickLinkV1, NeuronTrialTickObserverErrorV1> {
         // This and the complete-cohort path share one single-use issuance.
         // Even a rejected Observer signature consumes the process-local trail.
-        self.issued_cohort.clear();
+        let history = std::mem::take(&mut self.issued_cohort);
         let latest = self.issued_tick.take();
         (|| -> Result<NeuronTrialObservedTickLinkV1, NeuronTrialTickObserverErrorV1> {
-            require_owner_issued_tick(latest.as_ref(), query.tick)?;
+            // A multi-tick series must use the whole Observer-signed cohort,
+            // never cherry-pick one later outcome from many executed ticks.
+            require_single_owner_issued_tick(&history, latest.as_ref(), query.tick)?;
             let before = self.read_local_checkpoint_binding_v1()?;
             if query.tick.local_checkpoint_binding_digest != before.binding_digest
                 || query.tick.checkpoint_after != before.anchor.checkpoint_digest
@@ -310,6 +312,20 @@ where
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
     }
+}
+
+/// The legacy single Episode bridge is admissible ONLY for a single actually
+/// issued tick. Once a series contains multiple ticks, the complete batch path
+/// is mandatory; a caller cannot select just its best observed outcome.
+fn require_single_owner_issued_tick(
+    history: &[AgentdNeuronTickObservationV1],
+    retained: Option<&AgentdNeuronTickObservationV1>,
+    presented: &AgentdNeuronTickObservationV1,
+) -> Result<(), NeuronRuntimeError> {
+    if history.len() != 1 || history.first() != Some(presented) {
+        return Err(NeuronRuntimeError::ModelBindingMismatch);
+    }
+    require_owner_issued_tick(retained, presented)
 }
 
 /// Only a truly contiguous series from one current owner may be retained.
