@@ -233,8 +233,7 @@ fn coalesced_scope_reuses_its_stale_round_robin_slot_on_readmission() {
     config.max_lanes_per_poll = 2;
     let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
 
-    q.enqueue(1, intent("first", "scope-a", 1, 1, 100))
-        .unwrap();
+    q.enqueue(1, intent("first", "scope-a", 1, 1, 100)).unwrap();
     q.enqueue(1, intent("coalesced", "scope-b", 1, 2, 100))
         .unwrap();
     let first = q.poll_physically_compatible(11).unwrap().batch.unwrap();
@@ -255,6 +254,52 @@ fn coalesced_scope_reuses_its_stale_round_robin_slot_on_readmission() {
     assert_eq!(second.requests[0].request_id, id("readmitted"));
     assert_eq!(q.pending(), 0);
     assert!(q.round_robin_members.is_empty());
+}
+
+#[test]
+fn stale_coalesced_slots_cannot_hide_an_urgent_request() {
+    let mut config = limits();
+    config.max_batch_size = 4;
+    config.max_lanes_per_poll = 4;
+    config.max_wait_ms = 100;
+    let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
+
+    // The first native batch consumes four physical lanes, leaving three
+    // stale round-robin slots ahead of two still-live scopes.
+    for number in 0..4 {
+        q.enqueue(
+            1,
+            intent(
+                &format!("coalesced-{number}"),
+                &format!("a-{number}"),
+                1,
+                1,
+                50,
+            ),
+        )
+        .unwrap();
+    }
+    let mut waiting = intent("waiting", "b-waiting", 1, 1, 1_000);
+    waiting.key.model_digest = digest("unrelated-model");
+    q.enqueue(1, waiting).unwrap();
+    q.enqueue(1, intent("urgent", "c-urgent", 1, 1, 2)).unwrap();
+
+    let first = q.poll_physically_compatible(1).unwrap();
+    assert_eq!(first.scanned_lanes, 4);
+    assert_eq!(first.batch.unwrap().requests.len(), 4);
+    assert_eq!(q.round_robin.len(), 5);
+
+    // Three stale slots do not use up the four-live-lane scan budget.
+    // The not-yet-ready scope must not hide an urgent later scope.
+    let second = q.poll_physically_compatible(1).unwrap();
+    assert_eq!(second.scanned_lanes, 2);
+    let ready = second.batch.expect("urgent request must be observed");
+    assert_eq!(ready.requests[0].request_id, id("urgent"));
+    assert_eq!(q.pending(), 1);
+
+    let last = q.poll(101).unwrap().batch.unwrap();
+    assert_eq!(last.requests[0].request_id, id("waiting"));
+    assert_eq!(q.pending(), 0);
 }
 
 #[test]
