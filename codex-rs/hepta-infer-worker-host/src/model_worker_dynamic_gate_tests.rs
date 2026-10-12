@@ -40,6 +40,21 @@ fn gate_changes_with_input_and_is_not_absorbable_into_a_fixed_linear_head() {
 }
 
 #[test]
+fn exact_fractional_q24_input_is_admitted_but_out_of_domain_is_denied() {
+    let head = DynamicGateArtifactV3::new(candidate()).expect("valid test head");
+    // Decimal 1 + 2^-24 is genuinely representable in Q24. The cross-language
+    // Python oracle must not reject it as a non-integral input.
+    let (drive, prediction) = head
+        .compute(&"a".repeat(64), "cell.a", &[Q24 + 1, Q24], 1)
+        .expect("valid fractional Q24 feature");
+    assert_eq!(drive.len(), 1);
+    assert_eq!(prediction.len(), 1);
+    // Actual Q24 absolute limit is 8*Q24, with both endpoints inclusive.
+    assert!(head.compute(&"a".repeat(64), "cell.a", &[8 * Q24 + 1, Q24], 1).is_err());
+    assert!(head.compute(&"a".repeat(64), "cell.a", &[-8 * Q24 - 1, Q24], 1).is_err());
+}
+
+#[test]
 fn cell_state_is_private_and_all_model_bytes_change_digest() {
     let first = DynamicGateArtifactV3::new(candidate()).expect("valid");
     let mut other = candidate();
