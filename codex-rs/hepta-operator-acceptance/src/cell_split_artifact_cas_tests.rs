@@ -258,6 +258,12 @@ fn complete_orphaned_cas_object_cannot_be_adopted_after_lost_commit() {
         Err(CellSplitArtifactCasErrorV1::Ambiguous)
     ));
     assert!(owner.read_committed(&request).expect("readback").is_none());
+    assert_eq!(
+        owner
+            .current_sequence_for_intent(&request)
+            .expect("orphan is not a commit"),
+        1
+    );
     assert!(!owner.commit_path(&request).exists());
     drop(owner);
 
