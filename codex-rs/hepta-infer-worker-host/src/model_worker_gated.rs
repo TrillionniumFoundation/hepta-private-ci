@@ -24,6 +24,8 @@ use super::NeuronFeatureRequest;
 use super::NeuronSharedFeatureBatchDriverV2;
 use super::SharedNeuronFeatureRequestV2;
 use super::WorkerRequest;
+use super::dynamic_gate::DynamicGateArtifactV3;
+use super::dynamic_gate::DynamicGateCandidateV3;
 use super::validate_manifest;
 
 const Q24: i64 = 1 << 24;
@@ -62,6 +64,7 @@ struct GatedHeadArtifactV2 {
 pub struct GatedHeadCpuDriverV2 {
     selected_manifest: ModelManifest,
     heads: BTreeMap<String, GatedHeadArtifactV2>,
+    dynamic_heads: BTreeMap<String, DynamicGateArtifactV3>,
     loaded: bool,
     sealed: bool,
     tensor_bytes: usize,
@@ -74,6 +77,7 @@ impl GatedHeadCpuDriverV2 {
         Ok(Self {
             selected_manifest,
             heads: BTreeMap::new(),
+            dynamic_heads: BTreeMap::new(),
             loaded: false,
             sealed: false,
             tensor_bytes: 0,
@@ -87,7 +91,7 @@ impl GatedHeadCpuDriverV2 {
         if self.sealed {
             return Err(Error::ActiveRequests);
         }
-        if self.heads.len() >= MAX_REGISTERED_HEADS {
+        if self.heads.len() + self.dynamic_heads.len() >= MAX_REGISTERED_HEADS {
             return Err(Error::ModelCapacity);
         }
         validate_candidate(&candidate)?;
@@ -95,6 +99,10 @@ impl GatedHeadCpuDriverV2 {
             .heads
             .values()
             .any(|head| head.candidate.cell_identity == candidate.cell_identity)
+            || self
+                .dynamic_heads
+                .values()
+                .any(|head| head.candidate.cell_identity == candidate.cell_identity)
         {
             // Multiple active revisions for one Cell need separate generations.
             return Err(Error::ModelAlreadyLoaded);
@@ -126,8 +134,79 @@ impl GatedHeadCpuDriverV2 {
         Ok(head_digest)
     }
 
+    /// Register a separately trained, frozen dynamic gate. This does not update
+    /// a serving Head in-place; loading seals the complete catalog and digest.
+    pub fn register_dynamic_head(
+        &mut self,
+        candidate: DynamicGateCandidateV3,
+    ) -> Result<String, Error> {
+        if self.sealed {
+            return Err(Error::ActiveRequests);
+        }
+        if self.heads.len() + self.dynamic_heads.len() >= MAX_REGISTERED_HEADS {
+            return Err(Error::ModelCapacity);
+        }
+        let head = DynamicGateArtifactV3::new(candidate)?;
+        if self
+            .heads
+            .values()
+            .any(|v| v.candidate.cell_identity == head.candidate.cell_identity)
+            || self
+                .dynamic_heads
+                .values()
+                .any(|v| v.candidate.cell_identity == head.candidate.cell_identity)
+        {
+            return Err(Error::ModelAlreadyLoaded);
+        }
+        let bytes = head.tensor_bytes()?;
+        let total = self
+            .tensor_bytes
+            .checked_add(bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if total > MAX_TENSOR_BYTES {
+            return Err(Error::ModelCapacity);
+        }
+        let digest = head.digest().to_string();
+        if self.heads.contains_key(&digest) || self.dynamic_heads.contains_key(&digest) {
+            return Err(Error::ModelAlreadyLoaded);
+        }
+        self.dynamic_heads.insert(digest.clone(), head);
+        self.tensor_bytes = total;
+        Ok(digest)
+    }
+
     pub fn parameter_bytes(&self) -> usize {
         self.tensor_bytes
+    }
+
+    /// Report temporary Q24 tensors actually allocated by a dynamic Head,
+    /// not just the input and two outputs of the older static reference.
+    fn transient_bytes_for_head(
+        &self,
+        digest: &str,
+        input_width: usize,
+        output_width: usize,
+    ) -> Result<u64, Error> {
+        let base = transient_dimensions_bytes(input_width, output_width)?;
+        let Some(head) = self.dynamic_heads.get(digest) else {
+            return Ok(base);
+        };
+        let extra_values = head
+            .candidate
+            .rank
+            .checked_mul(2)
+            .and_then(|ranks| {
+                head.candidate
+                    .groups
+                    .checked_mul(2)
+                    .and_then(|groups| ranks.checked_add(groups))
+            })
+            .ok_or(Error::ArithmeticOverflow)?;
+        let extra_bytes = extra_values
+            .checked_mul(std::mem::size_of::<i64>())
+            .ok_or(Error::ArithmeticOverflow)?;
+        base.checked_add(u64::try_from(extra_bytes).map_err(|_| Error::ArithmeticOverflow)?)
+            .ok_or(Error::ArithmeticOverflow)
     }
 
     /// Calculate an exact bundle identity from the admitted immutable tensors,
@@ -152,6 +231,25 @@ impl GatedHeadCpuDriverV2 {
         {
             return Err(Error::ModelAlreadyLoaded);
         }
+        Ok(catalog_digest_sorted(&digests))
+    }
+
+    pub fn catalog_digest_for_dynamic(
+        candidates: &[DynamicGateCandidateV3],
+    ) -> Result<String, Error> {
+        if candidates.is_empty() || candidates.len() > MAX_REGISTERED_HEADS {
+            return Err(Error::ModelCapacity);
+        }
+        let mut digests = Vec::with_capacity(candidates.len());
+        let mut cells = std::collections::BTreeSet::new();
+        for candidate in candidates {
+            let head = DynamicGateArtifactV3::new(candidate.clone())?;
+            if !cells.insert(candidate.cell_identity.as_str()) {
+                return Err(Error::ModelAlreadyLoaded);
+            }
+            digests.push(head.digest().to_string());
+        }
+        digests.sort();
         Ok(catalog_digest_sorted(&digests))
     }
 
@@ -186,6 +284,12 @@ impl GatedHeadCpuDriverV2 {
         output_width: usize,
         cell_id: Option<&str>,
     ) -> Result<(Vec<i64>, Vec<i64>), Error> {
+        if let Some(head) = self.dynamic_heads.get(head_digest) {
+            // Legacy V1 has no authenticated Cell identity. Dynamic Heads
+            // therefore require the V2 Cell-scoped owner-private path.
+            let cell_id = cell_id.ok_or(Error::FeatureContract)?;
+            return head.compute(encoder_digest, cell_id, features_q24, output_width);
+        }
         let head = self.heads.get(head_digest).ok_or(Error::ModelNotLoaded)?;
         let candidate = &head.candidate;
         if head.head_digest != head_digest
@@ -217,11 +321,17 @@ impl GatedHeadCpuDriverV2 {
 
 impl ModelDriver for GatedHeadCpuDriverV2 {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
-        let selected_catalog =
-            catalog_digest_sorted(&self.heads.keys().cloned().collect::<Vec<_>>());
+        let selected_catalog = catalog_digest_sorted(
+            &self
+                .heads
+                .keys()
+                .chain(self.dynamic_heads.keys())
+                .cloned()
+                .collect::<Vec<_>>(),
+        );
         if *manifest != self.selected_manifest
             || self.loaded
-            || self.heads.is_empty()
+            || (self.heads.is_empty() && self.dynamic_heads.is_empty())
             || selected_catalog != manifest.weights_digest
         {
             return Err(Error::ModelMismatch);
@@ -364,7 +474,8 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
                     drive_q24: drive,
                     prediction_q24: prediction,
                     observed_memory_bytes: handle.observed_memory_bytes,
-                    transient_allocation_bytes: transient_dimensions_bytes(
+                    transient_allocation_bytes: self.transient_bytes_for_head(
+                        &request.head_digest,
                         request.snapshot.features_q24.len(),
                         request.expected_output_width,
                     )?,
@@ -690,6 +801,7 @@ mod tests {
         let digest = driver.register_head(candidate).expect("head");
         let handle = driver.load(&selected).expect("loaded");
         let identity = SharedFeatureIdentityV2 {
+            scope_id: id("scope.a"),
             principal_id: id("principal.a"),
             purpose_id: id("purpose.decision"),
             generation: Generation::new(1).expect("generation"),
@@ -717,6 +829,7 @@ mod tests {
                 reservation_maximum_tokens: 16,
                 cancelled: false,
             },
+            scope_id: id("scope.a"),
             principal_id: id("principal.a"),
             purpose_id: id("purpose.decision"),
             cell_id: id("cell.a"),
@@ -804,6 +917,7 @@ mod tests {
         let h_second = driver.register_head(second.clone()).expect("head b");
         let mut cache = SharedFeatureCacheV2::new(2, 512).expect("cache");
         let identity = SharedFeatureIdentityV2 {
+            scope_id: id("scope.a"),
             principal_id: id("principal.a"),
             purpose_id: id("purpose.prediction"),
             generation: Generation::new(3).expect("generation"),
@@ -832,6 +946,7 @@ mod tests {
                     reservation_maximum_tokens: 32,
                     cancelled: false,
                 },
+                scope_id: id("scope.a"),
                 principal_id: id("principal.a"),
                 purpose_id: id("purpose.prediction"),
                 cell_id: id(cell),
@@ -992,6 +1107,62 @@ mod tests {
         let mut driver = GatedHeadCpuDriverV2::new(selected).expect("driver");
         driver.register_head(first).expect("first");
         assert_eq!(driver.register_head(second), Err(Error::ModelAlreadyLoaded));
+    }
+
+    #[test]
+    fn dynamic_head_seals_catalog_and_refuses_identityless_v1_use() {
+        let candidate = DynamicGateCandidateV3 {
+            cell_identity: "cell.dynamic".into(),
+            encoder_digest: "a".repeat(64),
+            input_width: 2,
+            output_width: 1,
+            rank: 1,
+            groups: 2,
+            down_q24: vec![Q24, 0],
+            up_q24: vec![Q24, Q24],
+            gate_bias_q24: vec![0, 0],
+            cell_state_q24: vec![0, 0],
+            drive_weights_q24: vec![Q24, Q24],
+            prediction_weights_q24: vec![Q24, 0],
+            drive_bias_q24: vec![0],
+            prediction_bias_q24: vec![0],
+        };
+        let mut selected = manifest();
+        selected.weights_digest =
+            GatedHeadCpuDriverV2::catalog_digest_for_dynamic(&[candidate.clone()])
+                .expect("catalog");
+        let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
+        let digest = driver
+            .register_dynamic_head(candidate.clone())
+            .expect("register");
+        assert_eq!(driver.parameter_bytes(), 14 * 8);
+        let handle = driver.load(&selected).expect("seal and load");
+        assert_eq!(
+            driver.compute_parts(&digest, &"a".repeat(64), &[Q24, Q24], 1, None),
+            Err(Error::FeatureContract)
+        );
+        assert_eq!(
+            driver
+                .compute_parts(
+                    &digest,
+                    &"a".repeat(64),
+                    &[Q24, Q24],
+                    1,
+                    Some("cell.dynamic")
+                )
+                .expect("scoped dynamic gate")
+                .0,
+            vec![3 * Q24 / 2]
+        );
+        assert_eq!(
+            driver.compute_parts(&digest, &"a".repeat(64), &[Q24, Q24], 1, Some("cell.other")),
+            Err(Error::FeatureOutputMismatch)
+        );
+        assert_eq!(
+            driver.register_dynamic_head(candidate),
+            Err(Error::ActiveRequests)
+        );
+        assert!(driver.verify_loaded(&handle).is_ok());
     }
 
     #[test]
