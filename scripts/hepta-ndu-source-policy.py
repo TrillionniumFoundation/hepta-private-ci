@@ -8,21 +8,38 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LEGACY_CALL = re.compile(r"\bevaluate_candidates\s*\(")
+LEGACY_DEFINITION_PATH = Path("codex-rs/hepta-ndu/src/lib.rs")
+LEGACY_DEFINITION = re.compile(
+    r"(?m)^[ \t]*pub\s+fn\s+(?P<name>evaluate_candidates)\s*\("
+)
 ALLOWED = {
-    Path("codex-rs/hepta-ndu/src/evaluator.rs"),
     Path("codex-rs/hepta-ndu/src/evaluator_tests.rs"),
 }
+
+
+def legacy_call_lines(path: Path, text: str) -> list[int]:
+    if path in ALLOWED:
+        return []
+    # Only the approved declaration's name is exempt, never calls in its body
+    # or any other call in the root file. Other definitions fail closed.
+    declarations = (
+        {match.start("name") for match in LEGACY_DEFINITION.finditer(text)}
+        if path == LEGACY_DEFINITION_PATH
+        else set()
+    )
+    return [
+        text.count("\n", 0, match.start()) + 1
+        for match in LEGACY_CALL.finditer(text)
+        if match.start() not in declarations
+    ]
 
 
 def main() -> None:
     violations: list[str] = []
     for path in sorted((ROOT / "codex-rs").glob("**/*.rs")):
         rel = path.relative_to(ROOT)
-        if rel in ALLOWED:
-            continue
         text = path.read_text(encoding="utf-8")
-        for match in LEGACY_CALL.finditer(text):
-            line = text.count("\n", 0, match.start()) + 1
+        for line in legacy_call_lines(rel, text):
             violations.append(f"{rel}:{line}")
     if violations:
         raise SystemExit(
