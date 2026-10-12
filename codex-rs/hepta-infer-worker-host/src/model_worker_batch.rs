@@ -42,6 +42,20 @@ pub trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
     ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error>;
 }
 
+/// Admission floor for independent Q24 drive/prediction output buffers.
+/// Precomputed V1 input vectors already exist; this is not measured RSS.
+fn minimum_neuron_batch_output_bytes(requests: &[NeuronFeatureRequest]) -> Result<u64, Error> {
+    requests.iter().try_fold(0_u64, |total, item| {
+        let width =
+            u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
+        let bytes = width
+            .checked_mul(2)
+            .and_then(|elements| elements.checked_mul(8))
+            .ok_or(Error::ArithmeticOverflow)?;
+        total.checked_add(bytes).ok_or(Error::ArithmeticOverflow)
+    })
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceWorker<D> {
     /// Admit the entire batch before dispatch and reject partial/aliased results.
     /// Every item binds an independently admitted request, lease and reservation;
@@ -113,6 +127,24 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             {
                 return Err(Error::PayloadMismatch);
             }
+        }
+
+        // Every row allocates its own drive/prediction outputs, even though
+        // the backend receives just one batch call. Reject a batch whose
+        // minimum simultaneous output footprint exceeds the worker grant
+        // before reserving request slots or invoking the driver.
+        let resident_bytes = self
+            .models
+            .values()
+            .try_fold(0_u64, |total, loaded| {
+                total.checked_add(loaded.handle.observed_memory_bytes)
+            })
+            .ok_or(Error::ArithmeticOverflow)?;
+        let minimum_bytes = resident_bytes
+            .checked_add(minimum_neuron_batch_output_bytes(&requests)?)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if minimum_bytes > self.grant.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
         }
 
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
@@ -428,6 +460,26 @@ mod tests {
             Err(Error::PayloadMismatch)
         );
         assert_eq!(worker.driver.batches, 0);
+    }
+
+    #[test]
+    fn whole_batch_output_floor_rejects_before_mutating_slots_or_dispatch() {
+        let mut worker = worker(BatchMock::default());
+        // Loaded model owns 1024 bytes. Two independent width-3 Q24 output
+        // pairs need at least 2 * 3 * 2 * 8 more bytes, not just one pair.
+        worker.grant.maximum_memory_bytes = 1024 + (2 * 3 * 2 * 8) - 1;
+        assert_eq!(
+            worker.run_neuron_features_batch(
+                100,
+                "model.v2",
+                vec![feature("request.1", 'b'), feature("request.2", 'c')],
+            ),
+            Err(Error::ModelCapacity)
+        );
+        assert_eq!(worker.driver.batches, 0);
+        assert_eq!(worker.driver.single_calls, 0);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.v2"].active_requests, 0);
     }
 
     #[test]
